@@ -416,10 +416,14 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/experimental/*.java</exclude>
-                                <exclude>**/functional/**</exclude>
-                                <exclude>**/web/*</exclude>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
                             </excludes>
+                            <includes>
+                                <include>**/org/tdar/core/**/*</include>
+                                <include>**/org/tdar/struts/**/*</include>
+                            </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
                         </configuration>
@@ -432,11 +436,11 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/experimental/*.java</exclude>
-                                <exclude>**/functional/**</exclude>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
                             </excludes>
                             <includes>
-                                <include>**/web/*</include>
+                                <include>**/org/tdar/web/**/*</include>
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
@@ -454,11 +458,11 @@
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/selenium</reportsDirectory>
                             <excludes>
-                                <exclude>**/experimental/*.java</exclude>
-                                <exclude>**/web/*</exclude>
+                                <exclude>**/experimental/**/*.java</exclude>
+                                <exclude>**/web/**/*</exclude>
                             </excludes>
                             <includes>
-                                <include>**/functional/**</include>
+                                <include>**/org/tdar/functional/**/*</include>
                             </includes>
                         </configuration>
                     </execution>
