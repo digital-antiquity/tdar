@@ -29,8 +29,8 @@
             <tdar:type>SHARED</tdar:type>
         </tdar:ResourceCollection>
         <tdar:ResourceCollection hidden="true"  parentIdRef="NULL_REF">
-            <tdar:adminDescription></tdar:adminDescription>
             <tdar:description>description</tdar:description>
+            <tdar:formattedDescription></tdar:formattedDescription>
             <tdar:name>abcd</tdar:name>
             <tdar:orientation>LIST</tdar:orientation>
             <tdar:sortBy>TITLE</tdar:sortBy>

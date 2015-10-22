@@ -78,6 +78,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
+        addAnother.click();
         addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
                 "person-" + config.getUserId(),
                 permissions);

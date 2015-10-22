@@ -1468,9 +1468,11 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         WebElementSelection contribId = null;
+        logger.debug(getCurrentUrl());
+        logger.debug(getSource());
         try {
             contribId = find("#contributor-id");
-            if (contribId != null && reg.isRequestingContributorAccess() != contribId.isSelected()) {
+            if (contribId != null && contribId.size() > 0 && reg.isRequestingContributorAccess() != contribId.isSelected()) {
                 contribId.click();
             }
         } catch (TdarRecoverableRuntimeException e) {
