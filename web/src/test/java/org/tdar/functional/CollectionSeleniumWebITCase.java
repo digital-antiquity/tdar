@@ -76,13 +76,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
-        gotoEdit(url);
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
                 "person-" + config.getUserId(),
                 permissions);
-        submitForm();
     }
 
     @Test
@@ -246,7 +244,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     private void gotoEdit(String url) {
         url = url.substring(0, url.lastIndexOf("/"));
+        logger.debug(getCurrentUrl());
         gotoPage(url + "/edit");
+        logger.debug(getCurrentUrl());
         // find(By.linkText(" edit")).click();
         waitForPageload();
     }
