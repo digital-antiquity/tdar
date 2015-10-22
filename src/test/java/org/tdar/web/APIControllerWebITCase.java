@@ -136,6 +136,23 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     }
 
     @Test
+    @Rollback
+    public void testProjectWithCollection() throws Exception {
+        JaxbResultContainer login = setupValidLogin();
+
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        String text = FileUtils.readFileToString(new File("src/test/resources/xml/record-with-collections.xml"));
+        builder.addTextBody("record", text);
+
+        post.setEntity(builder.build());
+        CloseableHttpResponse response = httpClient.execute(post);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+    }
+
+    @Test
     public void testInvalidLogin() throws IllegalStateException, Exception {
         Pair<Integer, JaxbResultContainer> apiLogin = apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
         assertEquals(StatusCode.BAD_REQUEST, apiLogin.getFirst().intValue());

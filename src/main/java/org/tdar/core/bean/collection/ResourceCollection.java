@@ -792,6 +792,7 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.parentIds = parentIds;
     }
 
+    @XmlTransient
     public boolean isChangesNeedToBeLogged() {
         return changesNeedToBeLogged;
     }
