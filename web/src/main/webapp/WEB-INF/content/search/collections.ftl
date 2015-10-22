@@ -14,7 +14,7 @@
         <#if searchPhrase?? && !explore>
             Search Results: <span>${searchPhrase}</span>
         <#elseif query?has_content>
-        ${lookupSource.proper} Search Results: <span>${query?html}</span>
+        ${lookupSource.proper} Search Results: <span>${query!''?html}</span>
         <#else>
             Search Results: ${(searchSubtitle!"all records")?html}
         </#if>

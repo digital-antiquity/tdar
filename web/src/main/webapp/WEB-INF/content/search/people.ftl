@@ -2,7 +2,7 @@
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist />
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search />
 <head>
-    <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}<#else>${query?html}</#if></title>
+    <title>Search Results: <#if searchSubtitle??>${searchSubtitle?html}<#else>${query!''?html}</#if></title>
 </head>
 <body>
 
@@ -11,7 +11,7 @@
         <#if searchPhrase?? && !explore>
             Search Results: <span>${searchPhrase}</span>
         <#elseif query?has_content>
-        ${lookupSource.proper} Search Results: <span>${query?html}</span>
+        ${lookupSource.proper} Search Results: <span>${query!''?html}</span>
         <#else>
             Search Results: ${(searchSubtitle!"all people")?html}
         </#if>
