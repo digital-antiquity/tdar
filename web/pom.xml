@@ -242,10 +242,11 @@
                 </includes>
             </resource>
         </resources>
-        <filters>
+<!--         <filters>
             <filter>${basedir}/src/main/release/profiles/${build.profile.id}/config.properties</filter>
         </filters>
-        <testResources>
+ -->
+         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
             </testResource>
