@@ -548,22 +548,6 @@
             </build>
         </profile>
         <profile>
-            <activation>
-                <property>
-                    <name>!ignoreabc</name>
-                </property>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>com.sun</groupId>
-                    <artifactId>tools</artifactId>
-                    <version>1.4.2</version>
-                    <scope>system</scope>
-                    <systemPath>${java.home}/../lib/tools.jar</systemPath>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
             <id>updateVersion</id>
             <build>
                 <plugins>

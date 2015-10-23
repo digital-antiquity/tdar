@@ -130,6 +130,12 @@
             <artifactId>ij</artifactId>
             <version>1.50b</version>
             <!-- LICENSE: PUBLIC DOMAIN -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>tools</artifactId>
+                    <groupId>com.sun</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sf.ij_io</groupId>
