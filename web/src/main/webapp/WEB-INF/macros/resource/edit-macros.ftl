@@ -1002,11 +1002,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 -->
 
     <#macro resourceDataTable showDescription=true selectable=false limitToCollection=false idAddition="">
-    <div class="well tdar-widget" id="divSearchFilters"> <#--you are in a span9, but assume span8 so we fit inside well -->
+    <div class="well tdar-widget div-search-filter" id="divSearchFilters${idAddition}"> <#--you are in a span9, but assume span8 so we fit inside well -->
 
         <div class="row" >
             <div class="span8" >
-                <@s.textfield theme="tdar" name="_tdar.query" id="query" cssClass='span8'
+                <@s.textfield theme="tdar" name="_tdar.query" id="query${idAddition}" cssClass='span8'
                     placeholder="Enter a full or partial title to filter results" />
                 <div>
                     <button type="button" class="btn btn-mini pull-left" id="btnToggleFilters${idAddition}" data-toggle="collapse" data-target="#divAdvancedFilters${idAddition}">
@@ -1095,7 +1095,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <label class="">Sort by</label>
 
                     <div class="">
-                        <@s.select theme="tdar" emptyOption='false' name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' id="sortBy"
+                        <@s.select theme="tdar" emptyOption='false' id="sortBy${idAddition}" name='_tdar.sortBy' listValue='label' list='%{resourceDatatableSortOptions}' cssClass="selSortBy"
                         value="ID_REVERSE" cssClass="input-block-level"/>
                     </div>
                 </div>
@@ -1120,7 +1120,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <thead>
                 <tr>
                     <#if selectable>
-                        <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle">id</th></#if>
+                        <th><input type="checkbox" onclick="TDAR.datatable.checkAllToggle()" id="cbCheckAllToggle${idAddition}">id</th></#if>
                     <th>Title</th>
                     <th>Type</th>
                 </tr>
@@ -1462,7 +1462,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <@s.select theme="tdar" cssClass="creator-rights-select span3" name="${strutsPrefix}.generalPermission" emptyOption='false'
                 listValue='label' list='%{availablePermissions}' disabled=isDisabled />
             <#--HACK: disabled fields do not get sent in request, so we copy generalPermission via hidden field and prevent it from being cloned -->
-                <@s.hidden name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
+                <@s.hidden id="${strutsPrefix}hdnGeneralPermission" name="${strutsPrefix}.generalPermission" cssClass="repeat-row-remove" />
             <#else>
                 <span class="span2">&nbsp;</span>
             </#if>

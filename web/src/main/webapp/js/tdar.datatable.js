@@ -390,7 +390,7 @@ TDAR.datatable = function() {
      */
     function _resetAllFilters() {
         //reset all dropdowns, but only trigger change for one of them (otherwise datatable may try to re-render N times)
-        var $divSearchFilters = $("#divSearchFilters");
+        var $divSearchFilters = $(".div-search-filters");
         $divSearchFilters.find("input[type=checkbox]").prop("checked", false);
         $divSearchFilters.find("select").prop("selectedIndex", 0).last().change();
 

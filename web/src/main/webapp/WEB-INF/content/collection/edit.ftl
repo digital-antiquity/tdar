@@ -175,24 +175,24 @@
 
         </div>
 
-
+        <#--
         <div class="glide" id="divPublicResourcesSesction" data-tiplabel="Include Other Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
                     of results.">
             <h2>Include other resources (display only)</h2>
-            <#--only show the 'limit to collection' checkbox when we are editing a resource (it's pointless when creating new collection) -->
             <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection idAddition="public">
             </@edit.resourceDataTable>
 
-            <div id="divNoticeContainer" style="display:none">
-                <div id="divAddProjectToCollectionNotice" class="alert">
-                    <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNotice">×</button>
+            <div id="divNoticeContainerpublic" style="display:none">
+                <div id="divAddProjectToCollectionNoticepublic" class="alert">
+                    <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNoticepublic">×</button>
                     <em>Reminder:</em> Adding projects to a collection does not include the resources within a project.
                 </div>
             </div>
 
         </div>
 
+        -->
         <div id="divAddRemove">
             <h2>Modifications</h2>
 
