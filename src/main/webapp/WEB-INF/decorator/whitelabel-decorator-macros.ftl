@@ -39,7 +39,7 @@
 <#if !searchHeaderEnabled>
                 <nav>
                     <ul class="hidden-phone-portrait">
-                        <#include "${themeDir}/nav-items.dec" />
+                        <#include "/${themeDir}/nav-items.dec" />
                         <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
                         <#if ((authenticatedUser.contributor)!true)>
                             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
