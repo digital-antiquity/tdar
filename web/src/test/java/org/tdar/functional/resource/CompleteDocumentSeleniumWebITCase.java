@@ -218,7 +218,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         submitForm();
         String text = getText();
-        logger.trace(text);
+        logger.debug(text);
         assertTrue(text.contains(JONES));
         assertTrue(text.contains(INDIANA));
         assertTrue(text.contains("UC"));
