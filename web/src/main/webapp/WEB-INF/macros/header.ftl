@@ -17,6 +17,7 @@
 <!--[if !IE 8]><!-->
 <script>
     var $buoop = {vs:{i:8,f:50,o:12.1,s:7},c:2, reminder:0};
+    //http://browser-update.org/customize.html
     function $buo_f(){
         var e = document.createElement("script");
         e.src = "//browser-update.org/update.min.js";
