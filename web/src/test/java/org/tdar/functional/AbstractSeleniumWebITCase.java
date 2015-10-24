@@ -166,55 +166,6 @@ public abstract class AbstractSeleniumWebITCase {
 
     private WebDriverEventListener eventListener = new WebDriverEventAdapter() {
         @Override
-        public void afterNavigateTo(String url, WebDriver driver) {
-            afterPageChange();
-        }
-
-        @Override
-        public void beforeNavigateBack(WebDriver driver) {
-            beforePageChange();
-        }
-
-        @Override
-        public void afterNavigateBack(WebDriver driver) {
-            afterPageChange();
-        }
-
-        @Override
-        public void beforeNavigateForward(WebDriver driver) {
-            beforePageChange();
-        }
-
-        @Override
-        public void afterNavigateForward(WebDriver driver) {
-            afterPageChange();
-        }
-
-        @Override
-        public void beforeFindBy(By by, WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void afterFindBy(By by, WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void beforeChangeValueOf(WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void afterChangeValueOf(WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void beforeScript(String script, WebDriver driver) {
-        }
-
-        @Override
-        public void afterScript(String script, WebDriver driver) {
-        }
-
-        @Override
         public void onError(Throwable throwable, WebDriver driver) {
             getBrowserConsoleLogEntries(driver);
             if (!throwable.getMessage().contains("n is null")) {
