@@ -1,6 +1,8 @@
 package org.tdar.functional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -282,15 +284,15 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 find("#resource_datatable").first(), title));
 
         // get the checkbox of the matching row
-        WebElementSelection checkbox = find("#resource_datatable tbody tr")
-                .any(new Bool() {
-                    public boolean apply(WebElement tr) {
-                        return tr.getText().contains(title);
-                    }
-                })
+        WebElementSelection checkboxes = find("#resource_datatable tbody tr")
+                .any(tr -> tr.getText().contains(title))
                 .find(".datatable-checkbox");
-        assertThat(checkbox.size(), is(1));
-        checkbox.click();
+        assertThat("expecting one or more matches", checkboxes.size(), is(greaterThan(0)));
+
+        //some searches may yield more than one result. just pick the first.
+        checkboxes.first().click();
+
+        //reset the search
         find(By.name("_tdar.query")).val("");
 //        waitFor(ExpectedConditions.stalenessOf(origRow));
 

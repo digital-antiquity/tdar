@@ -235,7 +235,7 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return selection containing combined results of all findElements(By) from each element in the selection.
      */
     public WebElementSelection find(By by) {
-        return new WebElementSelection(findElements(by), driver);
+        return new WebElementSelection(driver, by);
     }
 
     /**

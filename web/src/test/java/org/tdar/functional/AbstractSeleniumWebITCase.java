@@ -89,9 +89,7 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.filestore.Filestore;
-import org.tdar.functional.util.LoggingStopWatch;
-import org.tdar.functional.util.TdarExpectedConditions;
-import org.tdar.functional.util.WebElementSelection;
+import org.tdar.functional.util.*;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
@@ -166,7 +164,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     private Set<WebElement> clickElems = new HashSet<>();
 
-    private WebDriverEventListener eventListener = new WebDriverEventListener() {
+    private WebDriverEventListener eventListener = new WebDriverEventAdapter() {
         @Override
         public void afterNavigateTo(String url, WebDriver driver) {
             afterPageChange();
@@ -217,7 +215,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         @Override
-        public void onException(Throwable throwable, WebDriver driver) {
+        public void onError(Throwable throwable, WebDriver driver) {
             getBrowserConsoleLogEntries(driver);
             if (!throwable.getMessage().contains("n is null")) {
                 logger.error("hey there was an error", throwable, throwable);
