@@ -9,7 +9,7 @@
     <name>The Digital Archaeological Record (search)</name>
 
     <properties>
-        <lucene.version>4.10.4</lucene.version>
+        <lucene.version>5.3.1</lucene.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -21,47 +21,68 @@
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
         <dependency>
-               <artifactId>solr-solrj</artifactId>
-               <groupId>org.apache.solr</groupId>
-               <version>5.3.1</version>
-               <type>jar</type>
-               <scope>compile</scope>
+            <artifactId>solr-solrj</artifactId>
+            <groupId>org.apache.solr</groupId>
+            <version>5.3.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-               <artifactId>solr-core</artifactId>
-               <groupId>org.apache.solr</groupId>
-               <version>5.3.1</version>
-               <type>jar</type>
-               <scope>compile</scope>
-        </dependency>
-        
-        <dependency>
-        	<groupId>org.apache.lucene</groupId>
-        	<artifactId>lucene-core</artifactId>
-        	<version>${lucene.version}</version>
-        </dependency>
-        <dependency>
-        	<groupId>org.apache.lucene</groupId>
-        	<artifactId>lucene-analyzers-common</artifactId>
-        	<version>${lucene.version}</version>
+            <artifactId>solr-core</artifactId>
+            <groupId>org.apache.solr</groupId>
+            <version>5.3.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
-        	<groupId>org.apache.lucene</groupId>
-        	<artifactId>lucene-queryparser</artifactId>
-        	<version>${lucene.version}</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
         </dependency>
-		<dependency>
-			<groupId>org.tdar</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.tdar</groupId>
-			<artifactId>core</artifactId>
-			<version>${project.version}</version>
-			<type>test-jar</type>
-			<scope>test</scope>
-		</dependency>        
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-solr</artifactId>
+            <version>1.5.0.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 

@@ -13,6 +13,7 @@ import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
@@ -47,9 +47,6 @@ public class SearchIndexService {
 
     @Autowired
     private GenericDao genericDao;
-
-    @Autowired
-    private DatasetDao datasetDao;
 
     @Autowired
     private EmailService emailService;
@@ -97,7 +94,7 @@ public class SearchIndexService {
         }
         return toReindex;
     }
-
+    
     /**
      * Index all of the @link Indexable items. Uses a ScrollableResult to manage memory and object complexity
      * 
@@ -121,6 +118,7 @@ public class SearchIndexService {
 
         try {
             genericDao.synchronize();
+//            solrTemplate.
 //            FullTextSession fullTextSession = getFullTextSession();
 //            FlushMode previousFlushMode = prepare(fullTextSession);
 //            SearchFactory sf = fullTextSession.getSearchFactory();
