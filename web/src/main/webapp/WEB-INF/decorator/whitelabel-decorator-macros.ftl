@@ -39,12 +39,12 @@
 <#if !searchHeaderEnabled>
                 <nav>
                     <ul class="hidden-phone-portrait">
-                        <#include "${themeDir}/nav-items.dec" />
+                        <#include "/${themeDir}/nav-items.dec" />
                         <li class="button hidden-phone"><a href="<@s.url value="/search/results"/>">BROWSE</a></li>
                         <#if ((authenticatedUser.contributor)!true)>
                             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
                         <li>
-                            <#if bodyid != 'home'>
+                            <#if bodyid!'' != 'home'>
                                 <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">
                                     <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
                                 <#--<input type="hidden" name="_tdar.searchType" value="simple">-->
