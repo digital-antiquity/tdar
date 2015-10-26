@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * http://stackoverflow.com/questions/285228/how-to-convert-utf-8-to-us-ascii-in-java
  */
 public class AsciiTransliterator {
-    private final KeywordTokenizer keywordTokenizer = new KeywordTokenizer(new StringReader(""));
+    private final KeywordTokenizer keywordTokenizer = new KeywordTokenizer();
     private final ASCIIFoldingFilter asciiFoldingFilter = new ASCIIFoldingFilter(keywordTokenizer);
     private final CharTermAttribute termAttribute = asciiFoldingFilter.getAttribute(CharTermAttribute.class);
 

@@ -18,8 +18,8 @@ import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 public class NonTokenizingAutocompleteAnalyzer extends Analyzer {
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        KeywordTokenizer et = new KeywordTokenizer(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        KeywordTokenizer et = new KeywordTokenizer();
         LowerCaseFilter stream = new LowerCaseFilter(et);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
         return new TokenStreamComponents(et, filter);

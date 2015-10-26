@@ -18,8 +18,8 @@ public final class TdarCaseSensitiveStandardAnalyzer extends Analyzer {
      * @see org.apache.lucene.analysis.Analyzer#tokenStream(java.lang.String, java.io.Reader)
      */
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        StandardTokenizer st = new StandardTokenizer(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        StandardTokenizer st = new StandardTokenizer();
         TrimFilter trimFilter = new TrimFilter(st);
         StopFilter stopFilter = new StopFilter(trimFilter, StopFilter.makeStopSet(TdarConfiguration.getInstance().getStopWords()));
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stopFilter);

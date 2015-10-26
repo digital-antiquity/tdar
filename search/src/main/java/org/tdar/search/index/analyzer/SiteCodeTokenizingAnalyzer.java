@@ -32,9 +32,9 @@ public final class SiteCodeTokenizingAnalyzer extends Analyzer {
     public static final Pattern sep_pattern = Pattern.compile(SEP);
 
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
+    protected TokenStreamComponents createComponents(String fieldName) {
         try {
-            PatternTokenizer tokenizer = new PatternTokenizer(reader, pattern, 0);
+            PatternTokenizer tokenizer = new PatternTokenizer(pattern, 0);
             ASCIIFoldingFilter filter = new ASCIIFoldingFilter(tokenizer);
             TrimFilter trimFilter = new TrimFilter(filter);
             // normalizing where possible so that RI-0000 matches RI0000

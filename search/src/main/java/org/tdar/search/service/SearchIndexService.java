@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
@@ -81,7 +82,18 @@ public class SearchIndexService {
             template.deleteById("Person-" + person.getId());
             SolrInputDocument document = PersonDocumentConverter.convert(person);
             template.add(document);
-            logger.debug("adding: " + person.getId() + " " + person.getProperName());
+            logger.trace("adding: " + person.getId() + " " + person.getProperName());
+        }
+        template.commit();
+    }
+
+    public void indexAllInstitutions() throws SolrServerException, IOException {
+        List<Institution > findAll = genericDao.findAll(Institution.class);
+        for (Institution inst : findAll) {
+            template.deleteById("Institution-" + inst.getId());
+            SolrInputDocument document = InstitutionDocumentConverter.convert(inst);
+            template.add("institutions", document);
+            logger.trace("adding: " + inst.getId() + " " + inst.getProperName());
         }
         template.commit();
     }

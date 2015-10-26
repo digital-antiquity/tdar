@@ -18,8 +18,8 @@ public final class NonTokenizingLowercaseKeywordAnalyzer extends Analyzer {
      * Treats entire field value as a single Keyword Token
      */
     @Override
-    protected TokenStreamComponents createComponents(String fieldName, Reader reader) {
-        KeywordTokenizer kt = new KeywordTokenizer(reader);
+    protected TokenStreamComponents createComponents(String fieldName) {
+        KeywordTokenizer kt = new KeywordTokenizer();
         LowerCaseFilter stream = new LowerCaseFilter(kt);
         ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stream);
         TrimFilter trimFilter = new TrimFilter(filter);

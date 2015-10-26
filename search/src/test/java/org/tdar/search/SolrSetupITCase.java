@@ -25,15 +25,29 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
     SearchIndexService searchIndexService;
     
     @Test
-    public void test() throws SolrServerException, IOException {
+    public void testPeople() throws SolrServerException, IOException {
         searchIndexService.indexAllPeople();
         SolrQuery solrQuery = new  SolrQuery();
         solrQuery.setParam("fl","id,score");
         String string = "S*";
+        
         solrQuery.setParam("q","name_autocomplete:"+ string);
-        QueryResponse rsp = template.query(solrQuery);
+        QueryResponse rsp = template.query("people",solrQuery);
         SolrDocumentList docs = rsp.getResults();
         logger.debug("{}", docs);
     }
-    
+
+    @Test
+    public void testInstitutions() throws SolrServerException, IOException {
+        searchIndexService.indexAllInstitutions();
+        SolrQuery solrQuery = new  SolrQuery();
+        solrQuery.setParam("fl","id,score");
+        String string = "University o*";
+        
+        solrQuery.setParam("q","name_autocomplete:"+ string);
+        QueryResponse rsp = template.query("institutions",solrQuery);
+        SolrDocumentList docs = rsp.getResults();
+        logger.debug("{}", docs);
+    }
+
 }

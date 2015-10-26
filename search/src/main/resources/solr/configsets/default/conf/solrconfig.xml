@@ -1518,6 +1518,7 @@
     <int name="xsltCacheLifetimeSeconds">5</int>
   </queryResponseWriter>
 
+<!--     <queryConverter name="queryConverter" class="org.tdar.search.query.SpellingQueryConverter"/> -->
   <!-- Query Parsers
 
        http://wiki.apache.org/solr/SolrQuerySyntax

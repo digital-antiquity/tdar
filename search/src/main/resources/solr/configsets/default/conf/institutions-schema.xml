@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="institutions" version="1.5">
+    
+    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="status" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    
+    <field name="_version_" type="long" indexed="true"  stored="true" multiValued="false"  />
+
+    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
+    
+    
+    
+  <!-- Field to use to determine and enforce document uniqueness. 
+      Unless this field is marked with required="false", it will be a required field
+   -->
+  <uniqueKey>id</uniqueKey>
+
+
+</schema>
