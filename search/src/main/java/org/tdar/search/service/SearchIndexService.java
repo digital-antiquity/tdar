@@ -1,5 +1,6 @@
 package org.tdar.search.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -8,12 +9,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.common.SolrInputDocument;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,6 +70,20 @@ public class SearchIndexService {
 
     public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
         indexAll(updateReceiver, getDefaultClassesToIndex(), person);
+    }
+
+    @Autowired
+    private SolrClient template;
+    
+    public void indexAllPeople() throws SolrServerException, IOException {
+        List<Person> findAll = genericDao.findAll(Person.class);
+        for (Person person : findAll) {
+            template.deleteById("Person-" + person.getId());
+            SolrInputDocument document = PersonDocumentConverter.convert(person);
+            template.add(document);
+            logger.debug("adding: " + person.getId() + " " + person.getProperName());
+        }
+        template.commit();
     }
 
     /**

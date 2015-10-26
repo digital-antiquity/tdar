@@ -13,7 +13,7 @@ public class PersonDocumentConverter {
         doc.setField("status", person.getStatus());
         doc.setField("firstName", person.getFirstName());
         doc.setField("lastName", person.getLastName());
-        doc.setField("properName", person.getProperName());
+        doc.setField("name_autocomplete", person.getProperName());
         doc.setField("registered", person.isRegistered());
         if (person instanceof TdarUser) {
             TdarUser user = (TdarUser) person;
