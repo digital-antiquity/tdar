@@ -93,7 +93,7 @@ public class SearchIndexService {
             template.deleteById("Institution-" + inst.getId());
             SolrInputDocument document = InstitutionDocumentConverter.convert(inst);
             template.add("institutions", document);
-            logger.trace("adding: " + inst.getId() + " " + inst.getProperName());
+            logger.debug("adding: " + inst.getId() + " " + inst.getProperName());
         }
         template.commit();
     }

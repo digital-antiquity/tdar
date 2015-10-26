@@ -42,7 +42,7 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
         searchIndexService.indexAllInstitutions();
         SolrQuery solrQuery = new  SolrQuery();
         solrQuery.setParam("fl","id,score");
-        String string = "University o*";
+        String string = "University\\ of*";
         
         solrQuery.setParam("q","name_autocomplete:"+ string);
         QueryResponse rsp = template.query("institutions",solrQuery);
