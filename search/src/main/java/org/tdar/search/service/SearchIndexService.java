@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -82,7 +83,7 @@ public class SearchIndexService {
     public void indexAllPeople() throws SolrServerException, IOException {
         List<Person> findAll = genericDao.findAll(Person.class);
         for (Person person : findAll) {
-            template.deleteById(person.getId().toString());
+            template.deleteById(generateId(person));
             SolrInputDocument document = PersonDocumentConverter.convert(person);
             template.add(document);
             logger.trace("adding: " + person.getId() + " " + person.getProperName());
@@ -93,7 +94,7 @@ public class SearchIndexService {
     public void indexAllInstitutions() throws SolrServerException, IOException {
         List<Institution> findAll = genericDao.findAll(Institution.class);
         for (Institution inst : findAll) {
-            template.deleteById(inst.getId().toString());
+            template.deleteById(generateId(inst));
             SolrInputDocument document = InstitutionDocumentConverter.convert(inst);
             template.add("institutions", document);
             logger.debug("adding: " + inst.getId() + " " + inst.getProperName());
@@ -104,12 +105,16 @@ public class SearchIndexService {
     public void indexAllKeywords() throws SolrServerException, IOException {
         List<Keyword > findAll = genericDao.findAll(Keyword.class);
         for (Keyword kwd : findAll) {
-            template.deleteById(kwd.getId().toString());
+            template.deleteById(generateId(kwd));
             SolrInputDocument document = KeywordDocumentConverter.convert(kwd);
             template.add("keywords", document);
             logger.debug("adding: " + kwd.getId() + " " + kwd.getLabel());
         }
         template.commit();
+    }
+
+    private String generateId(Persistable pers) {
+        return pers.getClass().getSimpleName() + "-"+ pers.getId();
     }
 
     /**

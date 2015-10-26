@@ -10,6 +10,7 @@ public class AbstractSolrDocumentConverter {
     public static SolrInputDocument convertPersistable(Persistable persist) {
         SolrInputDocument doc = new SolrInputDocument();
         doc.setField("id", persist.getId());
+        doc.setField("_id", persist.getClass().getSimpleName() + "-" + persist.getId());
         if (persist instanceof HasStatus) {
             doc.setField("status", ((HasStatus) persist).getStatus());
         }
