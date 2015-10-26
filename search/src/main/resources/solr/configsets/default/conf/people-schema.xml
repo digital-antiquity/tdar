@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="people" version="1.5">
     
-    <field name="id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="firstName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="lastName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="status" type="string" indexed="true" stored="false" required="false" multiValued="false" />

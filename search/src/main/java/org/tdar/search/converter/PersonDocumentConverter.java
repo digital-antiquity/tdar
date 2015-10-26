@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.converter;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.entity.Person;
@@ -9,8 +9,6 @@ public class PersonDocumentConverter {
 
     public static SolrInputDocument convert(Person person) {
         SolrInputDocument doc = new SolrInputDocument();
-        doc.setField("id", "Person-" + person.getId());
-        doc.setField("status", person.getStatus());
         doc.setField("firstName", person.getFirstName());
         doc.setField("lastName", person.getLastName());
         doc.setField("name_autocomplete", person.getProperName());

@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<schema name="institutions" version="1.5">
+<schema name="people" version="1.5">
     
     <field name="id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="status" type="string" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
-    
-    <field name="_version_" type="long" indexed="true"  stored="true" multiValued="false"  />
+    <field name="name" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="false" multiValued="true" />
 
-    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <field name="_version_" type="long" indexed="true"  stored="true" multiValued="false"  />
     <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
     
     
