@@ -470,4 +470,8 @@ public class BillingAccount extends Persistable.Base implements Updatable, HasSt
     public void setUsageHistory(List<AccountUsageHistory> history) {
         this.usageHistory = history;
     }
+
+    public String avaliableString() {
+        return String.format("f: %s s: %s", filesUsed, spaceUsedInBytes);
+    }
 }

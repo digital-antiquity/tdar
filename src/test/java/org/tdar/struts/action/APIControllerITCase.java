@@ -47,9 +47,11 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -74,6 +76,8 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Autowired
     GenericKeywordService genericKeywordService;
 
+    @Autowired
+    BillingAccountService billingAccountService; 
     public final static Long TEST_ID = 3794L;
 
     TestConfiguration config = TestConfiguration.getInstance();
@@ -248,24 +252,37 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
+    @RunWithTdarConfiguration(runWith = {RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS, RunWithTdarConfiguration.CREDIT_CARD })
     public void testNewConfidentialRecord() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File("src/test/resources/xml/confidentialImage.xml"));
         Project project = genericService.findAll(Project.class, 1).get(0);
-        BillingAccount account = setupAccountForPerson(getUser());
+        BillingAccount account = setupAccountWithInvoiceTenOfEach( billingAccountService.getLatestActivityModel(), getUser());
+        Long actId = account.getId();
+        Long totalNumberOfFiles = account.getFilesUsed();
+        logger.debug("files: {}", totalNumberOfFiles);
+        Long totalSpaceInMb = account.getSpaceUsedInMb();
+        logger.debug("mb: {}", totalSpaceInMb);
         controller.setRecord(text);
         logger.info(text);
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_IMAGE)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_IMAGE_NAME));
-        controller.setAccountId(account.getId());
+        controller.setAccountId(actId);
         controller.setProjectId(project.getId());
+        account = null;
         String uploadStatus = controller.upload();
         logger.info(controller.getErrorMessage());
         assertEquals(Action.SUCCESS, uploadStatus);
         assertEquals(StatusCode.CREATED, controller.getStatus());
         Image img = genericService.find(Image.class, controller.getId());
         assertFalse(img.getFilesWithRestrictions(true).isEmpty());
+        account = genericService.find(BillingAccount.class, actId);
+        logger.debug("files: {}", account.getFilesUsed());
+        logger.debug("mb: {}", account.getSpaceUsedInMb());
+        if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
+            assertNotEquals(totalNumberOfFiles, account.getFilesUsed());
+            assertNotEquals(totalSpaceInMb, account.getSpaceUsedInMb());
+        }
     }
 
     @Test
