@@ -24,9 +24,11 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -38,6 +40,7 @@ import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.search.converter.CollectionDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
@@ -103,18 +106,33 @@ public class SearchIndexService {
     }
 
     public void indexAllKeywords() throws SolrServerException, IOException {
-        List<Keyword > findAll = genericDao.findAll(Keyword.class);
-        for (Keyword kwd : findAll) {
-            template.deleteById(generateId(kwd));
-            SolrInputDocument document = KeywordDocumentConverter.convert(kwd);
+        for (KeywordType type : KeywordType.values()) {
+            List<? extends Keyword> findAll = genericDao.findAll(type.getKeywordClass());
+            for (Keyword kwd : findAll) {
+                template.deleteById(generateId(kwd));
+                SolrInputDocument document = KeywordDocumentConverter.convert(kwd);
+                template.add("keywords", document);
+                logger.debug("adding: " + kwd.getId() + " " + kwd.getLabel());
+            }
+            template.commit();
+        }
+    }
+
+    public void indexAllCollections() throws SolrServerException, IOException {
+        for (ResourceCollection collection : genericDao.findAll(ResourceCollection.class)) {
+            if (collection.getType() != CollectionType.SHARED) {
+                continue;
+            }
+            template.deleteById(generateId(collection));
+            SolrInputDocument document = CollectionDocumentConverter.convert(collection);
             template.add("keywords", document);
-            logger.debug("adding: " + kwd.getId() + " " + kwd.getLabel());
+            logger.debug("adding: " + collection.getId() + " " + collection.getName());
         }
         template.commit();
     }
 
     private String generateId(Persistable pers) {
-        return pers.getClass().getSimpleName() + "-"+ pers.getId();
+        return pers.getClass().getSimpleName() + "-" + pers.getId();
     }
 
     /**

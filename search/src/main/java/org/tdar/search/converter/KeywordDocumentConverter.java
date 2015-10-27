@@ -17,6 +17,7 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         List<String> names = new ArrayList<>();
         names.add(kwd.getLabel());
         doc.setField("name_autocomplete", kwd.getLabel());
+        doc.setField("type", kwd.getKeywordType());
         if (kwd instanceof HierarchicalKeyword<?>) {
             HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>)kwd;
             CollectionUtils.addAll(names, hk.getParentLabelList());

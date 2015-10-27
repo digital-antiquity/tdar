@@ -11,11 +11,10 @@
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="false" multiValued="true" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
-    <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
+    <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
 
-  <!-- Field to use to determine and enforce document uniqueness. 
-      Unless this field is marked with required="false", it will be a required field
-   -->
-  <uniqueKey>_id</uniqueKey>
+    <!-- Field to use to determine and enforce document uniqueness. Unless 
+        this field is marked with required="false", it will be a required field -->
+    <uniqueKey>_id</uniqueKey>
 
 </schema>
