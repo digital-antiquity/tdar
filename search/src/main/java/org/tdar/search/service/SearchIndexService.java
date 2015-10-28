@@ -39,7 +39,9 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.converter.CollectionDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
@@ -66,6 +68,12 @@ public class SearchIndexService {
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
 
+    @Autowired
+    private ResourceCollectionService resourceCollectionService;
+    
+    @Autowired
+    private ResourceService resourceService;
+    
     @Autowired
     private ProjectDao projectDao;
 
@@ -135,7 +143,7 @@ public class SearchIndexService {
     public void indexAllResources() throws SolrServerException, IOException {
         for (Resource resource : genericDao.findAll(Resource.class)) {
             template.deleteById(generateId(resource));
-            SolrInputDocument document = ResourceDocumentConverter.convert(resource);
+            SolrInputDocument document = ResourceDocumentConverter.convert(resource, resourceService, resourceCollectionService);
             template.add("resources", document);
             logger.debug("adding: " + resource.getId() + " " + resource.getName());
         }
