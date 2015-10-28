@@ -1,6 +1,4 @@
 <#setting url_escaping_charset="UTF-8">
-<#import "/WEB-INF/macros/resource/common.ftl" as common>
-
 <head>
     <title>Dataset Integration: Edit</title>
 </head>
@@ -468,7 +466,7 @@ ${categoriesJson}
 
             <div class="row-fluid">
                 <div class="span12">
-                    <a type="button" class="btn" ng-href="<@s.url value="/workspace/download?ticketId={{download.ticketId}}"/>">Download</a>
+                    <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>
             </div>
