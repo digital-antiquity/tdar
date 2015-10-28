@@ -32,6 +32,7 @@ public class ResourceCitationFormatter implements Serializable {
         String auth = getFormattedAuthorList();
         if (StringUtils.isNotBlank(auth)) {
             sb.append(auth);
+            sb.append(". ");
         }
         String src = getFormattedSourceInformation();
         if (StringUtils.isNotBlank(src)) {
