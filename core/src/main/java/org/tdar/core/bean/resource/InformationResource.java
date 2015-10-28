@@ -889,15 +889,6 @@ public abstract class InformationResource extends Resource {
 
     @Override
     @XmlTransient
-    public List<String> getCreatorRoleIdentifiers() {
-        List<String> list = super.getCreatorRoleIdentifiers();
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getPublisher(), ResourceCreatorRole.PUBLISHER));
-        return list;
-    }
-
-    @Override
-    @XmlTransient
     public List<Creator<?>> getRelatedCreators() {
         List<Creator<?>> creators = super.getRelatedCreators();
         creators.add(getResourceProviderInstitution());

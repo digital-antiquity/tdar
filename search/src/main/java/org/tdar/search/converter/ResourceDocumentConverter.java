@@ -9,12 +9,13 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.document.Document;
 import org.apache.solr.common.SolrInputDocument;
 import org.geotools.geometry.jts.JTS;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -39,15 +40,22 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField("name_autocomplete", resource.getName());
         doc.setField("submitter.id", resource.getSubmitter().getId());
         doc.setField("description", resource.getDescription());
+        doc.setField("dateCreated", resource.getDateCreated());
+        doc.setField("dateUpdated", resource.getDateUpdated());
         doc.setField("usersWhoCanModify", resource.getUsersWhoCanModify());
         doc.setField("usersWhoCanView", resource.getUsersWhoCanView());
 
         indexCreatorInformation(doc, resource);
         indexCollectionInformation(doc, resource);
         indexTemporalInformation(doc, resource);
-
+        if (resource instanceof InformationResource) {
+            InformationResource ir = (InformationResource)resource;
+            doc.setField("project.id", ir.getProjectId());
+            doc.setField("date", ir.getDate());
+            doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
+        }
         addKeyword(doc, KeywordType.CULTURE_KEYWORD, resource.getActiveCultureKeywords());
-        addKeyword(doc, KeywordType.GEOGRAPHIC_KEYWORD, resource.getActiveGeographicKeywords());
+        addKeyword(doc, KeywordType.GEOGRAPHIC_KEYWORD, resource.getIndexedGeographicKeywords());
         addKeyword(doc, KeywordType.INVESTIGATION_TYPE, resource.getActiveInvestigationTypes());
         addKeyword(doc, KeywordType.MATERIAL_TYPE, resource.getActiveMaterialKeywords());
         addKeyword(doc, KeywordType.OTHER_KEYWORD, resource.getActiveOtherKeywords());
@@ -64,14 +72,32 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         GeneralKeywordBuilder gkb = new GeneralKeywordBuilder(resource, data);
         String text = gkb.getKeywords();
-        doc.addField("searchAll", text);
+        doc.addField(QueryFieldNames.ALL, text);
 
         indexLatitudeLongitudeBoxes(resource, doc);
+        
+        // notes, resourceType, getUsersWhoCanModify, getUsersWhoCanView, TITLE_SORT, getResourceTypeSort,  getActiveResourceAnnotations, getActiveSourceCollections , getActiveRelatedComparativeCollections, getActiveResourceNotes, getResourceOwner, 
+        
+        //metadataLanguage, resourceLanguage, informationResourceFiles, doi, resourceProviderInstitution, publisher, getProjectTitle, getProjectTitleSort, getContent, getResourceAccessType, getVisibleFilesWithThumbnails,    
+        
+        // informationResourceFile.filename, 
+        
+        // project.*
+        
+        // documentType, doumentSubType, degree, seriesName, bookTitle, isbn, issn, journalName
+        
+        // dataset.dataTables, DataTable.displayName , dataTableColumn.displayName
+        
+        // ontology.categoryVariable, ontology.ontologyNode.*
+        
+        //codingSheet.categoryVariable, codingSheet.codingRule.*
+        
         return doc;
     }
     
 
     private static void indexTdarDataDatabaseValues(SolrInputDocument doc, Map<DataTableColumn, String> data) {
+        List<String> values = new ArrayList<>();
         if (data != null) {
             for (Object key : data.keySet()) {
                 if (key == null) {
@@ -87,15 +113,19 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 if (keyName == null || StringUtils.isBlank(mapValue)) {
                     continue;
                 }
-//                luceneOptions.addFieldToDocument(QueryFieldNames.DATA_VALUE_PAIR, keyName + ":" + mapValue, doc);
+                values.add(keyName + ":" + mapValue);
             }
+            doc.addField(QueryFieldNames.DATA_VALUE_PAIR, values);
         }
     }
 
 
     private static void indexTemporalInformation(SolrInputDocument doc, Resource resource) {
-        // TODO Auto-generated method stub
-
+        for (CoverageDate date : resource.getActiveCoverageDates()) {
+            doc.addField(QueryFieldNames.ACTIVE_END_DATE, date.getEndDate());
+            doc.addField(QueryFieldNames.ACTIVE_START_DATE, date.getStartDate());
+            doc.addField(QueryFieldNames.ACTIVE_COVERAGE_TYPE, date.getDateType().name());
+        }
     }
 
     private static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
@@ -119,6 +149,14 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
         Map<String, List<Long>> types = new HashMap<>();
         List<String> roles = new ArrayList<>();
+        if (resource instanceof InformationResource) {
+        InformationResource informationRessource = (InformationResource)resource;
+            roles.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
+            roles.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getPublisher(), ResourceCreatorRole.PUBLISHER));
+        }
+        roles.add(ResourceCreator.getCreatorRoleIdentifier(resource.getSubmitter(), ResourceCreatorRole.SUBMITTER));
+        roles.add(ResourceCreator.getCreatorRoleIdentifier(resource.getUpdatedBy(), ResourceCreatorRole.UPDATER));
+        
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
             String key = rc.getCreatorType().name();
             if (!types.containsKey(key)) {

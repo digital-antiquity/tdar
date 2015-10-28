@@ -38,6 +38,12 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    public void testResources() throws SolrServerException, IOException {
+        searchIndexService.indexAllResources();
+        
+    }
+    
+    @Test
     public void testInstitutions() throws SolrServerException, IOException {
         searchIndexService.indexAllInstitutions();
         SolrQuery solrQuery = new  SolrQuery();

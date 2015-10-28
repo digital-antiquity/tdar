@@ -1577,25 +1577,6 @@ public class Resource implements Persistable,
         return null;
     }
 
-    //@Field(name = QueryFieldNames.CREATOR_ROLE_IDENTIFIER, analyzer = //@Analyzer(impl = KeywordAnalyzer.class))
-    //@IndexedEmbedded
-    @ElementCollection
-    @XmlTransient
-    // This field facilitates unified lucene search for submitter, updater,
-    // resourceProvider, and resourceCreators
-    // should be in the form {creartorType}{creatorId}{creatorRole}
-    public List<String> getCreatorRoleIdentifiers() {
-        List<String> list = new ArrayList<String>();
-        for (ResourceCreator resourceCreator : getActiveResourceCreators()) {
-            list.add(resourceCreator.getCreatorRoleIdentifier());
-        }
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getSubmitter(),
-                ResourceCreatorRole.SUBMITTER));
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getUpdatedBy(),
-                ResourceCreatorRole.UPDATER));
-        return list;
-    }
-
 
     @XmlTransient
     public List<Creator<?>> getRelatedCreators() {

@@ -1,6 +1,5 @@
 package org.tdar.search.index.analyzer;
 
-import java.io.Reader;
 import java.util.regex.Pattern;
 
 import org.apache.lucene.analysis.Analyzer;
