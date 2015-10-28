@@ -115,7 +115,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             String maxx =longLat.getMaxObfuscatedLongitude().toString();
             String minx =longLat.getMinObfuscatedLongitude().toString();
             dc.addSpatial(minx, miny, maxx, maxy);
-            dc.addCoverage(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
+//            dc.addCoverage(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
         }
 
         dc.addIdentifier(UrlService.absoluteUrl(source));

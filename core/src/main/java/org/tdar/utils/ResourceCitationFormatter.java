@@ -8,6 +8,7 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * This class extracts out all of the formatting for a citation using the TdarFormat. The goal here is to put logic in one place, but it could strongly benefit
@@ -17,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
  *
  */
 public class ResourceCitationFormatter implements Serializable {
+    private TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private static final long serialVersionUID = -4055674012404120541L;
     private Resource resource;
 
@@ -35,7 +37,7 @@ public class ResourceCitationFormatter implements Serializable {
         if (StringUtils.isNotBlank(src)) {
             sb.append(src);
         }
-        sb.append(" ( ").append(resource.getId()).append(") ");
+        sb.append(" ( ").append(CONFIG.getSiteAcronym()).append(" id: ").append(resource.getId()).append(") ");
         if (StringUtils.isNotBlank(resource.getExternalId())) {
             sb.append("; ");
             sb.append(resource.getExternalId());
