@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="resources" version="1.5">
+    <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="description" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="allSearch" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="collectionIds" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="submitter.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+<!--     <field name="owner.id" type="long" indexed="true" stored="false" required="false" multiValued="false" /> -->
+
+    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+
+    <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
+    <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <!-- Field to use to determine and enforce document uniqueness. Unless 
+        this field is marked with required="false", it will be a required field -->
+    <uniqueKey>_id</uniqueKey>
+
+</schema>

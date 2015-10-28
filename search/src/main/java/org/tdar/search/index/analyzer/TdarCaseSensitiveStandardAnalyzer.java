@@ -21,8 +21,8 @@ public final class TdarCaseSensitiveStandardAnalyzer extends Analyzer {
     protected TokenStreamComponents createComponents(String fieldName) {
         StandardTokenizer st = new StandardTokenizer();
         TrimFilter trimFilter = new TrimFilter(st);
-        StopFilter stopFilter = new StopFilter(trimFilter, StopFilter.makeStopSet(TdarConfiguration.getInstance().getStopWords()));
-        ASCIIFoldingFilter filter = new ASCIIFoldingFilter(stopFilter);
+//        StopFilter stopFilter = new StopFilter(trimFilter, StopFilter.makeStopSet(TdarConfiguration.getInstance().getStopWords()));
+        ASCIIFoldingFilter filter = new ASCIIFoldingFilter(trimFilter);
         return new TokenStreamComponents(st, filter);
     }
 

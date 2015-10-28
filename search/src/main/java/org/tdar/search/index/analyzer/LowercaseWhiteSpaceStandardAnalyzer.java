@@ -53,8 +53,8 @@ public final class LowercaseWhiteSpaceStandardAnalyzer extends Analyzer {
             LowerCaseFilter stream = new LowerCaseFilter(wordFilter.create(st));
             TrimFilter trimFilter = new TrimFilter(stream);
 
-            StopFilter stopFilter = new StopFilter(trimFilter, StopFilter.makeStopSet(TdarConfiguration.getInstance().getStopWords()));
-            PorterStemFilter porterStemFilter = new PorterStemFilter(stopFilter);
+//            StopFilter stopFilter = new StopFilter(trimFilter, StopFilter.makeStopSet(TdarConfiguration.getInstance().getStopWords()));
+            PorterStemFilter porterStemFilter = new PorterStemFilter(trimFilter);
             ASCIIFoldingFilter filter = new ASCIIFoldingFilter(porterStemFilter);
             return new TokenStreamComponents(st, filter);
         } catch (Exception e) {

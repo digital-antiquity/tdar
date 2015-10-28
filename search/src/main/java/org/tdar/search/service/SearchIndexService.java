@@ -44,6 +44,7 @@ import org.tdar.search.converter.CollectionDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
+import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
@@ -125,8 +126,18 @@ public class SearchIndexService {
             }
             template.deleteById(generateId(collection));
             SolrInputDocument document = CollectionDocumentConverter.convert(collection);
-            template.add("keywords", document);
+            template.add("collections", document);
             logger.debug("adding: " + collection.getId() + " " + collection.getName());
+        }
+        template.commit();
+    }
+
+    public void indexAllResources() throws SolrServerException, IOException {
+        for (Resource resource : genericDao.findAll(Resource.class)) {
+            template.deleteById(generateId(resource));
+            SolrInputDocument document = ResourceDocumentConverter.convert(resource);
+            template.add("resources", document);
+            logger.debug("adding: " + resource.getId() + " " + resource.getName());
         }
         template.commit();
     }
