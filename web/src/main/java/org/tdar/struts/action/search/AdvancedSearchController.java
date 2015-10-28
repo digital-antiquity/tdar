@@ -277,7 +277,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = genericKeywordService.findAllWithCache(MaterialKeyword.class);
+            allMaterialKeywords = genericKeywordService.findAllApprovedWithCache(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;
