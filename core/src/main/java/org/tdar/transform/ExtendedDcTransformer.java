@@ -68,14 +68,11 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         List<ResourceCreator> sortedResourceCreators = new ArrayList<>(source.getResourceCreators());
         Collections.sort(sortedResourceCreators);
         for (ResourceCreator resourceCreator : source.getResourceCreators()) {
-            String name;
+            String name = resourceCreator.getCreator().getProperName();
             if (resourceCreator.getCreatorType() == CreatorType.PERSON) {
                 // display person names in special format
                 name = dcConstructPersonalName(resourceCreator);
-            } else {
-                // for institution, just display name and role
-                name = resourceCreator.toString();
-            }
+            } 
 
             // FIXME: check this logic
             if (resourceCreator.getRole() == ResourceCreatorRole.AUTHOR) {
@@ -149,9 +146,9 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
         Person person = (Person) resourceCreator.getCreator();
         String name = String.format("%s, %s", person.getLastName(), person.getFirstName());
-        if (!StringUtils.isEmpty("" + resourceCreator.getRole())) {
-            name += String.format(", %s", resourceCreator.getRole());
-        }
+//        if (!StringUtils.isEmpty("" + resourceCreator.getRole())) {
+//            name += String.format(", %s", resourceCreator.getRole());
+//        }
         if (!StringUtils.isEmpty(person.getInstitutionName())) {
             name += String.format(" (%s)", person.getInstitution());
         }
