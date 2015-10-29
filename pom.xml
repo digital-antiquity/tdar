@@ -31,8 +31,7 @@
 
 
     <properties>
-        <hibernate.version>4.3.10.Final</hibernate.version>
-        <hibernate.search.version>4.5.3.Final</hibernate.search.version>
+        <hibernate.version>5.0.2.Final</hibernate.version>
         <spring.framework.version>4.2.2.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4-1203-jdbc42</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
