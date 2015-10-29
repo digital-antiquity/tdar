@@ -28,6 +28,7 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.CodingRule;
@@ -37,7 +38,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.db.conversion.converters.DatasetConverter;
-import org.tdar.search.query.SortOption;
 import org.tdar.utils.MessageHelper;
 
 public class AccessConverterITCase extends AbstractIntegrationTestCase {

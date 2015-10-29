@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.search.query;
+package org.tdar.core.bean;
 
 import java.util.ArrayList;
 import java.util.List;

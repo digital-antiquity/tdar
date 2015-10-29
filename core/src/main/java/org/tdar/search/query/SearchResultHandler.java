@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 
 /* further abstracting some of the functions of the search result handler 
