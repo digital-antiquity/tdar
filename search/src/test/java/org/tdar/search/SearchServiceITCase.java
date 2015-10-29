@@ -17,14 +17,12 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-
-import com.github.jsonldjava.utils.Obj;
 
 @SuppressWarnings("unchecked")
 public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {
