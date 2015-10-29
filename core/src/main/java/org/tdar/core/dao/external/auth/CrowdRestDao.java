@@ -124,7 +124,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             if (StringUtils.isBlank(token)) {
                 token = httpAuthenticator.getToken(request);
             }
-            securityServerClient.invalidateSSOToken(token);
+            logger.debug("token: " + token);
+            if (token != null) {
+                securityServerClient.invalidateSSOToken(token);
+            }
             logger.debug("logged out");
         } catch (ApplicationPermissionException e) {
             logger.error("application permission exception", e);
