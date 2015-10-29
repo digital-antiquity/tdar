@@ -114,11 +114,6 @@
             <url>http://repo.springsource.org/libs-release</url>
         </repository>
         <repository>
-            <id>repository.springframework.milestone</id>
-            <name>Spring Framework Maven Milestone Repository</name>
-            <url>http://maven.springframework.org/milestone</url>
-        </repository>
-        <repository>
             <id>com.springsource.repository.libraries.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
             <url>http://repository.springsource.com/maven/libraries/external</url>
@@ -131,13 +126,6 @@
             <id>org.jboss.repository.nexus.public</id>
             <name>Hibernate Public repository</name>
             <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
-        </repository>
-        <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>jcenter</id>
-            <url>http://dl.bintray.com/abrin/maven/</url>
         </repository>
         <repository>
             <id>atlassian-m2-repository</id>
