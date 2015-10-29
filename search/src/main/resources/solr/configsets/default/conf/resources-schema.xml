@@ -3,7 +3,7 @@
     <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="description" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="allSearch" type="string" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="collectionIds" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="collectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="submitter.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
 <!--     <field name="owner.id" type="long" indexed="true" stored="false" required="false" multiValued="false" /> -->
 
