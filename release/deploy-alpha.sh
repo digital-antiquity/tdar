@@ -16,6 +16,10 @@ cd web
 #sudo rm /tmp/.wro4j/buildContext.properties
 #sudo rmdir /tmp/.wro4j/
 mvn clean compile war:war -Palpha,minify-web-resources,liquibase
+cd ../dataone/
+mvn clean compile war:war 
+cd ../oai-pmh/
+mvn clean compile war:war 
 
 if [ $? -ne 0 ] 
   then
@@ -26,8 +30,16 @@ if [ $? -ne 0 ]
    exit 1
   else
     sudo service tomcat7 stop
-#  	sudo cp target/ROOT.war ~tdar/app/
+    cd ../web/
+    sudo cp target/tdar-web.war ~tdar/app/ROOT.war
     sudo rm -Rrf ~tdar/app/ROOT
-#	cp /home/tdar/tdar.src/target/ROOT.war /home/tdar/app/
+    cd ../oai-pmh/
+    sudo cp target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
+    sudo rm -Rrf ~tdar/app/oai-pmh
+    cd ../dataone/
+    sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
+    sudo rm -Rrf ~tdar/app/dataone
     sudo service tomcat7 restart
 fi
+
+

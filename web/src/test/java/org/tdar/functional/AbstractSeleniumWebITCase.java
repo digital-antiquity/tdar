@@ -89,9 +89,7 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.filestore.Filestore;
-import org.tdar.functional.util.LoggingStopWatch;
-import org.tdar.functional.util.TdarExpectedConditions;
-import org.tdar.functional.util.WebElementSelection;
+import org.tdar.functional.util.*;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
@@ -166,7 +164,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     private Set<WebElement> clickElems = new HashSet<>();
 
-    private WebDriverEventListener eventListener = new WebDriverEventListener() {
+    private WebDriverEventListener eventListener = new WebDriverEventAdapter() {
         @Override
         public void afterNavigateTo(String url, WebDriver driver) {
             afterPageChange();
@@ -193,31 +191,7 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         @Override
-        public void beforeFindBy(By by, WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void afterFindBy(By by, WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void beforeChangeValueOf(WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void afterChangeValueOf(WebElement element, WebDriver driver) {
-        }
-
-        @Override
-        public void beforeScript(String script, WebDriver driver) {
-        }
-
-        @Override
-        public void afterScript(String script, WebDriver driver) {
-        }
-
-        @Override
-        public void onException(Throwable throwable, WebDriver driver) {
+        public void onError(Throwable throwable, WebDriver driver) {
             getBrowserConsoleLogEntries(driver);
             if (!throwable.getMessage().contains("n is null")) {
                 logger.error("hey there was an error", throwable, throwable);
@@ -704,12 +678,11 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public WebElementSelection find(By by) {
-        WebElementSelection selection = new WebElementSelection(driver.findElements(by), driver);
+        WebElementSelection selection = new WebElementSelection(driver, by);
         logger.trace("criteria:{}\t  size:{}", by, selection.size());
         return selection;
     }
 
-    // FIXME: select() seems more appropriate, given the ways you can select stuff. Or, since we're aping jquery.. just $()?
     /**
      * Create a selection out of one or more.
      * 
@@ -1469,9 +1442,11 @@ public abstract class AbstractSeleniumWebITCase {
         }
 
         WebElementSelection contribId = null;
+        logger.debug(getCurrentUrl());
+        logger.debug(getSource());
         try {
             contribId = find("#contributor-id");
-            if (contribId != null && reg.isRequestingContributorAccess() != contribId.isSelected()) {
+            if (contribId != null && contribId.size() > 0 && reg.isRequestingContributorAccess() != contribId.isSelected()) {
                 contribId.click();
             }
         } catch (TdarRecoverableRuntimeException e) {
@@ -1499,6 +1474,48 @@ public abstract class AbstractSeleniumWebITCase {
         // window becomes visible.
         List<WebElement> elements = waitFor(TdarExpectedConditions.visibilityOfAnyElementsLocatedBy(By.cssSelector("ul.ui-autocomplete")));
         return new WebElementSelection(elements, getDriver());
+    }
+
+
+    public void setStyle(WebElement elem, String property, Object value) {
+        executeJavascript("arguments[0].style[arguments[1]]=arguments[2]", elem, property, value);
+    }
+
+    public void setStyle(WebElementSelection selection, String property, Object value) {
+        for (WebElement element : selection) {
+            setStyle(element, property, value);
+        }
+    }
+
+    /**
+     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
+     * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
+     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
+     */
+    public void clearFileInputStyles() {
+        //todo: we removed this back in rev 94d504cf5128:7082 as workaround to FirefoxDriver bug.
+        //      Try removing the workaround and seeing if the firefoxdriver bug is fixed.
+        WebElement input = find("#fileAsyncUpload").first();
+        showAsyncFileInput(input);
+    }
+
+    /**
+     * This is a hack that enables selenium to work with the Blueimp jQuery File Upload widget. Typically in selenium you "upload" a file using
+     * the sendKeys() method, but this will not work when using the fileupload widget because it uses CSS styles to hide the text-entry box, and selenium
+     * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
+     *
+     * @param input
+     *            the actual file input element (not the div that renders the jquery file upload widget)
+     */
+    public void showAsyncFileInput(WebElement input) {
+        setStyle(input, "position", "static");
+        setStyle(input, "top", "auto");
+        setStyle(input, "right", "auto");
+        setStyle(input, "margin", 0);
+        setStyle(input, "opacity", 1);
+        setStyle(input, "transform", "none");
+        setStyle(input, "direction", "ltr");
+        setStyle(input, "cursor", "auto");
     }
 
 }

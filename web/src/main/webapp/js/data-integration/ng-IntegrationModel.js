@@ -263,6 +263,10 @@
             return _getOutputColumns("count");
         }
 
+        self.getCountColumns  = function(){
+            return _getOutputColumns("count");
+        }
+
         /**
          * Returns just the integrationColumns from the outputColumns
          * 

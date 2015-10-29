@@ -21,6 +21,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -456,7 +457,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resource.getResourceCollections().add(collectionToAdd);
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
-                String collectionName = collectionToAdd != null ? collectionToAdd.getName() : "null collection";
+                String collectionName = "null collection";
+                if (collectionToAdd != null && StringUtils.isNotBlank(collectionToAdd.getName()) ) {
+                    collectionName = collectionToAdd.getName();
+                }
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.invalid", Arrays.asList(collectionName));
             }
         }

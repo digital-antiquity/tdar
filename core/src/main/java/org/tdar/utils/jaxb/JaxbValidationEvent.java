@@ -53,6 +53,9 @@ public class JaxbValidationEvent implements Serializable {
 
     @Override
     public String toString() {
+        if (event == null) {
+            return "Unknown Error in JAXB processing";
+        }
         String err = ExceptionUtils.getStackTrace(event.getLinkedException());
 
         return String.format("[%s] %s line: %s column: %s  { %s } %s ", getSeverity(), event.getMessage(), event.getLocator().getLineNumber(), event

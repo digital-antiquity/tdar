@@ -38,10 +38,6 @@ TDAR.autocomplete = (function () {
     };
 
     ObjectCache.prototype = {
-        put: function (val) {
-            this.cache.push(val);
-            console.log("adding val to %s cache", this.namespace, val);
-        },
 
         //register the fields inside this parent as an 'extra record'. When caller invokes getValues(), this class
         //will generate records based for all the registeredRecords
@@ -81,10 +77,8 @@ TDAR.autocomplete = (function () {
             return values;
         },
 
-        search: function (term) {
-            //get current state of the new records;
-            return this.cache;
-        }
+        //by default search does nothing
+        search: function _noop(){return []}
     };
 
     /**
@@ -134,6 +128,7 @@ TDAR.autocomplete = (function () {
      */
     function _buildRequestData(element) {
         var data = {};
+
         //    console.log("autocompleteParentElement: " + element.attr("autocompleteParentElement"));
         if (element.attr("autocompleteParentElement")) {
             $("[autocompleteName]", element.attr("autocompleteParentElement")).each(function (index, elem) {
@@ -394,7 +389,7 @@ TDAR.autocomplete = (function () {
                                 values = values.concat(extraValues);
                             }
                         }
-                        console.log(options.dataPath + " autocomplete returned " + values.length);
+                        // console.log(options.dataPath + " autocomplete returned " + values.length);
 
                         if (options.showCreate) {
                             var createRow = _buildRequestData($elem);
@@ -556,11 +551,6 @@ TDAR.autocomplete = (function () {
                 return obj;
             }
         };
-
-        //FIXME: this was in stable but not default, make sure this should be here
-        if (!usersOnly) {
-//            options.sortField = 'CREATOR_NAME';
-        }
 
         _applyGenericAutocomplete($elements, options);
         _getCache(options).search = ObjectCache.basicSearch;
@@ -785,9 +775,9 @@ TDAR.autocomplete = (function () {
      */
     var _delegateKeyword = function (id, prefix, type) {
         $(id).delegate(".keywordAutocomplete", "focusin", function () {
-            // TODO: these calls re-regester every row after a row is created,
+            // TODO: these calls re-register every row after a row is created,
             // change so that only the new row is registered.
-            console.log('focusin:' + this.id);
+            // console.log('focusin:' + this.id);
             _applyKeywordAutocomplete(id + " .keywordAutocomplete", "keyword", {
                 keywordType: type
             }, true);
@@ -805,8 +795,8 @@ TDAR.autocomplete = (function () {
      */
     function _objectFromAutocompleteParent(parentElem) {
         var obj = {};
-        $(parentElem).find(".ui-autocomplete-input").each(function (idx) {
-            var key = $(this).attr("autocompletename") || this.name;
+        $(parentElem).find(".ui-autocomplete-input").each(function () {
+            var key = $(this).attr("autocompleteName") || this.name;
             obj[key] = this.value;
         });
         return obj;
@@ -824,6 +814,7 @@ TDAR.autocomplete = (function () {
         "delegateCreator": _delegateCreator,
         "delegateAnnotationKey": _delegateAnnotationKey,
         "delegateKeyword": _delegateKeyword,
-        "buildRequestData": _buildRequestData
+        "buildRequestData": _buildRequestData,
+        "ObjectCache": ObjectCache
     };
 })();

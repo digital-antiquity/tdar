@@ -217,12 +217,13 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
 
         submitForm();
-        logger.trace(getText());
-        assertTrue(getText().contains(JONES));
-        assertTrue(getText().contains(INDIANA));
-        assertTrue(getText().contains("UC"));
-        assertTrue(getText().contains(LOBLAW));
-        assertTrue(StringUtils.containsIgnoreCase(getText(), UNIVERSITY_OF_TEST));
+        String text = getText();
+        logger.debug(text);
+        assertTrue(text.contains(JONES));
+        assertTrue(text.contains(INDIANA));
+        assertTrue(text.contains("UC"));
+        assertTrue(text.contains(LOBLAW));
+        assertTrue(StringUtils.containsIgnoreCase(text, UNIVERSITY_OF_TEST));
     }
 
     @Test
@@ -257,6 +258,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         assertEquals("count of edit buttons", 1, find(By.partialLinkText("EDIT")).size());
         find(By.partialLinkText("EDIT")).click();
+        applyEditPageHacks();
         expandAllTreeviews();
 
         String NEW_START_DATE = "100";
@@ -361,6 +363,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         // go to the edit page and ensure (some) of the form fields and values that we originally created are still present
         find(By.partialLinkText("EDIT")).click();
+        applyEditPageHacks();
         expandAllTreeviews();
         logger.debug("----now on edit page----");
         logger.trace(find("body").getText());

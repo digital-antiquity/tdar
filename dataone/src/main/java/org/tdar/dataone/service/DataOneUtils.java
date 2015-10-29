@@ -1,8 +1,10 @@
 package org.tdar.dataone.service;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.lang.StringUtils;
@@ -68,12 +70,14 @@ public class DataOneUtils {
         return identifier;
     }
 
-    public static String checksumString(String string) throws NoSuchAlgorithmException {
-        final MessageDigest messageDigest = MessageDigest.getInstance(DataOneConstants.MD5);
-        messageDigest.reset();
-        messageDigest.update(string.getBytes(Charset.forName(DataOneConstants.UTF_8)));
-        final byte[] resultByte = messageDigest.digest();
-        final String result = new String(Hex.encodeHex(resultByte));
+    public static String checksumString(String string) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+//        final MessageDigest messageDigest = MessageDigest.getInstance(DataOneConstants.MD5);
+
+        final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+        // NOTE NO SLASH -- important for charset here
+        messageDigest.update(string.getBytes("UTF8"));
+        byte[] raw = messageDigest.digest();
+        final String result = new String(Hex.encodeHex(raw));
         return result;
     }
 

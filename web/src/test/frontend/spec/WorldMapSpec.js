@@ -67,5 +67,19 @@ describe("worldmap tests (tdar.worldmap.js)", function() {
         //fixme: when countries are loaded use map.fireEvent() to 'click' on them and confirm the UI updates accordingly
     });
 
+    it("has a valid worlds.json file", function(done){
+        var xhr = $j.getJSON("/js/maps/world.json");
+
+        xhr.done(function(data){
+            expect(typeof data).toBe("object");
+        });
+
+        xhr.fail(function(data){
+            fail("jquery.getJSON failed - probably due to malformed json");
+        });
+
+        xhr.always(function(){done();});
+    });
+
 
 });

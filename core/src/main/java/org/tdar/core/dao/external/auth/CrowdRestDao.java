@@ -1,8 +1,7 @@
 package org.tdar.core.dao.external.auth;
 
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -73,14 +72,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         Properties properties = new Properties();
         // leveraging factory method over spring autowiring
         // https://developer.atlassian.com/display/CROWDDEV/Java+Integration+Libraries
-        String CONFIG_DIR = System.getenv(ConfigurationAssistant.DEFAULT_CONFIG_PATH);
-        File dir = new File(CONFIG_DIR);
-        File conf = new File(dir,CROWD_PROPERTIES);
-        if (dir.exists() && conf.exists()) {
-           properties.load(new FileReader(conf));
-        } else{ 
-            properties.load(getClass().getClassLoader().getResourceAsStream(CROWD_PROPERTIES));
-        }
+        InputStream inputStream = ConfigurationAssistant.toInputStream(CROWD_PROPERTIES);
+        properties.load(inputStream);
         init(properties);
     }
 
@@ -131,7 +124,10 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             if (StringUtils.isBlank(token)) {
                 token = httpAuthenticator.getToken(request);
             }
-            securityServerClient.invalidateSSOToken(token);
+            logger.debug("token: " + token);
+            if (token != null) {
+                securityServerClient.invalidateSSOToken(token);
+            }
             logger.debug("logged out");
         } catch (ApplicationPermissionException e) {
             logger.error("application permission exception", e);
@@ -388,15 +384,13 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
     }
 
     @Override
-    public String getPasswordResetURL()
-    {
+    public String getPasswordResetURL() {
         return passwordResetURL;
     }
 
     @SuppressWarnings("el-syntax")
     @Value("${crowd.passwordreseturl:http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action}")
-    public void setPasswordResetURL(String url)
-    {
+    public void setPasswordResetURL(String url) {
         this.passwordResetURL = url;
     }
 

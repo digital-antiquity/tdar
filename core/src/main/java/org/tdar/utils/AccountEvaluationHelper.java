@@ -5,11 +5,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.resource.Resource;
 
+
 public class AccountEvaluationHelper {
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
     private Long id;
     private BillingActivityModel model;

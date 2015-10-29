@@ -6,6 +6,8 @@ import javax.naming.InvalidNameException;
 import javax.naming.Name;
 import javax.naming.NamingException;
 import javax.naming.directory.Attributes;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -15,17 +17,18 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.ldap.AuthenticationException;
-import org.springframework.ldap.NameNotFoundException;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
 import org.springframework.ldap.core.DirContextOperations;
-import org.springframework.ldap.core.DistinguishedName;
 import org.springframework.ldap.core.LdapOperations;
 import org.springframework.ldap.core.support.AbstractContextMapper;
 import org.springframework.ldap.filter.AndFilter;
 import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
+import org.springframework.ldap.query.LdapQueryBuilder;
+import org.springframework.ldap.support.LdapUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -51,9 +54,9 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
 
     protected final LdapOperations ldapTemplate;
     private String passwordResetURL;
-    private String baseDN;
-    private String userRDN;
-    private String groupDN;
+    private String baseDN = "";
+    private String userRDN = "";
+    private String groupDN = "";
 
     public SpringLdapDao() {
         ldapTemplate = null;
@@ -160,12 +163,16 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
                     + "]\n Returning and attempting to authenticate them.");
             // just check if authentication works then.
             return new AuthenticationResult(AuthenticationResultType.ACCOUNT_EXISTS);
-        } catch (NameNotFoundException e) {
+        } catch (Exception e) {
             logger.debug("Object not found, as expected.");
         }
 
         logger.debug("Adding LDAP user : " + username);
-        ldapDAO.create(person, password);
+        try {
+            ldapDAO.create(person, password);
+        } catch (InvalidNameException e) {
+            logger.error("cannot create LDAP user", e);
+        }
         return new AuthenticationResult(AuthenticationResultType.VALID);
 
     }
@@ -180,8 +187,12 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
     @Override
     public boolean deleteUser(TdarUser person) {
         PersonLdapDao ldapDAO = new PersonLdapDao();
-        ldapDAO.delete(person);
-
+        try {
+            ldapDAO.delete(person);
+        } catch (Exception e) {
+            logger.error("cannot delete user", e);
+            return false;
+        }
         logger.debug("Removed LDAP user : " + person);
         return true;
     }
@@ -213,7 +224,11 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
     @Override
     public void updateUserPassword(TdarUser person, String password) {
         PersonLdapDao ldapDAO = new PersonLdapDao();
-        ldapDAO.update(person, password);
+        try {
+            ldapDAO.update(person, password);
+        } catch (Exception e) {
+            logger.error("cannot update password", e);
+        }
     }
 
     @Override
@@ -289,11 +304,14 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             AndFilter filter = new AndFilter();
             filter.and(new EqualsFilter(ATTR_OBJECT_CLASS, CLASS_PERSON)).and(
                     new EqualsFilter(ATTR_USER_ID, username));
-            return ldapTemplate.authenticate(DistinguishedName.EMPTY_PATH,
-                    filter.toString(), password);
+            LdapQueryBuilder query = buildQuery(filter);
+            // will throw exception if "False"
+            ldapTemplate.authenticate(query, password);
+            return true;
+            
         }
 
-        public void create(TdarUser person, String password, TdarGroup... groups) {
+        public void create(TdarUser person, String password, TdarGroup... groups) throws InvalidNameException {
             Name userdn = buildPersonRDN(person);
             DirContextAdapter context = new DirContextAdapter(userdn);
             mapToContext(person, context);
@@ -322,7 +340,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             }
         }
 
-        public void update(TdarUser person, String password) {
+        public void update(TdarUser person, String password) throws InvalidNameException {
             Name dn = buildPersonRDN(person);
             DirContextOperations context = ldapTemplate.lookupContext(dn);
             mapToContext(person, context);
@@ -330,11 +348,11 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             ldapTemplate.modifyAttributes(context);
         }
 
-        public void delete(TdarUser person) {
+        public void delete(TdarUser person) throws org.springframework.ldap.NamingException, InvalidNameException {
             ldapTemplate.unbind(buildPersonRDN(person));
         }
 
-        public Person findByPrimaryKey(String uid) {
+        public Person findByPrimaryKey(String uid) throws InvalidNameException {
             Name dn = buildPersonRDN(uid);
             return (Person) ldapTemplate.lookup(dn, getContextMapper());
         }
@@ -343,15 +361,22 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             AndFilter filter = new AndFilter();
             filter.and(new EqualsFilter(ATTR_OBJECT_CLASS, CLASS_PERSON)).and(
                     new WhitespaceWildcardsFilter(ATTR_COMMON_NAME, name));
-            return ldapTemplate.search(DistinguishedName.EMPTY_PATH,
-                    filter.encode(), getContextMapper());
+            LdapQueryBuilder query = buildQuery(filter);
+            return ldapTemplate.search(query, getContextMapper());
+        }
+
+        protected LdapQueryBuilder buildQuery(Filter filter) {
+            LdapQueryBuilder query  = LdapQueryBuilder.query();
+            query.base(LdapUtils.emptyLdapName());
+            query.filter(filter);
+            return query;
         }
 
         public List<?> findAll() {
             EqualsFilter filter = new EqualsFilter(ATTR_OBJECT_CLASS,
                     CLASS_PERSON);
-            return ldapTemplate.search(DistinguishedName.EMPTY_PATH,
-                    filter.encode(), getContextMapper());
+            LdapQueryBuilder query = buildQuery(filter);
+            return ldapTemplate.search(query, getContextMapper());
         }
 
         public String[] getGroupMembership(String uid) {
@@ -359,9 +384,8 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             try {
                 filter.and(new EqualsFilter(ATTR_OBJECT_CLASS, CLASS_GROUP)).and(
                         new EqualsFilter(ATTR_MEMBER, uid));
-
-                List<?> groups = ldapTemplate.search(DistinguishedName.EMPTY_PATH,
-                        filter.encode(), new AttributesMapper() {
+                LdapQueryBuilder query = buildQuery(filter);
+                List<?> groups = ldapTemplate.search(query, new AttributesMapper<Object>() {
                             @Override
                             public Object mapFromAttributes(Attributes attrs) throws NamingException {
                                 return attrs.get(ATTR_COMMON_NAME).get().toString();
@@ -376,17 +400,17 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
             return new String[0];
         }
 
-        protected ContextMapper getContextMapper() {
+        protected ContextMapper<?> getContextMapper() {
             return new PersonContextMapper();
         }
 
-        protected Name buildPersonRDN(TdarUser person) {
+        protected Name buildPersonRDN(TdarUser person) throws InvalidNameException {
             return buildPersonRDN(person.getUsername());
         }
 
-        protected Name buildPersonRDN(String uid) {
-            DistinguishedName dn = new DistinguishedName(getUserRDN());
-            dn.add(ATTR_USER_ID, uid);
+        protected Name buildPersonRDN(String uid) throws InvalidNameException {
+            LdapName dn = new LdapName(getUserRDN());
+            dn.add(new Rdn(ATTR_USER_ID, uid));
             return dn;
         }
 
@@ -396,21 +420,21 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         }
 
         private Name buildPersonDN(String uid) throws InvalidNameException {
-            DistinguishedName dn = new DistinguishedName(getBaseDN());
+            LdapName dn = new LdapName(getBaseDN());
             dn.addAll(buildPersonRDN(uid));
             return dn;
         }
 
         @SuppressWarnings("unused")
         private Name buildGroupDN(String groupName) throws InvalidNameException {
-            DistinguishedName dn = new DistinguishedName(getBaseDN());
+            LdapName dn = new LdapName(getBaseDN());
             dn.addAll(buildGroupRDN(groupName));
             return dn;
         }
 
-        private Name buildGroupRDN(String groupName) {
-            DistinguishedName dn = new DistinguishedName(getGroupRDN());
-            dn.add(ATTR_COMMON_NAME, groupName);
+        private Name buildGroupRDN(String groupName) throws InvalidNameException {
+            LdapName dn = new LdapName(getGroupRDN());
+            dn.add(new Rdn(ATTR_COMMON_NAME, groupName));
             return dn;
         }
 

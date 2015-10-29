@@ -1,4 +1,4 @@
-/* global describe, it, expect */
+/* global describe, it, expect, beforeEach */
 
 describe("collection autocomplete", function(){
     
@@ -84,28 +84,93 @@ describe("collection autocomplete", function(){
     });
 });
 
-describe("tests for TDAR.autocomplete methods", function() {  
+describe("cached objects", function() {
+    var cache;
+    var $form;
+    beforeEach(function(){
+        setFixtures('<form id="testform"></form>');
+        cache = new TDAR.autocomplete.ObjectCache({});
+        $form = $("#testform");
+    });
 
-xit("should work when we call applyPersonAutoComplete", function() {
-   var $elements = null;
-   var usersOnly = null;
-   var showCreate = null;
-   var expectedVal = null;
+    it("registers input fields", function(){
+        $form.append('<div id="obj1"><input type="text" name="firstName" value="bob"><input type="text" name="lastName" value="loblaw"></div>');
+        cache.register(document.getElementById("obj1"));
+        var vals = cache.getValues();
+        expect(vals.length).toBe(1);
 
-   //var result = TDAR.autocomplete.applyPersonAutoComplete($elements, usersOnly, showCreate);
-   expect(true).toBe(false); //fixme: implement this test
+        cache.unregister("obj1");
+        expect(cache.getValues().length).toBe(0);
+    });
+
+    it("searches for objects containing term", function() {
+        cache.search = TDAR.autocomplete.ObjectCache.basicSearch;
+        $form.append('<div id="obj1"><input type="text" class="ui-autocomplete-input" autocompleteName="firstName" '
+            + 'name="firstName" value="bob"><input class="ui-autocomplete-input" autocompletename="lastName" '
+            + 'type="text" name="lastName" value="loblaw"></div>');
+        $form.append('<div id="obj2"><input type="text" class="ui-autocomplete-input" autocompleteName="firstName" '
+            + 'name="firstName" value="gob"><input class="ui-autocomplete-input" autocompletename="lastName" '
+            + 'type="text" name="lastName" value="bluth"></div>');
+        $form.append('<div id="obj3"><input type="text" class="ui-autocomplete-input" autocompleteName="firstName" '
+            + 'name="firstName" value="michael"><input class="ui-autocomplete-input" autocompletename="lastName" '
+            + 'type="text" name="lastName" value="bluth"></div>');
+
+        cache.register(document.getElementById("obj1"));
+        cache.register(document.getElementById("obj2"));
+        cache.register(document.getElementById("obj3"));
+
+        //search in all object fields
+        var results = cache.search("bob");
+        expect(results.length).toBe(1);
+
+        //search particular object field
+        expect(cache.search("bob", "firstName").length).toBe(1);
+        expect(cache.search("bob", "lastName").length).toBe(0);
+        expect(cache.search("loblaw", "lastName").length).toBe(1);
+    })
+
 });
 
-xit("should work when we call evaluateAutocompleteRowAsEmpty", function() {
-   var element = null;
-   var minCount = null;
-   var expectedVal = null;
+describe("tests for TDAR.autocomplete methods", function() {
 
-   //var result = TDAR.autocomplete.evaluateAutocompleteRowAsEmpty(element, minCount);
-   expect(true).toBe(false); //fixme: implement this test
-});
 
-xit("should work when we call applyKeywordAutocomplete", function() {
+    it("should treat record as 'not blank' ", function() {
+        setFixtures('<form id="testform">'
+            + '<div id="obj1" autocompleteIdElement="#pid">'
+            + ' <input type="text"  autocompleteParentElement="#testform" class="ui-autocomplete-input" autocompleteName="firstName" name="firstName" value="bob">'
+            + ' <input  autocompleteParentElement="#testform" class="ui-autocomplete-input" autocompleteName="lastName" type="text" name="lastName" value="loblaw">'
+            + ' <input type="hidden" autocompleteParentElement="#testform" autocompleteName="id"  id="pid" value="1234">'
+            + '</div>'
+            + '</form>');
+        var $form = $("#testform");
+        var evaluateAutocompleteRowAsEmpty = TDAR.autocomplete.evaluateAutocompleteRowAsEmpty;
+        var element = $form.find('input:first')[0];
+        var result = evaluateAutocompleteRowAsEmpty(element, 0);
+        expect(result).toBe(false);
+
+
+    });
+
+
+    //TODO: figure out why this doesn't return true. Better yet, rip out it's black heart and replace it w/ sensible vmmv framework.
+    xit("should treat record as blank", function() {
+        setFixtures('<form id="testform">'
+            + '<div id="obj1" autocompleteIdElement="#pid">'
+            + ' <input type="text"  autocompleteParentElement="#testform" class="ui-autocomplete-input" autocompleteName="firstName" name="firstName" value="">'
+            + ' <input  autocompleteParentElement="#testform" class="ui-autocomplete-input" autocompleteName="lastName" type="text" name="lastName" value="">'
+            + ' <input type="hidden" autocompleteParentElement="#testform" autocompleteName="id"  id="pid" value="">'
+            + '</div>'
+            + '</form>');
+        var $form = $("#testform");
+        var evaluateAutocompleteRowAsEmpty = TDAR.autocomplete.evaluateAutocompleteRowAsEmpty;
+        var element = $form.find('input:first')[0];
+        var result = evaluateAutocompleteRowAsEmpty(element, 1);
+        expect(result).toBe(true);
+
+
+    });
+
+    xit("should work when we call applyKeywordAutocomplete", function() {
    var selector = null;
    var lookupType = null;
    var extraData = null;

@@ -216,6 +216,6 @@ public class HomepageSupportingController extends AuthenticationAware.Base {
     }
 
     public boolean isHomepage() {
-        return true;
+        return false;
     }
 }

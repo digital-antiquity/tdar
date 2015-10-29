@@ -251,7 +251,7 @@ View freemarker macros
 <h2>Cite this Record</h2>
 <div class="citeMe">
     <p class="sml">
-        <#noescape>${resourceCitation.formattedCitation!''}</#noescape>
+        <#noescape>${resourceCitation.fullCitation!''}</#noescape>
         <#if !resource.externalId?has_content && resource.lessThanDayOld && !resource.citationRecord>
             <br/>
             <em>Note:</em>A DOI will be generated <#if resource.draft>when this resource is no longer a draft<#else> in the next day for this resource</#if>.
@@ -264,7 +264,7 @@ View freemarker macros
 <li><a href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" onClick="TDAR.common.registerShare('facebook','${currentUrl}','${resource.id?c}')">Share on Facebook</a></li>
 
 <li><a 
-    <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${resourceCitation.formattedCitation!''?trim?url}%0D%0A%0D%0A${url}"</#noescape>
+    <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${resourceCitation.fullCitation!''?trim?url}%0D%0A%0D%0A${url}"</#noescape>
      onClick="TDAR.common.registerShare('email','${currentUrl}','${resource.id?c}')">Email a link to a Friend</a></li>
 
 </ul></div>

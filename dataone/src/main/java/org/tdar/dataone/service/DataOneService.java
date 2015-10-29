@@ -411,13 +411,14 @@ public class DataOneService implements DataOneConstants {
             } else if (partIdentifier.contains(D1_VERS_SEP)) {
                 resp = constructFileFormatObject(partIdentifier, ir);
             } else {
-                resp = null;
-                logger.error("bad format");
+                logger.warn("bad format for: {}", id_ );
+                return null;
             }
+            
             resp.setIdentifier(id_);
 
         } catch (Exception e) {
-            logger.error("error in DataOneObjectRequest", e);
+            logger.error("error in DataOneObjectRequest:" + id_, e);
         }
         return resp;
     }

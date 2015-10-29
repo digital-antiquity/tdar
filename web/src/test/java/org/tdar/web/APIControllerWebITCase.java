@@ -28,27 +28,37 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.billing.BillingAccountService;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
+import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.APIControllerITCase;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
+import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
 import com.sun.media.rtsp.protocol.StatusCode;
 
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class APIControllerWebITCase extends AbstractWebTestCase {
-
+    
     @Autowired
     SerializationService serializationService;
 
+    @Autowired
+    BillingAccountService billingAccountService;
+    
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
     CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
@@ -97,7 +107,6 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testCreate() throws Exception {
         JaxbResultContainer login = setupValidLogin();
-
         Document doc = genericService.findAll(Document.class, 1).get(0);
         genericService.markReadOnly(doc);
         doc.setId(null);
@@ -107,8 +116,10 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String docXml = serializationService.convertToXML(doc);
         logger.info(docXml);
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
+
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody("record", docXml);
+
         post.setEntity(builder.build());
         CloseableHttpResponse response = httpClient.execute(post);
         logger.debug("status:{} ", response.getStatusLine());
@@ -117,7 +128,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     }
 
     @Test
-    @Rollback
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD})
     public void testConfidential() throws Exception {
         JaxbResultContainer login = setupValidLogin();
 
@@ -127,6 +138,24 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         builder.addTextBody("record", text);
         builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE)));
         builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE2)));
+        builder.addTextBody("accountId", "1");
+
+        post.setEntity(builder.build());
+        CloseableHttpResponse response = httpClient.execute(post);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    @Rollback
+    public void testProjectWithCollection() throws Exception {
+        JaxbResultContainer login = setupValidLogin();
+
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
+        builder.addTextBody("record", text);
 
         post.setEntity(builder.build());
         CloseableHttpResponse response = httpClient.execute(post);

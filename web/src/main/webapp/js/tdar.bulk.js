@@ -1,12 +1,26 @@
 (function (TDAR, $) {
     'use strict';
+    var asyncUrl;
+    var gPercentDone = 0;
+    var TIMEOUT = 1000 / 2; //2fps is all we need.
 
+    var _init = function($div) {
+        asyncUrl = $div.data('asyncUrl');
+        //stop pinging for info when the process is done
+        gPercentDone = 0;
 
+        $("#progressbar").progressbar({value: 0});
+
+        //fixme: for testing purposes, call fqn of updateProgress instead of _updateProgress
+        setTimeout(TDAR.bulk.updateProgress, TIMEOUT);
+
+        return {asyncUrl: asyncUrl, percentDone: gPercentDone, timeout: TIMEOUT};
+    };
 
     var _updateProgress = function () {
-        console.log("updating progress");
+        //console.log("updating progress");
         if (gPercentDone >= 100) {
-            console.log("progress at 100. no need to continue");
+            //console.log("progress at 100. no need to continue");
             return;
         }
         ;
@@ -42,11 +56,12 @@
             }
         });
 
-        console.log("registered ajax callback");
-    }
+        //console.log("registered ajax callback");
+    };
     //expose public elements
     TDAR.bulk = {
-        "updateProgress": _updateProgress
+        "updateProgress": _updateProgress,
+        "init": _init
     };
 
 })(TDAR, jQuery);

@@ -154,6 +154,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
+        logger.trace(account.avaliableString() + " " + totalFiles);
     }
 
     @SuppressWarnings("unchecked")
@@ -275,6 +276,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
         /* update the account info in the database */
         updateAccountInfo(account, resourceEvaluator);
+
         AccountAdditionStatus status = AccountAdditionStatus.CAN_ADD_RESOURCE;
         // init totals
         account.getTotalNumberOfResources();
@@ -317,20 +319,15 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                     account.setStatus(Status.ACTIVE);
                 }
             }
-
             saveOrUpdate(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account, getResourceEvaluator());
         } else {
             account.setStatus(Status.ACTIVE);
         }
-
         saveOrUpdate(account);
         helper = null;
-        logger.trace("files used: {} ", account.getFilesUsed());
-        logger.trace("files avail: {} ", account.getAvailableNumberOfFiles());
-        logger.trace("space used: {} ", account.getSpaceUsedInMb());
-        logger.trace("space avail: {} ", account.getAvailableSpaceInMb());
+        logger.trace(account.avaliableString());
         return status;
     }
 

@@ -1,6 +1,8 @@
 package org.tdar.functional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -35,22 +37,26 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionPermissionsAndVisible() {
         TestConfiguration config = TestConfiguration.getInstance();
+        // setup a collection with 3 resources in it
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, true);
+        logger.debug("URL: {}", url);
         logout();
         // make sure basic user cannot see restricted page
         login();
         setIgnorePageErrorChecks(true);
         gotoPage(url);
+        // assert that the page has the resources
         assertPageNotViewable(titles);
+        logout();
         // add basic user
-        logout();
         loginAdmin();
-        gotoPage(url);
-        assertPageViewable(titles);
+        gotoEdit(url);
+        applyEditPageHacks();
         addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
+        submitForm();
         logout();
-        // make sure unauthenticated user cannot see
+        // make sure unauthenticated user cannot see resources on the page
         setIgnorePageErrorChecks(true);
         gotoPage(url);
         assertPageNotViewable(titles);
@@ -62,6 +68,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         // change view permission
         loginAdmin();
         gotoEdit(url);
+        applyEditPageHacks();
         setFieldByName("resourceCollection.hidden", "false");
         submitForm();
         logout();
@@ -71,13 +78,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     }
 
     private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
-        gotoEdit(url);
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
+        addAnother.click();
         addAnother.click();
         addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
                 "person-" + config.getUserId(),
                 permissions);
-        submitForm();
     }
 
     @Test
@@ -88,6 +94,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, true);
         gotoEdit(url);
+        applyEditPageHacks();
+
         WebElementSelection select = find(By.id("collection-selector"));
         url = getCurrentUrl();
         logger.debug("url:{}", url);
@@ -118,8 +126,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(titles, false);
+        gotoEdit(url);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
+        submitForm();
+
         gotoPage("/project/" + _139 + "/edit");
+        applyEditPageHacks();
         setFieldByName("status", Status.DELETED.name());
         submitForm();
         logout();
@@ -169,12 +181,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage("/collection/1003");
         assertTitlesSeen(titles);
 
-//        for (SortOption option : SortOption.getOptionsForResourceCollectionPage()) {
-//            gotoEdit(url);
-//            setFieldByName("resourceCollection.sortBy", option.name());
-//            submitForm();
-//            assertPageViewable(titles);
-//        }
+        // for (SortOption option : SortOption.getOptionsForResourceCollectionPage()) {
+        // gotoEdit(url);
+        // setFieldByName("resourceCollection.sortBy", option.name());
+        // submitForm();
+        // assertPageViewable(titles);
+        // }
 
         List<String> urls = new ArrayList<>();
         for (WebElement el : find(".media-body a")) {
@@ -206,6 +218,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         waitForPageload();
         find(By.linkText("Collection")).click();
         waitForPageload();
+        applyEditPageHacks();
         TestConfiguration config = TestConfiguration.getInstance();
 
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
@@ -234,7 +247,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     private void gotoEdit(String url) {
         url = url.substring(0, url.lastIndexOf("/"));
+        logger.debug(getCurrentUrl());
         gotoPage(url + "/edit");
+        logger.debug(getCurrentUrl());
         // find(By.linkText(" edit")).click();
         waitForPageload();
     }
@@ -260,25 +275,27 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     public void addResourceToCollection(final String title) {
         // wait until datatable loads new content
         WebElement origRow = findFirst("#resource_datatable tbody tr");
+
         find(By.name("_tdar.query")).val(title);
         waitFor(ExpectedConditions.stalenessOf(origRow));
 
         // wait for new results to appear
         waitFor(ExpectedConditions.textToBePresentInElement(
-                find("#resource_datatable").first(),
-                title
-                ));
+                find("#resource_datatable").first(), title));
 
         // get the checkbox of the matching row
-        WebElementSelection checkbox = find("#resource_datatable tbody tr")
-                .any(new Bool() {
-                    public boolean apply(WebElement tr) {
-                        return tr.getText().contains(title);
-                    }
-                })
+        WebElementSelection checkboxes = find("#resource_datatable tbody tr")
+                .any(tr -> tr.getText().contains(title))
                 .find(".datatable-checkbox");
-        assertThat(checkbox.size(), is(1));
-        checkbox.click();
+        assertThat("expecting one or more matches", checkboxes.size(), is(greaterThan(0)));
+
+        //some searches may yield more than one result. just pick the first.
+        checkboxes.first().click();
+
+        //reset the search
+        find(By.name("_tdar.query")).val("");
+//        waitFor(ExpectedConditions.stalenessOf(origRow));
+
     }
 
     private void removeResourceFromCollection(String title) {
