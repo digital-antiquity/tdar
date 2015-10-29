@@ -550,7 +550,7 @@ public abstract class AbstractSeleniumWebITCase {
             String url = absoluteUrl(base, path);
             logger.debug("going to: {}", url);
             driver.get(url);
-            waitForPageload();
+            //waitForPageload();
         } catch (MalformedURLException ex) {
             String err = String.format("bad url:: base:%s\tpath:%s", base, path);
             logger.error(err, ex);
@@ -1139,22 +1139,22 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
-        setFieldByName(prefix + ".person.firstName", p.getFirstName());
-        setFieldByName(prefix + ".person.lastName", p.getLastName());
-        setFieldByName(prefix + ".person.email", p.getEmail());
-        setFieldByName(prefix + ".person.institution.name", p.getInstitutionName());
-        setFieldByName(prefix + ".role", role.name());
+        // the creator fields may not yet exist (i.e. user just clicked  "add-another" button).
+        // So we confirm it's presence before calling val();
+        waitFor(By.name(prefix + ".person.firstName")).val(p.getFirstName());
+        find(By.name(prefix + ".person.lastName")).val(p.getLastName());
+        find(By.name(prefix + ".person.email")).val(p.getEmail());
+        find(By.name(prefix + ".person.institution.name")).val(p.getInstitutionName());
+        find(By.name(prefix + ".role")).visibleElements().val(role.name());
 
         // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
         // waitFor(".ui-menu-item a").click();
     }
 
     protected void addInstitutionWithRole(Institution p, String prefix, ResourceCreatorRole role) {
-        setFieldByName(prefix + ".institution.name", p.getName());
-        setFieldByName(prefix + ".role", role.name());
+        waitFor(By.name(prefix + ".institution.name")).val(p.getName());
+        find(By.name(prefix + ".role")).visibleElements().val(role.name());
 
-        // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
-        // waitFor(".ui-menu-item a").click();
     }
 
     protected void setFieldByName(String fld, String value) {
