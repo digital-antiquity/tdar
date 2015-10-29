@@ -1,5 +1,7 @@
 package org.tdar.search.query;
 
+import org.tdar.core.bean.SortOption;
+
 public interface SimpleSearchResultHandler {
 
     void setRecordsPerPage(int recordsPerPage);

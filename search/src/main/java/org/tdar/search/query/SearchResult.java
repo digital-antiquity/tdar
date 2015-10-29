@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 
 public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
