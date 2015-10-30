@@ -102,18 +102,22 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 fitToBounds: true
             });
             _initFromDataAttr($el, map, recDefaults);
+            var hasBounds = false;
             $(".resource-list.MAP .listItem").each(function() {
                 var $t = $(this);
                 var title = $(".resourceLink", $t);
                 var lat = $t.data("lat");
                 var lng = $t.data("long");
                 if (!isNaN(lat) && !isNaN(lng)) {
+                    hasBounds = true;
                     var marker = L.marker(new L.LatLng(lat, lng), {title: title.text().trim()});
                     marker.bindPopup(title.html() + "<br><a href='" + title.attr('href') + "'>view</a>");
                     markers.addLayer(marker);
                 }
             });
-            map.fitBounds(markers.getBounds());
+            if (hasBounds) {
+                map.fitBounds(markers.getBounds());
+            }
             map.addLayer(markers);
         });
     }
