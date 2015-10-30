@@ -97,8 +97,8 @@ public class SearchIndexService {
         for (Person person : findAll) {
             template.deleteById(generateId(person));
             SolrInputDocument document = PersonDocumentConverter.convert(person);
-            template.add(document);
-            logger.trace("adding: " + person.getId() + " " + person.getProperName());
+            logger.debug("adding: " + person.getId() + " " + person.getProperName());
+            template.add("people", document);
         }
         template.commit();
     }

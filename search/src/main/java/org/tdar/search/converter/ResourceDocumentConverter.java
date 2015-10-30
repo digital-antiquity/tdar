@@ -158,7 +158,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         roles.add(ResourceCreator.getCreatorRoleIdentifier(resource.getUpdatedBy(), ResourceCreatorRole.UPDATER));
         
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
-            String key = rc.getCreatorType().name();
+            String key = rc.getRole().name();
             if (!types.containsKey(key)) {
                 types.put(key, new ArrayList<Long>());
             }
@@ -176,7 +176,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         List<String> envelops = new ArrayList<>();
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
             Envelope env = new Envelope(llb.getMinObfuscatedLongitude(), llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLatitude(),
-                    llb.getMinObfuscatedLongitude());
+                    llb.getMaxObfuscatedLatitude());
             WKTWriter wrt = new WKTWriter();
             String str = wrt.write(JTS.toGeometry(env));
             envelops.add(str);

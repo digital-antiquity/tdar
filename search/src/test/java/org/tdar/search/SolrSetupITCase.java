@@ -40,9 +40,18 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
     @Test
     public void testResources() throws SolrServerException, IOException {
         searchIndexService.indexAllResources();
-        
     }
-    
+
+    @Test
+    public void testCollections() throws SolrServerException, IOException {
+        searchIndexService.indexAllCollections();
+    }
+
+    @Test
+    public void testKeywords() throws SolrServerException, IOException {
+        searchIndexService.indexAllKeywords();
+    }
+
     @Test
     public void testInstitutions() throws SolrServerException, IOException {
         searchIndexService.indexAllInstitutions();

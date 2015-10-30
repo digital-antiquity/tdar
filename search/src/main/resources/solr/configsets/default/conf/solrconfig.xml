@@ -145,11 +145,12 @@
        When ManagedIndexSchemaFactory is specified with mutable = true, schema
        modification REST API calls will be allowed; otherwise, error responses will be
        sent back for these requests. 
-  -->
   <schemaFactory class="ManagedIndexSchemaFactory">
     <bool name="mutable">true</bool>
     <str name="managedSchemaResourceName">managed-schema</str>
   </schemaFactory>
+  -->
+       <schemaFactory class="ClassicIndexSchemaFactory" />
 
   <!-- ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
        Index Config - These settings control low-level behavior of indexing
@@ -865,11 +866,13 @@
     </lst>
   </initParams>
 
+<!-- 
   <initParams path="/update/**">
     <lst name="defaults">
       <str name="update.chain">add-unknown-fields-to-the-schema</str>
     </lst>
   </initParams>
+ -->
 
   <!-- Solr Cell Update Request Handler
 
@@ -1346,9 +1349,10 @@
        mutable specified as true. 
        
        See http://wiki.apache.org/solr/GuessingFieldTypes
-    -->
+       
+       
   <updateRequestProcessorChain name="add-unknown-fields-to-the-schema">
-    <!-- UUIDUpdateProcessorFactory will generate an id if none is present in the incoming document -->
+    <!- UUIDUpdateProcessorFactory will generate an id if none is present in the incoming document ->
     <processor class="solr.UUIDUpdateProcessorFactory" />
 
     <processor class="solr.LogUpdateProcessorFactory"/>
@@ -1404,7 +1408,9 @@
     </processor>
     <processor class="solr.RunUpdateProcessorFactory"/>
   </updateRequestProcessorChain>
-
+       
+    -->
+    
   <!-- Deduplication
 
        An example dedup update processor that creates the "id" field

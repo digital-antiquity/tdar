@@ -5,10 +5,10 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.PersistableUtils;
 
-public class PersonDocumentConverter {
+public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
 
     public static SolrInputDocument convert(Person person) {
-        SolrInputDocument doc = new SolrInputDocument();
+        SolrInputDocument doc = convertPersistable(person);
         doc.setField("firstName", person.getFirstName());
         doc.setField("lastName", person.getLastName());
         doc.setField("name_autocomplete", person.getProperName());

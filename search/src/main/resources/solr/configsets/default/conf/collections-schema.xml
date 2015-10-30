@@ -4,12 +4,12 @@
     <field name="description" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="allSearch" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="hidden" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="resourceIds" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="resourceIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="owner.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="parentId" type="long" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="usersWhoCanModifys" type="long" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="usersWhoCanAdministers" type="long" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="usersWhoCanViews" type="long" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanModify" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanAdminister" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanView" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 

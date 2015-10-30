@@ -2,6 +2,7 @@
 <schema name="institutions" version="1.5">
     
     <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="acronym" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 

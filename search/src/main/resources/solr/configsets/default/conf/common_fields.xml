@@ -5,6 +5,8 @@
    -->
     <field name="_id" type="string" indexed="true" stored="true" required="true" multiValued="false" />
     <field name="id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="dateCreated" type="date" required="false" indexed="true" />
+    <field name="dateUpdated" type="date" required="false" indexed="true" />
     <field name="_version_" type="long" indexed="true"  stored="true" multiValued="false"  />
     <field name="status" type="string" indexed="true" stored="false" required="false" multiValued="false" />
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <types>
 
-    <fieldType name="autocomplete" class="solr.TextField" positionIncrementGap="100" stored="true">
+    <fieldType name="autocomplete" class="solr.TextField" positionIncrementGap="100" stored="true" multiValued="true">
         <analyzer>
             <tokenizer class="solr.KeywordTokenizerFactory" />
             <filter class="solr.LowerCaseFilterFactory" />
@@ -75,6 +75,7 @@
       http://wiki.apache.org/solr/SolrAdaptersForLuceneSpatial4
     -->
     <fieldType name="location_rpt" class="solr.SpatialRecursivePrefixTreeFieldType"
+    spatialContextFactory="com.spatial4j.core.context.jts.JtsSpatialContextFactory"
                geo="true" distErrPct="0.025" maxDistErr="0.001" distanceUnits="kilometers" />
 
     <!-- Money/currency field type. See http://wiki.apache.org/solr/MoneyFieldType
