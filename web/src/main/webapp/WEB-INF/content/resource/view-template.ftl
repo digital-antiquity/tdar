@@ -89,22 +89,9 @@
 
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="dbl">
-    <#list viewableResourceCollections![]>
-	    <h3>This Resource is Part of the Following Collections</h3>
-		<p>
-	    <ul class="inline">
-		<#items as collection>
-            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
-            <#sep>&nbsp;&nbsp;&bull;</#sep></li>
-        </#items>
-		</ul>
-		</p>
-		<hr/>
-        </#list>
 <h2>Summary</h2>
     <@common.description resource.description />
 
-<hr/>
 <@view.resourceCitationSection resource />
 
     <#if authenticatedUser?has_content>
@@ -505,9 +492,20 @@
         </#list>
 
     <@view.unapiLink resource />
-    <#if viewableResourceCollections?has_content>
-    <hr/>
-    </#if>
+
+    <#list viewableResourceCollections![]>
+        <hr>
+        <h3>This Resource is Part of the Following Collections</h3>
+        <p>
+        <ul class="inline">
+        <#items as collection>
+            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <#sep>&nbsp;&nbsp;&bull;</#sep></li>
+        </#items>
+        </ul>
+        </p>
+        <hr>
+    </#list>
 
 <#--emit additional dataset metadata as a list of key/value pairs  -->
     <#if mappedData?has_content >
