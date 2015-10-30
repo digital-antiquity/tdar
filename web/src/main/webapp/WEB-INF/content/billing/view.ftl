@@ -31,7 +31,7 @@
     </tr>
     <tr>
         <th>Files</th>
-        <td> ${account.filesUsed}</td>
+        <td class="filesused">${account.filesUsed}</td>
         <td>
             <#if billingActivityModel.countingFiles>
             ${account.availableNumberOfFiles}
@@ -42,7 +42,7 @@
     </tr>
     <tr>
         <th>Space</th>
-        <td> ${account.spaceUsedInMb} mb</td>
+        <td class="spaceused">${account.spaceUsedInMb} mb</td>
         <td>
             <#if billingActivityModel.countingSpace>
             ${account.availableSpaceInMb} mb
