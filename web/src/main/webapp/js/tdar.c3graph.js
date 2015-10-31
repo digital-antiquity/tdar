@@ -140,6 +140,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 						value: ['count']
 					},
 				},
+			    point: {
+			        show: false
+			    },
 				legend: {
 					hide: false
 				},
