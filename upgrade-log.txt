@@ -41,8 +41,9 @@
  - JDBC properties that start with postgis or tdargisdata should be changed to prefix "tdargis."
 		- tdargisdata.connection.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
 		- postgis.driver.class=org.postgis.DriverWrapper
-		+ tdargis.connection.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
-		+ tdargis.driver.class=org.postgis.DriverWrapper
+		+ tdargisdata.persistence.jdbc.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
+		+ tdargisdata.persistence.jdbc.driver=org.postgis.DriverWrapper
+		+ tdardata.persistence.jdbc.url=...
  - remove the c3p0.xml reference in spring-local-settings.xml 
  - other work:
 	sudo add-apt-repository ppa:webupd8team/java
