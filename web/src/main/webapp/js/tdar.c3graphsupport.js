@@ -18,6 +18,7 @@ TDAR.c3graphsupport = (function(console, $, ctx) {
         } else {
             uri = TDAR.uri( uri );
         }
+        return uri;
     }
     
     var _dashboardResourcePieChartClick = function(d, element) {
