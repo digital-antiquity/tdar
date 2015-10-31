@@ -69,3 +69,6 @@ div.mapcontainer img {
     position: relative;
 }
 
+.mapcontainer #data {
+    font-weight:bold;
+}
