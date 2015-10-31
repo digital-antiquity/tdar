@@ -85,9 +85,7 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
         }
         try {
             provider.connect();
-            List<Long> nextBatch = getNextBatch();
-            logger.debug("batch: {}" ,nextBatch);
-            processBatch(nextBatch);
+            super.execute();
             provider.logout();
         } catch (Throwable e) {
             logger.debug(ExceptionUtils.getFullStackTrace(e));
