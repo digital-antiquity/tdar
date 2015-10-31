@@ -48,7 +48,7 @@ echo " hg update $PARAM "
 cd /home/tdar/tdar.src/
 hg pull
 hg update $PARAM
-perl src/main/release/release.pl
+perl release/release.pl
 if [ -e /usr/local/lib/nagios3/amazon-sns-notify.rb ]
 then
         /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
