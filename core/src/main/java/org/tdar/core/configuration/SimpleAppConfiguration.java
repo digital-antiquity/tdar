@@ -16,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -54,12 +53,16 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
         })
 @PropertySource(value = SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
-@PropertySource(value = "file://${TDAR_CONFIG_PATH}/hibernate.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
 
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
     protected static final String HIBERNATE_PROPERTIES = "hibernate.properties";
+    protected static final String TDAR_PROPERTIES = "tdar.properties";
     private static final long serialVersionUID = 2190713147269025044L;
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
