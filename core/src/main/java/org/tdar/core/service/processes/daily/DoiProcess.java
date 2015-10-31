@@ -86,7 +86,9 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
         }
         try {
             provider.connect();
-            processBatch(getNextBatch());
+            List<Long> nextBatch = getNextBatch();
+            logger.debug("batch: {}" ,nextBatch);
+            processBatch(nextBatch);
             provider.logout();
         } catch (Throwable e) {
             logger.debug(ExceptionUtils.getFullStackTrace(e));
@@ -97,6 +99,7 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
 
     @Override
     public void process(Resource resource) throws Exception {
+        logger.debug("processing: {}", resource);
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = provider.create(resource, urlService.absoluteUrl(resource));
