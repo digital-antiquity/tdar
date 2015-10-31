@@ -117,6 +117,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             });
             if (hasBounds) {
                 map.fitBounds(markers.getBounds());
+                map.zoomOut(1);
             }
             map.addLayer(markers);
         });
