@@ -281,6 +281,8 @@ public class EZIDDao implements ExternalIDProvider {
             String resourceType = r.getResourceType().toDcmiTypeString();
             // as PER API-DOC, http://n2t.net/ezid/doc/apidoc.html , a subset of these do not exactly MATCH DCMI TYPES?
             switch (r.getResourceType()) {
+                case PROJECT:
+                    resourceType = "Collection";
                 case SENSORY_DATA:
                     resourceType = resourceType.replace(" ", "");
                     break;

@@ -1,6 +1,5 @@
 package org.tdar.core.service.processes.daily;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
