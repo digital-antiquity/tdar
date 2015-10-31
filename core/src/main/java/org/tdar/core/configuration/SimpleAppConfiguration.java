@@ -114,7 +114,7 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean(name = "mailSender")
-    public JavaMailSender getJavaMailSender(@Value("${mail.smtp.host:localhost}") String hostname) {
+    public JavaMailSender getJavaMailSender(@Value("#{mail.smtp.host:localhost}") String hostname) {
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(hostname);
         return sender;
