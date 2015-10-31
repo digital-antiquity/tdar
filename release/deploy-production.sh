@@ -83,8 +83,8 @@ if [ $? -ne 0 ]
       cd ../oai-pmh/
       sudo cp target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
       sudo rm -Rrf ~tdar/app/oai-pmh
-      cd ../dataone/
-      sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
-      sudo rm -Rrf ~tdar/app/dataone
+      # cd ../dataone/
+      # sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
+      # sudo rm -Rrf ~tdar/app/dataone
       sudo service tomcat7 restart
 fi
