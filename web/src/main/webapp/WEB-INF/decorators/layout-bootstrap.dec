@@ -100,6 +100,11 @@ ${head}
             <@dec.homepageHeader />
         </#if>
 
+		<#if searchHeaderEnabled!false>
+			<@wdec.searchHeader />
+            <div class="container">
+		</#if>
+
         <@dec.subnav />
             <!-- BEGIN-TDAR-CONTENT -->
 
@@ -110,10 +115,6 @@ ${head}
             </div>
         </#if>
 
-        <#if whitelableCollection??>
-            <@wdec.searchHeader />
-            <div class="container">
-        </#if>
 
 
         <#if errorWarningSectionVisible >
