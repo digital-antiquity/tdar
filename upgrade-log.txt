@@ -53,3 +53,4 @@
 	sudo apt-get install npm git npm-legacy
 	sudo npm install -g bower
 	sudo npm install -g karma karma-cli
+- update reference to the theme-dir or comment it out

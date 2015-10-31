@@ -201,6 +201,7 @@ public class SimpleAppConfiguration implements Serializable {
      */
     private String getProperty(String prefix, String val_) {
         String val = env.getProperty(prefix + val_);
+        logger.debug("{} --> {}" , prefix + val_, val );
         if (val == null) {
             val = env.getRequiredProperty("javax" + val_);
         }
