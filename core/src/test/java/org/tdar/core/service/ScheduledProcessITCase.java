@@ -1,7 +1,5 @@
 package org.tdar.core.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -133,8 +131,19 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         user.setDateUpdated(new Date());
         genericService.saveOrUpdate(user);
 
-        dailyEmailProcess.execute();
-
+        scheduledProcessService.queue(DailyEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        assertTrue(dailyEmailProcess.isCompleted());
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+//        assertTrue(dailyEmailProcess.isCompleted());
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        logger.debug("//");
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+//        assertTrue(dailyEmailProcess.isCompleted());
     }
     
     @Autowired
