@@ -179,10 +179,11 @@ TDAR.c3graph = (function(console, $, ctx) {
 					var row = $("td, th", rows[i]);
 					for (var j = 0; j < row.length; j++) {
 						var d = $(row[j]).text().trim();
+						var d_ = d.replace(/\,/g,'');
 						if (i == 0) {
 							data[j].unshift(d);
-						} else if (parseInt(d) && j != 0) {
-							data[j][max - i] = parseInt(d);
+						} else if (parseInt(d_) && j != 0) {
+							data[j][max - i] = parseInt(d_);
 						} else {
 							data[j][max - i] = d;
 						}
