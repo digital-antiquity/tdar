@@ -62,7 +62,7 @@ mvn clean install -DskipTests -Djetty.skip=true
 cd web
 #sudo rm /tmp/.wro4j/buildContext.properties
 #sudo rmdir /tmp/.wro4j/
-mvn clean compile war:war -Palpha,minify-web-resources,liquibase
+mvn clean compile war:war -Pminify-web-resources,liquibase
 cd ../dataone/
 mvn clean compile war:war 
 cd ../oai-pmh/
