@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<!-- vim:sts=2:sw=2: -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       ">
+
+<!--     <import resource="pooling/c3p0.xml" />
+ -->    <!-- <import resource="pooling/dbcp.xml" /> -->
+
+    <!-- If we want the MockAuthentication Service activated set the property 
+        "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->
+
+     <bean id="AuthenticationProvider" class="org.tdar.core.dao.external.auth.MockAuthenticationProvider" />
+<!--    
+
+     <bean id="DoiProvider" class="org.tdar.core.dao.external.pid.EZIDDao" />
+
+ -->
+ 
+  
+    <!-- Site specific labels -->
+<!--     <import resource="spring-tag.xml" />
+ -->
+     <!-- <import resource="spring-tag-ahad.xml" /> -->
+    
+    <bean name="mailSender" class="org.tdar.core.service.external.MockMailSender" />
+
+</beans>

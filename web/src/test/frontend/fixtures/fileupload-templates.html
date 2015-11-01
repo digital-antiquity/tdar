@@ -1,0 +1,119 @@
+    <!-- The template to display files available for upload (uses tmpl.min.js) -->
+    <script id="template-upload" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+    <tr class="template-upload fade">
+        <td class="preview"><span class="fade"></span></td>
+        <td class="name"><span>{%=file.name%}</span></td>
+        <td class="size"><span>{%=o.formatFileSize(file.size)%}</span></td>
+        {% if (file.error) { %}
+            <td class="error" colspan="2"><span class="label label-important">Error</span> {%=file.error%}</td>
+        {% } else if (o.files.valid && !i) { %}
+            <td>
+                <div class="progress progress-success progress-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar" style="width:0%;"></div></div>
+            </td>
+            <td class="start">{% if (!o.options.autoUpload) { %}
+                <button class="btn btn-primary">
+                    <i class="icon-upload icon-white"></i>
+                    <span>Start</span>
+                </button>
+            {% } %}</td>
+        {% } else { %}
+            <td colspan="2"></td>
+        {% } %}
+        <td class="cancel">{% if (!i) { %}
+            <button class="btn btn-warning">
+                <i class="icon-ban-circle icon-white"></i>
+                <span>Cancel</span>
+            </button>
+        {% } %}</td>
+    </tr>
+{% } %}
+
+    </script>
+
+    <script id="template-download" type="text/x-tmpl">
+{% for (var i=0, file; file=o.files[i]; i++) { %}
+{% var idx = '' + TDAR.fileupload.getRowId();%}
+{% var rowclass = file.fileId ? "existing-file" : "new-file" ;%}
+{% var confclass = (document.location.pathname === "/batch/add") ? "" : "confidential-contact-required" ;%}
+{% rowclass += TDAR.fileupload.getRowVisibility() ? "" : " hidden"; %}
+    <tr class="template-download fade {%=rowclass%}" id="files-row-{%=idx%}">
+            <td colspan="4">
+                {% if (file.error) { %}
+                <div class="error"><span class="label label-important">Error</span> {%=file.error%}</div>
+                {% } %}
+
+                <label class="control-label">Filename</label>
+                <div class="controls controls-row">
+                    <div class="span5">
+                        <div><em class="replacement-text "></em></div>
+                        <span class="name uneditable-input subtle inpux-xlarge" title="{%=file.name%}">{%=file.name%}</span>
+                        <span class="help-inline">{%=o.formatFileSize(file.size)%}</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Restriction</label>
+                    <div class="controls">
+<select name="fileProxies[{%=idx%}].restriction" id="proxy{%=idx%}_conf" class="fileProxyConfidential {%=confclass%}" style="padding-left: 20px;" onchange="TDAR.fileupload.updateFileAction(this)" datarestriction="{%=file.restriction%}">
+    <option value="PUBLIC">Public</option>
+    <option value="EMBARGOED_SIX_MONTHS">Embargoed Six Months</option>
+    <option value="EMBARGOED_ONE_YEAR">Embargoed One Year</option>
+    <option value="EMBARGOED_TWO_YEARS">Embargoed Two Years</option>
+    <option value="EMBARGOED_FIVE_YEARS">Embargoed Five Years</option>
+    <option value="CONFIDENTIAL">Confidential</option>
+
+
+</select>
+
+                    </div>
+
+                    <label class="control-label" for="">Date Created</label>
+                    <div class="controls controls-row">
+                         <div class="span5">
+                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
+                         </div>
+                    </div>
+
+                    <label class="control-label">Description</label>
+                    <div class="controls controls-row">
+                        <div class="span5">
+                            <textarea class="input-block-level" name="fileProxies[{%=idx%}].description" rows="1" placeholder="Enter a description here">{%=file.description%}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </td>
+        <td style="width:10%">
+
+            {%if (file.fileId) { %}
+    <span class="btn fileinput-button replace-file-button btn btn-small btn-warning btn-block" id="fileupload{%=idx%}Wrapper" style="width:6em;text-align:left">
+    <i class="icon-refresh icon-white"> </i>
+    <span>Replace</span>
+    <input type="file" name="uploadFile" id="fileupload{%=idx%}" class="replace-file">
+</span>
+            <button type="button" style="display:none; text-align:left" class="btn btn-small btn-warning undo-replace-button btn-block" title="Restore Original File">Cancel</button>
+            {% } %}
+
+
+                <div class="delete">
+                    <button class="btn btn-danger delete-button btn-small btn-block" data-type="{%=file.delete_type%}" data-url="{%=file.delete_url%}" style="text-align:left ">
+                        <i class="icon-trash icon-white"></i>
+                        <span>Delete</span>
+                    </button>
+                </div>
+            
+
+            <div class="fileProxyFields">
+                <input type="hidden" class="fileAction" name="fileProxies[{%=idx%}].action" value="{%=file.action||'ADD'%}"/>
+                <input type="hidden" class="fileId" name="fileProxies[{%=idx%}].fileId" value="{%=''+(file.fileId || '-1')%}"/>
+                <input type="hidden" class="fileReplaceName" name="fileProxies[{%=idx%}].filename" value="{%=file.name%}"/>
+                <input type="hidden" class="fileSequenceNumber" name="fileProxies[{%=idx%}].sequenceNumber" value="{%=idx%}"/>
+            </div>
+        </td>
+    </tr>
+{% } %}
+
+    </script>
+
+
