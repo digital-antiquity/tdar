@@ -635,4 +635,8 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         return InternalTdarRights.EDIT_ANYTHING;
     }
 
+    @Override
+    public boolean isRightSidebar() {
+        return true;
+    }
 }

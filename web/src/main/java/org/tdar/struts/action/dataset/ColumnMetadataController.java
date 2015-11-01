@@ -381,4 +381,9 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
         return allDomainCategories;
     }
 
+    @Override
+    public boolean isRightSidebar() {
+        return true;
+    }
+
 }

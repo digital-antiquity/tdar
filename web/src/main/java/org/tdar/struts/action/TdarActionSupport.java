@@ -921,4 +921,23 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public String getLeafletApiKey() {
         return getTdarConfiguration().getLeafletMapsApiKey();
     }
+    
+    /**
+     * show the left sidebar in the future should override page.properties
+     * 
+     * @return
+     */
+    public boolean isLeftSidebar() {
+        return false;
+    }
+    
+    /**
+     * show the right sidebar in the future should override page.properties
+     * 
+     * @return
+     */
+    public boolean isRightSidebar() {
+        return false;
+    }
+    
 }

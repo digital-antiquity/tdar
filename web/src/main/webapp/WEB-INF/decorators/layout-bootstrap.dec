@@ -163,13 +163,30 @@ ${head}
 
         <#assign part="" />
         <#assign spanSize = 12/>
-        <#if  page.properties["div.sidebar-left"]?has_content ||  page.properties["div.sidebar-right"]?has_content >
+        <#if  showLeftSidebar() || showRightSidebar() >
             <#assign part="cols" />
             <#assign spanSize = 9/>
-        <#elseif page.properties["div.sidebar-left"]?has_content && page.properties["div.sidebar-right"]?has_content >
+        <#elseif showLeftSidebar() && showRightSidebar() >
             <#assign part="cols" />
             <#assign spanSize = 6/>
         </#if>
+        
+        
+        <#function showLeftSidebar>
+        	<#if (leftSidebar!false) && (page.properties["div.sidebar-left"]?has_content) >
+        	
+	        	<#return true />
+        	</#if>
+        	<#return false />
+        </#function>
+
+        <#function showRightSidebar>
+        	<#if (rightSidebar!false) && (page.properties["div.sidebar-right"]?has_content) >
+        	
+	        	<#return true />
+        	</#if>
+        	<#return false />
+        </#function>
 
     <#--FIXME: need a better way to hint to layout that we are rendering search results, or perhaps just use a separate layout file  -->
         <#if (lookupSource?? || actionName=='collections') ><#assign part="searchresults" /></#if>
@@ -180,7 +197,7 @@ ${head}
 
         <section class="row ${part}">
 
-            <#if page.properties["div.sidebar-left"]?has_content>
+            <#if showLeftSidebar()>
                 <aside class="span3">
                 ${page.properties["div.sidebar-left"]}
                 </aside>
@@ -192,7 +209,7 @@ ${head}
             ${body}
             </article>
 
-            <#if page.properties["div.sidebar-right"]?has_content>
+            <#if showRightSidebar() >
                 <aside class="span3 sidebar <#if actionName=='edit' || actionName='add' || actionName='columns'>hidden-tablet hidden-phone</#if> <#if actionName=='view' &&  resource?has_content>${resource.resourceType?lower_case}-bg-large tdar-icon</#if>">
                 ${page.properties["div.sidebar-right"]}
                 </aside>
