@@ -104,6 +104,11 @@ TDAR.assetsUri = function(path) {
         base = baseElems[0].assetsHref;
     }
     var uri = base;
+    
+    if (base == undefined) {
+        return TDAR.uri(path);
+    }
+    
     if (uri.lastIndexOf("/") != uri.length-1)  {
         uri += "/";
     }

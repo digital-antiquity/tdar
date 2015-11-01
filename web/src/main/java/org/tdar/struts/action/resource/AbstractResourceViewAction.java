@@ -527,4 +527,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.mappedData = mappedData;
     }
 
+    @Override
+    public boolean isRightSidebar() {
+        return true;
+    }
 }
