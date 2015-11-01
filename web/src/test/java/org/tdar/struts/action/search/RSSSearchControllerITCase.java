@@ -29,6 +29,7 @@ import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.xml.sax.SAXException;
 
 @Transactional
@@ -93,6 +94,21 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         controller.viewRss();
         // the record we created should be the absolute first record
         assertEquals(document, controller.getResults().get(0));
+    }
+
+
+    @Test
+    @Rollback(true)
+    public void testRss404() throws InstantiationException, IllegalAccessException, TdarActionException {
+        InformationResource document = generateDocumentWithUser();
+        searchIndexService.index(document);
+        controller.setSessionData(new SessionData()); // create unauthenticated session
+        // doSearch("");
+        controller.setStartRecord(1000);
+        String viewRss = controller.viewRss();
+        assertNotEquals(TdarActionSupport.SUCCESS, viewRss);
+        // the record we created should be the absolute first record
+//        assertEquals(document, controller.getResults().get(0));
     }
 
     @Test
