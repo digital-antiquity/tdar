@@ -547,8 +547,6 @@
                             <newVersion>14.0.${hg.version.as_dir}-NEOLITHIC</newVersion>
                             <generateBackupPoms>false</generateBackupPoms>
                             <processParent>true</processParent>
-                            <processProject>false</processProject>
-                            <updateMatchingVersions>false</updateMatchingVersions>
                         </configuration>
                         <executions>
                             <execution>
