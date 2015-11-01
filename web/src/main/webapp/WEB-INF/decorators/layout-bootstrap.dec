@@ -101,6 +101,7 @@ ${head}
         </#if>
 
 		<#if searchHeaderEnabled!false>
+		</div>
 			<@wdec.searchHeader />
             <div class="container">
 		</#if>
