@@ -79,7 +79,29 @@ TDAR.uri = function(path) {
     var base = window.location.origin;
     var baseElems = document.getElementsByTagName('base');
     if(baseElems.length) {
-        base = baseElems[0].href;
+        if (baseElems[0].href != undefined) {
+            base = baseElems[0].href;
+        }
+    }
+    var uri = base;
+    if (uri.lastIndexOf("/") != uri.length-1)  {
+        uri += "/";
+    }
+    if (uri.lastIndexOf("/") == uri.length -1 && path != undefined && path.indexOf("/") == 0) {
+        uri = uri.substring(0,uri.lastIndexOf("/"));
+    }
+    
+    if(path) {
+        uri += path;
+    }
+    return uri;
+};
+
+TDAR.assetsUri = function(path) {
+    var base = window.location.origin;
+    var baseElems = document.getElementsByTagName('base');
+    if(baseElems.length) {
+        base = baseElems[0].assetsHref;
     }
     var uri = base;
     if (uri.lastIndexOf("/") != uri.length-1)  {
