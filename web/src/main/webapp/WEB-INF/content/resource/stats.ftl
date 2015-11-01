@@ -7,13 +7,13 @@
 
 <h2>Usage Stats</h2>
 
-
+<!--
 <div class="row">
     <div class="span9">
         <div id="chart1" style="width:100%; height:400px" title="Views & Downloads"></div>
     </div>
 </div>
-
+-->
 
 <@statTable allByYear yearLabels "Year" />
 
