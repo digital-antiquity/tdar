@@ -120,15 +120,20 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
 
         for (Entry<String, List<AggregateDownloadStatistic>> entry : getDownloadStats().entrySet()) {
             for (AggregateDownloadStatistic stat : entry.getValue()) {
+                Date aggregateDate = stat.getAggregateDate();
+                if (!map.containsKey(aggregateDate)) {
+                    map.put(aggregateDate, new HashMap<>());
+                }
                 if (StringUtils.isNotBlank(entry.getKey())) {
-                    map.get(stat.getAggregateDate()).put(entry.getKey(), stat.getCount());
+                    map.get(aggregateDate).put(entry.getKey(), stat.getCount());
+                    map.get(aggregateDate).put("date", aggregateDate);
                 }
                 incrementKey(byYear, stat.getYear(), stat.getCount(), entry.getKey());
-                if (lastYear.isBefore(stat.getAggregateDate().getTime())) {
+                if (lastYear.isBefore(aggregateDate.getTime())) {
                     incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), entry.getKey());
                 }
-                if (lastWeek.isBefore(stat.getAggregateDate().getTime())) {
-                    incrementKey(byDay, format.format(stat.getAggregateDate()), stat.getCount(), entry.getKey());
+                if (lastWeek.isBefore(aggregateDate.getTime())) {
+                    incrementKey(byDay, format.format(aggregateDate), stat.getCount(), entry.getKey());
                 }
             }
         }
