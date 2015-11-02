@@ -3,6 +3,8 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/${themeDir}/settings.ftl" as settings>
 
+<title>Usage Information for ${resource.title}</title>
+
 <h1>Usage Information for <span>${resource.title}</span></h1>
 
 <#if graphJson?has_content>

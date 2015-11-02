@@ -2,7 +2,10 @@ package org.tdar.core.dao;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents an aggregate statistics query result.
@@ -45,6 +48,20 @@ public class StatsResultObject implements Serializable {
 
     public void setRowData(List<ResourceStatWrapper> rowData) {
         this.rowData = rowData;
+    }
+    
+    public Collection<Map<String,Object>> getObjectForJson() {
+        Map<String, Map<String,Object>> map = new HashMap<>();
+        for (int i =0; i< rowLabels.size(); i++) {
+            String[] v = rowLabels.get(i).split(" ");
+            String key = v[0];
+            if (!map.containsKey(key)) {
+                map.put(key, new HashMap<>());
+            }
+            map.get(key).put("date", v[0]);
+            map.get(key).put(v[1], totals[i]);
+        }
+        return map.values();
     }
 
     public List<Long> getTotals() {
