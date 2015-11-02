@@ -1,9 +1,11 @@
 package org.tdar.core.service.search;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -93,6 +95,8 @@ import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.range.DateRange;
+import org.tdar.utils.range.StringRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -775,6 +779,23 @@ public class SearchService {
         result.setSecondarySortField(SortOption.TITLE);
         result.setStartRecord(0);
         result.setRecordsPerPage(10);
+        handleSearch(qb, result, provider);
+        return (List<Resource>) ((List<?>) result.getResults());
+    }
+
+    @SuppressWarnings("unchecked")
+    public Collection<? extends Resource> findRecentResourcesSince(Date d, TdarUser authenticatedUser, TextProvider provider) throws ParseException {
+        ReservedSearchParameters params = new ReservedSearchParameters();
+        params.getStatuses().add(Status.ACTIVE);
+        ResourceQueryBuilder qb = new ResourceQueryBuilder();
+        params.getRegisteredDates().add(new DateRange(d, null));
+        qb.append(params.toQueryPartGroup(MessageHelper.getInstance()));
+        SearchResult result = new SearchResult();
+        result.setAuthenticatedUser(authenticatedUser);
+        result.setSortField(SortOption.ID_REVERSE);
+        result.setSecondarySortField(SortOption.TITLE);
+        result.setStartRecord(0);
+        result.setRecordsPerPage(1000);
         handleSearch(qb, result, provider);
         return (List<Resource>) ((List<?>) result.getResults());
     }

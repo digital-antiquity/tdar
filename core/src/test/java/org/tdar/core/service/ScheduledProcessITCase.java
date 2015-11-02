@@ -48,6 +48,7 @@ import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.upgradeTasks.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.processes.weekly.WeeklyResourcesAdded;
 
 /**
  * $Id$
@@ -144,6 +145,20 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         logger.debug("//");
         scheduledProcessService.runNextScheduledProcessesInQueue();
 //        assertTrue(dailyEmailProcess.isCompleted());
+    }
+    
+    @Test
+    @Rollback
+    public void testResourceReport() {
+        Dataset dataset = createAndSaveNewDataset();
+        searchIndexService.index(dataset);
+        searchIndexService.flushToIndexes();
+        scheduledProcessService.queue(WeeklyResourcesAdded.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        assertTrue(dailyEmailProcess.isCompleted());
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        
     }
     
     @Autowired
