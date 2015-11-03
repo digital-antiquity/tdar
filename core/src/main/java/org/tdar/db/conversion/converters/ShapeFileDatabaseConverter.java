@@ -17,13 +17,18 @@ import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
+import org.opengis.feature.simple.SimpleFeature;
+import org.opengis.feature.simple.SimpleFeatureType;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -119,7 +124,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         FeatureCollection<?, ?> collection = featureSource.getFeatures();
         FeatureIterator<?> iterator = collection.features();
         logger.debug("{}", dataStore.getNames());
-        
+//        ReprojectingFeatureCollection reprojectingCollection = new ReprojectingFeatureCollection((FeatureCollection<SimpleFeatureType, SimpleFeature>)collection, CRS.decode("EPSG:4326"));
         
         dumpToGeoJson(collection);
         

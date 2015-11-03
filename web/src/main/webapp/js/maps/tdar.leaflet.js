@@ -68,12 +68,12 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _elemData = $elem.data();
         // bootstrap stores a lot of data in BODY. We only want a subset
         var _bdata = $('body').data();
-        console.log(_bdata.centerlat);
+//        console.log(_bdata.centerlat);
         var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider,center: {lat: _bdata.centerlat, lng: _bdata.centerlong} };
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
 
 
-        console.log('creating L.map:', settings);
+//        console.log('creating L.map:', settings);
         var map = L.map(elem, settings).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
         //console.log('setting map obj on', $elem)
@@ -91,6 +91,19 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         tile.addTo(map);
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
+        
+        var geoJson = $('#leafetGeoJson');
+        if (geoJson.length > 0) {
+            var gj = JSON.parse(geoJson.html());
+            console.log("parsed");
+            var glayer = L.geoJson(gj);
+            console.log("loaded");
+            glayer.addTo(map);
+            console.log("added");
+
+            _fitTo(map, glayer);
+        }
+        
         return map;
     }
 
@@ -118,13 +131,18 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 }
             });
             if (hasBounds) {
-                map.fitBounds(markers.getBounds());
-                map.zoomOut(1);
+                _fitTo(map, arkers);
             }
             map.addLayer(markers);
         });
     }
 
+    
+    function _fitTo(map, layer) {
+        map.fitBounds(layer.getBounds());
+        map.zoomOut(1);
+    }
+    
     /**
      * init a "view" only map, binds to data-attribute minx, miny, maxx, maxy
      */
