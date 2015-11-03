@@ -112,4 +112,9 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
     public String getSearchSubtitle() {
         return getSearchTitle();
     }
+   
+    @Override
+    public boolean isLeftSidebar() {
+        return true;
+    }
 }
