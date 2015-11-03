@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -190,10 +191,25 @@ public class SimpleAppConfiguration implements Serializable {
         ds.setIdleConnectionTestPeriod(env.getProperty(prefix + ".idleConnectionTestPeriod", Integer.class, 300));
         ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
         ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
-        ds.setMaxPoolSize(env.getProperty(prefix + ".maxConnections", Integer.class, 10));
-        logger.debug(env.getProperty(System.getProperty("appPrefix") + ".maxConnections"));
-        ds.setMinPoolSize(env.getProperty(prefix + ".minConnections", Integer.class, 1));
+        ds.setMaxPoolSize(getChainedOptionalProperty(prefix, ".maxConnections", 10));
+        ds.setMinPoolSize(getChainedOptionalProperty(prefix ,".minConnections", 1));
         return ds;
+    }
+
+    private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
+        String appPrefix = System.getProperty("appPrefix");
+        String prefix_ = prefix;
+        if (StringUtils.isNotBlank(appPrefix)) {
+            prefix_ = appPrefix + "." + prefix;
+        }
+        
+        Integer val = env.getProperty(prefix_ + key, Integer.class);
+        if (val != null) {
+            logger.debug(prefix_ + key + ": " + val);
+            return val;
+        }
+        
+        return env.getProperty(prefix + key, Integer.class, deflt);
     }
 
     /**

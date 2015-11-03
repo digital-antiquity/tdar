@@ -123,6 +123,8 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         FeatureSource<?, ?> featureSource = dataStore.getFeatureSource(typeName);
         FeatureCollection<?, ?> collection = featureSource.getFeatures();
         FeatureIterator<?> iterator = collection.features();
+        
+//        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
         logger.debug("{}", dataStore.getNames());
 //        ReprojectingFeatureCollection reprojectingCollection = new ReprojectingFeatureCollection((FeatureCollection<SimpleFeatureType, SimpleFeature>)collection, CRS.decode("EPSG:4326"));
         
