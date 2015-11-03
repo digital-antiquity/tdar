@@ -35,8 +35,8 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
 
     private GeoRssMode geoMode = GeoRssMode.POINT;
 
-    @Action(value = "json", results = {
-            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
+//    @Action(value = "json", results = {
+//            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     public String viewJson() throws TdarActionException {
         try {
             if (getSortField() == null) {
@@ -68,7 +68,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
         String ex = "";
         if (!isReindexing()) {
             try {
-                ex = serializationService.createJsonFromResourceList(getResult(), getRssUrl(), null,getCallback());
+                ex = serializationService.createJsonFromResourceList(getResult(), getRssUrl(), filter,getCallback());
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }

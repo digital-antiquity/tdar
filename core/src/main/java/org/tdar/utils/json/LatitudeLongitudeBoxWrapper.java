@@ -19,11 +19,14 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     private GeoRssMode mode = GeoRssMode.ENVELOPE; 
     private Resource resource;
 
+    private boolean spatial;
+
     public LatitudeLongitudeBoxWrapper(Resource resource) {
         if (resource != null) {
             this.resource = resource;
             LatitudeLongitudeBox llb = resource.getFirstActiveLatitudeLongitudeBox();
             if (llb != null) {
+                setSpatial(true);
                 this.minLatitude = llb.getMinObfuscatedLatitude();
                 this.minLongitude = llb.getMinObfuscatedLongitude();
                 this.maxLatitude = llb.getMaxObfuscatedLatitude();
@@ -96,6 +99,14 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
 
     public void setCenterLatitude(double centerLatitude) {
         this.centerLatitude = centerLatitude;
+    }
+
+    public boolean isSpatial() {
+        return spatial;
+    }
+
+    public void setSpatial(boolean spatial) {
+        this.spatial = spatial;
     }
     
 }

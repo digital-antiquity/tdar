@@ -71,30 +71,32 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
     private void writeGeometry(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen) throws IOException, JsonGenerationException {
         jgen.writeFieldName("geometry");
         jgen.writeStartObject();
-        switch (value.getMode()) {
-            case ENVELOPE:
-                jgen.writeStringField("type", "Polygon");
-                jgen.writeFieldName("coordinates");
-                jgen.writeStartArray();
-                jgen.writeStartArray();
-                writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
-                writeArrayEntry(value.getMinLatitude(), value.getMaxLongitude(), jgen);
-                writeArrayEntry(value.getMaxLatitude(), value.getMaxLongitude(), jgen);
-                writeArrayEntry(value.getMaxLatitude(), value.getMinLongitude(), jgen);
-                writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
-                jgen.writeEndArray();
-                jgen.writeEndArray();
-                break;
-            case POINT:
-                // "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
-                jgen.writeStringField("type", "Point");
-                jgen.writeFieldName("coordinate");
-                jgen.writeStartArray();
-                writeArrayEntry(value.getCenterLatitude(), value.getCenterLongitude(), jgen);
-                jgen.writeEndArray();
-
-            default:
-                break;
+        if (value.isSpatial()) {
+            switch (value.getMode()) {
+                case ENVELOPE:
+                    jgen.writeStringField("type", "Polygon");
+                    jgen.writeFieldName("coordinates");
+                    jgen.writeStartArray();
+                    jgen.writeStartArray();
+                    writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
+                    writeArrayEntry(value.getMinLatitude(), value.getMaxLongitude(), jgen);
+                    writeArrayEntry(value.getMaxLatitude(), value.getMaxLongitude(), jgen);
+                    writeArrayEntry(value.getMaxLatitude(), value.getMinLongitude(), jgen);
+                    writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
+                    jgen.writeEndArray();
+                    jgen.writeEndArray();
+                    break;
+                case POINT:
+                    // "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
+                    jgen.writeStringField("type", "Point");
+                    jgen.writeFieldName("coordinate");
+                    jgen.writeStartArray();
+                    writeArrayEntry(value.getCenterLatitude(), value.getCenterLongitude(), jgen);
+                    jgen.writeEndArray();
+    
+                default:
+                    break;
+            }
         }
         jgen.writeEndObject();
     }

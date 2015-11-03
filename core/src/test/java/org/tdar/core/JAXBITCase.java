@@ -103,7 +103,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         StringWriter sw = new StringWriter();
         document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
         document.setInheritingCulturalInformation(true);
-        serializationService.convertToJson(document, sw, null);
+        serializationService.convertToJson(document, sw, null, null);
         logger.info(sw.toString());
         assertTrue(sw.toString().contains(NABATAEAN));
         Project project = genericService.find(Project.class, 3805l);
@@ -112,7 +112,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         // logger.error("{}", project.getActiveMaterialKeywords().add(new MaterialKeyword()));
         // project.getActiveOtherKeywords().add(new OtherKeyword(BEDOUIN));
         sw = new StringWriter();
-        serializationService.convertToJson(project, sw, JsonProjectLookupFilter.class);
+        serializationService.convertToJson(project, sw, JsonProjectLookupFilter.class, null);
         logger.info(sw.toString());
         assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));
