@@ -68,12 +68,12 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _elemData = $elem.data();
         // bootstrap stores a lot of data in BODY. We only want a subset
         var _bdata = $('body').data();
-        var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
+        console.log(_bdata.centerlat);
+        var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider,center: {lat: _bdata.centerlat, lng: _bdata.centerlong} };
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
 
-        //console.log(settings.leaflettileprovider);
 
-        //console.log('creating L.map:', settings);
+        console.log('creating L.map:', settings);
         var map = L.map(elem, settings).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
         //console.log('setting map obj on', $elem)
