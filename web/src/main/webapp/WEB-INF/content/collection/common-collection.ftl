@@ -113,7 +113,7 @@
             <#assign itemsPerRow = 5 />
             <#nested />
             <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
-                    orientation=resourceCollection.orientation    mapPosition="left" mapHeight=mapSize />
+                    orientation=resourceCollection.orientation    mapPosition="top" mapHeight=mapSize />
         </div>
             <@search.basicPagination "Records" />
         <#else>

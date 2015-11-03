@@ -112,11 +112,15 @@
     </#macro>
 
 	<#macro _mapDiv mapPosition mapHeight>
-		<#local span = "span9" />
-        <#if (mapPosition == 'left' || mapPosition == 'right') && ((rightSidebar!false) || (leftSidebar!false)) >
-			<#local span = "span6" />
+		<#local spans = 12 />
+		<#if (mapPosition == 'left' || mapPosition == 'right')>
+			<#local spans = 9 />
+		</#if>
+
+        <#if ((rightSidebar!false) || (leftSidebar!false)) >
+			<#local spans = spans - 3 />
 		</#if>	
-		<div class="${span} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+		<div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
         <#assign map_ = "" />
         <#if map?has_content>
             <#assign map_ = map />

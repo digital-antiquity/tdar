@@ -329,6 +329,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 					var ld = $(row[labInt]).text().trim();
 					var rd = new Array();
 					rd[0] = ld;
+					if (d != undefined) {
+					    d = d.replace(/\,/g,'');
+					}
 					rd[1] = parseInt(d);
 					data.push(rd);
 				}

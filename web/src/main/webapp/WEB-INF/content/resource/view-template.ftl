@@ -427,7 +427,7 @@
         </#list>
 
 
-    <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
+    <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
     <h2>Spatial Coverage</h2>
     <div class="title-data">
         <p>
@@ -456,6 +456,17 @@
         <input type="hidden" class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx"/>
         <input type="hidden" class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}" id="miny"/>
     </div>
+        <#--
+        <#elseif ableToViewConfidentialFiles && geoJson??>
+            <div class="row">
+            <div id='large-map' style="height:300px" class="leaflet-map span9"></div>
+        </div>
+        <#noescape>
+        <script id="leafetGeoJson">
+            [${geoJson!''}]
+        </script>
+        </#noescape>
+        -->
     </#if>
     <#if creditProxies?has_content >
     <h3>Individual &amp; Institutional Roles</h3>

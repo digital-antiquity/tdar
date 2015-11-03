@@ -148,11 +148,6 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
-        <!-- To pull Log4J e-mail throttler: https://github.com/reaktor/log4j-email-throttle -->
-        <repository>
-            <id>Laughing Panda</id>
-            <url>http://maven.laughingpanda.org/maven2</url>
-        </repository>
     </repositories>
     <pluginRepositories>
         <pluginRepository>

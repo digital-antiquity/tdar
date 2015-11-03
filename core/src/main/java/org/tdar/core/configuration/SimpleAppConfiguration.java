@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,15 +132,14 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean
-    // @Value("#{'${my.list.of.strings}'.split(',')}")
     public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
         FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
-        List<String> templateLoaderPaths = extracted();
+        List<String> templateLoaderPaths = getFreemarkerPaths();
         freemarkerConfig.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[0]));
         return freemarkerConfig;
     }
 
-    protected List<String> extracted() {
+    protected List<String> getFreemarkerPaths() {
         List<String> templateLoaderPaths = new ArrayList<>();
         templateLoaderPaths.add("classpath:/freemarker-templates");
         templateLoaderPaths.add("file:/WEB-INF/freemarker-templates");
@@ -191,9 +191,25 @@ public class SimpleAppConfiguration implements Serializable {
         ds.setIdleConnectionTestPeriod(env.getProperty(prefix + ".idleConnectionTestPeriod", Integer.class, 300));
         ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
         ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
-        ds.setMaxPoolSize(env.getProperty(prefix + ".maxConnections", Integer.class, 10));
-        ds.setMinPoolSize(env.getProperty(prefix + ".minConnections", Integer.class, 1));
+        ds.setMaxPoolSize(getChainedOptionalProperty(prefix, ".maxConnections", 10));
+        ds.setMinPoolSize(getChainedOptionalProperty(prefix ,".minConnections", 1));
         return ds;
+    }
+
+    private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
+        String appPrefix = System.getProperty("appPrefix");
+        String prefix_ = prefix;
+        if (StringUtils.isNotBlank(appPrefix)) {
+            prefix_ = appPrefix + "." + prefix;
+        }
+        
+        Integer val = env.getProperty(prefix_ + key, Integer.class);
+        if (val != null) {
+            logger.debug(prefix_ + key + ": " + val);
+            return val;
+        }
+        
+        return env.getProperty(prefix + key, Integer.class, deflt);
     }
 
     /**

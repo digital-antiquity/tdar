@@ -9,6 +9,7 @@ import javax.sql.DataSource;
 
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.support.AbstractCacheManager;
 import org.springframework.cache.support.SimpleCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -51,7 +52,7 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     }
 
     @Bean
-    public SimpleCacheManager cacheManager() {
+    public AbstractCacheManager cacheManager() {
         SimpleCacheManager cacheManager = new SimpleCacheManager();
         cacheManager.setCaches(getCachesToLoad());
         return cacheManager;
