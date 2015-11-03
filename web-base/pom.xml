@@ -113,20 +113,6 @@
             <artifactId>jsp-api</artifactId>
             <version>2.2</version>
         </dependency>
-        <!-- Log4J e-mail throttling: https://github.com/reaktor/log4j-email-throttle -->
-        <dependency>
-            <groupId>fi.reaktor.log4j</groupId>
-            <artifactId>log4j-email-throttle</artifactId>
-            <version>1.0.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-
         <dependency>
             <groupId>jtidy</groupId>
             <artifactId>jtidy</artifactId>
