@@ -69,7 +69,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         // bootstrap stores a lot of data in BODY. We only want a subset
         var _bdata = $('body').data();
 //        console.log(_bdata.centerlat);
-        var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider,center: {lat: _bdata.centerlat, lng: _bdata.centerlong} };
+        var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
+        if (_bdata.centerlat && _bdata.centerlong) {
+            _bodyData.center =  {lat: _bdata.centerlat, lng: _bdata.centerlong} 
+        };
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
 
 
@@ -131,7 +134,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 }
             });
             if (hasBounds) {
-                _fitTo(map, arkers);
+                _fitTo(map, markers);
             }
             map.addLayer(markers);
         });
