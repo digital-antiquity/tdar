@@ -172,39 +172,16 @@ public class SerializationService {
      */
     @Transactional
     public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper();
-        ObjectWriter objectWriter = mapper.writer();
-
-        if (view != null) {
-            mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
-            objectWriter = mapper.writerWithView(view);
-        }
-        
-        if (TdarConfiguration.getInstance().isPrettyPrintJson()) {
-            objectWriter = objectWriter.with(new DefaultPrettyPrinter());
-        }
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
         object = wrapObjectIfNeeded(object, callback);
         objectWriter.writeValue(writer, object);
     }
 
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper();
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         return mapper.readValue(json, cls);
-    }
-
-    private ObjectMapper initializeObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-        mapper.registerModules(new JaxbAnnotationModule());
-        Hibernate4Module hibernate4Module = new Hibernate4Module();
-        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(LatitudeLongitudeBoxWrapper.class, new LatLongGeoJsonSerializer());
-        mapper.registerModules(hibernate4Module, module);
-        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
-        return mapper;
     }
 
     /**
@@ -454,9 +431,18 @@ public class SerializationService {
 
     }
 
-    public String createJsonFromResourceList(Map<String, Object> map, String rssUrl, Class<?> view, String callback) throws IOException {
+    public String createGeoJsonFromResourceList(Map<String, Object> result, String resultKey, String rssUrl, Class<?> filter, String callback) throws IOException {
+        List<Object> rslts = (List<Object>) result.get(resultKey);
+        List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
+        for (Object obj : rslts) {
+            if (obj instanceof Resource) {
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource)obj, filter));
+            }
+        }
+        result.put(resultKey, wrappers);
         StringWriter writer = new StringWriter();
-        convertToJson(map, writer, view, callback);
+        logger.debug("filter: {}", filter);
+        convertToJson(result, writer, filter, callback);
         return writer.toString();
     }
 }

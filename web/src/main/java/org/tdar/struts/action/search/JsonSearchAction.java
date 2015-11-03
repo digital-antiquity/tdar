@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.io.ByteArrayInputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -11,7 +10,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.query.FacetGroup;
@@ -19,7 +17,6 @@ import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.json.JsonLookupFilter;
-import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
 
 @Namespace("/search")
 @Component
@@ -35,8 +32,8 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
 
     private GeoRssMode geoMode = GeoRssMode.POINT;
 
-//    @Action(value = "json", results = {
-//            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
+    @Action(value = "json", results = {
+            @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
     public String viewJson() throws TdarActionException {
         try {
             if (getSortField() == null) {
@@ -57,18 +54,10 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
     @Override
     public void jsonifyResult(Class<?> filter) {
         prepareResult();
-        List<Object> rslts = (List<Object>) getResult().get(getResultsKey());
-        List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
-        for (Object obj : rslts) {
-            if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource)obj));
-            }
-        }
-        getResult().put(getResultsKey(), wrappers);
         String ex = "";
         if (!isReindexing()) {
             try {
-                ex = serializationService.createJsonFromResourceList(getResult(), getRssUrl(), filter,getCallback());
+                ex = serializationService.createGeoJsonFromResourceList(getResult(),getResultsKey(), getRssUrl(), filter,getCallback());
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }

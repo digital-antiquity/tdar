@@ -5,11 +5,14 @@ import java.io.IOException;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.service.JacksonUtils;
 import org.tdar.core.service.UrlService;
 
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 
@@ -38,14 +41,17 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
          * //http://www.baeldung.com/jackson-custom-serialization
          * //http://geojson.org/geojson-spec.html#polygon
          */
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, value.getJsonView());
+        
         jgen.writeStartObject();
         jgen.writeStringField("type", "Feature");
         writeGeometry(value, jgen);
-        writeProperties(value, jgen);
+        writeProperties(value, jgen, objectWriter);
         jgen.writeEndObject();
     }
 
-    private void writeProperties(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen) throws IOException {
+    private void writeProperties(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen, ObjectWriter objectWriter) throws IOException {
         jgen.writeFieldName("properties");
         jgen.writeStartObject();
         jgen.writeStringField("title", value.getResource().getTitle());
@@ -64,7 +70,9 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
             }
             jgen.writeStringField("thumbnailUrl", UrlService.thumbnailUrl(t));
         }
-        jgen.writeObjectField("resource", value.getResource());
+        jgen.writeFieldName("resource");
+        objectWriter.writeValue(jgen, value.getResource());
+//        jgen.writeObjectField("resource", value.getResource());
         jgen.writeEndObject();
     }
 

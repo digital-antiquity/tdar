@@ -13,6 +13,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
@@ -40,8 +44,10 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
+import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
+
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
 
@@ -65,6 +71,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     GenericKeywordService genericKeywordService;
 
     @Test
+    @Rollback
     public void testJAXBDocumentConversion() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         String xml = serializationService.convertToXML(document);
@@ -72,6 +79,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testFileProxyConversion() throws Exception {
         FileProxies fp = new FileProxies();
         fp.getFileProxies().add(new FileProxy());
@@ -98,6 +106,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testJsonExport() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         StringWriter sw = new StringWriter();
@@ -116,6 +125,27 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         logger.info(sw.toString());
         assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));
+    }
+
+    
+    @Test
+    @Rollback
+    public void testJsonSearchExport() throws Exception {
+        Document document = generateDocumentWithFileAndUseDefaultUser();
+        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
+        document.setInheritingCulturalInformation(true);
+        Project project = genericService.find(Project.class, 3805l);
+        project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
+        Map<String, Object> map =new HashMap<>();
+        List<Resource> list = new ArrayList<>();
+        list.add(document);
+        list.add(project);
+        map.put("result", list);
+        String result = serializationService.createGeoJsonFromResourceList(map , "result", "http://www.test.com", JsonLookupFilter.class, null);
+        logger.info(result);
+        assertFalse(result.contains("\"activeMaterialKeywords\":null"));
+        assertFalse(result.contains("minLatitude"));
+        assertFalse(result.contains("maxLatitude"));
     }
 
     @Test
