@@ -3,17 +3,21 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/${themeDir}/settings.ftl" as settings>
 
+<title>Usage Information for ${resource.title}</title>
+
 <h1>Usage Information for <span>${resource.title}</span></h1>
 
+<#if graphJson?has_content>
 <h2>Usage Stats</h2>
-
-
-<div class="row">
-    <div class="span9">
-        <div id="chart1" style="width:100%; height:400px" title="Views & Downloads"></div>
+    <div class="lineGraph" id="statusChart"  data-source="#graphJson" style="height:200px" data-x="date" data-values="${categoryKeys}" >
     </div>
-</div>
 
+<#noescape>
+<script id="graphJson">
+${graphJson!'[]'}
+</script>
+</#noescape>
+</#if>
 
 <@statTable allByYear yearLabels "Year" />
 
@@ -38,18 +42,6 @@
         	<#assign total = total + stats.count />
     </#list>
 </table>
-<#if (total > 0)>
-    <#noescape>
-    <script id="usageStats" type="application/json">
-    	${jsonStats}
-</script>
-    </#noescape>
-<#else>
-	<style>
-	#chart1 {display:none;visibile:hidden}
-	</style>
-        <p><b>None</b></p>
-</#if>
 
     <#if downloadStats?has_content>
     <h2>Download Stats</h2>

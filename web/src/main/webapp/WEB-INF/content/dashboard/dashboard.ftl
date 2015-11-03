@@ -157,7 +157,7 @@
     <div>
             <h2>At a glance</h2>
 
-            <div class="pieChart" id="statusChart"  data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick">
+            <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick">
             </div>
             
             <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick">

@@ -72,14 +72,18 @@ TDAR.c3graph = (function(console, $, ctx) {
 					}
 				}
 			};
-			if (c3colors != undefined && c3colors.length > 0) {
-			    cdata.data.color = function(c,d) {
-			        return c3colors[d.index];
-			    }
-			}
+			console.log($parent.data('colorcategories') != undefined);
+		    if ($parent.data('colorcategories') != undefined) {
+    			if (c3colors != undefined && c3colors.length > 0) {
+    			    cdata.data.color = function(c,d) {
+    			        return c3colors[d.index];
+    			    }
+    			}
+		    }
 
 			
 			_initJson($parent, cdata);
+			console.log(JSON.stringify(cdata));
 			var chart = c3.generate(cdata);
 		});
 	};
@@ -232,7 +236,19 @@ TDAR.c3graph = (function(console, $, ctx) {
 			}
 		}
 		
-		if ($parent.data("columns")) {
+        if ($parent.data("legend")) {
+            if ($parent.data("legend") === 'true') {
+                cdata.legend.hide = true;
+            } else {
+                cdata.legend.hide = false;
+            }
+        }
+
+        if ($parent.data("xtype")) {
+            cdata.axis.x.type = $parent.data("xtype");
+        }
+
+        if ($parent.data("columns")) {
 			var source = JSON.parse($($parent.data("columns")).html());
 			cdata.data.columns = source;
 		}

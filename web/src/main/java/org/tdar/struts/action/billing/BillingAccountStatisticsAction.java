@@ -29,6 +29,7 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
     public void prepare() throws Exception {
         account = accountService.find(getId());
         setStatsForAccount(statisticsService.getStatsForAccount(account, this, getGranularity()));
+        setupJson();
     }
 
     public BillingAccount getAccount() {

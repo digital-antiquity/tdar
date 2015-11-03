@@ -18,6 +18,7 @@ import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Namespace("/search")
@@ -25,6 +26,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpOnlyIfUnauthenticated
+@HttpNotFoundErrorOnly()
 public class RSSSearchAction extends AbstractAdvancedSearchController {
 
     private static final long serialVersionUID = -1844450612633514072L;

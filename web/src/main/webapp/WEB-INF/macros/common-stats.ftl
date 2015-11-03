@@ -2,6 +2,19 @@
 	
 <#macro table>
 
+<#if json?has_content>
+<h2>Usage Stats</h2>
+    <div class="barChart" id="statusChart"  data-source="#graphJson" 
+    	 style="height:200px" data-x="date" data-values="Views,Downloads" data-legend="true" >
+    </div>
+
+<#noescape>
+<script id="graphJson">
+${json!'[]'}
+</script>
+</#noescape>
+</#if>
+
     <div>
     <ul class="nav nav-tabs">
         <li class="<#if granularity == 'DAY'>active</#if>"><a href="?granularity=DAY">Last Week</a></li>
@@ -23,6 +36,14 @@
 				</#if>
 			</#list>
 		</tr>
+		<tr>
+			<th colspan="4">Grand Totals</th>
+			<#list statsForAccount.totals as dataPoint>
+					<th>${dataPoint!0?c}</th>
+				<#if statsForAccount.totals[dataPoint_index] != 0>
+				</#if>
+			</#list>
+        </tr>
 		<#list statsForAccount.rowData as row> 
 		<tr>
 			<td>${row.resource.id?c}</td>
@@ -43,7 +64,7 @@
 				<#if statsForAccount.totals[dataPoint_index] != 0>
 				</#if>
 			</#list>
-	</tr>
+        </tr>
 	</table>
 	<#else>
 None Yet
