@@ -103,16 +103,10 @@ public class SerializationService {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UrlService urlService;
-
-    @Autowired
     private JaxbPersistableConverter persistableConverter;
 
     @Autowired
     private JaxbResourceCollectionRefConverter collectionRefConverter;
-
-    @Autowired
-    private ObfuscationService obfuscationService;
 
     XMLFilestoreLogger xmlFilestoreLogger;
 
@@ -177,7 +171,7 @@ public class SerializationService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
+    public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
         ObjectMapper mapper = initializeObjectMapper();
         ObjectWriter objectWriter = mapper.writer();
 
@@ -189,6 +183,7 @@ public class SerializationService {
         if (TdarConfiguration.getInstance().isPrettyPrintJson()) {
             objectWriter = objectWriter.with(new DefaultPrettyPrinter());
         }
+        object = wrapObjectIfNeeded(object, callback);
         objectWriter.writeValue(writer, object);
     }
 
@@ -222,7 +217,7 @@ public class SerializationService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, null);
+        convertToJson(object, writer, null, null);
         return writer.toString();
     }
 
@@ -265,7 +260,7 @@ public class SerializationService {
     @Transactional
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, view);
+        convertToJson(object, writer, view, null);
         return writer.toString();
     }
 
@@ -338,7 +333,7 @@ public class SerializationService {
      * @param log
      * @throws IOException
      */
-    public void generateFOAF(Creator creator, RelatedInfoLog log) throws IOException {
+    public void generateFOAF(Creator<?> creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
         com.hp.hpl.jena.rdf.model.Resource rdf = null;
@@ -459,9 +454,9 @@ public class SerializationService {
 
     }
 
-    public String createJsonFromResourceList(Map<String, Object> map, String rssUrl, Class<?> view) throws IOException {
+    public String createJsonFromResourceList(Map<String, Object> map, String rssUrl, Class<?> view, String callback) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(map, writer, view);
+        convertToJson(map, writer, view, callback);
         return writer.toString();
     }
 }

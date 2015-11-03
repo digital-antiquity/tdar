@@ -68,7 +68,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
         String ex = "";
         if (!isReindexing()) {
             try {
-                ex = serializationService.createJsonFromResourceList(getResult(), getRssUrl(), null);
+                ex = serializationService.createJsonFromResourceList(getResult(), getRssUrl(), null,getCallback());
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }
