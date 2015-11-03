@@ -131,15 +131,14 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean
-    // @Value("#{'${my.list.of.strings}'.split(',')}")
     public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
         FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
-        List<String> templateLoaderPaths = extracted();
+        List<String> templateLoaderPaths = getFreemarkerPaths();
         freemarkerConfig.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[0]));
         return freemarkerConfig;
     }
 
-    protected List<String> extracted() {
+    protected List<String> getFreemarkerPaths() {
         List<String> templateLoaderPaths = new ArrayList<>();
         templateLoaderPaths.add("classpath:/freemarker-templates");
         templateLoaderPaths.add("file:/WEB-INF/freemarker-templates");
@@ -192,6 +191,7 @@ public class SimpleAppConfiguration implements Serializable {
         ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
         ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
         ds.setMaxPoolSize(env.getProperty(prefix + ".maxConnections", Integer.class, 10));
+        logger.debug(env.getProperty(System.getProperty("appPrefix") + ".maxConnections"));
         ds.setMinPoolSize(env.getProperty(prefix + ".minConnections", Integer.class, 1));
         return ds;
     }

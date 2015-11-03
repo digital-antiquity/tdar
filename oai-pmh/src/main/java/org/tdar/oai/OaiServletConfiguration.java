@@ -19,6 +19,12 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
 	public OaiServletConfiguration() {
         super("Initializing OAI Servlet");
     }
+	
+	@Override
+    public String getAppPropertyPrefix() {
+        return "oaiPmh";
+    }
+
 
     @Override
 	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {

@@ -52,6 +52,10 @@ public abstract class AbstractServletConfiguration {
             setFailureMessage(t.getMessage() + " (see initial exception for details)");
             logger.error("\r\n\r\n" + BAR + "\r\n" + t.getMessage() + "\r\n" + BAR + "\r\n", t);
         }
+        
+        if (getAppPropertyPrefix() != null) {
+            System.setProperty("appPrefix", getAppPropertyPrefix());
+        }
 
     }
 
@@ -79,5 +83,9 @@ public abstract class AbstractServletConfiguration {
     protected void setupOpenSessionInViewFilter(ServletContext container) {
         Dynamic openSessionInView = container.addFilter("osiv-filter", OpenSessionInViewFilter.class);
         openSessionInView.addMappingForUrlPatterns(EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD), false, ALL_PATHS);
+    }
+
+    public String getAppPropertyPrefix() {
+        return null;
     }
 }
