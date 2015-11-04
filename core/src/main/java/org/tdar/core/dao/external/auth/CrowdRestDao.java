@@ -13,7 +13,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.ConfigurationAssistant;
@@ -84,6 +83,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             ClientProperties clientProperties = ClientPropertiesImpl.newInstanceFromProperties(crowdProperties);
             RestCrowdClientFactory factory = new RestCrowdClientFactory();
             securityServerClient = factory.newInstance(clientProperties);
+            setPasswordResetURL(crowdProperties.getProperty("crowd.passwordreseturl","http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action"));
             httpAuthenticator = new CrowdHttpAuthenticatorImpl(securityServerClient, clientProperties,
                     CrowdHttpTokenHelperImpl.getInstance(CrowdHttpValidationFactorExtractorImpl.getInstance()));
             logger.debug("maxHttpConnections: {} timeout: {}", clientProperties.getHttpMaxConnections(), clientProperties.getHttpTimeout());
@@ -388,8 +388,6 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         return passwordResetURL;
     }
 
-    @SuppressWarnings("el-syntax")
-    @Value("${crowd.passwordreseturl:http://auth.tdar.org/crowd/console/forgottenlogindetails!default.action}")
     public void setPasswordResetURL(String url) {
         this.passwordResetURL = url;
     }
