@@ -693,7 +693,7 @@ TDAR.datatable = function() {
                 "sName" : "id_row_tdar",
                 "sTitle" : '<i class="icon-eye-open  icon-white"></i>',
                 "fnRender" : function(obj) {
-                    return '<a href="' + TDAR.uri() + namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] +
+                    return '<a href="' + TDAR.uri( namespace + '/row/' + resourceId + '/' + dataTableId + '/' + obj.aData[0] ) +
                             '" title="View row as page..."><i class="icon-list-alt"></i></a></li>';
                 }
             });
@@ -787,7 +787,7 @@ TDAR.datatable = function() {
 
         var dataTableWidget = null;
 
-        var _loadThenInit = function(dataTableId){
+        var _loadThenInit = function(dataTableId,namespace){
             //get the column schema for the default dataTable
             var columnsPromise = _loadDatasetTableMetadata('/datatable/browse', dataTableId);
             columnsPromise.done(function(data) {
@@ -799,7 +799,7 @@ TDAR.datatable = function() {
                     dataTableWidget.fnDestroy();
                     $dataTable.empty();
                 }
-                dataTableWidget = _initalizeResourceDatasetDataTable(columns, true, config.resourceId, 'datatable', dataTableId);
+                dataTableWidget = _initalizeResourceDatasetDataTable(columns, true, config.resourceId, namespace, dataTableId);
             });
 
         }
@@ -807,7 +807,7 @@ TDAR.datatable = function() {
         //if dataset has many tables, load & init the table every time user changes the dropdown
         if($select.length) {
             $select.change(function() {
-                _loadThenInit($select.val());
+                _loadThenInit($select.val(),$select.data('namespace'));
             }).change();
         }
         // if only one dataset,  just load+init the table once
