@@ -187,8 +187,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 				Integer count = ((Number) objs[2]).intValue();
 				BigInteger bigint = (BigInteger) objs[3];
 				ResourceType resourceType = ResourceType.valueOf((String) objs[1]);
-                cache.add(new HomepageGeographicCache(code, resourceType, MessageHelper.getInstance().getText(resourceType.getLocaleKey()),count,
-						bigint.longValue()));
+				String label = MessageHelper.getInstance().getText(resourceType.getPluralLocaleKey());
+                cache.add(new HomepageGeographicCache(code, resourceType, label ,count, bigint.longValue()));
 				if (!totals.containsKey(code)) {
 					totals.put(code, 0);
 				}
