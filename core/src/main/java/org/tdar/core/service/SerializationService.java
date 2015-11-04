@@ -103,16 +103,10 @@ public class SerializationService {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private UrlService urlService;
-
-    @Autowired
     private JaxbPersistableConverter persistableConverter;
 
     @Autowired
     private JaxbResourceCollectionRefConverter collectionRefConverter;
-
-    @Autowired
-    private ObfuscationService obfuscationService;
 
     XMLFilestoreLogger xmlFilestoreLogger;
 
@@ -177,39 +171,17 @@ public class SerializationService {
      * @throws IOException
      */
     @Transactional
-    public void convertToJson(Object object, Writer writer, Class<?> view) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper();
-        ObjectWriter objectWriter = mapper.writer();
-
-        if (view != null) {
-            mapper.disable(MapperFeature.DEFAULT_VIEW_INCLUSION);
-            objectWriter = mapper.writerWithView(view);
-        }
-        
-        if (TdarConfiguration.getInstance().isPrettyPrintJson()) {
-            objectWriter = objectWriter.with(new DefaultPrettyPrinter());
-        }
+    public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
+        object = wrapObjectIfNeeded(object, callback);
         objectWriter.writeValue(writer, object);
     }
 
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
-        ObjectMapper mapper = initializeObjectMapper();
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         return mapper.readValue(json, cls);
-    }
-
-    private ObjectMapper initializeObjectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
-
-        mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
-        mapper.registerModules(new JaxbAnnotationModule());
-        Hibernate4Module hibernate4Module = new Hibernate4Module();
-        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
-        SimpleModule module = new SimpleModule();
-        module.addSerializer(LatitudeLongitudeBoxWrapper.class, new LatLongGeoJsonSerializer());
-        mapper.registerModules(hibernate4Module, module);
-        mapper.enable(MapperFeature.USE_WRAPPER_NAME_AS_PROPERTY_NAME);
-        return mapper;
     }
 
     /**
@@ -222,7 +194,7 @@ public class SerializationService {
     @Transactional
     public String convertToJson(Object object) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, null);
+        convertToJson(object, writer, null, null);
         return writer.toString();
     }
 
@@ -265,7 +237,7 @@ public class SerializationService {
     @Transactional
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
-        convertToJson(object, writer, view);
+        convertToJson(object, writer, view, null);
         return writer.toString();
     }
 
@@ -338,7 +310,7 @@ public class SerializationService {
      * @param log
      * @throws IOException
      */
-    public void generateFOAF(Creator creator, RelatedInfoLog log) throws IOException {
+    public void generateFOAF(Creator<?> creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
         com.hp.hpl.jena.rdf.model.Resource rdf = null;
@@ -459,9 +431,18 @@ public class SerializationService {
 
     }
 
-    public String createJsonFromResourceList(Map<String, Object> map, String rssUrl, Class<?> view) throws IOException {
+    public String createGeoJsonFromResourceList(Map<String, Object> result, String resultKey, String rssUrl, Class<?> filter, String callback) throws IOException {
+        List<Object> rslts = (List<Object>) result.get(resultKey);
+        List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
+        for (Object obj : rslts) {
+            if (obj instanceof Resource) {
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource)obj, filter));
+            }
+        }
+        result.put(resultKey, wrappers);
         StringWriter writer = new StringWriter();
-        convertToJson(map, writer, view);
+        logger.debug("filter: {}", filter);
+        convertToJson(result, writer, filter, callback);
         return writer.toString();
     }
 }

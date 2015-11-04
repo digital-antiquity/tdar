@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.tdar.core.configuration.SimpleAppConfiguration;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
@@ -33,6 +32,11 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 
 	public TdarServletConfiguration() {
 		super("Initializing tDAR Servlet");
+	}
+
+	@Override
+	public String getAppPropertyPrefix() {
+	    return "tdar";
 	}
 	
 	@Override

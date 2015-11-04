@@ -41,21 +41,7 @@
             <#local itemTag_="li"/>
         <div class="resource-list row">
             <#if mapPosition=="top" || mapPosition == "right">
-                <div class="span9 leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
-        <#assign map_ = "" />
-        <#if map?has_content>
-            <#assign map_ = map />
-        </#if>
-        <#if !map_?has_content && (g[0].latitudeLongitudeBoxes[0])?has_content>
-            <#assign map_ = g[0].latitudeLongitudeBoxes[0] />
-        </#if>
-        <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
-        data-maxy="${map_.maxObfuscatedLatitude}" 
-        data-minx="${map_.minObfuscatedLongitude}"
-        data-maxx="${map_.maxObfuscatedLongitude}"
-        data-miny="${map_.minObfuscatedLatitude}"
-        </#if>
-                 ></div>
+                <@_mapDiv mapPosition mapHeight />
             </#if>
         <div class="<#if mapPosition=='left' || mapPosition=="right">span3<#else>span9</#if>">
         </#if>
@@ -118,14 +104,39 @@
         <#if orientation == "MAP">
         </div>
             <#if mapPosition=="left" || mapPosition == "bottom">
-            <div class="span9 google-map" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if> >
-
-            </div>
+				<@_mapDiv mapPosition mapHeight />
             </#if>
         </div>
         </#if>
 
     </#macro>
+
+	<#macro _mapDiv mapPosition mapHeight>
+		<#local spans = 12 />
+		<#if (mapPosition == 'left' || mapPosition == 'right')>
+			<#local spans = 9 />
+		</#if>
+
+        <#if ((rightSidebar!false) || (leftSidebar!false)) >
+			<#local spans = spans - 3 />
+		</#if>	
+		<div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+        <#assign map_ = "" />
+        <#if map?has_content>
+            <#assign map_ = map />
+        </#if>
+        <#if !map_?has_content && (g[0].latitudeLongitudeBoxes[0])?has_content>
+            <#assign map_ = g[0].latitudeLongitudeBoxes[0] />
+        </#if>
+        <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
+        data-maxy="${map_.maxObfuscatedLatitude}" 
+        data-minx="${map_.minObfuscatedLongitude}"
+        data-maxx="${map_.maxObfuscatedLongitude}"
+        data-miny="${map_.minObfuscatedLatitude}"
+        </#if> >
+
+		</div>
+	</#macro>
 
 <#-- divider between the sections of results -->
     <#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>

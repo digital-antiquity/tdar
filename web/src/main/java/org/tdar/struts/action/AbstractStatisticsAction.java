@@ -1,13 +1,18 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
+
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.stats.DateGranularity;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -26,8 +31,24 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
     private DateGranularity granularity = DateGranularity.YEAR;
 
     @Autowired
-    protected StatisticService statisticsService;
+    protected SerializationService serializationService;
 
+    @Autowired
+    protected StatisticService statisticsService;
+    
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private String json;
+
+    
+    protected void setupJson() {
+        try {
+            setJson(serializationService.convertToJson(getStatsForAccount().getObjectForJson()));
+        } catch (IOException e) {
+            logger.error("error setting json", e);
+        }
+    }
+    
     @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../stats.ftl") })
     @Override
     public String execute() throws Exception {
@@ -57,6 +78,15 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
 
     public void setGranularity(DateGranularity granularity) {
         this.granularity = granularity;
+    }
+
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 
 }

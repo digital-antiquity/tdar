@@ -6,6 +6,9 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.RssService.GeoRssMode;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+
+@JsonAutoDetect
 public class LatitudeLongitudeBoxWrapper implements Serializable {
 
     private static final long serialVersionUID = 9175448938321937035L;
@@ -19,11 +22,16 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     private GeoRssMode mode = GeoRssMode.ENVELOPE; 
     private Resource resource;
 
-    public LatitudeLongitudeBoxWrapper(Resource resource) {
+    private Class<?> jsonView = null;
+    private boolean spatial;
+
+    public LatitudeLongitudeBoxWrapper(Resource resource, Class<?> filter) {
+        this.jsonView = filter;
         if (resource != null) {
             this.resource = resource;
             LatitudeLongitudeBox llb = resource.getFirstActiveLatitudeLongitudeBox();
             if (llb != null) {
+                setSpatial(true);
                 this.minLatitude = llb.getMinObfuscatedLatitude();
                 this.minLongitude = llb.getMinObfuscatedLongitude();
                 this.maxLatitude = llb.getMaxObfuscatedLatitude();
@@ -96,6 +104,22 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
 
     public void setCenterLatitude(double centerLatitude) {
         this.centerLatitude = centerLatitude;
+    }
+
+    public boolean isSpatial() {
+        return spatial;
+    }
+
+    public void setSpatial(boolean spatial) {
+        this.spatial = spatial;
+    }
+
+    public Class<?> getJsonView() {
+        return jsonView;
+    }
+
+    public void setJsonView(Class<?> jsonView) {
+        this.jsonView = jsonView;
     }
     
 }

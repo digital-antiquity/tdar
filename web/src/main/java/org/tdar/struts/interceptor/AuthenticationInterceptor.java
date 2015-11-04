@@ -22,6 +22,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
@@ -147,6 +148,9 @@ public class AuthenticationInterceptor implements SessionDataAware, Interceptor 
 
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpForbiddenErrorResponseOnly.class)) {
             return "forbidden-status-only";
+        }
+        if (ReflectionService.methodOrActionContainsAnnotation(invocation, HttpNotFoundErrorOnly.class)) {
+            return "not-found-status-only";
         }
 
         setReturnUrl(invocation);

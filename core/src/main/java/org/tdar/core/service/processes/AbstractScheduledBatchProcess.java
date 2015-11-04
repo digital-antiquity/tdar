@@ -81,7 +81,12 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
 
     @Override
     public synchronized void execute() {
-        processBatch(getNextBatch());
+        List<Long> batch = getNextBatch();
+        while (CollectionUtils.isNotEmpty(batch)) {
+            processBatch(batch);
+            getBatchIdQueue().removeAll(batch);
+            batch = getNextBatch();
+        }
     }
 
     public synchronized List<Long> getNextBatch() {

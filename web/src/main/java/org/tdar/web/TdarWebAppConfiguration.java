@@ -57,8 +57,7 @@ public class TdarWebAppConfiguration extends TdarAppConfiguration implements Sch
 	public ProcessManager processManager() {
 		return new AutowiredProcessManager();
 	}
-
-
+	
 	@Override
 	public Executor getAsyncExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();

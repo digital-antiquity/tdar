@@ -1,7 +1,5 @@
 package org.tdar.core.service;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -50,6 +48,7 @@ import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.upgradeTasks.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.processes.weekly.WeeklyResourcesAdded;
 
 /**
  * $Id$
@@ -128,8 +127,33 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         user.setDateUpdated(new Date());
         genericService.saveOrUpdate(user);
 
-        dailyEmailProcess.execute();
-
+        scheduledProcessService.queue(DailyEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        assertTrue(dailyEmailProcess.isCompleted());
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+//        assertTrue(dailyEmailProcess.isCompleted());
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        logger.debug("//");
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+//        assertTrue(dailyEmailProcess.isCompleted());
+    }
+    
+    @Test
+    @Rollback
+    public void testResourceReport() {
+        Dataset dataset = createAndSaveNewDataset();
+        searchIndexService.index(dataset);
+        searchIndexService.flushToIndexes();
+        scheduledProcessService.queue(WeeklyResourcesAdded.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        assertTrue(dailyEmailProcess.isCompleted());
+        scheduledProcessService.queue(SendEmailProcess.class);
+        scheduledProcessService.runNextScheduledProcessesInQueue();
+        
     }
     
     @Autowired

@@ -92,13 +92,6 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
         }
     }
 
-    private Map<String, Object> initDataModel() {
-        Map<String, Object> dataModel = new HashMap<>();
-        dataModel.put("siteAcronym", config.getSiteAcronym());
-        dataModel.put("siteUrl", config.getBaseUrl());
-        dataModel.put("date", new Date());
-        return dataModel;
-    }
 
     private void sendQuarrantineEmail() {
         List<Email> emails = emailService.findEmailsWithStatus(Status.IN_REVIEW);

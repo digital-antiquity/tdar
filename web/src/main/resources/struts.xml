@@ -190,6 +190,9 @@
             <result name="forbidden-status-only" type="httpheader">
                 <param name="status">403</param>
             </result>
+            <result name="not-found-status-only" type="httpheader">
+                <param name="status">404</param>
+            </result>
             <result name="invalid.token" type="redirect">
                 <param name="location">/invalid-token</param>
             </result>

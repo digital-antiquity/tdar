@@ -20,6 +20,10 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
         super("Initializing dataOne Servlet");
     }
 
+    public String getAppPropertyPrefix() {
+        return "dataOne";
+    }
+    
     @Override
     public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
         return SimpleAppConfiguration.class;

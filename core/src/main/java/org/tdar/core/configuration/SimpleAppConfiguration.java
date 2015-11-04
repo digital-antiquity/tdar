@@ -11,12 +11,12 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -54,12 +54,16 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
         })
 @PropertySource(value = SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
 @PropertySource(value = "classpath:" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
-@PropertySource(value = "file://${TDAR_CONFIG_PATH}/hibernate.properties", ignoreResourceNotFound = true)
+@PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.HIBERNATE_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = "classpath:" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
+@PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
 
 @Configuration
 public class SimpleAppConfiguration implements Serializable {
 
     protected static final String HIBERNATE_PROPERTIES = "hibernate.properties";
+    protected static final String TDAR_PROPERTIES = "tdar.properties";
     private static final long serialVersionUID = 2190713147269025044L;
     public transient Logger logger = LoggerFactory.getLogger(getClass());
     public static transient Logger staticLogger = LoggerFactory.getLogger(SimpleAppConfiguration.class);
@@ -114,7 +118,8 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean(name = "mailSender")
-    public JavaMailSender getJavaMailSender(@Value("${mail.smtp.host:localhost}") String hostname) {
+    public JavaMailSender getJavaMailSender() {
+        String hostname = env.getProperty("mail.smtp.host","localhost");
         JavaMailSenderImpl sender = new JavaMailSenderImpl();
         sender.setHost(hostname);
         return sender;
@@ -127,15 +132,14 @@ public class SimpleAppConfiguration implements Serializable {
     }
 
     @Bean
-    // @Value("#{'${my.list.of.strings}'.split(',')}")
     public FreeMarkerConfigurationFactoryBean getFreemarkerMailConfiguration() {
         FreeMarkerConfigurationFactoryBean freemarkerConfig = new FreeMarkerConfigurationFactoryBean();
-        List<String> templateLoaderPaths = extracted();
+        List<String> templateLoaderPaths = getFreemarkerPaths();
         freemarkerConfig.setTemplateLoaderPaths(templateLoaderPaths.toArray(new String[0]));
         return freemarkerConfig;
     }
 
-    protected List<String> extracted() {
+    protected List<String> getFreemarkerPaths() {
         List<String> templateLoaderPaths = new ArrayList<>();
         templateLoaderPaths.add("classpath:/freemarker-templates");
         templateLoaderPaths.add("file:/WEB-INF/freemarker-templates");
@@ -187,9 +191,25 @@ public class SimpleAppConfiguration implements Serializable {
         ds.setIdleConnectionTestPeriod(env.getProperty(prefix + ".idleConnectionTestPeriod", Integer.class, 300));
         ds.setMaxStatements(env.getProperty(prefix + ".maxStatements", Integer.class, 100));
         ds.setTestConnectionOnCheckin(env.getProperty(prefix + ".testConnectionOnCheckin", Boolean.class, true));
-        ds.setMaxPoolSize(env.getProperty(prefix + ".maxConnections", Integer.class, 10));
-        ds.setMinPoolSize(env.getProperty(prefix + ".minConnections", Integer.class, 1));
+        ds.setMaxPoolSize(getChainedOptionalProperty(prefix, ".maxConnections", 10));
+        ds.setMinPoolSize(getChainedOptionalProperty(prefix ,".minConnections", 1));
         return ds;
+    }
+
+    private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
+        String appPrefix = System.getProperty("appPrefix");
+        String prefix_ = prefix;
+        if (StringUtils.isNotBlank(appPrefix)) {
+            prefix_ = appPrefix + "." + prefix;
+        }
+        
+        Integer val = env.getProperty(prefix_ + key, Integer.class);
+        if (val != null) {
+            logger.debug(prefix_ + key + ": " + val);
+            return val;
+        }
+        
+        return env.getProperty(prefix + key, Integer.class, deflt);
     }
 
     /**
@@ -203,6 +223,8 @@ public class SimpleAppConfiguration implements Serializable {
         String val = env.getProperty(prefix + val_);
         if (val == null) {
             val = env.getRequiredProperty("javax" + val_);
+        } else {
+            logger.debug("{} --> {}" , prefix + val_, val );
         }
         return val;
     }

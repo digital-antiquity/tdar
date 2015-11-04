@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SerializationService;
@@ -47,7 +46,6 @@ import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
-import com.hp.hpl.jena.sparql.sse.builders.BuilderExpr.Build;
 import com.sun.media.rtsp.protocol.StatusCode;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
@@ -131,7 +129,9 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD})
     public void testConfidential() throws Exception {
         JaxbResultContainer login = setupValidLogin();
-
+        String filesUed = getFilesUsed(true);
+        logger.debug("used: {}", filesUed);
+        
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
@@ -145,6 +145,21 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+
+        String filesUed_ = getFilesUsed(false);
+        logger.debug("used: {} vs. {}", filesUed, filesUed_);
+}
+
+    private String getFilesUsed(boolean login) {
+        if (login) {
+            login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+        }
+        gotoPage("/billing/1");
+        String code = getPageCode();
+        String str = "class=\"filesused\">";
+        String filesUed = code.substring(code.indexOf(str) + str.length());
+        filesUed = filesUed.substring(0, filesUed.indexOf("</"));
+        return filesUed;
     }
 
     @Test

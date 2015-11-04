@@ -41,6 +41,17 @@
  - JDBC properties that start with postgis or tdargisdata should be changed to prefix "tdargis."
 		- tdargisdata.connection.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
 		- postgis.driver.class=org.postgis.DriverWrapper
-		+ tdargis.connection.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
-		+ tdargis.driver.class=org.postgis.DriverWrapper
+		+ tdargisdata.persistence.jdbc.url=jdbc:postgresql_postGIS://${test.db.host}/tdargis
+		+ tdargisdata.persistence.jdbc.driver=org.postgis.DriverWrapper
+		+ tdardata.persistence.jdbc.url=...
  - remove the c3p0.xml reference in spring-local-settings.xml 
+ - other work:
+	sudo add-apt-repository ppa:webupd8team/java
+	sudo apt-get update && sudo apt-get install oracle-java8-installer
+	sudo apt-get install oracle-java8-set-default
+	cd /usr/lib/jvm/java-8-oracle/ ; sudo sh /shared/java/install-extensions.sh 
+	
+	sudo apt-get install npm git npm-legacy
+	sudo npm install -g bower
+	sudo npm install -g karma karma-cli
+- update reference to the theme-dir or comment it out

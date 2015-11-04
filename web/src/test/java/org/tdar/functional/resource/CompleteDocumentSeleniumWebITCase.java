@@ -193,17 +193,18 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
     @Test
     public void testDupCreator() {
         gotoPage("/document/add");
-        setFieldByName("document.title", "My Sample Document");
-        setFieldByName("document.documentType", "OTHER");
-        setFieldByName("document.description", "A resource description");
-        setFieldByName("document.date", "1923");
-        setFieldByName("projectId", "-1");
+        find(By.name("document.title")).val("My Sample Document");
+        find(By.name("document.documentType")).val("OTHER");
+        find(By.name("document.description")).val("A resource description");
+        find(By.name("document.date")).val("1923");
+        find(By.name("projectId")).val("-1");
         // add a person to satisfy the confidential file requirement
-        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[0]",
+                ResourceCreatorRole.AUTHOR);
         find("#authorshipRow_0_ .institutionButton").click();
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
 
-        find("#authorshipSection .addanother").click();
+        waitFor("#authorshipSection .addanother").click();
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
         find("#authorshipRow_1_ .personButton").click();
         addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
@@ -219,11 +220,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         submitForm();
         String text = getText();
         logger.debug(text);
-        assertTrue(text.contains(JONES));
-        assertTrue(text.contains(INDIANA));
-        assertTrue(text.contains("UC"));
-        assertTrue(text.contains(LOBLAW));
-        assertTrue(StringUtils.containsIgnoreCase(text, UNIVERSITY_OF_TEST));
+        assertTrue("page text should contain: " + JONES, text.contains(JONES));
+        assertTrue("page text should contain: " + INDIANA, text.contains(INDIANA));
+        assertTrue("page text should contain: " + "UC", text.contains("UC"));
+        assertTrue("page text should contain: " + LOBLAW, text.contains(LOBLAW));
+        assertTrue("page text should contain: " + UNIVERSITY_OF_TEST, StringUtils.containsIgnoreCase(text, UNIVERSITY_OF_TEST));
     }
 
     @Test

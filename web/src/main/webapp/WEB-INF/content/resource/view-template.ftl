@@ -90,21 +90,21 @@
 <p class="visible-phone"><a href="#sidebar-right">&raquo; Downloads &amp; Basic Metadata</a></p>
 <hr class="dbl">
     <#list viewableResourceCollections![]>
-	    <h3>This Resource is Part of the Following Collections</h3>
-		<p>
-	    <ul class="inline">
-		<#items as collection>
-            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
-            <#sep>&nbsp;&nbsp;&bull;</#sep></li>
-        </#items>
-		</ul>
-		</p>
-		<hr/>
-        </#list>
+    <h3>This Resource is Part of the Following Collections</h3>
+    <p>
+    <ul class="inline">
+        <#items as collection>
+    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+        <#sep>&nbsp;&nbsp;&bull;</#sep></li>
+</#items>
+</ul>
+</p>
+<hr>
+</#list>
+
 <h2>Summary</h2>
     <@common.description resource.description />
-
-<hr/>
+<hr>
 <@view.resourceCitationSection resource />
 
     <#if authenticatedUser?has_content>
@@ -427,7 +427,7 @@
         </#list>
 
 
-    <#if (resource.activeLatitudeLongitudeBoxes?has_content )>
+    <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
     <h2>Spatial Coverage</h2>
     <div class="title-data">
         <p>
@@ -456,6 +456,17 @@
         <input type="hidden" class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx"/>
         <input type="hidden" class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}" id="miny"/>
     </div>
+        <#--
+        <#elseif ableToViewConfidentialFiles && geoJson??>
+            <div class="row">
+            <div id='large-map' style="height:300px" class="leaflet-map span9"></div>
+        </div>
+        <#noescape>
+        <script id="leafetGeoJson">
+            [${geoJson!''}]
+        </script>
+        </#noescape>
+        -->
     </#if>
     <#if creditProxies?has_content >
     <h3>Individual &amp; Institutional Roles</h3>
@@ -505,9 +516,6 @@
         </#list>
 
     <@view.unapiLink resource />
-    <#if viewableResourceCollections?has_content>
-    <hr/>
-    </#if>
 
 <#--emit additional dataset metadata as a list of key/value pairs  -->
     <#if mappedData?has_content >

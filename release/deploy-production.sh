@@ -48,7 +48,7 @@ echo " hg update $PARAM "
 cd /home/tdar/tdar.src/
 hg pull
 hg update $PARAM
-perl src/main/release/release.pl
+perl release/release.pl
 if [ -e /usr/local/lib/nagios3/amazon-sns-notify.rb ]
 then
         /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
@@ -62,7 +62,7 @@ mvn clean install -DskipTests -Djetty.skip=true
 cd web
 #sudo rm /tmp/.wro4j/buildContext.properties
 #sudo rmdir /tmp/.wro4j/
-mvn clean compile war:war -Palpha,minify-web-resources,liquibase
+mvn clean compile war:war -Pminify-web-resources,liquibase
 cd ../dataone/
 mvn clean compile war:war 
 cd ../oai-pmh/
@@ -83,8 +83,8 @@ if [ $? -ne 0 ]
       cd ../oai-pmh/
       sudo cp target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
       sudo rm -Rrf ~tdar/app/oai-pmh
-      cd ../dataone/
-      sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
-      sudo rm -Rrf ~tdar/app/dataone
+      # cd ../dataone/
+      # sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
+      # sudo rm -Rrf ~tdar/app/dataone
       sudo service tomcat7 restart
 fi

@@ -87,4 +87,8 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
         this.query = query;
     }
 
+    @Override
+    public boolean isLeftSidebar() {
+        return true;
+    }
 }

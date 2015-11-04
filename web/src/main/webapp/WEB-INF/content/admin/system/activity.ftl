@@ -16,10 +16,17 @@
 </head>
 <body>
     <@admin.header/>
+
+
+<a href="#users">users</a> 
+<a href="#activity">activity</a>
+<a href="#process">process</a>
+<a href="#stats">stats</a>
+
 <h1>Recent System Activity</h1>
     <@s.actionerror />
 
-<h3>Active Users</h3>
+<h3 id="users">Active Users</h3>
 <ul>
     <#list activePeople as user>
         <li>
@@ -35,7 +42,7 @@
 <h3>User Agents</h3>
     <@list.hashtable data=counters keyLabel="Browser" valueLabel="Count" />
 
-<h3>Recent Activity</h3>
+<h3 id="activity">Recent Activity</h3>
 <table class="tableFormat table" id="tblRecentActivity">
     <thead>
     <tr>
@@ -70,7 +77,7 @@
         </#list>
     </tbody>
 </table>
-<h3>Scheduled Processes Currently in the Queue</h3>
+<h3 id="process">Scheduled Processes Currently in the Queue</h3>
     <#if scheduledProcessesEnabled??>
     <ol>
         <#list scheduledProcessQueue as process>
@@ -92,7 +99,7 @@
     Scheduled Processes are not enabled on this machine
     </#if>
 
-<h3>System Statistics</h3>
+<h3 id="stats">System Statistics</h3>
 <table class="tableFormat table" id="tblQueryStats">
     <#list moreInfo?keys as key>
         <tr>

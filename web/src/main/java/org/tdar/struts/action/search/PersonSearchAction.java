@@ -87,4 +87,8 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
         this.query = query;
     }
 
+    @Override
+    public boolean isLeftSidebar() {
+        return true;
+    }
 }

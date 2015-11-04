@@ -409,4 +409,8 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 	    return entityService.findSimilarPeople(getAuthenticatedUser());
 	}
 
+	@Override
+	public boolean isRightSidebar() {
+	    return true;
+	}
 }

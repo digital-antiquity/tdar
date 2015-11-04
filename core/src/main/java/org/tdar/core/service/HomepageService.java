@@ -41,10 +41,13 @@ public class HomepageService {
     @Autowired
     private GenericService genericService;
     
+    @Transactional(readOnly=true)
     public Set<Resource> featuredItems(TdarUser authenticatedUser) {
         Set<Resource> featuredResources = new HashSet<>(); 
         try {
             for (Resource key : informationResourceService.getFeaturedItems()) {
+                //perhaps overkill
+                genericService.markReadOnly(key);
                 if (key instanceof InformationResource) {
                     authorizationService.applyTransientViewableFlag(key, null);
                 }
@@ -59,7 +62,7 @@ public class HomepageService {
         return featuredResources;
     }
 
-    
+    @Transactional(readOnly=true)
     public List<HomepageResourceCountCache> resourceStats() {
         List<HomepageResourceCountCache> homepageResourceCountCache = genericService.findAllWithL2Cache(HomepageResourceCountCache.class);
         Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
@@ -72,6 +75,7 @@ public class HomepageService {
     }
 
 
+    @Transactional(readOnly=true)
     public String getMapJson() {
         List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
         try {

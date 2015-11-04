@@ -8,12 +8,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.event.spi.SaveOrUpdateEvent;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.MockMailSender;
@@ -76,6 +78,11 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         // create new resources (1) without file (1) with file (2) with file, ancient date, and already has DOI
         InformationResource generateInformationResourceWithUser = generateDocumentWithUser();
         InformationResource file = generateDocumentWithFileAndUseDefaultUser();
+        Project project = new Project();
+        project.setTitle("test");
+        project.setDescription("abcd");
+        project.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(project);
         InformationResource file2 = generateDocumentWithFileAndUseDefaultUser();
         file2.setDateUpdated(new Date(10000)); // forever ago -- should not register
         file2.setExternalId("1234");
@@ -88,7 +95,7 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("created:" + created_.size());
         logger.debug("updated:" + updated_.size());
         logger.debug("deleted:" + deleted_.size());
-        assertEquals(1, created_.size());
+        assertEquals(2, created_.size());
         assertTrue(updated_.size() > 0);
         assertTrue(deleted_.size() > 0);
         sendEmailProcess.execute();

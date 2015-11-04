@@ -72,14 +72,18 @@ TDAR.c3graph = (function(console, $, ctx) {
 					}
 				}
 			};
-			if (c3colors != undefined && c3colors.length > 0) {
-			    cdata.data.color = function(c,d) {
-			        return c3colors[d.index];
-			    }
-			}
+			console.log($parent.data('colorcategories') != undefined);
+		    if ($parent.data('colorcategories') != undefined) {
+    			if (c3colors != undefined && c3colors.length > 0) {
+    			    cdata.data.color = function(c,d) {
+    			        return c3colors[d.index];
+    			    }
+    			}
+		    }
 
 			
 			_initJson($parent, cdata);
+			console.log(JSON.stringify(cdata));
 			var chart = c3.generate(cdata);
 		});
 	};
@@ -140,6 +144,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 						value: ['count']
 					},
 				},
+			    point: {
+			        show: false
+			    },
 				legend: {
 					hide: false
 				},
@@ -179,10 +186,11 @@ TDAR.c3graph = (function(console, $, ctx) {
 					var row = $("td, th", rows[i]);
 					for (var j = 0; j < row.length; j++) {
 						var d = $(row[j]).text().trim();
+						var d_ = d.replace(/\,/g,'');
 						if (i == 0) {
 							data[j].unshift(d);
-						} else if (parseInt(d) && j != 0) {
-							data[j][max - i] = parseInt(d);
+						} else if (parseInt(d_) && j != 0) {
+							data[j][max - i] = parseInt(d_);
 						} else {
 							data[j][max - i] = d;
 						}
@@ -228,7 +236,19 @@ TDAR.c3graph = (function(console, $, ctx) {
 			}
 		}
 		
-		if ($parent.data("columns")) {
+        if ($parent.data("legend")) {
+            if ($parent.data("legend") === 'true') {
+                cdata.legend.hide = true;
+            } else {
+                cdata.legend.hide = false;
+            }
+        }
+
+        if ($parent.data("xtype")) {
+            cdata.axis.x.type = $parent.data("xtype");
+        }
+
+        if ($parent.data("columns")) {
 			var source = JSON.parse($($parent.data("columns")).html());
 			cdata.data.columns = source;
 		}
@@ -309,6 +329,9 @@ TDAR.c3graph = (function(console, $, ctx) {
 					var ld = $(row[labInt]).text().trim();
 					var rd = new Array();
 					rd[0] = ld;
+					if (d != undefined) {
+					    d = d.replace(/\,/g,'');
+					}
 					rd[1] = parseInt(d);
 					data.push(rd);
 				}

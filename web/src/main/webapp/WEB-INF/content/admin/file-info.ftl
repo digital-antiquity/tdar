@@ -111,7 +111,7 @@ ${file.errorMessage!""}
 <script>
     $(function () {
         TDAR.datatable.extendSorting();
-        $(".table").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false})
+//        $(".table").dataTable({"bFilter": false, "bInfo": false, "bPaginate": false})
     });
 </script>
 </#escape>

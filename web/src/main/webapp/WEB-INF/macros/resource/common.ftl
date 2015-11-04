@@ -220,7 +220,7 @@ Common macros used in multiple contexts
 <#-- Emit the container and script for a bar graph -->
     <#macro resourceBarGraph>
 		<div id="resourceBarGraph" style="height:400px" data-source="#homepageResourceCountCache" class="barChart"
-		data-x="label" data-values="count" data-click="resourceBarGraphClick" data-yaxis="log">
+		data-x="label" data-values="count" data-click="resourceBarGraphClick" data-yaxis="log" data-colorcategories="true" >
 		</div>
 		<#noescape>
 		<script id="homepageResourceCountCache">

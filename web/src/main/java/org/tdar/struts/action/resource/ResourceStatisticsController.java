@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -70,11 +72,8 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
         setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
                 Arrays.asList(getResource().getId())));
         if (getResource() instanceof InformationResource) {
-            int i = 0;
             for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
-                i++;
-                getDownloadStats().put(String.format("%s. %s", i, file.getFilename()),
-                        resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
+                getDownloadStats().put(file.getFilename(), resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
             }
         }
         setupAggregateStats();
@@ -89,6 +88,7 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
     private Map<String, List<Long>> allByDay;
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     Set<String> keys = new HashSet<>();
+    private String graphJson;
     
     protected void setupAggregateStats() {
         Map<Integer, Map<String, Long>> byYear = new HashMap<>();
@@ -97,27 +97,53 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
         String viewsText = getText("resourceStatisticsController.views");
         DateTime lastYear = DateTime.now().minusDays(255);
         DateTime lastWeek = DateTime.now().minusDays(7);
+        Map<Date, Map<String, Object>> map = new HashMap<>();
         for (AggregateViewStatistic stat : getUsageStatsForResources()) {
             incrementKey(byYear, stat.getYear(), stat.getCount(), viewsText);
-            if (lastYear.isBefore(stat.getAggregateDate().getTime())) {
+            
+            Date date = stat.getAggregateDate();
+            if (!map.containsKey(date)) {
+                map.put(date, new HashMap<String,Object>());
+            }
+            Map<String,Object> submap = map.get(date);
+            submap.put(viewsText, stat.getCount());
+            submap.put("date", date);
+            
+            if (lastYear.isBefore(date.getTime())) {
                 incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), viewsText);
             }
-            if (lastWeek.isBefore(stat.getAggregateDate().getTime())) {
-                incrementKey(byDay, format.format(stat.getAggregateDate()), stat.getCount(), viewsText);
+            if (lastWeek.isBefore(date.getTime())) {
+                incrementKey(byDay, format.format(date), stat.getCount(), viewsText);
             }
             keys.add(viewsText);
         }
+
         for (Entry<String, List<AggregateDownloadStatistic>> entry : getDownloadStats().entrySet()) {
             for (AggregateDownloadStatistic stat : entry.getValue()) {
+                Date aggregateDate = stat.getAggregateDate();
+                if (!map.containsKey(aggregateDate)) {
+                    map.put(aggregateDate, new HashMap<>());
+                }
+                if (StringUtils.isNotBlank(entry.getKey())) {
+                    map.get(aggregateDate).put(entry.getKey(), stat.getCount());
+                    map.get(aggregateDate).put("date", aggregateDate);
+                }
                 incrementKey(byYear, stat.getYear(), stat.getCount(), entry.getKey());
-                if (lastYear.isBefore(stat.getAggregateDate().getTime())) {
+                if (lastYear.isBefore(aggregateDate.getTime())) {
                     incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), entry.getKey());
                 }
-                if (lastWeek.isBefore(stat.getAggregateDate().getTime())) {
-                    incrementKey(byDay, format.format(stat.getAggregateDate()), stat.getCount(), entry.getKey());
+                if (lastWeek.isBefore(aggregateDate.getTime())) {
+                    incrementKey(byDay, format.format(aggregateDate), stat.getCount(), entry.getKey());
                 }
             }
         }
+        try {
+           setGraphJson(serializationService.convertToJson(map.values()));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
         keys.addAll(getDownloadStats().keySet());
 
         allByYear = unwrapByKey(byYear);
@@ -165,20 +191,8 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
         prepareAndLoad(this, RequestType.EDIT);
     }
 
-    public String getJsonStats() {
-        String json = "null";
-        // FIXME: what is the goal of this null check; shouldn't the UsageStats object handle this? Also, why bail if only one is null?
-        if ((usageStatsForResources == null) || (downloadStats == null)) {
-            return json;
-        }
-
-        try {
-            json = serializationService.convertToJson(new UsageStats(usageStatsForResources, downloadStats));
-        } catch (IOException e) {
-            getLogger().error("failed to convert stats to json", e);
-            json = String.format("{'error': '%s'}", StringEscapeUtils.escapeEcmaScript(e.getMessage()));
-        }
-        return json;
+    public String getCategoryKeys() {
+        return StringUtils.join(keys,",");
     }
 
     public List<AggregateViewStatistic> getUsageStatsForResources() {
@@ -284,6 +298,14 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
 
     public void setAllByDay(Map<String, List<Long>> allByDay) {
         this.allByDay = allByDay;
+    }
+
+    public String getGraphJson() {
+        return graphJson;
+    }
+
+    public void setGraphJson(String graphJson) {
+        this.graphJson = graphJson;
     }
     
     

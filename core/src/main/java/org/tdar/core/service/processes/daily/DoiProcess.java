@@ -1,6 +1,5 @@
 package org.tdar.core.service.processes.daily;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -8,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,9 +85,10 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
         }
         try {
             provider.connect();
-            processBatch(getNextBatch());
+            super.execute();
             provider.logout();
-        } catch (IOException e) {
+        } catch (Throwable e) {
+            logger.debug(ExceptionUtils.getFullStackTrace(e));
             logger.error("connection issues with provider " + provider, e);
             throw new TdarRuntimeException(e);
         }
@@ -95,6 +96,7 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
 
     @Override
     public void process(Resource resource) throws Exception {
+        logger.trace("processing: {}", resource);
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
                 Map<String, String> createdIds = provider.create(resource, urlService.absoluteUrl(resource));

@@ -53,6 +53,7 @@ import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.processes.weekly.WeeklyResourcesAdded;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 
 import com.google.common.collect.Sets;
@@ -120,6 +121,11 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     public void cronGenerateWeeklyStats() {
         queue(WeeklyStatisticsLoggingProcess.class);
         queue(CreatorAnalysisProcess.class);
+    }
+
+    @Scheduled(cron = "12 0 0 * * THU")
+    public void cronWeeklyAdded() {
+        queue(WeeklyResourcesAdded.class);
     }
 
     /**
