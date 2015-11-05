@@ -2,6 +2,10 @@
 <meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
 <meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
 <link rel='shortcut icon' href='<@s.url value="/images/tdar-favicon.ico"/>'/>
+<link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
 
 <#if (persistable.description)?has_content>
 <meta name="description" content="${persistable.description?html}"/>
