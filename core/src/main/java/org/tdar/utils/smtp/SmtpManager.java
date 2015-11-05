@@ -139,9 +139,13 @@ public class SmtpManager extends AbstractManager {
                 if (appendEvent.getMessage() != null) {
                     subject_ = appendEvent.getThrown().getMessage();
                 }
-                if (CollectionUtils.isNotEmpty(ignoreExceptionClasses) && ignoreExceptionClasses.contains(appendEvent.getThrown().getClass().getCanonicalName())) {
-                    System.out.println("skipping: " + appendEvent.getThrown().getClass());
-                    return;
+                System.out.println(appendEvent.getThrown().getClass().getCanonicalName());
+                if (CollectionUtils.isNotEmpty(ignoreExceptionClasses)) {
+                    System.out.println(ignoreExceptionClasses.toArray());
+                    if (ignoreExceptionClasses.contains(appendEvent.getThrown().getClass().getCanonicalName())) {
+                        System.out.println("skipping: " + appendEvent.getThrown().getClass());
+                        return;
+                    }
                 }
             }
 
