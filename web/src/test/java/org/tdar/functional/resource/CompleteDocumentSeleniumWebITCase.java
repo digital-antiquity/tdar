@@ -205,6 +205,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
 
         waitFor("#authorshipSection .addanother").click();
+        try {
+            waitFor(By.name("authorshipProxies[1].institution.name"));
+        } catch (Exception e) {
+            waitFor("#authorshipSection .addanother").click();
+        }
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
         find("#authorshipRow_1_ .personButton").click();
         addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
@@ -213,6 +218,12 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find("#creditRow_0_ .institutionButton").click();
         addInstitutionWithRole(new Institution("UC"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
         find("#creditSection .addanother").click();
+        try {
+            waitFor(By.name("creditProxies[1].institution.name"));
+        } catch (Exception e) {
+            find("#creditSection .addanother").click();
+        }
+
         addInstitutionWithRole(new Institution("UC"), "creditProxies[1]", ResourceCreatorRole.CONTACT);
         find("#creditRow_1_ .personButton").click();
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
