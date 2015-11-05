@@ -2,7 +2,10 @@ package org.tdar.utils.smtp;
 
 // Local modification of the Apache SmtpAppender (still Apache 2 license)
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
@@ -14,6 +17,8 @@ import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.ThresholdFilter;
 import org.apache.logging.log4j.core.layout.HtmlLayout;
 import org.apache.logging.log4j.core.util.Booleans;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * Send an e-mail when a specific logging event occurs, typically on errors or
@@ -103,6 +108,7 @@ public final class PatternSubjectSMTPAppender extends AbstractAppender {
             @PluginAttribute("smtpDebug") final String smtpDebug,
             @PluginAttribute("bufferSize") final String bufferSizeStr,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
+            @PluginAttribute("ignoreException") final String ignoreExceptionClasses,
             @PluginElement("Filter") Filter filter,
             @PluginAttribute("ignoreExceptions") final String ignore) {
         if (name == null) {
@@ -122,8 +128,12 @@ public final class PatternSubjectSMTPAppender extends AbstractAppender {
             filter = ThresholdFilter.createFilter(null, null, null);
         }
 
+        List<String> ignoreExceptionClassList = new ArrayList<>();
+        if (StringUtils.isNotBlank(ignoreExceptionClasses)) {
+            ignoreExceptionClassList.addAll(Arrays.asList(StringUtils.split(ignoreExceptionClasses, ",")));
+        }
         final SmtpManager manager = SmtpManager.getSMTPManager(to, cc, bcc, from, replyTo, subject, smtpProtocol,
-                smtpHost, smtpPort, smtpUsername, smtpPassword, isSmtpDebug, filter.toString(), bufferSize);
+                smtpHost, smtpPort, smtpUsername, smtpPassword, isSmtpDebug, filter.toString(), bufferSize, ignoreExceptionClassList );
         if (manager == null) {
             return null;
         }
