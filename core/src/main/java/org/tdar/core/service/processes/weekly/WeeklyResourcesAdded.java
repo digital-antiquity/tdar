@@ -16,7 +16,6 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.utils.MessageHelper;
 
 @Component
@@ -26,8 +25,8 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
     private static final long serialVersionUID = -121034534408651405L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private transient SearchService searchService;
+//    @Autowired
+//    private transient SearchService searchService;
 
     @Autowired
     private transient EmailService emailService;
@@ -39,7 +38,8 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
         DateTime time = DateTime.now().minusDays(7);
         Collection<? extends Resource> resources  = new ArrayList<>();
         try {
-         resources = searchService.findRecentResourcesSince(time.toDate(), null, MessageHelper.getInstance());
+            logger.error("disabeld");
+//         resources = searchService.findRecentResourcesSince(time.toDate(), null, MessageHelper.getInstance());
         } catch(Exception e) {
             logger.error("issue in recent resources report", e);
         }
