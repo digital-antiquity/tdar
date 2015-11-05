@@ -25,6 +25,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.logging.log4j.LoggingException;
 import org.apache.logging.log4j.core.Layout;
@@ -138,7 +139,7 @@ public class SmtpManager extends AbstractManager {
                 if (appendEvent.getMessage() != null) {
                     subject_ = appendEvent.getThrown().getMessage();
                 }
-                if (ignoreExceptionClasses.contains(appendEvent.getThrown().getClass().getCanonicalName())) {
+                if (CollectionUtils.isNotEmpty(ignoreExceptionClasses) && ignoreExceptionClasses.contains(appendEvent.getThrown().getClass().getCanonicalName())) {
                     System.out.println("skipping: " + appendEvent.getThrown().getClass());
                     return;
                 }
