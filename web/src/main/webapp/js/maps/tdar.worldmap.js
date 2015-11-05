@@ -202,6 +202,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             filter = mapdata.filter(function(d) {return d.code == id});  
       		filter.forEach(function(row){
       			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+      			    console.log(row);
       				data.push([row.label, row.count]);				
       			}
       		});

@@ -166,7 +166,7 @@ public class DownloadService {
             if (TdarConfiguration.getInstance().shouldThrowExceptionOnConcurrentUserDownload()) {
                 throw new TdarRecoverableRuntimeException("downloadService.too_many_concurrent_download");
             } else {
-                logger.error("too many concurrent downloads ({}) by one user: {}", list.size(), authenticatedUser);
+                logger.warn("too many concurrent downloads ({}) by one user: {}", list.size(), authenticatedUser);
             }
         }
 
