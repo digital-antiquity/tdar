@@ -108,7 +108,7 @@ public final class PatternSubjectSMTPAppender extends AbstractAppender {
             @PluginAttribute("smtpDebug") final String smtpDebug,
             @PluginAttribute("bufferSize") final String bufferSizeStr,
             @PluginElement("Layout") Layout<? extends Serializable> layout,
-            @PluginAttribute("ignoreException") final String ignoreExceptionClasses,
+            @PluginAttribute("ignoreExceptionClasses") final String ignoreExceptionClasses,
             @PluginElement("Filter") Filter filter,
             @PluginAttribute("ignoreExceptions") final String ignore) {
         if (name == null) {
