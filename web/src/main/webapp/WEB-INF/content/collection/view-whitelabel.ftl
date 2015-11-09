@@ -15,13 +15,18 @@
 </head>
 <body>
 <#-- todo: move these to .css and use collection-specific css classes -->
-    <#if searchHeaderLogoAvailable>
     <style>
+    <#if searchHeaderLogoAvailable>
         div.searchheader {
             background-image: url("${hostedContentBaseUrl}/search-header.jpg");
         }
-    </style>
+    <#elseif searchHeaderEnabled>
+        div.searchheader {
+		    background: url(/images/r4/bg-home.jpg);
+			background-repeat: no-repeat;
+        }
     </#if>
+    </style>
     <!-- search header url: "${hostedContentBaseUrl}/search-header.jpg" -->
     <@commonCollection.header />
 

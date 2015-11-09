@@ -8,6 +8,7 @@
             <h2 class="color-title">${title}</h2>
             <#if subtitle?has_content>
             <p class="color-subtitle">${subtitle}</p>
+           	<#else><p></p>
             </#if>
             <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
                 <input type="text" name="query" placeholder="Search witin ${title?html}..." class="searchbox input-xxlarge">

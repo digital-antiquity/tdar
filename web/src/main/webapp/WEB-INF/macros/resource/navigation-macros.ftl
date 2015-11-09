@@ -61,7 +61,8 @@ navigation freemarker macros
                     <@makeLink namespace "edit" "edit" "edit" current />
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
-                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current />
+                    <#local _large = (persistable.resources?size &gt; 50000) />
+                    <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
         </#if>
         <#nested>
 			</ul>
@@ -88,7 +89,8 @@ navigation freemarker macros
     		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
 		        </#if>
     		    <#if editable || administrator>
-	                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current />
+                    <#local _large = (persistable.resources?size &gt; 50000) />
+	                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
 		        </#if>
 			</ul>
 		</div>
