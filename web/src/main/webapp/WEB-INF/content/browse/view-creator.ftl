@@ -250,6 +250,21 @@
                             </#if>
                             </div>
                         </div>
+
+                        <#if editor>
+                        <div class="row">
+                            <div class="span12">
+                                <h2>Collection Membership</h2>
+                                <ul>
+                                    <#list ownerCollections as collection>
+                                        <li><a href="${collection.detailUrl}">${collection.name}</a></li>
+                                    </#list>
+                                </ul>
+                            </div>
+                        </div>
+                        </#if>
+
+
                     </#if>
                 </#if>
 </#if>

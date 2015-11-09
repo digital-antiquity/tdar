@@ -153,8 +153,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
 	private void setupResourceCollectionTreesForDashboard() {
 		getLogger().trace("parent/ owner collections");
-		getAllResourceCollections()
-				.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+		getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
 		getLogger().trace("accessible collections");
 		getSharedResourceCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
 		List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
