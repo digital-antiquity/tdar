@@ -180,6 +180,9 @@ TDAR.d3tree = (function(console, $, ctx) {
                  return "";})
 			.style("fill-opacity", 1e-6).
             on("click",function(d){
+                if (d.iri == undefined) {
+                    return false;
+                };
 				var loc = window.location.href;
 				if (loc.substring(loc.length-1) == "/") {
 					loc = loc.substring(0,loc.length -2);

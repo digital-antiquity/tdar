@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -86,10 +88,12 @@ public class OntologyViewController extends AbstractOntologyViewAction {
         Collections.reverse(nodes);
         Map<Long, OntologyNodeWrapper> tree = new HashMap<>();
         OntologyNodeWrapper root = null;
+        Set<OntologyNodeWrapper> roots = new HashSet<>();
         for (OntologyNode node : nodes) {
             OntologyNodeWrapper value = new OntologyNodeWrapper(node);
             if (!node.getIndex().contains(".")) {
                 root = value;
+                roots.add(value);
             }
             tree.put(node.getId(), value);
         }
@@ -122,6 +126,14 @@ public class OntologyViewController extends AbstractOntologyViewAction {
                     wrapper.getChildren().add(e);
                 }
             }
+        }
+
+        if (roots.size() > 1) {
+            OntologyNodeWrapper wrapper = new OntologyNodeWrapper();
+            wrapper.setId(-1L);
+            wrapper.setDisplayName(getOntology().getName());
+            wrapper.getChildren().addAll(roots);
+            root = wrapper;
         }
 
         try {
