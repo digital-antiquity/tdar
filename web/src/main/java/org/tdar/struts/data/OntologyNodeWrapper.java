@@ -15,8 +15,11 @@ public class OntologyNodeWrapper implements Serializable {
     String iri;
     String displayName;
     Long id;
-    List<OntologyNodeWrapper> children;
+    List<OntologyNodeWrapper> children = new ArrayList<>();
 
+    public OntologyNodeWrapper() {
+    }
+    
     public OntologyNodeWrapper(OntologyNode c) {
         this.iri = c.getIri();
         this.displayName = c.getDisplayName();

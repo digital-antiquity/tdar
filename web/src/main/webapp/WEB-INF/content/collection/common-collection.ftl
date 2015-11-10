@@ -79,12 +79,14 @@
         
         <div class="collection-facets">
             <#assign mapSize="450" />
+<#-- for when map orientiation is 'left' or 'right'  
             <#if (totalRecords > 10)>
                 <#assign mapSize="700" />
             </#if>
             <#if (totalRecords > 18)>
                 <#assign mapSize="1000" />
             </#if>
+-->
             <#if selectedResourceTypes.empty>
                 <@search.facetBy facetlist=resourceTypeFacets currentValues=selectedResourceTypes label="" facetParam="selectedResourceTypes" />
             <#else>

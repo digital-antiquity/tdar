@@ -495,12 +495,24 @@
                                             <arg line="id -n" />
                                         </exec>
                                         <exec
+                                            output="target/classes/version-sum.txt"
+                                            executable="${hg.location}">
+                                            <arg line="id -i" />
+                                        </exec>
+                                        <exec
                                             output="target/classes/branch.txt"
                                             executable="${hg.location}">
                                             <arg line="branch" />
                                         </exec>
                                         <loadfile property="hg.version"
                                             srcFile="target/classes/version.txt" />
+                                        <loadfile property="hg.absoluteversion"
+                                            srcFile="target/classes/version-sum.txt">
+                                            <filterchain>
+                                                <deletecharacters
+                                                    chars="\t\r\n+" />
+                                            </filterchain>
+                                        </loadfile>
                                         <loadfile property="hg.branch"
                                             srcFile="target/classes/branch.txt">
                                             <filterchain>
@@ -540,7 +552,7 @@
                         <artifactId>versions-maven-plugin</artifactId>
                         <version>2.2</version>
                         <configuration>
-                            <newVersion>14.0.${hg.version.as_dir}-NEOLITHIC</newVersion>
+                            <newVersion>14.0.${hg.absoluteversion}-NEOLITHIC</newVersion>
                             <generateBackupPoms>false</generateBackupPoms>
                             <processParent>true</processParent>
                         </configuration>
