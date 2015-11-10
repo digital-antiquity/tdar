@@ -17,7 +17,8 @@ fi
 }
 
 hg pull
-hg update 
+hg update -C
+mvn clean compile -Pversion
 mvn clean package -Pprepare -q
 handleError
 sudo service tomcat7 stop

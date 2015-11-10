@@ -8,9 +8,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -41,6 +44,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.FileSystemResourceService;
+import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -120,6 +124,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private String slug = "";
     private String slugSuffix = "";
     private boolean redirectBadSlug;
+    private List<ResourceCollection> collections;
 
     @Autowired
     private transient BillingAccountService accountService;
@@ -129,6 +134,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Autowired
     public transient SerializationService serializationService;
+
+    @Autowired
+    public transient ResourceCollectionService resourceCollectionService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
@@ -148,6 +156,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     @Autowired
     private transient ResourceService resourceService;
     private String schemaOrgJsonLD;
+    private Set<ResourceCollection> ownerCollections = new HashSet<>();
 
     public Creator getAuthorityForDup() {
         return entityService.findAuthorityFromDuplicate(creator);
@@ -211,6 +220,12 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             prepareLuceneQuery();
         }
 
+        if (isEditor() && getPersistable() instanceof TdarUser) {
+            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser)getPersistable()));
+            getOwnerCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
+
+        }
+        
         if (isLogoAvailable()) {
             setLogoUrl(UrlService.creatorLogoUrl(creator));
         }
@@ -530,6 +545,22 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
+    }
+
+    public List<ResourceCollection> getCollections() {
+        return collections;
+    }
+
+    public void setCollections(List<ResourceCollection> collections) {
+        this.collections = collections;
+    }
+
+    public Set<ResourceCollection> getOwnerCollections() {
+        return ownerCollections;
+    }
+
+    public void setOwnerCollections(Set<ResourceCollection> ownerCollections) {
+        this.ownerCollections = ownerCollections;
     }
 
 }
