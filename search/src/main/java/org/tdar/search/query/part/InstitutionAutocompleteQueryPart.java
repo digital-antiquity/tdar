@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.search.query.QueryFieldNames;
 
 public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution> {
 
@@ -21,17 +22,17 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
             for (Institution inst : getFieldValues()) {
                 names.add(StringUtils.trim(inst.getName()));
             }
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>("name", Operator.OR, names);
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(QueryFieldNames.NAME, Operator.OR, names);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             fqp.setBoost(3f);
             group.append(fqp);
         }
-        FieldQueryPart<Institution> name_auto = new FieldQueryPart<Institution>("name_auto", getFieldValues());
+        FieldQueryPart<Institution> name_auto = new FieldQueryPart<Institution>(QueryFieldNames.NAME_AUTOCOMPLETE, getFieldValues());
         group.append(name_auto);
         name_auto.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
 
         // match ASU, but not "arizona state"
-        FieldQueryPart<String> acronym = new FieldQueryPart<String>("acronym", names);
+        FieldQueryPart<String> acronym = new FieldQueryPart<String>(QueryFieldNames.ACRONYM, names);
         acronym.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         acronym.setOperator(Operator.OR);
         acronym.setBoost(7f);

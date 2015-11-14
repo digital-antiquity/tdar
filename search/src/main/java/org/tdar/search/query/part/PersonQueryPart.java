@@ -102,7 +102,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
 
             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
             qpg.append(group);
-            qpg.append(new FieldQueryPart<Boolean>("registered", Boolean.TRUE));
+            qpg.append(new FieldQueryPart<Boolean>(QueryFieldNames.REGISTERED, Boolean.TRUE));
             return qpg.generateQueryString();
         }
         return group.toString();

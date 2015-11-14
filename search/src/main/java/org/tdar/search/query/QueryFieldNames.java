@@ -111,4 +111,7 @@ public interface QueryFieldNames {
     String INSTITUION_ID = "institution.id";
     String LATITUDE_LONGITUDE_BOXES = "latLongBoxes";
     String CLASS = "class";
+    String BOOKMARKED_RESOURCE_PERSON_ID = "bookmarkedResource.person.id";
+    String CREATOR_ROLE = "activeResourceCreators.role";
+    String ACRONYM = "acronym";
 }

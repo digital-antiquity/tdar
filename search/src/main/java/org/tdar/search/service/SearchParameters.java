@@ -33,7 +33,6 @@ import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
-import org.tdar.search.query.part.PaddedNumberQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.query.part.RangeQueryPart;
@@ -383,7 +382,7 @@ public class SearchParameters {
         queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
-        queryPartGroup.append(new PaddedNumberQueryPart<Integer>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
+        queryPartGroup.append(new FieldQueryPart<Integer>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
 
         // explore: title starts with
         if (startingLetter != null) {
