@@ -70,7 +70,7 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
      * 
      * @param toReturn
      */
-    void setResults(List<I> toReturn);
+    void setResults(List<Indexable> toReturn);
 
     List<I> getResults();
 

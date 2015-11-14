@@ -97,8 +97,8 @@ public class SearchIndexService {
         for (Person person : findAll) {
             template.deleteById(generateId(person));
             SolrInputDocument document = PersonDocumentConverter.convert(person);
+            template.add(CoreNames.PEOPLE, document);
             logger.debug("adding: " + person.getId() + " " + person.getProperName());
-            template.add("people", document);
         }
         template.commit();
     }
@@ -108,7 +108,7 @@ public class SearchIndexService {
         for (Institution inst : findAll) {
             template.deleteById(generateId(inst));
             SolrInputDocument document = InstitutionDocumentConverter.convert(inst);
-            template.add("institutions", document);
+            template.add(CoreNames.INSTITUTIONS, document);
             logger.debug("adding: " + inst.getId() + " " + inst.getProperName());
         }
         template.commit();
@@ -120,7 +120,7 @@ public class SearchIndexService {
             for (Keyword kwd : findAll) {
                 template.deleteById(generateId(kwd));
                 SolrInputDocument document = KeywordDocumentConverter.convert(kwd);
-                template.add("keywords", document);
+                template.add(CoreNames.KEYWORDS, document);
                 logger.debug("adding: " + kwd.getId() + " " + kwd.getLabel());
             }
             template.commit();
@@ -134,7 +134,7 @@ public class SearchIndexService {
             }
             template.deleteById(generateId(collection));
             SolrInputDocument document = CollectionDocumentConverter.convert(collection);
-            template.add("collections", document);
+            template.add(CoreNames.COLLECTIONS, document);
             logger.debug("adding: " + collection.getId() + " " + collection.getName());
         }
         template.commit();
@@ -144,7 +144,7 @@ public class SearchIndexService {
         for (Resource resource : genericDao.findAll(Resource.class)) {
             template.deleteById(generateId(resource));
             SolrInputDocument document = ResourceDocumentConverter.convert(resource, resourceService, resourceCollectionService);
-            template.add("resources", document);
+            template.add(CoreNames.RESOURCE, document);
             logger.debug("adding: " + resource.getId() + " " + resource.getName());
         }
         template.commit();

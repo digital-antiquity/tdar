@@ -3,23 +3,24 @@ package org.tdar.search.converter;
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
 
 public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
 
     public static SolrInputDocument convert(Person person) {
         SolrInputDocument doc = convertPersistable(person);
-        doc.setField("firstName", person.getFirstName());
-        doc.setField("lastName", person.getLastName());
-        doc.setField("name_autocomplete", person.getProperName());
-        doc.setField("registered", person.isRegistered());
+        doc.setField(QueryFieldNames.FIRST_NAME, person.getFirstName());
+        doc.setField(QueryFieldNames.LAST_NAME, person.getLastName());
+        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, person.getProperName());
+        doc.setField(QueryFieldNames.REGISTERED, person.isRegistered());
         if (person instanceof TdarUser) {
             TdarUser user = (TdarUser) person;
-            doc.setField("contributor", user.isContributor());
+            doc.setField(QueryFieldNames.CONTIRBUTOR, user.isContributor());
         }
         if (PersistableUtils.isNotNullOrTransient(person.getInstitution())) {
-            doc.setField("institutionName", person.getInstitutionName());
-            doc.setField("institution_id", person.getInstitution().getId());
+            doc.setField(QueryFieldNames.INSTITUTION_NAME, person.getInstitutionName());
+            doc.setField(QueryFieldNames.INSTITUION_ID, person.getInstitution().getId());
         }
         return doc;
     }

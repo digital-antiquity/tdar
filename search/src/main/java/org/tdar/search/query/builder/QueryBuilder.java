@@ -149,4 +149,6 @@ public abstract class QueryBuilder extends QueryPartGroup {
         return super.isEmpty() && StringUtils.isBlank(getRawQuery());
     }
 
+    public abstract String getCoreName();
+
 }

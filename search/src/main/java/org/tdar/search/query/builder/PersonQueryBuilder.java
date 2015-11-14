@@ -3,6 +3,7 @@ package org.tdar.search.query.builder;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.search.service.CoreNames;
 
 /**
  * 
@@ -22,4 +23,10 @@ public class PersonQueryBuilder extends QueryBuilder {
         this();
         setOperator(op);
     }
+
+    @Override
+    public String getCoreName() {
+        return CoreNames.PEOPLE;
+    }
+
 }

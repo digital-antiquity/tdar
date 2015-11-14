@@ -103,4 +103,12 @@ public interface QueryFieldNames {
     String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";
     String LAST_NAME_AUTO = "lastName_auto";
     String FIRST_NAME_AUTO = "firstName_auto";
+    String NAME_AUTOCOMPLETE = "name_autocomplete";
+    String TYPE = "type";
+    String REGISTERED = "registered";
+    String CONTIRBUTOR = "contributor";
+    String INSTITUTION_NAME = "institution.name";
+    String INSTITUION_ID = "institution.id";
+    String LATITUDE_LONGITUDE_BOXES = "latLongBoxes";
+    String CLASS = "class";
 }

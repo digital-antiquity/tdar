@@ -2,6 +2,7 @@ package org.tdar.search.query.builder;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.CoreNames;
 
 /**
  * 
@@ -20,5 +21,10 @@ public class KeywordQueryBuilder extends QueryBuilder {
     public KeywordQueryBuilder(Operator op) {
         this();
         setOperator(op);
+    }
+
+    @Override
+    public String getCoreName() {
+        return CoreNames.KEYWORDS;
     }
 }

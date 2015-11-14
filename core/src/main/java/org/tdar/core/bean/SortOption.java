@@ -157,4 +157,11 @@ public enum SortOption {
         }
         return sortOptions;
     }
+
+    public String getSortOrder() {
+        if (reversed) {
+            return "asc";
+        }
+        return "desc";
+    }
 }

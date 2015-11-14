@@ -36,22 +36,21 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     public static SolrInputDocument convert(Resource resource, ResourceService resourceService, ResourceCollectionService resourceCollectionService) {
 
         SolrInputDocument doc = convertPersistable(resource);
-        doc.setField("name", resource.getName());
-        doc.setField("name_autocomplete", resource.getName());
-        doc.setField("submitter.id", resource.getSubmitter().getId());
-        doc.setField("description", resource.getDescription());
-        doc.setField("dateCreated", resource.getDateCreated());
-        doc.setField("dateUpdated", resource.getDateUpdated());
-        doc.setField("usersWhoCanModify", resource.getUsersWhoCanModify());
-        doc.setField("usersWhoCanView", resource.getUsersWhoCanView());
+        doc.setField(QueryFieldNames.TITLE, resource.getName());
+        doc.setField(QueryFieldNames.TITLE_AUTO, resource.getName());
+        doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
+        doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
+        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, resource.getUsersWhoCanModify());
+        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, resource.getUsersWhoCanView());
 
         indexCreatorInformation(doc, resource);
         indexCollectionInformation(doc, resource);
         indexTemporalInformation(doc, resource);
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource)resource;
-            doc.setField("project.id", ir.getProjectId());
-            doc.setField("date", ir.getDate());
+            doc.setField(QueryFieldNames.PROJECT_ID, ir.getProjectId());
+            doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitleSort());
+            doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
         }
         addKeyword(doc, KeywordType.CULTURE_KEYWORD, resource.getActiveCultureKeywords());
@@ -181,7 +180,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             String str = wrt.write(JTS.toGeometry(env));
             envelops.add(str);
         }
-        doc.setField("latitudeLongitudeBoxes", envelops);
+        doc.setField(QueryFieldNames.LATITUDE_LONGITUDE_BOXES, envelops);
     }
 
     private static <K extends Keyword> void addKeyword(SolrInputDocument doc, KeywordType type, Set<K> keywords) {
