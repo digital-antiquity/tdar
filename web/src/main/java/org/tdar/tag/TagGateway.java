@@ -1,6 +1,7 @@
 package org.tdar.tag;
 
 import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,8 +14,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.hibernate.search.FullTextQuery;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,19 +35,24 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
-import org.tdar.core.service.search.ReservedSearchParameters;
-import org.tdar.core.service.search.SearchParameters;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.ReservedSearchParameters;
+import org.tdar.search.service.SearchParameters;
+import org.tdar.search.service.SearchService;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
 import org.tdar.tag.SearchResults.Meta;
 import org.tdar.tag.SearchResults.Results;
+import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+
+import com.sun.mail.handlers.message_rfc822;
 
 /**
  * 
@@ -112,7 +118,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             String freetext = query.getFreetext();
 
             ResourceQueryBuilder qb = buildSearchQuery(what, where, when, freetext);
-            FullTextQuery q = null;
+            SearchResult q = new SearchResult();
             List<Project> resources = Collections.emptyList();
             int totalRecords = 0;
             int firstRec = 0;
@@ -120,7 +126,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
             // actually perform the search against the index
             try {
-                q = searchService.search(qb);
+                searchService.handleSearch(qb,q, MessageHelper.getInstance());
                 logger.info(qb.generateQueryString());
             } catch (ParseException e) {
                 logger.warn("Could not parse supplied query.", e);
@@ -135,7 +141,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
                 if (totalRecords > 0) {
                     firstRec = 1;
                 }
-                q.setMaxResults(numberOfRecords);
+//                q.setMaxResults(numberOfRecords);
                 if (totalRecords > numberOfRecords) {
                     totalExceedsRequested = true;
                     lastRec = numberOfRecords;
@@ -144,7 +150,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
                 }
                 logger.debug("Number of records requested: " + numberOfRecords);
                 logger.debug("Total number of records: " + totalRecords);
-                resources = q.list();
+                resources = (List<Project>)(List<?>)q.getResults();
             }
 
             int recordsReturned = totalRecords == 0 ? 0 : (lastRec - firstRec) + 1;
@@ -169,14 +175,14 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     private void getAllProjectIds(ResourceQueryBuilder qb, boolean totalExceedsRequested, List<Long> projIds) {
         if (totalExceedsRequested) { // query again to get all of the projectIds
             try {
-                FullTextQuery idq = searchService.search(qb);
-                idq.setProjection("id");
-                @SuppressWarnings("unchecked")
-                List<Object[]> idresults = idq.list();
-                for (Object[] idresult : idresults) {
-                    projIds.add((Long) idresult[0]);
-                }
+                SearchResult q = new SearchResult();
+                searchService.handleSearch(qb, q, MessageHelper.getInstance());
+                projIds.addAll(PersistableUtils.extractIds(q.getResults()));
             } catch (ParseException e) {
+                logger.warn("Could not parse supplied query.", e);
+            } catch (SolrServerException e) {
+                logger.warn("Could not parse supplied query.", e);
+            } catch (IOException e) {
                 logger.warn("Could not parse supplied query.", e);
             }
         }
@@ -258,7 +264,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         if (StringUtils.isNotBlank(freetext) && !"*:*".equals(freetext)) {
             params.getAllFields().add(freetext);
         }
-        authenticationAndAuthorizationService.initializeReservedSearchParameters(reserved, null);
+        searchService.initializeReservedSearchParameters(reserved, null);
         QueryPartGroup reservedPart = reserved.toQueryPartGroup(null);
         qb.append(reservedPart);
         qb.append(params, null);
