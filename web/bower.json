@@ -28,7 +28,7 @@
   "name": "tDAR",
   "private": true,
   "resolutions": {
-    "d3": "3.5.6",
+    "d3": "~3.5.6",
     "DataTablesPlugins": "1.0.1",
     "jquery": "~1.11.3"
   },
