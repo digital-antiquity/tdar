@@ -141,7 +141,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
     @Test
     public void testCreateImage() {
         try {
-            Resource r = resourceService.findRandom(Image.class, 1).get(0);
+            Resource r = genericService.findRandom(Image.class, 1).get(0);
             r.setStatus(Status.ACTIVE);
             ezidDao.connect();
             String absoluteUrl = urlService.absoluteUrl(r);

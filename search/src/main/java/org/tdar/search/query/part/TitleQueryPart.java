@@ -54,13 +54,13 @@ public class TitleQueryPart extends FieldQueryPart<String> {
 
         QueryPartGroup group = new QueryPartGroup();
         group.setOperator(Operator.OR);
-        FieldQueryPart<String> wordsInTitle = new FieldQueryPart<String>(getPrefix() + QueryFieldNames.TITLE, value);
+        FieldQueryPart<String> wordsInTitle = new FieldQueryPart<String>(getPrefix() + QueryFieldNames.NAME, value);
         if (value.contains(" ")) {
             wordsInTitle.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
         } else {
             wordsInTitle.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
         }
-        FieldQueryPart<String> wholeTitle = new FieldQueryPart<String>(getPrefix() + QueryFieldNames.TITLE_AUTO, value);
+        FieldQueryPart<String> wholeTitle = new FieldQueryPart<String>(getPrefix() + QueryFieldNames.NAME_AUTOCOMPLETE, value);
         wholeTitle.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED).setBoost(TITLE_BOOST);
         group.append(wholeTitle);
         group.append(wordsInTitle);

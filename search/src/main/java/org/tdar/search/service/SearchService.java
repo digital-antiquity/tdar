@@ -71,8 +71,6 @@ import com.opensymphony.xwork2.TextProvider;
  @Service
  @Transactional
  public class SearchService {
-     private static final String ID_FIELD = "id";
-
 
      private final GenericService genericService;
 

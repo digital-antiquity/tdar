@@ -104,17 +104,17 @@ public class Dataset extends InformationResource {
 
     //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     // @Transient
-    @JsonView({ JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class })
-    public IntegratableOptions getIntegratableOptions() {
-        for (DataTable dt : getDataTables()) {
-            for (DataTableColumn dtc : dt.getDataTableColumns()) {
-                if (dtc.getMappedOntology() != null) {
-                    return IntegratableOptions.YES;
-                }
-            }
-        }
-        return IntegratableOptions.NO;
-    }
+//    @JsonView({ JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class })
+//    public IntegratableOptions getIntegratableOptions() {
+//        for (DataTable dt : getDataTables()) {
+//            for (DataTableColumn dtc : dt.getDataTableColumns()) {
+//                if (dtc.getMappedOntology() != null) {
+//                    return IntegratableOptions.YES;
+//                }
+//            }
+//        }
+//        return IntegratableOptions.NO;
+//    }
 
     /**
      * @param string

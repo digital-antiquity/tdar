@@ -36,13 +36,13 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     protected QueryPart<?> getQueryPart() {
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         // look up quoted leading match in autocomplete index
-        FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_AUTO, title).setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+        FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, title).setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         // FIXME: while allowed, I'm not sure it's helpful to include non-analyzed fields in a search, especially considering the fact that it will use a
         // default analyzer at search-time. arguments otherwise?
-        FieldQueryPart<String> titleSortPart = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, title).setPhraseFormatters(PhraseFormatter.ESCAPED,
+        FieldQueryPart<String> titleSortPart = new FieldQueryPart<String>(QueryFieldNames.NAME_SORT, title).setPhraseFormatters(PhraseFormatter.ESCAPED,
                 PhraseFormatter.WILDCARD);
         // keyword match on title
-        FieldQueryPart<String> keywordTitlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, title).setPhraseFormatters(PhraseFormatter.ESCAPED);
+        FieldQueryPart<String> keywordTitlePart = new FieldQueryPart<String>(QueryFieldNames.NAME, title).setPhraseFormatters(PhraseFormatter.ESCAPED);
         if (title.length() > 2) {
             // FIXME: if title is over 2 characters, use escaped wildcard formatter?
             keywordTitlePart.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);

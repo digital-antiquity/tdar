@@ -14,7 +14,7 @@ public class AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.CLASS, persist.getClass());
         doc.setField("_id", persist.getClass().getSimpleName() + "-" + persist.getId());
         if (persist instanceof HasStatus) {
-            doc.setField("status", ((HasStatus) persist).getStatus());
+            doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus());
         }
         if (persist instanceof Updatable) {
             Updatable up = (Updatable) persist;

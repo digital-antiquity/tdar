@@ -19,9 +19,6 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
     private SolrClient template;
     
     @Autowired
-    GenericService genericService;
-    
-    @Autowired
     SearchIndexService searchIndexService;
     
     @Test

@@ -54,6 +54,7 @@ import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
+import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -65,7 +66,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
@@ -76,10 +76,11 @@ import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 
 @Service
-public class ResourceService extends GenericService {
+public class ResourceService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    
     public enum ErrorHandling {
         NO_VALIDATION,
         VALIDATE_SKIP_ERRORS,
@@ -89,6 +90,8 @@ public class ResourceService extends GenericService {
     @Autowired
     private transient EntityService entityService;
 
+    @Autowired
+    private GenericDao genericDao;
     @Autowired
     private DatasetDao datasetDao;
     @Autowired
@@ -188,7 +191,7 @@ public class ResourceService extends GenericService {
         log.setPerson(person);
         log.setTimestamp(new Date());
         log.setPayload(payload);
-        save(log);
+        genericDao.save(log);
     }
 
     /**
@@ -210,7 +213,7 @@ public class ResourceService extends GenericService {
     public void incrementAccessCounter(Resource r) {
         ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
         datasetDao.markWritable(rac);
-        save(rac);
+        genericDao.save(rac);
     }
 
     /**
@@ -472,7 +475,7 @@ public class ResourceService extends GenericService {
                     ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
                     newInternal.setName(collection.getName());
                     TdarUser owner = collection.getOwner();
-                    refresh(owner);
+                    genericDao.refresh(owner);
                     newInternal.markUpdated(owner);
                     if (save) {
                         datasetDao.save(newInternal);
@@ -487,7 +490,7 @@ public class ResourceService extends GenericService {
                 } else {
                     logger.info("adding to shared collection : {} ", collection);
                     if (collection.isTransient() && save) {
-                        save(collection);
+                        genericDao.save(collection);
                     }
                     collection.getResources().add(resource);
                     resource.getResourceCollections().add(collection);
@@ -806,13 +809,13 @@ public class ResourceService extends GenericService {
         if (StringUtils.isNotEmpty(reason)) {
             ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, reason);
             resource.getResourceNotes().add(note);
-            save(note);
+            genericDao.save(note);
         } else {
             reason = "reason not specified";
         }
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
         logResourceModification(resource, authUser, logMessage);
-        delete(resource);
+        genericDao.delete(resource);
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             Collection<Resource> toEvaluate = Arrays.asList(resource);
@@ -827,9 +830,9 @@ public class ResourceService extends GenericService {
                     resource.setAccount(account);
                 }
             }
-            account = markWritableOnExistingSession(account);
+            account = genericDao.markWritableOnExistingSession(account);
             accountDao.updateQuota(account, toEvaluate);
-            saveOrUpdate(account);
+            genericDao.saveOrUpdate(account);
         }
 
     }

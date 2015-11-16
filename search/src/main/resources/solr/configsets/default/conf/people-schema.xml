@@ -5,8 +5,8 @@
     <field name="lastName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="registered" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="contributor" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="institutionName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="institution_id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="institution.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="institution.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="false" multiValued="true" />
 

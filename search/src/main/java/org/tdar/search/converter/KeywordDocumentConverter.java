@@ -23,7 +23,7 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
             HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>)kwd;
             CollectionUtils.addAll(names, hk.getParentLabelList());
         }
-        doc.setField(QueryFieldNames.LABEL, names);
+        doc.setField(QueryFieldNames.NAME, names);
         return doc;
     }
 }

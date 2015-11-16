@@ -310,7 +310,7 @@ public class SearchParameters {
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.INFORMATION_RESOURCE_FILES_FILENAME, support.getText("searchParameter.file_name"),
+        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"),
                 getOperator(), filenames));
 
         if (creatorOwner != null) {
@@ -386,7 +386,7 @@ public class SearchParameters {
 
         // explore: title starts with
         if (startingLetter != null) {
-            FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.TITLE_SORT, startingLetter.toLowerCase());
+            FieldQueryPart<String> part = new FieldQueryPart<String>(QueryFieldNames.NAME_SORT, startingLetter.toLowerCase());
             part.setDisplayName(support.getText("searchParameter.title_starts_with", Arrays.asList(startingLetter)));
             part.setPhraseFormatters(PhraseFormatter.WILDCARD);
             queryPartGroup.append(part);

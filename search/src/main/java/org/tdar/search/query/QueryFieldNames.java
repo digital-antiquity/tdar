@@ -2,7 +2,7 @@ package org.tdar.search.query;
 
 public interface QueryFieldNames {
 
-    String PROJECT_ID = "projectId";
+    String PROJECT_ID = "project.id";
     String RESOURCE_TYPE = "resourceType";
     String STATUS = "status";
     String ACTIVE_START_DATE = "activeCoverageDates.startDate";
@@ -10,20 +10,15 @@ public interface QueryFieldNames {
     String DATE = "date";
     String DATE_UPDATED = "dateUpdated";
     String DATE_CREATED = "dateCreated";
-    String LABEL = "label";
     String DOT = ".";
-    String DOT_LABEL = DOT + LABEL;
     String IR = "informationResources.";
-    String TITLE = "title";
-    String TITLE_AUTO = "title_auto";
-    String PROJECT_TITLE = "project.title";
-    String PROJECT_TITLE_AUTO = "project.title_auto";
-    String TITLE_SORT = "title_sort";
+    String PROJECT_TITLE = "project.name";
+//    String PROJECT_TITLE_AUTO = "project.title_auto";
     String DOCUMENT_TYPE = "documentType";
     String INTEGRATABLE = "integratable";
     String SUBMITTER_ID = "submitter.id";
-    String RESOURCE_CREATORS_CREATOR_ID = "activeResourceCreators.creator.id";
-    String RESOURCE_CREATORS_CREATOR_NAME_KEYWORD = "activeResourceCreators.creator.name_kwd";
+//    String RESOURCE_CREATORS_CREATOR_ID = "activeResourceCreators.creator.id";
+//    String RESOURCE_CREATORS_CREATOR_NAME_KEYWORD = "activeResourceCreators.creator.name_kwd";
     String ACTIVE_SITE_TYPE_KEYWORDS = "activeSiteTypeKeywords";
     String ACTIVE_MATERIAL_KEYWORDS = "activeMaterialKeywords";
     String ACTIVE_CULTURE_KEYWORDS = "activeCultureKeywords";
@@ -42,11 +37,9 @@ public interface QueryFieldNames {
     String MAXXPRIME = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxxPrime";
 
     String ACTIVE_TEMPORAL_KEYWORDS = "activeTemporalKeywords";
-    String ACTIVE_SITE_TYPE_KEYWORDS_LABEL = ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
-    String ACTIVE_CULTURE_KEYWORDS_LABEL = ACTIVE_CULTURE_KEYWORDS + DOT_LABEL;
-    String ACTIVE_GEOGRAPHIC_KEYWORDS_LABEL = ACTIVE_GEOGRAPHIC_KEYWORDS + DOT_LABEL;
-    String IR_ACTIVE_CULTURE_KEYWORDS_LABEL = IR + ACTIVE_CULTURE_KEYWORDS + DOT_LABEL;
-    String IR_ACTIVE_SITE_TYPE_KEYWORDS_LABEL = IR + ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
+//    String ACTIVE_SITE_TYPE_KEYWORDS_LABEL = ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
+//    String IR_ACTIVE_CULTURE_KEYWORDS_LABEL = IR + ACTIVE_CULTURE_KEYWORDS + DOT_LABEL;
+//    String IR_ACTIVE_SITE_TYPE_KEYWORDS_LABEL = IR + ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
     String ACTIVE_COVERAGE_TYPE = "activeCoverageDates.dateType";
     String NAME = "name";
     String FIRST_NAME = "firstName";
@@ -57,14 +50,12 @@ public interface QueryFieldNames {
     String ALL_PHRASE = "allPhrase";
     String CONTENT = "content";
     String DESCRIPTION = "description";
-    String PROJECT_TITLE_SORT = "project_title_sort";
+    String PROJECT_TITLE_SORT = "project.name_sort";
     String LABEL_SORT = "label_sort";
     String FIRST_NAME_SORT = "firstName_sort";
     String LAST_NAME_SORT = "lastName_sort";
     String CREATOR_NAME_SORT = "creator_name_sort";
 
-    String COLLECTION_NAME = TITLE;
-    String COLLECTION_NAME_AUTO = TITLE_AUTO;
     String COLLECTION_TYPE = "type";
     String RESOURCE_USERS_WHO_CAN_VIEW = "usersWhoCanView";
     String RESOURCE_USERS_WHO_CAN_MODIFY = "usersWhoCanModify";
@@ -76,8 +67,7 @@ public interface QueryFieldNames {
     String RESOURCE_ACCESS_TYPE = "resourceAccessType";
     String PROPER_NAME = "properName";
     String RESOURCE_CREATORS_PROPER_NAME = "activeResourceCreators.creator." + PROPER_NAME;
-    String INFORMATION_RESOURCE_FILES_FILENAME = "informationResourceFiles.filename";
-    String RESOURCE_PROVIDER_ID = "resourceProviderInstitution.id";
+    String RESOURCE_PROVIDER_ID = "RESOURCE_PROVIDER";
     String CATEGORY_ID = "categoryVariable.id";
     String CATEGORY_LABEL = "categoryVariable.label";
     String COLLECTION_HIDDEN = "hidden";
@@ -89,8 +79,7 @@ public interface QueryFieldNames {
     String IR_CREATOR_ROLE_IDENTIFIER = IR + CREATOR_ROLE_IDENTIFIER;
     String FILENAME = "filename";
     String DATA_VALUE_PAIR = "dataValuePair";
-    String COLLECTION_TREE = "collection.parentTree";
-    String SITE_CODE = "siteCode";
+    String SITE_CODE = "activeSiteCodes";
     String TITLE_PHRASE = "title.phrase";
     String DESCRIPTION_PHRASE = "description.phrase";
     String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
@@ -104,14 +93,28 @@ public interface QueryFieldNames {
     String LAST_NAME_AUTO = "lastName_auto";
     String FIRST_NAME_AUTO = "firstName_auto";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
+    String NAME_SORT = "name_sort";
     String TYPE = "type";
     String REGISTERED = "registered";
     String CONTIRBUTOR = "contributor";
     String INSTITUTION_NAME = "institution.name";
     String INSTITUION_ID = "institution.id";
-    String LATITUDE_LONGITUDE_BOXES = "latLongBoxes";
-    String CLASS = "class";
-    String BOOKMARKED_RESOURCE_PERSON_ID = "bookmarkedResource.person.id";
+    String LATITUDE_LONGITUDE_BOXES = "latitudeLongitudeBoxes";
+    String CLASS = "_class";
     String CREATOR_ROLE = "activeResourceCreators.role";
+    String BOOKMARKED_RESOURCE_PERSON_ID = "bookmarkedResource.person.id";
     String ACRONYM = "acronym";
+    String DOCUMENT_SUB_TYPE = "subType";
+    String DEGREE = "degree";
+    String SERIES_NAME = "seriesName";
+    String BOOK_TITLE = "bookTitle";
+    String JOURNAL_NAME = "journalName";
+    String ISSN = "issn";
+    String ISBN = "isbn";
+    String RESOURCE_LANGUAGE = "resourceLanguage";
+    String METADATA_LANGUAGE = "metadataLanguage";
+    String DOI = "doi";
+    String RESOURCE_IDS = "resourceIds";
+    String COLLECTION_PARENT = "parentId";
+    String COLLECTION_PARENT_LIST = "parentIdList";
 }

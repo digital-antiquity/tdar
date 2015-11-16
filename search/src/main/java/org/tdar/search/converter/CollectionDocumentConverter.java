@@ -9,12 +9,12 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
     public static SolrInputDocument convert(ResourceCollection collection) {
         
         SolrInputDocument doc = convertPersistable(collection);
-        doc.setField(QueryFieldNames.TITLE, collection.getName());
-        doc.setField(QueryFieldNames.TITLE_AUTO, collection.getName());
-        doc.setField("resourceIds", collection.getResourceIds());
-        doc.setField("owner.id", collection.getOwner().getId());
-        doc.setField("parentId", collection.getParentId());
-        doc.setField("parentIds", collection.getParentIds());
+        doc.setField(QueryFieldNames.NAME, collection.getName());
+        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, collection.getName());
+        doc.setField(QueryFieldNames.RESOURCE_IDS, collection.getResourceIds());
+        doc.setField(QueryFieldNames.RESOURCE_OWNER, collection.getOwner().getId());
+        doc.setField(QueryFieldNames.COLLECTION_PARENT, collection.getParentId());
+        doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, collection.getParentIds());
         doc.setField(QueryFieldNames.DESCRIPTION, collection.getDescription());
         doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, collection.getUsersWhoCanModify());

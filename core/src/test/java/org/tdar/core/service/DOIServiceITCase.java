@@ -72,8 +72,8 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         toBeUpdated.setDescription(toBeUpdated.getTitle());
         ((InformationResource) toBeUpdated).setDate(1243);
         ((InformationResource) toBeDeleted).setDate(1243);
-        resourceService.saveOrUpdate(toBeUpdated);
-        resourceService.saveOrUpdate(toBeDeleted);
+        genericService.saveOrUpdate(toBeUpdated);
+        genericService.saveOrUpdate(toBeDeleted);
 
         // create new resources (1) without file (1) with file (2) with file, ancient date, and already has DOI
         InformationResource generateInformationResourceWithUser = generateDocumentWithUser();

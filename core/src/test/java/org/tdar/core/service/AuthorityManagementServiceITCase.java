@@ -71,7 +71,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         long origCount = authorityManagementService.getTotalReferrerCount(keyword.getClass(), Arrays.asList(keyword.getId()));
         Document document = createAndSaveNewInformationResource(Document.class);
         document.getGeographicKeywords().add(keyword);
-        resourceService.save(document);
+        genericService.save(document);
         long newCount = authorityManagementService.getTotalReferrerCount(keyword.getClass(), Arrays.asList(keyword.getId()));
         logger.debug("original count:{}\tnew count:{}", origCount, newCount);
         Assert.assertTrue("reference count should have increased by one and only one. ref1:" + origCount + " ref2:" + newCount,
@@ -102,7 +102,7 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         Document document = createAndSaveNewInformationResource(Document.class);
         document.getGeographicKeywords().addAll(allKeywords);
-        resourceService.save(document);
+        genericService.save(document);
         Map<Long, Long> newMap = authorityManagementService.getReferrerCountMaps(keyword.getClass(), ids);
 
         for (Map.Entry<Long, Long> entry : origMap.entrySet()) {
@@ -152,8 +152,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
 
         // d1.setSubmitter(dupe1);
         // d2.setUpdatedBy(dupe2);
-        resourceService.save(d1);
-        resourceService.save(d2);
+        genericService.save(d1);
+        genericService.save(d2);
 
         // ResourceCreator is trickier than the others because the creator field may refer to Institution or Person
         ResourceCreator resourceCreator = new ResourceCreator(dupe1, ResourceCreatorRole.AUTHOR);
@@ -237,8 +237,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         doc2.getOtherKeywords().add(dupe2);
         doc2.getOtherKeywords().add(authority);
 
-        resourceService.save(doc1);
-        resourceService.save(doc2);
+        genericService.save(doc1);
+        genericService.save(doc2);
 
         // great, now lets do some deduping;
         Set<Long> dupeIds = new HashSet<Long>(Arrays.asList(dupe1Id, dupe2Id));
@@ -251,8 +251,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
         switch (mode) {
             case DELETE_DUPLICATES:
                 // makes sure that the dupes no longer exist
-                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DELETED, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
-                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DELETED, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DELETED, genericService.find(OtherKeyword.class, dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DELETED, genericService.find(OtherKeyword.class, dupe2Id).getStatus());
                 Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(authority));
                 Assert.assertFalse("authority should replace dupe", doc1.getOtherKeywords().contains(dupe1));
                 Assert.assertFalse("authority should replace dupe", doc2.getOtherKeywords().contains(dupe2));
@@ -260,8 +260,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
                 break;
             case MARK_DUPS_AND_CONSOLDIATE:
                 // makes sure that the dupes no longer exist
-                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
-                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericService.find(OtherKeyword.class, dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericService.find(OtherKeyword.class, dupe2Id).getStatus());
                 Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(authority));
                 Assert.assertFalse("authority should replace dupe", doc1.getOtherKeywords().contains(dupe1));
                 Assert.assertFalse("authority should replace dupe", doc2.getOtherKeywords().contains(dupe2));
@@ -269,8 +269,8 @@ public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCas
                 break;
             case MARK_DUPS_ONLY:
                 // makes sure that the dupes no longer exist
-                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe1Id).getStatus());
-                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericKeywordService.find(OtherKeyword.class, dupe2Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe1, Status.DUPLICATE, genericService.find(OtherKeyword.class, dupe1Id).getStatus());
+                Assert.assertEquals("dupe should be deleted:" + dupe2, Status.DUPLICATE, genericService.find(OtherKeyword.class, dupe2Id).getStatus());
                 Assert.assertTrue("authority should replace dupe", doc1.getOtherKeywords().contains(dupe1));
                 Assert.assertTrue("authority should replace dupe", doc2.getOtherKeywords().contains(dupe2));
                 break;
