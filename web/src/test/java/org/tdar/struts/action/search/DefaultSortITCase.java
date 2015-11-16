@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.tdar.search.query.SortOption;
+import org.tdar.core.bean.SortOption;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;

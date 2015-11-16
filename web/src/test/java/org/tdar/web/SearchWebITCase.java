@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.service.SearchFieldType;
+import org.tdar.search.service.SearchIndexService;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;

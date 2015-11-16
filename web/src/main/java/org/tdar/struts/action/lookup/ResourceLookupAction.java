@@ -1,10 +1,12 @@
 package org.tdar.struts.action.lookup;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -12,13 +14,13 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.CategoryTermQueryPart;
@@ -59,7 +61,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     @Action(value = "resource", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
-    public String lookupResource() {
+    public String lookupResource() throws SolrServerException, IOException {
         QueryBuilder q = new ResourceQueryBuilder();
         setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");

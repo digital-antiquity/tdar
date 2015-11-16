@@ -5,12 +5,14 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.junit.Before;
@@ -20,6 +22,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -35,12 +38,11 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.service.SearchIndexService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.range.DateRange;
 
@@ -81,7 +83,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testCreatorOwnerQueryPart() throws ParseException {
+    public void testCreatorOwnerQueryPart() throws ParseException, SolrServerException, IOException {
         QueryBuilder rqb = searchService.generateQueryForRelatedResources(getAdminUser(), null, controller);
         Document authorDocument = new Document();
         authorDocument.setTitle("author");

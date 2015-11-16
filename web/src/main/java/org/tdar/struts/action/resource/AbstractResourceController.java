@@ -55,16 +55,14 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -114,6 +112,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     @Autowired
     private GenericKeywordService genericKeywordService;
+    @Autowired
+    private GenericService genericService;
 
     @Autowired
     public ResourceCollectionService resourceCollectionService;
@@ -425,16 +425,16 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         cleanupKeywords(temporalKeywords);
 
         Set<CultureKeyword> culKeys = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, uncontrolledCultureKeywords);
-        culKeys.addAll(genericKeywordService.findAll(CultureKeyword.class, approvedCultureKeywordIds));
+        culKeys.addAll(genericService.findAll(CultureKeyword.class, approvedCultureKeywordIds));
         Set<MaterialKeyword> matKeys = genericKeywordService.findOrCreateByLabels(MaterialKeyword.class, uncontrolledMaterialKeywords);
-        matKeys.addAll(genericKeywordService.findAll(MaterialKeyword.class, approvedMaterialKeywordIds));
+        matKeys.addAll(genericService.findAll(MaterialKeyword.class, approvedMaterialKeywordIds));
 
         Set<SiteTypeKeyword> siteTypeKeys = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, uncontrolledSiteTypeKeywords);
-        siteTypeKeys.addAll(genericKeywordService.findAll(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
+        siteTypeKeys.addAll(genericService.findAll(SiteTypeKeyword.class, approvedSiteTypeKeywordIds));
 
         PersistableUtils.reconcileSet(res.getSiteNameKeywords(), genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, siteNameKeywords));
         PersistableUtils.reconcileSet(res.getOtherKeywords(), genericKeywordService.findOrCreateByLabels(OtherKeyword.class, otherKeywords));
-        PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericKeywordService.findAll(InvestigationType.class, investigationTypeIds));
+        PersistableUtils.reconcileSet(res.getInvestigationTypes(), genericService.findAll(InvestigationType.class, investigationTypeIds));
 
         PersistableUtils.reconcileSet(res.getCultureKeywords(), culKeys);
         PersistableUtils.reconcileSet(res.getSiteTypeKeywords(), siteTypeKeys);
@@ -507,7 +507,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     protected void saveBasicResourceMetadata() {
 
         if (shouldSaveResource()) {
-            resourceService.saveOrUpdate(getPersistable());
+            genericService.saveOrUpdate(getPersistable());
         }
 
         if (PersistableUtils.isNotNullOrTransient(getSubmitter())) {
@@ -726,7 +726,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<InvestigationType> getAllInvestigationTypes() {
         if (CollectionUtils.isEmpty(allInvestigationTypes)) {
-            allInvestigationTypes = genericKeywordService.findAllWithCache(InvestigationType.class);
+            allInvestigationTypes = genericService.findAllWithCache(InvestigationType.class);
             Collections.sort(allInvestigationTypes);
         }
         return allInvestigationTypes;

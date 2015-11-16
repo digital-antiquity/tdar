@@ -1,7 +1,9 @@
 package org.tdar.struts.action.lookup;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -36,7 +38,7 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
     @Action(value = "institution", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
-    public String lookupInstitution() {
+    public String lookupInstitution() throws SolrServerException, IOException {
         setMode("institutionLookup");
         return findInstitution(getInstitution());
     }

@@ -13,8 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.SearchIndexService;
 
 @Transactional
 public class RawLuceneSearchControllerITCase extends AbstractSearchControllerITCase {

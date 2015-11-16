@@ -1,8 +1,10 @@
 package org.tdar.struts.action.lookup;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -43,7 +45,7 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     @Action(value = "person", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
-    public String lookupPerson() {
+    public String lookupPerson() throws SolrServerException, IOException {
         setMode("personLookup");
         return findPerson(firstName, term, lastName, institution, email, registered);
     }

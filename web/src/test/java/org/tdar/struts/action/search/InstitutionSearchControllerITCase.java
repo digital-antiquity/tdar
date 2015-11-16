@@ -2,9 +2,11 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +19,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
+import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionException;
 
@@ -54,7 +56,7 @@ public class InstitutionSearchControllerITCase extends AbstractControllerITCase 
 
     @Test
     @Rollback
-    public void testPersonRelevancy() throws TdarActionException {
+    public void testPersonRelevancy() throws TdarActionException, SolrServerException, IOException {
         List<Person> people = new ArrayList<>();
         Person whelan = new Person("Mary", "Whelan", null);
         people.add(whelan);

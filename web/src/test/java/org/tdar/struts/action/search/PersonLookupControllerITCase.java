@@ -5,22 +5,23 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.PersonLookupAction;
 import org.tdar.struts.interceptor.ObfuscationResultListener;
@@ -46,7 +47,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     }
 
     @Test
-    public void testPersonLookupWithNoResults() {
+    public void testPersonLookupWithNoResults() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setFirstName("bobby");
         String result = controller.lookupPerson();
@@ -57,7 +58,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback
-    public void testUserLookupWithrelevancy() {
+    public void testUserLookupWithrelevancy() throws SolrServerException, IOException {
         TdarUser person = setupMScottPeople();
 
         // searching by name
@@ -94,7 +95,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback
-    public void testUserLastNameSpaceWithRelevancy() {
+    public void testUserLastNameSpaceWithRelevancy() throws SolrServerException, IOException {
         TdarUser person = setupMScottPeople();
         controller = generateNewInitializedController(PersonLookupAction.class, getAdminUser());
         controller.setLastName("Scott Th");
@@ -135,7 +136,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     }
 
     @Test
-    public void testPersonLookupTooShortOverride() {
+    public void testPersonLookupTooShortOverride() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setLastName("B");
         controller.setMinLookupLength(0);
@@ -146,7 +147,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     }
 
     @Test
-    public void testPersonLookupTooShort() {
+    public void testPersonLookupTooShort() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setLastName("Br");
         String result = controller.lookupPerson();
@@ -156,7 +157,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     }
 
     @Test
-    public void testPersonLookupWithOneResult() {
+    public void testPersonLookupWithOneResult() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setEmail("test@tdar.org");
         String result = controller.lookupPerson();
@@ -167,7 +168,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     // we should properly escape input
-    public void testPersonWithInvalidInput() {
+    public void testPersonWithInvalidInput() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // FIXME: need more invalid input examples than just paren
         controller.setLastName("(    ");
@@ -179,7 +180,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     @Test
     @Rollback
     // we should properly escape input
-    public void testPersonByUsername() {
+    public void testPersonByUsername() throws SolrServerException, IOException {
         TdarUser user = new TdarUser("billing", "admin", "billingadmin@tdar.net");
         user.setUsername("billingAdmin");
         user.markUpdated(getAdminUser());
@@ -195,7 +196,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     }
 
     @Test
-    public void testRegisteredPersonLookupWithOneResult() {
+    public void testRegisteredPersonLookupWithOneResult() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class, TdarUser.class);
         controller.setFirstName("Keit");
         controller.setRegistered("true");
@@ -207,7 +208,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback(true)
-    public void testPersonWithInstitution() {
+    public void testPersonWithInstitution() throws SolrServerException, IOException {
         String institution = "University of TEST is fun";
         String email = "test1234@tdar.org";
         Person person = new Person("a", "test", email);
@@ -228,7 +229,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
     }
 
     @Test
-    public void testPersonLookupWithSeveralResults() {
+    public void testPersonLookupWithSeveralResults() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // based on our test data this should return at least two records (john doe and jane doe)
         String partialLastName = "Mann";
@@ -243,7 +244,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback
-    public void testUserLookup() {
+    public void testUserLookup() throws SolrServerException, IOException {
         setupUsers();
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // based on our test data this should return at least two records (john doe and jane doe)
@@ -322,7 +323,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback(true)
-    public void testInstitutionAlone() {
+    public void testInstitutionAlone() throws SolrServerException, IOException {
         Person person = new Person("a test", "person", null);
         Institution inst = new Institution("TQF");
         genericService.saveOrUpdate(person);
@@ -338,7 +339,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback(true)
-    public void testValidInstitutionWithSpace() {
+    public void testValidInstitutionWithSpace() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         controller.setInstitution("University of");
         String result = controller.lookupPerson();
@@ -354,7 +355,7 @@ public class PersonLookupControllerITCase extends AbstractIntegrationControllerT
 
     @Test
     @Rollback(true)
-    public void testInstitutionEmpty() {
+    public void testInstitutionEmpty() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // FIXME: should not need to be quoted
         controller.setInstitution("University ABCD");

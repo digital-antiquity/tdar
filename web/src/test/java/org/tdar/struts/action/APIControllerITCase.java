@@ -166,7 +166,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertTrue("field should be inherited", importedRecord.isInheritingMaterialInformation());
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
-        genericKeywordService.delete(importedRecord);
+        genericService.delete(importedRecord);
         for (ResourceCollection rc : importedRecord.getSharedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
             if (rc.getName().equals("hidden")) {
@@ -188,7 +188,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         genericService.markReadOnly(fake);
         fake.setDescription(fake.getTitle());
         fake.getInvestigationTypes().clear();
-        fake.getInvestigationTypes().add(genericKeywordService.find(InvestigationType.class, 1L));
+        fake.getInvestigationTypes().add(genericService.find(InvestigationType.class, 1L));
         fake.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "test"));
         fake.setInheritingCollectionInformation(false);
         fake.setInheritingCulturalInformation(true);

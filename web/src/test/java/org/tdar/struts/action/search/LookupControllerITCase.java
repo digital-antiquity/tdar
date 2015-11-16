@@ -11,13 +11,14 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -29,7 +30,6 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.lookup.CollectionLookupAction;
@@ -54,7 +54,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
 
     @Test
     @Rollback(true)
-    public void testSelectedResourceLookup() {
+    public void testSelectedResourceLookup() throws SolrServerException, IOException {
         ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getUser());
         collection.markUpdated(getUser());
         Ontology ont = createAndSaveNewInformationResource(Ontology.class);
@@ -74,7 +74,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
 
     @Test
     @Rollback(true)
-    public void testModifyEditor() {
+    public void testModifyEditor() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         init(controller, getEditorUser());
         controller.setRecordsPerPage(1000);
@@ -97,7 +97,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
 
     @Test
     @Rollback(true)
-    public void testLookupByTitle() throws InstantiationException, IllegalAccessException {
+    public void testLookupByTitle() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String[] titles = new String[] { "CARP Fauna Side or Symmetry", "CARP Fauna Completeness (Condition)", "CARP Fauna Origin of Fragmentation",
                 "CARP Fauna Proximal-Distal", " CARP Fauna Dorsal-Ventral", "CARP Fauna Fusion", "CARP Fauna Burning", "CARP Fauna Bone Artifacts",
                 "CARP Fauna Gnawing", "CARP Fauna Natural Modification", "CARP Fauna Element", "CARP Fauna Butchering",
@@ -287,7 +287,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     }
 
     @Test
-    public void testResourceLookupByType() {
+    public void testResourceLookupByType() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         // get back all documents
         controller.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT));
@@ -297,7 +297,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     }
 
     @Test
-    public void testResourceLookupByTdarId() {
+    public void testResourceLookupByTdarId() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         // get back all documents
         controller.setTerm(TestConstants.TEST_DOCUMENT_ID);
@@ -307,7 +307,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     }
 
     @Test
-    public void testResourceLookupByProjectId() {
+    public void testResourceLookupByProjectId() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         controller.setProjectId(3073L);
         controller.lookupResource();
@@ -409,7 +409,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     }
 
     @Test
-    public void testResourceLookup() throws IOException {
+    public void testResourceLookup() throws IOException, SolrServerException {
         initControllerFields();
         controller.setTitle("HARP");
         controller.lookupResource();
@@ -465,7 +465,7 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     @Test
     @Rollback
     // special characters need to be escaped or stripped prior to search
-    public void testLookupWithSpecialCharactors() {
+    public void testLookupWithSpecialCharactors() throws SolrServerException, IOException {
         controller.setTerm(L_BL_AW);
         controller.setTitle(L_BL_AW);
         controller.setMinLookupLength(0);

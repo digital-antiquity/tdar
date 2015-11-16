@@ -3,7 +3,7 @@ package org.tdar.struts.action.entity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
-import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.utils.PersistableUtils;
 
@@ -14,7 +14,7 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
     private static final long serialVersionUID = -7469398370759336245L;
 
     @Autowired
-    private transient GenericKeywordService genericKeywordService;
+    private transient GenericService genericService;
 
     private Long id;
     private KeywordType keywordType;
@@ -53,7 +53,7 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
             addActionError(getText("simpleKeywordAction.type_required"));
         }
 
-        setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+        setKeyword(genericService.find(getKeywordType().getKeywordClass(), getId()));
     }
 
 }

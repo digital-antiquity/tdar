@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -25,16 +26,16 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
@@ -63,6 +64,8 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient ResourceService resourceService;
+    @Autowired
+    private transient GenericService genericService;
     @Autowired
     private transient AuthorizationService authorizationService;
 
@@ -137,13 +140,13 @@ public class CollectionController extends AbstractPersistableController<Resource
             return INPUT;
         }
 
-        List<Resource> resourcesToRemove = resourceService.findAll(Resource.class, toRemove);
-        List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
+        List<Resource> resourcesToRemove = genericService.findAll(Resource.class, toRemove);
+        List<Resource> resourcesToAdd = genericService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
 
-        List<Resource> publicResourcesToRemove = resourceService.findAll(Resource.class, publicToRemove);
-        List<Resource> publicResourcesToAdd = resourceService.findAll(Resource.class, publicToAdd);
+        List<Resource> publicResourcesToRemove = genericService.findAll(Resource.class, publicToRemove);
+        List<Resource> publicResourcesToAdd = genericService.findAll(Resource.class, publicToAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
@@ -420,7 +423,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @SuppressWarnings("rawtypes")
-    @Override
+//    @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();

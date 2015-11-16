@@ -2,10 +2,12 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,9 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
+import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.TdarActionException;
 
@@ -66,7 +68,7 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testInstitutionSearchWordPlacement() throws TdarActionException {
+    public void testInstitutionSearchWordPlacement() throws TdarActionException, SolrServerException, IOException {
         List<Institution> insts = setupInstitutionSearch();
         controller.setQuery("Air Force");
         controller.searchInstitutions();
@@ -81,7 +83,7 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testInstitutionSearchCaseInsensitive() throws TdarActionException {
+    public void testInstitutionSearchCaseInsensitive() throws TdarActionException, SolrServerException, IOException {
         List<Institution> insts = setupInstitutionSearch();
         controller.setQuery("air force");
         controller.searchInstitutions();

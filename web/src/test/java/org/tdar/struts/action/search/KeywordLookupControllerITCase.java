@@ -2,8 +2,10 @@ package org.tdar.struts.action.search;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
@@ -25,7 +27,7 @@ public class KeywordLookupControllerITCase extends AbstractIntegrationController
     }
 
     @Test
-    public void testKeywordLookup() {
+    public void testKeywordLookup() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), GeographicKeyword.class, CultureKeyword.class);
         controller.setKeywordType("CultureKeyword");
         controller.setTerm("Folsom");
@@ -35,7 +37,7 @@ public class KeywordLookupControllerITCase extends AbstractIntegrationController
     }
 
     @Test
-    public void testSiteNameKeywordLookup() {
+    public void testSiteNameKeywordLookup() throws SolrServerException, IOException {
         SiteNameKeyword keyword = new SiteNameKeyword();
         keyword.setLabel("18-ST-389");
         genericService.saveOrUpdate(keyword);

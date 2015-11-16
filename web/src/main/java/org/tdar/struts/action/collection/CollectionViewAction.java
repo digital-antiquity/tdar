@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
@@ -35,15 +36,14 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -376,7 +376,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     @SuppressWarnings("rawtypes")
-    @Override
+//    @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();

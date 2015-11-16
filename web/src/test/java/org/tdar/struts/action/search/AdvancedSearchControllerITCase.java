@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -31,6 +31,7 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
@@ -64,12 +65,11 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.service.SearchFieldType;
+import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.SearchParameters;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.range.DateRange;
 
@@ -385,7 +385,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testMaterialKeywords() {
         // FIXME: magic numbers
-        Keyword keyword = genericKeywordService.find(MaterialKeyword.class, 2L);
+        Keyword keyword = genericService.find(MaterialKeyword.class, 2L);
         firstGroup().getMaterialKeywordIdLists().add(Arrays.asList(keyword.getId().toString()));
         doSearch();
         assertTrue("we should get back at least one hit", !controller.getResults().isEmpty());
@@ -1100,8 +1100,8 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         istanbul.setLabel(ISTANBUL);
         GeographicKeyword constantinople = new GeographicKeyword();
         constantinople.setLabel(CONSTANTINOPLE);
-        genericKeywordService.save(istanbul);
-        genericKeywordService.save(constantinople);
+        genericService.save(istanbul);
+        genericService.save(constantinople);
         doc1.getGeographicKeywords().add(istanbul);
         doc2.getGeographicKeywords().add(constantinople);
         genericService.saveOrUpdate(doc1);

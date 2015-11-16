@@ -167,13 +167,6 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
         return startRecord - recordsPerPage;
     }
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public ProjectionModel getProjectionModel() {
         return projectionModel;

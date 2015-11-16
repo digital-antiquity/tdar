@@ -3,9 +3,11 @@ package org.tdar.struts.action.search;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +34,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testInstitutionWithAcronym() {
+    public void testInstitutionWithAcronym() throws SolrServerException, IOException {
         Institution inst = new Institution("Arizona State University (ASU)");
         genericService.saveOrUpdate(inst);
         genericService.saveOrUpdate(inst);
@@ -47,7 +49,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testInstitutionLookupWithNoResults() {
+    public void testInstitutionLookupWithNoResults() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("fdaksfddfde");
         controller.lookupInstitution();
@@ -56,7 +58,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
     }
 
     @Test
-    public void testInstitutionLookupWithOneResult() {
+    public void testInstitutionLookupWithOneResult() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("tfqa");
         controller.lookupInstitution();
@@ -66,7 +68,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     // given test script, searching 'digital' should return multiple results that start with 'Digital Antiquity'
     @Test
-    public void testInstitutionLookupWithMultiple() {
+    public void testInstitutionLookupWithMultiple() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         controller.setInstitution("University");
         controller.lookupInstitution();
@@ -77,7 +79,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
     // searching for string witn blanks should yield zero results.
     @Test
     @Rollback(true)
-    public void testInstitutionLookupWithBlanks() {
+    public void testInstitutionLookupWithBlanks() throws SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         String blanks = "    ";
         controller.setInstitution(blanks);
@@ -93,7 +95,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testMultiWordInstitution() {
+    public void testMultiWordInstitution() throws SolrServerException, IOException {
         String name1 = "U.S. Department of the Interior";
         String term = "U.S. Department of";
 
@@ -108,7 +110,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testPrefixUppercase() {
+    public void testPrefixUppercase() throws SolrServerException, IOException {
         List<Institution> insts = setupInstitutionsForLookup();
         String lookingFor = "U.S.";
         initControllerFields();
@@ -125,7 +127,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testPrefixLowercase() {
+    public void testPrefixLowercase() throws SolrServerException, IOException {
         List<Institution> insts = setupInstitutionsForLookup();
         initControllerFields();
         controller.setInstitution("u.s.");
@@ -140,7 +142,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testPrefixWithoutPunctuationMatchesPunctuation() {
+    public void testPrefixWithoutPunctuationMatchesPunctuation() throws SolrServerException, IOException {
         List<Institution> insts = setupInstitutionsForLookup();
         initControllerFields();
         controller.setInstitution("US");

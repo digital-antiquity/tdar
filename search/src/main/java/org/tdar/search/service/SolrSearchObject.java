@@ -13,10 +13,10 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.QueryBuilder;
 
-public class SolrSearchObject {
+public class SolrSearchObject<I extends Indexable> {
 
     private List<Long> idList = new ArrayList<>();
-    private Class<? extends Indexable> objectClass;
+    private Class<I> objectClass;
     private String sortParam = "";
     private int resultSize;
     private int startRecord;
@@ -70,7 +70,7 @@ public class SolrSearchObject {
         return idList;
     }
 
-    public Class<? extends Indexable> getObjectClass() {
+    public Class<I> getObjectClass() {
         return objectClass;
     }
 

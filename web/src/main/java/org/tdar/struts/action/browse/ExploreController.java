@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -28,12 +29,13 @@ import org.tdar.core.cache.BrowseYearCountCache;
 import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.FacetGroup;
+import org.tdar.search.service.SearchFieldType;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
@@ -86,6 +88,9 @@ public class ExploreController extends AbstractLookupController {
     private transient GenericKeywordService genericKeywordService;
 
     @Autowired
+    private transient GenericService genericService;
+
+    @Autowired
     private transient SearchService searchService;
 
     @Autowired
@@ -97,8 +102,8 @@ public class ExploreController extends AbstractLookupController {
     @Action(EXPLORE)
     public String explore() throws IOException {
         setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
-        setMaterialTypes(genericKeywordService.findAllWithCache(MaterialKeyword.class));
-        setInvestigationTypes(genericKeywordService.findAllWithCache(InvestigationType.class));
+        setMaterialTypes(genericService.findAllWithCache(MaterialKeyword.class));
+        setInvestigationTypes(genericService.findAllWithCache(InvestigationType.class));
         setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
         setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
         setupTimelineData();
@@ -115,7 +120,7 @@ public class ExploreController extends AbstractLookupController {
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
         try {
             getRecentResources().addAll(searchService.findMostRecentResources(10, getAuthenticatedUser(), this));
-        } catch (ParseException pe) {
+        } catch (ParseException | SolrServerException pe) {
             getLogger().debug("parse exception", pe);
         }
         return SUCCESS;

@@ -1,5 +1,6 @@
 package org.tdar.struts.action.browse;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -32,13 +34,13 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.service.SearchFieldType;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -131,6 +133,10 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
             getLogger().warn("search parse exception", tdre);
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
+            getLogger().warn("search parse exception", e);
+        } catch (SolrServerException e) {
+            getLogger().warn("search parse exception", e);
+        } catch (IOException e) {
             getLogger().warn("search parse exception", e);
         }
         setSearchDescription(getText("browseController.all_tdar_collections"));

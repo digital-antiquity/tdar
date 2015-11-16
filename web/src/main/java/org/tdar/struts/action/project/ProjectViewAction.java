@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -19,13 +20,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
@@ -226,7 +226,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     }
 
     @SuppressWarnings("rawtypes")
-    @Override
+//    @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         List<FacetGroup<? extends Enum>> group = new ArrayList<>();
         // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();

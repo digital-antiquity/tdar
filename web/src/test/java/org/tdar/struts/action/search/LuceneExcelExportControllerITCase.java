@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -27,7 +27,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.external.session.SessionData;
-import org.tdar.core.service.search.SearchIndexService;
+import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;

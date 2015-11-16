@@ -9,7 +9,6 @@ package org.tdar.core.bean;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;

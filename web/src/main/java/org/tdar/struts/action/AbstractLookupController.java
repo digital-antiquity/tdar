@@ -7,6 +7,7 @@
 package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,11 +18,12 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.hibernate.search.FullTextQuery;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -32,11 +34,9 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.ReservedSearchParameters;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -46,6 +46,8 @@ import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.ReservedSearchParameters;
+import org.tdar.search.service.SearchService;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -96,7 +98,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     @Autowired
     ObfuscationService obfuscationService;
 
-    protected void handleSearch(QueryBuilder q) throws ParseException {
+    protected void handleSearch(QueryBuilder q) throws ParseException, SolrServerException, IOException {
         searchService.handleSearch(q, this, this);
     }
 
@@ -111,10 +113,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public int getMinLookupLength() {
         return minLookupLength;
     }
+    
+    public abstract List<FacetGroup<? extends Enum>> getFacetFields();
 
-    public void addFacets(FullTextQuery ftq) {
-        // empty method, overriden if needed
-    }
+//    public void addFacets(FullTextQuery ftq) {
+//        // empty method, overriden if needed
+//    }
 
     public void setMinLookupLength(int minLookupLength) {
         this.minLookupLength = minLookupLength;
@@ -226,7 +230,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
     protected QueryPartGroup processReservedTerms(ActionSupport support) {
-        authorizationService.initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
+        searchService.initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
         return getReservedSearchParameters().toQueryPartGroup(support);
     }
 
@@ -413,7 +417,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-    public String findPerson(String firstName, String term, String lastName, String institution, String email, String registered) {
+    public String findPerson(String firstName, String term, String lastName, String institution, String email, String registered) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.PERSON);
         QueryBuilder q = new PersonQueryBuilder(Operator.AND);
         boolean valid = false;
@@ -515,7 +519,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return getLookupSource().getCollectionName();
     }
 
-    public String findInstitution(String institution) {
+    public String findInstitution(String institution) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.INSTITUTION);
         QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         if (checkMinString(institution)) {

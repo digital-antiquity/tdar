@@ -3,7 +3,6 @@ package org.tdar.struts.action;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.jaxp13.Validator;
@@ -62,8 +60,8 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchService;
+import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.ErrorListener;
 import org.tdar.utils.PersistableUtils;
 

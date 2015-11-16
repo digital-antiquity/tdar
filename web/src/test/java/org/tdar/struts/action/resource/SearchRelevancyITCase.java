@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -23,11 +24,10 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchParameters;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.dao.SearchDao;
+import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.SearchParameters;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.search.AdvancedSearchController;
 
@@ -40,7 +40,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     @Autowired
     SearchIndexService searchIndexService;
     @Autowired
-    HibernateSearchDao hibernateSearchDao;
+    SearchDao hibernateSearchDao;
 
     Document resourceWithTitleMatch;
     Document resourceWithKeywordMatch;

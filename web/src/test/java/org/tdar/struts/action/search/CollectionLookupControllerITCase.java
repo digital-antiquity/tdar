@@ -8,12 +8,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -21,7 +22,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
-import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.struts.action.lookup.CollectionLookupAction;
 
@@ -45,7 +45,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testCollectionLookup() throws IOException {
+    public void testCollectionLookup() throws IOException, SolrServerException {
         setupCollections();
         controller.setTerm("Kin");
         controller.lookupResourceCollection();
@@ -72,7 +72,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testCollectionLookupUnauthenticated() {
+    public void testCollectionLookupUnauthenticated() throws SolrServerException, IOException {
         setupCollections();
         controller = generateNewController(CollectionLookupAction.class);
         initAnonymousUser(controller);
@@ -102,7 +102,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicOwner() {
+    public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
         controller.setTerm("test");
         controller.lookupResourceCollection();
@@ -111,7 +111,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUser() {
+    public void testInvisibleCollectionLookupFoundByBasicUser() throws SolrServerException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
         init(controller, getBasicUser());
         controller.setTerm("test");
@@ -121,7 +121,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUserForModification() {
+    public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SolrServerException, IOException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
         init(controller, getBasicUser());
         controller.setTerm("test");

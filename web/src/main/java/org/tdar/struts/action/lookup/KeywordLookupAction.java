@@ -1,11 +1,13 @@
 package org.tdar.struts.action.lookup;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -52,7 +54,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
     @Action(value = "keyword", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
-    public String lookupKeyword() {
+    public String lookupKeyword() throws SolrServerException, IOException {
         // only return results if query length has enough characters
         getLogger().trace("term: {} , minLength: {}", getTerm(), getMinLookupLength());
         setLookupSource(LookupSource.KEYWORD);

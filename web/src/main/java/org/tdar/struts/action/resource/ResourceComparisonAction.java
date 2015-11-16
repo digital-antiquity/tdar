@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.resource.ResourceService;
+import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
@@ -29,11 +29,11 @@ public class ResourceComparisonAction extends AuthenticationAware.Base implement
     private List<Resource> resources;
     
     @Autowired
-    private ResourceService resourceService;
+    private GenericService genericService;
     
     @Override
     public void prepare() throws Exception {
-        resources = resourceService.findAll(Resource.class, ids);
+        resources = genericService.findAll(Resource.class, ids);
     }
 
     @Action(value = "compare", results = {

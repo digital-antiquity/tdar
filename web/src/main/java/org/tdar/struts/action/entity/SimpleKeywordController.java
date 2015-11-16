@@ -10,18 +10,18 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
@@ -176,7 +176,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     }
 
     @SuppressWarnings("rawtypes")
-    @Override
+//    @Override
     public List<FacetGroup<? extends Enum>> getFacetFields() {
         // TODO Auto-generated method stub
         return null;

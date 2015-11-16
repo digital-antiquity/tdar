@@ -1,10 +1,12 @@
 package org.tdar.struts.action.search;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -12,14 +14,14 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -43,7 +45,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
     @Action(value = "collections", results = {
             @Result(name = SUCCESS, location = "collections.ftl"),
             @Result(name = INPUT, location = "collection.ftl") })
-    public String searchCollections() throws TdarActionException {
+    public String searchCollections() throws TdarActionException, SolrServerException, IOException {
         setSortOptions(SortOption.getOptionsForContext(ResourceCollection.class));
         try {
             return collectionSearch();
@@ -53,7 +55,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         }
     }
 
-    private String collectionSearch() {
+    private String collectionSearch() throws SolrServerException, IOException {
         setLookupSource(LookupSource.COLLECTION);
         setMode("COLLECTION SEARCH:");
         determineCollectionSearchTitle();

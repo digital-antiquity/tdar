@@ -1,5 +1,6 @@
 package org.tdar.struts.action.search;
 
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,10 +11,12 @@ import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -34,14 +37,13 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchParameters;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.SearchFieldType;
+import org.tdar.search.service.SearchParameters;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -60,15 +62,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
-    private transient AuthorizationService authorizationService;
-
-    @Autowired
-    private transient GenericKeywordService genericKeywordService;
-
-    @Autowired
-    private transient UrlService urlService;
 
     private DisplayOrientation orientation;
     // error message of last resort. User entered something we did not
@@ -109,7 +102,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private boolean collectionSearchBoxVisible = false;
 
     // FIXME: "explore" results belong in a separate controller.
-    public String exploreSearch() throws TdarActionException {
+    public String exploreSearch() throws TdarActionException, SolrServerException, IOException {
         processExploreRequest();
         advancedSearch();
         return SUCCESS;
@@ -218,7 +211,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         return null;
     }
 
-    private String advancedSearch() throws TdarActionException {
+    private String advancedSearch() throws TdarActionException, SolrServerException, IOException {
         determineSearchTitle();
         setMode("SEARCH");
         // beforeSearch();
@@ -322,7 +315,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         }
     }
 
-    private String basicSearch() throws TdarActionException {
+    private String basicSearch() throws TdarActionException, SolrServerException, IOException {
         // translate basic search field(s) so that they can be processed by advancedSearch()
         processBasicSearchParameters();
         return advancedSearch();
@@ -714,7 +707,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         this.collectionSearchBoxVisible = collectionSearchBoxVisible;
     }
 
-    public String performResourceSearch() throws TdarActionException {
+    public String performResourceSearch() throws TdarActionException, SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);
         // we need this for tests to be able to change the projection model so we get full objects
         if (getProjectionModel() == null) {

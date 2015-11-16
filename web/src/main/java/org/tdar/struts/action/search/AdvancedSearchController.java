@@ -1,5 +1,6 @@
 package org.tdar.struts.action.search;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -7,7 +8,8 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.NotImplementedException;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -35,11 +37,9 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchParameters;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
@@ -47,6 +47,9 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.service.SearchFieldType;
+import org.tdar.search.service.SearchParameters;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -80,6 +83,8 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     @Autowired
     private transient GenericKeywordService genericKeywordService;
+    @Autowired
+    private transient GenericService genericService;
 
     private DisplayOrientation orientation;
 
@@ -134,7 +139,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     }
 
     @SuppressWarnings("unchecked")
-    private void searchCollectionsToo() {
+    private void searchCollectionsToo() throws SolrServerException, IOException {
         QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         searchService.buildResourceCollectionQuery(queryBuilder, getAuthenticatedUser(), getAllGeneralQueryFields());
 
@@ -266,7 +271,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
-        return genericKeywordService.findAllWithCache(InvestigationType.class);
+        return genericService.findAllWithCache(InvestigationType.class);
     }
 
     public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {

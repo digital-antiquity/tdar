@@ -9,7 +9,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -17,12 +18,13 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -39,8 +41,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
@@ -108,7 +109,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 	// dashboard;
 	// toggles let us turn off specific queries / parts of homepage
 
-	private void setupRecentResources() {
+	private void setupRecentResources() throws SolrServerException, IOException {
 		int count = 10;
 		try {
 			getFeaturedResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
@@ -123,7 +124,7 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 
 	@Override
 	@Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })
-	public String execute() {
+	public String execute() throws SolrServerException, IOException {
 		setupRecentResources();
 		setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
 		getLogger().trace("find recently edited resources");

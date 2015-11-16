@@ -1,23 +1,25 @@
 package org.tdar.struts.action.search;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SortOption;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralCreatorQueryPart;
@@ -42,7 +44,7 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
     @Action(value = "institutions", results = {
             @Result(name = SUCCESS, location = "institutions.ftl"),
             @Result(name = INPUT, location = "institution.ftl") })
-    public String searchInstitutions() throws TdarActionException {
+    public String searchInstitutions() throws TdarActionException, SolrServerException, IOException {
         setSortOptions(SortOption.getOptionsForContext(Institution.class));
         setMinLookupLength(0);
         setLookupSource(LookupSource.INSTITUTION);

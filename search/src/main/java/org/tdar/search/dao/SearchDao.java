@@ -2,6 +2,7 @@ package org.tdar.search.dao;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -66,9 +67,9 @@ public class SearchDao {
      */
     @SuppressWarnings("rawtypes")
     public <F extends FacetValue> void processFacets(SolrSearchObject ftq, SearchResultHandler<?> resultHandler) {
-        if (resultHandler.getFacetFields() == null) {
-            return;
-        }
+//        if (resultHandler.getFacetFields() == null) {
+//            return;
+//        }
 
         // for (FacetGroup<? extends Enum> facet : resultHandler.getFacetFields()) {
         // FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
@@ -93,8 +94,8 @@ public class SearchDao {
      * @param user
      * @return
      */
-    private void convertProjectedResultIntoObjects(SearchResultHandler<?> resultHandler, SolrSearchObject results) {
-        List<Indexable> toReturn = new ArrayList<>();
+    private <I extends Indexable> void convertProjectedResultIntoObjects(SearchResultHandler<I> resultHandler, SolrSearchObject results) {
+        List<I> toReturn = new ArrayList<>();
         ProjectionModel projectionModel = resultHandler.getProjectionModel();
         if (projectionModel == null) {
             projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
@@ -109,13 +110,13 @@ public class SearchDao {
                 case RESOURCE_PROXY_INVALIDATE_CACHE:
                 case RESOURCE_PROXY:
                     toReturn.clear();
-                    toReturn.addAll(datasetDao.findSkeletonsForSearch(false, results.getIdList().toArray(new Long[0])));
+                    toReturn.addAll((Collection<I>)(Collection<?>)datasetDao.findSkeletonsForSearch(false, (Long[])results.getIdList().toArray(new Long[0])));
                     break;
                 default:
                     break;
             }
 
-            for (Indexable p : toReturn) {
+            for (I p : toReturn) {
                 if (PersistableUtils.isNullOrTransient(p)) {
                     continue;
                 }
@@ -168,8 +169,8 @@ public class SearchDao {
      * @param ids
      * @return
      */
-    private List<Indexable> createSpareObjectFromProjection(SearchResultHandler<?> resultHandler, SolrSearchObject results) {
-        List<Indexable> toReturn = new ArrayList<>();
+    private <I extends Indexable> List<I> createSpareObjectFromProjection(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
+        List<I> toReturn = new ArrayList<>();
         ProjectionModel projectionModel = resultHandler.getProjectionModel();
         if (projectionModel == null) {
             projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
@@ -177,7 +178,7 @@ public class SearchDao {
         for (Long id : results.getIdList()) {
 
             try {
-                Indexable p = results.getObjectClass().newInstance();
+                I p = results.getObjectClass().newInstance();
                 p.setId(id);
                 toReturn.add(p);
             } catch (Exception e) {
