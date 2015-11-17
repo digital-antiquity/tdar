@@ -11,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.request.UpdateRequest;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
@@ -50,6 +52,8 @@ import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
+
+import com.joestelmach.natty.generated.DateParser.time_date_separator_return;
 
 @Service
 @Transactional(readOnly = true)
@@ -95,6 +99,7 @@ public class SearchIndexService {
     public void indexAllPeople() throws SolrServerException, IOException {
         List<Person> findAll = genericDao.findAll(Person.class);
         for (Person person : findAll) {
+            
             template.deleteById(generateId(person));
             SolrInputDocument document = PersonDocumentConverter.convert(person);
             template.add(CoreNames.PEOPLE, document);
@@ -144,7 +149,7 @@ public class SearchIndexService {
         for (Resource resource : genericDao.findAll(Resource.class)) {
             template.deleteById(generateId(resource));
             SolrInputDocument document = ResourceDocumentConverter.convert(resource, resourceService, resourceCollectionService);
-            template.add(CoreNames.RESOURCE, document);
+            template.add(CoreNames.RESOURCES, document);
             logger.debug("adding: " + resource.getId() + " " + resource.getName());
         }
         template.commit();
@@ -277,7 +282,7 @@ public class SearchIndexService {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
             currentProgress = numProcessed / total.floatValue();
-            index(fullTextSession, item, deleteFirst);
+            index(item, deleteFirst);
             numProcessed++;
             float totalProgress = ((currentProgress * maxPer) + percent);
             if ((numProcessed % divisor) == 0) {
@@ -317,9 +322,11 @@ public class SearchIndexService {
      * @param fullTextSession
      * @param item
      */
-    private void index(Object fullTextSession, Indexable item, boolean deleteFirst) {
+    private SolrInputDocument index(Indexable item, boolean deleteFirst) {
         try {
+            Class cls = item.getClass();
             if (deleteFirst) {
+                template.deleteById(generateId(item));
                 // fullTextSession.purge(item.getClass(), item.getId());
             }
 
@@ -330,11 +337,35 @@ public class SearchIndexService {
                     // logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
                 }
             }
-            // fullTextSession.index(item);
+            
+            SolrInputDocument document = null;
+            String core = null;
+            if (item instanceof Person) {
+                document = PersonDocumentConverter.convert((Person)item);
+                core = CoreNames.PEOPLE;
+            }
+            if (item instanceof Institution) {
+                document = InstitutionDocumentConverter.convert((Institution)item);
+                core = CoreNames.INSTITUTIONS;
+            }
+            if (item instanceof Resource) {
+                document = ResourceDocumentConverter.convert((Resource)item, resourceService, resourceCollectionService);
+                core = CoreNames.RESOURCES;
+            }
+            if (item instanceof ResourceCollection) {
+                document = CollectionDocumentConverter.convert((ResourceCollection)item);
+                core = CoreNames.COLLECTIONS;
+            }
+            if (item instanceof Keyword) {
+                document = KeywordDocumentConverter.convert((Keyword)item);
+                core = CoreNames.KEYWORDS;
+            }
+            template.add(core,document);
+            return document;
         } catch (Throwable t) {
             logger.error("error ocurred in indexing", t);
-            throw t;
         }
+        return null;
     }
 
     /**
@@ -367,9 +398,11 @@ public class SearchIndexService {
     /**
      * @see #indexCollection(Collection)
      * @param collectionToReindex
+     * @throws IOException 
+     * @throws SolrServerException 
      */
     @Async
-    public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) {
+    public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) throws SolrServerException, IOException {
         indexCollection(collectionToReindex);
     }
 
@@ -398,9 +431,11 @@ public class SearchIndexService {
     /**
      * @see #indexCollection(Collection)
      * @param indexable
+     * @throws IOException 
+     * @throws SolrServerException 
      */
     @SuppressWarnings("unchecked")
-    public <C extends Indexable> void index(C... indexable) {
+    public <C extends Indexable> void index(C... indexable) throws SolrServerException, IOException {
         indexCollection(Arrays.asList(indexable));
     }
 
@@ -408,24 +443,27 @@ public class SearchIndexService {
      * Index a collection of @link Indexable entities
      * 
      * @param indexable
+     * @throws IOException 
+     * @throws SolrServerException 
      */
-    public <C extends Indexable> boolean indexCollection(Collection<C> indexable) {
+    public <C extends Indexable> boolean indexCollection(Collection<C> indexable) throws SolrServerException, IOException {
         boolean exceptions = false;
         if (indexable != null) {
+            List<SolrInputDocument> docs = new ArrayList<>();
             logger.debug("manual indexing ... {}", indexable.size());
             // FullTextSession fullTextSession = getFullTextSession();
             int count = 0;
+            String core = "";
             for (C toIndex : indexable) {
                 count++;
+                core = getCoreForClass(toIndex);
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
-                    index(null, genericDao.merge(toIndex), true);
+                    index(genericDao.merge(toIndex), true);
                     if (count % FLUSH_EVERY == 0) {
                         logger.debug("indexing: {}", toIndex);
                         logger.debug("flush to index ... every {}", FLUSH_EVERY);
-                        // fullTextSession.flushToIndexes();
-                        // fullTextSession.clear();
                     }
                 } catch (Throwable e) {
                     logger.error("exception in indexing, {} [{}]", toIndex, e);
@@ -436,10 +474,41 @@ public class SearchIndexService {
             }
             logger.debug("begin flushing");
             // fullTextSession.flushToIndexes();
+            template.commit(core);
+//            processBatch(docs);
         }
+        
+
         logger.debug("Done indexing collection");
         return exceptions;
     }
+
+    private String getCoreForClass(Indexable item) {
+        if (item instanceof Person) {
+            return CoreNames.PEOPLE;
+        }
+        if (item instanceof Institution) {
+            return CoreNames.INSTITUTIONS;
+        }
+        if (item instanceof Resource) {
+            return CoreNames.RESOURCES;
+        }
+        if (item instanceof ResourceCollection) {
+            return CoreNames.COLLECTIONS;
+        }
+        if (item instanceof Keyword) {
+            return CoreNames.KEYWORDS;
+        }        // TODO Auto-generated method stub
+        return null;
+    }
+
+//    private void processBatch(List<SolrInputDocument> docs) throws SolrServerException, IOException {
+//        UpdateRequest req = new UpdateRequest();
+//        req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
+//        req.add( docs );
+//        UpdateResponse rsp = req.process( template );
+//        logger.error("resp: {}", rsp);
+//    }
 
     /**
      * Similar to @link GenericService.synchronize() forces all pending indexing actions to be written.
@@ -518,8 +587,10 @@ public class SearchIndexService {
      * Indexes a @link Project and it's contents. It loads the project's child @link Resource entries before indexing
      * 
      * @param project
+     * @throws IOException 
+     * @throws SolrServerException 
      */
-    public boolean indexProject(Project project) {
+    public boolean indexProject(Project project) throws SolrServerException, IOException {
         setupProjectForIndexing(project);
         index(project);
         logger.debug("reindexing project contents");
@@ -541,15 +612,17 @@ public class SearchIndexService {
     /**
      * @see #indexProject(Project)
      * @param project
+     * @throws IOException 
+     * @throws SolrServerException 
      */
     @Async
     @Transactional(readOnly = true)
-    public void indexProjectAsync(final Project project) {
+    public void indexProjectAsync(final Project project) throws SolrServerException, IOException {
         indexProject(project);
     }
 
     @Transactional(readOnly = true)
-    public boolean indexProject(Long id) {
+    public boolean indexProject(Long id) throws SolrServerException, IOException {
         return indexProject(genericDao.find(Project.class, id));
     }
 

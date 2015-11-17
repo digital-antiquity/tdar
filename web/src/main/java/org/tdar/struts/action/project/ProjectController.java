@@ -1,10 +1,12 @@
 package org.tdar.struts.action.project;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -66,7 +68,7 @@ public class ProjectController extends AbstractResourceController<Project> {
     }
 
     @Override
-    public void indexPersistable() {
+    public void indexPersistable() throws SolrServerException, IOException {
         if (isAsync()) {
             searchIndexService.indexProjectAsync(getPersistable());
         } else {

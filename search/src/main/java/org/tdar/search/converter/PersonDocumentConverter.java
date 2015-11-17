@@ -13,6 +13,7 @@ public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
         doc.setField(QueryFieldNames.FIRST_NAME, person.getFirstName());
         doc.setField(QueryFieldNames.LAST_NAME, person.getLastName());
         doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, person.getProperName());
+        doc.setField(QueryFieldNames.NAME, person.getProperName());
         doc.setField(QueryFieldNames.REGISTERED, person.isRegistered());
         if (person instanceof TdarUser) {
             TdarUser user = (TdarUser) person;

@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>search</artifactId>
     <packaging>jar</packaging>
-    <name>The Digital Archaeological Record (search)</name>
+    <name>tDAR (search)</name>
 
     <properties>
         <lucene.version>5.3.1</lucene.version>

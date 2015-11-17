@@ -8,7 +8,9 @@
     <field name="institution.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="institution.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     
-    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="false" multiValued="true" />
+    <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
+    <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
     <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>

@@ -11,10 +11,10 @@ public class AbstractSolrDocumentConverter {
     public static SolrInputDocument convertPersistable(Persistable persist) {
         SolrInputDocument doc = new SolrInputDocument();
         doc.setField(QueryFieldNames.ID, persist.getId());
-        doc.setField(QueryFieldNames.CLASS, persist.getClass());
-        doc.setField("_id", persist.getClass().getSimpleName() + "-" + persist.getId());
+        doc.setField(QueryFieldNames.CLASS, persist.getClass().getName());
+        doc.setField(QueryFieldNames._ID, persist.getClass().getSimpleName() + "-" + persist.getId());
         if (persist instanceof HasStatus) {
-            doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus());
+            doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus().name());
         }
         if (persist instanceof Updatable) {
             Updatable up = (Updatable) persist;

@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.TimeZone;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -247,7 +249,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         }
     }
 
-    protected void indexPersistable() {
+    protected void indexPersistable() throws SolrServerException, IOException {
         if (persistable instanceof Indexable) {
             ((Indexable) persistable).setReadyToIndex(true);
             searchIndexService.index((Indexable) persistable);

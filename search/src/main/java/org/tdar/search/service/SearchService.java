@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -70,18 +71,18 @@ import com.opensymphony.xwork2.TextProvider;
 
  @Service
  @Transactional
- public class SearchService {
+ public class SearchService<I extends Indexable> {
 
      private final GenericService genericService;
 
-     private final SearchDao searchDao;
+     private final SearchDao<I> searchDao;
 
      private final AuthorizationService authorizationService;
      private final AuthenticationService authenticationService;
 
      @Autowired
      public SearchService(SessionFactory sessionFactory, GenericService genericDao, 
-             AuthenticationService authenticationService, AuthorizationService authorizationService, SearchDao searchDao) {
+             AuthenticationService authenticationService, AuthorizationService authorizationService, SearchDao<I> searchDao) {
          this.genericService = genericDao;
          this.searchDao = searchDao;
          this.authenticationService = authenticationService;
@@ -105,8 +106,8 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws IOException 
      * @throws SolrServerException 
       */
-     public SolrSearchObject constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler handler, SortOption... sortOptions) throws ParseException, SolrServerException, IOException {
-         return searchDao.search(new SolrSearchObject(queryBuilder, sortOptions), handler);
+     public SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler<I> handler, SortOption... sortOptions) throws ParseException, SolrServerException, IOException {
+         return searchDao.search(new SolrSearchObject<I>(queryBuilder, sortOptions, handler), handler);
      } 
 
      /**
@@ -127,21 +128,17 @@ import com.opensymphony.xwork2.TextProvider;
          }
          long num = System.currentTimeMillis();
          hydrateQueryParts(q);
-         SolrSearchObject ftq = constructSolrSearch(q, resultHandler, resultHandler.getSortField(), resultHandler.getSecondarySortField());
+         SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, resultHandler.getSortField(), resultHandler.getSecondarySortField());
 
          resultHandler.setTotalRecords(ftq.getResultSize());
-         ftq.setFirstResult(resultHandler.getStartRecord());
-         ftq.setMaxResults(resultHandler.getRecordsPerPage());
          long lucene = System.currentTimeMillis() - num;
          num = System.currentTimeMillis();
          logger.trace("begin adding facets");
          searchDao.processFacets(ftq, resultHandler);
          logger.trace("completed adding facets");
          logger.trace("completed hibernate hydration ");
-         String queryText = "";
-         if (q.getQuery() != null) {
-             queryText = q.getQuery().toString();
-         }
+         String queryText = ftq.getQueryString();
+
          Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                  lucene, (System.currentTimeMillis() - num),
                  ftq.getResultSize(),
@@ -383,8 +380,8 @@ import com.opensymphony.xwork2.TextProvider;
          q.append(new FieldQueryPart<>("status", Status.ACTIVE));
          List<Creator> list = null;
          logger.trace(q.generateQueryString());
-         SearchResultHandler<?> handler = new SearchResult();
-        SolrSearchObject search = searchDao.search(new SolrSearchObject(q, ((SortOption[]) null)), handler );
+         SearchResultHandler<I> handler = (SearchResultHandler<I>) new SearchResult();
+        SolrSearchObject<I> search = searchDao.search(new SolrSearchObject<I>(q, ((SortOption[]) null),handler), handler );
          search.setMaxResults(maxToResolve);
          list = (List<Creator>)search.getResultList();
          if (CollectionUtils.isNotEmpty(list)) {

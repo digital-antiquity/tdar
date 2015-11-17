@@ -28,7 +28,7 @@ import com.opensymphony.xwork2.TextProvider;
  * 
  */
 public abstract class QueryBuilder extends QueryPartGroup {
-    private static final String _AUTO = "_auto";
+//    private static final String _AUTO = "_auto";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Class<?>[] classes;
 //    private List<DynamicQueryComponent> overrides = new ArrayList<DynamicQueryComponent>();
@@ -57,24 +57,18 @@ public abstract class QueryBuilder extends QueryPartGroup {
      * classes specified by looking at the annotations on the classes and
      * extracting the @Field annotations out.
      */
-    public Query buildQuery() throws ParseException {
-        String qstring = rawQuery;
-        if (StringUtils.isBlank(qstring)) {
-            qstring = this.toString();
-        }
-        setQuery(new MatchAllDocsQuery());
-        if (!qstring.isEmpty()) {
-            setQuery(getQueryParser().parse(qstring));
-            logger.trace(getQuery().toString());
-        }
-        return getQuery();
-    }
-
-    protected Map<String, Class<? extends Analyzer>> createPartialLabelOverrides() {
-        Map<String, Class<? extends Analyzer>> map = new HashMap<String, Class<? extends Analyzer>>();
-        map.put(_AUTO, NonTokenizingLowercaseKeywordAnalyzer.class);
-        return map;
-    }
+//    public Query buildQuery() throws ParseException {
+//        String qstring = rawQuery;
+//        if (StringUtils.isBlank(qstring)) {
+//            qstring = this.toString();
+//        }
+//        setQuery(new MatchAllDocsQuery());
+//        if (!qstring.isEmpty()) {
+//            setQuery(getQueryParser().parse(qstring));
+//            logger.trace(getQuery().toString());
+//        }
+//        return getQuery();
+//    }
 
     /*
      * Use setClasses to specify exactly which classes should be inspected to
@@ -91,24 +85,24 @@ public abstract class QueryBuilder extends QueryPartGroup {
         return classes;
     }
 
-    public String stringContainedInLabel(String label) {
-        if (createPartialLabelOverrides() == null) {
-            return null;
-        }
-        Set<String> omitContainedLabels = getPartialLabelOverrides().keySet();
-
-        for (String omitItem : omitContainedLabels) {
-            if (StringUtils.containsIgnoreCase(label, omitItem)) {
-                return omitItem;
-            }
-        }
-        return null;
-    }
-
-    public Map<String, Class<? extends Analyzer>> getPartialLabelOverrides() {
-        // TODO: see if it's safe to cache this
-        return createPartialLabelOverrides();
-    }
+//    public String stringContainedInLabel(String label) {
+//        if (createPartialLabelOverrides() == null) {
+//            return null;
+//        }
+//        Set<String> omitContainedLabels = getPartialLabelOverrides().keySet();
+//
+//        for (String omitItem : omitContainedLabels) {
+//            if (StringUtils.containsIgnoreCase(label, omitItem)) {
+//                return omitItem;
+//            }
+//        }
+//        return null;
+//    }
+//
+//    public Map<String, Class<? extends Analyzer>> getPartialLabelOverrides() {
+//        // TODO: see if it's safe to cache this
+//        return createPartialLabelOverrides();
+//    }
 
     @Override
     public Operator getOperator() {

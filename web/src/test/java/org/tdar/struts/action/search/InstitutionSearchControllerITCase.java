@@ -34,9 +34,6 @@ public class InstitutionSearchControllerITCase extends AbstractControllerITCase 
     @Autowired
     EntityService entityService;
 
-    @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
-
     private PersonSearchAction controller;
 
     public void AdvancedSearchController() {

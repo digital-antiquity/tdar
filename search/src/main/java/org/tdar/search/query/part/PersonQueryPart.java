@@ -86,8 +86,8 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         }
         if (CollectionUtils.isNotEmpty(insts)) {
             QueryPartGroup group1 = new QueryPartGroup(Operator.OR);
-            group1.append(new FieldQueryPart<String>("institution.name", insts));
-            group1.append(new FieldQueryPart<String>("institution.name_auto", insts));
+            group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME, insts));
+//            group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME_AUTO, insts));
             group.append(group1);
         }
 

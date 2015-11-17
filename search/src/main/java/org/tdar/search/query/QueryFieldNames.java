@@ -83,8 +83,8 @@ public interface QueryFieldNames {
     String TITLE_PHRASE = "title.phrase";
     String DESCRIPTION_PHRASE = "description.phrase";
     String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
-    String NAME_PHRASE = "name_phrase";
-    String NAME_TOKEN = "name_token";
+    String NAME_PHRASE = "name";
+    String NAME_TOKEN = "name";
     String USERNAME = "username";
     String PROPER_AUTO = "proper_name_auto";
     String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
@@ -117,4 +117,5 @@ public interface QueryFieldNames {
     String RESOURCE_IDS = "resourceIds";
     String COLLECTION_PARENT = "parentId";
     String COLLECTION_PARENT_LIST = "parentIdList";
+    String _ID = "_id";
 }
