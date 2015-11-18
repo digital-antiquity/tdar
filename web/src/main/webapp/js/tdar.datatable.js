@@ -807,12 +807,12 @@ TDAR.datatable = function() {
         //if dataset has many tables, load & init the table every time user changes the dropdown
         if($select.length) {
             $select.change(function() {
-                _loadThenInit($select.val(),$select.data('namespace'));
+                _loadThenInit($select.val(),$("#browseTable").data("namespace"));
             }).change();
         }
         // if only one dataset,  just load+init the table once
         else {
-            _loadThenInit(config.defaultDataTableId);
+            _loadThenInit(config.defaultDataTableId, $("#browseTable").data("namespace"));
         }
 
     }
