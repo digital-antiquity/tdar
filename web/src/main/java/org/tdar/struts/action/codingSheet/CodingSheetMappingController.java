@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -100,7 +101,11 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
             for (CodingRule transientRule : getCodingRules()) {
                 OntologyNode ontologyNode = transientRule.getOntologyNode();
                 getLogger().debug(" matching column values: {} -> node ids {}", transientRule, ontologyNode);
-
+                
+                if (ontologyNode != null && StringUtils.isNotBlank(ontologyNode.getDisplayName()) && ontologyNode.getId() == null) {
+                    getLogger().error("mapping>> ontology node label has text {}, but id is null for rule: {}", ontologyNode, transientRule);
+                }
+                
                 CodingRule rule = getCodingSheet().getCodingRuleById(transientRule.getId());
                 Ontology ontology = getCodingSheet().getDefaultOntology();
 
