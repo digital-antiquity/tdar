@@ -903,4 +903,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public String getStaticContext() {
         return assistant.getStringProperty("static.context", "");
     }
+
+    public boolean shouldUseLowMemoryPDFMerger() {
+        return assistant.getBooleanProperty("pdf.use_low_mem", false);
+    }
 }

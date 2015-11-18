@@ -19,12 +19,14 @@
     <#if searchHeaderLogoAvailable>
         div.searchheader {
             background-image: url("${hostedContentBaseUrl}/search-header.jpg");
+              background-position: center 0;
         }
     <#elseif searchHeaderEnabled>
         div.searchheader {
 		    background: url(/images/r4/bg-home.jpg);
 			background-repeat: no-repeat;
-        }
+            background-position: center 0;
+          }
     </#if>
     </style>
     <!-- search header url: "${hostedContentBaseUrl}/search-header.jpg" -->

@@ -142,7 +142,7 @@ TDAR.d3tree = (function(console, $, ctx) {
     function _nodeFillClass(d) {
         if (d.class=== 'found') {
             return "found";
-        } else if (d._children ){
+        } else if (d._children && d._children.length > 0){
             return "children"
         }
         return "";

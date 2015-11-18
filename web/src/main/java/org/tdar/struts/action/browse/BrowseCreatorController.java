@@ -222,7 +222,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
         if (isEditor() && getPersistable() instanceof TdarUser) {
             getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser)getPersistable()));
-            getOwnerCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
+            getOwnerCollections().addAll(entityService.findAccessibleResourceCollections((TdarUser)getPersistable()));
 
         }
         
