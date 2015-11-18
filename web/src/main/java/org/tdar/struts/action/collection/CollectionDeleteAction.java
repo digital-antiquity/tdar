@@ -30,7 +30,7 @@ public class CollectionDeleteAction extends AbstractDeleteAction<ResourceCollect
     @Override
     protected ResourceCollection loadPersistable() {
         ResourceCollection collection = resourceCollectionService.find(getId());
-        if (collection.isInternal()) {
+        if (collection == null || collection.isInternal()) {
             return null;
         }
         return collection;
