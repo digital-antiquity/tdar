@@ -95,15 +95,10 @@
             },
             open: function (event, ui) {
                 $("ul.ui-autocomplete").css("width", $(this).parent().width());
-            },
-            change: function (event, ui) {
             }
         });
 
-        //not to be confused with autocomplete 'change' option,  which is actually a custom 'autocompletechange' event
-        //we assume this fires only when you change the textbox and not when via selecting an item from the autocomplete list
-        $(selector).change(function () {
-
+        $(selector).on('autocompletechange', function () {
             var input = this; //'this' is the text input element
             var $input = $(input);
 
@@ -113,32 +108,7 @@
                 $idElement.val("");
                 return;
             }
-
-            //don't allow invalid selection
-            if (true) {
-                var valid = false;
-
-                var inputValue = input.value.toLowerCase();
-                //troll through onto ontologies (and their synonyms) until we find one that matches the value of the input element
-                $.each(flattedOntologyNodes, function (k, v) {
-                    if ($.inArray(inputValue, v.allNames) >= 0) {
-                        valid = true;
-                        var $idElement = $($input.attr("autocompleteIdElement"));
-                        $idElement.val(v.id);
-                        return false;
-                    }
-                });
-
-                if (!valid) {
-                    console.debug("invalid entry - clearing input box and hidden id value");
-                    var $idElement = $($input.attr("autocompleteIdElement"));
-                    $idElement.val("");
-                    $input.addClass("error");
-                }
-
-            }
         });
-
     }
 
     function _autosuggest() {
