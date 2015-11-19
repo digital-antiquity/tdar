@@ -113,6 +113,12 @@
 
         <div class="tdarresults">
             <#assign itemsPerRow = 5 />
+        <#if ((rightSidebar!false) || (leftSidebar!false)) >
+            <#assign itemsPerRow = 4 />
+		</#if>	
+
+
+
             <#nested />
             <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
                     orientation=resourceCollection.orientation    mapPosition="top" mapHeight=mapSize />

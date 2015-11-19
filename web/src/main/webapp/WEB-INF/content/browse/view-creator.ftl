@@ -252,16 +252,18 @@
                         </div>
 
                         <#if editor>
+                            <#list ownerCollections![]>
                         <div class="row">
                             <div class="span12">
                                 <h2>Collection Membership</h2>
                                 <ul>
-                                    <#list ownerCollections as collection>
+					        		<#items as collection>
                                         <li><a href="${collection.detailUrl}">${collection.name}</a></li>
-                                    </#list>
+									</#items>
                                 </ul>
                             </div>
                         </div>
+                            </#list>
                         </#if>
 
 
