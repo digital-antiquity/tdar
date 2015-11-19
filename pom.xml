@@ -95,6 +95,7 @@
             <url>http://maven.imagej.net/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -145,6 +146,7 @@
                 <enabled>false</enabled>
             </snapshots>
             <releases>
+                <updatePolicy>never</updatePolicy>
                 <enabled>true</enabled>
             </releases>
         </repository>
