@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.solr.client.solrj.request.UpdateRequest;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.hibernate.FlushMode;
@@ -35,6 +34,7 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -52,8 +52,6 @@ import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
-
-import com.joestelmach.natty.generated.DateParser.time_date_separator_return;
 
 @Service
 @Transactional(readOnly = true)
@@ -105,7 +103,8 @@ public class SearchIndexService {
             template.add(CoreNames.PEOPLE, document);
             logger.debug("adding: " + person.getId() + " " + person.getProperName());
         }
-        template.commit();
+        UpdateResponse commit = template.commit();
+        logger.debug("response: {}", commit.getResponseHeader());
     }
 
     public void indexAllInstitutions() throws SolrServerException, IOException {
@@ -215,12 +214,12 @@ public class SearchIndexService {
             float percent = 0f;
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
             float maxPer = (1f / classesToIndex.size()) * 100f;
-            for (Class<?> toIndex : classesToIndex) {
+            for (Class<? extends Indexable> toIndex : classesToIndex) {
                 // fullTextSession.purgeAll(toIndex);
                 // sf.optimize(toIndex);
                 Number total = genericDao.count(toIndex);
                 ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
-                indexScrollable(updateReceiver, activity, null, percent, maxPer, toIndex, total, scrollableResults, false);
+                indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
                 // fullTextSession.flushToIndexes();
                 // fullTextSession.clear();
                 percent += maxPer;
@@ -268,8 +267,11 @@ public class SearchIndexService {
      * @param total
      * @param scrollableResults
      */
-    private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, Object fullTextSession, float percent, float maxPer,
-            Class<?> toIndex, Number total, ScrollableResults scrollableResults, boolean deleteFirst) {
+    private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, float percent, float maxPer,
+            Class<? extends Indexable> toIndex, Number total, ScrollableResults scrollableResults, boolean deleteFirst) {
+        if (ResourceAnnotationKey.class.isAssignableFrom(toIndex)) {
+            return;
+        }
         String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
         updateAllStatuses(updateReceiver, activity, message, 0f);
         int divisor = getDivisor(total);
@@ -278,6 +280,7 @@ public class SearchIndexService {
         String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
         Long prevId = 0L;
         Long currentId = 0L;
+        purge(getCoreForClass(toIndex));
         while (scrollableResults.next()) {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
@@ -324,9 +327,9 @@ public class SearchIndexService {
      */
     private SolrInputDocument index(Indexable item, boolean deleteFirst) {
         try {
-            Class cls = item.getClass();
+            String core = getCoreForClass(item.getClass());
             if (deleteFirst) {
-                template.deleteById(generateId(item));
+                template.deleteById(core,generateId(item));
                 // fullTextSession.purge(item.getClass(), item.getId());
             }
 
@@ -339,26 +342,20 @@ public class SearchIndexService {
             }
             
             SolrInputDocument document = null;
-            String core = null;
             if (item instanceof Person) {
                 document = PersonDocumentConverter.convert((Person)item);
-                core = CoreNames.PEOPLE;
             }
             if (item instanceof Institution) {
                 document = InstitutionDocumentConverter.convert((Institution)item);
-                core = CoreNames.INSTITUTIONS;
             }
             if (item instanceof Resource) {
                 document = ResourceDocumentConverter.convert((Resource)item, resourceService, resourceCollectionService);
-                core = CoreNames.RESOURCES;
             }
             if (item instanceof ResourceCollection) {
                 document = CollectionDocumentConverter.convert((ResourceCollection)item);
-                core = CoreNames.COLLECTIONS;
             }
             if (item instanceof Keyword) {
                 document = KeywordDocumentConverter.convert((Keyword)item);
-                core = CoreNames.KEYWORDS;
             }
             template.add(core,document);
             return document;
@@ -380,7 +377,7 @@ public class SearchIndexService {
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
         // FlushMode previousFlushMode = prepare(getFullTextSession());
         AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
-        indexScrollable(updateReceiver, null, null, 0f, 100f, Resource.class, count, results, true);
+        indexScrollable(updateReceiver, null, 0f, 100f, Resource.class, count, results, true);
         complete(updateReceiver, null, null, null);
     }
 
@@ -456,7 +453,7 @@ public class SearchIndexService {
             String core = "";
             for (C toIndex : indexable) {
                 count++;
-                core = getCoreForClass(toIndex);
+                core = getCoreForClass(toIndex.getClass());
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
@@ -474,7 +471,8 @@ public class SearchIndexService {
             }
             logger.debug("begin flushing");
             // fullTextSession.flushToIndexes();
-            template.commit(core);
+            UpdateResponse commit = template.commit(core);
+            logger.debug("response: {}", commit.getResponseHeader());
 //            processBatch(docs);
         }
         
@@ -483,20 +481,20 @@ public class SearchIndexService {
         return exceptions;
     }
 
-    private String getCoreForClass(Indexable item) {
-        if (item instanceof Person) {
+    private String getCoreForClass(Class<? extends Indexable> item) {
+        if (Person.class.isAssignableFrom(item)) {
             return CoreNames.PEOPLE;
         }
-        if (item instanceof Institution) {
+        if (Institution.class.isAssignableFrom(item)) {
             return CoreNames.INSTITUTIONS;
         }
-        if (item instanceof Resource) {
+        if (Resource.class.isAssignableFrom(item)) {
             return CoreNames.RESOURCES;
         }
-        if (item instanceof ResourceCollection) {
+        if (ResourceCollection.class.isAssignableFrom(item)) {
             return CoreNames.COLLECTIONS;
         }
-        if (item instanceof Keyword) {
+        if (Keyword.class.isAssignableFrom(item)) {
             return CoreNames.KEYWORDS;
         }        // TODO Auto-generated method stub
         return null;
@@ -564,9 +562,17 @@ public class SearchIndexService {
      * @param classes
      */
     public void purgeAll(List<Class<? extends Indexable>> classes) {
-        // FullTextSession fullTextSession = getFullTextSession();
-        for (Class<?> clss : classes) {
-            // fullTextSession.purgeAll(clss);
+        for (Class<? extends Indexable> clss : classes) {
+            purge(getCoreForClass(clss));
+        }
+    }
+
+    private void purge(String core) {
+        try {
+            template.deleteByQuery(core, "*:*");
+            template.commit(core);
+        } catch (SolrServerException | IOException e) {
+            logger.error("error purging index: {}", core, e);
         }
     }
 
@@ -575,11 +581,14 @@ public class SearchIndexService {
      * 
      */
     public void optimizeAll() {
-        // FullTextSession fullTextSession = getFullTextSession();
-        // SearchFactory sf = fullTextSession.getSearchFactory();
-        for (Class<?> toIndex : getDefaultClassesToIndex()) {
-            // sf.optimize(toIndex);
+        for (Class<? extends Indexable> toIndex : getDefaultClassesToIndex()) {
             logger.info("optimizing {}", toIndex.getSimpleName());
+            String core = getCoreForClass(toIndex);
+            try {
+                template.optimize(core);
+            } catch (SolrServerException | IOException e) {
+                logger.error("error in optimize of {}", core, e);
+            }
         }
     }
 
@@ -596,7 +605,7 @@ public class SearchIndexService {
         logger.debug("reindexing project contents");
         int total = 0;
         ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
-        indexScrollable(getDefaultUpdateReceiver(), null, null, 0f, 100f, Resource.class, total, scrollableResults, true);
+        indexScrollable(getDefaultUpdateReceiver(), null, 0f, 100f, Resource.class, total, scrollableResults, true);
         logger.debug("completed reindexing project contents");
         return false;
     }
