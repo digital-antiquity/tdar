@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>deploy</artifactId>
-    <version>14.0.0-NEOLITHIC</version>
+    <version>14.0.f9ad4d9b7942-NEOLITHIC</version>
 
     <parent>
         <groupId>org.tdar</groupId>
@@ -11,7 +11,6 @@
         <version>14.0.0-NEOLITHIC</version>
         <relativePath>../pom.xml</relativePath>
    </parent>
-
     <repositories>
         <repository>
             <id>internal-repo</id>
@@ -35,9 +34,6 @@
             </snapshots>
         </repository>
     </repositories>
-    <properties>
-        <postgresql.jdbc.version>9.4-1203-jdbc42</postgresql.jdbc.version>
-    </properties>
     <dependencies>
         <dependency>
             <groupId>org.postgresql</groupId>
@@ -171,11 +167,29 @@
             <build>
                 <plugins>
                     <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${antrun.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <exportAntProperties>true</exportAntProperties>
+                                    <target>
+									    <property name="deploy.version" value="${hg.version}"/>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>versions-maven-plugin</artifactId>
                         <version>2.2</version>
                         <configuration>
-                            <newVersion>14.0.${hg.absoluteversion}-NEOLITHIC</newVersion>
+                            <newVersion>14.0.${deploy.version}-NEOLITHIC</newVersion>
                             <generateBackupPoms>false</generateBackupPoms>
                             <processParent>true</processParent>
                         </configuration>
