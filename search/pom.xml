@@ -112,7 +112,7 @@
                             <goal>test-jar</goal>
                         </goals>
                         <configuration>
-                            <finalName>tdar-core-test</finalName>
+                            <finalName>tdar-search-test</finalName>
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
                         </configuration>
                     </execution>
