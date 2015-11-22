@@ -12,6 +12,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -22,6 +23,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Before;
@@ -126,7 +128,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testSiteNameKeywords() {
+    public void testSiteNameKeywords() throws SolrServerException, IOException {
         SiteNameKeyword snk = genericKeywordService.findByLabel(SiteNameKeyword.class, "Atsinna");
         Document doc = createAndSaveNewResource(Document.class);
         doc.getSiteNameKeywords().add(snk);
@@ -141,7 +143,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     @Test
-    public void testResourceCaseSensitivity() {
+    public void testResourceCaseSensitivity() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
         ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
         titleCase.markUpdated(getAdminUser());
@@ -214,7 +216,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
     @Test
-    public void testTitleCaseSensitivity() {
+    public void testTitleCaseSensitivity() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
         doc.setTitle("usaf");
         updateAndIndex(doc);
@@ -229,14 +231,14 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(controller.getResults().contains(doc));
     }
 
-    private void updateAndIndex(Indexable doc) {
+    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }
 
     @Test
     @Rollback
-    public void testComplexGeographicKeywords() {
+    public void testComplexGeographicKeywords() throws SolrServerException, IOException {
         GeographicKeyword snk = genericKeywordService.findOrCreateByLabel(GeographicKeyword.class, "propylon, Athens, Greece, Mnesicles");
         Document doc = createAndSaveNewResource(Document.class);
         doc.getGeographicKeywords().add(snk);
@@ -334,7 +336,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testSearchDecade() {
+    public void testSearchDecade() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
         doc.setDate(4000);
         genericService.saveOrUpdate(doc);
@@ -554,7 +556,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAsUnauthenticatedUser() {
+    public void testResultCountsAsUnauthenticatedUser() throws SolrServerException, IOException {
         evictCache();
 
         setIgnoreActionErrors(true);
@@ -563,7 +565,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAsBasicUser() {
+    public void testResultCountsAsBasicUser() throws SolrServerException, IOException {
         evictCache();
 
         // testing as a user who did not create their own stuff
@@ -576,7 +578,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAsBasicContributor() {
+    public void testResultCountsAsBasicContributor() throws SolrServerException, IOException {
         // testing as a user who did create their own stuff
         evictCache();
         setIgnoreActionErrors(true);
@@ -585,7 +587,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testTitleSiteCodeMatching() {
+    public void testTitleSiteCodeMatching() throws SolrServerException, IOException {
         List<String> titles = Arrays
                 .asList("Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)",
                         "Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
@@ -628,14 +630,14 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testResultCountsAdmin() {
+    public void testResultCountsAdmin() throws SolrServerException, IOException {
         evictCache();
         testResourceCounts(getAdminUser());
     }
 
     @Test
     @Rollback(true)
-    public void testGeographicKeywordIndexedAndFound() {
+    public void testGeographicKeywordIndexedAndFound() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class, getBasicUser(), "testing doc");
         GeographicKeyword kwd = new GeographicKeyword();
         kwd.setLabel("Casa NonGrande");
@@ -659,7 +661,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testFilenameFound() throws InstantiationException, IllegalAccessException {
+    public void testFilenameFound() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         Document doc = generateDocumentWithFileAndUseDefaultUser();
         searchIndexService.index(doc);
         firstGroup().getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
@@ -673,7 +675,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertTrue(seen);
     }
 
-    private void testResourceCounts(TdarUser user) {
+    private void testResourceCounts(TdarUser user) throws SolrServerException, IOException {
         for (ResourceType type : ResourceType.values()) {
             Resource resource = createAndSaveNewResource(type.getResourceClass());
             for (Status status : Status.values()) {
@@ -909,7 +911,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testOtherKeywords() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testOtherKeywords() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
         // Create a document w/ some other keywords, then try to find that document in a search
         OtherKeyword ok = new OtherKeyword();
         ok.setLabel("testotherkeyword");
@@ -935,7 +937,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testTemporalKeywords() throws ParseException, InstantiationException, IllegalAccessException {
+    public void testTemporalKeywords() throws ParseException, InstantiationException, IllegalAccessException, SolrServerException, IOException {
         // Create a document w/ some temporal keywords, then try to find that document in a search
         TemporalKeyword tk = new TemporalKeyword();
         tk.setLabel("testtemporalkeyword");
@@ -961,7 +963,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testGeoKeywords() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testGeoKeywords() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
         // Create a document w/ some temporal keywords, then try to find that document in a search
         GeographicKeyword gk = new GeographicKeyword();
         gk.setLabel("testgeographickeyword");
@@ -985,7 +987,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         assertSearchPhrase(gk.getLabel());
     }
 
-    private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException {
+    private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         TdarUser submitter = new TdarUser("E", "deVos", "ecd@tdar.net");
         genericService.save(submitter);
         Document doc = createAndSaveNewInformationResource(Document.class, submitter);
@@ -1000,7 +1002,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testSearchBySubmitterIds() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testSearchBySubmitterIds() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
         Document doc = createDocumentWithContributorAndSubmitter();
         Long submitterId = doc.getSubmitter().getId();
         assertFalse(submitterId == -1);
@@ -1012,7 +1014,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testSearchContributorIds2() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testSearchContributorIds2() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
         Document doc = createDocumentWithContributorAndSubmitter();
         ResourceCreator contributor = doc.getResourceCreators().iterator().next();
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(contributor.getCreator(), contributor.getRole()));
@@ -1029,7 +1031,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
         Document doc = createDocumentWithContributorAndSubmitter();
         String title = "the archaeology of class and war";
         doc.setTitle(title);
@@ -1044,7 +1046,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException {
+    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
         Document doc = createDocumentWithContributorAndSubmitter();
         String title = "the archaeology of class ( AND ) war";
         doc.setTitle(title);
@@ -1093,7 +1095,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testBooleanSearch() throws InstantiationException, IllegalAccessException {
+    public void testBooleanSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         Document doc1 = generateDocumentWithUser();
         Document doc2 = generateDocumentWithUser();
         GeographicKeyword istanbul = new GeographicKeyword();
@@ -1128,7 +1130,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testCalDateSearch() throws InstantiationException, IllegalAccessException {
+    public void testCalDateSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         Document exact = createDocumentWithDates(-1000, 1200);
         Document interior = createDocumentWithDates(-500, 1000);
         Document start = createDocumentWithDates(-1500, 1000);
@@ -1210,7 +1212,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
-    public void testSparseObjectLoading() {
+    public void testSparseObjectLoading() throws SolrServerException, IOException {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
         ResourceCollection coll = createAndSaveNewResourceCollection(colname);
@@ -1231,7 +1233,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
-    public void testSparseObjectNameLoading() {
+    public void testSparseObjectNameLoading() throws SolrServerException, IOException {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
         ResourceCollection coll = createAndSaveNewResourceCollection(colname);
@@ -1257,7 +1259,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
-    public void testLookupObjectLoading() {
+    public void testLookupObjectLoading() throws SolrServerException, IOException {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
         proj.setTitle(colname);
@@ -1423,7 +1425,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testSynonymPersonSearch() {
+    public void testSynonymPersonSearch() throws SolrServerException, IOException {
         // setup test
         // create image
         Image image = new Image();

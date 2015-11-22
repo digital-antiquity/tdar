@@ -36,6 +36,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -47,10 +48,12 @@ import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.dao.SearchDao;
+import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
+import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -229,24 +232,6 @@ import com.opensymphony.xwork2.TextProvider;
          return partList;
      }
 
-     /**
-      * Shared logic to find all direct children of container resource (ResourceCollections and Projects)
-      *
-      * @param fieldName
-      * @param indexable
-      * @param user
-      * @return
-      */
-     public <P extends Persistable> ResourceQueryBuilder buildResourceContainedInSearch(String fieldName, P indexable, TdarUser user, TextProvider provider) {
-         ResourceQueryBuilder qb = new ResourceQueryBuilder();
-         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-         initializeReservedSearchParameters(reservedSearchParameters, user);
-         qb.append(reservedSearchParameters, provider);
-         qb.setOperator(Operator.AND);
-         qb.append(new FieldQueryPart<>(fieldName, indexable.getId()));
-
-         return qb;
-     }
 
      /**
       * remove unauthorized statuses from list. it's up to caller to handle implications of empty list
@@ -392,25 +377,6 @@ import com.opensymphony.xwork2.TextProvider;
      }
 
      /**
-      * Generates a query for resources created by or releated to in some way to a @link Creator given a creator and a user
-      *
-      * @param creator
-      * @param user
-      * @return
-      */
-     public QueryBuilder generateQueryForRelatedResources(Creator creator, TdarUser user, TextProvider provider) {
-         QueryBuilder queryBuilder = new ResourceQueryBuilder();
-         queryBuilder.setOperator(Operator.AND);
-         SearchParameters params = new SearchParameters(Operator.AND);
-         params.setCreatorOwner(new ResourceCreatorProxy(creator, null));
-         queryBuilder.append(params, provider);
-         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-         initializeReservedSearchParameters(reservedSearchParameters, user);
-         queryBuilder.append(reservedSearchParameters, provider);
-         return queryBuilder;
-     }
-
-     /**
       * Applies the @link ResourceType facet to a search
       *
       * @param qb
@@ -461,33 +427,6 @@ import com.opensymphony.xwork2.TextProvider;
          return (List<Resource>) ((List<?>) result.getResults());
      }
 
-     public void buildResourceCollectionQuery(QueryBuilder queryBuilder, TdarUser authenticatedUser, List<String> allFields) {
-         queryBuilder.setOperator(Operator.AND);
-
-         if (CollectionUtils.isNotEmpty(allFields)) {
-             queryBuilder.append(new GeneralSearchQueryPart(allFields));
-         }
-         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
-
-         // either it's not hidden and you can see it, or it is hidden but you have rights to it.
-
-         QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
-         rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
-         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
-             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
-             qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "true"));
-             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                 // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
-                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
-                 rightsPart.append(qpg);
-             }  else {
-                 // if we're admin, drop the hidden check
-                 rightsPart.clear();
-             }
-         }
-         queryBuilder.append(rightsPart);
-     }
-
      /*
       * The @link AdvancedSearchController's ReservedSearchParameters is a proxy object for handling advanced boolean searches. We initialize it with the search
       * parameters
@@ -511,6 +450,36 @@ import com.opensymphony.xwork2.TextProvider;
          }
 
      }
+
+    public KeywordQueryBuilder findKeyword(String term, String keywordType, TextProvider provider, int min) {
+        QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
+        if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
+            if (StringUtils.isNotBlank(term) && SiteCodeTokenizingAnalyzer.pattern.matcher(term).matches()) {
+                FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, term);
+                siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+                siteCodePart.setDisplayName(provider.getText("searchParameters.site_code"));
+                subgroup.append(siteCodePart.setBoost(5f));
+            }
+
+        }
+
+        KeywordQueryBuilder q = new KeywordQueryBuilder(Operator.AND);
+        QueryPartGroup group = new QueryPartGroup();
+
+        group.setOperator(Operator.AND);
+        if (SearchUtils.checkMinString(term,min)) {
+            FieldQueryPart<String> fqp = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, StringUtils.trim(term));
+            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            q.append(fqp);
+        }
+
+        // refine search to the correct keyword type
+        group.append(new FieldQueryPart<String>(QueryFieldNames.TYPE, keywordType));
+        subgroup.append(group);
+        q.append(subgroup);
+        q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
+        return q;
+    }
 
 
  }

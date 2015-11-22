@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
@@ -20,11 +21,8 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.CategoryTermQueryPart;
-import org.tdar.search.query.part.ProjectIdLookupQueryPart;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -58,11 +56,13 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 
     private Long selectResourcesFromCollectionid;
 
+    @Autowired
+    private ResourceSearchService resourceSearchService;
+    
     @Action(value = "resource", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
     public String lookupResource() throws SolrServerException, IOException {
-        QueryBuilder q = new ResourceQueryBuilder();
         setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
@@ -71,22 +71,11 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-        q.append(new CategoryTermQueryPart(getTerm(), getSortCategoryId()));
-
-        if (PersistableUtils.isNotNullOrTransient(getProjectId())) {
-            q.append(new ProjectIdLookupQueryPart(getProjectId()));
-        }
-
-        String colQueryField = isParentCollectionsIncluded() ?
-                QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS : QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
-
-        appendIf(PersistableUtils.isNotNullOrTransient(getCollectionId()), q, colQueryField, getCollectionId());
-
+        ResourceQueryBuilder q = resourceSearchService.lookupResource(getTerm(), getProjectId(), isIncludeCompleteRecord(), getCollectionId(), getSortCategoryId(),getAuthenticatedUser(), getReservedSearchParameters(), this);
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
 
-        q.append(processReservedTerms(this));
         try {
             handleSearch(q);
             getLogger().trace("jsonResults: {}", getResults());

@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
@@ -24,6 +25,7 @@ import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralCreatorQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -41,6 +43,9 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
 
     private String query;
 
+    @Autowired
+    private CreatorSearchService creatorSearchService;
+    
     @Action(value = "people", results = {
             @Result(name = SUCCESS, location = "people.ftl"),
             @Result(name = INPUT, location = "person.ftl") })
@@ -49,14 +54,7 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
         setMinLookupLength(0);
         setMode("PERSON");
         setLookupSource(LookupSource.PERSON);
-        PersonQueryBuilder pqb = new PersonQueryBuilder();
-        QueryPartGroup group = new QueryPartGroup(Operator.AND);
-        group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
-        if (!isFindAll(getQuery())) {
-            Person person = Person.fromName(getQuery());
-            group.append(new GeneralCreatorQueryPart(person));
-            pqb.append(group);
-        }
+        PersonQueryBuilder pqb = creatorSearchService.findPerson(getQuery());
         try {
             handleSearch(pqb);
         } catch (TdarRecoverableRuntimeException | ParseException trex) {

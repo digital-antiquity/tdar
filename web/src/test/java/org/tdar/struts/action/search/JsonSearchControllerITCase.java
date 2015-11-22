@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
 import org.custommonkey.xmlunit.XMLUnit;
@@ -56,7 +57,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testJsonDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testJsonDefaultSortOrder() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         searchIndexService.index(document);
         controller.setSessionData(new SessionData()); // create unauthenticated session
@@ -68,7 +69,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testGeoJson() throws InstantiationException, IllegalAccessException, TdarActionException, IOException {
+    public void testGeoJson() throws InstantiationException, IllegalAccessException, TdarActionException, IOException, SolrServerException {
         InformationResource document = generateDocumentWithUser();
         document.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(84.37156598282918, 57.89149735271034, -131.484375, 27.0703125));
         genericService.saveOrUpdate(document);
@@ -103,7 +104,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testJsonInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testJsonInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
         document.setDescription("\u0001");
         genericService.saveOrUpdate(document);
@@ -119,7 +120,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testFindResourceBuildJson() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException {
+    public void testFindResourceBuildJson() throws XpathException, SAXException, IOException, InterruptedException, TdarActionException, SolrServerException {
         ActivityManager.getInstance().getActivityQueueClone().clear();
         Resource r = genericService.find(Resource.class, 3074L);
         r.setStatus(Status.ACTIVE);

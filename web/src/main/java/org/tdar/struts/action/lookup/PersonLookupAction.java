@@ -12,6 +12,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.FacetGroup;
@@ -39,15 +40,18 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     private String registered;
     private String term;
 
-    @Autowired
-    private transient AuthorizationService authorizationService;
-
     @Action(value = "person", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
     public String lookupPerson() throws SolrServerException, IOException {
         setMode("personLookup");
-        return findPerson(firstName, term, lastName, institution, email, registered);
+        Person person = new Person(firstName, lastName,email);
+        if (StringUtils.isNotBlank(institution)) {
+            Institution inst = new Institution(institution);
+            person.setInstitution(inst);
+        }
+        
+        return findPerson(term, person, Boolean.parseBoolean(registered));
     }
 
     public String getFirstName() {

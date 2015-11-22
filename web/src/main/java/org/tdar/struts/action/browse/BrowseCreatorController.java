@@ -58,6 +58,7 @@ import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchFieldType;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
@@ -152,6 +153,9 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     @Autowired
     private transient SearchService searchService;
 
+    @Autowired
+    private transient CreatorSearchService creatorSearchService;
+    
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
 
@@ -300,7 +304,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     }
 
     private void prepareLuceneQuery() throws TdarActionException {
-        QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
+        QueryBuilder queryBuilder = creatorSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
         if (PersistableUtils.isNotNullOrTransient(creator)) {

@@ -14,14 +14,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.part.AutocompleteTitleQueryPart;
-import org.tdar.search.query.part.CollectionAccessQueryPart;
+import org.tdar.search.service.CollectionSearchService;
+import org.tdar.search.service.SearchUtils;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -42,6 +40,9 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    @Autowired
+    private transient CollectionSearchService collectionSearchService;
+    
     private String term;
     private GeneralPermissions permission;
 
@@ -49,20 +50,13 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
     public String lookupResourceCollection() throws SolrServerException, IOException {
-        QueryBuilder q = new ResourceCollectionQueryBuilder();
         setMinLookupLength(0);
         setLookupSource(LookupSource.COLLECTION);
         getLogger().trace("looking up: '{}'", getTerm());
         setMode("collectionLookup");
         // only return results if query length has enough characters
-        if (checkMinString(getTerm())) {
-            q.append(new AutocompleteTitleQueryPart(getTerm()));
-            boolean admin = false;
-            if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, getAuthenticatedUser())) {
-                admin = true;
-            }
-            CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(getAuthenticatedUser(), admin, getPermission());
-            q.append(queryPart);
+        if (SearchUtils.checkMinString(getTerm(), getMinLookupLength())) {
+            ResourceCollectionQueryBuilder q = collectionSearchService.findCollection(getAuthenticatedUser(), getPermission(), getTerm());
             try {
                 handleSearch(q);
             } catch (ParseException e) {

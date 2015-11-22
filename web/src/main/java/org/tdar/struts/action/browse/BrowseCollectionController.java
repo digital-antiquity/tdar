@@ -26,21 +26,12 @@ import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FileSystemResourceService;
-import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchFieldType;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -73,6 +64,9 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
+    @Autowired
+    private ResourceSearchService resourceSearchService;
+    
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
@@ -80,28 +74,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private Long contentLength;
 
     @Autowired
-    private transient BillingAccountService accountService;
-
-    @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
-    private transient AuthenticationService authenticationService;
-
-    @Autowired
-    private transient EntityService entityService;
-
-    @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-
-    @Autowired
-    private transient GenericKeywordService genericKeywordService;
-
-    @Autowired
-    private transient SearchService searchService;
-
-    @Autowired
-    private transient FileSystemResourceService fileSystemResourceService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -119,10 +92,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     }
 
     private void performLuceneQuery() throws TdarActionException {
-        QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
+        QueryBuilder qb = resourceSearchService.buildCollectionResourceSearch();
         setMode("browseCollections");
         setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         try {

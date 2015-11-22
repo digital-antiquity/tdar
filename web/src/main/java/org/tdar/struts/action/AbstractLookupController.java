@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
@@ -41,13 +40,13 @@ import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
-import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.ReservedSearchParameters;
 import org.tdar.search.service.SearchService;
+import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -93,7 +92,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private transient SearchService searchService;
 
     @Autowired
-    private transient AuthorizationService authorizationService;
+    private CreatorSearchService creatorSearchService;
+
 
     @Autowired
     ObfuscationService obfuscationService;
@@ -113,12 +113,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public int getMinLookupLength() {
         return minLookupLength;
     }
-    
-    public abstract List<FacetGroup<? extends Enum>> getFacetFields();
 
-//    public void addFacets(FullTextQuery ftq) {
-//        // empty method, overriden if needed
-//    }
+    public abstract List<FacetGroup<? extends Enum>> getFacetFields();
 
     public void setMinLookupLength(int minLookupLength) {
         this.minLookupLength = minLookupLength;
@@ -174,58 +170,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return totalRecords;
     }
 
-    /**
-     * Return true if the specified string meets the minimum length requirement (or if there is no minimum length requirement). Not to be confused w/
-     * checking if the specified string is blank.
-     */
-    public boolean checkMinString(String value) {
-        if (getMinLookupLength() == 0) {
-            return true;
-        }
-        return StringUtils.isNotEmpty(value) && (value.trim().length() >= getMinLookupLength());
-    }
-
-    // return true if ALL of the specified strings meet the minimum length. Otherwise false;
-    public boolean checkMinString(String... candidates) {
-        for (String candidate : candidates) {
-            if (!checkMinString(candidate)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
-        if (checkMinString(value) && StringUtils.isNotBlank(value)) {
-            getLogger().trace("{}:{}", field, value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
-            fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
-            q.append(fqp);
-        }
-    }
-
-    protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
-        if (checkMinString(value)) {
-            getLogger().trace("{}:{}", field, value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
-            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            q.append(fqp);
-        }
-    }
-
-    protected <C> void appendIf(boolean test, QueryGroup q, String field, C value) {
-        if (test) {
-            q.append(new FieldQueryPart<C>(field, value));
-        }
-    }
-
-    protected void addResourceTypeQueryPart(QueryGroup q, List<ResourceType> list) {
-        if (!CollectionUtils.isEmpty(list)) {
-            FieldQueryPart<ResourceType> fqp = new FieldQueryPart<ResourceType>("resourceType", list.toArray(new ResourceType[0]));
-            fqp.setOperator(Operator.OR);
-            q.append(fqp);
-        }
-    }
 
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
@@ -417,60 +361,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-    public String findPerson(String firstName, String term, String lastName, String institution, String email, String registered) throws SolrServerException, IOException {
+    public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.PERSON);
-        QueryBuilder q = new PersonQueryBuilder(Operator.AND);
-        boolean valid = false;
-
-        Person incomingPerson = new Person();
-        if (checkMinString(firstName)) {
-            incomingPerson.setFirstName(firstName);
-            valid = true;
-        }
-
-        if (checkMinString(lastName)) {
-            incomingPerson.setLastName(lastName);
-            valid = true;
-        }
-
-        if (StringUtils.isEmpty(firstName) && StringUtils.isEmpty(lastName) && checkMinString(term)) {
-            incomingPerson.setWildcardName(term);
-            valid = true;
-        }
-
-        if (checkMinString(institution)) {
-            valid = true;
-            Institution incomingInstitution = new Institution(institution);
-            incomingPerson.setInstitution(incomingInstitution);
-            // FIXME: I believe this detach is unnecessary - object was never on the session
-            // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
-            getGenericService().detachFromSessionAndWarn(incomingInstitution);
-        }
-
-        // ignore email field for unauthenticated users.
-        if (isAuthenticated() && checkMinString(email)) {
-            incomingPerson.setEmail(email);
-            valid = true;
-        }
-        // FIXME: I believe this detach is unnecessary - object was never on the session
-        // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
-        getGenericService().detachFromSessionAndWarn(incomingPerson);
-
-        PersonQueryPart pqp = new PersonQueryPart();
-        pqp.add(incomingPerson);
-        q.append(pqp);
-        getLogger().debug("{}", pqp.toString());
-        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-        if (valid || (getMinLookupLength() == 0)) {
-            if (StringUtils.isNotBlank(registered)) {
-                try {
-                    pqp.setRegistered(Boolean.parseBoolean(registered));
-                } catch (Exception e) {
-                    addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-                    return ERROR;
-                }
-            }
-
+        // TODO Auto-generated method stub
+        PersonQueryBuilder q = creatorSearchService.findPerson(person, term, registered, getMinLookupLength());
+        if (!q.isEmpty() || getMinLookupLength() == 0) {
             try {
                 handleSearch(q);
                 // sanitize results if the user is not logged in
@@ -478,11 +373,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
-        }
-        if (isEditor()) {
-            jsonifyResult(JsonAdminLookupFilter.class);
-        } else {
-            jsonifyResult(JsonLookupFilter.class);
+            if (isEditor()) {
+                jsonifyResult(JsonAdminLookupFilter.class);
+            } else {
+                jsonifyResult(JsonLookupFilter.class);
+            }
         }
         return SUCCESS;
     }
@@ -521,15 +416,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
 
     public String findInstitution(String institution) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.INSTITUTION);
-        QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
-        if (checkMinString(institution)) {
-            InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
-            Institution testInstitution = new Institution(institution);
-            if (StringUtils.isNotBlank(institution)) {
-                iqp.add(testInstitution);
-                q.append(iqp);
-            }
-            q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
+            InstitutionQueryBuilder q = creatorSearchService.findInstitution(institution);
             try {
                 handleSearch(q);
             } catch (ParseException e) {
@@ -603,10 +491,4 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return DEFAULT_RESULT_SIZE;
     }
 
-    protected boolean isFindAll(String query) {
-        if (StringUtils.isBlank(query)) {
-            return true;
-        }
-        return StringUtils.equals(StringUtils.trim(query), "*");
-    }
 }

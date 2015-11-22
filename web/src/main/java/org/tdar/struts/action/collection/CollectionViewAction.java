@@ -43,6 +43,7 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
@@ -78,6 +79,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
      */
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient SearchService searchService;
     @Autowired
@@ -227,7 +230,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
-        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+        ResourceQueryBuilder qb = resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 getResourceCollection(), getAuthenticatedUser(), this);
         searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
 

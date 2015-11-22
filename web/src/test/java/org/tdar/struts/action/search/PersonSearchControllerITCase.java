@@ -55,7 +55,7 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
         controller.setRecordsPerPage(50);
     }
 
-    public List<Institution> setupInstitutionSearch() {
+    public List<Institution> setupInstitutionSearch() throws SolrServerException, IOException {
         ArrayList<Institution> insts = new ArrayList<>();
         String[] names = new String[] { "US Air Force", "Vandenberg Air Force Base", "Air Force Base" };
         for (String name : names) {
@@ -111,7 +111,7 @@ public class PersonSearchControllerITCase extends AbstractControllerITCase {
         logger.info("search found: " + controller.getTotalRecords());
     }
 
-    private void updateAndIndex(Indexable doc) {
+    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }

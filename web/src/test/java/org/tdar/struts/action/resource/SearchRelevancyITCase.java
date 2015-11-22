@@ -8,6 +8,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -150,7 +151,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // given resource1 and resource2, where both have same title/desc/keywords, assert resource1 is more relevant because it has an attachment
     @Test
     @Rollback
-    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
         controller.setRecordsPerPage(50);
         Project p = new Project();

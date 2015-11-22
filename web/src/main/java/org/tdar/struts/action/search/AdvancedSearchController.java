@@ -46,7 +46,8 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.service.CollectionSearchService;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchFieldType;
 import org.tdar.search.service.SearchParameters;
 import org.tdar.search.service.SearchService;
@@ -74,6 +75,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     private static final long serialVersionUID = -2615014247540428072L;
     private static final String SEARCH_RSS = "/search/rss";
     private boolean hideFacetsAndSort = false;
+
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
+
+    @Autowired
+    private transient CollectionSearchService collectionSearchService;
 
     @Autowired
     private transient SearchService searchService;
@@ -140,8 +147,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     @SuppressWarnings("unchecked")
     private void searchCollectionsToo() throws SolrServerException, IOException {
-        QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
-        searchService.buildResourceCollectionQuery(queryBuilder, getAuthenticatedUser(), getAllGeneralQueryFields());
+        QueryBuilder queryBuilder = collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields());
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);

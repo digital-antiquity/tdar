@@ -19,8 +19,8 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.service.CollectionSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
@@ -39,6 +39,9 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
 
     @Autowired
     private transient SearchService searchService;
+
+    @Autowired
+    private transient CollectionSearchService collectionSearchService;
 
     private String query;
 
@@ -59,8 +62,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         setLookupSource(LookupSource.COLLECTION);
         setMode("COLLECTION SEARCH:");
         determineCollectionSearchTitle();
-        QueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
-        searchService.buildResourceCollectionQuery(queryBuilder, getAuthenticatedUser(), Arrays.asList(getQuery()));
+        ResourceCollectionQueryBuilder queryBuilder = collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()));
 
         try {
             getLogger().trace("queryBuilder: {}", queryBuilder);

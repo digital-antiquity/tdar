@@ -42,6 +42,8 @@ import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.range.DateRange;
@@ -57,7 +59,9 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     SearchIndexService searchIndexService;
     @Autowired
     GenericKeywordService genericKeywordService;
-
+    @Autowired
+    CreatorSearchService creatorSearchService;
+    
     private void setTitle(String title) {
         firstGroup().getTitles().add(title);
     }
@@ -84,7 +88,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException, SolrServerException, IOException {
-        QueryBuilder rqb = searchService.generateQueryForRelatedResources(getAdminUser(), null, controller);
+        QueryBuilder rqb = creatorSearchService.generateQueryForRelatedResources(getAdminUser(), null, controller);
         Document authorDocument = new Document();
         authorDocument.setTitle("author");
         authorDocument.setDescription(REASON);
@@ -147,7 +151,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
         }
     }
 
-    public void setupTestDocuments() throws InstantiationException, IllegalAccessException {
+    public void setupTestDocuments() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String[] titles = {
                 "Preliminary Archeological Investigation at the Site of a Mid-Nineteenth Century Shop and Yard Complex Associated With the Belvidere and Delaware Railroad, Lambertville, New Jersey",
                 "The James Franks Site (41DT97): Excavations at a Mid-Nineteenth Century Farmstead in the South Sulphur River Valley, Cooper Lake Project, Texas",
@@ -164,7 +168,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException {
+    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "Archeological Excavation at Site 33-Cu-314: A Mid-Nineteenth Century Structure on the Ohio and Erie Canal";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -178,7 +182,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException {
+    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -193,7 +197,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException {
+    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -208,7 +212,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException {
+    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -223,7 +227,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException {
+    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
         String label = "33-Cu-314";
@@ -243,7 +247,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException {
+    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
         String label = "33-Cu-314";
@@ -410,7 +414,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testPeopleAndInstitutionsInSearchResults() {
+    public void testPeopleAndInstitutionsInSearchResults() throws SolrServerException, IOException {
         Long imgId = setupDataset(Status.ACTIVE);
         logger.info("Created new image: " + imgId);
         searchIndexService.index(resourceService.find(imgId));
@@ -542,7 +546,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
-    public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException {
+    public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         // From the Hibernate documentation:
         // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time."
         // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
@@ -616,7 +620,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException {
+    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
@@ -637,7 +641,7 @@ public class LuceneSearchControllerITCase extends AbstractSearchControllerITCase
 
     @Test
     @Rollback(true)
-    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException {
+    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         String resourceTitle = "33-Cu-314";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);

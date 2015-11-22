@@ -4,10 +4,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +84,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
 
     @Test
     @Rollback(true)
-    public void testDeletedMaterialsAreIndexedButYouCantSee() {
+    public void testDeletedMaterialsAreIndexedButYouCantSee() throws SolrServerException, IOException {
         controller = generateNewInitializedController(AdvancedSearchController.class, getBasicUser());
         setIgnoreActionErrors(true);
         controller.setRecordsPerPage(50);

@@ -34,9 +34,7 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -215,11 +213,11 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         determineSearchTitle();
         setMode("SEARCH");
         // beforeSearch();
-        QueryBuilder queryBuilder = new ResourceQueryBuilder();
-        queryBuilder.setOperator(Operator.AND);
 
         processCollectionProjectLimit();
 
+        QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        queryBuilder.setOperator(Operator.AND);
         topLevelQueryPart = new QueryPartGroup(topLevelOperator);
 
         for (SearchParameters group : groups) {

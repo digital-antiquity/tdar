@@ -101,7 +101,7 @@ public class InstitutionSearchControllerITCase extends AbstractControllerITCase 
         logger.info("search found: " + controller.getTotalRecords());
     }
 
-    private void updateAndIndex(Indexable doc) {
+    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
         genericService.saveOrUpdate(doc);
         searchIndexService.index(doc);
     }

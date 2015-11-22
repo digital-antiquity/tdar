@@ -156,7 +156,7 @@ public class InstiutionLookupControllerITCase extends AbstractIntegrationControl
 
     }
 
-    private List<Institution> setupInstitutionsForLookup() {
+    private List<Institution> setupInstitutionsForLookup() throws SolrServerException, IOException {
         String name1 = "U.S. Department of the Interior";
         searchIndexService.indexAll(getAdminUser(), Institution.class);
         List<Institution> insts = Arrays.asList(new Institution(name1),

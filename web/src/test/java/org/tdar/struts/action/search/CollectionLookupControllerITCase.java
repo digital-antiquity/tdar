@@ -88,7 +88,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     }
 
-    private void setupCollections() {
+    private void setupCollections() throws SolrServerException, IOException {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         for (String collectionName : collectionNames) {
             ResourceCollection e = new ResourceCollection(collectionName, collectionName, SortOption.TITLE, CollectionType.SHARED, true, getBasicUser());
@@ -130,7 +130,7 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
         assertFalse(controller.getResults().contains(e));
     }
 
-    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission) {
+    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission) throws SolrServerException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
         ResourceCollection e = new ResourceCollection("a test", "a Name", SortOption.TITLE, CollectionType.SHARED, visible, owner);
         e.markUpdated(owner);

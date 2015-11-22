@@ -25,6 +25,7 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
@@ -51,6 +52,9 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
 
     @Autowired
+    private transient ResourceSearchService resourceSearchService;
+
+    @Autowired
     private transient SearchService searchService;
 
     @Autowired
@@ -72,7 +76,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
 
     private void handleSearch() throws TdarActionException {
         Project project = (Project) getResource();
-        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this);
+        ResourceQueryBuilder qb = resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this);
         setSortField(project.getSortBy());
         setSecondarySortField(SortOption.TITLE);
         if (project.getSecondarySortBy() != null) {
