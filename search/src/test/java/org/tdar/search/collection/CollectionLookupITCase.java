@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.search.collection;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -7,12 +7,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -20,20 +20,19 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ReflectionService;
-import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
-import org.tdar.struts.action.lookup.CollectionLookupAction;
+import org.tdar.search.query.SearchResult;
+import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
+import org.tdar.search.service.CollectionSearchService;
+import org.tdar.search.service.SearchService;
+import org.tdar.utils.MessageHelper;
 
-public class CollectionLookupControllerITCase extends AbstractIntegrationControllerTestCase {
+public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase {
 
-    private CollectionLookupAction controller;
+    @Autowired
+    SearchService searchService;
 
-    @Before
-    public void initController() {
-        controller = generateNewInitializedController(CollectionLookupAction.class);
-        controller.setRecordsPerPage(99);
-    }
+    @Autowired
+    CollectionSearchService collectionSearchService;
 
     String[] collectionNames = new String[] { "Kalaupapa National Historical Park, Hawaii", "Kaloko-Honokohau National Historical Park, Hawaii", "Kapsul",
             "KBP Artifact Photographs", "KBP Field Notes", "KBP Level Maps", "KBP Maps", "KBP Profiles", "KBP Reports", "KBP Site Photographs",
@@ -45,22 +44,18 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testCollectionLookup() throws IOException, SolrServerException {
+    public void testCollectionLookup() throws IOException, SolrServerException, ParseException {
         setupCollections();
-        controller.setTerm("Kin");
-        controller.lookupResourceCollection();
-        for (Indexable collection_ : controller.getResults()) {
+        SearchResult results = search(null, null, "Kin");
+        for (Indexable collection_ : results.getResults()) {
             ResourceCollection collection = (ResourceCollection) collection_;
             logger.info("{}", collection);
             if (collection != null) {
                 assertFalse(collection.getTitle().equals("Kleis"));
             }
         }
-        initController();
-        controller.setTerm("Kintigh - C");
-        controller.lookupResourceCollection();
-        logger.debug(IOUtils.toString(controller.getJsonInputStream()));
-        for (Indexable collection_ : controller.getResults()) {
+        results = search(null, null, "Kintigh - C");
+        for (Indexable collection_ : results.getResults()) {
             ResourceCollection collection = (ResourceCollection) collection_;
             logger.info("{}", collection);
             if (collection != null) {
@@ -70,15 +65,20 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     }
 
+    private SearchResult search(TdarUser user, GeneralPermissions permission, String title) throws ParseException, SolrServerException, IOException {
+        SearchResult results = new SearchResult();
+        results.setRecordsPerPage(100);
+        ResourceCollectionQueryBuilder findCollection = collectionSearchService.findCollection(user, permission, title);
+        searchService.handleSearch(findCollection, results, MessageHelper.getInstance());
+        return results;
+    }
+
     @Test
     @Rollback(true)
-    public void testCollectionLookupUnauthenticated() throws SolrServerException, IOException {
+    public void testCollectionLookupUnauthenticated() throws SolrServerException, IOException, ParseException {
         setupCollections();
-        controller = generateNewController(CollectionLookupAction.class);
-        initAnonymousUser(controller);
-        controller.setTerm("Kintigh - C");
-        controller.lookupResourceCollection();
-        for (Indexable collection_ : controller.getResults()) {
+        SearchResult result = search(null, null, "Kintigh - C");
+        for (Indexable collection_ : result.getResults()) {
             ResourceCollection collection = (ResourceCollection) collection_;
             logger.info("{}", collection);
             if (collection != null) {
@@ -102,35 +102,30 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException {
+    public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        controller.setTerm("test");
-        controller.lookupResourceCollection();
-        assertTrue(controller.getResults().contains(e));
+        SearchResult result = search(null, null,"test");
+        assertTrue(result.getResults().contains(e));
     }
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUser() throws SolrServerException, IOException {
+    public void testInvisibleCollectionLookupFoundByBasicUser() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        init(controller, getBasicUser());
-        controller.setTerm("test");
-        controller.lookupResourceCollection();
-        assertTrue(controller.getResults().contains(e));
+        SearchResult result = search(getBasicUser(), null, "test");
+        assertTrue(result.getResults().contains(e));
     }
 
     @Test
     @Rollback(true)
-    public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SolrServerException, IOException {
+    public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        init(controller, getBasicUser());
-        controller.setTerm("test");
-        controller.setPermission(GeneralPermissions.ADMINISTER_GROUP);
-        controller.lookupResourceCollection();
-        assertFalse(controller.getResults().contains(e));
+        SearchResult result = search(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP, "test");
+        assertFalse(result.getResults().contains(e));
     }
 
-    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission) throws SolrServerException, IOException {
+    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission)
+            throws SolrServerException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
         ResourceCollection e = new ResourceCollection("a test", "a Name", SortOption.TITLE, CollectionType.SHARED, visible, owner);
         e.markUpdated(owner);
@@ -142,11 +137,5 @@ public class CollectionLookupControllerITCase extends AbstractIntegrationControl
         searchIndexService.index(e);
         return e;
     }
-
-    @Autowired
-    ObfuscationService obfuscationService;
-
-    @Autowired
-    ReflectionService reflectionService;
 
 }

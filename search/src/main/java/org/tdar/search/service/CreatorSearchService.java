@@ -95,7 +95,7 @@ public class CreatorSearchService<I extends Indexable> {
             iqp.add(testInstitution);
             q.append(iqp);
         }
-        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         return q;
     }
 
