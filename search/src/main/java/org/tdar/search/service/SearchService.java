@@ -142,12 +142,12 @@ import com.opensymphony.xwork2.TextProvider;
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
 
-         Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
+         Object searchMetadata[] = { q.getCoreName(), resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                  lucene, (System.currentTimeMillis() - num),
                  ftq.getResultSize(),
                  resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);
-         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
+         logger.debug("{} {}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
 
          if (resultHandler.getStartRecord() > ftq.getResultSize()) {
              throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", Arrays.asList(resultHandler.getStartRecord(),
