@@ -94,66 +94,6 @@ public class SearchIndexService {
     @Autowired
     private SolrClient template;
 
-    public void indexAllPeople() throws SolrServerException, IOException {
-        List<Person> findAll = genericDao.findAll(Person.class);
-        for (Person person : findAll) {
-            
-            template.deleteById(generateId(person));
-            SolrInputDocument document = PersonDocumentConverter.convert(person);
-            template.add(CoreNames.PEOPLE, document);
-            logger.debug("adding: " + person.getId() + " " + person.getProperName());
-        }
-        UpdateResponse commit = template.commit();
-        logger.debug("response: {}", commit.getResponseHeader());
-    }
-
-    public void indexAllInstitutions() throws SolrServerException, IOException {
-        List<Institution> findAll = genericDao.findAll(Institution.class);
-        for (Institution inst : findAll) {
-            template.deleteById(generateId(inst));
-            SolrInputDocument document = InstitutionDocumentConverter.convert(inst);
-            template.add(CoreNames.INSTITUTIONS, document);
-            logger.debug("adding: " + inst.getId() + " " + inst.getProperName());
-        }
-        template.commit();
-    }
-
-    public void indexAllKeywords() throws SolrServerException, IOException {
-        for (KeywordType type : KeywordType.values()) {
-            List<? extends Keyword> findAll = genericDao.findAll(type.getKeywordClass());
-            for (Keyword kwd : findAll) {
-                template.deleteById(generateId(kwd));
-                SolrInputDocument document = KeywordDocumentConverter.convert(kwd);
-                template.add(CoreNames.KEYWORDS, document);
-                logger.debug("adding: " + kwd.getId() + " " + kwd.getLabel());
-            }
-            template.commit();
-        }
-    }
-
-    public void indexAllCollections() throws SolrServerException, IOException {
-        for (ResourceCollection collection : genericDao.findAll(ResourceCollection.class)) {
-            if (collection.getType() != CollectionType.SHARED) {
-                continue;
-            }
-            template.deleteById(generateId(collection));
-            SolrInputDocument document = CollectionDocumentConverter.convert(collection);
-            template.add(CoreNames.COLLECTIONS, document);
-            logger.debug("adding: " + collection.getId() + " " + collection.getName());
-        }
-        template.commit();
-    }
-
-    public void indexAllResources() throws SolrServerException, IOException {
-        for (Resource resource : genericDao.findAll(Resource.class)) {
-            template.deleteById(generateId(resource));
-            SolrInputDocument document = ResourceDocumentConverter.convert(resource, resourceService, resourceCollectionService);
-            template.add(CoreNames.RESOURCES, document);
-            logger.debug("adding: " + resource.getId() + " " + resource.getName());
-        }
-        template.commit();
-    }
-
     private String generateId(Persistable pers) {
         return pers.getClass().getSimpleName() + "-" + pers.getId();
     }
@@ -471,8 +411,8 @@ public class SearchIndexService {
             }
             logger.debug("begin flushing");
             // fullTextSession.flushToIndexes();
-            UpdateResponse commit = template.commit(core);
-            logger.debug("response: {}", commit.getResponseHeader());
+//            UpdateResponse commit = template.commit(core);
+//            logger.debug("response: {}", commit.getResponseHeader());
 //            processBatch(docs);
         }
         
@@ -570,7 +510,7 @@ public class SearchIndexService {
     private void purge(String core) {
         try {
             template.deleteByQuery(core, "*:*");
-            template.commit(core);
+//            template.commit(core);
         } catch (SolrServerException | IOException e) {
             logger.error("error purging index: {}", core, e);
         }
