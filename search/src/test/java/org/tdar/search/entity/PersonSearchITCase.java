@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +47,12 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     EntityService entityService;
 
     private int min = 2;
+
+    @Override
+    public void reindex() {
+        searchIndexService.purgeAll(Arrays.asList(Person.class));
+        searchIndexService.indexAll(getAdminUser(),Person.class);
+    };
 
     @Test
     @Rollback

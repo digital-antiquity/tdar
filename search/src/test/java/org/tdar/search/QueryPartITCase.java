@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.TdarGroup;
@@ -14,8 +13,8 @@ import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 
 public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
 
-    @Before
-    public void before() {
+    @Override
+    public void reindex() {
         searchIndexService.purgeAll();
         searchIndexService.indexAll(getAdminUser(), Resource.class);
     }

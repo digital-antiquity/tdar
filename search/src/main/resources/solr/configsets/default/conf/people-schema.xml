@@ -8,7 +8,7 @@
     <field name="institution.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="institution.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     
-    <field name="name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
 

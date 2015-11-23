@@ -71,7 +71,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-        ResourceQueryBuilder q = resourceSearchService.lookupResource(getTerm(), getProjectId(), isIncludeCompleteRecord(), getCollectionId(), getSortCategoryId(),getAuthenticatedUser(), getReservedSearchParameters(), this);
+        ResourceQueryBuilder q = resourceSearchService.lookupResource(getTerm(), getProjectId(), isIncludeCompleteRecord(), getCollectionId(), getSortCategoryId(),getAuthenticatedUser(), getReservedSearchParameters(), permission, this);
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }

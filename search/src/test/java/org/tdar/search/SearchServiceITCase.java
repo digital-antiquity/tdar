@@ -12,7 +12,6 @@ import java.util.Map;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
@@ -102,10 +101,6 @@ public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {
         return title1;
     }
 
-    @Before
-    public void prepare() {
-        setupIndex();
-    }
 
     @BeforeClass
     public static void before() {

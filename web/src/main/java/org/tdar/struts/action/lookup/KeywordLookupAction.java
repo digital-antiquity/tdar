@@ -18,7 +18,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
-import org.tdar.search.service.SearchService;
+import org.tdar.search.service.KeywordSearchService;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -41,7 +41,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
     private String term;
     
     @Autowired
-    SearchService searchService;
+    KeywordSearchService keywordSearchService;
 
     @Action(value = "keyword", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
@@ -65,7 +65,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         }
 
         setMode("keywordLookup");
-        KeywordQueryBuilder q = searchService.findKeyword(getTerm(), getKeywordType(), this, getMinLookupLength());
+        KeywordQueryBuilder q = keywordSearchService.findKeyword(getTerm(), getKeywordType(), this, getMinLookupLength());
         try {
             handleSearch(q);
         } catch (ParseException e) {

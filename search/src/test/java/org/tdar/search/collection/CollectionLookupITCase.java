@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -27,6 +28,12 @@ import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase {
+
+    @Override
+    public void reindex() {
+        searchIndexService.purgeAll(Arrays.asList(ResourceCollection.class));
+        searchIndexService.indexAll(getAdminUser(),ResourceCollection.class);
+    };
 
     @Autowired
     SearchService searchService;

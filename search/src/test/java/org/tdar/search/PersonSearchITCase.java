@@ -27,10 +27,16 @@ import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
-public class PesronSearchITCase extends AbstractWithIndexIntegrationTestCase {
+public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
     SearchService searchService;
+
+    @Override
+    public void reindex() {
+        searchIndexService.purgeAll(Arrays.asList(Person.class));
+        searchIndexService.indexAll(getAdminUser(),Person.class);
+    };
     
     @Test
     public void testPersonRelevancy() throws ParseException, SolrServerException, IOException {

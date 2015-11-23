@@ -42,6 +42,12 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Autowired
     CreatorSearchService<Institution> creatorSearchService;
 
+    @Override
+    public void reindex() {
+        searchIndexService.purgeAll(Arrays.asList(Institution.class));
+        searchIndexService.indexAll(getAdminUser(),Institution.class);
+    };
+
 
     public List<Institution> setupInstitutionSearch() throws SolrServerException, IOException {
         ArrayList<Institution> insts = new ArrayList<>();

@@ -451,35 +451,4 @@ import com.opensymphony.xwork2.TextProvider;
 
      }
 
-    public KeywordQueryBuilder findKeyword(String term, String keywordType, TextProvider provider, int min) {
-        QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
-        if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
-            if (StringUtils.isNotBlank(term) && SiteCodeTokenizingAnalyzer.pattern.matcher(term).matches()) {
-                FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, term);
-                siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-                siteCodePart.setDisplayName(provider.getText("searchParameters.site_code"));
-                subgroup.append(siteCodePart.setBoost(5f));
-            }
-
-        }
-
-        KeywordQueryBuilder q = new KeywordQueryBuilder(Operator.AND);
-        QueryPartGroup group = new QueryPartGroup();
-
-        group.setOperator(Operator.AND);
-        if (SearchUtils.checkMinString(term,min)) {
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, StringUtils.trim(term));
-            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            q.append(fqp);
-        }
-
-        // refine search to the correct keyword type
-        group.append(new FieldQueryPart<String>(QueryFieldNames.TYPE, keywordType));
-        subgroup.append(group);
-        q.append(subgroup);
-        q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        return q;
-    }
-
-
  }
