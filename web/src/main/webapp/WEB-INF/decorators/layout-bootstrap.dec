@@ -87,7 +87,8 @@ ${head}
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
 
       <#if authenticatedUser?has_content>data-currentTime="1" </#if>
-      <#if ngApplicationName?has_content>ng-cloak</#if>>
+      <#if ngApplicationName?has_content>ng-cloak</#if>
+    >
     <@header.outdatedBrowserWarning />
 
     <div class="container">

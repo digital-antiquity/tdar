@@ -36,6 +36,7 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
+import com.healthmarketscience.jackcess.query.Query;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
 
@@ -213,7 +214,19 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             } finally {
                 completePreparedStatements();
             }
+            
         }
+        
+        for (Query query : getDatabase().getQueries()) {
+            try {
+                logger.debug("Query {}: {} ", query.getObjectId(), query.toString());
+                logger.debug("      {}: {} ", query.getObjectId(), query.getName());
+                logger.debug("      {}: {} ", query.getObjectId(), query.toSQLString());
+            } catch (Exception e) {
+                logger.warn("error reading queries: {}", e);
+            }
+        }
+        
         IOUtils.closeQuietly(indexedFileOutputStream);
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {

@@ -190,12 +190,12 @@
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
             <#if resource.viewable && authenticated && (resource.publicallyAccessible || ableToViewConfidentialFiles)>
-            <h3>Browse the Data Set</h3>
+            <h3 id="browseTable" data-namespace="${namespace}">Browse the Data Set</h3>
 
                 <#if (resource.dataTables?size > 1)>
                 <form>
                     <label for="table_select">Choose Table:</label>
-                    <select id="table_select" name="dataTableId" data-namespace="${namespace}">
+                    <select id="table_select" name="dataTableId">
                         <#list resource.dataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>

@@ -224,7 +224,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return result;
     }
 
-    private boolean isWhiteLabelCollection() {
+    public boolean isWhiteLabelCollection() {
         return getPersistable().isWhiteLabelCollection();
     }
 

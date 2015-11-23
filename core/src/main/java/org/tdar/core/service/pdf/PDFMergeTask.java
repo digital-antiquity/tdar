@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.configuration.TdarConfiguration;
 
 /**
  * Handles the actual merging of the PDFs through a piped-output-stream.
@@ -41,7 +42,11 @@ public class PDFMergeTask implements Runnable {
         File scratchFile = null;
         try {
             scratchFile = File.createTempFile("pdfbox-merge-scratch", ".bin");
+            if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
             wrapper.getMerger().mergeDocumentsNonSeq(new RandomAccessFile(scratchFile, "rw"));
+            } else {
+                wrapper.getMerger().mergeDocuments();
+            }
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
