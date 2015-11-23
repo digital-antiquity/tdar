@@ -10,8 +10,9 @@ import org.apache.solr.common.SolrDocumentList;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.service.GenericService;
 import org.tdar.search.service.SearchIndexService;
+
+import com.opensymphony.xwork2.interceptor.annotations.Before;
 
 public class SolrSetupITCase extends AbstractIntegrationTestCase {
 
@@ -21,9 +22,13 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
     @Autowired
     SearchIndexService searchIndexService;
     
+    @Before
+    public void index() {
+        searchIndexService.indexAll(getAdminUser());
+    }
+    
     @Test
     public void testPeople() throws SolrServerException, IOException {
-        searchIndexService.indexAllPeople();
         SolrQuery solrQuery = new  SolrQuery();
         solrQuery.setParam("fl","id,score");
         String string = "S*";
@@ -35,23 +40,7 @@ public class SolrSetupITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    public void testResources() throws SolrServerException, IOException {
-        searchIndexService.indexAllResources();
-    }
-
-    @Test
-    public void testCollections() throws SolrServerException, IOException {
-        searchIndexService.indexAllCollections();
-    }
-
-    @Test
-    public void testKeywords() throws SolrServerException, IOException {
-        searchIndexService.indexAllKeywords();
-    }
-
-    @Test
     public void testInstitutions() throws SolrServerException, IOException {
-        searchIndexService.indexAllInstitutions();
         SolrQuery solrQuery = new  SolrQuery();
         solrQuery.setParam("fl","id,score");
         String string = "University\\ of*";
