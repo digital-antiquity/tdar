@@ -477,8 +477,8 @@ View freemarker macros
                 <#assign contents = "" />
                 <#list proxyList as proxy>
                     <#if proxy.valid && proxy.role == role && !proxy.resourceCreator.creator.deleted >
-                        <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>
-                        ,</#if> <@browse creator=proxy.resourceCreator /><#t/></#assign>
+                        <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if>
+                        <@browse creator=proxy.resourceCreator /><#t/></#assign>
                     </#if>
                 </#list>
                 <#if contents?has_content>
@@ -746,12 +746,14 @@ View freemarker macros
     </#macro>
     <#function _staticGoogleMapUrl boundingBox apikey>
         <#local bb=boundingBox>
-        <#local bbvals="${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.maxObfuscatedLongitude?c}|${bb.maxObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}|${bb.minObfuscatedLatitude?c},${bb.minObfuscatedLongitude?c}">
+        <#local bbvals="[[${bb.minObfuscatedLongitude?c},${bb.minObfuscatedLatitude?c}],[${bb.minObfuscatedLongitude?c},${bb.maxObfuscatedLatitude?c}],[${bb.maxObfuscatedLongitude?c},${bb.maxObfuscatedLatitude?c}],[${bb.maxObfuscatedLongitude?c},${bb.minObfuscatedLatitude?c}],[${bb.minObfuscatedLongitude?c},${bb.minObfuscatedLatitude?c}]]">
+        <#local mapId="abrin.n9j4f56m">
         <#local apikeyval="">
-        <#if googleMapsApiKey?has_content>
-            <#local apikeyval="&key=${googleMapsApiKey}">
-        </#if>
-        <#return "//maps.googleapis.com/maps/api/staticmap?size=410x235&maptype=terrain&path=color:0x000000|weight:1|fillcolor:0x888888|${bbvals}&sensor=false${apikeyval}">
+        <#local width=410>
+        <#local height=235>
+        <#local uri>geojson({"type":"Feature","properties":{"stroke-width":4,"stroke":"#7a1501","stroke-opacity":0.5,"fill-opacity":0.15},"geometry":{"type":"Polygon","coordinates":[${bbvals}]}})</#local>
+
+        <#return "//api.mapbox.com/v4/${mapId}/${uri?url}/auto/${width}x${height}.png?access_token=${leafletApiKey}">
     </#function>
 
 

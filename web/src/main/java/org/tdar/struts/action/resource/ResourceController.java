@@ -106,25 +106,6 @@ public class ResourceController extends AuthenticationAware.Base {
         return (!getTdarConfiguration().isPayPerIngestEnabled() || accountService.hasSpaceInAnAccount(getAuthenticatedUser(), null));
     }
 
-    /**
-     * Used to edit an existing resource's resource type / document type / etc.
-     * 
-     * @return
-     */
-    @Action(value = "{id}",
-            results = {
-                    @Result(name = "SUCCESS", type = TYPE_REDIRECT, location = "${resource.detailUrl}")
-            })
-    public String view() {
-        resource = getGenericService().find(Resource.class, resourceId);
-        if (resource == null) {
-            getLogger().error("trying to edit information resource but it was null.");
-            addActionError(getText("resourceController.not_found"));
-            return NOT_FOUND;
-        }
-        return SUCCESS;
-    }
-
     public ResourceType getResourceType() {
         return resourceType;
     }
@@ -155,6 +136,6 @@ public class ResourceController extends AuthenticationAware.Base {
 
     public void setResource(Resource resource) {
         this.resource = resource;
-    }
+    } 
 
 }

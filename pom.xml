@@ -72,7 +72,7 @@
             <name>Archiva Managed Internal Repository</name>
             <url>https://dev.tdar.org/archiva/repository/internal/</url>
             <releases>
-                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -95,6 +95,7 @@
             <url>http://maven.imagej.net/content/repositories/releases</url>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
             </releases>
             <snapshots>
                 <enabled>false</enabled>
@@ -121,11 +122,18 @@
         <repository>
             <id>spring-release</id>
             <url>http://maven.springframework.org/release</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
         </repository>
         <repository>
             <id>org.jboss.repository.nexus.public</id>
             <name>Hibernate Public repository</name>
             <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            
         </repository>
         <repository>
             <id>atlassian-m2-repository</id>
@@ -135,6 +143,7 @@
             </snapshots>
             <releases>
                 <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
             </releases>
         </repository>
         <repository>
@@ -145,6 +154,7 @@
                 <enabled>false</enabled>
             </snapshots>
             <releases>
+                <updatePolicy>never</updatePolicy>
                 <enabled>true</enabled>
             </releases>
         </repository>
@@ -154,6 +164,9 @@
             <name>oss.sonatype.org - github-releases</name>
             <id>oss.sonatype.org-github-releases</id>
             <url>http://oss.sonatype.org/content/repositories/github-releases</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
         </pluginRepository>
     </pluginRepositories>
 
