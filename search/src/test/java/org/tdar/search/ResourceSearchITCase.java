@@ -413,6 +413,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         Project project = new Project();
         project.setTitle(title);
         project.setDescription(title);
+        project.markUpdated(getAdminUser());
         genericService.save(project);
         Assert.assertNotNull(project.getId());
         assertTrue(project.getId() != -1L);

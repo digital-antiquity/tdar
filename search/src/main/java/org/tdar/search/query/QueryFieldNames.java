@@ -90,8 +90,8 @@ public interface QueryFieldNames {
     String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
     String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";
-    String LAST_NAME_AUTO = "lastName_auto";
-    String FIRST_NAME_AUTO = "firstName_auto";
+    String LAST_NAME_AUTO = "lastName_autocomplete";
+    String FIRST_NAME_AUTO = "firstName_autocomplete";
     String NAME_AUTOCOMPLETE = "name_autocomplete";
     String NAME_SORT = "name_sort";
     String TYPE = "type";

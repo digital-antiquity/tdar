@@ -249,7 +249,6 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         Person person_ = setupPesron(null, null, null, null);
         SearchResult result = findPerson(person_, "billingAdmin", true, min); 
         
-        assertEquals("result should be success", Action.SUCCESS, result);
         List<Indexable> people = result.getResults();
         assertNotEmpty(people);
         assertTrue(people.contains(user));

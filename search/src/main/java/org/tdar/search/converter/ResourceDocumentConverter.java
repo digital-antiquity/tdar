@@ -241,7 +241,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         for (String key : types.keySet()) {
             doc.setField(key, types.get(key));
         }
-        doc.setField("roles", roles);
+        doc.setField(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, roles);
     }
 
     private static void indexLatitudeLongitudeBoxes(Resource resource, SolrInputDocument doc) {

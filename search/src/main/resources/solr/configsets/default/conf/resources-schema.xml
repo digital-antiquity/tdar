@@ -61,7 +61,6 @@
     <field name="UPDATER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="RESOURCE_PROVIDER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="PUBLISHER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="roles" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="resourceOwner" type="long" indexed="true" stored="false" required="false" multiValued="false" />
 
 
