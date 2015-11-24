@@ -83,7 +83,7 @@ TDAR.c3graph = (function(console, $, ctx) {
 
 			
 			_initJson($parent, cdata);
-			console.log(JSON.stringify(cdata));
+//			console.log(JSON.stringify(cdata));
 			var chart = c3.generate(cdata);
 		});
 	};
