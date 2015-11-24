@@ -30,13 +30,11 @@ import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -48,24 +46,20 @@ import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.dao.SearchDao;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
-import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.AbstractHydrateableQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryGroup;
 import org.tdar.search.query.part.QueryPart;
-import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.range.DateRange;
@@ -74,7 +68,7 @@ import com.opensymphony.xwork2.TextProvider;
 
  @Service
  @Transactional
- public class SearchService<I extends Indexable> {
+ public class SearchService<I extends Indexable> extends AbstractSearchService {
 
      private final GenericService genericService;
 
@@ -427,28 +421,5 @@ import com.opensymphony.xwork2.TextProvider;
          return (List<Resource>) ((List<?>) result.getResults());
      }
 
-     /*
-      * The @link AdvancedSearchController's ReservedSearchParameters is a proxy object for handling advanced boolean searches. We initialize it with the search
-      * parameters
-      * that are AND-ed with the user's search to ensure appropriate search results are returned (such as a Resource's @link Status).
-      */
-     public void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, TdarUser user) {
-         reservedSearchParameters.setAuthenticatedUser(user);
-         reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
-         Set<Status> allowedSearchStatuses = authorizationService.getAllowedSearchStatuses(user);
-         List<Status> statuses = reservedSearchParameters.getStatuses();
-         statuses.removeAll(Collections.singletonList(null));
-
-         if (CollectionUtils.isEmpty(statuses)) {
-             statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
-         }
-
-         statuses.retainAll(allowedSearchStatuses);
-         reservedSearchParameters.setStatuses(statuses);
-         if (statuses.isEmpty()) {
-             throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
-         }
-
-     }
 
  }

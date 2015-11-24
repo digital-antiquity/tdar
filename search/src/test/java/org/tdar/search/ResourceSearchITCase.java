@@ -491,7 +491,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Autowired
-    ResourceSearchService resourceSearchService;
+    private ResourceSearchService resourceSearchService;
 
     public SearchResult performSearch(String term, TdarUser user, int max) throws ParseException, SolrServerException, IOException {
         return performSearch(term, null, null, null, null, user, null, null, max);
@@ -505,9 +505,10 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public SearchResult performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
             ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws ParseException, SolrServerException, IOException {
         SearchResult result = new SearchResult();
-        ResourceQueryBuilder q = resourceSearchService.lookupResource(term, projectId, includeParent, collectionId, categoryId, user, reservedSearchParameters,
-                permission, MessageHelper.getInstance());
+        logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
         result.setRecordsPerPage(max);
+        ResourceQueryBuilder q = resourceSearchService.lookupResource(term, projectId, includeParent, collectionId, categoryId, user,
+                reservedSearchParameters, permission, MessageHelper.getInstance());
         searchService.handleSearch(q, result, MessageHelper.getInstance());
         return result;
     }

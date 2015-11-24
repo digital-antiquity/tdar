@@ -17,20 +17,24 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
 @Service
 @Transactional
-public class ResourceSearchService {
+public class ResourceSearchService extends AbstractSearchService {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
 
-    
     @Autowired
-    private SearchService searchService;
-    
+    public ResourceSearchService(SearchService searchService) {
+        this.searchService = searchService;
+    }
+
+    private final SearchService searchService;
+
     public QueryBuilder buildCollectionResourceSearch() {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
@@ -38,7 +42,6 @@ public class ResourceSearchService {
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         return qb;
     }
-    
 
     /**
      * Shared logic to find all direct children of container resource (ResourceCollections and Projects)
@@ -59,8 +62,8 @@ public class ResourceSearchService {
         return qb;
     }
 
-
-    public ResourceQueryBuilder lookupResource(String name, Long projectId, boolean includeParent, Long collectionId, Long categoryId, TdarUser user, ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, TextProvider support) {
+    public ResourceQueryBuilder lookupResource(String name, Long projectId, Boolean includeParent, Long collectionId, Long categoryId, TdarUser user,
+            ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, TextProvider support) {
         ResourceQueryBuilder q = new ResourceQueryBuilder();
         q.append(new CategoryTermQueryPart(name, categoryId));
 
@@ -69,7 +72,7 @@ public class ResourceSearchService {
         }
 
         String colQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
-        if (!includeParent) {
+        if (includeParent == Boolean.FALSE || includeParent == null) {
             colQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
 
@@ -79,10 +82,14 @@ public class ResourceSearchService {
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
             q.append(new FieldQueryPart<Long>(colQueryField, collectionId));
         }
-        searchService.initializeReservedSearchParameters(reservedSearchParameters, user);
-        q.append(reservedSearchParameters.toQueryPartGroup(support));
+
+        if (reservedSearchParameters != null) {
+            initializeReservedSearchParameters(reservedSearchParameters, user);
+            q.append(reservedSearchParameters.toQueryPartGroup(support));
+        }
 
         return q;
-        
+
     }
+
 }
