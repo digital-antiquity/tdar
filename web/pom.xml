@@ -114,9 +114,22 @@
                     <artifactId>javassist</artifactId>
                     <groupId>javassist</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-commons</artifactId>
+                </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-java8-support-plugin</artifactId>
+        <version>2.3.24.1</version>
+    </dependency>
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-sitemesh-plugin</artifactId>

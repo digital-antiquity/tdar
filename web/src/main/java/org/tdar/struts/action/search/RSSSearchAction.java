@@ -64,6 +64,9 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
             }
         } catch (TdarActionException tdae) {
             statusCode = tdae.getStatusCode();
+            if (statusCode != 404) {
+                getLogger().error("rss error(2)", tdae);
+            }
             return ERROR;
         } catch (Exception e) {
             getLogger().error("rss error", e);
