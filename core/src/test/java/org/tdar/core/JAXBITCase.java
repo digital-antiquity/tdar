@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
@@ -82,7 +83,9 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testFileProxyConversion() throws Exception {
         FileProxies fp = new FileProxies();
-        fp.getFileProxies().add(new FileProxy());
+        FileProxy fpx = new FileProxy();
+        fp.getFileProxies().add(fpx);
+        fpx.setAction(FileAction.REPLACE);
         String xml = serializationService.convertToXML(fp);
         logger.info(xml);
         serializationService.parseXml(FileProxies.class, new StringReader(xml));
