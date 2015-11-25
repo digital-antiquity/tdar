@@ -1,9 +1,11 @@
 package org.tdar.struts.action.codingSheet;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.SortedMap;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -32,6 +34,7 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
+
 
 /**
  * $Id$
@@ -96,6 +99,7 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
                     @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
+        List<String> mappingIssues = new ArrayList<>();
         try {
             getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", getCodingSheet());
             for (CodingRule transientRule : getCodingRules()) {
@@ -103,7 +107,8 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
                 getLogger().debug(" matching column values: {} -> node ids {}", transientRule, ontologyNode);
                 
                 if (ontologyNode != null && StringUtils.isNotBlank(ontologyNode.getDisplayName()) && ontologyNode.getId() == null) {
-                    getLogger().error("mapping>> ontology node label has text {}, but id is null for rule: {}", ontologyNode, transientRule);
+                    getLogger().warn("mapping>> ontology node label has text {}, but id is null for rule: {}", ontologyNode, transientRule);
+                    mappingIssues.add(transientRule.getTerm());
                 }
                 
                 CodingRule rule = getCodingSheet().getCodingRuleById(transientRule.getId());
@@ -112,6 +117,9 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
                 if (ontologyNode != null) {
                     rule.setOntologyNode(ontology.getOntologyNodeById(ontologyNode.getId()));
                 }
+            }
+            if (CollectionUtils.isNotEmpty(mappingIssues)) {
+                addActionMessage(getText("codingSheetMappingController.could_not_map", Arrays.asList(mappingIssues)));
             }
             getGenericService().save(getCodingSheet().getCodingRules());
         } catch (Throwable tde) {

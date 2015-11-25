@@ -44,6 +44,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/browse")
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.FREEMARKER, location = "keywords.ftl"),
+        @Result(name=TdarActionSupport.INPUT, type=TdarActionSupport.REDIRECT, location="/not-found"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
                 location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${slugSuffix}", params = { "ignoreParams", "id,keywordPath,slug" })
 })
