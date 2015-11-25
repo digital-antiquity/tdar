@@ -236,13 +236,11 @@ TDAR.worldmap = (function(console, $, ctx) {
 		        columns: data,
 		        type : 'pie',
 		        onclick: function (d, element) {
-//		            console.log(d.id);
-//		            console.log(id);
-//		            var uri = "/search/results?resourceTypes=" + typeLabelMap[d.id];
-//		            if (id != undefined) {
-//		                uri += "&geographicKeywords=" + id + " (ISO Country Code)";
-//		            }
-//		            window.location.href = TDAR.c3graphsupport.getClickPath(uri);
+                    var uri = "/search/results?resourceTypes=" + typeLabelMap[d.id];
+                    if (name != undefined) {
+                        uri += "&geographicKeywords=" + name + " (Country)";
+                    }
+                    window.location.href = TDAR.c3graphsupport.getClickPath(uri);
 		        }
 		    },
             pie: {
