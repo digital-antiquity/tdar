@@ -16,7 +16,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
@@ -157,8 +156,6 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("used: {} vs. {}", filesUed, filesUed_);
     }
 
-    
-    
     @Test
     public void testReplaceFile() throws Exception {
         JaxbResultContainer login = setupValidLogin();
@@ -177,11 +174,10 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String id_ = document.getElementsByTagName("tdar:id").item(0).getTextContent();
         logger.debug("ID:: {}", id_);
         Long id = Long.parseLong(id_);
-        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+        assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
 
-        
         CloseableHttpClient client2 = SimpleHttpUtils.createClient();
-        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s&%s=%s",  CONFIG.getBaseSecureUrl(), id, login.getSessionKeyName(), login.getApiToken()));
+        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s&%s=%s", CONFIG.getBaseSecureUrl(), id, login.getSessionKeyName(), login.getApiToken()));
         CloseableHttpResponse execute = client2.execute(get);
         String xmlRecord = IOUtils.toString(execute.getEntity().getContent());
         logger.debug(xmlRecord);
@@ -200,9 +196,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         post.setEntity(builder.build());
         response = httpClient.execute(post);
         logger.debug("status:{} ", response.getStatusLine());
-        logger.debug("response: {}", resp);
-
-        
+        assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
+        logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
     }
 
     private org.w3c.dom.Document getXmlDocument(InputSource is) throws ParserConfigurationException, SAXException, IOException {
