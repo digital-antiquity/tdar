@@ -198,6 +198,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         var mapdata = _getMapdata($mapDiv.parent());
 		var filter =[];
 		var data = [];
+		var typeLabelMap = {};
         if (id != undefined) {
             filter = mapdata.filter(function(d) {return d.code == id});  
       		filter.forEach(function(row){
@@ -211,6 +212,7 @@ TDAR.worldmap = (function(console, $, ctx) {
                 var tmp = {};
             mapdata.forEach(function(row) {
       			if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
+      			    typeLabelMap[row.label] = row.resourceType;
                     var t = 0;
                     if (parseInt(tmp[row.label])) {
                         t = parseInt(tmp[row.label]);
@@ -233,6 +235,13 @@ TDAR.worldmap = (function(console, $, ctx) {
 		    data: {
 		        columns: data,
 		        type : 'pie',
+		        onclick: function (d, element) {
+                    var uri = "/search/results?resourceTypes=" + typeLabelMap[d.id];
+                    if (name != undefined) {
+                        uri += "&geographicKeywords=" + name + " (Country)";
+                    }
+                    window.location.href = TDAR.c3graphsupport.getClickPath(uri);
+		        }
 		    },
             pie: {
                 label: {

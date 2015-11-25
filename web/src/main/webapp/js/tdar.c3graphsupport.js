@@ -20,7 +20,7 @@ TDAR.c3graphsupport = (function(console, $, ctx) {
         }
         return uri;
     }
-    
+        
     var _dashboardResourcePieChartClick = function(d, element) {
         var $parent = $("#resourceTypeChart");
         var source = JSON.parse($($parent.data("columns")).html());
@@ -36,7 +36,8 @@ TDAR.c3graphsupport = (function(console, $, ctx) {
     return {
         resourceBarGraphClick : _resourceBarGraphClick,
         dashboardStatusPieChartClick : _dashboardStatusPieChartClick,
-        dashboardResourcePieChartClick : _dashboardResourcePieChartClick
+        dashboardResourcePieChartClick : _dashboardResourcePieChartClick,
+        getClickPath : _getClickPath
     }
     
 })(console, jQuery, window);
