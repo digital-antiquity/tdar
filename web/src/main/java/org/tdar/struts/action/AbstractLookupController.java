@@ -417,7 +417,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public String findInstitution(String institution) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.INSTITUTION);
         if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
-            InstitutionQueryBuilder q = creatorSearchService.findInstitution(institution);
+            InstitutionQueryBuilder q = creatorSearchService.findInstitution(institution, getMinLookupLength());
             try {
                 handleSearch(q);
             } catch (ParseException e) {

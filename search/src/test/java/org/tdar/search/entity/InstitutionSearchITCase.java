@@ -42,6 +42,8 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Autowired
     CreatorSearchService<Institution> creatorSearchService;
 
+    private int min = 2;
+
     @Override
     public void reindex() {
         searchIndexService.purgeAll(Arrays.asList(Institution.class));
@@ -75,7 +77,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     }
     
     private SearchResult searchInstitution(String term) throws ParseException, SolrServerException, IOException {
-        InstitutionQueryBuilder queryBuilder = creatorSearchService.findInstitution(term);
+        InstitutionQueryBuilder queryBuilder = creatorSearchService.findInstitution(term, min );
         SearchResult result = new SearchResult();
         searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
         assertResultsOkay(term, result);
@@ -127,15 +129,11 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Test
     @Rollback(true)
     public void testInstitutionLookupWithNoResults() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Institution.class);
-        SearchResult result = searchInstitution("fdaksfddfde");
-        List<Indexable> institutions = result.getResults();
-        assertEquals("person list should be empty", institutions.size(), 0);
-    }
+        searchAssertEmpty("fdaksfddfde");
+        }
 
     @Test
     public void testInstitutionLookupWithOneResult() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Institution.class);
         SearchResult result = searchInstitution("tfqa");
         List<Indexable> institutions = result.getResults();
         assertTrue("only one result expected", institutions.size() == 1);
@@ -144,7 +142,6 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     // given test script, searching 'digital' should return multiple results that start with 'Digital Antiquity'
     @Test
     public void testInstitutionLookupWithMultiple() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Institution.class);
         SearchResult result = searchInstitution("University");
         List<Indexable> institutions = result.getResults();
         assertTrue("more than one result expected", institutions.size() > 1);
@@ -154,9 +151,15 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Test
     @Rollback(true)
     public void testInstitutionLookupWithBlanks() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Institution.class);
         String blanks = "    ";
-        SearchResult result = searchInstitution(blanks);
+        searchAssertEmpty(blanks);
+    }
+
+
+    private void searchAssertEmpty(String blanks) throws ParseException, SolrServerException, IOException {
+        InstitutionQueryBuilder queryBuilder = creatorSearchService.findInstitution(blanks, min );
+        SearchResult result = new SearchResult();
+        searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
         List<Indexable> results = result.getResults();
         Assert.assertEquals("expecting zero results", 0, results.size());
     }
@@ -207,11 +210,11 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Test
     @Rollback(true)
     public void testPrefixWithoutPunctuationMatchesPunctuation() throws SolrServerException, IOException, ParseException {
-        List<Institution> insts = setupInstitutionsForLookup();
         SearchResult results = searchInstitution("US");
         logger.debug("results:{}", results);
         for (Indexable indx : results.getResults()) {
             Institution inst = (Institution) indx;
+            logger.debug("{}", inst.getName());
             assertTrue(inst.getName().toLowerCase().contains("u.s."));
         }
 
@@ -219,7 +222,6 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     private List<Institution> setupInstitutionsForLookup() throws SolrServerException, IOException {
         String name1 = "U.S. Department of the Interior";
-        searchIndexService.indexAll(getAdminUser(), Institution.class);
         List<Institution> insts = Arrays.asList(new Institution(name1),
                 new Institution("National Geographic Society (U.S.)")
                 , new Institution("Robertson Research (U.S.)")

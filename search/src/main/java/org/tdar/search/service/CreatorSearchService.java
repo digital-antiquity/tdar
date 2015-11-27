@@ -87,13 +87,16 @@ public class CreatorSearchService<I extends Indexable> {
         return pqb;
     }
 
-    public InstitutionQueryBuilder findInstitution(String institution) {
+    public InstitutionQueryBuilder findInstitution(String institution, int min) {
         InstitutionQueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
         Institution testInstitution = new Institution(institution);
         if (StringUtils.isNotBlank(institution)) {
             iqp.add(testInstitution);
             q.append(iqp);
+        }
+        if (min > 0 && q.size() == 0) {
+            return q;
         }
         q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         return q;
