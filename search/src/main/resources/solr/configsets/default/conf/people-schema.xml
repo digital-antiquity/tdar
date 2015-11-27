@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="people" version="1.5">
     
-    <field name="firstName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="firstName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="firstName_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
-    <field name="lastName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="lastName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="email" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="lastName_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
     <field name="registered" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="contributor" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="institution.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="institution.name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="institution.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="username" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
 

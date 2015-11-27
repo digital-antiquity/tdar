@@ -99,7 +99,11 @@ public class CreatorSearchService<I extends Indexable> {
         return q;
     }
 
-    public PersonQueryBuilder findPerson(Person person, String term, Boolean registered, int min) {
+    public PersonQueryBuilder findPerson(Person person_, String term, Boolean registered, int min) {
+        Person person = person_;
+        if (person == null) {
+            person = new Person();
+        }
         PersonQueryBuilder q = new PersonQueryBuilder(Operator.AND);
         boolean valid = false;
 
@@ -126,15 +130,14 @@ public class CreatorSearchService<I extends Indexable> {
         if (SearchUtils.checkMinString(person.getEmail(), min)) {
             valid = true;
         }
-
         if (valid || min == 0) {
             if (valid) {
                 PersonQueryPart pqp = new PersonQueryPart();
                 pqp.add(person);
                 q.append(pqp);
-                logger.debug("{}", pqp.toString());
+                logger.trace("{}", pqp.toString());
             }
-            q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+            q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         }
         return q;
     }

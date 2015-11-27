@@ -83,10 +83,10 @@ public interface QueryFieldNames {
     String TITLE_PHRASE = "title.phrase";
     String DESCRIPTION_PHRASE = "description.phrase";
     String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
-    String NAME_PHRASE = "name";
+    String NAME_PHRASE = "name_phrase";
     String NAME_TOKEN = "name";
     String USERNAME = "username";
-    String PROPER_AUTO = "proper_name_auto";
+    String PROPER_AUTO = "name_autocomplete";
     String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
     String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";

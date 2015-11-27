@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
@@ -217,7 +218,8 @@ public class SearchIndexService {
         String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
         Long prevId = 0L;
         Long currentId = 0L;
-        purge(getCoreForClass(toIndex));
+        String coreForClass = getCoreForClass(toIndex);
+        purge(coreForClass);
         while (scrollableResults.next()) {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
@@ -240,6 +242,11 @@ public class SearchIndexService {
                 // fullTextSession.clear();
                 logger.trace("flushed search index");
             }
+        }
+        try {
+            template.commit(coreForClass);
+        } catch (SolrServerException | IOException e) {
+            logger.error("error committing: {}", e);
         }
         scrollableResults.close();
     }
@@ -408,8 +415,8 @@ public class SearchIndexService {
             }
             logger.debug("begin flushing");
             // fullTextSession.flushToIndexes();
-//            UpdateResponse commit = template.commit(core);
-//            logger.debug("response: {}", commit.getResponseHeader());
+            UpdateResponse commit = template.commit(core);
+            logger.debug("response: {}", commit.getResponseHeader());
 //            processBatch(docs);
         }
         
@@ -507,7 +514,7 @@ public class SearchIndexService {
     private void purge(String core) {
         try {
             template.deleteByQuery(core, "*:*");
-//            template.commit(core);
+            template.commit(core);
         } catch (SolrServerException | IOException e) {
             logger.error("error purging index: {}", core, e);
         }
