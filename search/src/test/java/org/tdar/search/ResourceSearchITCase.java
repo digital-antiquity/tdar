@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,7 +13,10 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTimeZone;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -22,10 +26,16 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
@@ -34,18 +44,23 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
+import org.tdar.core.service.GenericKeywordService;
+import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.ReservedSearchParameters;
 import org.tdar.search.service.ResourceSearchService;
+import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.SearchParameters;
 import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.range.DateRange;
 
-public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
+public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Autowired
     SearchService searchService;
@@ -95,7 +110,6 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
         assertFalse(rqb.isEmpty());
         SearchResult result = new SearchResult();
-        result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         result.setSortField(SortOption.RELEVANCE);
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
         for (Resource r : (List<Resource>) (List<?>) result.getResults()) {
@@ -510,4 +524,566 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         searchService.handleSearch(q, result, MessageHelper.getInstance());
         return result;
     }
+
+
+
+    
+    
+    
+    
+    
+    
+
+    protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
+    protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
+    protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
+
+    @Autowired
+    SearchIndexService searchIndexService;
+    @Autowired
+    GenericKeywordService genericKeywordService;
+    
+
+    @Test
+    @Rollback(true)
+    public void testFindAllSearchPhrase() {
+        SearchResult result = doSearch("");
+        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), result.getSearchSubtitle());
+    }
+
+    @Test
+    @Rollback(true)
+    public void testResourceTypeSearchPhrase() {
+        ReservedSearchParameters reserved = new ReservedSearchParameters();
+        reserved.getResourceTypes().add(ResourceType.IMAGE);
+        SearchResult result = doSearch("", null, null, reserved);
+        for (Indexable r : result.getResults()) {
+            assertEquals(ResourceType.IMAGE, ((Resource)r).getResourceType());
+        }
+    }
+
+    public void setupTestDocuments() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String[] titles = {
+                "Preliminary Archeological Investigation at the Site of a Mid-Nineteenth Century Shop and Yard Complex Associated With the Belvidere and Delaware Railroad, Lambertville, New Jersey",
+                "The James Franks Site (41DT97): Excavations at a Mid-Nineteenth Century Farmstead in the South Sulphur River Valley, Cooper Lake Project, Texas",
+                "Archeological and Architectural Investigation of Public, Residential, and Hydrological Features at the Mid-Nineteenth Century Quintana Thermal Baths Ponce, Puerto Rico",
+                "Final Report On a Phased Archaeological Survey Along the Ohio and Erie Canal Towpath in Cuyahoga Valley NRA, Summit and Cuyahoga Counties, Ohio",
+                "Archeological Investigation at the Lock 33 Complex, Chesapeake and Ohio Canal",
+                "Arthur Patterson Site, a Mid-Nineteenth Century Site, San Jacinto County" };
+        for (String title : titles) {
+            Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), title);
+            searchIndexService.index(document);
+        }
+
+    }
+
+    @Test
+    @Rollback(true)
+    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "Archeological Excavation at Site 33-Cu-314: A Mid-Nineteenth Century Structure on the Ohio and Erie Canal";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        searchIndexService.index(document);
+        setupTestDocuments();
+        SearchResult result = doSearch(resourceTitle);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "33-Cu-314";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        searchIndexService.index(document);
+
+        setupTestDocuments();
+        SearchResult result = doSearch(resourceTitle);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "33-Cu-314";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        searchIndexService.index(document);
+        setupTestDocuments();
+        SearchParameters params = new SearchParameters();
+        params.getTitles().add(resourceTitle);
+        SearchResult result = doSearch("", null,params,null);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "33-Cu-314";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        searchIndexService.index(document);
+        setupTestDocuments();
+        SearchParameters params = new SearchParameters();
+        params.getTitles().add(resourceTitle.replaceAll("\\-", ""));
+        SearchResult result = doSearch("", null,params,null);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "what fun";
+        SiteNameKeyword snk = new SiteNameKeyword();
+        String label = "33-Cu-314";
+        snk.setLabel(label);
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        genericService.save(snk);
+        document.getSiteNameKeywords().add(snk);
+        searchIndexService.index(document);
+        setupTestDocuments();
+        SearchParameters params = new SearchParameters();
+        params.getSiteNames().add(label);
+        SearchResult result = doSearch("", null, params, null);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "what fun";
+        SiteNameKeyword snk = new SiteNameKeyword();
+        String label = "33-Cu-314";
+        snk.setLabel(label);
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        genericService.save(snk);
+        document.getSiteNameKeywords().add(snk);
+        searchIndexService.index(document);
+        setupTestDocuments();
+        SearchResult result = doSearch("what fun 33-Cu-314");
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testFindResourceTypePhrase() {
+        ReservedSearchParameters reserved = new ReservedSearchParameters();
+        reserved.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+        SearchResult result = doSearch("", null, null, reserved);
+        logger.debug("search phrase:{}", result.getSearchTitle());
+        assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
+        assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
+        assertEquals(result.getSearchSubtitle(), MessageHelper.getMessage("advancedSearchController.title_all_records"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testFindResourceById() {
+        ReservedSearchParameters params = new ReservedSearchParameters();
+        params.getResourceIds().add(Long.valueOf(3074));
+        SearchResult result = doSearch("", null, null, params);
+        assertTrue(resultsContainId(result,3074l));
+        for (Indexable r : result.getResults()) {
+            logger.info("{}", r);
+        }
+    }
+
+    @Test
+    @Rollback(true)
+    public void testFindTerm() {
+        ReservedSearchParameters params = new ReservedSearchParameters();
+        params.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+
+        SearchResult result = doSearch("test", null, null, params);
+        logger.info(result.getSearchTitle());
+        assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
+        assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
+        assertTrue(result.getSearchTitle().contains("test"));
+        assertEquals(result.getSearchSubtitle(), "test");
+    }
+
+    @Test
+    @Rollback(true)
+    public void testCultureKeywordSearch() {
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+
+        CultureKeyword keyword1 = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
+        CultureKeyword keyword2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
+        logger.info(keyword1.getLabel());
+        logger.info(keyword2.getLabel());
+        // this test is failing because the "Skeleton" versions of these fields just have IDs, and thus, when they're put into a set
+        // they fall in on themselves, thus, bad.
+        
+        SearchParameters params = new SearchParameters();
+        params.getApprovedCultureKeywordIdLists().add(Arrays.asList(keyword1.getId().toString(), keyword2.getId().toString()));
+        params.getAllFields().add("test");
+        SearchResult result = doSearch("", null, params, rparams);
+        String searchPhrase = result.getSearchTitle();
+        assertTrue("search phrase shouldn't be blank:", StringUtils.isNotBlank(searchPhrase));
+        logger.debug("search phrase: {}", searchPhrase);
+        logger.debug("keyword1:      {}", keyword1.getLabel());
+        logger.debug("keyword2:      {}", keyword2.getLabel());
+        assertTrue(searchPhrase.contains(ResourceType.DOCUMENT.getLabel()));
+        assertTrue(searchPhrase.contains(ResourceType.IMAGE.getLabel()));
+        assertTrue(searchPhrase.contains(keyword1.getLabel()));
+        assertTrue(searchPhrase.contains(keyword2.getLabel()));
+        assertTrue(searchPhrase.contains("test"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testBadDateSearch() {
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+        CoverageDate cd = new CoverageDate(CoverageType.NONE);
+        SearchParameters params = new SearchParameters();
+        params.getCoverageDates().add(cd);
+        params.getAllFields().add("test");
+        SearchResult result = doSearch("", null, params, rparams);
+        assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
+        assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
+        assertFalse(result.getSearchTitle().contains("null"));
+        assertFalse(result.getSearchTitle().contains(" TO "));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testCalDateSearchPhrase() {
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+        CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
+        SearchParameters params = new SearchParameters();
+        params.getCoverageDates().add(cd);
+        params.getAllFields().add("test");
+        SearchResult result = doSearch("", null, params, rparams);
+        logger.debug(result.getSearchTitle());
+
+        assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
+        assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
+        assertFalse(result.getSearchTitle().contains("null"));
+        assertTrue(result.getSearchTitle().contains("1000"));
+        assertTrue(result.getSearchTitle().contains("1200"));
+        assertTrue(result.getSearchTitle().contains(CoverageType.CALENDAR_DATE.getLabel()));
+        TdarAssert.assertMatches(result.getSearchTitle(), ".+?" + "\\:.+? \\- .+?");
+    }
+
+    @Test
+    @Rollback(true)
+    public void testSpatialSearch() {
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+        LatitudeLongitudeBox box = new LatitudeLongitudeBox(-1d, -1d, 1d, 1d);
+        rparams.getLatitudeLongitudeBoxes().add(box);
+        SearchResult result = doSearch("test",null, null, rparams);
+        assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
+        assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
+        assertTrue(result.getSearchTitle().contains("Resource Located"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testForInheritedCulturalInformationFromProject() {
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
+        SearchResult result = doSearch("Archaic",null,null,rparams);
+        assertTrue("'Archaic' defined inparent project should be found in information resource", resultsContainId(result,DOCUMENT_INHERITING_CULTURE_ID));
+        assertFalse("A child document that inherits nothing from parent project should not appear in results", resultsContainId(result,DOCUMENT_INHERITING_NOTHING_ID));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testDeletedOrDraftMaterialsAreHiddenInDefaultSearch() {
+        Long imgId = setupImage();
+        Long datasetId = setupDataset();
+        Long codingSheetId = setupCodingSheet();
+
+        logger.info("imgId:" + imgId + " datasetId:" + datasetId + " codingSheetId:" + codingSheetId);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+        SearchResult result = doSearch("precambrian",null, null, rparams);
+        assertFalse(resultsContainId(result,datasetId));
+        assertTrue(resultsContainId(result,codingSheetId));
+        assertFalse(resultsContainId(result,imgId));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testGeneratedAreHidden() {
+        Long codingSheetId = setupCodingSheet();
+        CodingSheet sheet = genericService.find(CodingSheet.class, codingSheetId);
+        sheet.setGenerated(true);
+        genericService.save(sheet);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.getResourceTypes().add(ResourceType.CODING_SHEET);
+        SearchResult result = doSearch("", null, null, rparams);
+        assertFalse(resultsContainId(result,codingSheetId));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testPeopleAndInstitutionsInSearchResults() throws SolrServerException, IOException {
+        Long imgId = setupDataset(Status.ACTIVE);
+        logger.info("Created new image: " + imgId);
+        searchIndexService.index(resourceService.find(imgId));
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+        rparams.getStatuses().addAll(Arrays.asList(Status.values()));
+        SearchResult result = doSearch("testabc", null, null, rparams);
+        assertTrue("expected to find person in keyword style search of firstname", resultsContainId(result,imgId));
+        result = doSearch("\"" + TestConstants.DEFAULT_FIRST_NAME + "abc " + TestConstants.DEFAULT_LAST_NAME + "abc\"");
+        assertTrue("expected to find person in phrase style search of full name", resultsContainId(result,imgId));
+
+        result = doSearch("university");
+        assertTrue("institutional author expected to find in search", resultsContainId(result,imgId));
+    }
+
+    
+    
+    
+    
+    
+    @Test
+    @Rollback(true)
+    // try a search that will fail the strict parsing pass, but work under lenient parsing.
+    public void testLenientParsing() {
+        String term = "a term w/ unclosed \" quote and at least one token that will return results: " + TestConstants.DEFAULT_LAST_NAME;
+        doSearch(term);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testDatedSearch() {
+        Long docId = setupDatedDocument();
+        logger.info("Created new document: " + docId);
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        ReservedSearchParameters rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+
+        // test inner range
+        SearchParameters params = new SearchParameters();
+        params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -900, 1000));
+        SearchResult result = doSearch("", null, params, rparams);
+        assertTrue("expected to find document for inner range match", resultsContainId(result,docId));
+
+        rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+        params = new SearchParameters();
+        params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -2000, -1));
+        result = doSearch("", null, params, rparams);
+        assertTrue("expected to find document for overlapping range (lower)", resultsContainId(result,docId));
+
+        rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+        params = new SearchParameters();
+        params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 1999, 2009));
+        result = doSearch("", null, params, rparams);
+        assertTrue("expected to find document for overlapping range (upper)", resultsContainId(result,docId));
+
+        // test invalid range
+        rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+        params = new SearchParameters();
+        params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -7000, -1001));
+        result = doSearch("", null, params, rparams);
+        assertFalse("expected not to find document in invalid range", resultsContainId(result,docId));
+
+        // test exact range (query inclusive)
+        rparams = new ReservedSearchParameters();
+        rparams.setResourceTypes(allResourceTypes);
+        params = new SearchParameters();
+        params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 2000));
+        result = doSearch("", null, params, rparams);
+        assertTrue("expected to find document for exact range match", resultsContainId(result,docId));
+    }
+
+    @Test
+    @Rollback
+    public void testInvestigationTypes() {
+
+        // TODO:dynamically get the list of 'used investigation types' and the resources that use them
+        SearchParameters params = addInvestigationTypes(new SearchParameters());
+        ReservedSearchParameters reserved = new ReservedSearchParameters();
+        
+        // this fails because all of the Skeleton Investigation Types with IDs get put into a set, and thus fold into each other
+        // because equality based on label[NULL]
+        reserved.setResourceTypes(allResourceTypes);
+        reserved.getStatuses().addAll(Arrays.asList(Status.ACTIVE, Status.DELETED, Status.DRAFT, Status.FLAGGED));
+        SearchResult result = doSearch("",null, params, reserved);
+        assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,2420L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,1628L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,3805L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,3738L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,4287L));
+        assertTrue("expected to find document that uses known investigation types", resultsContainId(result,262L));
+    }
+
+    private boolean resultsContainId(SearchResult result, long l) {
+        List<Long> extractIds = PersistableUtils.extractIds(result.getResults());
+        return extractIds.contains(l);
+    }
+
+    @Test
+    @Rollback
+    // searching for an specific tdar id should ignore all other filters
+    public void testTdarIdSearchOverride() throws Exception {
+        Document document = createAndSaveNewInformationResource(Document.class);
+        Long expectedId = document.getId();
+        assertTrue(expectedId > 0);
+        reindex();
+
+        // specify some filters that would normally filter-out the document we just created.
+        ReservedSearchParameters reserved = new ReservedSearchParameters();
+        reserved.setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
+        SearchParameters params = new SearchParameters();
+        params.getTitles().add("thistitleshouldprettymuchfilteroutanyandallresources");
+        reserved.getResourceIds().add(expectedId);
+        SearchResult result = doSearch("", null, params, reserved);
+        assertEquals("expecting only one result", 1, result.getResults().size());
+        Indexable resource = result.getResults().iterator().next();
+        assertEquals(expectedId, resource.getId());
+    }
+
+    // add all investigation types... for some reason
+    private SearchParameters addInvestigationTypes(SearchParameters params) {
+        List<InvestigationType> investigationTypes = genericService.findAll(InvestigationType.class);
+        List<String> ids = new ArrayList<String>();
+        for (InvestigationType type : investigationTypes) {
+            ids.add(type.getId().toString());
+        }
+        params.getInvestigationTypeIdLists().add(ids);
+        return params;
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback
+    public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        // From the Hibernate documentation:
+        // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time."
+        // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
+        // So for the tests below to work in, say, Australia, we need to force the DateMidnight to the GMT time zone...
+        // ie:
+        // DateTimeZone dtz = DateTimeZone.forID("Australia/Melbourne");
+        // will break this test.
+        DateTimeZone dtz = DateTimeZone.forID("GMT");
+
+        // first create two documents with two separate create dates
+        Document document1 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest1@tdar.net", ""));
+        DateMidnight dm1 = new DateMidnight(2001, 2, 16, dtz);
+        document1.setDateCreated(dm1.toDate());
+
+        Document document2 = createAndSaveNewInformationResource(Document.class, createAndSaveNewPerson("lookuptest2@tdar.net", ""));
+        DateMidnight dm2 = new DateMidnight(2002, 11, 1, dtz);
+        document2.setDateCreated(dm2.toDate());
+
+        genericService.saveOrUpdate(document1, document2);
+        searchIndexService.index(document1, document2);
+
+        // okay, lets start with a search that should contain both of our newly created documents
+        DateRange dateRange = new DateRange();
+        dateRange.setStart(dm1.minusDays(1).toDate());
+        dateRange.setEnd(dm2.plusDays(1).toDate());
+        SearchParameters params = new SearchParameters();
+        params.getRegisteredDates().add(dateRange);
+        SearchResult result = doSearch("",null, params,null);
+
+        doSearch("", null, params, null);
+
+        assertTrue(result.getResults().contains(document1));
+        assertTrue(result.getResults().contains(document2));
+
+        // now lets refine the search so that the document2 is filtered out.
+        dateRange.setEnd(dm2.minusDays(1).toDate());
+        params = new SearchParameters();
+        params.getRegisteredDates().add(dateRange);
+        result = doSearch("",null, params,null);
+
+        assertTrue(result.getResults().contains(document1));
+        assertFalse(result.getResults().contains(document2));
+    }
+
+    @Test
+    public void testSearchPhraseWithQuote() {
+        doSearch("\"test");
+    }
+
+    @Test
+    public void testSearchPhraseWithColon() {
+        doSearch("\"test : abc ");
+    }
+
+    @Test
+    public void testSearchPhraseWithLuceneSyntax() {
+        doSearch("title:abc");
+    }
+
+    @Test
+    public void testSearchPhraseWithUnbalancedParenthesis() {
+        doSearch("\"test ( abc ");
+    }
+
+    @Test
+    @Rollback(true)
+    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "33-Cu-314";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
+        searchIndexService.index(document);
+        SearchParameters params = new SearchParameters();
+        params.getContents().add("fun");
+        SearchResult result = doSearch("",null, params,null);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+        params = new SearchParameters();
+        params.getContents().add("have fun digging");
+        result = doSearch("",null, params,null);
+        logger.info("results:{}", result.getResults());
+        assertTrue(result.getResults().contains(document));
+
+    }
+
+    @Test
+    @Rollback(true)
+    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        String resourceTitle = "33-Cu-314";
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+        addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);
+        searchIndexService.index(document);
+        SearchParameters params = new SearchParameters();
+        params.getContents().add("fun");
+        SearchResult result = doSearch("",null, params,null);
+        logger.info("results:{}", result.getResults());
+        assertFalse(result.getResults().contains(document));
+        params = new SearchParameters();
+        params.getContents().add("have fun digging");
+        result = doSearch("",null, params,null);
+        logger.info("results:{}", result.getResults());
+        assertFalse(result.getResults().contains(document));
+
+    }
+
+    private SearchResult doSearch(String text, TdarUser user, SearchParameters params, ReservedSearchParameters reservedParams) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    private SearchResult doSearch(String text) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+
 }

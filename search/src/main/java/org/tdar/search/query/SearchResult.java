@@ -174,4 +174,9 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     public boolean hasMore() {
         return (getTotalRecords() > getStartRecord() + getRecordsPerPage());
     }
+
+    public String getSearchSubtitle() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }
