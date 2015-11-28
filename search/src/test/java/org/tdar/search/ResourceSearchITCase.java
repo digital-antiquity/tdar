@@ -55,7 +55,6 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     public static final String REASON = "because";
 
-    //FIXME
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException, SolrServerException, IOException {
@@ -365,7 +364,6 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertTrue("at least one document", resources.size() >= 1);
     }
 
-    //FIXME
     @Test
     @Rollback(value = true)
     public void testDeletedResourceFilteredForNonAdmins() throws Exception {
@@ -376,17 +374,11 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
         List<Indexable> results = result.getResults();
 
-        for (Indexable result_ : results) {
-            if (proj.getId().equals(result_.getId())) {
-                logger.debug("found same id");
-                assertEquals(result, proj);
-                break;
-            }
-        }
+        List<Long> ids = PersistableUtils.extractIds(results);
 
         logger.debug("list type:{}  contents:{}", results.getClass(), results);
-        boolean contained = results.contains(proj);
-        assertTrue(contained);
+        Long projectId = proj.getId();
+        assertTrue(ids.contains(projectId));
 
         // now delete the resource and makes sure it doesn't show up for the common rabble
         logger.debug("result contents before delete: {}", result.getResults());
@@ -396,8 +388,10 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
         result = performSearch("", null, null, true, null, null, null, 1000);
 
+        ids = PersistableUtils.extractIds(result.getResults());
+
         logger.debug("result contents after delete: {}", result.getResults());
-        assertFalse(result.getResults().contains(proj));
+        assertFalse(ids.contains(projectId));
 
         // now pretend that it's an admin visiting the dashboard. Even though they can view/edit everything, deleted items
         // won't show up in their dashboard unless they are the submitter or have explicitly been given access rights, so we update the project's submitter
@@ -408,7 +402,8 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setStatuses(new ArrayList<Status>(Arrays.asList(Status.values())));
         result = performSearch("", null, null, null, null, getAdminUser(), params, 1000);
-        assertTrue(result.getResults().contains(proj));
+        ids = PersistableUtils.extractIds(result.getResults());
+        assertTrue(ids.contains(projectId));
     }
 
     // more accurately model how struts will create a project by having the controller do it
@@ -440,7 +435,6 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return params;
     }
 
-    //FIXME
     @Test
     public void testResourceLookup() throws IOException, SolrServerException, ParseException {
         ReservedSearchParameters params = initControllerFields();
@@ -456,7 +450,6 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertTrue(seen);
     }
 
-    //FIXME
     @Test
     @Rollback(value = true)
     public void testAdminDashboardAnyStatus() throws Exception {

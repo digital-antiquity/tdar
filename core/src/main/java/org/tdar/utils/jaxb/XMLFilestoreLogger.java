@@ -35,6 +35,7 @@ public class XMLFilestoreLogger implements Serializable {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private static Class<?>[] jaxbClasses;
+    private TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
     public XMLFilestoreLogger() throws ClassNotFoundException {
         jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
@@ -47,6 +48,9 @@ public class XMLFilestoreLogger implements Serializable {
      */
     @Transactional(readOnly = true)
     public <T extends Persistable> void logRecordXmlToFilestore(T resource) {
+        if (!CONFIG.shouldLogToFilestore()) {
+            return;
+        }
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename("record.xml");
