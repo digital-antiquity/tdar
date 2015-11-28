@@ -152,6 +152,10 @@ public class SearchIndexService {
             float percent = 0f;
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
             float maxPer = (1f / classesToIndex.size()) * 100f;
+            
+            for (Class<? extends Indexable> toIndex : classesToIndex) {
+                purge(getCoreForClass(toIndex));
+            }            
             for (Class<? extends Indexable> toIndex : classesToIndex) {
                 // fullTextSession.purgeAll(toIndex);
                 // sf.optimize(toIndex);
@@ -219,7 +223,7 @@ public class SearchIndexService {
         Long prevId = 0L;
         Long currentId = 0L;
         String coreForClass = getCoreForClass(toIndex);
-        purge(coreForClass);
+//        purge(coreForClass);
         while (scrollableResults.next()) {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
