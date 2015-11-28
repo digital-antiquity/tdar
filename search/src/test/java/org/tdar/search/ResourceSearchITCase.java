@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -56,6 +55,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     public static final String REASON = "because";
 
+    //FIXME
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException, SolrServerException, IOException {
@@ -133,11 +133,16 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertFalse(result.getResults().isEmpty());
         assertTrue(result.getResults().contains(ont));
     }
+    
+    @Override
+    public void reindex() {
+        searchIndexService.purgeAll(Arrays.asList(Resource.class));
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+    }
 
     @Test
     @Rollback(true)
     public void testModifyEditor() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
         ReservedSearchParameters params = new ReservedSearchParameters();
 
         SearchResult result = performSearch("", null, null, null, null, getEditorUser(), params, GeneralPermissions.MODIFY_METADATA, 1000);
@@ -345,7 +350,6 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     public void testResourceLookupByTdarId() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
         // get back all documents
         SearchResult result = performSearch(TestConstants.TEST_DOCUMENT_ID, null, null, null, null, null, null, 1000);
 
@@ -355,17 +359,16 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     public void testResourceLookupByProjectId() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
         SearchResult result = performSearch("", 3073L, null, null, null, null, null, 1000);
 
         List<Indexable> resources = result.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
 
+    //FIXME
     @Test
     @Rollback(value = true)
     public void testDeletedResourceFilteredForNonAdmins() throws Exception {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
         Project proj = createProject("project to be deleted");
 
         searchIndexService.index(proj);
@@ -437,6 +440,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return params;
     }
 
+    //FIXME
     @Test
     public void testResourceLookup() throws IOException, SolrServerException, ParseException {
         ReservedSearchParameters params = initControllerFields();
@@ -444,7 +448,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
         boolean seen = true;
         for (Indexable idx : result.getResults()) {
-            if (!StringUtils.containsIgnoreCase("HARP", ((Resource) idx).getTitle())) {
+            if (!StringUtils.containsIgnoreCase( ((Resource) idx).getTitle(),"HARP")) {
                 seen = false;
             }
         }
@@ -452,6 +456,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertTrue(seen);
     }
 
+    //FIXME
     @Test
     @Rollback(value = true)
     public void testAdminDashboardAnyStatus() throws Exception {
@@ -476,8 +481,7 @@ public class ResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
                 assertTrue(String.format("looking for '%s' when filtering ", doc),
                         result.getResults().contains(doc));
             } else {
-                assertFalse(String.format("looking for '%s' when filtering ", doc), result.getResults()
-                        .contains(doc));
+                assertFalse(String.format("looking for '%s' when filtering ", doc), result.getResults().contains(doc));
 
             }
         }

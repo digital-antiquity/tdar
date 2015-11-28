@@ -17,7 +17,6 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private int startRecord = 0;
     private int recordsPerPage = getDefaultRecordsPerPage();
     private boolean debug;
-    private boolean showAll;
     private List<Indexable> results;
     private String mode;
     private boolean reindexing;
@@ -90,15 +89,6 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    @Override
-    public boolean isShowAll() {
-        return showAll;
-    }
-
-    public void setShowAll(boolean showAll) {
-        this.showAll = showAll;
     }
 
     @Override

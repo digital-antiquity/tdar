@@ -119,9 +119,8 @@ import com.opensymphony.xwork2.TextProvider;
       */
      @SuppressWarnings({ "unchecked", "rawtypes" })
      public void handleSearch(QueryBuilder q, SearchResultHandler resultHandler, TextProvider textProvider) throws ParseException, SolrServerException, IOException {
-         if (q.isEmpty() && !resultHandler.isShowAll()) {
-             logger.trace("empty query or show all");
-             resultHandler.setResults(Collections.EMPTY_LIST);
+         if (q.isEmpty()) {
+             q.setRawQuery("*:*");
          }
          long num = System.currentTimeMillis();
          hydrateQueryParts(q);

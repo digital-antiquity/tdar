@@ -151,11 +151,6 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     }
 
     @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
     public String getSearchTitle() {
         return null;
     }

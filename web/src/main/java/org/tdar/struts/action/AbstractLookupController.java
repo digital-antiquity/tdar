@@ -79,7 +79,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String searchTitle;
     private String searchDescription;
     // execute a query even if query is empty
-    private boolean showAll = false;
 
     private LookupSource lookupSource;
 
@@ -227,15 +226,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    @Override
-    public boolean isShowAll() {
-        return showAll;
-    }
-
-    public void setShowAll(boolean ignoringEmptyQuery) {
-        this.showAll = ignoringEmptyQuery;
     }
 
     /**

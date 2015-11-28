@@ -334,11 +334,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }

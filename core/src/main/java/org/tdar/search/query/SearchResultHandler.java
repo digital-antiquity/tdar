@@ -63,8 +63,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     boolean isDebug();
 
-    boolean isShowAll();
-
     /**
      * Return a page of results from the SearchService.
      * 

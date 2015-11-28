@@ -283,11 +283,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }

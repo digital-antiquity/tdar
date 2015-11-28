@@ -48,6 +48,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         SolrInputDocument doc = convertPersistable(resource);
         doc.setField(QueryFieldNames.NAME, resource.getName());
+        doc.setField(QueryFieldNames.NAME_PHRASE, resource.getName());
         doc.setField(QueryFieldNames.NAME_SORT, resource.getTitleSort());
         doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, resource.getName());
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
@@ -220,28 +221,30 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
         Map<String, List<Long>> types = new HashMap<>();
-        List<String> roles = new ArrayList<>();
+        List<String> crids = new ArrayList<>();
         if (resource instanceof InformationResource) {
             InformationResource informationRessource = (InformationResource) resource;
-            roles.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
-            roles.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getPublisher(), ResourceCreatorRole.PUBLISHER));
+            crids.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
+            crids.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getPublisher(), ResourceCreatorRole.PUBLISHER));
         }
-        roles.add(ResourceCreator.getCreatorRoleIdentifier(resource.getSubmitter(), ResourceCreatorRole.SUBMITTER));
-        roles.add(ResourceCreator.getCreatorRoleIdentifier(resource.getUpdatedBy(), ResourceCreatorRole.UPDATER));
-
+        crids.add(ResourceCreator.getCreatorRoleIdentifier(resource.getSubmitter(), ResourceCreatorRole.SUBMITTER));
+        crids.add(ResourceCreator.getCreatorRoleIdentifier(resource.getUpdatedBy(), ResourceCreatorRole.UPDATER));
+        Set<String> roles = new HashSet<>();
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
             String key = rc.getRole().name();
+            roles.add(key);
             if (!types.containsKey(key)) {
                 types.put(key, new ArrayList<Long>());
             }
             types.get(key).add(rc.getCreator().getId());
-            roles.add(rc.getCreatorRoleIdentifier());
+            crids.add(rc.getCreatorRoleIdentifier());
         }
 
         for (String key : types.keySet()) {
             doc.setField(key, types.get(key));
         }
-        doc.setField(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, roles);
+        doc.setField(QueryFieldNames.CREATOR_ROLE, roles);
+        doc.setField(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, crids);
     }
 
     private static void indexLatitudeLongitudeBoxes(Resource resource, SolrInputDocument doc) {

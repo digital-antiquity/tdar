@@ -136,11 +136,6 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     }
 
     @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
     public void setStartRecord(int startRecord) {
         this.startRecord = startRecord;
     }

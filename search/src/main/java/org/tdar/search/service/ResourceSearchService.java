@@ -1,5 +1,6 @@
 package org.tdar.search.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +64,11 @@ public class ResourceSearchService extends AbstractSearchService {
     }
 
     public ResourceQueryBuilder lookupResource(String name, Long projectId, Boolean includeParent, Long collectionId, Long categoryId, TdarUser user,
-            ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, TextProvider support) {
+            ReservedSearchParameters reservedSearchParameters_, GeneralPermissions permission, TextProvider support) {
         ResourceQueryBuilder q = new ResourceQueryBuilder();
-        q.append(new CategoryTermQueryPart(name, categoryId));
+        if (StringUtils.isNotBlank(name) || categoryId != null) {
+            q.append(new CategoryTermQueryPart(name, categoryId));
+        }
 
         if (PersistableUtils.isNotNullOrTransient(projectId)) {
             q.append(new ProjectIdLookupQueryPart(projectId));
@@ -83,11 +86,16 @@ public class ResourceSearchService extends AbstractSearchService {
             q.append(new FieldQueryPart<Long>(colQueryField, collectionId));
         }
 
+        ReservedSearchParameters reservedSearchParameters = reservedSearchParameters_;
+        if (reservedSearchParameters == null) {
+            reservedSearchParameters = new ReservedSearchParameters();
+        }
+
         if (reservedSearchParameters != null) {
             initializeReservedSearchParameters(reservedSearchParameters, user);
             q.append(reservedSearchParameters.toQueryPartGroup(support));
         }
-
+        
         return q;
 
     }

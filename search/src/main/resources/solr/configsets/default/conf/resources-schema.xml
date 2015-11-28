@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="resources" version="1.5">
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
@@ -31,6 +32,7 @@
     <field name="filename" type="strings" indexed="true" stored="false" required="false" multiValued="false" />
 
     <field name="activeResourceCreators.role" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="crid" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="bookmarkedResource.person.id" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="collectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="directSharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
