@@ -517,4 +517,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isNavSearchBoxVisible() {
         return showNavSearchBox;
     }
+
+    @Override
+    public void setSearchTitle(String description) {
+        // TODO Auto-generated method stub
+        
+    }
 }

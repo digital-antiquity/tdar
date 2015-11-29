@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;

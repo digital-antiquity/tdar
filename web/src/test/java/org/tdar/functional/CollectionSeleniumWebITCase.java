@@ -2,7 +2,6 @@ package org.tdar.functional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -19,9 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.utils.TestConfiguration;
-import org.tdar.functional.util.Bool;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 

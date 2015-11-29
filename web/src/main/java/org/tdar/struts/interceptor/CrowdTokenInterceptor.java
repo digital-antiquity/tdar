@@ -1,8 +1,9 @@
 package org.tdar.struts.interceptor;
 
-import com.opensymphony.xwork2.ActionContext;
-import com.opensymphony.xwork2.ActionInvocation;
-import com.opensymphony.xwork2.interceptor.Interceptor;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+//import com.atlassian.crowd.integration.http.HttpAuthenticatorFactory;
+
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -11,9 +12,9 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-//import com.atlassian.crowd.integration.http.HttpAuthenticatorFactory;
+import com.opensymphony.xwork2.ActionContext;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
 
 /**
  * Determine if a given request contains a token for a crowd SSO session.  If crowd session does exist, make sure

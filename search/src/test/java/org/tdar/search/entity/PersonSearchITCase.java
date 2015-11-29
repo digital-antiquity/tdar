@@ -18,7 +18,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -29,8 +28,6 @@ import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
-
-import com.opensymphony.xwork2.Action;
 
 public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 

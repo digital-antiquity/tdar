@@ -22,10 +22,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.ReservedSearchParameters;
 import org.tdar.search.service.SearchIndexService;
-import org.tdar.search.service.SearchParameters;
 import org.tdar.utils.MessageHelper;
 
 public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchControllerITCase {

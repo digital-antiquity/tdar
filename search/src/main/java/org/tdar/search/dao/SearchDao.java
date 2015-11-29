@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.jena.atlas.test.Gen;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -20,7 +19,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;

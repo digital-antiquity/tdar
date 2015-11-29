@@ -1,13 +1,9 @@
 package org.tdar.search.index.analyzer;
 
-import java.io.Reader;
-
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.core.StopFilter;
 import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.miscellaneous.TrimFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
-import org.tdar.core.configuration.TdarConfiguration;
 
 public final class TdarCaseSensitiveStandardAnalyzer extends Analyzer {
 

@@ -573,4 +573,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     public void setPublicToRemove(List<Long> publicToRemove) {
         this.publicToRemove = publicToRemove;
     }
+
+    @Override
+    public void setSearchTitle(String description) {
+        // TODO Auto-generated method stub
+        
+    }
 }

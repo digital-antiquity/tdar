@@ -1,8 +1,5 @@
 package org.tdar.search.query.builder;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.QueryPartGroup;

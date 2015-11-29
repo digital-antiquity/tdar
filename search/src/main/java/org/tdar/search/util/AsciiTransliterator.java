@@ -1,7 +1,6 @@
 package org.tdar.search.util;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 import javax.persistence.Transient;
 

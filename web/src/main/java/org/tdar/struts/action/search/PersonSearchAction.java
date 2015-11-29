@@ -1,11 +1,9 @@
 package org.tdar.struts.action.search;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -16,15 +14,10 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.PersonQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.GeneralCreatorQueryPart;
-import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;

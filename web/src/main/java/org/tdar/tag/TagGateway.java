@@ -52,8 +52,6 @@ import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import com.sun.mail.handlers.message_rfc822;
-
 /**
  * 
  * $Id$

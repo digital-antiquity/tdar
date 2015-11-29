@@ -2,11 +2,9 @@ package org.tdar.struts.action.resource;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mail.SimpleMailMessage;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;

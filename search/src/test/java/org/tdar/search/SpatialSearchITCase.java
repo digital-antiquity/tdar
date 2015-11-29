@@ -30,8 +30,6 @@ import org.tdar.search.service.SearchIndexService;
 import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
-import com.opensymphony.xwork2.interceptor.annotations.Before;
-
 public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());

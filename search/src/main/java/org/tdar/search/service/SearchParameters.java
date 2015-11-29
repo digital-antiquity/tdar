@@ -47,8 +47,6 @@ import org.tdar.utils.range.StringRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
-import arq.qparse;
-
 /**
  * This class is meant to capture a group of search terms.
  * 

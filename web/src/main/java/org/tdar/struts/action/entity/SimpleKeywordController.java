@@ -181,4 +181,10 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     public int getDefaultRecordsPerPage() {
         return 100;
     }
+
+    @Override
+    public void setSearchTitle(String description) {
+        // TODO Auto-generated method stub
+        
+    }
 }

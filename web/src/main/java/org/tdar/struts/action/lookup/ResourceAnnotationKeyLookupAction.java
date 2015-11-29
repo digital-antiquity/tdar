@@ -2,7 +2,6 @@ package org.tdar.struts.action.lookup;
 
 import java.util.List;
 
-import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -12,11 +11,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.utils.json.JsonLookupFilter;
 
 /**
  * $Id$

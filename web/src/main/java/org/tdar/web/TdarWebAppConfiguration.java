@@ -11,8 +11,6 @@ import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.cache.Cache;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCache;
-import org.springframework.cache.ehcache.EhCacheCacheManager;
-import org.springframework.cache.support.AbstractCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
@@ -26,9 +24,6 @@ import org.tdar.core.cache.Caches;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.service.processes.manager.AutowiredProcessManager;
 import org.tdar.core.service.processes.manager.ProcessManager;
-
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.config.CacheConfiguration;
 
 @EnableAsync
 @EnableCaching

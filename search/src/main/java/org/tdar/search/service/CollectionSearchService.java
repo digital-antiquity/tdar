@@ -14,7 +14,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.CollectionAccessQueryPart;
