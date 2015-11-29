@@ -17,6 +17,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
@@ -28,6 +29,8 @@ import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
+
+import com.opensymphony.xwork2.interceptor.annotations.Before;
 
 public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
@@ -44,6 +47,11 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     private LatitudeLongitudeBox searchBox;
 
+    @Override
+    public void reindex() {
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+    }
+    
     private Document createGeoDoc(String title, double minLatY, double minLongX, double maxLatY, double maxLongX) throws SolrServerException, IOException {
         Document doc = null;
         try {
@@ -258,9 +266,10 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         genericService.saveOrUpdate(latitudeLongitudeBoxOfItem);
         searchIndexService.index(file);
 
-        logger.info("Item : {}", (new SpatialQueryPart(latitudeLongitudeBoxOfItem)).generateQueryString());
+        SpatialQueryPart spatialQueryPart = new SpatialQueryPart(latitudeLongitudeBoxOfItem);
+        logger.info("Item : {}", spatialQueryPart.getFilter());
         SpatialQueryPart searchPart = new SpatialQueryPart(latitudLongitudeBoxOfQuery);
-        logger.info("Query: {}", searchPart.generateQueryString());
+        logger.info("Query: {}", searchPart.getFilter());
 
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(searchPart);

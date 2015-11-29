@@ -272,14 +272,17 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static void indexLatitudeLongitudeBoxes(Resource resource, SolrInputDocument doc) {
         List<String> envelops = new ArrayList<>();
+        List<Integer> scales = new ArrayList<>();
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
             Envelope env = new Envelope(llb.getMinObfuscatedLongitude(), llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLatitude(),
                     llb.getMaxObfuscatedLatitude());
             WKTWriter wrt = new WKTWriter();
             String str = wrt.write(JTS.toGeometry(env));
             envelops.add(str);
+            scales.add(llb.getScale());
         }
         doc.setField(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES, envelops);
+        doc.setField(QueryFieldNames.SCALE, scales);
     }
 
     private static <K extends Keyword> void addKeyword(SolrInputDocument doc, String id, KeywordType type, Set<K> keywords) {

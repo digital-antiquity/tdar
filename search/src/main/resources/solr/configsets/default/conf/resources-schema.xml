@@ -74,6 +74,7 @@
 
 
     <field name="activeLatitudeLongitudeBoxes" type="location_rpt" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeLatitudeLongitudeBoxes.scale" type="ints" indexed="true" stored="false" required="false" multiValued="true" />
 
     <field name="categoryVariable.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
 
