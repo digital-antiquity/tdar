@@ -96,4 +96,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     int getDefaultRecordsPerPage();
 
+    void setSearchTitle(String description);
+
 }

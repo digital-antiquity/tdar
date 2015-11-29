@@ -21,7 +21,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 
-public class AbstractResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
+public abstract class AbstractResourceSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     
     @Autowired

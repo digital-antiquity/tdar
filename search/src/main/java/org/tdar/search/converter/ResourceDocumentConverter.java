@@ -1,5 +1,7 @@
 package org.tdar.search.converter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,6 +10,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.geotools.geometry.jts.JTS;
@@ -31,18 +35,22 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.index.bridge.GeneralKeywordBuilder;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.DataUtil;
 import org.tdar.utils.PersistableUtils;
 
-import com.rometools.modules.activitystreams.types.Bookmark;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.io.WKTWriter;
 
 public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
+
+    private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
     public static SolrInputDocument convert(Resource resource, ResourceService resourceService, ResourceCollectionService resourceCollectionService) {
 
@@ -80,9 +88,20 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
 
             Set<String> filenames = new HashSet<>();
+            StringBuilder sb = new StringBuilder();
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 filenames.add(irf.getFilename());
+                if (irf.getIndexableVersion() != null && irf.isPublic()) {
+                    try {
+                        sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
+                    } catch (FileNotFoundException fnf) {
+                        
+                    } catch (IOException e) {
+                        logger.error("{}", e);
+                    }
+                }
             }
+            doc.setField(QueryFieldNames.CONTENT, sb.toString());
             doc.setField(QueryFieldNames.FILENAME, filenames);
             doc.setField(QueryFieldNames.DOI, ir.getDoi());
             if (PersistableUtils.isNotNullOrTransient(ir.getResourceProviderInstitution())) {
@@ -91,6 +110,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
             doc.setField(QueryFieldNames.RESOURCE_ACCESS_TYPE, ir.getResourceAccessType().name());
             // getContent
+
+            doc.setField(QueryFieldNames.CONTENT, "");
 
         }
 
@@ -230,6 +251,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         crids.add(ResourceCreator.getCreatorRoleIdentifier(resource.getSubmitter(), ResourceCreatorRole.SUBMITTER));
         crids.add(ResourceCreator.getCreatorRoleIdentifier(resource.getUpdatedBy(), ResourceCreatorRole.UPDATER));
         Set<String> roles = new HashSet<>();
+        Set<String> names = new HashSet<>();
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
             String key = rc.getRole().name();
             roles.add(key);
@@ -238,8 +260,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
             types.get(key).add(rc.getCreator().getId());
             crids.add(rc.getCreatorRoleIdentifier());
+            names.add(rc.getCreator().getProperName());
         }
-
+        doc.setField(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, names);
         for (String key : types.keySet()) {
             doc.setField(key, types.get(key));
         }

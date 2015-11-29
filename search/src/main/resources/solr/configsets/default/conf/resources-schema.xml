@@ -5,7 +5,10 @@
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="description_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="content" type="text_en_splitting" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="all" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="allPhrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="submitter.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
@@ -26,6 +29,9 @@
     <field name="doi" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="resourceLanguage" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="metadataLanguage" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+
+
+    <field name="dataValuePair" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
 
     <field name="integratable" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="resourceAccessType" type="string" indexed="true" stored="false" required="false" multiValued="false" />
@@ -64,6 +70,7 @@
     <field name="RESOURCE_PROVIDER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="PUBLISHER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="resourceOwner" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="activeResourceCreators.creator.properName" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
 
 
     <field name="activeLatitudeLongitudeBoxes" type="location_rpt" indexed="true" stored="false" required="false" multiValued="true" />
@@ -80,6 +87,26 @@
     <field name="activeSiteTypeKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeSiteCodes" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeTemporalKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+
+    <field name="activeCultureKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+
+    <field name="activeCultureKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
 
     <field name="activeCoverageDates.dateType" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeCoverageDates.startDate" type="ints" indexed="true" stored="false" required="false" multiValued="true" />

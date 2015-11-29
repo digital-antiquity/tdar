@@ -29,8 +29,8 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
     // binding to multiple values see TDAR-1163
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static final String TEMPORAL_QUERY_FORMAT = QueryFieldNames.ACTIVE_START_DATE + ":[00000000000 TO %2$s] AND " + QueryFieldNames.ACTIVE_END_DATE
-            + ":[%1$s TO 19999999999] AND " + QueryFieldNames.ACTIVE_COVERAGE_TYPE + ":%3$s ";
+    private static final String TEMPORAL_QUERY_FORMAT = QueryFieldNames.ACTIVE_START_DATE + ":[-10000 TO %2$s] AND " + QueryFieldNames.ACTIVE_END_DATE
+            + ":[%1$s TO 99999] AND " + QueryFieldNames.ACTIVE_COVERAGE_TYPE + ":%3$s ";
 
     public TemporalQueryPart() {
     }
@@ -52,7 +52,7 @@ public class TemporalQueryPart extends FieldQueryPart<CoverageDate> {
         }
         return String.format(
                 TEMPORAL_QUERY_FORMAT,
-                TdarIndexNumberFormatter.format(date.getStartDate()), TdarIndexNumberFormatter.format(date.getEndDate()), date.getDateType().name());
+                date.getStartDate(), date.getEndDate(), date.getDateType().name());
     };
 
     @Override

@@ -18,7 +18,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -98,6 +97,20 @@ public class ResourceSearchService extends AbstractSearchService {
         
         return q;
 
+    }
+
+    public ResourceQueryBuilder buildAdvancedSearch(SearchParameters params, ReservedSearchParameters reservedParams_, TdarUser user, TextProvider provider) {
+        ResourceQueryBuilder builder = new ResourceQueryBuilder();
+        ReservedSearchParameters reservedParams = reservedParams_;
+        if (reservedParams == null) {
+            reservedParams = new ReservedSearchParameters();
+        }
+        initializeReservedSearchParameters(reservedParams, user);
+
+        builder.setOperator(Operator.AND);
+        builder.appendIfNotEmpty(params, provider);
+        builder.appendIfNotEmpty(reservedParams, provider);
+        return builder;
     }
 
 }

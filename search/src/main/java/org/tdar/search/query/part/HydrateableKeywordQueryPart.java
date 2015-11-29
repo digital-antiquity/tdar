@@ -26,9 +26,9 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydrateableQueryPart<K> {
 
-    private static final String ID = ".id";
-    private static final String LABEL_KEYWORD = ".labelKeyword";
-    private static final String LABEL = ".label";
+//    private static final String ID = ".id";
+    private static final String LABEL_KEYWORD = "_label";
+    private static final String LABEL = "_label_phrase";
     private static final String INFORMATION_RESOURCES = "informationResources.";
     private boolean includeChildren = true;
 
@@ -77,14 +77,14 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         FieldQueryPart<String> labelPart = new FieldQueryPart<String>(getFieldName() + LABEL, getOperator(), labels);
         FieldQueryPart<String> labelKeyPart = new FieldQueryPart<String>(getFieldName() + LABEL_KEYWORD, getOperator(), labels);
         labelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-        FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName() + ID, getOperator(), ids);
+        FieldQueryPart<Long> idPart = new FieldQueryPart<Long>(getFieldName(), getOperator(), ids);
         labelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
         QueryPartGroup field = new QueryPartGroup(getOperator(), idPart, labelPart, labelKeyPart);
 
         QueryPartGroup topLevel = new QueryPartGroup(Operator.AND, field);
         if (includeChildren) {
             topLevel.setOperator(Operator.OR);
-            FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>(INFORMATION_RESOURCES + getFieldName() + ID, getOperator(), ids);
+            FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>(INFORMATION_RESOURCES + getFieldName(), getOperator(), ids);
             FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>(INFORMATION_RESOURCES + getFieldName() + LABEL, getOperator(), labels);
             irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>(INFORMATION_RESOURCES + getFieldName() + LABEL_KEYWORD, getOperator(),

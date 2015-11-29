@@ -1,11 +1,11 @@
 package org.tdar.search.query.builder;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.lucene.analysis.Analyzer;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.CoreNames;
+import org.tdar.search.service.SearchParameters;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * 
@@ -51,6 +51,16 @@ public class ResourceQueryBuilder extends QueryBuilder {
     @Override
     public String getCoreName() {
         return CoreNames.RESOURCES;
+    }
+
+    public void appendIfNotEmpty(SearchParameters params, TextProvider support_) {
+        if (params != null) {
+            QueryPartGroup queryPartGroup = params.toQueryPartGroup(support_);
+            if (!queryPartGroup.isEmpty()) {
+                append(queryPartGroup);
+            }
+        }
+        
     }
 
 }

@@ -80,8 +80,8 @@ public interface QueryFieldNames {
     String FILENAME = "filename";
     String DATA_VALUE_PAIR = "dataValuePair";
     String SITE_CODE = "activeSiteCodes";
-    String TITLE_PHRASE = "title.phrase";
-    String DESCRIPTION_PHRASE = "description.phrase";
+    String TITLE_PHRASE = "name_phrase";
+    String DESCRIPTION_PHRASE = "description_phrase";
     String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
     String NAME_PHRASE = "name_phrase";
     String NAME_TOKEN = "name";

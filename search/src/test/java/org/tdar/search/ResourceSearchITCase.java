@@ -62,6 +62,8 @@ import org.tdar.utils.range.DateRange;
 
 public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
+    private static final String _33_CU_314 = "33-Cu-314";
+
     @Autowired
     SearchService searchService;
 
@@ -544,16 +546,10 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     GenericKeywordService genericKeywordService;
     
 
-    @Test
-    @Rollback(true)
-    public void testFindAllSearchPhrase() {
-        SearchResult result = doSearch("");
-        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), result.getSearchSubtitle());
-    }
 
     @Test
     @Rollback(true)
-    public void testResourceTypeSearchPhrase() {
+    public void testResourceTypeSearchPhrase() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters reserved = new ReservedSearchParameters();
         reserved.getResourceTypes().add(ResourceType.IMAGE);
         SearchResult result = doSearch("", null, null, reserved);
@@ -579,7 +575,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+    public void testExactTitleMatchInKeywordSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
         String resourceTitle = "Archeological Excavation at Site 33-Cu-314: A Mid-Nineteenth Century Structure on the Ohio and Erie Canal";
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
@@ -592,8 +588,8 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        String resourceTitle = "33-Cu-314";
+    public void testHyphenatedSearchBasic() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
 
@@ -606,8 +602,8 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        String resourceTitle = "33-Cu-314";
+    public void testHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
         setupTestDocuments();
@@ -621,8 +617,8 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        String resourceTitle = "33-Cu-314";
+    public void testUnHyphenatedTitleSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         searchIndexService.index(document);
         setupTestDocuments();
@@ -636,10 +632,10 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+    public void testHyphenatedSiteNameSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
-        String label = "33-Cu-314";
+        String label = _33_CU_314;
         snk.setLabel(label);
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         genericService.save(snk);
@@ -656,10 +652,10 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+    public void testHyphenatedSiteNameSearchCombined() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
         String resourceTitle = "what fun";
         SiteNameKeyword snk = new SiteNameKeyword();
-        String label = "33-Cu-314";
+        String label = _33_CU_314;
         snk.setLabel(label);
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         genericService.save(snk);
@@ -674,19 +670,18 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testFindResourceTypePhrase() {
+    public void testFindResourceTypePhrase() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters reserved = new ReservedSearchParameters();
         reserved.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         SearchResult result = doSearch("", null, null, reserved);
         logger.debug("search phrase:{}", result.getSearchTitle());
         assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
         assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
-        assertEquals(result.getSearchSubtitle(), MessageHelper.getMessage("advancedSearchController.title_all_records"));
     }
 
     @Test
     @Rollback(true)
-    public void testFindResourceById() {
+    public void testFindResourceById() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.getResourceIds().add(Long.valueOf(3074));
         SearchResult result = doSearch("", null, null, params);
@@ -698,7 +693,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testFindTerm() {
+    public void testFindTerm() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
 
@@ -707,12 +702,11 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         assertTrue(result.getSearchTitle().contains(ResourceType.DOCUMENT.getLabel()));
         assertTrue(result.getSearchTitle().contains(ResourceType.IMAGE.getLabel()));
         assertTrue(result.getSearchTitle().contains("test"));
-        assertEquals(result.getSearchSubtitle(), "test");
     }
 
     @Test
     @Rollback(true)
-    public void testCultureKeywordSearch() {
+    public void testCultureKeywordSearch() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
 
@@ -741,7 +735,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testBadDateSearch() {
+    public void testBadDateSearch() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         CoverageDate cd = new CoverageDate(CoverageType.NONE);
@@ -757,7 +751,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testCalDateSearchPhrase() {
+    public void testCalDateSearchPhrase() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
@@ -778,7 +772,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testSpatialSearch() {
+    public void testSpatialSearch() throws ParseException, SolrServerException, IOException {
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         LatitudeLongitudeBox box = new LatitudeLongitudeBox(-1d, -1d, 1d, 1d);
@@ -791,7 +785,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testForInheritedCulturalInformationFromProject() {
+    public void testForInheritedCulturalInformationFromProject() throws ParseException, SolrServerException, IOException {
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
@@ -802,7 +796,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testDeletedOrDraftMaterialsAreHiddenInDefaultSearch() {
+    public void testDeletedOrDraftMaterialsAreHiddenInDefaultSearch() throws ParseException, SolrServerException, IOException {
         Long imgId = setupImage();
         Long datasetId = setupDataset();
         Long codingSheetId = setupCodingSheet();
@@ -819,7 +813,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testGeneratedAreHidden() {
+    public void testGeneratedAreHidden() throws ParseException, SolrServerException, IOException {
         Long codingSheetId = setupCodingSheet();
         CodingSheet sheet = genericService.find(CodingSheet.class, codingSheetId);
         sheet.setGenerated(true);
@@ -833,7 +827,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
-    public void testPeopleAndInstitutionsInSearchResults() throws SolrServerException, IOException {
+    public void testPeopleAndInstitutionsInSearchResults() throws SolrServerException, IOException, ParseException {
         Long imgId = setupDataset(Status.ACTIVE);
         logger.info("Created new image: " + imgId);
         searchIndexService.index(resourceService.find(imgId));
@@ -857,14 +851,14 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     @Test
     @Rollback(true)
     // try a search that will fail the strict parsing pass, but work under lenient parsing.
-    public void testLenientParsing() {
+    public void testLenientParsing() throws ParseException, SolrServerException, IOException {
         String term = "a term w/ unclosed \" quote and at least one token that will return results: " + TestConstants.DEFAULT_LAST_NAME;
         doSearch(term);
     }
 
     @Test
     @Rollback(true)
-    public void testDatedSearch() {
+    public void testDatedSearch() throws ParseException, SolrServerException, IOException {
         Long docId = setupDatedDocument();
         logger.info("Created new document: " + docId);
         searchIndexService.indexAll(getAdminUser(), Resource.class);
@@ -875,7 +869,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         SearchParameters params = new SearchParameters();
         params.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, -900, 1000));
         SearchResult result = doSearch("", null, params, rparams);
-        assertTrue("expected to find document for inner range match", resultsContainId(result,docId));
+        assertTrue("expected to find document "+docId+" for inner range match", resultsContainId(result,docId));
 
         rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(allResourceTypes);
@@ -910,7 +904,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testInvestigationTypes() {
+    public void testInvestigationTypes() throws ParseException, SolrServerException, IOException {
 
         // TODO:dynamically get the list of 'used investigation types' and the resources that use them
         SearchParameters params = addInvestigationTypes(new SearchParameters());
@@ -935,26 +929,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         return extractIds.contains(l);
     }
 
-    @Test
-    @Rollback
-    // searching for an specific tdar id should ignore all other filters
-    public void testTdarIdSearchOverride() throws Exception {
-        Document document = createAndSaveNewInformationResource(Document.class);
-        Long expectedId = document.getId();
-        assertTrue(expectedId > 0);
-        reindex();
-
-        // specify some filters that would normally filter-out the document we just created.
-        ReservedSearchParameters reserved = new ReservedSearchParameters();
-        reserved.setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
-        SearchParameters params = new SearchParameters();
-        params.getTitles().add("thistitleshouldprettymuchfilteroutanyandallresources");
-        reserved.getResourceIds().add(expectedId);
-        SearchResult result = doSearch("", null, params, reserved);
-        assertEquals("expecting only one result", 1, result.getResults().size());
-        Indexable resource = result.getResults().iterator().next();
-        assertEquals(expectedId, resource.getId());
-    }
 
     // add all investigation types... for some reason
     private SearchParameters addInvestigationTypes(SearchParameters params) {
@@ -970,7 +944,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
-    public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+    public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
         // From the Hibernate documentation:
         // "The default Date bridge uses Lucene's DateTools to convert from and to String. This means that all dates are expressed in GMT time."
         // The Joda DateMidnight defaults to DateTimeZone.getDefault(). Which is probably *not* GMT
@@ -1016,49 +990,51 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     }
 
     @Test
-    public void testSearchPhraseWithQuote() {
+    public void testSearchPhraseWithQuote() throws ParseException, SolrServerException, IOException {
         doSearch("\"test");
     }
 
     @Test
-    public void testSearchPhraseWithColon() {
+    public void testSearchPhraseWithColon() throws ParseException, SolrServerException, IOException {
         doSearch("\"test : abc ");
     }
 
     @Test
-    public void testSearchPhraseWithLuceneSyntax() {
+    public void testSearchPhraseWithLuceneSyntax() throws ParseException, SolrServerException, IOException {
         doSearch("title:abc");
     }
 
     @Test
-    public void testSearchPhraseWithUnbalancedParenthesis() {
+    public void testSearchPhraseWithUnbalancedParenthesis() throws ParseException, SolrServerException, IOException {
         doSearch("\"test ( abc ");
     }
 
     @Test
     @Rollback(true)
-    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        String resourceTitle = "33-Cu-314";
-        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
+    public void testAttachedFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), _33_CU_314);
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
         searchIndexService.index(document);
         SearchParameters params = new SearchParameters();
         params.getContents().add("fun");
         SearchResult result = doSearch("",null, params,null);
+        Long id = document.getId();
+        List<Long> ids = PersistableUtils.extractIds(result.getResults());
         logger.info("results:{}", result.getResults());
-        assertTrue(result.getResults().contains(document));
+        assertTrue(ids.contains(id));
         params = new SearchParameters();
         params.getContents().add("have fun digging");
         result = doSearch("",null, params,null);
         logger.info("results:{}", result.getResults());
-        assertTrue(result.getResults().contains(document));
+        ids = PersistableUtils.extractIds(result.getResults());
+        assertTrue(ids.contains(id));
 
     }
 
     @Test
     @Rollback(true)
-    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        String resourceTitle = "33-Cu-314";
+    public void testConfidentialFileSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        String resourceTitle = _33_CU_314;
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"), FileAccessRestriction.CONFIDENTIAL);
         searchIndexService.index(document);
@@ -1075,14 +1051,22 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     }
 
-    private SearchResult doSearch(String text, TdarUser user, SearchParameters params, ReservedSearchParameters reservedParams) {
-        // TODO Auto-generated method stub
-        return null;
+    private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams) throws ParseException, SolrServerException, IOException {
+        SearchParameters params = params_;
+        if (params == null) {
+            params =new SearchParameters();            
+        }
+        if (StringUtils.isNotBlank(text )) {
+            params.getAllFields().add(text);
+        }
+        ResourceQueryBuilder search = resourceSearchService.buildAdvancedSearch(params, reservedParams, user,MessageHelper.getInstance());
+        SearchResult result = new SearchResult();
+        searchService.handleSearch(search, result, MessageHelper.getInstance());
+        return result;
     }
 
-    private SearchResult doSearch(String text) {
-        // TODO Auto-generated method stub
-        return null;
+    private SearchResult doSearch(String text) throws ParseException, SolrServerException, IOException {
+        return doSearch(text,null,null, null);
     }
 
 

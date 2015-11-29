@@ -425,7 +425,7 @@ public class SearchIndexService {
         }
         
 
-        logger.debug("Done indexing collection");
+        logger.debug("Done indexing");
         return exceptions;
     }
 

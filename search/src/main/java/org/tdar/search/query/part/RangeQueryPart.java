@@ -7,15 +7,11 @@ import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.search.index.TdarIndexNumberFormatter;
 import org.tdar.utils.range.Range;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -26,7 +22,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
     private boolean inclusive = true;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
+//    private static DateTimeFormatter dtf = DateTimeFormat.forPattern("yyyyMMdd");
 
     @SafeVarargs
     public RangeQueryPart(String field, Range<C>... values) {
@@ -82,7 +78,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         // we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
         // dates in a date range.
         dateTime = dateTime.toDateTime(DateTimeZone.UTC);
-        return dateTime.toString(dtf);
+        return dateTime.toString();
     }
 
     private static String convert(Object object) {
@@ -97,9 +93,9 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         }
 
         String objString = object.toString();
-        if (StringUtils.isNumeric(objString) && StringUtils.isNotBlank(objString)) {
-            return TdarIndexNumberFormatter.format(NumberUtils.createNumber(objString));
-        }
+//        if (StringUtils.isNumeric(objString) && StringUtils.isNotBlank(objString)) {
+//            return objString;
+//        }
         return objString;
     }
 
@@ -107,7 +103,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         if (number == null) {
             return null;
         }
-        return TdarIndexNumberFormatter.format(number);
+        return number.toString();
     }
 
     @Override

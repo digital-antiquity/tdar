@@ -9,17 +9,24 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.query.SearchResult;
+import org.tdar.search.service.ReservedSearchParameters;
 import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.SearchParameters;
+import org.tdar.utils.MessageHelper;
 
 public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchControllerITCase {
 
@@ -119,4 +126,28 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         assertTrue(resultsContainId(imgId));
     }
 
+    @Test
+    @Rollback(true)
+    public void testFindAllSearchPhrase() throws ParseException, SolrServerException, IOException {
+        doSearch("");
+        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
+    }
+
+    @Test
+    @Rollback
+    // searching for an specific tdar id should ignore all other filters
+    public void testTdarIdSearchOverride() throws Exception {
+        Document document = createAndSaveNewInformationResource(Document.class);
+        Long expectedId = document.getId();
+        assertTrue(expectedId > 0);
+        reindex();
+
+        // specify some filters that would normally filter-out the document we just created.
+        firstGroup().getTitles().add("thistitleshouldprettymuchfilteroutanyandallresources");
+        firstGroup().getResourceIds().add(expectedId);
+        doSearch("");
+        assertEquals("expecting only one result", 1, controller.getResults().size());
+        Indexable resource = controller.getResults().iterator().next();
+        assertEquals(expectedId, resource.getId());
+    }
 }

@@ -141,7 +141,7 @@ import com.opensymphony.xwork2.TextProvider;
                  resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);
          logger.debug("{} {}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
-
+         resultHandler.setSearchTitle(q.getDescription(textProvider));
          if (resultHandler.getStartRecord() > ftq.getResultSize()) {
              throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", Arrays.asList(resultHandler.getStartRecord(),
                      ftq.getResultSize())));
