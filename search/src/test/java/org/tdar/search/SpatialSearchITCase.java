@@ -9,6 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,10 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.search.service.SearchService;
@@ -64,7 +67,11 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
             throws ParseException, SolrServerException, IOException {
         searchBox = new LatitudeLongitudeBox(minLongX, minLatY, maxLongX, maxLatY);
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(new SpatialQueryPart(searchBox));
+        rqb.setOperator(Operator.AND);
+        SpatialQueryPart sqp = new SpatialQueryPart(searchBox);
+        rqb.append(sqp);
+        rqb.append(new FieldQueryPart<>(QueryFieldNames.STATUS, Status.ACTIVE));
+        rqb.appendFilter(Arrays.asList(sqp.getFilter()));
         SearchResult result = new SearchResult();
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
         return result;

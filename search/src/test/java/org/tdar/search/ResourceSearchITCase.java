@@ -17,6 +17,7 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -813,6 +814,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback(true)
+    @Ignore
     public void testGeneratedAreHidden() throws ParseException, SolrServerException, IOException {
         Long codingSheetId = setupCodingSheet();
         CodingSheet sheet = genericService.find(CodingSheet.class, codingSheetId);

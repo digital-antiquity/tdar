@@ -47,6 +47,8 @@ import org.tdar.utils.range.StringRange;
 
 import com.opensymphony.xwork2.TextProvider;
 
+import arq.qparse;
+
 /**
  * This class is meant to capture a group of search terms.
  * 
@@ -63,6 +65,8 @@ public class SearchParameters {
         setOperator(operator);
     }
 
+    
+    private List<String> filters = new ArrayList<>();
     private boolean explore = false;
     // user specified status that they do not have permissions to search for. probably because they are not logged in.
 
@@ -373,7 +377,9 @@ public class SearchParameters {
         queryPartGroup.append(new RangeQueryPart(QueryFieldNames.DATE, support.getText("searchParameter.date"), getOperator(), getCreatedDates()));
 
         queryPartGroup.append(new TemporalQueryPart(getCoverageDates(), getOperator()));
-        queryPartGroup.append(new SpatialQueryPart(getLatitudeLongitudeBoxes()));
+        SpatialQueryPart spatialQueryPart = new SpatialQueryPart(getLatitudeLongitudeBoxes());
+//        getFilters().add(spatialQueryPart.getFilter());
+        queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
@@ -586,6 +592,14 @@ public class SearchParameters {
 
     public void setUncontrolledMaterialKeywords(List<String> uncontrolledMaterialKeywords) {
         this.uncontrolledMaterialKeywords = uncontrolledMaterialKeywords;
+    }
+
+    public List<String> getFilters() {
+        return filters;
+    }
+
+    public void setFilters(List<String> filters) {
+        this.filters = filters;
     }
 
 }

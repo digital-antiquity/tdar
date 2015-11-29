@@ -93,6 +93,7 @@ public class ResourceSearchService extends AbstractSearchService {
         if (reservedSearchParameters != null) {
             initializeReservedSearchParameters(reservedSearchParameters, user);
             q.append(reservedSearchParameters.toQueryPartGroup(support));
+            q.appendFilter(reservedSearchParameters.getFilters());
         }
         
         return q;

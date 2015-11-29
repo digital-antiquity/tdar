@@ -32,6 +32,7 @@ public class SolrSearchObject<I extends Indexable> {
     private List<I> resultList;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private String queryString;
+    private String filterString;
 
     /*
      * Query query = new MatchAllDocsQuery();
@@ -52,6 +53,7 @@ public class SolrSearchObject<I extends Indexable> {
                 sort.add(option.getSortField() + " " + option.getSortOrder());
             }
         }
+        this.filterString = StringUtils.join(queryBuilder.getFilters(), " ");
         setSortParam(StringUtils.join(sort, ","));
     }
 
@@ -73,6 +75,10 @@ public class SolrSearchObject<I extends Indexable> {
         solrQuery.setParam("q", getQueryString());
         solrQuery.setParam("start", Integer.toString(startRecord));
         solrQuery.setParam("rows", Integer.toString(resultSize));
+        if (StringUtils.isNotBlank(filterString)) {
+            solrQuery.setParam("fq", filterString);
+            logger.debug(filterString);
+        }
         if (StringUtils.isNotBlank(sortParam)) {
             solrQuery.setParam("sort", sortParam);
         }
