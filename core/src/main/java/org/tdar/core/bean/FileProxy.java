@@ -149,6 +149,12 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.originalFileVersionId = originalFileVersionId;
     }
 
+    public void setOriginalFileVersionId(String originalFileVersionId) {
+        if (StringUtils.isEmpty(originalFileVersionId)) {} else {
+            this.originalFileVersionId = Long.parseLong(originalFileVersionId);
+        }
+    }
+
     public Long getSize() {
         if (size == null) {
             return 0L;

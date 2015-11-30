@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.NumberUtils;
 import org.apache.commons.lang.StringUtils;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.StatusCode;
@@ -34,6 +35,7 @@ public class JaxbResultContainer implements Serializable, APIParameters {
     private Resource result;
     private List<String> stackTraces;
     private String message;
+    private Long id;
     private int statusCode = StatusCode.OK.getHttpStatusCode();
     private String status;
     private Long recordId;
@@ -48,8 +50,13 @@ public class JaxbResultContainer implements Serializable, APIParameters {
         String message_ = (String) object_.get(MESSAGE);
         if (StringUtils.isNotBlank(message_)) {
             setMessage(message_);
-            ;
         }
+        
+        String id_ = (String)object_.get(ID);
+        if (id_ != null && NumberUtils.isNumber(id_)) {
+            id = Long.parseLong(id_);
+        }
+        
         String apiKey_ = (String) object_.get(API_TOKEN);
         if (StringUtils.isNotBlank(apiKey_)) {
             apiToken = apiKey_;
@@ -153,6 +160,14 @@ public class JaxbResultContainer implements Serializable, APIParameters {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

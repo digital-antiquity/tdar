@@ -11,6 +11,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpEntity;
@@ -45,18 +49,20 @@ import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.jaxb.JaxbResultContainer;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.sun.media.rtsp.protocol.StatusCode;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class APIControllerWebITCase extends AbstractWebTestCase {
-    
+
     @Autowired
     SerializationService serializationService;
 
     @Autowired
     BillingAccountService billingAccountService;
-    
+
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
     CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
@@ -126,12 +132,12 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     }
 
     @Test
-    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD})
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testConfidential() throws Exception {
         JaxbResultContainer login = setupValidLogin();
         String filesUed = getFilesUsed(true);
         logger.debug("used: {}", filesUed);
-        
+
         HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
@@ -148,7 +154,60 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
         String filesUed_ = getFilesUsed(false);
         logger.debug("used: {} vs. {}", filesUed, filesUed_);
-}
+    }
+
+    @Test
+    public void testReplaceFile() throws Exception {
+        JaxbResultContainer login = setupValidLogin();
+
+        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
+        builder.addTextBody("record", text);
+        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE)));
+        post.setEntity(builder.build());
+        CloseableHttpResponse response = httpClient.execute(post);
+        logger.debug("status:{} ", response.getStatusLine());
+        String resp = IOUtils.toString(response.getEntity().getContent());
+        logger.debug("response: {}", resp);
+        org.w3c.dom.Document document = getXmlDocument(new InputSource(new StringReader(resp)));
+        String id_ = document.getElementsByTagName("tdar:id").item(0).getTextContent();
+        logger.debug("ID:: {}", id_);
+        Long id = Long.parseLong(id_);
+        assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
+
+        CloseableHttpClient client2 = SimpleHttpUtils.createClient();
+        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s&%s=%s", CONFIG.getBaseSecureUrl(), id, login.getSessionKeyName(), login.getApiToken()));
+        CloseableHttpResponse execute = client2.execute(get);
+        String xmlRecord = IOUtils.toString(execute.getEntity().getContent());
+        logger.debug(xmlRecord);
+        document = getXmlDocument(new InputSource(new StringReader(xmlRecord)));
+        String fileId = document.getElementsByTagName("tdar:informationResourceFile").item(0).getAttributes().getNamedItem("id").getNodeValue();
+        logger.debug("fileId::{}", fileId);
+        post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/updateFiles");
+        builder = MultipartEntityBuilder.create();
+        text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
+        text = text.replace("{{FILE_ID}}", fileId);
+        text = text.replace("{{FILENAME}}", TestConstants.TEST_IMAGE_NAME2);
+        logger.debug(text);
+        builder.addTextBody("record", text);
+        builder.addTextBody("id", id.toString());
+        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE2)));
+        post.setEntity(builder.build());
+        response = httpClient.execute(post);
+        logger.debug("status:{} ", response.getStatusLine());
+        assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
+        logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
+    }
+
+    private org.w3c.dom.Document getXmlDocument(InputSource is) throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
+                .newInstance();
+        DocumentBuilder documentBuilder = documentBuilderFactory
+                .newDocumentBuilder();
+        org.w3c.dom.Document document = documentBuilder.parse(is);
+        return document;
+    }
 
     private String getFilesUsed(boolean login) {
         if (login) {
