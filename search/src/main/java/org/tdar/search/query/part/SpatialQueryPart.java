@@ -70,6 +70,9 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
             logger.trace("crosses primeMeridian: {}, crosses antiMeridian: {}", box.crossesPrimeMeridian(), box.crossesDateline());
             // If the search bounds cross the antimeridian, we need to split up the spatial limit into two separate
             // boxes because the degrees change from positive to negative.
+            
+            
+            //*** NOTE *** ENVELOPE uses following pattern minX, maxX, maxy, minY *** // 
             if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
                 q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" OR"
                         + "  %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,

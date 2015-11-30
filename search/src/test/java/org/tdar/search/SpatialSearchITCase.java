@@ -47,7 +47,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Override
     public void reindex() {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.purgeAll(Arrays.asList(Resource.class));
     }
     
     private Document createGeoDoc(String title, double minLatY, double minLongX, double maxLatY, double maxLongX) throws SolrServerException, IOException {
