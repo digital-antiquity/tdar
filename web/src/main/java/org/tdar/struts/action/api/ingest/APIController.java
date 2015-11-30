@@ -68,8 +68,6 @@ public class APIController extends AuthenticationAware.Base {
     @Autowired
     private transient SerializationService serializationService;
     @Autowired
-    private transient ObfuscationService obfuscationService;
-    @Autowired
     private transient ResourceService resourceService;
     @Autowired
     private transient ImportService importService;
@@ -98,7 +96,7 @@ public class APIController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
-//    @WriteableSession
+    // @WriteableSession
     public String upload() {
 
         if (StringUtils.isEmpty(getRecord())) {
@@ -134,6 +132,7 @@ public class APIController extends AuthenticationAware.Base {
                 message = "created:" + loadedRecord.getId();
                 code = StatusCode.CREATED;
                 getXmlResultObject().setRecordId(loadedRecord.getId());
+                getXmlResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
             }
 
@@ -230,6 +229,7 @@ public class APIController extends AuthenticationAware.Base {
             // I don't know that this is "right"
             incoming = getGenericService().markWritableOnExistingSession(incoming);
             xmlResultObject.setRecordId(getId());
+            xmlResultObject.setId(getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));
             List<FileProxy> incomingList = fileProxies.getFileProxies();

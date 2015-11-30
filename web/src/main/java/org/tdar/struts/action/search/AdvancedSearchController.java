@@ -406,7 +406,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     @Override
     protected void updateDisplayOrientationBasedOnSearchResults() {
         if (orientation != null) {
-            getLogger().debug("orientation is set to: {}", orientation);
+            getLogger().trace("orientation is set to: {}", orientation);
             return;
         }
 
@@ -420,7 +420,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
             // if we're only dealing with images, and an orientation has not been set
             if (allImages) {
                 setOrientation(DisplayOrientation.GRID);
-                getLogger().debug("switching to grid orientation");
+                getLogger().trace("switching to grid orientation");
                 return;
             }
         }
@@ -431,7 +431,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
             // ignore
         }
         if (getMap() != null && getMap().isInitializedAndValid() || map != null && map.isInitializedAndValid()) {
-            getLogger().debug("switching to map orientation");
+            getLogger().trace("switching to map orientation");
             setOrientation(DisplayOrientation.MAP);
         }
     }
