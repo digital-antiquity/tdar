@@ -160,8 +160,8 @@ ul.inline > li.bullet a {
     font-size: 13pt;
     font-weight: 500;
     line-height: 1pt !important;
-    margin-top: 15px !important;
-    padding: 0px !important;
+    padding-top: 15px !important;
+    /* padding: 0px !important; */
 }
 
 .popover {
