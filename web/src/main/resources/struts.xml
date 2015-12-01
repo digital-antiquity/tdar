@@ -71,6 +71,7 @@
                 class="org.tdar.struts.interceptor.CacheControlInterceptor" />
             <interceptor name="activityLogging"
                 class="org.tdar.struts.interceptor.ActivityLoggingInterceptor" />
+            <interceptor name="sso" class="org.tdar.struts.interceptor.CrowdTokenInterceptor" />
             <interceptor-stack name="tdarDefaultStack">
                 <interceptor-ref name="exception">
                     <param name="logEnabled">true</param>
@@ -78,6 +79,7 @@
                     <!-- <param name="exception.logCategory">org.tdar.struts</param> -->
                 </interceptor-ref>
                 <interceptor-ref name="activityLogging" />
+                <interceptor-ref name="sso" />
                 <interceptor-ref name="sessionSecurity" />
                 <interceptor-ref name="cacheControl" />
                 <interceptor-ref name="httpsMethod" />
