@@ -30,7 +30,7 @@
 
     <@nav.toolbar "${resource.urlNamespace}" "view">
         <#if resource.resourceType.dataTableSupported && editable>
-            <#assign disabled = resource.dataTables?size==0 />
+            <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
             <#if administrator && resource.project?? && resource.project.id != -1 >

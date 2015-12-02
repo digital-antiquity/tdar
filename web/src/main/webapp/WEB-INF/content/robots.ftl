@@ -2,6 +2,7 @@ User-agent: *
 <#if production>
 Disallow: /search/*
 Disallow: /search/
+Disallow: /search/results
 Disallow: /login
 Disallow: /logout
 Disallow: /search/rss

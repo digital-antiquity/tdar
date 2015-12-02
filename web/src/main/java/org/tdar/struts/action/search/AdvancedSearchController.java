@@ -214,7 +214,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         if (hasActionErrors()) {
             getGroups().clear();
         }
-        getLogger().debug("advanced search doen");
+        getLogger().debug("advanced search done");
         return SUCCESS;
     }
 
