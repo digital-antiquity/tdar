@@ -717,6 +717,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void logout() {
         gotoPage("/logout");
+//        driver.manage().deleteAllCookies();
     }
 
     public String getSource() {

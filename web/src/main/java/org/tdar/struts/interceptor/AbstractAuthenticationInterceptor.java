@@ -1,5 +1,7 @@
 package org.tdar.struts.interceptor;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
@@ -12,6 +14,7 @@ import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
 
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.interceptor.Interceptor;
 
 public abstract class AbstractAuthenticationInterceptor implements SessionDataAware, Interceptor {
@@ -40,18 +43,27 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    protected boolean validateSsoTokenAndAttachUser(Object[] token_) {
-        if (ArrayUtils.isEmpty(token_)) {
+    protected boolean validateSsoTokenAndAttachUser(String token) {
+        if (StringUtils.isBlank(token)) {
             return false;
         }
-        String token = (String) token_[0];
-        if (StringUtils.isNotBlank(token)) {
-            logger.debug("checking valid token: {}", token);
-            boolean result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
-            logger.debug("token authentication result: {}", result);
-            return result;
-        }
-        return false;
+
+        logger.debug("checking valid token: {}", token);
+        boolean result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
+        logger.debug("token authentication result: {}", result);
+        return result;
     }
 
+
+    protected String getSSoTokenFromParams() {
+        Object[] token_ = (Object[]) ActionContext.getContext().getParameters().get(CONFIG.getRequestTokenName());
+        String token = null;
+        if (ArrayUtils.isEmpty(token_)) {
+            HttpServletRequest request = ServletActionContext.getRequest();
+            token = authenticationService.getSsoCookieToken(request);
+        } else {
+            token = (String)token_[0];
+        }
+        return token;
+    }
 }
