@@ -56,14 +56,6 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
 
 
     protected String getSSoTokenFromParams() {
-        Object[] token_ = (Object[]) ActionContext.getContext().getParameters().get(CONFIG.getRequestTokenName());
-        String token = null;
-        if (ArrayUtils.isEmpty(token_)) {
-            HttpServletRequest request = ServletActionContext.getRequest();
-            token = authenticationService.getSsoCookieToken(request);
-        } else {
-            token = (String)token_[0];
-        }
-        return token;
+        return authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
     }
 }

@@ -19,7 +19,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
@@ -471,14 +470,16 @@ public class AuthenticationService {
     @Transactional(readOnly = true)
     public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse, TdarUser user) {
         sessionData.clearAuthenticationToken();
-        String token = servletRequest.getParameter(CONFIG.getRequestTokenName());
-        if (token == null) {
-            token = getSsoCookieToken(servletRequest);
-        }
+        String token = getSsoTokenFromRequest(servletRequest);
         getAuthenticationProvider().logout(servletRequest, servletResponse, token, user);
     }
+    
+    public String getSsoTokenFromRequest(HttpServletRequest request) {
+        String token = request.getParameter(CONFIG.getRequestTokenName());
+        if (StringUtils.isNotBlank(token)) {
+            return token;
+        }
 
-    public String getSsoCookieToken(HttpServletRequest request) {
         if (!ArrayUtils.isEmpty(request.getCookies())) {
             for (Cookie c : request.getCookies()) {
                 if (c.getName().equals(CONFIG.getRequestTokenName())) {
@@ -488,6 +489,8 @@ public class AuthenticationService {
         }
         return null;
     }
+
+
 
     /**
      * Provides access to the configured @link AuthenticationProvider -- CROWD or LDAP, for example. Consider making private.
@@ -576,5 +579,6 @@ public class AuthenticationService {
         String normalizedUsername = userName.toLowerCase();
         return normalizedUsername;
     }
+
 
 }
