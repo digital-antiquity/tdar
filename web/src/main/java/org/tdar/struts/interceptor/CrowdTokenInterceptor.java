@@ -35,7 +35,7 @@ public class CrowdTokenInterceptor extends AbstractAuthenticationInterceptor {
         Object[] token = (Object[]) ActionContext.getContext().getParameters().get(CONFIG.getRequestTokenName());
         if (ArrayUtils.isEmpty(token)) {
             HttpServletRequest request = ServletActionContext.getRequest();
-            if (ArrayUtils.isNotEmpty(request.getCookies())) {
+            if (!ArrayUtils.isEmpty(request.getCookies())) {
                 for (Cookie c : request.getCookies()) {
                     if (c.getName().equals(CONFIG.getRequestTokenName())) {
                         token = new Object[1];
