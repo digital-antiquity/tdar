@@ -289,7 +289,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             result.setToken(token);
             return result;
         } catch (OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException | InvalidTokenException e) {
-            logger.error("++++ CROWD: Unable to process token " + token, e);
+            logger.warn("++++ CROWD: Unable to process token " + token, e);
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION, e);
         }
     }
