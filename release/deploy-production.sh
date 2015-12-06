@@ -58,15 +58,9 @@ fi
 cd /home/tdar/tdar.src/
 hg pull
 hg update -C
-mvn clean install -DskipTests -Djetty.skip=true
-cd web
-#sudo rm /tmp/.wro4j/buildContext.properties
-#sudo rmdir /tmp/.wro4j/
-mvn clean compile war:war -Pminify-web-resources,liquibase
-cd ../dataone/
-mvn clean compile war:war 
-cd ../oai-pmh/
-mvn clean compile war:war 
+mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base
+mvn clean compile war:war -Pminify-web-resources -pl web,oai-pmh,dataone
+mvn process-resources -Pliquibase -pl web
 
 if [ $? -ne 0 ] 
   then
