@@ -19,6 +19,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.search.SearchService;
@@ -48,10 +49,10 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
     public void execute() {
         DateTime time = DateTime.now().minusDays(7);
         Collection<? extends Resource> resources = new ArrayList<>();
+        ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
         try {
             MessageHelper messageHelper = MessageHelper.getInstance();
             resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
-            ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
             collection.markUpdated(genericService.find(TdarUser.class, config.getAdminUserId()));
             collection.setName(messageHelper.getText("weekly_collection.name", Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY))));
             collection.setName(messageHelper.getText("weekly_collection.description",
@@ -73,6 +74,8 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             Map<String, Object> dataModel = initDataModel();
             dataModel.put("resources", resources);
             dataModel.put("totalResources", resources.size());
+            dataModel.put("collection", collection);
+            dataModel.put("collectionUrl",UrlService.absoluteUrl(collection));
             emailService.queueWithFreemarkerTemplate("email_recent_resources.ftl", dataModel, email);
         }
 
