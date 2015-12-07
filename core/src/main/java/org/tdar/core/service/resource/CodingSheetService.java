@@ -15,6 +15,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -264,6 +266,9 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         }
         codingSheet.markUpdated(authenticatedUser);
         saveOrUpdate(codingSheet);
+        ResourceRevisionLog rrl = new ResourceRevisionLog("updated coding sheet mapings", codingSheet, authenticatedUser);
+        getDao().saveOrUpdate(rrl);
+        codingSheet.getResourceRevisionLog().add(rrl);
         getDao().saveOrUpdate(codingSheet.getCodingRules());       
         return mappingIssues;
     }
