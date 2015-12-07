@@ -145,7 +145,12 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
              */
             OntologyNode existing = existingSet.get(incoming.getIri());
             if (existing == null) {
-                existing = synonymsSet.get(incoming.getDisplayName());
+                // ONLY MAP synonym to node if node remains umapped; e.g. if Dentary is a Synonym of Mandible, and Dentary becomes it's own Node, don't use the
+                // id for Mandible
+                OntologyNode synonym = synonymsSet.get(incoming.getDisplayName());
+                if (synonym != null && existingSet.get(synonym.getIri()) == null) {
+                    existing = synonym;
+                }
             }
 
             if (existing == null) {
