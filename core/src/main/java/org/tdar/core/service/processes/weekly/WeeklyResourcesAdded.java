@@ -1,6 +1,7 @@
 package org.tdar.core.service.processes.weekly;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
@@ -12,17 +13,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.search.SearchService;
+import org.tdar.search.query.SortOption;
 import org.tdar.utils.MessageHelper;
 
 @Component
 @Scope("prototype")
 public class WeeklyResourcesAdded extends AbstractScheduledProcess {
 
+    private static final String MM_DD_YYYY = "MM/dd/yyyy";
     private static final long serialVersionUID = -121034534408651405L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -32,15 +39,28 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
     @Autowired
     private transient EmailService emailService;
 
+    @Autowired
+    private transient GenericService genericService;
+
     private boolean run = false;
 
     @Override
     public void execute() {
         DateTime time = DateTime.now().minusDays(7);
-        Collection<? extends Resource> resources  = new ArrayList<>();
+        Collection<? extends Resource> resources = new ArrayList<>();
         try {
-         resources = searchService.findRecentResourcesSince(time.toDate(), null, MessageHelper.getInstance());
-        } catch(Exception e) {
+            MessageHelper messageHelper = MessageHelper.getInstance();
+            resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
+            ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
+            collection.markUpdated(genericService.find(TdarUser.class, config.getAdminUserId()));
+            collection.setName(messageHelper.getText("weekly_collection.name", Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY))));
+            collection.setName(messageHelper.getText("weekly_collection.description",
+                    Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY), config.getSiteAcronym())));
+            collection.setSortBy(SortOption.RESOURCE_TYPE);
+            genericService.saveOrUpdate(collection);
+            collection.getResources().addAll(resources);
+            genericService.saveOrUpdate(collection);
+        } catch (Exception e) {
             logger.error("issue in recent resources report", e);
         }
         if (CollectionUtils.isNotEmpty(resources)) {

@@ -907,4 +907,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean shouldUseLowMemoryPDFMerger() {
         return assistant.getBooleanProperty("pdf.use_low_mem", false);
     }
+
+    public Long getAdminUserId() {
+        return assistant.getLongProperty("admin.userid", 135028);
+    }
 }
