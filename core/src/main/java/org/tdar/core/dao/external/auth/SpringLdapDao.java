@@ -92,7 +92,7 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
      * .http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user) {
         // do nothing
     }
 

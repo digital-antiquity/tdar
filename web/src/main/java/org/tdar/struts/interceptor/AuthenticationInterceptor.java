@@ -16,12 +16,11 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Action;
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 
@@ -99,7 +98,7 @@ public class AuthenticationInterceptor extends AbstractAuthenticationInterceptor
             methodName = "execute";
         }
         Method method = action.getClass().getMethod(methodName);
-        Object[] token = (Object[]) ActionContext.getContext().getParameters().get(CONFIG.getRequestTokenName());
+        String token = getSSoTokenFromParams();
         if (sessionData.isAuthenticated() || validateSsoTokenAndAttachUser(token)) {
             return evaluateRightsOnAction(invocation, sessionData, action, methodName, method);
         }

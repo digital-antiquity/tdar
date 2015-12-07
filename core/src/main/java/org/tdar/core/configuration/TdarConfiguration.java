@@ -845,7 +845,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public String getRequestTokenName() {
-        return assistant.getStringProperty("auth.token.name", "session.tokenkey");
+        return assistant.getStringProperty("auth.token.name", "crowd.token_key");
     }
 
     public Boolean allowAuthentication() {

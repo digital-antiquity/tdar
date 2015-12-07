@@ -1,6 +1,5 @@
 package org.tdar.struts.interceptor;
 
-import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 
 /**
@@ -26,12 +25,13 @@ public class CrowdTokenInterceptor extends AbstractAuthenticationInterceptor {
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
         // get the token name
-        Object[] token = (Object[]) ActionContext.getContext().getParameters().get(CONFIG.getRequestTokenName());
-
+        
+        String token = getSSoTokenFromParams();
         // if not authenticated, check for the token, then validate that
         if (!getSessionData().isAuthenticated()) {
             validateSsoTokenAndAttachUser(token);
         }
         return invocation.invoke();
     }
+
 }

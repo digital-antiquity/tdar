@@ -79,7 +79,6 @@
                     <!-- <param name="exception.logCategory">org.tdar.struts</param> -->
                 </interceptor-ref>
                 <interceptor-ref name="activityLogging" />
-                <interceptor-ref name="sso" />
                 <interceptor-ref name="sessionSecurity" />
                 <interceptor-ref name="cacheControl" />
                 <interceptor-ref name="httpsMethod" />
@@ -104,6 +103,7 @@
             <interceptor-stack name="tdarDefaultStackWritable">
                 <!-- used for when we are opening a Writable hibernate session, 
                     should be used sparingly -->
+                <interceptor-ref name="sso" />
                 <interceptor-ref name="authenticate" />
                 <interceptor-ref name='tdarDefaultStack' />
                 <interceptor-ref name="fileUpload">
@@ -125,6 +125,7 @@
             <interceptor-stack name="unauthenticatedStack">
                 <!-- default stack for tDAR - not writable, does not have 
                     params-prepare-params -->
+                <interceptor-ref name="sso" />
                 <interceptor-ref name="tdarDefaultStack" />
                 <interceptor-ref name="conversionError" />
                 <interceptor-ref name="validation">
@@ -137,6 +138,7 @@
 
             <interceptor-stack name="authenticatedStack">
                 <!-- unauthenticated stack + authentication and user agreement -->
+                <interceptor-ref name="sso" />
                 <interceptor-ref name="authenticate" />
                 <interceptor-ref name="unauthenticatedStack" />
                 <interceptor-ref name="userAgreement" />
@@ -144,6 +146,7 @@
 
             <interceptor-stack name='csrfDefaultStack'>
                 <interceptor-ref name='tokenSession' />
+                <interceptor-ref name="sso" />
                 <interceptor-ref name='tdarDefaultStack' />
             </interceptor-stack>
         </interceptors>
