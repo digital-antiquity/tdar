@@ -28,7 +28,7 @@ import org.tdar.utils.PersistableUtils;
  */
 public interface AuthenticationAware extends SessionDataAware {
 
-    final String TYPE_REDIRECT = "redirect";
+    public static final String TYPE_REDIRECT = "redirect";
 
     @DoNotObfuscate(reason = "never obfuscate the session user")
     TdarUser getAuthenticatedUser();
