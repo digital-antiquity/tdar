@@ -123,7 +123,7 @@ public class FileSystemResourceDao {
         File baseFolder = new File(TdarConfiguration.getInstance().getHostedFileStoreLocation());
         File pairTreeRoot = new File(baseFolder, PairtreeFilestore.toPairTree(id));
         File file = new File(pairTreeRoot, filename);
-        logger.debug(file.getAbsolutePath());
+        logger.trace(file.getAbsolutePath());
         if (file.exists()) {
             return file;
         }

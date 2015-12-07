@@ -117,7 +117,7 @@ public class ApiAuthenticationController extends AuthenticationAware.Base implem
         getLogger().debug("{} {} {}", getSessionData().isAuthenticated(), getAuthenticatedUser(), token);
         if (getSessionData().isAuthenticated()
                 || authenticationService.checkToken(token, getSessionData(), ServletActionContext.getRequest()).getType().isValid()) {
-            authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse());
+            authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }
         xmlResultObject.put("status", "success");
         return SUCCESS;

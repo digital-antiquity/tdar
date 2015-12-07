@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,11 +60,13 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, String token) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user) {
+        MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
+        info.setToken(null);
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals(TdarConfiguration.getInstance().getRequestTokenName())) {
                 cookie.setMaxAge(0);
-            }
+            } 
             response.addCookie(cookie);
         }
     }
@@ -228,6 +231,9 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        if (StringUtils.isBlank(token)) {
+            return result;
+        }
         for (MockAuthenticationInfo info : users.values()) {
             if (Objects.equals(token, info.getToken())) {
                 result.setTokenUsername(info.getUsername());

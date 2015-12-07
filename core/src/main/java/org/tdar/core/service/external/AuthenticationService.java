@@ -9,15 +9,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
@@ -45,6 +46,7 @@ import org.tdar.utils.PersistableUtils;
 @Service
 public class AuthenticationService {
 
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     public static final String LEGACY_USERNAME_VALID_REGEX = "^\\w[a-zA-Z0-9+@._\\-\\s]{0,253}\\w$";
     public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,255}$";
     public static final String EMAIL_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{4,255}$";
@@ -62,8 +64,6 @@ public class AuthenticationService {
      */
     private final WeakHashMap<TdarUser, TdarGroup> groupMembershipCache = new WeakHashMap<>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private TdarConfiguration tdarConfiguration = TdarConfiguration.getInstance();
 
     @Autowired
     private PersonDao personDao;
@@ -161,8 +161,8 @@ public class AuthenticationService {
     public AuthenticationResult authenticatePerson(UserLogin userLogin, HttpServletRequest request, HttpServletResponse response,
             SessionData sessionData) {
         // deny authentication if we've turned it off in cases of system manintance
-        if (!TdarConfiguration.getInstance().allowAuthentication()
-                || TdarConfiguration.getInstance().getAdminUsernames().contains(userLogin.getLoginUsername())) {
+        if (!CONFIG.allowAuthentication()
+                || CONFIG.getAdminUsernames().contains(userLogin.getLoginUsername())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         }
 
@@ -417,11 +417,11 @@ public class AuthenticationService {
 
     private void sendWelcomeEmail(Person person) {
         Map<String, Object> result = new HashMap<>();
-        final TdarConfiguration config = TdarConfiguration.getInstance();
+        final TdarConfiguration config = CONFIG;
         result.put("user", person);
         result.put("config", config);
         try {
-            String subject = MessageHelper.getMessage("userAccountController.welcome", Arrays.asList(TdarConfiguration.getInstance().getSiteAcronym()));
+            String subject = MessageHelper.getMessage("userAccountController.welcome", Arrays.asList(CONFIG.getSiteAcronym()));
             Email email = new Email();
             email.setSubject(subject);
             email.addToAddress(person.getEmail());
@@ -468,11 +468,29 @@ public class AuthenticationService {
     }
 
     @Transactional(readOnly = true)
-    public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse) {
+    public void logout(SessionData sessionData, HttpServletRequest servletRequest, HttpServletResponse servletResponse, TdarUser user) {
         sessionData.clearAuthenticationToken();
-        String token = servletRequest.getParameter(TdarConfiguration.getInstance().getRequestTokenName());
-        getAuthenticationProvider().logout(servletRequest, servletResponse, token);
+        String token = getSsoTokenFromRequest(servletRequest);
+        getAuthenticationProvider().logout(servletRequest, servletResponse, token, user);
     }
+    
+    public String getSsoTokenFromRequest(HttpServletRequest request) {
+        String token = request.getParameter(CONFIG.getRequestTokenName());
+        if (StringUtils.isNotBlank(token)) {
+            return token;
+        }
+
+        if (!ArrayUtils.isEmpty(request.getCookies())) {
+            for (Cookie c : request.getCookies()) {
+                if (c.getName().equals(CONFIG.getRequestTokenName())) {
+                    return c.getValue();
+                }
+            }
+        }
+        return null;
+    }
+
+
 
     /**
      * Provides access to the configured @link AuthenticationProvider -- CROWD or LDAP, for example. Consider making private.
@@ -488,8 +506,8 @@ public class AuthenticationService {
     public List<AuthNotice> getUserRequirements(TdarUser user) {
         List<AuthNotice> notifications = new ArrayList<>();
         // not public static final because don't work in testing
-        Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
-        Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
+        Integer tosLatestVersion = CONFIG.getTosLatestVersion();
+        Integer contributorAgreementLatestVersion = CONFIG.getContributorAgreementLatestVersion();
         if (user.getTosVersion() < tosLatestVersion) {
             notifications.add(AuthNotice.TOS_AGREEMENT);
         }
@@ -509,8 +527,8 @@ public class AuthenticationService {
     @Transactional(readOnly = false)
     public void satisfyPrerequisite(TdarUser user, AuthNotice req) {
         // not public static final because don't work in testing
-        Integer tosLatestVersion = tdarConfiguration.getTosLatestVersion();
-        Integer contributorAgreementLatestVersion = tdarConfiguration.getContributorAgreementLatestVersion();
+        Integer tosLatestVersion = CONFIG.getTosLatestVersion();
+        Integer contributorAgreementLatestVersion = CONFIG.getContributorAgreementLatestVersion();
         switch (req) {
             case CONTRIBUTOR_AGREEMENT:
                 user.setContributorAgreementVersion(contributorAgreementLatestVersion);
@@ -561,5 +579,6 @@ public class AuthenticationService {
         String normalizedUsername = userName.toLowerCase();
         return normalizedUsername;
     }
+
 
 }

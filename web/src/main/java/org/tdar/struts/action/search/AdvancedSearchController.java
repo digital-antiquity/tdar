@@ -205,7 +205,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     @Action(value = "advanced")
     public String advanced() {
-        getLogger().debug("greetings from advanced search");
+        getLogger().trace("greetings from advanced search");
         // process query paramter or legacy parameters, if present.
         processBasicSearchParameters();
         processLegacySearchParameters();
@@ -225,7 +225,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         if (hasActionErrors()) {
             getGroups().clear();
         }
-        getLogger().debug("advanced search done");
+        getLogger().trace("advanced search done");
         return SUCCESS;
     }
 

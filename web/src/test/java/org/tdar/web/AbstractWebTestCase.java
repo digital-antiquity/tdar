@@ -1359,6 +1359,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     public void logout() {
         webClient.getOptions().setJavaScriptEnabled(false);
         gotoPage("/logout");
+        webClient.getCookieManager().clearCookies();
     }
 
     @Autowired
