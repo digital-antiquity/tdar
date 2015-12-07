@@ -20,11 +20,9 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 
 /**
