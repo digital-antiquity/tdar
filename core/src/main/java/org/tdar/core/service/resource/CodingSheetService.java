@@ -18,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
@@ -34,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.FilestoreObjectType;
@@ -57,6 +59,9 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    SerializationService serializationService;
+    
     public List<CodingSheet> findSparseCodingSheetList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
     }
@@ -267,6 +272,11 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         codingSheet.markUpdated(authenticatedUser);
         saveOrUpdate(codingSheet);
         ResourceRevisionLog rrl = new ResourceRevisionLog("updated coding sheet mapings", codingSheet, authenticatedUser);
+        try {
+            rrl.setPayload(serializationService.convertToXML(codingSheet));
+        } catch (Exception e) {
+            logger.error("issue serializing to XML", e);
+        }
         getDao().saveOrUpdate(rrl);
         codingSheet.getResourceRevisionLog().add(rrl);
         getDao().saveOrUpdate(codingSheet.getCodingRules());       
