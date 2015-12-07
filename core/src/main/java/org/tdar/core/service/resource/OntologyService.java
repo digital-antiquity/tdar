@@ -99,6 +99,8 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
             if (numberOfMappedValues > 0) {
                 getLogger().debug("had mapped values, reconciling {} with {}", existingOntologyNodes, incomingOntologyNodes);
                 reconcile(existingOntologyNodes, incomingOntologyNodes);
+            } else {
+                getLogger().debug("has no mappings... deleting ontology and replacing");
             }
             getDao().removeReferencesToOntologyNodes(existingOntologyNodes);
             getDao().delete(existingOntologyNodes);
