@@ -145,6 +145,12 @@ public class Ontology extends InformationResource implements SupportsResource {
         }
     }
 
+    public void clearTransientMaps() {
+        nameMap.clear();
+        iriMap.clear();
+        idMap.clear();
+    }
+    
     @Transient
     public OntologyNode getNodeByNameIgnoreCase(String name) {
         for (OntologyNode node : getOntologyNodes()) {

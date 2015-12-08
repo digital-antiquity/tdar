@@ -911,4 +911,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean shouldLogToFilestore() {
         return assistant.getBooleanProperty("log.to.filestore",true);
     }
+
+    public Long getAdminUserId() {
+        return assistant.getLongProperty("admin.userid", 135028);
+    }
 }

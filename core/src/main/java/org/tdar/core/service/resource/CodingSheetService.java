@@ -14,14 +14,19 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -30,6 +35,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.CodingSheetDao;
 import org.tdar.core.parser.CodingSheetParser;
 import org.tdar.core.parser.CodingSheetParserException;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.workflow.workflows.GenericColumnarDataWorkflow;
 import org.tdar.filestore.FilestoreObjectType;
@@ -37,6 +43,8 @@ import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+
+import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.
@@ -51,6 +59,9 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    SerializationService serializationService;
+    
     public List<CodingSheet> findSparseCodingSheetList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
     }
@@ -238,4 +249,37 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         return getDao().findAllUsingOntology(ontology, Arrays.asList(Status.ACTIVE));
     }
 
+    @Transactional(readOnly=false)
+    public List<String> updateCodingSheetMappings(CodingSheet codingSheet, TdarUser authenticatedUser, List<CodingRule> incomingRules) {
+        List<String> mappingIssues = new ArrayList<>();
+        getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", codingSheet);
+        for (CodingRule transientRule : incomingRules) {
+            OntologyNode ontologyNode = transientRule.getOntologyNode();
+            getLogger().debug(" matching column values: {} -> node ids {}", transientRule, ontologyNode);
+            
+            if (ontologyNode != null && StringUtils.isNotBlank(ontologyNode.getDisplayName()) && ontologyNode.getId() == null) {
+                getLogger().warn("mapping>> ontology node label has text {}, but id is null for rule: {}", ontologyNode, transientRule);
+                mappingIssues.add(transientRule.getTerm());
+            }
+            
+            CodingRule rule = codingSheet.getCodingRuleById(transientRule.getId());
+            Ontology ontology = codingSheet.getDefaultOntology();
+
+            if (ontologyNode != null) {
+                rule.setOntologyNode(ontology.getOntologyNodeById(ontologyNode.getId()));
+            }
+        }
+        codingSheet.markUpdated(authenticatedUser);
+        saveOrUpdate(codingSheet);
+        ResourceRevisionLog rrl = new ResourceRevisionLog("updated coding sheet mapings", codingSheet, authenticatedUser);
+        try {
+            rrl.setPayload(serializationService.convertToXML(codingSheet));
+        } catch (Exception e) {
+            logger.error("issue serializing to XML", e);
+        }
+        getDao().saveOrUpdate(rrl);
+        codingSheet.getResourceRevisionLog().add(rrl);
+        getDao().saveOrUpdate(codingSheet.getCodingRules());       
+        return mappingIssues;
+    }
 }

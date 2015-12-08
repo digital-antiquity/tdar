@@ -103,6 +103,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String UNKNOWN_ERROR = "exception"; // 500
     public static final String BAD_REQUEST = "badrequest"; // 400
 
+//    public static final String TYPE_REDIRECT = "redirect";
+
     public static final String FORBIDDEN = "forbidden"; // 403
     public static final String NOT_FOUND = "not_found"; // 404
     /**

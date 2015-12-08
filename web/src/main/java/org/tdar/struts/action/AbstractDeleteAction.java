@@ -5,6 +5,7 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.Results;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,6 +30,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/")
+@Results(@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.REDIRECT, location = TdarActionSupport.UNKNOWN_ERROR))
 public abstract class AbstractDeleteAction<P extends Persistable & Addressable> extends AuthenticationAware.Base implements Preparable {
 
     public final static String msg = "%s is %s %s (%s): %s";
@@ -61,7 +63,7 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return INPUT;
         }
-        
+
         getLogger().info("user {} is TRYING to {} a {}", getAuthenticatedUser(), getActionName(), getPersistable().getClass().getSimpleName());
         getLogger().trace("post: {} ; delete: {}", isPostRequest(), getDelete());
         if (isPostRequest() && DELETE.equals(getDelete())) {
@@ -71,12 +73,12 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
             }
             logAction("DELETING");
             try {
-            delete(persistable);
+                delete(persistable);
             } catch (FilestoreLoggingException fsl) {
-                logger.error("Could not log to filestore",fsl);
+                logger.error("Could not log to filestore", fsl);
                 return SUCCESS;
             } catch (Exception e) {
-                addActionErrorWithException(getText("abstractPersistableController.cannot_delete"),e);
+                addActionErrorWithException(getText("abstractPersistableController.cannot_delete"), e);
                 return INPUT;
             }
             return SUCCESS;
