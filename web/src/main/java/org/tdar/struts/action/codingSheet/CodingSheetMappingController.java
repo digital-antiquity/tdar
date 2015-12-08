@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
@@ -60,7 +61,9 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
 
     @Autowired
     private transient AuthorizationService authorizationService;
-
+    @Autowired
+    private transient CodingSheetService codingSheetService;
+    
     private CodingSheet codingSheet;
     private List<OntologyNode> ontologyNodes;
     private List<CodingRule> codingRules;
@@ -99,29 +102,12 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
                     @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
-        List<String> mappingIssues = new ArrayList<>();
         try {
-            getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", getCodingSheet());
-            for (CodingRule transientRule : getCodingRules()) {
-                OntologyNode ontologyNode = transientRule.getOntologyNode();
-                getLogger().debug(" matching column values: {} -> node ids {}", transientRule, ontologyNode);
-                
-                if (ontologyNode != null && StringUtils.isNotBlank(ontologyNode.getDisplayName()) && ontologyNode.getId() == null) {
-                    getLogger().warn("mapping>> ontology node label has text {}, but id is null for rule: {}", ontologyNode, transientRule);
-                    mappingIssues.add(transientRule.getTerm());
-                }
-                
-                CodingRule rule = getCodingSheet().getCodingRuleById(transientRule.getId());
-                Ontology ontology = getCodingSheet().getDefaultOntology();
-
-                if (ontologyNode != null) {
-                    rule.setOntologyNode(ontology.getOntologyNodeById(ontologyNode.getId()));
-                }
-            }
+            List<String> mappingIssues = codingSheetService.updateCodingSheetMappings(getCodingSheet(), getAuthenticatedUser(), getCodingRules());
             if (CollectionUtils.isNotEmpty(mappingIssues)) {
                 addActionMessage(getText("codingSheetMappingController.could_not_map", Arrays.asList(mappingIssues)));
             }
-            getGenericService().save(getCodingSheet().getCodingRules());
+
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);

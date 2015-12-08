@@ -42,7 +42,7 @@ public class HomepageService {
     private GenericService genericService;
     
     @Transactional(readOnly=true)
-    public Set<Resource> featuredItems(TdarUser authenticatedUser) {
+    public synchronized Set<Resource> featuredItems(TdarUser authenticatedUser) {
         Set<Resource> featuredResources = new HashSet<>(); 
         try {
             for (Resource key : informationResourceService.getFeaturedItems()) {
@@ -63,7 +63,7 @@ public class HomepageService {
     }
 
     @Transactional(readOnly=true)
-    public List<HomepageResourceCountCache> resourceStats() {
+    public synchronized List<HomepageResourceCountCache> resourceStats() {
         List<HomepageResourceCountCache> homepageResourceCountCache = genericService.findAllWithL2Cache(HomepageResourceCountCache.class);
         Iterator<HomepageResourceCountCache> iterator = homepageResourceCountCache.iterator();
         while (iterator.hasNext()) {
@@ -76,7 +76,7 @@ public class HomepageService {
 
 
     @Transactional(readOnly=true)
-    public String getMapJson() {
+    public synchronized String getMapJson() {
         List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
         try {
             return serializationService.convertToJson(isoGeographicCounts);
@@ -87,7 +87,7 @@ public class HomepageService {
     }
 
 
-    public String getResourceCountsJson() {
+    public synchronized String getResourceCountsJson() {
         try {
             return serializationService.convertToJson(resourceService.getResourceCounts());
         } catch (IOException e) {

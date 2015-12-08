@@ -90,7 +90,6 @@ public class OaiPmhServer {
             @QueryParam("resumptionToken") String resumptionToken_) {
         genericService.markReadOnly();
         OAIPMHtype response = new OAIPMHtype();
-
         RequestType request = createRequest(verb_, identifier_, metadataPrefix_, set, from_, until_, resumptionToken_, servletRequest);
         response.setRequest(request);
         ObjectFactory factory = new ObjectFactory();
@@ -106,7 +105,11 @@ public class OaiPmhServer {
             prepare(verb_, identifier_, metadataPrefix_, from_, until_, resumptionToken_);
             execute(set, from_, until_, response);
         } catch (OAIException oaie) {
-            logger.error("OaiException", oaie);
+            if (oaie.getCode() == OAIPMHerrorcodeType.NO_RECORDS_MATCH) {
+            logger.warn("OaiException", oaie);
+            } else {
+                logger.error("OaiException", oaie);
+            }
             OAIPMHerrorType error = new OAIPMHerrorType();
             error.setCode(oaie.getCode());
             error.setValue(oaie.getMessage());
@@ -148,7 +151,6 @@ public class OaiPmhServer {
         if (from_ != null) {
             request.setFrom(from_);
         }
-        logger.debug("request:{}",servletRequest);
         request.setValue(servletRequest.getRequestURI());
         request.setVerb(VerbType.fromValue(verb_));
         logger.debug(">>> {}", servletRequest.getRequestURI());

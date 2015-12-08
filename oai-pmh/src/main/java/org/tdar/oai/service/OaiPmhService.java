@@ -199,7 +199,7 @@ public class OaiPmhService {
 		}
 
 		// if there were no records found, then throw an exception
-		if ((maxResults) == 0) {
+		if (maxResults == 0) {
 			throw new OAIException(MessageHelper.getInstance().getText("oaiController.no_matches"),
 					OAIPMHerrorcodeType.NO_RECORDS_MATCH);
 		}
