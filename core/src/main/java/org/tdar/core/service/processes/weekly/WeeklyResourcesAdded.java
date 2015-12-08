@@ -22,8 +22,6 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.SortOption;
 import org.tdar.utils.MessageHelper;
 
 @Component
@@ -54,12 +52,12 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             logger.error("disabeld");
 //         resources = searchService.findRecentResourcesSince(time.toDate(), null, MessageHelper.getInstance());
             MessageHelper messageHelper = MessageHelper.getInstance();
-            resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
+//            resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
             collection.markUpdated(genericService.find(TdarUser.class, config.getAdminUserId()));
             collection.setName(messageHelper.getText("weekly_collection.name", Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY))));
             collection.setName(messageHelper.getText("weekly_collection.description",
                     Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY), config.getSiteAcronym())));
-            collection.setSortBy(SortOption.RESOURCE_TYPE);
+//            collection.setSortBy(SortOption.RESOURCE_TYPE);
             genericService.saveOrUpdate(collection);
             collection.getResources().addAll(resources);
             genericService.saveOrUpdate(collection);
