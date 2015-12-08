@@ -71,14 +71,11 @@ if [ $? -ne 0 ]
    exit 1
   else
       sudo service tomcat7 stop
-      cd ../web/
-      sudo cp target/tdar-web.war ~tdar/app/ROOT.war
+      sudo cp web/target/tdar-web.war ~tdar/app/ROOT.war
       sudo rm -Rrf ~tdar/app/ROOT
-      cd ../oai-pmh/
-      sudo cp target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
+      sudo cp oai-pmh/target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
       sudo rm -Rrf ~tdar/app/oai-pmh
-      # cd ../dataone/
-      # sudo cp target/tdar-dataone.war ~tdar/app/dataone.war
+      # sudo cp dataone/target/tdar-dataone.war ~tdar/app/dataone.war
       # sudo rm -Rrf ~tdar/app/dataone
       sudo service tomcat7 restart
 fi
