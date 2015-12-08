@@ -18,7 +18,6 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.QueryBuilder;
 
-
 public class SolrSearchObject<I extends Indexable> {
 
     private List<Long> idList = new ArrayList<>();
@@ -33,6 +32,7 @@ public class SolrSearchObject<I extends Indexable> {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private String queryString;
     private String filterString;
+    private Integer totalResults = 0;
 
     /*
      * Query query = new MatchAllDocsQuery();
@@ -48,13 +48,59 @@ public class SolrSearchObject<I extends Indexable> {
         this.setFirstResult(handler.getStartRecord());
 
         List<String> sort = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(sort)) {
-            for (SortOption option : sortOptions) {
-                sort.add(option.getSortField() + " " + option.getSortOrder());
+        for (SortOption option : sortOptions) {
+            String sortName = getSortFieldName(option);
+            logger.trace("{} - {}", option, sortName);
+            if (sortName != null) {
+                sort.add( sortName+ " " + option.getSortOrder());
             }
         }
+        if (CollectionUtils.isNotEmpty(sort)) {
+            setSortParam(StringUtils.join(sort, ","));
+        }
         this.filterString = StringUtils.join(queryBuilder.getFilters(), " ");
-        setSortParam(StringUtils.join(sort, ","));
+    }
+
+    private String getSortFieldName(SortOption sortField) {
+        if (sortField == null) {
+            return null;
+        }
+        switch (sortField) {
+            case COLLECTION_TITLE:
+            case COLLECTION_TITLE_REVERSE:
+            case CREATOR_NAME:
+            case CREATOR_NAME_REVERSE:
+            case LABEL:
+            case LABEL_REVERSE:
+            case TITLE:
+            case TITLE_REVERSE:
+                return QueryFieldNames.NAME_SORT;
+            case DATE:
+            case DATE_REVERSE:
+                return QueryFieldNames.DATE;
+            case DATE_UPDATED:
+            case DATE_UPDATED_REVERSE:
+                return QueryFieldNames.DATE_UPDATED;
+            case FIRST_NAME:
+            case FIRST_NAME_REVERSE:
+                return QueryFieldNames.FIRST_NAME_SORT;
+            case ID:
+            case ID_REVERSE:
+                return QueryFieldNames.ID;
+            case LAST_NAME:
+            case LAST_NAME_REVERSE:
+                return QueryFieldNames.LAST_NAME_SORT;
+            case PROJECT:
+                return QueryFieldNames.PROJECT_TITLE_SORT;
+            case RELEVANCE:
+                break;
+            case RESOURCE_TYPE:
+            case RESOURCE_TYPE_REVERSE:
+                return QueryFieldNames.RESOURCE_TYPE;
+            default:
+                break;
+        }
+        return null;
     }
 
     public int getResultSize() {
@@ -81,8 +127,9 @@ public class SolrSearchObject<I extends Indexable> {
         }
         if (StringUtils.isNotBlank(sortParam)) {
             solrQuery.setParam("sort", sortParam);
+            logger.debug("sort:{}", sortParam);
         }
-        solrQuery.setParam("fl", StringUtils.join(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID,QueryFieldNames.CLASS, "score"), ","));
+        solrQuery.setParam("fl", StringUtils.join(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"), ","));
 
         return solrQuery;
     }
@@ -110,6 +157,7 @@ public class SolrSearchObject<I extends Indexable> {
     public void processResults(SolrDocumentList results) {
         this.setDocumentList(results);
         logger.debug("results:{}", results);
+        setTotalResults((int) results.getNumFound());
         for (SolrDocument doc : results) {
             idList.add((Long) doc.get(QueryFieldNames.ID));
         }
@@ -137,6 +185,14 @@ public class SolrSearchObject<I extends Indexable> {
 
     public void setDocumentList(SolrDocumentList documentList) {
         this.documentList = documentList;
+    }
+
+    public Integer getTotalResults() {
+        return totalResults;
+    }
+
+    public void setTotalResults(Integer totalResults) {
+        this.totalResults = totalResults;
     }
 
 }

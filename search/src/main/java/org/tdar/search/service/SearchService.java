@@ -124,7 +124,7 @@ import com.opensymphony.xwork2.TextProvider;
          hydrateQueryParts(q);
          SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, resultHandler.getSortField(), resultHandler.getSecondarySortField());
 
-         resultHandler.setTotalRecords(ftq.getResultSize());
+         resultHandler.setTotalRecords(ftq.getTotalResults());
          long lucene = System.currentTimeMillis() - num;
          num = System.currentTimeMillis();
          logger.trace("begin adding facets");
@@ -135,7 +135,7 @@ import com.opensymphony.xwork2.TextProvider;
 
          Object searchMetadata[] = { q.getCoreName(), resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                  lucene, (System.currentTimeMillis() - num),
-                 ftq.getResultSize(),
+                 ftq.getTotalResults(),
                  resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);
          logger.debug("{} {}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);

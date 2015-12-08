@@ -3,6 +3,7 @@ package org.tdar.search;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,22 +13,32 @@ import java.util.Map;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.service.SearchService;
+import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
 public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {
 
     private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 
+    @Autowired
+    SearchService searchService;
+    
     public static class SortTestStruct {
         public SortTestStruct(Class<? extends Indexable> type, QueryBuilder queryBuilder) {
             this.type = type;
@@ -171,16 +182,19 @@ public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {
     // the sortInfo data structure has all the info on all the fields we sort by, which querybuilders to use, and what comparators to use
     // to assert that the searchService successfully sorted the results.
     @SuppressWarnings({ "rawtypes" })
-    public void testAllSortFields() throws ParseException {
+    public void testAllSortFields() throws ParseException, SolrServerException, IOException {
 
         for (SortTestStruct sortTestInfo : sortTests) {
             getSearchIndexService().indexAll(getAdminUser(), sortTestInfo.type);
             for (Map.Entry<SortOption, Comparator<?>> entry : sortTestInfo.comparators.entrySet()) {
                 // assumption: an empty queryBuilder returns alldocs
                 SortOption sortOption = entry.getKey();
-//                FullTextQuery ftq = searchService.search(sortTestInfo.qb, entry.getKey());
-//                List results = ftq.list();
-                List results = null;
+                
+                SearchResult result = new SearchResult();
+                result.setSortField(entry.getKey());
+                sortTestInfo.qb.append(new FieldQueryPart<>(QueryFieldNames.NAME,"*"));;
+                searchService.handleSearch(sortTestInfo.qb, result, MessageHelper.getInstance());
+                List results = result.getResults();
                 assertFalse("list should not be empty", results.isEmpty());
                 Comparator comparator = entry.getValue();
 

@@ -10,6 +10,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         
         SolrInputDocument doc = convertPersistable(collection);
         doc.setField(QueryFieldNames.NAME, collection.getName());
+        doc.setField(QueryFieldNames.NAME_SORT, collection.getName());
         doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, collection.getName());
         doc.setField(QueryFieldNames.RESOURCE_IDS, collection.getResourceIds());
         doc.setField(QueryFieldNames.RESOURCE_OWNER, collection.getOwner().getId());

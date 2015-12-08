@@ -48,6 +48,7 @@ public enum SortOption {
     public static SortOption getDefaultSortOption() {
         return RELEVANCE;
     }
+    
 
     private SortOption(Class<? extends Indexable> context, String label) {
         this(context, label, false);
@@ -158,7 +159,7 @@ public enum SortOption {
     }
 
     public String getSortOrder() {
-        if (reversed) {
+        if (!reversed) {
             return "asc";
         }
         return "desc";

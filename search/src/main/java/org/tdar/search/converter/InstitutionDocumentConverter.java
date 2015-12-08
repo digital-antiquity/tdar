@@ -10,6 +10,7 @@ public class InstitutionDocumentConverter extends AbstractSolrDocumentConverter 
         
         SolrInputDocument doc = convertPersistable(inst);
         doc.setField(QueryFieldNames.NAME, inst.getName());
+        doc.setField(QueryFieldNames.NAME_SORT, inst.getName());
         doc.setField(QueryFieldNames.ACRONYM, inst.getAcronym());
         doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, inst.getProperName());
         return doc;

@@ -18,9 +18,14 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(Operator.OR);
         List<String> names = new ArrayList<String>();
+        boolean containsSpaces = false;
         if (CollectionUtils.isNotEmpty(getFieldValues())) {
             for (Institution inst : getFieldValues()) {
-                names.add(StringUtils.trim(inst.getName()));
+                String trim = StringUtils.trim(inst.getName());
+                if (trim.contains(" ")) {
+                    containsSpaces =true;
+                }
+                names.add(trim);
             }
             FieldQueryPart<String> fqp = new FieldQueryPart<String>(QueryFieldNames.NAME, Operator.OR, names);
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
@@ -28,8 +33,12 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
             group.append(fqp);
         }
         FieldQueryPart<Institution> name_auto = new FieldQueryPart<Institution>(QueryFieldNames.NAME_AUTOCOMPLETE, getFieldValues());
+        if (containsSpaces) {
+            name_auto.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
+        } else {
+            name_auto.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
+        }
         group.append(name_auto);
-        name_auto.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
 
         // match ASU, but not "arizona state"
         FieldQueryPart<String> acronym = new FieldQueryPart<String>(QueryFieldNames.ACRONYM, names);

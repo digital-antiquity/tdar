@@ -24,6 +24,7 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
             CollectionUtils.addAll(names, hk.getParentLabelList());
         }
         doc.setField(QueryFieldNames.NAME, names);
+        doc.setField(QueryFieldNames.NAME_SORT, kwd.getLabel());
         return doc;
     }
 }

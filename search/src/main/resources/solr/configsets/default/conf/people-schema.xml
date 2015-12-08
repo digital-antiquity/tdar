@@ -3,6 +3,8 @@
     
     <field name="firstName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="firstName_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
+    <field name="firstName_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="lastName_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="lastName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="email" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="lastName_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
