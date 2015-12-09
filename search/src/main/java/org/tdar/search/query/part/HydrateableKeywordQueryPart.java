@@ -40,21 +40,28 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
         switch (type) {
             case CULTURE_KEYWORD:
                 name = QueryFieldNames.ACTIVE_CULTURE_KEYWORDS;
+                break;
             case INVESTIGATION_TYPE:
                 name = QueryFieldNames.ACTIVE_INVESTIGATION_TYPES;
+                break;
             case GEOGRAPHIC_KEYWORD:
                 name = QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS;
+                break;
             case MATERIAL_TYPE:
                 name = QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS;
+                break;
             case OTHER_KEYWORD:
                 name = QueryFieldNames.ACTIVE_OTHER_KEYWORDS;
+                break;
             case SITE_NAME_KEYWORD:
                 name = QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS;
+                break;
             case SITE_TYPE_KEYWORD:
                 name = QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS;
+                break;
             case TEMPORAL_KEYWORD:
                 name = QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS;
-            
+                break;
         }
         setFieldName(name);
         setFieldValues(fieldValues_);

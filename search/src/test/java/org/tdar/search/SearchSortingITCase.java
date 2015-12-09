@@ -32,7 +32,7 @@ import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
-public class SearchServiceITCase extends AbstractWithIndexIntegrationTestCase {
+public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 

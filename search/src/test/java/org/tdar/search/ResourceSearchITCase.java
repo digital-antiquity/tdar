@@ -638,15 +638,18 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         snk.setLabel(label);
         Document document = createAndSaveNewInformationResource(Document.class, getBasicUser(), resourceTitle);
         genericService.save(snk);
+        Long id = document.getId();
         document.getSiteNameKeywords().add(snk);
         searchIndexService.index(document);
         setupTestDocuments();
         SearchParameters params = new SearchParameters();
         params.getSiteNames().add(label);
         SearchResult result = doSearch("", null, params, null);
-        logger.info("results:{}", result.getResults());
-        assertTrue(result.getResults().contains(document));
-        assertTrue(result.getResults().get(0).equals(document) || result.getResults().get(1).equals(document));
+        List<Indexable> results = result.getResults();
+        List<Long> ids = PersistableUtils.extractIds(results);
+        logger.info("results:{}", results);
+        assertTrue(ids.contains(id));
+        assertTrue(ids.get(0).equals(id) || ids.get(1).equals(id));
     }
 
     @Test

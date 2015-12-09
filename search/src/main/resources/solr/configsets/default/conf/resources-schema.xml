@@ -89,25 +89,25 @@
     <field name="activeSiteCodes" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeTemporalKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
 
-    <field name="activeCultureKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeInvestigationTypes_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeMaterialKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeGeographicKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeOtherKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeSiteNameKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeSiteTypeKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeSiteCodes_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeTemporalKeywords_label" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeCultureKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
 
-    <field name="activeCultureKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeInvestigationTypes_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeMaterialKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeGeographicKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeOtherKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeSiteNameKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeSiteTypeKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeSiteCodes_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="activeTemporalKeywords_label_phrase" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeCultureKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
 
     <field name="activeCoverageDates.dateType" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeCoverageDates.startDate" type="ints" indexed="true" stored="false" required="false" multiValued="true" />
