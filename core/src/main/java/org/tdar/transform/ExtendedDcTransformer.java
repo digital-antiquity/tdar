@@ -3,8 +3,11 @@ package org.tdar.transform;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -15,6 +18,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
@@ -38,6 +42,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.ResourceCitationFormatter;
+
+import com.google.common.base.Objects;
 
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
@@ -83,27 +89,27 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         // add geographic subjects
-        for (GeographicKeyword geoTerm : source.getActiveGeographicKeywords()) {
+        for (GeographicKeyword geoTerm : toSortedList(source.getActiveGeographicKeywords())) {
             dc.addSpatial(geoTerm.getLabel());
         }
 
         // add temporal subjects
-        for (TemporalKeyword temporalTerm : source.getActiveTemporalKeywords()) {
+        for (TemporalKeyword temporalTerm : toSortedList(source.getActiveTemporalKeywords())) {
             dc.addTemporal(temporalTerm.getLabel());
         }
 
         // add culture subjects
-        for (CultureKeyword cultureTerm : source.getActiveCultureKeywords()) {
+        for (CultureKeyword cultureTerm : toSortedList(source.getActiveCultureKeywords())) {
             dc.addSubject(cultureTerm.getLabel());
         }
 
         // add site name subjects
-        for (SiteNameKeyword siteNameTerm : source.getActiveSiteNameKeywords()) {
+        for (SiteNameKeyword siteNameTerm : toSortedList(source.getActiveSiteNameKeywords())) {
             dc.addCoverage(siteNameTerm.getLabel());
         }
 
         // add other subjects
-        for (OtherKeyword otherTerm : source.getActiveOtherKeywords()) {
+        for (OtherKeyword otherTerm : toSortedList(source.getActiveOtherKeywords())) {
             dc.addSubject(otherTerm.getLabel());
         }
 
@@ -127,6 +133,19 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         // TODO: deal with Url here.
 
         return dc;
+    }
+
+    private <K extends Keyword> List<K> toSortedList(Set<K> activeCultureKeywords) {
+        List<K> list = new ArrayList<>(activeCultureKeywords);
+        list.sort(new Comparator<K>() {
+
+            @Override
+            public int compare(K o1, K o2) {
+                return ObjectUtils.compare(o1.getLabel(), o2.getLabel());
+            }
+        });
+        // TODO Auto-generated method stub
+        return list;
     }
 
     protected String dcConstructPersonalName(String firstName, String lastName, String role, String affiliation) {
