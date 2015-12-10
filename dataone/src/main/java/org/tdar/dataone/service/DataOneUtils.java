@@ -72,10 +72,7 @@ public class DataOneUtils {
     }
 
     public static String checksumString(String string) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-//        final MessageDigest messageDigest = MessageDigest.getInstance(DataOneConstants.MD5);
         String result = DigestUtils.md5Hex(string);
-        logger.debug("{}", string);
-        logger.debug(result);
         return result;
     }
 
