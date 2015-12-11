@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -115,7 +116,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
         dc.addType(source.getResourceType().getLabel());
 
-        for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
+        for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
             String maxy =longLat.getMaxObfuscatedLatitude().toString();
             String miny =longLat.getMinObfuscatedLatitude().toString();
             String maxx =longLat.getMaxObfuscatedLongitude().toString();
@@ -126,7 +127,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
         dc.addIdentifier(UrlService.absoluteUrl(source));
 
-        for (CoverageDate date : source.getCoverageDates()) {
+        for (CoverageDate date : toSortedList(source.getCoverageDates())) {
             dc.addTemporal(date.toString());
         }
 
@@ -135,13 +136,13 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         return dc;
     }
 
-    private <K extends Keyword> List<K> toSortedList(Set<K> activeCultureKeywords) {
+    private <K extends Persistable> List<K> toSortedList(Set<K> activeCultureKeywords) {
         List<K> list = new ArrayList<>(activeCultureKeywords);
         list.sort(new Comparator<K>() {
 
             @Override
             public int compare(K o1, K o2) {
-                return ObjectUtils.compare(o1.getLabel(), o2.getLabel());
+                return ObjectUtils.compare(o1.getId(), o2.getId());
             }
         });
         // TODO Auto-generated method stub
