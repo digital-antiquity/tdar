@@ -1,19 +1,33 @@
 package org.tdar.search;
 
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -28,23 +42,38 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
+import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
+import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.TdarAssert;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -71,6 +100,1182 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     public static final String REASON = "because";
 
+
+    private static final String USAF_LOWER_CASE = "us air force archaeology and cultural resources archive";
+
+    private static final String USAF_TITLE_CASE = "US Air Force Archaeology and Cultural Resources Archive";
+
+    private static final String CONSTANTINOPLE = "Constantinople";
+
+    private static final String ISTANBUL = "Istanbul";
+
+    private static final String L_BL_AW = "l[]bl aw\\";
+
+    @Autowired
+    ResourceService resourceServicek;
+
+    @Autowired
+    EntityService entityService;
+
+    @Autowired
+    private AuthorizationService authenticationAndAuthorizationService;
+
+
+    @Test
+    @Rollback
+    public void testSiteNameKeywords() throws SolrServerException, IOException, ParseException {
+        SiteNameKeyword snk = genericKeywordService.findByLabel(SiteNameKeyword.class, "Atsinna");
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.getSiteNameKeywords().add(snk);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getSiteNames().add(snk.getLabel());
+        SearchResult result = doSearch(null,null,sp,null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        for (Indexable resource : result.getResults()) {
+            assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
+        }
+    }
+
+    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+    }
+    @Test
+    public void testTitleCaseSensitivity() throws SolrServerException, IOException, ParseException {
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.setTitle("usaf");
+        updateAndIndex(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.setTitles(Arrays.asList("USAF"));
+        SearchResult result = doSearch(null,null,sp,null);
+        
+        assertTrue(result.getResults().contains(doc));
+        doc.setTitle("USAF");
+        updateAndIndex(doc);
+        sp = new SearchParameters();
+        sp.setTitles(Arrays.asList("usaf"));
+        result = doSearch(null,null,sp,null);
+        assertTrue(result.getResults().contains(doc));
+    }
+
+
+    @Test
+    @Rollback
+    public void testComplexGeographicKeywords() throws SolrServerException, IOException, ParseException {
+        GeographicKeyword snk = genericKeywordService.findOrCreateByLabel(GeographicKeyword.class, "propylon, Athens, Greece, Mnesicles");
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.getGeographicKeywords().add(snk);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getGeographicKeywords().add("Greece");
+        SearchResult result = doSearch(null,null, sp,null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        for (Indexable resource : result.getResults()) {
+            assertTrue("expecting site name for resource", ((Resource)resource).getGeographicKeywords().contains(snk));
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testPersonSearchWithoutAutocomplete() throws ParseException, SolrServerException, IOException {
+        String lastName = "Watts";
+        Person person = new Person(null, lastName, null);
+        lookForCreatorNameInResult(lastName, person);
+    }
+
+    @Test
+    @Rollback
+    public void testMultiplePersonSearch() throws ParseException, SolrServerException, IOException {
+        Long peopleIds[] = { 8044L, 8344L, 8393L, 8608L, 8009L };
+        List<Person> people = genericService.findAll(Person.class, Arrays.asList(peopleIds));
+        assertEquals(4, people.size());
+        logger.info("{}", people);
+        List<String> names = new ArrayList<String>();
+        SearchParameters sp = new SearchParameters();
+        for (Person person : people) {
+            names.add(person.getProperName());
+            Person p = new Person();
+            // this will likely fail because skeleton people are being put into a set further down the chain...
+            p.setId(person.getId());
+            ResourceCreator rc = new ResourceCreator(p, null);
+            sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
+        }
+        SearchResult result = doSearch(null,null,sp,null);
+        logger.info(result.getSearchDescription());
+        for (String name : names) {
+            assertTrue(result.getSearchDescription().contains(name));
+        }
+        // lookForCreatorNameInResult(lastName, person);
+    }
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchWithoutAutocomplete() throws ParseException, SolrServerException, IOException {
+        String name = "Digital Antiquity";
+        Institution institution = new Institution(name);
+        lookForCreatorNameInResult(name, institution);
+    }
+
+    private void lookForCreatorNameInResult(String namePart, Creator creator_) throws ParseException, SolrServerException, IOException {
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
+        SearchResult result = doSearch(null, null, sp, null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        for (Indexable resource : result.getResults()) {
+            logger.info("{}", resource);
+            boolean seen = checkResourceForValue(namePart, (Resource)resource);
+            if (resource instanceof Project) {
+                for (Resource r : projectService.findAllResourcesInProject((Project) resource, Status.values())) {
+                    if (seen) {
+                        break;
+                    }
+                    seen = checkResourceForValue(namePart, r);
+                }
+
+            }
+            assertTrue("should have seen term somwehere", seen);
+        }
+    }
+
+    private boolean checkResourceForValue(String namePart, Resource resource) {
+        boolean seen = false;
+        if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
+            logger.debug("seen submitter or updater");
+            seen = true;
+        }
+        if (resource instanceof InformationResource) {
+            Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
+            if ((institution != null) && institution.getName().contains(namePart)) {
+                logger.debug("seen in institution");
+                seen = true;
+            }
+        }
+        for (ResourceCreator creator : resource.getActiveResourceCreators()) {
+            if (creator.getCreator().getProperName().contains(namePart)) {
+                logger.debug("seen in resource creator");
+                seen = true;
+            }
+        }
+        return seen;
+    }
+
+    @Test
+    @Rollback
+    public void testSearchDecade() throws SolrServerException, IOException, ParseException {
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.setDate(4000);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getCreationDecades().add(4000);
+        SearchResult result = doSearch(null, null, sp, null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        for (Indexable resource : result.getResults()) {
+            assertEquals("expecting resource", 4000, ((InformationResource) resource).getDateNormalized().intValue());
+        }
+
+    }
+
+    @Test
+    @Rollback
+    public void testApprovedSiteTypeKeywords() throws ParseException, SolrServerException, IOException {
+        final Long keywordId = 256L;
+        Keyword keyword = genericService.find(SiteTypeKeyword.class, keywordId);
+        List<String> keywordIds = new ArrayList<String>();
+        keywordIds.add(keywordId.toString());
+        SearchParameters sp = new SearchParameters();
+        sp.getApprovedSiteTypeIdLists().add(keywordIds);
+        SearchResult result = doSearch(null, null, sp, null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        assertTrue(resultsContainId(result, 262L));
+//        result.getIncludedStatuses().add(Status.ACTIVE);
+        for (Indexable resource : result.getResults()) {
+            // if it's a project, the keyword should be found in either it's own keyword list, or the keyword list
+            // of one of the projects informationResources
+            if (resource instanceof Project) {
+                // put all of the keywords in a superset
+                Project project = (Project) resource;
+                Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveSiteTypeKeywords());
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                for (InformationResource informationResource : projectInformationResources) {
+                    keywords.addAll(informationResource.getActiveSiteTypeKeywords());
+                }
+                assertTrue("keyword should be found in project, or project's informationResources",
+                        keywords.contains(keyword));
+
+            } else {
+                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource)resource).getActiveSiteTypeKeywords());
+                assertTrue("expecting site type for resource:", ((Resource)resource).getActiveSiteTypeKeywords().contains(keyword));
+            }
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testMaterialKeywords() throws ParseException, SolrServerException, IOException {
+        // FIXME: magic numbers
+        Keyword keyword = genericService.find(MaterialKeyword.class, 2L);
+        SearchParameters sp = new SearchParameters();
+        sp.getMaterialKeywordIdLists().add(Arrays.asList(keyword.getId().toString()));
+        SearchResult result = doSearch(null,null, sp, null);
+        assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
+        // every resource in results should have that material keyword (or should have at least one informationResource that has that keyword)
+        for (Indexable resource : result.getResults()) {
+            Set<Keyword> keywords = new HashSet<Keyword>(((Resource)resource).getActiveMaterialKeywords());
+            if (resource instanceof Project) {
+                // check that at least one child uses this keyword
+                Project project = (Project) resource;
+                for (InformationResource informationResource : projectService.findAllResourcesInProject(project)) {
+                    keywords.addAll(informationResource.getMaterialKeywords());
+                }
+            }
+            assertTrue(String.format("Expected to find material keyword %s in %s", keyword, resource), keywords.contains(keyword));
+        }
+    }
+
+    @Test
+    @Rollback
+    public void testCulture() throws ParseException, SolrServerException, IOException {
+        // FIXME: this test is brittle/incomplete
+        String label = "Sinagua";
+        SearchParameters sp = new SearchParameters();
+        sp.getUncontrolledCultureKeywords().add(label);
+        Keyword keyword = genericKeywordService.findByLabel(CultureKeyword.class, label);
+
+        SearchResult result = doSearch(null, null,sp ,null);
+        assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
+
+        for (Indexable resource : result.getResults()) {
+            // if it's a project, the keyword should be found in either it's own keyword list, or the keyword list
+            // of one of the projects informationResources
+            if (resource instanceof Project) {
+                // put all of the keywords in a superset
+                Project project = (Project) resource;
+                Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveCultureKeywords());
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                for (InformationResource informationResource : projectInformationResources) {
+                    keywords.addAll(informationResource.getActiveCultureKeywords());
+                }
+                assertTrue("keyword should be found in project, or project's informationResources",
+                        keywords.contains(keyword));
+
+            } else {
+                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource)resource).getActiveCultureKeywords());
+                assertTrue("expecting site type for resource:", ((Resource)resource).getActiveCultureKeywords().contains(keyword));
+            }
+        }
+
+    }
+
+    @Test
+    @Rollback
+    public void testApprovedCulture() throws ParseException, SolrServerException, IOException {
+        // FIXME: pull this ID from db or generate/save new keyword+resource that uses it
+        Long keywordId = 19L;
+        Keyword keyword = genericService.find(CultureKeyword.class, keywordId);
+        SearchParameters sp = new SearchParameters();
+        sp.getApprovedCultureKeywordIdLists().add(Arrays.asList(keywordId.toString()));
+        SearchResult result = doSearch(null,null,sp ,null);
+        assertTrue("we should get back at least one hit", !result.getResults().isEmpty());
+        for (Indexable resource : result.getResults()) {
+            // if it's a project, the keyword should be found in either it's own keyword list, or the keyword list
+            // of one of the projects informationResources
+            if (resource instanceof Project) {
+                // put all of the keywords in a superset
+                Project project = (Project) resource;
+                Set<Keyword> keywords = new HashSet<Keyword>(project.getActiveCultureKeywords());
+                Set<InformationResource> projectInformationResources = projectService.findAllResourcesInProject(project, Status.ACTIVE);
+                for (InformationResource informationResource : projectInformationResources) {
+                    keywords.addAll(informationResource.getActiveCultureKeywords());
+                }
+                assertTrue("keyword should be found in project, or project's informationResources",
+                        keywords.contains(keyword));
+
+            } else {
+                logger.debug("resourceid:{} contents of resource:", resource.getId(), ((Resource)resource).getActiveCultureKeywords());
+                assertTrue("expecting site type for resource:", ((Resource)resource).getActiveCultureKeywords().contains(keyword));
+            }
+        }
+    }
+    
+
+
+    @Test
+    @Rollback
+    public void testProjectIds() throws ParseException, SolrServerException, IOException {
+        // FIXME: magic numbers
+        Long projectId = 3805L;
+        SearchParameters sp = new SearchParameters();
+        sp.getProjects().add(sparseProject(projectId));
+        ReservedSearchParameters rsp = new ReservedSearchParameters();
+        rsp.getResourceTypes().clear(); // select all resource types
+        SearchResult result = doSearch(null,null,sp, null);
+        int resourceCount = 0;
+        for (Indexable resource : result.getResults()) {
+            if (resource instanceof InformationResource) {
+                resourceCount++;
+                InformationResource informationResource = (InformationResource) resource;
+                assertEquals("informationResource should belong to project we just searched for", projectId, informationResource.getProjectId());
+            }
+        }
+        assertTrue("search should have at least 1 result", resourceCount > 0);
+    }
+
+    @SuppressWarnings("deprecation")
+    private Project sparseProject(Long id) {
+        Project project = new Project(id, "sparse");
+        return project;
+    }
+
+    private ResourceCollection sparseCollection(Long id) {
+        ResourceCollection collection = new ResourceCollection();
+        collection.setId(id);
+        return collection;
+    }
+
+    @Test
+    @Rollback
+    public void testTitle() throws ParseException, SolrServerException, IOException {
+        // FIXME: magic numbers
+        Long projectId = 139L;
+        Project project = genericService.find(Project.class, projectId);
+        String projectTitle = project.getTitle();
+        SearchParameters sp = new SearchParameters();
+        sp.getTitles().add(projectTitle);
+        SearchResult result = doSearch(null,null,sp, null);
+        result.getResults().contains(project);
+    }
+
+    @Test
+    @Rollback
+    public void testSearchSubmitterIds() throws ParseException, SolrServerException, IOException {
+        // FIXME: magic numbers
+        Person person = genericService.find(Person.class, 6L);
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(person, ResourceCreatorRole.SUBMITTER));
+        SearchResult result = doSearch(null,null,sp, null);
+
+        // make sure every resource has that submitter
+        for (Indexable resource : result.getResults()) {
+            assertEquals("Expecting same submitterId", person.getId(), ((Resource)resource).getSubmitter().getId());
+        }
+    }
+
+    @Test
+    @Rollback(true)
+    public void testTitleSiteCodeMatching() throws SolrServerException, IOException, ParseException {
+        List<String> titles = Arrays
+                .asList("Pueblo Grande (AZ U:9:1(ASM)): Unit 12, Gateway and 44th Streets: SSI Kitchell Testing, Photography Log (PHOTO) Data (1997)",
+                        "Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
+                        "Phase 2 Archaeological Testing at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, the Former Maricopa County Sheriff’s Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (1999)",
+                        "Final Data Recovery And Burial Removal At Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa Counry Sheriff's Substation, Washington And 48th Streets, Phoenix, Arizona (2008)",
+                        "Pueblo Grande (AZ U:9:1(ASM)): Unit 15, Washington and 48th Streets: Soil Systems, Inc. Kitchell Development Testing and Data Recovery (The Former Maricopa County Sheriff's Substation) ",
+                        "Archaeological Testing of Unit 13 at Pueblo Grande, AZ U:9:1(ASM), Arizona Federal Credit Union Property, 44th and Van Buren Streets, Phoenix, Maricopa County, Arizona (1998)",
+                        "Archaeological Testing And Burial Removal Of Unit 11 At Pueblo Grande, AZ U:9:1(ASM), DMB Property, 44th And Van Buren Streets, Phoenix, Maricopa County, Arizona -- DRAFT REPORT (1998)",
+                        "Pueblo Grande (AZ U:9:1(ASM)): Unit 13, Northeast Corner of Van Buren and 44th Streets: Soil Systems, Inc. AZ Federal Credit Union Testing and Data Recovery Project ",
+                        "POLLEN AND MACROFLORAL ANAYSIS AT THE WATER USERS SITE, AZ U:6:23(ASM), ARIZONA (1990)",
+                        "Partial Data Recovery and Burial Removal at Pueblo Grande (AZ U:9:1(ASM)): Unit 15, The Former Maricopa County Sheriff's Substation, Washington and 48th Streets, Phoenix, Arizona -- DRAFT REPORT (2002)",
+                        "MACROFLORAL AND PROTEIN RESIDUE ANALYSIS AT SITE AZ U:15:18(ASM), CENTRAL ARIZONA (1996)",
+                        "Pueblo Grande (AZ U:9:1(ASM)) Soil Systems, Inc. Master Provenience Table: Projects, Unit Numbers, and Feature Numbers (2008)");
+
+        List<Document> docs = new ArrayList<>();
+        List<Document> badMatches = new ArrayList<>();
+        for (String title : titles) {
+            Document doc = new Document();
+            doc.setTitle(title);
+            doc.setDescription(title);
+            doc.markUpdated(getBasicUser());
+            genericService.saveOrUpdate(doc);
+            if (title.contains("MACROFLORAL")) {
+                badMatches.add(doc);
+            }
+        }
+        genericService.synchronize();
+        searchIndexService.indexCollection(docs);
+        searchIndexService.flushToIndexes();
+        SearchResult result = doSearch("AZ U:9:1(ASM)");
+        List<Indexable> results = result.getResults();
+        logger.debug("results: {}", results);
+        assertTrue("controller should not contain titles with MACROFLORAL", CollectionUtils.containsAny(results, badMatches));
+        assertTrue("controller should not contain titles with MACROFLORAL",
+                CollectionUtils.containsAll(results.subList(results.size() - 3, results.size()), badMatches));
+
+    }
+
+
+
+    @Test
+    @Rollback(true)
+    public void testGeographicKeywordIndexedAndFound() throws SolrServerException, IOException, ParseException {
+        Document doc = createAndSaveNewResource(Document.class, getBasicUser(), "testing doc");
+        GeographicKeyword kwd = new GeographicKeyword();
+        kwd.setLabel("Casa NonGrande");
+        genericService.save(kwd);
+        doc.getGeographicKeywords().add(kwd);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getGeographicKeywords().add("Casa NonGrande");
+        SearchResult result = doSearch(null, null, sp, null);
+        boolean seen = false;
+        for (Indexable res : result.getResults()) {
+            logger.info("{}", res);
+            if (((Resource)res).getGeographicKeywords().contains(kwd)) {
+                seen = true;
+            } else {
+                fail("found resource without keyword");
+            }
+        }
+        assertTrue(seen);
+    }
+
+    @Test
+    @Rollback(true)
+    public void testFilenameFound() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        Document doc = generateDocumentWithFileAndUseDefaultUser();
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getFilenames().add(TestConstants.TEST_DOCUMENT_NAME);
+        SearchResult result = doSearch(null, null,sp, null);
+        boolean seen = false;
+        for (Indexable res : result.getResults()) {
+            if (res.getId().equals(doc.getId())) {
+                seen = true;
+            }
+        }
+        assertTrue(seen);
+    }
+
+
+    private void setSortThenCheckFirstResult(String message, SortOption sortField, Long projectId, Long expectedId) throws ParseException, SolrServerException, IOException {
+        SearchParameters sp = new SearchParameters();
+        sp.getProjects().add(sparseProject(projectId));
+        SearchResult result = doSearch(null, null, sp, null, sortField);
+        logger.info("{}", result.getResults());
+        Indexable found = result.getResults().iterator().next();
+        logger.info("{}", found);
+        Assert.assertEquals(message, expectedId, found.getId());
+    }
+
+    // note: relevance sort broken out into SearchRelevancyITCase
+    @Test
+    @Rollback
+    public void testSortFieldTitle() throws ParseException, SolrServerException, IOException {
+        Long alphaId = -1L;
+        Long omegaId = -1L;
+        Project p = new Project();
+        p.setTitle("test project");
+        p.setDescription("test descr");
+        p.setStatus(Status.ACTIVE);
+        p.markUpdated(getUser());
+        List<String> titleList = Arrays.asList(new String[] { "a", "b", "c", "d" });
+        genericService.save(p);
+        for (String title : titleList) {
+            Document doc = new Document();
+            doc.markUpdated(getUser());
+            doc.setTitle(title);
+            doc.setDescription(title);
+            doc.setDate(2341);
+            doc.setProject(p);
+            doc.setStatus(Status.ACTIVE);
+            genericService.save(doc);
+            if (alphaId == -1) {
+                alphaId = doc.getId();
+            }
+            omegaId = doc.getId();
+        }
+        reindex();
+        setSortThenCheckFirstResult("sorting by title asc", SortOption.TITLE, p.getId(), alphaId);
+        setSortThenCheckFirstResult("sorting by title desc", SortOption.TITLE_REVERSE, p.getId(), omegaId);
+    }
+
+    @Test
+    @Rollback
+    public void testSortFieldProject() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+
+        Project project = createAndSaveNewProject("my project");
+        Project project2 = createAndSaveNewProject("my project 2");
+        Image a = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "a");
+        Image b = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "b");
+        Image c = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "c");
+
+        Image d = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "d");
+        Image e = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "e");
+        Image aa = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "a");
+        List<Resource> res = Arrays.asList(project, project2, a, b, c, d, e, aa);
+
+        reindex();
+
+        SearchResult result = doSearch("", null, null, null, SortOption.PROJECT);
+        List<Indexable> results = result.getResults();
+        // assertTrue(CollectionUtils.isProperSubCollection(results, res));
+        int i = results.indexOf(project);
+        assertEquals(i + 1, results.indexOf(a));
+        assertEquals(i + 2, results.indexOf(b));
+        assertEquals(i + 3, results.indexOf(c));
+        assertEquals(i + 4, results.indexOf(project2));
+        assertEquals(i + 5, results.indexOf(aa));
+        assertEquals(i + 6, results.indexOf(d));
+        assertEquals(i + 7, results.indexOf(e));
+    }
+
+    @Test
+    @Rollback
+    public void testSortFieldDateCreated() throws ParseException, SolrServerException, IOException {
+        Long alphaId = -1L;
+        Long omegaId = -1L;
+        Project p = new Project();
+        p.setTitle("test project");
+        p.setDescription("test description");
+        p.markUpdated(getUser());
+        List<Integer> dateList = Arrays.asList(new Integer[] { 1, 2, 3, 4, 5, 19, 39 });
+        genericService.save(p);
+        for (Integer date : dateList) {
+            Document doc = new Document();
+            doc.markUpdated(getUser());
+            doc.setDate(date);
+            doc.setTitle("hello" + date);
+            doc.setDescription(doc.getTitle());
+            doc.setProject(p);
+            genericService.save(doc);
+            if (alphaId == -1) {
+                logger.debug("setting id for doc:{}", doc.getId());
+                alphaId = doc.getId();
+            }
+            omegaId = doc.getId();
+        }
+        reindex();
+
+        setSortThenCheckFirstResult("sorting by datecreated asc", SortOption.DATE, p.getId(), alphaId);
+        setSortThenCheckFirstResult("sorting by datecreated desc", SortOption.DATE_REVERSE, p.getId(), omegaId);
+    }
+
+    @Test
+    @Rollback
+    public void testResourceCount() {
+        // fixme: remove this query. it's only temporary to ensure that my named query is working
+        long count = resourceService.getResourceCount(ResourceType.PROJECT, Status.ACTIVE);
+        assertTrue(count > 0);
+    }
+
+    @Test
+    @Rollback
+    public void testResourceUpdated() throws java.text.ParseException, ParseException, SolrServerException, IOException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        Document document = new Document();
+        document.setTitle("just before");
+        document.setDescription("just before");
+        document.markUpdated(getAdminUser());
+        document.setDateUpdated(format.parse("2010-03-04"));
+        genericService.saveOrUpdate(document);
+        Document documentAfter = new Document();
+        documentAfter.setTitle("just after");
+        documentAfter.setDescription("just after");
+        documentAfter.markUpdated(getAdminUser());
+        documentAfter.setDateUpdated(format.parse("2010-07-23"));
+        genericService.saveOrUpdate(documentAfter);
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
+        SearchParameters params = new SearchParameters();
+        params.getUpdatedDates().add(new DateRange(format.parse("2010-03-05"), format.parse("2010-07-22")));
+        SearchResult result = doSearch(null,null, params, null, SortOption.DATE_UPDATED);
+        for (Indexable r : result.getResults()) {
+            logger.debug("{} - {} - {}", r.getId(), ((Resource)r).getDateUpdated(), ((Resource)r).getTitle());
+        }
+        assertFalse(result.getResults().contains(documentAfter));
+        assertFalse(result.getResults().contains(document));
+    }
+
+    /**
+     * lucene translates dates to utc prior to indexing. When performing a search the system must similarly transform the begin/end
+     * dates in a daterange
+     * @throws IOException 
+     * @throws SolrServerException 
+     * @throws ParseException 
+     */
+    @Test
+    @Rollback
+    public void testTimezoneEdgeCase() throws ParseException, SolrServerException, IOException {
+        Resource doc = createAndSaveNewInformationResource(Document.class);
+        DateTime createDateTime = new DateTime(2005, 3, 26, 23, 0, 0, 0);
+        DateTime searchDateTime = new DateTime(2005, 3, 26, 0, 0, 0, 0);
+        doc.setDateCreated(createDateTime.toDate());
+        doc.setDateUpdated(createDateTime.toDate());
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+
+        // converstion from MST to UTC date advances registration date by one day.
+        searchIndexService.flushToIndexes();
+        DateRange dateRange = new DateRange();
+        dateRange.setStart(searchDateTime.toDate());
+        dateRange.setEnd(searchDateTime.plusDays(1).toDate());
+
+        SearchParameters sp = new SearchParameters();
+        sp.getRegisteredDates().add(dateRange);
+        SearchResult result = doSearch(null,null,sp, null);
+        assertThat(result.getResults(), contains(doc));
+
+        // if we advance the search begin/end by one day, we should not see it in search results
+        dateRange.setStart(searchDateTime.plusDays(1).toDate());
+        dateRange.setEnd(searchDateTime.plusDays(2).toDate());
+        sp.getRegisteredDates().add(dateRange);
+        result = doSearch(null,null,sp, null);
+        assertThat(result.getResults(), not(contains(doc)));
+
+        // if we decrement the search begin/end by one day, we should not see it in search results
+        dateRange.setStart(searchDateTime.minusDays(1).toDate());
+        dateRange.setEnd(searchDateTime.toDate());
+        sp.getRegisteredDates().add(dateRange);
+        result = doSearch(null,null,sp, null);
+        assertThat(result.getResults(), not(contains(doc)));
+    }
+
+    @Test
+    @Rollback
+    public void testOtherKeywords() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+        // Create a document w/ some other keywords, then try to find that document in a search
+        OtherKeyword ok = new OtherKeyword();
+        ok.setLabel("testotherkeyword");
+        assertNull("this label already taken. need a unique label", genericKeywordService.findByLabel(OtherKeyword.class, ok.getLabel()));
+        Document document = createAndSaveNewInformationResource(Document.class);
+        document.setTitle("otherkeywordtest");
+        document.getOtherKeywords().add(ok);
+        genericService.save(ok);
+        genericService.save(document);
+        searchIndexService.index(document);
+        searchIndexService.index(ok);
+        Long documentId = document.getId();
+        assertNotNull(documentId);
+        SearchParameters sp = new SearchParameters();
+        ReservedSearchParameters rsp = new ReservedSearchParameters();
+
+        sp.getOtherKeywords().add(ok.getLabel());
+        rsp.getResourceTypes().add(ResourceType.DOCUMENT);
+        SearchResult result = doSearch(null,null,sp, rsp);
+        Set<Indexable> results = new HashSet<Indexable>();
+        results.addAll(result.getResults());
+        assertEquals("only expecting one result", 1L, result.getResults().size());
+        assertTrue("document containig our test keyword should be in results", results.contains(document));
+        assertSearchPhrase(result, ok.getLabel());
+    }
+
+    @Test
+    @Rollback
+    public void testTemporalKeywords() throws ParseException, InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        // Create a document w/ some temporal keywords, then try to find that document in a search
+        TemporalKeyword tk = new TemporalKeyword();
+        tk.setLabel("testtemporalkeyword");
+        assertNull("this label already taken. need a unique label", genericKeywordService.findByLabel(TemporalKeyword.class, tk.getLabel()));
+        Document document = createAndSaveNewInformationResource(Document.class);
+        document.setTitle("temporal keyword test");
+        document.getTemporalKeywords().add(tk);
+        genericService.save(tk);
+        genericService.save(document);
+        searchIndexService.index(tk);
+        searchIndexService.index(document);
+        Long documentId = document.getId();
+        assertNotNull(documentId);
+        SearchParameters sp = new SearchParameters();
+        ReservedSearchParameters rsp = new ReservedSearchParameters();
+
+        sp.getTemporalKeywords().add(tk.getLabel());
+        rsp.getResourceTypes().add(ResourceType.DOCUMENT);
+        SearchResult result = doSearch(null,null,sp, rsp);
+        Set<Indexable> results = new HashSet<Indexable>();
+        results.addAll(result.getResults());
+        assertEquals("only expecting one result", 1L, result.getResults().size());
+        assertTrue("document containig our test keyword should be in results", results.contains(document));
+        assertSearchPhrase(result, tk.getLabel());
+    }
+
+    @Test
+    @Rollback
+    public void testGeoKeywords() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+        // Create a document w/ some temporal keywords, then try to find that document in a search
+        GeographicKeyword gk = new GeographicKeyword();
+        gk.setLabel("testgeographickeyword");
+        assertNull("this label already taken. need a unique label", genericKeywordService.findByLabel(GeographicKeyword.class, gk.getLabel()));
+        Document document = createAndSaveNewInformationResource(Document.class);
+        document.setTitle("geographic keyword test");
+        document.getGeographicKeywords().add(gk);
+        genericService.save(gk);
+        genericService.save(document);
+        searchIndexService.index(gk);
+        searchIndexService.index(document);
+        Long documentId = document.getId();
+        assertNotNull(documentId);
+        SearchParameters sp = new SearchParameters();
+        sp.getGeographicKeywords().add(gk.getLabel());
+        ReservedSearchParameters rsp = new ReservedSearchParameters();
+        rsp.getResourceTypes().add(ResourceType.DOCUMENT);
+        SearchResult result = doSearch(null,null,sp, rsp);
+        Set<Indexable> results = new HashSet<Indexable>();
+        results.addAll(result.getResults());
+        assertEquals("only expecting one result", 1L, result.getResults().size());
+        assertTrue("document containig our test keyword should be in results", results.contains(document));
+        assertSearchPhrase(result, gk.getLabel());
+    }
+
+    private Document createDocumentWithContributorAndSubmitter() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        TdarUser submitter = new TdarUser("E", "deVos", "ecd@tdar.net");
+        genericService.save(submitter);
+        Document doc = createAndSaveNewInformationResource(Document.class, submitter);
+        ResourceCreator rc = new ResourceCreator(new Person("K", "deVos", "kellyd@tdar.net"), ResourceCreatorRole.AUTHOR);
+        genericService.save(rc.getCreator());
+        // genericService.save(rc);
+        doc.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        return doc;
+    }
+
+    @Test
+    @Rollback
+    public void testSearchBySubmitterIds() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+        Document doc = createDocumentWithContributorAndSubmitter();
+        Long submitterId = doc.getSubmitter().getId();
+        assertFalse(submitterId == -1);
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(doc.getSubmitter(), ResourceCreatorRole.SUBMITTER));
+        SearchResult result = doSearch(null,null,sp, null);
+
+        assertTrue("only one result expected", 1 <= result.getResults().size());
+        assertTrue(result.getResults().contains(doc));
+    }
+
+    @Test
+    @Rollback
+    public void testSearchContributorIds2() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+        Document doc = createDocumentWithContributorAndSubmitter();
+        ResourceCreator contributor = doc.getResourceCreators().iterator().next();
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(contributor.getCreator(), contributor.getRole()));
+        
+        SearchResult result = doSearch(null,null,sp, null);
+
+        assertEquals("only one result expected", 1L, result.getResults().size());
+        assertEquals(doc, result.getResults().iterator().next());
+    }
+
+    public void assertSearchPhrase(SearchResult result, String term) {
+        logger.debug("term:{}\t search phrase:{}", term, result.getSearchDescription());
+        assertTrue(String.format("looking for string '%s' in search phrase '%s'", term, result.getSearchDescription()),
+                result.getSearchDescription().toLowerCase().contains(term.toLowerCase()));
+    }
+
+    @Test
+    @Rollback
+    public void testTitleSearch() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+        Document doc = createDocumentWithContributorAndSubmitter();
+        String title = "the archaeology of class and war";
+        doc.setTitle(title);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getTitles().add(title);
+        SearchResult result = doSearch(null,null,sp, null);
+
+        logger.info("{}", result.getResults());
+        assertEquals("only one result expected", 1L, result.getResults().size());
+        assertEquals(doc, result.getResults().iterator().next());
+    }
+
+    @Test
+    @Rollback
+    public void testLuceneOperatorInSearch() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
+        Document doc = createDocumentWithContributorAndSubmitter();
+        String title = "the archaeology of class ( AND ) war";
+        doc.setTitle(title);
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getAllFields().add(title);
+        SearchResult result = doSearch(null,null,sp, null);
+        logger.info("{}", result.getResults());
+        assertEquals("only one result expected", 1L, result.getResults().size());
+        assertEquals(doc, result.getResults().iterator().next());
+    }
+
+    @Test
+    @Rollback
+    public void testResourceCreatorPerson() throws ParseException, SolrServerException, IOException {
+        Person person = new Person("Bob", "Loblaw", null);
+        genericService.save(person);
+        Resource resource = constructActiveResourceWithCreator(person, ResourceCreatorRole.AUTHOR);
+        logger.info("resource: {}", resource);
+        reindex();
+        logger.debug("user:{}   id:{}", person, person.getId());
+        assertTrue("person id should be set - id:" + person.getId(), person.getId() != 1L);
+
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(person, ResourceCreatorRole.AUTHOR));
+
+        SearchResult result = doSearch(null,null,sp, null);
+
+        logger.info("{}", result.getResults());
+        assertTrue(String.format("expecting %s in results", resource), result.getResults().contains(resource));
+        assertEquals("should be one and only one result", 1, result.getResults().size());
+    }
+
+    @Test
+    @Rollback
+    public void testResourceCreatorWithAnyRole() throws ParseException, SolrServerException, IOException {
+        Person person = new Person("Bob", "Loblaw", null);
+        genericService.save(person);
+        Resource resource = constructActiveResourceWithCreator(person, ResourceCreatorRole.AUTHOR);
+        reindex();
+        logger.debug("user:{}   id:{}", person, person.getId());
+        assertTrue("person id should be set - id:" + person.getId(), person.getId() != 1L);
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(person, null));
+
+        SearchResult result = doSearch(null,null,sp, null);
+        assertTrue(String.format("expecting %s in results", resource), result.getResults().contains(resource));
+    }
+
+    @Test
+    @Rollback
+    public void testBooleanSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        Document doc1 = generateDocumentWithUser();
+        Document doc2 = generateDocumentWithUser();
+        GeographicKeyword istanbul = new GeographicKeyword();
+        istanbul.setLabel(ISTANBUL);
+        GeographicKeyword constantinople = new GeographicKeyword();
+        constantinople.setLabel(CONSTANTINOPLE);
+        genericService.save(istanbul);
+        genericService.save(constantinople);
+        doc1.getGeographicKeywords().add(istanbul);
+        doc2.getGeographicKeywords().add(constantinople);
+        genericService.saveOrUpdate(doc1);
+        genericService.saveOrUpdate(doc2);
+        evictCache();
+        searchIndexService.index(doc1, doc2);
+        searchIndexService.flushToIndexes();
+        SearchParameters params = new SearchParameters();
+        params.setAllFields(Arrays.asList(ISTANBUL, CONSTANTINOPLE));
+        params.setOperator(Operator.OR);
+        
+        SearchResult result = doSearch(null,null,params, null);
+        assertTrue(result.getResults().contains(doc1));
+        assertTrue(result.getResults().contains(doc2));
+        logger.debug("results:{}", result.getResults());
+
+        params.setOperator(Operator.AND);
+        result = doSearch(null,null,params, null);
+        logger.debug("results:{}", result.getResults());
+        assertFalse(result.getResults().contains(doc1));
+        assertFalse(result.getResults().contains(doc2));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testCalDateSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
+        Document exact = createDocumentWithDates(-1000, 1200);
+        Document interior = createDocumentWithDates(-500, 1000);
+        Document start = createDocumentWithDates(-1500, 1000);
+        Document end = createDocumentWithDates(-500, 2000);
+        Document before = createDocumentWithDates(-1300, -1100);
+        Document after = createDocumentWithDates(1300, 2000);
+        genericService.saveOrUpdate(start, end, interior, exact, after, before);
+        searchIndexService.index(exact, interior, start, end, after, before);
+
+        CoverageDate cd = new CoverageDate(CoverageType.CALENDAR_DATE, -1000, 1200);
+        SearchParameters sp = new SearchParameters();
+        sp.getCoverageDates().add(cd);
+        SearchResult result = doSearch(null,null,sp, null);
+
+        assertFalse("expecting multiple results", result.getResults().isEmpty());
+        assertTrue(result.getResults().contains(start));
+        assertTrue(result.getResults().contains(end));
+        assertTrue(result.getResults().contains(interior));
+        assertTrue(result.getResults().contains(exact));
+        assertFalse(result.getResults().contains(before));
+        assertFalse(result.getResults().contains(after));
+    }
+
+    private Document createDocumentWithDates(int i, int j) throws InstantiationException, IllegalAccessException {
+        Document document = createAndSaveNewInformationResource(Document.class);
+        CoverageDate date = new CoverageDate(CoverageType.CALENDAR_DATE, i, j);
+        document.getCoverageDates().add(date);
+        genericService.saveOrUpdate(date);
+        return document;
+    }
+
+    @Test
+    @Rollback(true)
+    public void testLegacyKeywordSearch() throws Exception {
+        Document doc = createAndSaveNewInformationResource(Document.class);
+        Project proj = createAndSaveNewProject("parent");
+        doc.setProject(proj);
+        Set<CultureKeyword> cultureKeywords = genericKeywordService.findOrCreateByLabels(CultureKeyword.class, Arrays.asList("iamaculturekeyword"));
+        Set<SiteNameKeyword> siteNames = genericKeywordService.findOrCreateByLabels(SiteNameKeyword.class, Arrays.asList("thisisasitename"));
+        Set<SiteTypeKeyword> siteTypes = genericKeywordService.findOrCreateByLabels(SiteTypeKeyword.class, Arrays.asList("asitetypekeyword"));
+
+        doc.setCultureKeywords(cultureKeywords);
+        doc.setSiteNameKeywords(siteNames);
+        doc.setSiteTypeKeywords(siteTypes);
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.flushToIndexes();
+        SearchParameters sp = new SearchParameters();
+        sp.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
+        SearchResult result = doSearch(null, null, sp, null);
+        assertOnlyResultAndProject(result, doc);
+
+        sp = new SearchParameters();
+        sp.getUncontrolledSiteTypes().add(siteTypes.iterator().next().getLabel());
+        result = doSearch(null, null, sp, null);
+        assertOnlyResultAndProject(result, doc);
+
+        sp = new SearchParameters();
+        sp.getSiteNames().add(siteNames.iterator().next().getLabel());
+        result = doSearch(null, null, sp, null);
+        assertOnlyResultAndProject(result, doc);
+    }
+
+    @Test
+    @Rollback(true)
+    // TODO: modify this test to do additional checks on what we define as "good grammar", right now it only tests for a one-off bug (repetition)
+    public void testAllFieldsSearchDescriptionGrammar() throws ParseException, SolrServerException, IOException {
+        String TEST_VALUE = "spam"; // damn vikings!
+
+        SearchResult result = doSearch(TEST_VALUE, null, null, null);
+
+        for (int i = 0; i < 10; i++) {
+            logger.debug("search phrase:{}", result.getSearchDescription());
+        }
+        int occurances = result.getSearchDescription().split(TEST_VALUE).length;
+        assertTrue("search description should have gooder english than it currently does", occurances <= 2);
+    }
+
+    @Test
+    @Rollback()
+    // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
+    public void testSparseObjectLoading() throws SolrServerException, IOException, ParseException {
+        String colname = "my fancy collection";
+        Project proj = createAndSaveNewResource(Project.class);
+        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
+        searchIndexService.index(coll);
+        searchIndexService.index(proj);
+
+        SearchParameters sp = new SearchParameters();
+        // simulate searchParamerters that represents a project at [0] and collection at [1]
+        sp.getProjects().add(sparseProject(proj.getId()));
+        sp.getCollections().add(null); // [0]
+        sp.getCollections().add(sparseCollection(coll.getId())); // [1]
+
+        SearchResult result = doSearch(null, null, sp, null);
+
+        // skeleton lists should have been loaded w/ sparse records...
+        assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
+        assertEquals(colname, sp.getCollections().get(1).getName());
+    }
+
+    @Test
+    @Rollback()
+    // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
+    public void testSparseObjectNameLoading() throws SolrServerException, IOException, ParseException {
+        String colname = "my fancy collection";
+        Project proj = createAndSaveNewResource(Project.class);
+        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
+        searchIndexService.index(coll);
+        proj.getResourceCollections().add(coll);
+        searchIndexService.index(proj);
+
+        // simulate searchParamerters that represents a project at [0] and collection at [1]
+        // sp.getProjects().add(new Project(null,proj.getName()));
+        // sp.getCollections().add(null); // [0]
+        SearchParameters sp = new SearchParameters();
+        sp.getCollections().add(new ResourceCollection(colname, null, null, null, true, null)); // [1]
+
+        SearchResult result = doSearch(null, null, sp, null);
+
+        
+        // skeleton lists should have been loaded w/ sparse records...
+        // assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
+        assertEquals(colname, sp.getCollections().get(0).getName());
+        assertTrue(result.getResults().contains(proj));
+        // assertEquals(proj.getId(), sp.getProjects().get(0).getId());
+        // assertEquals(coll.getId(), sp.getCollections().get(1).getId());
+    }
+
+    @SuppressWarnings("deprecation")
+    @Test
+    @Rollback()
+    // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
+    public void testLookupObjectLoading() throws SolrServerException, IOException, ParseException {
+        String colname = "my fancy collection";
+        Project proj = createAndSaveNewResource(Project.class);
+        proj.setTitle(colname);
+        Document doc1 = createAndSaveNewResource(Document.class);
+        doc1.setProject(proj);
+        genericService.saveOrUpdate(doc1);
+        genericService.saveOrUpdate(proj);
+        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
+        searchIndexService.index(doc1, proj);
+
+        // simulate searchParamerters that represents a project at [0] and collection at [1]
+        SearchParameters sp = new SearchParameters();
+        sp.getProjects().add(new Project(-1L, colname));
+        SearchResult result = doSearch(null, null, sp, null);
+
+        // skeleton lists should have been loaded w/ sparse records...
+        assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
+        assertTrue(result.getResults().contains(doc1));
+    }
+
+
+
+    @Test
+    // if user gets to the results page via clicking on persons name from resource view page, querystring only contains person.id field. So before
+    // rendering the 'refine your search' version of the search form the controller must inflate query components.
+    public void testRefineSearchWithSparseProject() throws ParseException, SolrServerException, IOException {
+        Project persisted = createAndSaveNewProject("PROJECT TEST TITLE");
+        Project sparse = new Project();
+        // ensure the project is in
+        evictCache();
+        sparse.setId(persisted.getId());
+        SearchParameters sp = new SearchParameters();
+        sp.getProjects().add(sparse);
+        SearchResult result = doSearch(null, null, sp, null);
+
+        assertEquals("sparse project should have been inflated", persisted.getTitle(), sp.getProjects().get(0).getTitle());
+    }
+
+    @Test
+    @Rollback
+    public void testRefineSearchWithSparseCollection() throws ParseException, SolrServerException, IOException {
+
+        ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
+        ResourceCollection sparseCollection = new ResourceCollection();
+        evictCache();
+        long collectionId = rc.getId();
+        assertThat(collectionId, greaterThan(0L));
+        sparseCollection.setId(collectionId);
+        SearchParameters sp = new SearchParameters();
+        sp.getCollections().add(sparseCollection);
+        SearchResult result = doSearch(null, null, sp, null);
+
+        assertThat(sp.getCollections().get(0).getTitle(), is("Mega Collection"));
+    }
+
+    private void assertOnlyResultAndProject(SearchResult result, InformationResource informationResource) {
+        assertEquals("expecting two results: doc and project", 2, result.getResults().size());
+        assertTrue("expecting resource in results", result.getResults().contains(informationResource));
+        assertTrue("expecting resource's project in results", result.getResults().contains(informationResource.getProject()));
+    }
+
+    private Resource constructActiveResourceWithCreator(Creator creator, ResourceCreatorRole role) {
+        try {
+            Document doc = createAndSaveNewInformationResource(Document.class);
+            ResourceCreator resourceCreator = new ResourceCreator(creator, role);
+            doc.getResourceCreators().add(resourceCreator);
+            return doc;
+        } catch (Exception ignored) {
+        }
+        fail();
+        return null;
+    }
+
+    protected boolean resultsContainId(SearchResult result, Long id) {
+        boolean found = false;
+        for (Indexable r_ : result.getResults()) {
+            Resource r = (Resource)r_;
+            logger.trace(r.getId() + " " + r.getResourceType());
+            if (id.equals(r.getId())) {
+                found = true;
+            }
+        }
+        return found;
+    }
+
+
+    protected Long setupImage() {
+        return setupImage(getUser());
+    }
+
+    protected Long setupImage(TdarUser user) {
+        Image img = new Image();
+        img.setTitle("precambrian Test");
+        img.setDescription("image description");
+        img.markUpdated(user);
+        CultureKeyword label = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
+        CultureKeyword label2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
+        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(-117.101, 33.354, -117.124, 35.791);
+        img.setLatitudeLongitudeBox(latLong);
+        assertNotNull(label.getId());
+        img.getCultureKeywords().add(label);
+        img.getCultureKeywords().add(label2);
+        img.setStatus(Status.DRAFT);
+        genericService.save(img);
+        genericService.save(latLong);
+        Long imgId = img.getId();
+        return imgId;
+    }
+
+    @Test
+    @Rollback(true)
+    public void testSynonymPersonSearch() throws SolrServerException, IOException, ParseException {
+        // setup test
+        // create image
+        Image image = new Image();
+        image.setTitle("precambrian Test");
+        image.setDescription("image description");
+        image.markUpdated(getBasicUser());
+        image.setStatus(Status.ACTIVE);
+
+        // create primary creator
+        TdarUser person = createAndSaveNewPerson("adelphi@tdar.org", "delphi");
+
+        // create dup
+        Person dup = new Person("Delphi", "Person", "d@aoracl.adb");
+        dup.setInstitution(new Institution("a test 13asd as"));
+        genericService.saveOrUpdate(person.getInstitution());
+        dup.setStatus(Status.DUPLICATE);
+        dup.setInstitution(new Institution("test 123ad as"));
+        genericService.saveOrUpdate(dup.getInstitution());
+        genericService.saveOrUpdate(dup);
+        person.getSynonyms().add(dup);
+        genericService.saveOrUpdate(person);
+        genericService.saveOrUpdate(dup);
+        ResourceCreator rc = new ResourceCreator(dup, ResourceCreatorRole.CREATOR);
+        image.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(image);
+
+        genericService.synchronize();
+        // flush, detach (important for test), setup
+        searchIndexService.flushToIndexes();
+        searchIndexService.index(image);
+        genericService.detachFromSession(person);
+        genericService.detachFromSession(dup);
+        SearchParameters sp = new SearchParameters();
+
+        // transient version of person
+        Person p = new Person(person.getFirstName(), person.getLastName(), person.getEmail());
+        p.setInstitution(person.getInstitution());
+        genericService.detachFromSession(p);
+        p.setId(person.getId());
+
+        // test finding dup from parent
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(p, ResourceCreatorRole.CREATOR));
+        SearchResult result = doSearch(null,null,sp,null);
+        logger.debug("resutls: {}", result.getResults());
+        assertTrue(result.getResults().contains(image));
+
+        // test finding parent from dup
+        sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(dup, ResourceCreatorRole.CREATOR));
+        result = doSearch(null,null,sp,null);
+        logger.debug("resutls: {}", result.getResults());
+        assertTrue(result.getResults().contains(image));
+
+    }
+
+    
     @Test
     @Rollback(true)
     public void testCreatorOwnerQueryPart() throws ParseException, SolrServerException, IOException {
@@ -126,7 +1331,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         assertTrue(result.getResults().contains(ownerDocument));
     }
 
-    private static final String L_BL_AW = "l[]bl aw\\";
+
 
     @Test
     @Rollback(true)
@@ -1054,7 +2259,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     }
 
-    private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams) throws ParseException, SolrServerException, IOException {
+    private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams, SortOption option) throws ParseException, SolrServerException, IOException {
         SearchParameters params = params_;
         if (params == null) {
             params =new SearchParameters();            
@@ -1064,12 +2269,17 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         }
         ResourceQueryBuilder search = resourceSearchService.buildAdvancedSearch(params, reservedParams, user,MessageHelper.getInstance());
         SearchResult result = new SearchResult();
+        result.setSortField(option);
         searchService.handleSearch(search, result, MessageHelper.getInstance());
         return result;
     }
 
+    private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams) throws ParseException, SolrServerException, IOException {
+        return doSearch(text, user, params_, reservedParams);
+    }
+    
     private SearchResult doSearch(String text) throws ParseException, SolrServerException, IOException {
-        return doSearch(text,null,null, null);
+        return doSearch(text,null,null, null,null);
     }
 
 
