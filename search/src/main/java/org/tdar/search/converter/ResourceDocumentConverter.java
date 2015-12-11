@@ -73,6 +73,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             InformationResource ir = (InformationResource) resource;
             doc.setField(QueryFieldNames.PROJECT_ID, ir.getProjectId());
             doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
+            doc.setField(QueryFieldNames.PROJECT_TITLE_AUTOCOMPLETE, ir.getProjectTitle());
             doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
             doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
@@ -224,18 +225,25 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
         Set<Long> collectionIds = new HashSet<Long>();
         Set<Long> directCollectionIds = new HashSet<Long>();
+        Set<String> collectionNames = new HashSet<>();
+        Set<String> directCollectionNames = new HashSet<>();
         Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
         collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {
             if (collection.isShared()) {
                 directCollectionIds.add(collection.getId());
+                directCollectionNames.add(collection.getName());
                 collectionIds.addAll(collection.getParentIds());
+                collectionNames.addAll(collection.getParentNameList());
             }
         }
         collectionIds.addAll(directCollectionIds);
 
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, directCollectionIds);
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionIds);
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME_AUTOCOMPLETE, collectionNames);
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, collectionNames);
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME_PHRASE, collectionNames);
 
     }
 
@@ -284,10 +292,12 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.SCALE, scales);
     }
 
-    private static <K extends Keyword> void addKeyword(SolrInputDocument doc, String id, KeywordType type, Set<K> keywords) {
+    private static <K extends Keyword> void addKeyword(SolrInputDocument doc, String prefix, KeywordType type, Set<K> keywords) {
         Set<Long> ids = new HashSet<>();
+        Set<String> labels = new HashSet<>();
         for (K k : keywords) {
             ids.add(k.getId());
+            labels.add(k.getLabel());
             if (k instanceof HierarchicalKeyword) {
                 HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>) k;
                 while (hk.getParent() != null) {
@@ -298,7 +308,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
         }
         if (CollectionUtils.isNotEmpty(ids)) {
-            doc.setField(id, ids);
+            doc.setField(prefix, ids);
+            doc.setField(prefix + "_label_phrase", labels);
+            doc.setField(prefix + "_label", labels);
         }
 
     }

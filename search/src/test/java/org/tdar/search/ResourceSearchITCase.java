@@ -101,9 +101,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     public static final String REASON = "because";
 
 
-    private static final String USAF_LOWER_CASE = "us air force archaeology and cultural resources archive";
-
-    private static final String USAF_TITLE_CASE = "US Air Force Archaeology and Cultural Resources Archive";
 
     private static final String CONSTANTINOPLE = "Constantinople";
 
@@ -180,14 +177,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testPersonSearchWithoutAutocomplete() throws ParseException, SolrServerException, IOException {
-        String lastName = "Watts";
-        Person person = new Person(null, lastName, null);
-        lookForCreatorNameInResult(lastName, person);
-    }
-
-    @Test
-    @Rollback
     public void testMultiplePersonSearch() throws ParseException, SolrServerException, IOException {
         Long peopleIds[] = { 8044L, 8344L, 8393L, 8608L, 8009L };
         List<Person> people = genericService.findAll(Person.class, Arrays.asList(peopleIds));
@@ -204,63 +193,13 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
             sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(rc));
         }
         SearchResult result = doSearch(null,null,sp,null);
-        logger.info(result.getSearchDescription());
+        logger.info(result.getSearchTitle());
         for (String name : names) {
-            assertTrue(result.getSearchDescription().contains(name));
+            assertTrue(result.getSearchTitle().contains(name));
         }
         // lookForCreatorNameInResult(lastName, person);
     }
 
-    @Test
-    @Rollback
-    public void testInstitutionSearchWithoutAutocomplete() throws ParseException, SolrServerException, IOException {
-        String name = "Digital Antiquity";
-        Institution institution = new Institution(name);
-        lookForCreatorNameInResult(name, institution);
-    }
-
-    private void lookForCreatorNameInResult(String namePart, Creator creator_) throws ParseException, SolrServerException, IOException {
-        SearchParameters sp = new SearchParameters();
-        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
-        SearchResult result = doSearch(null, null, sp, null);
-        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
-        for (Indexable resource : result.getResults()) {
-            logger.info("{}", resource);
-            boolean seen = checkResourceForValue(namePart, (Resource)resource);
-            if (resource instanceof Project) {
-                for (Resource r : projectService.findAllResourcesInProject((Project) resource, Status.values())) {
-                    if (seen) {
-                        break;
-                    }
-                    seen = checkResourceForValue(namePart, r);
-                }
-
-            }
-            assertTrue("should have seen term somwehere", seen);
-        }
-    }
-
-    private boolean checkResourceForValue(String namePart, Resource resource) {
-        boolean seen = false;
-        if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
-            logger.debug("seen submitter or updater");
-            seen = true;
-        }
-        if (resource instanceof InformationResource) {
-            Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
-            if ((institution != null) && institution.getName().contains(namePart)) {
-                logger.debug("seen in institution");
-                seen = true;
-            }
-        }
-        for (ResourceCreator creator : resource.getActiveResourceCreators()) {
-            if (creator.getCreator().getProperName().contains(namePart)) {
-                logger.debug("seen in resource creator");
-                seen = true;
-            }
-        }
-        return seen;
-    }
 
     @Test
     @Rollback
@@ -716,21 +655,22 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         SearchParameters sp = new SearchParameters();
         sp.getRegisteredDates().add(dateRange);
         SearchResult result = doSearch(null,null,sp, null);
-        assertThat(result.getResults(), contains(doc));
+        Long docId = doc.getId();
+        assertThat(PersistableUtils.extractIds(result.getResults()), contains(docId));
 
         // if we advance the search begin/end by one day, we should not see it in search results
         dateRange.setStart(searchDateTime.plusDays(1).toDate());
         dateRange.setEnd(searchDateTime.plusDays(2).toDate());
         sp.getRegisteredDates().add(dateRange);
         result = doSearch(null,null,sp, null);
-        assertThat(result.getResults(), not(contains(doc)));
+        assertThat(PersistableUtils.extractIds(result.getResults()), not(contains(docId)));
 
         // if we decrement the search begin/end by one day, we should not see it in search results
         dateRange.setStart(searchDateTime.minusDays(1).toDate());
         dateRange.setEnd(searchDateTime.toDate());
         sp.getRegisteredDates().add(dateRange);
         result = doSearch(null,null,sp, null);
-        assertThat(result.getResults(), not(contains(doc)));
+        assertThat(PersistableUtils.extractIds(result.getResults()), not(contains(docId)));
     }
 
     @Test
@@ -861,9 +801,9 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     }
 
     public void assertSearchPhrase(SearchResult result, String term) {
-        logger.debug("term:{}\t search phrase:{}", term, result.getSearchDescription());
-        assertTrue(String.format("looking for string '%s' in search phrase '%s'", term, result.getSearchDescription()),
-                result.getSearchDescription().toLowerCase().contains(term.toLowerCase()));
+        logger.debug("term:{}\t search phrase:{}", term, result.getSearchTitle());
+        assertTrue(String.format("looking for string '%s' in search phrase '%s'", term, result.getSearchTitle()),
+                result.getSearchTitle().toLowerCase().contains(term.toLowerCase()));
     }
 
     @Test
@@ -1046,9 +986,9 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         SearchResult result = doSearch(TEST_VALUE, null, null, null);
 
         for (int i = 0; i < 10; i++) {
-            logger.debug("search phrase:{}", result.getSearchDescription());
+            logger.debug("search phrase:{}", result.getSearchTitle());
         }
-        int occurances = result.getSearchDescription().split(TEST_VALUE).length;
+        int occurances = result.getSearchTitle().split(TEST_VALUE).length;
         assertTrue("search description should have gooder english than it currently does", occurances <= 2);
     }
 
@@ -1125,7 +1065,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
-        assertTrue(result.getResults().contains(doc1));
+        assertTrue(PersistableUtils.extractIds(result.getResults()).contains(doc1.getId()));
     }
 
 
@@ -1193,29 +1133,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         return found;
     }
 
-
-    protected Long setupImage() {
-        return setupImage(getUser());
-    }
-
-    protected Long setupImage(TdarUser user) {
-        Image img = new Image();
-        img.setTitle("precambrian Test");
-        img.setDescription("image description");
-        img.markUpdated(user);
-        CultureKeyword label = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
-        CultureKeyword label2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
-        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(-117.101, 33.354, -117.124, 35.791);
-        img.setLatitudeLongitudeBox(latLong);
-        assertNotNull(label.getId());
-        img.getCultureKeywords().add(label);
-        img.getCultureKeywords().add(label2);
-        img.setStatus(Status.DRAFT);
-        genericService.save(img);
-        genericService.save(latLong);
-        Long imgId = img.getId();
-        return imgId;
-    }
 
     @Test
     @Rollback(true)
@@ -2275,7 +2192,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     }
 
     private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams) throws ParseException, SolrServerException, IOException {
-        return doSearch(text, user, params_, reservedParams);
+        return doSearch(text, user, params_, reservedParams, null);
     }
     
     private SearchResult doSearch(String text) throws ParseException, SolrServerException, IOException {

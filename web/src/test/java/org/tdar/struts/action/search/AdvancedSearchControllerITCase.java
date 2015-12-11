@@ -1,14 +1,15 @@
 package org.tdar.struts.action.search;
 
-import static org.junit.Assert.*;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -22,17 +23,22 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.index.LookupSource;
@@ -352,4 +358,63 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         logger.info("search found: " + controller.getTotalRecords());
     }
 
+    @Test
+    @Rollback
+    public void testPersonSearchWithoutAutocomplete() throws SolrServerException, IOException {
+        String lastName = "Watts";
+        Person person = new Person(null, lastName, null);
+        lookForCreatorNameInResult(lastName, person);
+    }
+
+
+    @Test
+    @Rollback
+    public void testInstitutionSearchWithoutAutocomplete() throws SolrServerException, IOException {
+        String name = "Digital Antiquity";
+        Institution institution = new Institution(name);
+        lookForCreatorNameInResult(name, institution);
+    }
+    
+
+    private void lookForCreatorNameInResult(String namePart, Creator creator_) {
+        firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
+        doSearch();
+        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
+        for (Resource resource : controller.getResults()) {
+            logger.info("{}", resource);
+            boolean seen = checkResourceForValue(namePart, resource);
+            if (resource instanceof Project) {
+                for (Resource r : projectService.findAllResourcesInProject((Project) resource, Status.values())) {
+                    if (seen) {
+                        break;
+                    }
+                    seen = checkResourceForValue(namePart, r);
+                }
+
+            }
+            assertTrue("should have seen term somwehere", seen);
+        }
+    }
+
+    private boolean checkResourceForValue(String namePart, Resource resource) {
+        boolean seen = false;
+        if (resource.getSubmitter().getProperName().contains(namePart) || resource.getUpdatedBy().getProperName().contains(namePart)) {
+            logger.debug("seen submitter or updater");
+            seen = true;
+        }
+        if (resource instanceof InformationResource) {
+            Institution institution = ((InformationResource) resource).getResourceProviderInstitution();
+            if ((institution != null) && institution.getName().contains(namePart)) {
+                logger.debug("seen in institution");
+                seen = true;
+            }
+        }
+        for (ResourceCreator creator : resource.getActiveResourceCreators()) {
+            if (creator.getCreator().getProperName().contains(namePart)) {
+                logger.debug("seen in resource creator");
+                seen = true;
+            }
+        }
+        return seen;
+    }
 }

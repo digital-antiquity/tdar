@@ -3,6 +3,9 @@
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <field name="resourceCollections.name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <field name="resourceCollections.name" type="text_en" indexed="true" stored="true" multiValued="true" />
+    <field name="resourceCollections.name_phrase" type="text_general" indexed="true" stored="true" multiValued="true" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="description_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
@@ -12,6 +15,7 @@
     <field name="submitter.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="project.name_autocomplete" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.name_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="date" type="int" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="decadeCreated" type="int" indexed="true" stored="false" required="false" multiValued="false" />

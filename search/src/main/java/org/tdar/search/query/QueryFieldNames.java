@@ -13,7 +13,7 @@ public interface QueryFieldNames {
     String DOT = ".";
     String IR = "informationResources.";
     String PROJECT_TITLE = "project.name";
-//    String PROJECT_TITLE_AUTO = "project.title_auto";
+    String PROJECT_TITLE_AUTOCOMPLETE = "project.name_autocomplete";
     String DOCUMENT_TYPE = "documentType";
     String INTEGRATABLE = "integratable";
     String SUBMITTER_ID = "submitter.id";
@@ -27,7 +27,9 @@ public interface QueryFieldNames {
     String ACTIVE_GEOGRAPHIC_KEYWORDS = "activeGeographicKeywords";
     String ACTIVE_OTHER_KEYWORDS = "activeOtherKeywords";
     String ACTIVE_LATITUDE_LONGITUDE_BOXES = "activeLatitudeLongitudeBoxes";
-
+    String RESOURCE_COLLECTION_NAME_AUTOCOMPLETE = "resourceCollections.name_autocomplete";
+    String RESOURCE_COLLECTION_NAME = "resourceCollections.name";
+    String RESOURCE_COLLECTION_NAME_PHRASE = "resourceCollections.name_phrase";
     String MAXX = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxx";
     String MAXY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "maxy";
     String MINY = ACTIVE_LATITUDE_LONGITUDE_BOXES + DOT + "miny";
@@ -118,4 +120,4 @@ public interface QueryFieldNames {
     String COLLECTION_PARENT = "parentId";
     String COLLECTION_PARENT_LIST = "parentIdList";
     String _ID = "_id";
-}
+    }
