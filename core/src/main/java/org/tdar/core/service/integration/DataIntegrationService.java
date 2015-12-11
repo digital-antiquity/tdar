@@ -49,6 +49,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.FileProxyWrapper;
+import org.tdar.db.model.abstracts.Database;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
@@ -211,6 +212,10 @@ public class DataIntegrationService {
         Set<CodingRule> rules = new HashSet<>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);
+            if (StringUtils.contains(dataValue, Database.NO_CODING_SHEET_VALUE)) {
+                logger.debug("skipping {}", dataValue);
+                continue;
+            }
             CodingRule rule = new CodingRule(codingSheet, dataValue);
             rules.add(rule);
         }

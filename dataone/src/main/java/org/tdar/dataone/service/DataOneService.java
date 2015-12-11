@@ -466,7 +466,7 @@ public class DataOneService implements DataOneConstants {
         QualifiedDublinCoreDocument modsDoc = ExtendedDcTransformer.transformAny(ir);
         resp.setObjectFormat(META);
         StringWriter sw = new StringWriter();
-        JaxbDocumentWriter.write(modsDoc, sw, true);
+        JaxbDocumentWriter.write(modsDoc, sw, false);
         String metaXml = sw.toString();
         logger.trace(metaXml);
         resp.setSize(metaXml.getBytes(UTF_8).length);

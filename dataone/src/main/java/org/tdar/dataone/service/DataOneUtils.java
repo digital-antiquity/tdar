@@ -1,12 +1,9 @@
 package org.tdar.dataone.service;
 
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
 
-import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
 import org.dataone.service.types.v1.AccessRule;
 import org.dataone.service.types.v1.Checksum;
@@ -14,6 +11,8 @@ import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.ObjectFormatIdentifier;
 import org.dataone.service.types.v1.Permission;
 import org.dataone.service.types.v1.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.dataone.bean.EntryType;
 
 /**
@@ -23,6 +22,8 @@ import org.tdar.dataone.bean.EntryType;
  *
  */
 public class DataOneUtils {
+
+    private static final transient Logger logger = LoggerFactory.getLogger(DataOneUtils.class);
 
     public static Subject createSubject(String name) {
         Subject subject = new Subject();
@@ -71,13 +72,7 @@ public class DataOneUtils {
     }
 
     public static String checksumString(String string) throws NoSuchAlgorithmException, UnsupportedEncodingException {
-//        final MessageDigest messageDigest = MessageDigest.getInstance(DataOneConstants.MD5);
-
-        final MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        // NOTE NO SLASH -- important for charset here
-        messageDigest.update(string.getBytes("UTF8"));
-        byte[] raw = messageDigest.digest();
-        final String result = new String(Hex.encodeHex(raw));
+        String result = DigestUtils.md5Hex(string);
         return result;
     }
 
