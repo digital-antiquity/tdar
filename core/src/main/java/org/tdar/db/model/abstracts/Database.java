@@ -17,6 +17,7 @@ public interface Database
     };
 
     DatabaseType getDatabaseType();
+    public static final String NO_CODING_SHEET_VALUE = "No coding sheet value for code:";
 
     int getMaxTableLength();
 

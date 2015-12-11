@@ -94,7 +94,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT %s FROM %s WHERE lower(\"%s\")=lower(?)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
-    private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='No coding sheet value for code: ' || \"%s\" WHERE \"%s\" IS NULL";
+    private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='"+NO_CODING_SHEET_VALUE+" ' || \"%s\" WHERE \"%s\" IS NULL";
     private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
     private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
