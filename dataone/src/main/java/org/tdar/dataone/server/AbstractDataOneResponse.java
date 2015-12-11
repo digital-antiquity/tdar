@@ -32,7 +32,7 @@ public class AbstractDataOneResponse {
     public static final String BASE_PATH = "/v1/";
     private static final String ISO_822 = "EEE, dd MMM yyyy HH:mm:ss Z";
     private static final String HEADER_DATE = "Date";
-    public static final String APPLICATION_XML = "application/xml";
+    public static final String APPLICATION_XML = "application/xml; charset=utf-8";
     private static final SimpleDateFormat format = new SimpleDateFormat(ISO_822);
     public static final String FROM_DATE = "fromDate";
     public static final String TO_DATE = "toDate";

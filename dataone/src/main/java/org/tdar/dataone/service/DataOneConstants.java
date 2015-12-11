@@ -17,8 +17,8 @@ interface DataOneConstants {
     static final String VERSION = "v1";
     static final String DATAONE = "/dataone/";
 
-    static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=UTF-8";
-    static final String XML_CONTENT_TYPE = "application/xml; charset=UTF-8";
+    static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=utf-8";
+    static final String XML_CONTENT_TYPE = "application/xml; charset=utf-8";
 
 
     static final String PUBLIC = "public";
