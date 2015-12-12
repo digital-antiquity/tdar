@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.persistence.Transient;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
@@ -126,12 +125,4 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
         }
     }
 
-    public String getFilter() {
-        if (CollectionUtils.isNotEmpty(getFieldValues())) {
-        LatitudeLongitudeBox box = getFieldValues().get(0);
-//        return String.format("\"%s:Overlaps(%s %s %s %s)\"", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES, box.getMinObfuscatedLatitude(), box.getMinObfuscatedLongitude(), 
-//                box.getMaxObfuscatedLatitude(), box.getMaxObfuscatedLongitude());
-        } 
-        return "";
-    }
 }

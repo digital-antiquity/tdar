@@ -30,6 +30,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -417,4 +418,68 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         }
         return seen;
     }
+
+
+
+    @Test
+    @Rollback(true)
+    public void testSynonymPersonSearch() {
+        // setup test
+        // create image
+        Image image = new Image();
+        image.setTitle("precambrian Test");
+        image.setDescription("image description");
+        image.markUpdated(getBasicUser());
+        image.setStatus(Status.ACTIVE);
+
+        // create primary creator
+        TdarUser person = createAndSaveNewPerson("adelphi@tdar.org", "delphi");
+
+        // create dup
+        Person dup = new Person("Delphi", "Person", "d@aoracl.adb");
+        dup.setInstitution(new Institution("a test 13asd as"));
+        genericService.saveOrUpdate(person.getInstitution());
+        dup.setStatus(Status.DUPLICATE);
+        dup.setInstitution(new Institution("test 123ad as"));
+        genericService.saveOrUpdate(dup.getInstitution());
+        genericService.saveOrUpdate(dup);
+        person.getSynonyms().add(dup);
+        genericService.saveOrUpdate(person);
+        genericService.saveOrUpdate(dup);
+        ResourceCreator rc = new ResourceCreator(dup, ResourceCreatorRole.CREATOR);
+        image.getResourceCreators().add(rc);
+        genericService.saveOrUpdate(image);
+
+        genericService.synchronize();
+        // flush, detach (important for test), setup
+        searchIndexService.flushToIndexes();
+        searchIndexService.index(image);
+        genericService.detachFromSession(person);
+        genericService.detachFromSession(dup);
+        SearchParameters sp = new SearchParameters();
+
+        // transient version of person
+        Person p = new Person(person.getFirstName(), person.getLastName(), person.getEmail());
+        p.setInstitution(person.getInstitution());
+        genericService.detachFromSession(p);
+        p.setId(person.getId());
+
+        // test finding dup from parent
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(p, ResourceCreatorRole.CREATOR));
+        controller.getGroups().add(sp);
+        doSearch();
+        logger.debug("resutls: {}", controller.getResults());
+        assertTrue(controller.getResults().contains(image));
+
+        resetController();
+        // test finding parent from dup
+        sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(dup, ResourceCreatorRole.CREATOR));
+        controller.getGroups().add(sp);
+        doSearch();
+        logger.debug("resutls: {}", controller.getResults());
+        assertTrue(controller.getResults().contains(image));
+
+    }
+
 }

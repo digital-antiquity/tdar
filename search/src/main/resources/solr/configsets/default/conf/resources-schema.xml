@@ -16,7 +16,7 @@
     <field name="project.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.name_autocomplete" type="string" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="project.name_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="project.name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="date" type="int" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="decadeCreated" type="int" indexed="true" stored="false" required="false" multiValued="false" />
 

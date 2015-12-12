@@ -151,7 +151,10 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         }
 
         if (sb.length() > 0) {
-            sb.append(" ").append(operator).append(" ");
+            sb.append(" ");
+            if (operator != Operator.OR) {
+                sb.append(operator).append(" ");
+            }
         }
         sb.append(value);
 

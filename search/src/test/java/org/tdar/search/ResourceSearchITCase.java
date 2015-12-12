@@ -43,7 +43,6 @@ import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -431,6 +430,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
             if (title.contains("MACROFLORAL")) {
                 badMatches.add(doc);
             }
+            docs.add(doc);
         }
         genericService.synchronize();
         searchIndexService.indexCollection(docs);
@@ -534,7 +534,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     @Test
     @Rollback
     public void testSortFieldProject() throws InstantiationException, IllegalAccessException, ParseException, SolrServerException, IOException {
-
+        searchIndexService.purgeAll();
         Project project = createAndSaveNewProject("my project");
         Project project2 = createAndSaveNewProject("my project 2");
         Image a = createAndSaveNewInformationResource(Image.class, project, getBasicUser(), "a");
@@ -545,12 +545,19 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         Image e = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "e");
         Image aa = createAndSaveNewInformationResource(Image.class, project2, getBasicUser(), "a");
         List<Resource> res = Arrays.asList(project, project2, a, b, c, d, e, aa);
-
-        reindex();
+        searchIndexService.indexCollection(res);
 
         SearchResult result = doSearch("", null, null, null, SortOption.PROJECT);
         List<Indexable> results = result.getResults();
-        // assertTrue(CollectionUtils.isProperSubCollection(results, res));
+        for (Indexable r_ : results) {
+            Resource r = (Resource)r_;
+            if (r instanceof InformationResource) {
+                InformationResource ir = (InformationResource)r;
+                logger.debug("{} {} {}", r.getId(), r.getName(), ((InformationResource) r).getProjectId());
+            } else {
+                logger.debug("{} {}", r.getId(), r.getName());
+            }
+        }
         int i = results.indexOf(project);
         assertEquals(i + 1, results.indexOf(a));
         assertEquals(i + 2, results.indexOf(b));
@@ -645,6 +652,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         doc.setDateUpdated(createDateTime.toDate());
         genericService.saveOrUpdate(doc);
         genericService.synchronize();
+        searchIndexService.index(doc);
 
         // converstion from MST to UTC date advances registration date by one day.
         searchIndexService.flushToIndexes();
@@ -1133,65 +1141,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         return found;
     }
 
-
-    @Test
-    @Rollback(true)
-    public void testSynonymPersonSearch() throws SolrServerException, IOException, ParseException {
-        // setup test
-        // create image
-        Image image = new Image();
-        image.setTitle("precambrian Test");
-        image.setDescription("image description");
-        image.markUpdated(getBasicUser());
-        image.setStatus(Status.ACTIVE);
-
-        // create primary creator
-        TdarUser person = createAndSaveNewPerson("adelphi@tdar.org", "delphi");
-
-        // create dup
-        Person dup = new Person("Delphi", "Person", "d@aoracl.adb");
-        dup.setInstitution(new Institution("a test 13asd as"));
-        genericService.saveOrUpdate(person.getInstitution());
-        dup.setStatus(Status.DUPLICATE);
-        dup.setInstitution(new Institution("test 123ad as"));
-        genericService.saveOrUpdate(dup.getInstitution());
-        genericService.saveOrUpdate(dup);
-        person.getSynonyms().add(dup);
-        genericService.saveOrUpdate(person);
-        genericService.saveOrUpdate(dup);
-        ResourceCreator rc = new ResourceCreator(dup, ResourceCreatorRole.CREATOR);
-        image.getResourceCreators().add(rc);
-        genericService.saveOrUpdate(image);
-
-        genericService.synchronize();
-        // flush, detach (important for test), setup
-        searchIndexService.flushToIndexes();
-        searchIndexService.index(image);
-        genericService.detachFromSession(person);
-        genericService.detachFromSession(dup);
-        SearchParameters sp = new SearchParameters();
-
-        // transient version of person
-        Person p = new Person(person.getFirstName(), person.getLastName(), person.getEmail());
-        p.setInstitution(person.getInstitution());
-        genericService.detachFromSession(p);
-        p.setId(person.getId());
-
-        // test finding dup from parent
-        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(p, ResourceCreatorRole.CREATOR));
-        SearchResult result = doSearch(null,null,sp,null);
-        logger.debug("resutls: {}", result.getResults());
-        assertTrue(result.getResults().contains(image));
-
-        // test finding parent from dup
-        sp = new SearchParameters();
-        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(dup, ResourceCreatorRole.CREATOR));
-        result = doSearch(null,null,sp,null);
-        logger.debug("resutls: {}", result.getResults());
-        assertTrue(result.getResults().contains(image));
-
-    }
-
     
     @Test
     @Rollback(true)
@@ -1234,6 +1183,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         assertFalse(rqb.isEmpty());
         SearchResult result = new SearchResult();
         result.setSortField(SortOption.RELEVANCE);
+        logger.debug(rqb.generateQueryString());
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
         for (Resource r : (List<Resource>) (List<?>) result.getResults()) {
             List<Long> authorIds = new ArrayList<Long>();

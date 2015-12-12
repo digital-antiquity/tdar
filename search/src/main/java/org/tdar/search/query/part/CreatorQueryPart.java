@@ -41,6 +41,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                         creators.addAll(((Dedupable<Creator>) rc.getCreator()).getSynonyms());
                     }
                     creators.add(rc.getCreator());
+                    logger.debug("{}", creators);
                     for (Creator creator_ : creators) {
                         if (PersistableUtils.isTransient(creator_)) {
                             // user entered a complete-ish creator record but autocomplete callback did fire successfully
@@ -75,9 +76,9 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
             fqp.setOperator(Operator.OR);
             group.append(fqp);
             if (QueryFieldNames.CREATOR_ROLE_IDENTIFIER.equals(getFieldName())) {
-                FieldQueryPart<String> projectChildren = new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, terms);
+                FieldQueryPart<String> projectChildren = new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, terms);
                 projectChildren.setOperator(Operator.OR);
-                group.append(projectChildren);
+                group.append(new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, projectChildren));
                 group.setOperator(Operator.OR);
             }
 

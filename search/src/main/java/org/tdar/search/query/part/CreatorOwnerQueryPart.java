@@ -64,8 +64,8 @@ public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<
         QueryPartGroup inherit = new QueryPartGroup(Operator.OR);
 
         inherit.append(new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
-        logger.error("handle inheritance");
-//        inherit.append(new FieldQueryPart<>(QueryFieldNames.IR_CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
+        FieldQueryPart subPart = new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms);
+        inherit.append(new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, subPart ));
 
         parent.append(notGroup);
         parent.append(inherit);

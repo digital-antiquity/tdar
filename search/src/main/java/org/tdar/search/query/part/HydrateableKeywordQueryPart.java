@@ -90,15 +90,17 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
 
         QueryPartGroup topLevel = new QueryPartGroup(Operator.AND, field);
         if (includeChildren) {
-//            topLevel.setOperator(Operator.OR);
-//            FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>(INFORMATION_RESOURCES + getFieldName(), getOperator(), ids);
-//            FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>(INFORMATION_RESOURCES + getFieldName() + LABEL, getOperator(), labels);
-//            irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-//            FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>(INFORMATION_RESOURCES + getFieldName() + LABEL_KEYWORD, getOperator(),
-//                    labels);
-//            irLabelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-//            QueryPartGroup group = new QueryPartGroup(getOperator(), irLabelPart, irIdPart, irLabelKeyPart);
-//            topLevel.append(group);
+            topLevel.setOperator(Operator.OR);
+            FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>(getFieldName(), getOperator(), ids);
+            FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>(getFieldName() + LABEL, getOperator(), labels);
+            irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>(getFieldName() + LABEL_KEYWORD, getOperator(),
+                    labels);
+            irLabelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            QueryPartGroup group = new QueryPartGroup(getOperator(), new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, irLabelPart), 
+                    new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, irIdPart), 
+                    new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, irLabelKeyPart));
+            topLevel.append(group);
         }
         return topLevel.generateQueryString();
     }

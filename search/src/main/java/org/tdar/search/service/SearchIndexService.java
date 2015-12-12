@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrClient;
@@ -50,6 +51,7 @@ import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.search.index.LookupSource;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.activity.Activity;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -393,8 +395,8 @@ public class SearchIndexService {
      */
     public <C extends Indexable> boolean indexCollection(Collection<C> indexable) throws SolrServerException, IOException {
         boolean exceptions = false;
-        if (indexable != null) {
-            List<SolrInputDocument> docs = new ArrayList<>();
+        
+        if (CollectionUtils.isNotEmpty(indexable)) {
             logger.debug("manual indexing ... {}", indexable.size());
             // FullTextSession fullTextSession = getFullTextSession();
             int count = 0;

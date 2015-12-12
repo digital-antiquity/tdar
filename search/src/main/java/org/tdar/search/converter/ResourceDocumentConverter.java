@@ -3,6 +3,8 @@ package org.tdar.search.converter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +20,7 @@ import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
@@ -30,6 +33,7 @@ import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -69,6 +73,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         indexCollectionInformation(doc, resource);
         indexTemporalInformation(doc, resource);
         Map<DataTableColumn, String> data = null;
+        if (resource instanceof Project) {
+            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ((Project)resource).getTitleSort());
+
+        }
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;
             doc.setField(QueryFieldNames.PROJECT_ID, ir.getProjectId());
@@ -248,31 +256,51 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
-        Map<String, List<Long>> types = new HashMap<>();
         List<String> crids = new ArrayList<>();
+        Map<ResourceCreatorRole,HashSet<Creator<? extends Creator>>> map = new HashMap<>();
+        for (ResourceCreatorRole r : ResourceCreatorRole.values()) {
+            map.put(r, new HashSet<>());
+        }
         if (resource instanceof InformationResource) {
             InformationResource informationRessource = (InformationResource) resource;
-            crids.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
-            crids.add(ResourceCreator.getCreatorRoleIdentifier(informationRessource.getPublisher(), ResourceCreatorRole.PUBLISHER));
+            map.get(ResourceCreatorRole.RESOURCE_PROVIDER).add(informationRessource.getResourceProviderInstitution());
+            map.get(ResourceCreatorRole.PUBLISHER).add(informationRessource.getPublisher());
         }
-        crids.add(ResourceCreator.getCreatorRoleIdentifier(resource.getSubmitter(), ResourceCreatorRole.SUBMITTER));
-        crids.add(ResourceCreator.getCreatorRoleIdentifier(resource.getUpdatedBy(), ResourceCreatorRole.UPDATER));
+        map.get(ResourceCreatorRole.SUBMITTER).add(resource.getSubmitter());
+        map.get(ResourceCreatorRole.UPDATER).add(resource.getUpdatedBy());
         Set<String> roles = new HashSet<>();
         Set<String> names = new HashSet<>();
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
-            String key = rc.getRole().name();
-            roles.add(key);
-            if (!types.containsKey(key)) {
-                types.put(key, new ArrayList<Long>());
+            map.get(rc.getRole()).add(rc.getCreator());
+        }
+        
+        for (ResourceCreatorRole role_ : map.keySet()) {
+            Set<Creator<? extends Creator>> creators = map.get(role_);
+            creators.removeAll(Collections.singleton(null));
+            if (CollectionUtils.isEmpty(creators)) {
+                continue;
             }
-            types.get(key).add(rc.getCreator().getId());
-            crids.add(rc.getCreatorRoleIdentifier());
-            names.add(rc.getCreator().getProperName());
+            roles.add(role_.name());
+            Set<Long> typeIds = new HashSet<>();
+            for (Creator creator : creators) {
+                if (creator == null) {
+                    continue;
+                }
+                names.add(creator.getProperName());
+                typeIds.add(creator.getId());
+                crids.add(ResourceCreator.getCreatorRoleIdentifier(creator, role_));
+//                if (CollectionUtils.isNotEmpty(creator.getSynonyms())) {
+//                    for (Creator syn : (Collection<Creator>)creator.getSynonyms()) {
+//                        names.add(syn.getProperName());
+//                        crids.add(ResourceCreator.getCreatorRoleIdentifier(syn, role_));
+//                        typeIds.add(syn.getId());
+//                    }
+//                }
+            }
+            doc.setField(role_.name(), typeIds);
         }
+        
         doc.setField(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, names);
-        for (String key : types.keySet()) {
-            doc.setField(key, types.get(key));
-        }
         doc.setField(QueryFieldNames.CREATOR_ROLE, roles);
         doc.setField(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, crids);
     }

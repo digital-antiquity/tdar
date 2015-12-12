@@ -77,7 +77,6 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         SpatialQueryPart sqp = new SpatialQueryPart(searchBox);
         rqb.append(sqp);
         rqb.append(new FieldQueryPart<>(QueryFieldNames.STATUS, Status.ACTIVE));
-        rqb.appendFilter(Arrays.asList(sqp.getFilter()));
         SearchResult result = new SearchResult();
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
         return result;
@@ -265,9 +264,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         searchIndexService.index(file);
 
         SpatialQueryPart spatialQueryPart = new SpatialQueryPart(latitudeLongitudeBoxOfItem);
-        logger.info("Item : {}", spatialQueryPart.getFilter());
         SpatialQueryPart searchPart = new SpatialQueryPart(latitudLongitudeBoxOfQuery);
-        logger.info("Query: {}", searchPart.getFilter());
 
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(searchPart);

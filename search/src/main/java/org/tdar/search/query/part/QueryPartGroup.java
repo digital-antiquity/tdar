@@ -103,6 +103,17 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
 
     @Override
     public String generateQueryString() {
+        StringBuilder builder = generateContents();
+        if (builder.length() == 0) {
+            return "";
+        }
+        builder.insert(0, "( ");
+        builder.append(" ) ");
+        logger.trace("{}", builder);
+        return builder.toString();
+    }
+
+    protected StringBuilder generateContents() {
         StringBuilder builder = new StringBuilder();
         for (QueryPart<?> part : getParts()) {
             String queryString = part.generateQueryString();
@@ -114,13 +125,7 @@ public class QueryPartGroup implements QueryPart, QueryGroup {
                 builder.append(queryString);
             }
         }
-        if (builder.length() == 0) {
-            return "";
-        }
-        builder.insert(0, "( ");
-        builder.append(" ) ");
-        logger.trace("{}", builder);
-        return builder.toString();
+        return builder;
     }
 
     @Override

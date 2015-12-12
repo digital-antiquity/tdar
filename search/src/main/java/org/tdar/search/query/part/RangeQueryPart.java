@@ -78,7 +78,7 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         // we convert dates to utc when indexing them in lucene, therefore when performing a search we need to similarly convert the
         // dates in a date range.
         dateTime = dateTime.toDateTime(DateTimeZone.UTC);
-        return dateTime.toString();
+        return dateTime.toString("yyyy-MM-dd'T'HH:mm:ss'Z'");
     }
 
     private static String convert(Object object) {
