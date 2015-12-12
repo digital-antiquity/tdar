@@ -186,7 +186,7 @@ public class DataIntegrationService {
      */
     @Transactional
     public List<CodingRule> findMappedCodingRules(DataTableColumn column) {
-        List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
+        List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column,false);
         return dataTableColumnDao.findMappedCodingRules(column, distinctColumnValues);
     }
 
@@ -208,14 +208,10 @@ public class DataIntegrationService {
         Dataset dataset = column.getDataTable().getDataset();
         CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
-        List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column);
+        List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column,true);
         Set<CodingRule> rules = new HashSet<>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);
-            if (StringUtils.contains(dataValue, Database.NO_CODING_SHEET_VALUE)) {
-                logger.debug("skipping {}", dataValue);
-                continue;
-            }
             CodingRule rule = new CodingRule(codingSheet, dataValue);
             rules.add(rule);
         }
