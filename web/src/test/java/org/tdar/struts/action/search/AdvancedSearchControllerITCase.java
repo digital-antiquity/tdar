@@ -423,7 +423,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testSynonymPersonSearch() {
+    public void testSynonymPersonSearch() throws SolrServerException, IOException {
         // setup test
         // create image
         Image image = new Image();
