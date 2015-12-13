@@ -1,9 +1,12 @@
 package org.tdar.search.query;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 
@@ -24,6 +27,15 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private String searchTitle;
     private String searchDescription;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
+    private Map<String, Class<? extends Persistable>> facetMap = new HashMap<>();
+
+    public void facetBy(String facetField, Class<? extends Persistable> facetClass) {
+        facetMap.put(facetField, facetClass);
+    }
+
+    public Map<String, Class<? extends Persistable>> getFacetMap() {
+        return facetMap;
+    }
 
     @Override
     public SortOption getSortField() {

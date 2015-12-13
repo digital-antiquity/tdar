@@ -38,6 +38,10 @@
                     <artifactId>guava</artifactId>
                     <groupId>com.google.guava</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -87,7 +91,7 @@
 
 
     <build>
-        <finalName>tdar-search</finalName>
+        <finalName>search</finalName>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>
@@ -121,6 +125,29 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.5</version>
             </plugin>
+
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <!-- not this doesn't really work -->
+                            <resourcesDirectory>${basedir}/src/main/resources/</resourcesDirectory>
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                            <excludes>
+                                <exclude>liquibase.properties</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.liquibase</groupId>
                 <artifactId>liquibase-maven-plugin</artifactId>
