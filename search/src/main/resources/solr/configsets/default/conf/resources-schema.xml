@@ -39,7 +39,7 @@
 
     <field name="integratable" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="resourceAccessType" type="string" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="filename" type="strings" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="filename" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
 
     <field name="activeResourceCreators.role" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="crid" type="strings" indexed="true" stored="false" required="false" multiValued="true" />

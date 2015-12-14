@@ -60,7 +60,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SimpleAppConfiguration.TDAR_PROPERTIES, ignoreResourceNotFound = true)
 
 @Configuration
-public class SimpleAppConfiguration implements Serializable {
+public abstract class SimpleAppConfiguration implements Serializable {
 
     protected static final String HIBERNATE_PROPERTIES = "hibernate.properties";
     protected static final String TDAR_PROPERTIES = "tdar.properties";

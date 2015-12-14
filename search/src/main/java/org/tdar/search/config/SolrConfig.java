@@ -2,6 +2,7 @@ package org.tdar.search.config;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.List;
 
 import javax.annotation.PreDestroy;
 import javax.annotation.Resource;
@@ -19,7 +20,6 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.data.solr.repository.config.EnableSolrRepositories;
 import org.tdar.core.configuration.SimpleAppConfiguration;
-import org.tdar.core.configuration.TdarAppConfiguration;
 
 @EnableSolrRepositories
 @Configuration
@@ -38,12 +38,40 @@ public class SolrConfig {
     public transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    SimpleAppConfiguration config;
+    List<SimpleAppConfiguration> config;
+    
+
+    //FIXME: autowiring issue trying to get most detailed config
+    public SimpleAppConfiguration resolveConfig() {
+        if (config.size() == 0) {
+            return null;
+        }
+        SimpleAppConfiguration current  = null;
+        if (config.size() > 0) {
+            current = config.get(0);
+        }
+        if (config.size() == 1) {
+            return current;
+        }
+        
+        // only really works with 2
+        if (config.size() > 1) {
+            for (SimpleAppConfiguration config_ : config) {
+                Class<? extends SimpleAppConfiguration> currentClass = current.getClass();
+                Class<? extends SimpleAppConfiguration> configClass = config_.getClass();
+                if (configClass.isAssignableFrom(configClass) && configClass != currentClass) {
+                    current = config_;
+                }
+            }
+        }
+        return current;
+    }
     
     @Bean
     public SolrClient solrServerFactoryBean() {
-        logger.debug("config:{}", config);
-        if (config.disableHibernateSearch()) {
+        SimpleAppConfiguration resolveConfig = resolveConfig();
+        logger.debug("config:({}) {}", resolveConfig, config);
+        if (resolveConfig.disableHibernateSearch()) {
             return null;
         }
         // more configuration info
