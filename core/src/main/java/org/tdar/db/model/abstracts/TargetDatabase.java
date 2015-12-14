@@ -50,7 +50,7 @@ public interface TargetDatabase extends Database {
     void addTableRow(DataTable dataTable, Map<DataTableColumn, String> valueColumnMap) throws Exception;
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    List<String> selectNonNullDistinctValues(DataTableColumn column);
+    List<String> selectNonNullDistinctValues(DataTableColumn column, boolean useUntranslatedValues);
 
     /**
      * @param dataType

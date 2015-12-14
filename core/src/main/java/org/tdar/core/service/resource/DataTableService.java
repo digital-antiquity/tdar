@@ -59,7 +59,7 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
      */
     @Transactional(readOnly = true)
     public List<String> findAllDistinctValues(DataTableColumn column) {
-        return tdarDataImportDatabase.selectNonNullDistinctValues(column);
+        return tdarDataImportDatabase.selectNonNullDistinctValues(column,false);
     }
 
     /*

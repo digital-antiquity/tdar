@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao;
@@ -91,7 +92,11 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
             codingSheet.setProject(dataset.getProject());
             codingSheet.getResourceCollections().addAll(dataset.getResourceCollections());
         }
+        String msg = String.format("genearting coding sheet from datatable column %s (%s) datasetId: %s", column, column.getId(), dataset.getId());
+        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, codingSheet, user);
+        codingSheet.getResourceRevisionLog().add(rrl);
         saveOrUpdate(codingSheet);
+        saveOrUpdate(rrl);
         return codingSheet;
     }
 
