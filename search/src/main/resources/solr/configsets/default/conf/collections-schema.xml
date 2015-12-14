@@ -6,6 +6,7 @@
     <field name="type" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="description" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="all" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="allPhrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="hidden" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />

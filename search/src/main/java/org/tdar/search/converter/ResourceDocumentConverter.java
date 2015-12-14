@@ -66,6 +66,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
         doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
+        doc.setField(QueryFieldNames.DESCRIPTION_PHRASE, resource.getDescription());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, resource.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, resource.getUsersWhoCanView());
 
