@@ -7,8 +7,10 @@
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="all" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="allPhrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="hidden" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="visibleInSearch" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="topLevel" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="resourceIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="parentIdList" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="parentId" type="long" indexed="true" stored="false" required="false" multiValued="false" />

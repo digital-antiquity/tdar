@@ -171,6 +171,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         GeneralKeywordBuilder gkb = new GeneralKeywordBuilder(resource, data);
         String text = gkb.getKeywords();
         doc.setField(QueryFieldNames.ALL, text);
+        doc.setField(QueryFieldNames.ALL_PHRASE, text);
 
         indexLatitudeLongitudeBoxes(resource, doc);
 
