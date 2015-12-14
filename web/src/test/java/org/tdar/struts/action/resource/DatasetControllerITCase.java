@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.db.model.PostgresDatabase;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
@@ -87,6 +88,39 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         genericService.merge(dataset);
     }
 
+    @Autowired
+    private PostgresDatabase database;
+
+    @Test
+    @Rollback(true)
+    public void testTranslatedGeneratedCodingSheet() throws Exception {
+        //test for TDAR-5038 ;; issue is that the translated values are being pushed into coding sheets.
+        Dataset dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class);
+        controller.setId(dataset.getId());
+        Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
+        DataTableColumn elementColumn = new DataTableColumn();
+        DataTable dataTable = dataset.getDataTables().iterator().next();
+        elementColumn.setTransientOntology(bElementOntology);
+        elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
+        elementColumn.setName(BELEMENT_COL);
+        mapColumnsToDataset(dataset, dataTable, elementColumn);
+        DataTableColumn column = dataTable.getColumnByName(BELEMENT_COL);
+        database.translateInPlace(column, column.getDefaultCodingSheet());
+        database.executeUpdateOrDelete(String.format("update %s set %s='ABCD'", dataTable.getName(),column.getName()));
+        assertNotNull(column.getDefaultCodingSheet());
+        assertTrue(column.getDefaultCodingSheet().isGenerated());
+
+        List<String> original = database.selectNonNullDistinctValues(column, true);
+        logger.debug("original:{}",original);
+        assertFalse(original.contains("ABCD"));
+        List<String> mapped = database.selectNonNullDistinctValues(column, false);
+        logger.debug("mapped:{}", mapped);
+        assertTrue(mapped.contains("ABCD"));
+        
+    }
+    
+    
+
     @Test
     @Rollback
     public void testOntologyMappingCaseSensitivity() throws Exception {
@@ -94,15 +128,17 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         controller.setId(dataset.getId());
         Ontology bElementOntology = setupAndLoadResource("fauna-element-updated---default-ontology-draft.owl", Ontology.class);
         DataTableColumn elementColumn = new DataTableColumn();
+        DataTable dataTable = dataset.getDataTables().iterator().next();
         elementColumn.setTransientOntology(bElementOntology);
         elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
         elementColumn.setName(BELEMENT_COL);
-        DataTable dataTable = dataset.getDataTables().iterator().next();
         mapColumnsToDataset(dataset, dataTable, elementColumn);
         CodingSheetMappingController codingSheetController = generateNewInitializedController(CodingSheetMappingController.class);
         DataTableColumn column = dataTable.getColumnByName(BELEMENT_COL);
+
         assertNotNull(column.getDefaultCodingSheet());
         assertTrue(column.getDefaultCodingSheet().isGenerated());
+        
         codingSheetController.setId(column.getDefaultCodingSheet().getId());
         codingSheetController.prepare();
         codingSheetController.loadOntologyMappedColumns();

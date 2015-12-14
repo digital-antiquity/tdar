@@ -748,7 +748,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
              * NOTE: a manual reindex happens at the end
              */
             for (DataTableColumn column : columns) {
-                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column));
+                getDao().mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column,false));
             }
         }
     }

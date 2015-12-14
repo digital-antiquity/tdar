@@ -298,7 +298,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectNonNullDistinctValues(DataTableColumn dataTableColumn) {
+    public List<String> selectNonNullDistinctValues(DataTableColumn dataTableColumn, boolean useUntranslatedValues) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
@@ -306,6 +306,12 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         builder.getTableNames().add(dataTableColumn.getDataTable().getName());
         builder.setDistinct(true);
         String name = dataTableColumn.getName();
+        if (useUntranslatedValues) {
+            String original = generateOriginalColumnName(dataTableColumn);
+            if (hasColumn(dataTableColumn.getDataTable().getName(), original)) {
+                name = original;
+            }
+        }
         builder.getOrderBy().add(name);
         builder.getColumns().add(name);
         WhereCondition notNull = new WhereCondition(name);
