@@ -186,6 +186,10 @@
                                     <name>slf4j</name>
                                     <value>true</value>
                                 </systemProperty>
+                                <systemProperty>
+                                    <name>solr.lock.type</name>
+                                    <value>none</value>
+                                </systemProperty>
                             </systemProperties>
                             <webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
                             <scanIntervalSeconds>0</scanIntervalSeconds>

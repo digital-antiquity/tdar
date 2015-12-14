@@ -434,6 +434,10 @@
                             <name>maven.it.global-settings.dir</name>
                             <value>${project.build.testOutputDirectory}</value>
                         </property>
+                        <systemProperty>
+                            <name>solr.lock.type</name>
+                            <value>none</value>
+                        </systemProperty>
                     </systemProperties>
                     <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
                         </includes> -->
@@ -473,6 +477,12 @@
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                            <systemProperties>
+                                <systemProperty>
+                                    <name>solr.lock.type</name>
+                                    <value>none</value>
+                                </systemProperty>
+                            </systemProperties>
                         </configuration>
                     </execution>
                     <execution>
