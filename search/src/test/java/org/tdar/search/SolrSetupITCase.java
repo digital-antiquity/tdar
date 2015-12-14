@@ -9,12 +9,12 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocumentList;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.search.service.SearchIndexService;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 
-public class SolrSetupITCase extends AbstractIntegrationTestCase {
+public class SolrSetupITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
     private SolrClient template;
