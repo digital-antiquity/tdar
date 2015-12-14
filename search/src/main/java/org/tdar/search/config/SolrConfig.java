@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.client.solrj.impl.HttpSolrClient;
+import org.apache.zookeeper.common.PathUtils;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
@@ -37,7 +38,12 @@ public class SolrConfig {
         }
         
         String solrServerPath = environment.getProperty("solr.server.path");
-        Path path = new File("target/classes/solr/").toPath();
+        File defaultTestPath = new File("target/classes/solr/");
+        Path path = defaultTestPath.toPath();
+        File globalTestPath = new File("../web/target/classes/solr/");
+        if (globalTestPath.exists()) {
+            path = globalTestPath.toPath();
+        }
         if (StringUtils.isNotBlank(solrServerPath)) {
             File dir = new File(solrServerPath);
             if (dir.exists()) {
