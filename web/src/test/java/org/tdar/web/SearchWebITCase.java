@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
@@ -20,7 +19,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.service.SearchFieldType;
-import org.tdar.search.service.SearchIndexService;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
@@ -39,9 +37,6 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private static final String BASIC_SEARCH_BASE_URL = "/search/basic";
     private static final String SEARCH_RESULTS_BASE_URL = "/search/results";
     private static int indexCount = 0;
-
-    @Autowired
-    SearchIndexService indexService;
 
     private void selectAllResourceTypes() {
         List<DomElement> iter = getHtmlPage().getElementsByName("resourceTypes");

@@ -57,7 +57,6 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplat
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.junit.WebTestCase;
-import org.tdar.search.service.SearchIndexService;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
@@ -109,9 +108,6 @@ import net.sf.json.JSONSerializer;
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
-
-    @Autowired
-    SearchIndexService searchIndexService;
 
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
@@ -956,8 +952,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
     public void testProjectView() {
         // this should probably be done @before every test but it would slow things down even more
-        searchIndexService.indexAll(getAdminUser());
-
+        reindex();
         gotoPage("/project/3805");
         logger.trace("{}", this);
         assertTextPresentInPage("New Philadelphia Archaeology Project");

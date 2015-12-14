@@ -23,11 +23,12 @@ import org.tdar.core.dao.external.pid.ExternalIDProvider;
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration()
 @EnableCaching
-public class TdarAppConfiguration extends IntegrationAppConfiguration implements Serializable {
+public class TdarSearchAppConfiguration extends TdarAppConfiguration implements Serializable {
 
-    private static final long serialVersionUID = 6038273491995542363L;
 
-    public TdarAppConfiguration() {
+    private static final long serialVersionUID = -4500782466973090097L;
+
+    public TdarSearchAppConfiguration() {
         logger.debug("Initializing tDAR Application Context");
     }
 
@@ -63,7 +64,7 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     }
 
     public boolean disableHibernateSearch() {
-        return true;
+        return false;
     }
 
     @Bean(name = "tdarGeoDataSource")

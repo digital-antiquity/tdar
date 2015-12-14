@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -40,6 +41,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarSearchAppConfiguration;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -75,6 +77,7 @@ import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 
+@ContextConfiguration(classes = TdarSearchAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationControllerTestCase extends AbstractIntegrationTestCase implements ErrorListener {
 
