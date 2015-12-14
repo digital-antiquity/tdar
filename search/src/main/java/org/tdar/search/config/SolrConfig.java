@@ -40,7 +40,8 @@ public class SolrConfig {
         String solrServerPath = environment.getProperty("solr.server.path");
         File defaultTestPath = new File("target/classes/solr/");
         Path path = defaultTestPath.toPath();
-        File globalTestPath = new File("../web/target/classes/solr/");
+        //fixme: brittle
+        File globalTestPath = new File("web/target/classes/solr/");
         if (globalTestPath.exists()) {
             path = globalTestPath.toPath();
         }
