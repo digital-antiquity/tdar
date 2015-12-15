@@ -156,7 +156,7 @@ public class SearchIndexService {
             float maxPer = (1f / classesToIndex.size()) * 100f;
             
             for (Class<? extends Indexable> toIndex : classesToIndex) {
-                purge(getCoreForClass(toIndex));
+                purgeCore(getCoreForClass(toIndex));
             }            
             for (Class<? extends Indexable> toIndex : classesToIndex) {
                 // fullTextSession.purgeAll(toIndex);
@@ -279,7 +279,7 @@ public class SearchIndexService {
         try {
             String core = getCoreForClass(item.getClass());
             if (deleteFirst) {
-                template.deleteById(core,generateId(item));
+                purge(item);
                 // fullTextSession.purge(item.getClass(), item.getId());
             }
 
@@ -422,7 +422,7 @@ public class SearchIndexService {
             logger.debug("begin flushing");
             // fullTextSession.flushToIndexes();
             UpdateResponse commit = template.commit(core);
-            logger.debug("response: {}", commit.getResponseHeader());
+            logger.trace("response: {}", commit.getResponseHeader());
 //            processBatch(docs);
         }
         
@@ -513,11 +513,11 @@ public class SearchIndexService {
      */
     public void purgeAll(List<Class<? extends Indexable>> classes) {
         for (Class<? extends Indexable> clss : classes) {
-            purge(getCoreForClass(clss));
+            purgeCore(getCoreForClass(clss));
         }
     }
 
-    private void purge(String core) {
+    private void purgeCore(String core) {
         try {
             template.deleteByQuery(core, "*:*");
             template.commit(core);
@@ -605,5 +605,13 @@ public class SearchIndexService {
             email.setUserGenerated(false);
             emailService.send(email);
         }
+    }
+
+    @Transactional(readOnly=true)
+    public void purge(Indexable entity) throws SolrServerException, IOException {
+        String core = getCoreForClass(entity.getClass());
+        template.deleteById(core,generateId(entity));
+        // TODO Auto-generated method stub
+        
     }
 }

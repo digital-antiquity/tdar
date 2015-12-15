@@ -49,7 +49,7 @@ public class SolrSearchObject<I extends Indexable> {
         this.setFirstResult(handler.getStartRecord());
 
         List<String> sort = new ArrayList<>();
-        if (ArrayUtils.isNotEmpty(sortOptions)) {
+        if (!ArrayUtils.isEmpty(sortOptions)) {
             for (SortOption option : sortOptions) {
                 String sortName = getSortFieldName(option);
                 logger.trace("{} - {}", option, sortName);

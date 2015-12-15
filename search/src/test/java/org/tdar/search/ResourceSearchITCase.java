@@ -25,6 +25,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.poi.hwpf.model.NoteType;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
@@ -65,6 +66,8 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
@@ -116,6 +119,19 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     @Autowired
     private AuthorizationService authenticationAndAuthorizationService;
 
+    @Test
+    @Rollback
+    @Ignore
+    public void t() {
+        SiteNameKeyword snk = genericKeywordService.findByLabel(SiteNameKeyword.class, "Atsinna");
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.getSiteNameKeywords().add(snk);
+        ResourceNote note = new ResourceNote(ResourceNoteType.GENERAL, "abcd");
+        doc.getResourceNotes().add(note);
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
+        logger.debug("hi");
+    }
 
     @Test
     @Rollback
