@@ -52,6 +52,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         ResourceCollection collection = setupCollection(true, getBasicUser(), true);
+        searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
 

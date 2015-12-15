@@ -132,13 +132,13 @@ import com.opensymphony.xwork2.TextProvider;
          logger.trace("completed adding facets");
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
-
-         Object searchMetadata[] = { q.getCoreName(), resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
+logger.debug(queryText);
+         Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                  lucene, (System.currentTimeMillis() - num),
                  ftq.getTotalResults(),
                  resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);
-         logger.debug("{} {}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
+         logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
          resultHandler.setSearchTitle(q.getDescription(textProvider));
          if (resultHandler.getStartRecord() > ftq.getResultSize()) {
              throw new SearchPaginationException(MessageHelper.getMessage("searchService.start_record_too_high", Arrays.asList(resultHandler.getStartRecord(),

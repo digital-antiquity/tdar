@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Before;
 import org.junit.Test;
@@ -127,7 +128,10 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Rollback(true)
     public void testFindAllSearchPhrase() throws ParseException, SolrServerException, IOException {
         doSearch("");
-        assertEquals(MessageHelper.getMessage("advancedSearchController.title_all_records"), controller.getSearchSubtitle());
+        logger.debug(controller.getSearchDescription());
+        logger.debug(controller.getSearchPhrase());
+        logger.debug(controller.getSearchSubtitle());
+       assertTrue(controller.getSearchPhrase().contains("All"));
     }
 
     @Test
@@ -141,6 +145,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
 
         // specify some filters that would normally filter-out the document we just created.
         firstGroup().getTitles().add("thistitleshouldprettymuchfilteroutanyandallresources");
+        firstGroup().setOperator(Operator.OR);
         firstGroup().getResourceIds().add(expectedId);
         doSearch("");
         assertEquals("expecting only one result", 1, controller.getResults().size());
