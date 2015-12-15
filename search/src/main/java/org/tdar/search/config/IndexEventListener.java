@@ -26,6 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.AutowireHelper;
@@ -56,6 +57,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
     
     @Override
+    @Transactional(readOnly=true)
     public void onFlush(FlushEvent event) throws HibernateException {
         if (isEnabled()) {
             try {
@@ -67,16 +69,19 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void onPostUpdateCollection(PostCollectionUpdateEvent event) {
         processCollectionEvent( event );
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void onPostRecreateCollection(PostCollectionRecreateEvent event) {
         processCollectionEvent( event );        
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void onPostRemoveCollection(PostCollectionRemoveEvent event) {
         processCollectionEvent( event );        
     }
@@ -105,6 +110,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void onPostDelete(PostDeleteEvent event) {
         if (!isEnabled()) {
             return;
@@ -121,6 +127,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void onPostUpdate(PostUpdateEvent event) {
         index(event.getEntity());
     }
@@ -138,11 +145,13 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
 
     @Override
+    @Transactional(readOnly=true)
     public void onPostInsert(PostInsertEvent event) {
         index(event.getEntity());        
     }
 
     @Override
+    @Transactional(readOnly=true)
     public boolean requiresPostCommitHanding(EntityPersister persister) {
         // TODO Auto-generated method stub
         return false;

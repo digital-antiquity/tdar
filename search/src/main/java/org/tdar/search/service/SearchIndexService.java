@@ -283,13 +283,13 @@ public class SearchIndexService {
                 // fullTextSession.purge(item.getClass(), item.getId());
             }
 
-            if (item instanceof Project) {
-                Project project = (Project) item;
-                if (null == project.getCachedInformationResources()) {
-                    setupProjectForIndexing(project);
-                    // logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
-                }
-            }
+//            if (item instanceof Project) {
+//                Project project = (Project) item;
+//                if (null == project.getCachedInformationResources()) {
+//                    setupProjectForIndexing(project);
+//                    // logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
+//                }
+//            }
             
             SolrInputDocument document = null;
             if (item instanceof Person) {

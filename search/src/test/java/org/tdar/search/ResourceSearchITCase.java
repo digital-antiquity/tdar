@@ -121,7 +121,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    @Ignore
+//    @Ignore
     public void t() {
         SiteNameKeyword snk = genericKeywordService.findByLabel(SiteNameKeyword.class, "Atsinna");
         Document doc = createAndSaveNewResource(Document.class);
