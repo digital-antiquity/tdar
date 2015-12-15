@@ -407,7 +407,7 @@ public class SearchIndexService {
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
-                    index(genericDao.merge(toIndex), true);
+                    index(toIndex, true);
                     if (count % FLUSH_EVERY == 0) {
                         logger.debug("indexing: {}", toIndex);
                         logger.debug("flush to index ... every {}", FLUSH_EVERY);
