@@ -13,6 +13,9 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
+import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
@@ -32,6 +35,7 @@ import org.tdar.web.TdarWebAppConfiguration;
  * 
  */
 @ContextConfiguration(classes = TdarWebAppConfiguration.class)
+@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD, classMode = ClassMode.AFTER_CLASS)
 public class CachingServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
