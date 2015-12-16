@@ -193,6 +193,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private SessionData sessionData;
+    
+    public AbstractIntegrationTestCase() {
+        // making sure all test-index data ends up in target
+        System.setProperty("solr.data.dir", "target/junit-solr/");
+    }
 
     @Rule
     public TestName testName = new TestName();

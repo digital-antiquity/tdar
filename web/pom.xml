@@ -434,10 +434,6 @@
                             <name>maven.it.global-settings.dir</name>
                             <value>${project.build.testOutputDirectory}</value>
                         </property>
-                        <systemProperty>
-                            <name>solr.lock.type</name>
-                            <value>none</value>
-                        </systemProperty>
                     </systemProperties>
                     <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
                         </includes> -->
@@ -477,12 +473,6 @@
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
-                            <systemProperties>
-                                <systemProperty>
-                                    <name>solr.lock.type</name>
-                                    <value>none</value>
-                                </systemProperty>
-                            </systemProperties>
                         </configuration>
                     </execution>
                     <execution>
@@ -530,10 +520,9 @@
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
                     <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true</argLine>
+                        -DenableContextSwitchingConfig=true -Dsolr.data.dir=target/solr-failsafe/</argLine>
                 </configuration>
             </plugin>
-
             <plugin>
                 <!-- with this plugin we can do the following to push our 
                     war file out to the test server -->
