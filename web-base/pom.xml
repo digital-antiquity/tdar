@@ -210,6 +210,22 @@
                                     <daemon>true</daemon>
                                     <systemProperties>
                                         <systemProperty>
+                                            <name>jetty.ssl.port</name>
+                                            <value>${jetty.ssl.port}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <name>maven.rootDir</name>
+                                            <value>${basedir}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <name>jetty.port</name>
+                                            <value>${jetty.port}</value>
+                                        </systemProperty>
+                                        <systemProperty>
+                                            <name>slf4j</name>
+                                            <value>true</value>
+                                        </systemProperty>
+                                        <systemProperty>
                                             <name>solr.data.dir</name>
                                             <value>target/solr-jetty/</value>
                                         </systemProperty>
