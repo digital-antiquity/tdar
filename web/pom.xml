@@ -520,7 +520,7 @@
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
                     <argLine>${jvm.args}
-                        -DenableContextSwitchingConfig=true -Dsolr.data.dir=target/solr-failsafe/</argLine>
+                        -DenableContextSwitchingConfig=true -Dsolr.data.dir=target/solr-failsafe/ -Dsolr.lock.type=none</argLine>
                 </configuration>
             </plugin>
             <plugin>

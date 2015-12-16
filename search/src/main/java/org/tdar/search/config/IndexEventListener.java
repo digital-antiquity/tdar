@@ -105,8 +105,10 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         } else {
             collectionRole = null;
         }
-        Class v = persistentCollection.getValue().getClass();
-        logger.trace("{} {} {} {}", event.getClass(), v, event.getAffectedOwnerEntityName());
+        if (persistentCollection != null && persistentCollection.getValue() != null) {
+            Class v = persistentCollection.getValue().getClass();
+            logger.trace("{} {} {} {}", event.getClass(), v, event.getAffectedOwnerEntityName());
+        }
     }
 
     @Override
