@@ -26,10 +26,10 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ImportService;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -39,7 +39,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
@@ -135,6 +135,8 @@ public class APIController extends AuthenticationAware.Base {
                 getXmlResultObject().setRecordId(loadedRecord.getId());
                 getXmlResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
+            } else {
+                reconcileAccountId(loadedRecord);
             }
 
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
@@ -238,6 +240,8 @@ public class APIController extends AuthenticationAware.Base {
             processIncomingFileProxies(incomingList);
 
             Resource loadedRecord = importService.processFileProxies(incoming, incomingList, getAuthenticatedUser());
+            reconcileAccountId(loadedRecord);
+            
             updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
@@ -292,6 +296,21 @@ public class APIController extends AuthenticationAware.Base {
         errorResponse(StatusCode.UNKNOWN_ERROR);
         return ERROR;
 
+    }
+
+    private void reconcileAccountId(Resource loadedRecord) {
+        if (!getTdarConfiguration().isPayPerIngestEnabled()) {
+            return;
+        }
+        if (PersistableUtils.isNullOrTransient(getAccountId())) {
+            accountService.updateTransientAccountInfo(loadedRecord);
+            if (PersistableUtils.isNotNullOrTransient(loadedRecord.getAccount())) {
+                setAccountId(loadedRecord.getAccount().getId());
+            }
+        }
+        if (PersistableUtils.isNullOrTransient(getAccountId()) && isAdministrator()) {
+            setAccountId(TdarConfiguration.getInstance().getAdminBillingAccountId());
+        }
     }
 
     private String errorResponse(StatusCode statusCode) {
