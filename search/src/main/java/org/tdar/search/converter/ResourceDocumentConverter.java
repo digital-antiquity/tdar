@@ -80,10 +80,12 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;
-            doc.setField(QueryFieldNames.PROJECT_ID, ir.getProjectId());
-            doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
-            doc.setField(QueryFieldNames.PROJECT_TITLE_AUTOCOMPLETE, ir.getProjectTitle());
-            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
+            if (ir.getProject() != null) {
+                doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
+                doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
+                doc.setField(QueryFieldNames.PROJECT_TITLE_AUTOCOMPLETE, ir.getProjectTitle());
+                doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
+            }
             doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
