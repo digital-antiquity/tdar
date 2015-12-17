@@ -14,6 +14,7 @@ import java.net.URISyntaxException;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -366,8 +367,13 @@ public class PdfService {
      * @param utf8Text
      * @return
      */
-    private String transliterate(String utf8Text) {
-        Transliterator instance = Transliterator.getInstance("NFD; [:Nonspacing Mark:] Remove; NFC.");
+    public String transliterate(String utf8Text) {
+//        Enumeration<String> availableIDs = Transliterator.getAvailableIDs();
+//        while (availableIDs.hasMoreElements()) {
+//            String str  = availableIDs.nextElement();
+//            logger.debug("{}", str);
+//        }
+        Transliterator instance = Transliterator.getInstance("Latin-ASCII");
         logger.error("check that I work properly");
         String text = instance.transliterate(utf8Text);
         return text;
