@@ -58,6 +58,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
@@ -164,9 +165,13 @@ public class ImportService {
 
     public <R extends InformationResource> R processFileProxies(R incoming_, Collection<FileProxy> proxies, TdarUser authorizedUser) throws APIException,
             IOException {
+        for (InformationResourceFile file : incoming_.getInformationResourceFiles()) {
+            InformationResourceFile file2 = genericService.markWritableOnExistingSession(file);
+        }
         processFiles(authorizedUser, proxies, incoming_);
         incoming_.markUpdated(authorizedUser);
         genericService.saveOrUpdate(incoming_);
+        genericService.saveOrUpdate(incoming_.getInformationResourceFiles());
         return incoming_;
 
     }

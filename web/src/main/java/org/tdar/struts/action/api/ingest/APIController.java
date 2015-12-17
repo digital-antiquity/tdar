@@ -39,6 +39,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbResultContainer;
@@ -215,6 +216,7 @@ public class APIController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
+//    @WriteableSession
     public String updateFiles() {
 
         if (StringUtils.isEmpty(getRecord())) {
