@@ -13,11 +13,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.web.TdarWebAppConfiguration;
+import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
 import com.opensymphony.xwork2.ActionProxy;
 
-@ContextConfiguration(classes = TdarWebAppConfiguration.class)
+@ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @Transactional

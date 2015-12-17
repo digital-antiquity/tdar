@@ -15,9 +15,9 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.annotation.DirtiesContext.MethodMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.web.TdarWebAppConfiguration;
+import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
-@ContextConfiguration(classes = TdarWebAppConfiguration.class)
+@ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
 @DirtiesContext(methodMode = MethodMode.BEFORE_METHOD, classMode = ClassMode.AFTER_CLASS)
 public class CronScheduledTaskITCase extends AbstractIntegrationTestCase {
 

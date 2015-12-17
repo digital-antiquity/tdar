@@ -111,7 +111,7 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     private static final String L_BL_AW = "l[]bl aw\\";
 
     @Autowired
-    ResourceService resourceServicek;
+    ResourceService resourceService;
 
     @Autowired
     EntityService entityService;
@@ -1623,8 +1623,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
     
     
 
-    protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;
-    protected static final Long DOCUMENT_INHERITING_NOTHING_ID = 4231L;
     protected static List<ResourceType> allResourceTypes = Arrays.asList(ResourceType.values());
 
     @Autowired
@@ -1873,16 +1871,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         assertTrue(result.getSearchTitle().contains("Resource Located"));
     }
 
-    @Test
-    @Rollback(true)
-    public void testForInheritedCulturalInformationFromProject() throws ParseException, SolrServerException, IOException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
-        ReservedSearchParameters rparams = new ReservedSearchParameters();
-        rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
-        SearchResult result = doSearch("Archaic",null,null,rparams);
-        assertTrue("'Archaic' defined inparent project should be found in information resource", resultsContainId(result,DOCUMENT_INHERITING_CULTURE_ID));
-        assertFalse("A child document that inherits nothing from parent project should not appear in results", resultsContainId(result,DOCUMENT_INHERITING_NOTHING_ID));
-    }
 
     @Test
     @Rollback(true)
@@ -2015,11 +2003,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
         assertTrue("expected to find document that uses known investigation types", resultsContainId(result,262L));
     }
 
-    private boolean resultsContainId(SearchResult result, long l) {
-        List<Long> extractIds = PersistableUtils.extractIds(result.getResults());
-        return extractIds.contains(l);
-    }
-
 
     // add all investigation types... for some reason
     private SearchParameters addInvestigationTypes(SearchParameters params) {
@@ -2142,28 +2125,6 @@ public class ResourceSearchITCase extends AbstractResourceSearchITCase {
 
     }
 
-    private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams, SortOption option) throws ParseException, SolrServerException, IOException {
-        SearchParameters params = params_;
-        if (params == null) {
-            params =new SearchParameters();            
-        }
-        if (StringUtils.isNotBlank(text )) {
-            params.getAllFields().add(text);
-        }
-        ResourceQueryBuilder search = resourceSearchService.buildAdvancedSearch(params, reservedParams, user,MessageHelper.getInstance());
-        SearchResult result = new SearchResult();
-        result.setSortField(option);
-        searchService.handleSearch(search, result, MessageHelper.getInstance());
-        return result;
-    }
-
-    private SearchResult doSearch(String text, TdarUser user, SearchParameters params_, ReservedSearchParameters reservedParams) throws ParseException, SolrServerException, IOException {
-        return doSearch(text, user, params_, reservedParams, null);
-    }
-    
-    private SearchResult doSearch(String text) throws ParseException, SolrServerException, IOException {
-        return doSearch(text,null,null, null,null);
-    }
 
 
 }
