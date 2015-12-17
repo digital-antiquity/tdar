@@ -699,10 +699,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
                 new ArrayList<Resource>(), collection1.getId());
         evictCache();
         searchIndexService.index(collection1, collection2);
+        logger.debug("1:{} 2:{}", collection1.getId(), collection2.getId());
         searchIndexService.flushToIndexes();
         BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class);
         browseController.setRecordsPerPage(Integer.MAX_VALUE);
         browseController.browseCollections();
+        logger.debug("results:{}", PersistableUtils.extractIds(browseController.getResults()));
         assertTrue("should see child collection of hidden parent", browseController.getResults().contains(collection2));
         assertFalse("should not see hidden collection", browseController.getResults().contains(collection1));
     }

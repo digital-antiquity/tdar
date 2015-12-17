@@ -253,6 +253,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         titleCase.getResources().add(doc);
         lowerCase.getResources().add(doc);
         upperCase.getResources().add(doc);
+        genericService.saveOrUpdate(usafLowerCase, titleCase, lowerCase, upperCase);
         reindex();
 
         // search lowercase one word

@@ -130,7 +130,6 @@ public class SolrSearchObject<I extends Indexable> {
         }
         if (StringUtils.isNotBlank(sortParam)) {
             solrQuery.setParam("sort", sortParam);
-            logger.debug("sort:{}", sortParam);
         }
         solrQuery.setParam("fl", StringUtils.join(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"), ","));
 
