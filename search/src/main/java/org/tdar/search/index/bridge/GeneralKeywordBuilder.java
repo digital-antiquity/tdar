@@ -57,7 +57,7 @@ public class GeneralKeywordBuilder implements Serializable {
     public void indexResource(Resource r, StringBuilder sb) {
 //        logger.trace("get keyword contents: {}", r.getId());
         sb.append(r.getTitle()).append(" ").append(r.getDescription()).append(" ").append(" ");
-
+        sb.append(r.getId()).append(" ");
         Collection<Keyword> kwds = r.getAllActiveKeywords();
 
         for (Keyword kwd : kwds) {
