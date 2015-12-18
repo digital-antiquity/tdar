@@ -121,7 +121,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             int totalRecords = 0;
             int firstRec = 0;
             int lastRec = 0;
-
+            q.setRecordsPerPage(numberOfRecords);
             // actually perform the search against the index
             try {
                 searchService.handleSearch(qb,q, MessageHelper.getInstance());
@@ -139,7 +139,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
                 if (totalRecords > 0) {
                     firstRec = 1;
                 }
-//                q.setMaxResults(numberOfRecords);
+
                 if (totalRecords > numberOfRecords) {
                     totalExceedsRequested = true;
                     lastRec = numberOfRecords;
