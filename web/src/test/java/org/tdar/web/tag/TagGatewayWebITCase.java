@@ -32,7 +32,7 @@ import org.tdar.tag.TagGateway;
 import org.tdar.tag.TagGatewayPort;
 import org.tdar.tag.TagGatewayService;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
+import org.tdar.web.AbstractWebTestCase;
 import org.w3c.dom.Element;
 
 /**
@@ -41,7 +41,7 @@ import org.w3c.dom.Element;
  * @author abrin
  *
  */
-public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
+public class TagGatewayWebITCase extends AbstractWebTestCase {
 
     private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "services/TagGatewayService?wsdl";
     private static final String SERVICE_NAMESPACE = "http://archaeologydataservice.ac.uk/tag/schema";
@@ -50,12 +50,23 @@ public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Autowired
     TagGateway gateway;
+    private static boolean setUpIsDone = false;
 
-    @Before
-    public void setupServiceClient() throws MalformedURLException {
+    public TagGatewayWebITCase() throws MalformedURLException {
+        if (setUpIsDone) {
+            return;
+        }
+        setUpIsDone = true;
+        TestConfiguration TEST = TestConfiguration.getInstance();
+        initializeAndConfigureWebClient();
+        login(TEST.getAdminUsername(), TEST.getAdminPassword());
         reindex();
         logout();
-
+        logger.debug("-----------------------------------------------------------------------------------------------");
+    }
+    
+    @Before
+    public void setupServiceClient() throws MalformedURLException {
         // use this to run the TAG Gateway with a direct connection, not a socket connection
         boolean runLocal = false;
         if (!runLocal) {
@@ -112,6 +123,8 @@ public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         SearchResults results = getResults(query, sessionId);
         Meta meta = results.getMeta();
         assertEquals(sessionId, meta.getSessionID());
+        logger.debug("total: {}", meta.getTotalRecords());
+        logger.debug("records: {}", results.getResults());        
         assertTrue(meta.getTotalRecords() > 0); // we are absolutely 100% positive that there are maybe some records that should come back.
         assertEquals(5, results.getResults().getResult().size());
     }
@@ -187,6 +200,7 @@ public class TagGatewayWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private boolean titleInResults(List<ResultType> results, String title) {
         for (ResultType res : results) {
+            logger.debug(res.getIdentifier() + " " + res.getTitle());
             if (res.getTitle().equalsIgnoreCase(title)) {
                 return true;
             }

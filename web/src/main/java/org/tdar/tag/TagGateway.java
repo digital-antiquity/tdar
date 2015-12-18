@@ -135,7 +135,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             boolean totalExceedsRequested = false;
 
             if (q != null) {
-                totalRecords = q.getResultSize();
+                totalRecords = q.getTotalRecords();
                 if (totalRecords > 0) {
                     firstRec = 1;
                 }

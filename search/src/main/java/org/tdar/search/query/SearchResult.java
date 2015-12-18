@@ -15,7 +15,6 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
     private SortOption secondarySortField;
-    private int resultSize = 0;
     private int totalRecords = 0;
     private int startRecord = 0;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -54,14 +53,6 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     public void setSecondarySortField(SortOption secondarySortField) {
         this.secondarySortField = secondarySortField;
-    }
-
-    public int getResultSize() {
-        return resultSize;
-    }
-
-    public void setResultSize(int resultSize) {
-        this.resultSize = resultSize;
     }
 
     @Override

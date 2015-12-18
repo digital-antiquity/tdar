@@ -864,7 +864,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         skipHtmlValidation = false;
     }
 
-    private void initializeAndConfigureWebClient() {
+    protected void initializeAndConfigureWebClient() {
         webClient.getOptions().setUseInsecureSSL(true);
         // webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setJavaScriptEnabled(false);
@@ -877,6 +877,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         webClient.getOptions().setTimeout(0);
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
+        
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
 
             @Override
