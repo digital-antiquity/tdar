@@ -109,9 +109,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Autowired
     EntityService entityService;
 
-    @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
-
     @Test
     @Rollback
     public void testSiteNameKeywords() throws SolrServerException, IOException, ParseException {
@@ -488,7 +485,11 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchParameters sp = new SearchParameters();
         sp.getProjects().add(sparseProject(projectId));
         SearchResult<Resource> result = doSearch(null, null, sp, null, sortField);
-        logger.info("{}", result.getResults());
+//        logger.info("{}", result.getResults());
+        for (Resource d: result.getResults()) {
+            InformationResource ir = (InformationResource)d;
+            logger.debug("{} {} {}", ir.getDate(),ir.getId(), ir);
+        }
         Indexable found = result.getResults().iterator().next();
         logger.info("{}", found);
         Assert.assertEquals(message, expectedId, found.getId());
@@ -564,7 +565,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testSortFieldDateCreated() throws ParseException, SolrServerException, IOException {
+    public void testSortFieldDate() throws ParseException, SolrServerException, IOException {
         Long alphaId = -1L;
         Long omegaId = -1L;
         Project p = new Project();

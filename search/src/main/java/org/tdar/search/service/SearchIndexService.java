@@ -398,7 +398,9 @@ public class SearchIndexService {
         boolean exceptions = false;
         
         if (CollectionUtils.isNotEmpty(indexable)) {
-            logger.debug("manual indexing ... {}", indexable.size());
+            if (CollectionUtils.size(indexable) > 1) {
+                logger.debug("manual indexing ... {}", indexable.size());
+            }
             // FullTextSession fullTextSession = getFullTextSession();
             int count = 0;
             String core = "";
@@ -420,7 +422,7 @@ public class SearchIndexService {
                     exceptions = true;
                 }
             }
-            logger.debug("begin flushing");
+            logger.trace("begin flushing");
             // fullTextSession.flushToIndexes();
             UpdateResponse commit = template.commit(core);
             logger.trace("response: {}", commit.getResponseHeader());
@@ -428,7 +430,9 @@ public class SearchIndexService {
         }
         
 
-        logger.debug("Done indexing");
+        if (indexable != null && CollectionUtils.size(indexable) > 1) {
+            logger.debug("Done indexing");
+        }
         return exceptions;
     }
 

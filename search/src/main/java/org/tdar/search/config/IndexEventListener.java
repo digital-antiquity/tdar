@@ -138,7 +138,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         logger.trace("{}", entity);
         if (entity instanceof Indexable && isEnabled()) {
             try {
-                logger.debug("indexing: {}", entity);
+//                logger.debug("indexing: {}", entity);
                 getSearchIndexService().index((Indexable)entity);
             } catch (SolrServerException | IOException e) {
                 logger.error("error indexing",e);

@@ -210,9 +210,9 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
                     Object item2 = results.get(i + 1);
                     String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);
                     if (sortOption.isReversed()) {
-                        assertTrue(msg, comparator.compare(item1, item2) <= 0);
-                    } else {
                         assertTrue(msg, comparator.compare(item1, item2) >= 0);
+                    } else {
+                        assertTrue(msg, comparator.compare(item1, item2) <= 0);
                     }
                 }
             }
@@ -247,9 +247,9 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
             Resource item2 = resources.get(i + 1);
             String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);
             if (sortOption.isReversed()) {
-                assertTrue(msg, comparator.compare(item1, item2) <= 0);
-            } else {
                 assertTrue(msg, comparator.compare(item1, item2) >= 0);
+            } else {
+                assertTrue(msg, comparator.compare(item1, item2) <= 0);
             }
         }
     }

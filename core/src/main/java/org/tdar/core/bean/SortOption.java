@@ -16,28 +16,16 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 
 public enum SortOption {
-    RELEVANCE(null, "Relevance", false),
-    ID(null, "ID",false),
-    ID_REVERSE(null, "ID (Most Recent)", true),
-    COLLECTION_TITLE(ResourceCollection.class, "Title"),
-    COLLECTION_TITLE_REVERSE(ResourceCollection.class, "Title (Z-A)", true),
-    TITLE(Resource.class, "Title"),
-    TITLE_REVERSE(Resource.class, "Title (Z-A)", true),
-    PROJECT(Resource.class, "Project" ),
-    DATE(Resource.class, "Date", false),
-    DATE_REVERSE(Resource.class, "Date (Most Recent)", true),
-    DATE_UPDATED(Resource.class, "Date Updated", false),
-    DATE_UPDATED_REVERSE(Resource.class, "Date Updated (Most Recent)", true),
-    RESOURCE_TYPE(Resource.class, "Resource Type"),
-    RESOURCE_TYPE_REVERSE(Resource.class, "Resource Type (Z-A)", true),
-    LABEL(Keyword.class, "Label"),
-    LABEL_REVERSE(Keyword.class, "Label",true),
-    CREATOR_NAME(Creator.class, "Name"),
-    CREATOR_NAME_REVERSE(Creator.class, "Name", true),
-    FIRST_NAME(Person.class, "First Name"),
-    FIRST_NAME_REVERSE(Person.class, "First Name (Reversed)", true),
-    LAST_NAME(Person.class, "Last Name"),
-    LAST_NAME_REVERSE(Person.class, "Last Name (Reversed)", true);
+    RELEVANCE(null, "Relevance", false), ID(null, "ID", false), ID_REVERSE(null, "ID (Most Recent)", true), COLLECTION_TITLE(ResourceCollection.class,
+            "Title"), COLLECTION_TITLE_REVERSE(ResourceCollection.class, "Title (Z-A)", true), TITLE(Resource.class, "Title"), TITLE_REVERSE(Resource.class,
+                    "Title (Z-A)", true), PROJECT(Resource.class, "Project"), DATE(Resource.class, "Date", false), DATE_REVERSE(Resource.class,
+                            "Date (Most Recent)", true), DATE_UPDATED(Resource.class, "Date Updated", false), DATE_UPDATED_REVERSE(Resource.class,
+                                    "Date Updated (Most Recent)", true), RESOURCE_TYPE(Resource.class, "Resource Type"), RESOURCE_TYPE_REVERSE(Resource.class,
+                                            "Resource Type (Z-A)",
+                                            true), LABEL(Keyword.class, "Label"), LABEL_REVERSE(Keyword.class, "Label", true), CREATOR_NAME(Creator.class,
+                                                    "Name"), CREATOR_NAME_REVERSE(Creator.class, "Name", true), FIRST_NAME(Person.class,
+                                                            "First Name"), FIRST_NAME_REVERSE(Person.class, "First Name (Reversed)", true), LAST_NAME(
+                                                                    Person.class, "Last Name"), LAST_NAME_REVERSE(Person.class, "Last Name (Reversed)", true);
 
     private String label;
     private String sortField;
@@ -48,7 +36,6 @@ public enum SortOption {
     public static SortOption getDefaultSortOption() {
         return RELEVANCE;
     }
-    
 
     private SortOption(Class<? extends Indexable> context, String label) {
         this(context, label, false);
@@ -159,7 +146,12 @@ public enum SortOption {
     }
 
     public String getSortOrder() {
-        if (reversed) {
+        // SOLR's sorting seems to be reverse of what we're used to, so for most cases, we invert what they're asking for
+        // the exception is relevancy
+        if (this == RELEVANCE) {
+            return "desc";
+        }
+        if (!reversed) {
             return "asc";
         }
         return "desc";
