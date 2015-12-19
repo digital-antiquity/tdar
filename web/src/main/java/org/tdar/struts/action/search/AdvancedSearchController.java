@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -145,7 +146,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
         try {
             SearchResult<ResourceCollection> result = new SearchResult<>();
-            result.setSortField(getSortField());
+            result.setSortField(SortOption.RELEVANCE);
             result.setSecondarySortField(getSecondarySortField());
             result.setAuthenticatedUser(getAuthenticatedUser());
             result.setStartRecord(0);
