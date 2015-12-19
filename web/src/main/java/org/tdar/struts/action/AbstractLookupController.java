@@ -30,22 +30,16 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
-import org.tdar.search.query.builder.PersonQueryBuilder;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.CreatorSearchService;
-import org.tdar.search.service.ReservedSearchParameters;
 import org.tdar.search.service.SearchService;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
-
-import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author Adam Brin

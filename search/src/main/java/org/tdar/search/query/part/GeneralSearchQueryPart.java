@@ -10,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.service.SearchFieldType;
 
 import com.opensymphony.xwork2.TextProvider;
 

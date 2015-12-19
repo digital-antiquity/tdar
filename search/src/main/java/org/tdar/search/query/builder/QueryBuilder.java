@@ -9,8 +9,8 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.lucene.search.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.search.service.SearchParameters;
 
 import com.opensymphony.xwork2.TextProvider;
 

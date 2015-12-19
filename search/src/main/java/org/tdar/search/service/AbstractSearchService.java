@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.bean.ReservedSearchParameters;
 
 public abstract class AbstractSearchService {
     

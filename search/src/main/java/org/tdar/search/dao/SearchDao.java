@@ -20,11 +20,11 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.search.service.SolrSearchObject;
 import org.tdar.utils.PersistableUtils;
 
 @Component

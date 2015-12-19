@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.bean;
 
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;

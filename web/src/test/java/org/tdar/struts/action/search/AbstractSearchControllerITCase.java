@@ -34,8 +34,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.SearchParameters;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.AbstractLookupController;
 

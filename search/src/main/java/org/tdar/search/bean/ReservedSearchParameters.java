@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.bean;
 
 import java.util.ArrayList;
 import java.util.List;

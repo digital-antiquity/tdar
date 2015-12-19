@@ -1,12 +1,10 @@
-package org.tdar.search;
+package org.tdar.search.bean;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.tdar.search.service.ReservedSearchParameters;
-import org.tdar.search.service.SearchParameters;
 
 public class AdvancedSearchQueryObject implements Serializable {
 

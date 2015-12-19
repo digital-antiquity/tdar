@@ -30,10 +30,11 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.bean.ReservedSearchParameters;
+import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.ReservedSearchParameters;
 import org.tdar.search.service.ResourceSearchService;
-import org.tdar.search.service.SearchParameters;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
