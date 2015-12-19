@@ -47,9 +47,8 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
         setMinLookupLength(0);
         setLookupSource(LookupSource.INSTITUTION);
         setMode("INSTITUTION");
-        InstitutionQueryBuilder iqb = creatorSearchService.searchInstitution(getQuery());
         try {
-            handleSearch(iqb);
+            creatorSearchService.searchInstitution(getQuery(),this,this);
         } catch (TdarRecoverableRuntimeException | ParseException trex) {
             addActionError(trex.getMessage());
             return INPUT;

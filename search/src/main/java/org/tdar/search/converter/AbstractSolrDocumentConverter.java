@@ -10,6 +10,7 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.service.SearchUtils;
 
 public class AbstractSolrDocumentConverter {
 
@@ -21,7 +22,7 @@ public class AbstractSolrDocumentConverter {
         SolrInputDocument doc = new SolrInputDocument();
         doc.setField(QueryFieldNames.ID, persist.getId());
         doc.setField(QueryFieldNames.CLASS, persist.getClass().getName());
-        doc.setField(QueryFieldNames._ID, persist.getClass().getSimpleName() + "-" + persist.getId());
+        doc.setField(QueryFieldNames._ID, SearchUtils.createKey(persist));
         if (persist instanceof HasStatus) {
             doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus().name());
         }

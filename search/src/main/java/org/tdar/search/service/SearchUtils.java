@@ -1,6 +1,7 @@
 package org.tdar.search.service;
 
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.core.bean.Persistable;
 
 public class SearchUtils {
 
@@ -13,6 +14,10 @@ public class SearchUtils {
             return true;
         }
         return StringUtils.isNotEmpty(value) && (value.trim().length() >= length);
+    }
+
+    public static String createKey(Persistable pers) {
+        return pers.getClass().getSimpleName() + "-" + pers.getId();
     }
 
 }

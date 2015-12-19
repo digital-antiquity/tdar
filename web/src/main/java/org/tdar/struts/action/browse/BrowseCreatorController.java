@@ -57,10 +57,8 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.service.CreatorSearchService;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchFieldType;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -151,10 +149,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private transient EntityService entityService;
 
     @Autowired
-    private transient SearchService searchService;
-
-    @Autowired
-    private transient CreatorSearchService creatorSearchService;
+    private transient ResourceSearchService resourceSearchService;
     
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
@@ -304,7 +299,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     }
 
     private void prepareLuceneQuery() throws TdarActionException {
-        QueryBuilder queryBuilder = creatorSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
         if (PersistableUtils.isNotNullOrTransient(creator)) {
@@ -314,7 +308,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             setRecordsPerPage(50);
             try {
                 setProjectionModel(ProjectionModel.RESOURCE_PROXY);
-                handleSearch(queryBuilder);
+                resourceSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this,this);
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
             } catch (SearchPaginationException spe) {

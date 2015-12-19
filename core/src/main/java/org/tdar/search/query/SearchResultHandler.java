@@ -2,6 +2,7 @@ package org.tdar.search.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.tdar.core.bean.Indexable;
@@ -91,9 +92,8 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     int getPrevPageStartRecord();
 
-//    @SuppressWarnings("rawtypes")
-//    List<FacetGroup<? extends Enum>> getFacetFields();
-
+    <C> void facetBy(Class<C> c, Collection<C> vals);
+    
     int getDefaultRecordsPerPage();
 
     void setSearchTitle(String description);

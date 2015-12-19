@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -22,9 +21,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.service.CollectionSearchService;
-import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase {
@@ -34,9 +31,6 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
         searchIndexService.purgeAll(Arrays.asList(ResourceCollection.class));
         searchIndexService.indexAll(getAdminUser(),ResourceCollection.class);
     };
-
-    @Autowired
-    SearchService searchService;
 
     @Autowired
     CollectionSearchService collectionSearchService;
@@ -53,17 +47,15 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Rollback(true)
     public void testCollectionLookup() throws IOException, SolrServerException, ParseException {
         setupCollections();
-        SearchResult results = search(null, null, "Kin");
-        for (Indexable collection_ : results.getResults()) {
-            ResourceCollection collection = (ResourceCollection) collection_;
+        SearchResult<ResourceCollection> results = search(null, null, "Kin");
+        for (ResourceCollection collection : results.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
                 assertFalse(collection.getTitle().equals("Kleis"));
             }
         }
         results = search(null, null, "Kintigh - C");
-        for (Indexable collection_ : results.getResults()) {
-            ResourceCollection collection = (ResourceCollection) collection_;
+        for (ResourceCollection collection : results.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
                 assertTrue(collection.getTitle().contains("Kintigh - C"));
@@ -72,11 +64,10 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
 
     }
 
-    private SearchResult search(TdarUser user, GeneralPermissions permission, String title) throws ParseException, SolrServerException, IOException {
-        SearchResult results = new SearchResult();
+    private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title) throws ParseException, SolrServerException, IOException {
+        SearchResult<ResourceCollection> results = new SearchResult();
         results.setRecordsPerPage(100);
-        ResourceCollectionQueryBuilder findCollection = collectionSearchService.findCollection(user, permission, title);
-        searchService.handleSearch(findCollection, results, MessageHelper.getInstance());
+        collectionSearchService.findCollection(user, permission, title,results, MessageHelper.getInstance());
         return results;
     }
 
@@ -84,9 +75,8 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Rollback(true)
     public void testCollectionLookupUnauthenticated() throws SolrServerException, IOException, ParseException {
         setupCollections();
-        SearchResult result = search(null, null, "Kintigh - C");
-        for (Indexable collection_ : result.getResults()) {
-            ResourceCollection collection = (ResourceCollection) collection_;
+        SearchResult<ResourceCollection> result = search(null, null, "Kintigh - C");
+        for (ResourceCollection collection : result.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
                 assertTrue(collection.getTitle().contains("Kintigh - C"));
@@ -111,7 +101,7 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        SearchResult result = search(null, null,"test");
+        SearchResult<ResourceCollection> result = search(null, null,"test");
         assertTrue(result.getResults().contains(e));
     }
 
@@ -119,7 +109,7 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUser() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        SearchResult result = search(getBasicUser(), null, "test");
+        SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
     }
 
@@ -127,7 +117,7 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        SearchResult result = search(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP, "test");
+        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP, "test");
         assertFalse(result.getResults().contains(e));
     }
 

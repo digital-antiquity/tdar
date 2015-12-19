@@ -953,7 +953,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
     public void testProjectView() {
         // this should probably be done @before every test but it would slow things down even more
-        reindex();
+//        reindex();
         gotoPage("/project/3805");
         logger.trace("{}", this);
         assertTextPresentInPage("New Philadelphia Archaeology Project");

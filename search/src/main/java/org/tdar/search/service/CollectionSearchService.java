@@ -1,19 +1,23 @@
  package org.tdar.search.service;
 
- import java.util.List;
+ import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.CollectionAccessQueryPart;
@@ -22,14 +26,19 @@ import org.tdar.search.query.part.GeneralSearchQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.utils.PersistableUtils;
 
+import com.opensymphony.xwork2.TextProvider;
+
  @Service
  @Transactional
- public class CollectionSearchService<I extends Indexable> {
+ public class CollectionSearchService extends AbstractSearchService {
 
      @Autowired
      private transient AuthorizationService authorizationService;
      
-     public ResourceCollectionQueryBuilder buildResourceCollectionQuery(TdarUser authenticatedUser, List<String> allFields) {
+     @Autowired
+     private transient SearchService<ResourceCollection> searchService;
+     
+     public SearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, List<String> allFields, SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
          ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
          queryBuilder.setOperator(Operator.AND);
 
@@ -55,10 +64,12 @@ import org.tdar.utils.PersistableUtils;
              }
          }
          queryBuilder.append(rightsPart);
-         return queryBuilder;
+         searchService.handleSearch(queryBuilder, result, provider);
+         return result;
+
      }
 
-    public ResourceCollectionQueryBuilder findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title) {
+    public SearchResultHandler<ResourceCollection> findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title, SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
         q.append(new AutocompleteTitleQueryPart(title));
         boolean admin = false;
@@ -67,7 +78,9 @@ import org.tdar.utils.PersistableUtils;
         }
         CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(authenticatedUser, admin, permission);
         q.append(queryPart);
-        return q;
+        searchService.handleSearch(q, result, provider);
+        return result;
+
     }
 
      

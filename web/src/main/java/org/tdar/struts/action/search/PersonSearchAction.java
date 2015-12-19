@@ -47,9 +47,8 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
         setMinLookupLength(0);
         setMode("PERSON");
         setLookupSource(LookupSource.PERSON);
-        PersonQueryBuilder pqb = creatorSearchService.findPerson(getQuery());
         try {
-            handleSearch(pqb);
+            creatorSearchService.findPerson(getQuery(),this,this);
         } catch (TdarRecoverableRuntimeException | ParseException trex) {
             addActionError(trex.getMessage());
             return INPUT;

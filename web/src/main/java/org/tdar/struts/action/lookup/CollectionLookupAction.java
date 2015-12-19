@@ -17,7 +17,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.service.CollectionSearchService;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.struts.action.AbstractLookupController;
@@ -56,9 +55,8 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         setMode("collectionLookup");
         // only return results if query length has enough characters
         if (SearchUtils.checkMinString(getTerm(), getMinLookupLength())) {
-            ResourceCollectionQueryBuilder q = collectionSearchService.findCollection(getAuthenticatedUser(), getPermission(), getTerm());
             try {
-                handleSearch(q);
+                collectionSearchService.findCollection(getAuthenticatedUser(), getPermission(), getTerm(),this,this);
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;

@@ -22,6 +22,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.service.ResourceLookupObject;
 import org.tdar.search.service.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.PersistableUtils;
@@ -71,13 +72,21 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-        ResourceQueryBuilder q = resourceSearchService.lookupResource(getTerm(), getProjectId(), isIncludeCompleteRecord(), getCollectionId(), getSortCategoryId(),getAuthenticatedUser(), getReservedSearchParameters(), permission, this);
+        ResourceLookupObject look = new ResourceLookupObject();
+        look.setTerm(term);
+        look.setProjectId(projectId);
+        look.setCollectionId(collectionId);
+        look.setCategoryId(sortCategoryId);
+        look.setReservedSearchParameters(getReservedSearchParameters());
+        look.setPermission(permission);
+        
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
 
         try {
-            handleSearch(q);
+            // includeComplete?
+            resourceSearchService.lookupResource(getAuthenticatedUser(),look,this,this);
             getLogger().trace("jsonResults: {}", getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);

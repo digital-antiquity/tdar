@@ -35,10 +35,9 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.UrlService;
+import org.tdar.search.AdvancedSearchQueryObject;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchFieldType;
 import org.tdar.search.service.SearchParameters;
 import org.tdar.search.service.SearchService;
@@ -57,6 +56,8 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     @Autowired
     private transient SearchService searchService;
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
@@ -90,8 +91,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     // SearchParams.toQueryGroup only returns 'dehydrated' query parts. after
     // the search they will (potentially) be hydrated.
     // let's hang on to that state for the search phrase
-    private QueryPartGroup topLevelQueryPart;
-    private QueryPartGroup reservedQueryPart;
 
     // support for "explore" requests
     private boolean explore = false;
@@ -99,29 +98,13 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     private boolean collectionSearchBoxVisible = false;
 
+    private AdvancedSearchQueryObject asqo;
+
     // FIXME: "explore" results belong in a separate controller.
     public String exploreSearch() throws TdarActionException, SolrServerException, IOException {
         processExploreRequest();
         advancedSearch();
         return SUCCESS;
-    }
-
-    public List<String> getAllGeneralQueryFields() {
-        List<String> allFields = new ArrayList<>();
-        for (SearchParameters param : groups) {
-            if (param == null) {
-                continue;
-            }
-            for (String val : param.getAllFields()) {
-                if (StringUtils.isNotBlank(val)) {
-                    allFields.add(val);
-                }
-            }
-        }
-        if (StringUtils.isNotBlank(query)) {
-            allFields.add(query);
-        }
-        return allFields;
     }
 
     /**
@@ -216,42 +199,21 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
         processCollectionProjectLimit();
 
-        QueryBuilder queryBuilder = new ResourceQueryBuilder();
-        queryBuilder.setOperator(Operator.AND);
-        topLevelQueryPart = new QueryPartGroup(topLevelOperator);
-
-        for (SearchParameters group : groups) {
-            if (group == null) {
-                continue;
-            }
-            group.setExplore(explore);
-            try {
-                searchService.updateResourceCreators(group, 20);
-            } catch (ParseException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-            topLevelQueryPart.append(group.toQueryPartGroup(this));
-        }
-        queryBuilder.append(topLevelQueryPart);
-
-        if (topLevelQueryPart.isEmpty() || CollectionUtils.isNotEmpty(getAllGeneralQueryFields())) {
-            setCollectionSearchBoxVisible(true);
-        }
-        reservedQueryPart = processReservedTerms(this);
-        queryBuilder.append(reservedQueryPart);
         try {
-            getLogger().trace("queryBuilder: {}", queryBuilder);
-            searchService.handleSearch(queryBuilder, this, this);
+            asqo = new AdvancedSearchQueryObject();
+            asqo.setExplore(explore);
+            asqo.setAllGeneralQueryFields(getAllGeneralQueryFields());
+            asqo.setQuery(query);
+            asqo.getSearchParameters().addAll(groups);
+            asqo.setReservedParams(getReservedSearchParameters());
+            resourceSearchService.buildAdvancedSearch(asqo, getAuthenticatedUser(), this, this);
             updateDisplayOrientationBasedOnSearchResults();
+            setCollectionSearchBoxVisible(asqo.isCollectionSearchBoxVisible());
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND, TdarActionSupport.NOT_FOUND);
-        } catch (TdarRecoverableRuntimeException tdre) {
+        } catch (TdarRecoverableRuntimeException | ParseException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
-        } catch (ParseException e) {
-            getLogger().warn("search parse exception: {}", e.getMessage());
-            addActionError(getText("advancedSearchController.error_parsing_failed"));
         }
         bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
@@ -392,14 +354,14 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
     public String getSearchPhrase() {
         StringBuilder sb = new StringBuilder();
-        String searchingFor = topLevelQueryPart.getDescription(this);
+        String searchingFor = asqo.getSearchPhrase();
         if (groups.isEmpty() || StringUtils.isBlank(searchingFor)) {
             sb.append(getText("advancedSearchController.showing_all_resources"));
         } else {
             sb.append(searchingFor);
         }
         // THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
-        String narrowedBy = reservedQueryPart.getDescription(this);
+        String narrowedBy = asqo.getRefinedBy();
         if ((narrowedBy != null) && StringUtils.isNotBlank(narrowedBy.trim())) {
             sb.append(" ").append(getText("advancedSearchController.narrowed_by"));
             sb.append(narrowedBy);
@@ -676,6 +638,24 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             return advancedSearch();
         }
 
+    }
+
+    public List<String> getAllGeneralQueryFields() {
+        List<String> allFields = new ArrayList<>();
+        for (SearchParameters param : groups) {
+            if (param == null) {
+                continue;
+            }
+            for (String val : param.getAllFields()) {
+                if (StringUtils.isNotBlank(val)) {
+                    allFields.add(val);
+                }
+            }
+        }
+        if (StringUtils.isNotBlank(getQuery())) {
+            allFields.add(getQuery());
+        }
+        return allFields;
     }
 
 }

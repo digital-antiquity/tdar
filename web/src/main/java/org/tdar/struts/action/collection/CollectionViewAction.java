@@ -2,6 +2,7 @@ package org.tdar.struts.action.collection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -42,7 +43,6 @@ import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
@@ -230,9 +230,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
-        ResourceQueryBuilder qb = resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                getResourceCollection(), getAuthenticatedUser(), this);
-        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+        facetBy(ResourceType.class, selectedResourceTypes);
 
         setSortField(getPersistable().getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
@@ -243,7 +241,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         }
 
         try {
-            searchService.handleSearch(qb, this, this);
+            resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+                    getResourceCollection(), getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
@@ -522,5 +521,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public <C> void facetBy(Class<C> c, Collection<C> vals) {
+        searchService.facetBy(c, vals,this);
     }
 }

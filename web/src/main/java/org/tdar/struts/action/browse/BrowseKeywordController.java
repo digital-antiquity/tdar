@@ -1,6 +1,5 @@
 package org.tdar.struts.action.browse;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -25,10 +24,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -54,6 +50,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient SearchService searchService;
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
@@ -155,15 +153,12 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private void prepareLuceneQuery() throws TdarActionException {
 
         setMode("KeywordBrowse");
-        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
-        rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
             // setOrientation(DisplayOrientation.MAP);
         }
         try {
             setSortField(SortOption.TITLE);
-            searchService.handleSearch(rqb, this, this);
+            resourceSearchService.buildKeywordQuery(keyword, keywordType, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());

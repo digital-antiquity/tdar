@@ -1,6 +1,6 @@
 package org.tdar.struts.action.entity;
 
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,15 +12,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -34,6 +30,8 @@ public class SimpleKeywordController extends AbstractKeywordController implement
 
     private static final long serialVersionUID = 8576078075798508582L;
 
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient SearchService searchService;
 
@@ -58,12 +56,9 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         if (getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
-        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
-        rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         try {
             setSortField(SortOption.TITLE);
-            searchService.handleSearch(rqb, this, this);
+            resourceSearchService.buildKeywordQuery(getKeyword(), getKeywordType(), this, this);
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
@@ -187,4 +182,10 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         // TODO Auto-generated method stub
         
     }
+
+    @Override
+    public <C> void facetBy(Class<C> c, Collection<C> vals) {
+        searchService.facetBy(c, vals,this);
+    }
+
 }

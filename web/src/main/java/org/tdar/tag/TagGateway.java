@@ -35,13 +35,12 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
+import org.tdar.search.AdvancedSearchQueryObject;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.ReservedSearchParameters;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchParameters;
-import org.tdar.search.service.SearchService;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;
@@ -72,7 +71,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     private static final Element XSLT;
     private String version;
     @Autowired
-    private SearchService searchService;
+    private ResourceSearchService resourceSearchService;
 
     @Autowired
     private AuthorizationService authenticationAndAuthorizationService;
@@ -115,7 +114,6 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             When when = query.getWhen();
             String freetext = query.getFreetext();
 
-            ResourceQueryBuilder qb = buildSearchQuery(what, where, when, freetext);
             SearchResult q = new SearchResult();
             List<Project> resources = Collections.emptyList();
             int totalRecords = 0;
@@ -123,9 +121,9 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             int lastRec = 0;
             q.setRecordsPerPage(numberOfRecords);
             // actually perform the search against the index
+            AdvancedSearchQueryObject asqo = buildSearchQuery(what, where, when, freetext);
             try {
-                searchService.handleSearch(qb,q, MessageHelper.getInstance());
-                logger.info(qb.generateQueryString());
+                resourceSearchService.buildAdvancedSearch(asqo,null, q, MessageHelper.getInstance());
             } catch (ParseException e) {
                 logger.warn("Could not parse supplied query.", e);
             }
@@ -157,7 +155,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
 
             // project ids used to grab the integratable datasets
             List<Long> projIds = processProjects(resources, totalExceedsRequested, tdarRes);
-            getAllProjectIds(qb, totalExceedsRequested, projIds);
+            getAllProjectIds(asqo, totalExceedsRequested, projIds);
 
             // build a link to our search page listing the integratable datasets
             if (projectService.containsIntegratableDatasets(projIds)) {
@@ -170,11 +168,11 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         return searchRes;
     }
 
-    private void getAllProjectIds(ResourceQueryBuilder qb, boolean totalExceedsRequested, List<Long> projIds) {
+    private void getAllProjectIds(AdvancedSearchQueryObject asqo, boolean totalExceedsRequested, List<Long> projIds) {
         if (totalExceedsRequested) { // query again to get all of the projectIds
             try {
                 SearchResult q = new SearchResult();
-                searchService.handleSearch(qb, q, MessageHelper.getInstance());
+                resourceSearchService.buildAdvancedSearch(asqo, null, q, MessageHelper.getInstance());
                 projIds.addAll(PersistableUtils.extractIds(q.getResults()));
             } catch (ParseException e) {
                 logger.warn("Could not parse supplied query.", e);
@@ -228,14 +226,12 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         return projIds;
     }
 
-    private ResourceQueryBuilder buildSearchQuery(What what, Where where, When when, String freetext) {
-        // build the query from the supplied parameters
-        ResourceQueryBuilder qb = new ResourceQueryBuilder();
+    private AdvancedSearchQueryObject buildSearchQuery(What what, Where where, When when, String freetext) {
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         SearchParameters params = new SearchParameters();
         ReservedSearchParameters reserved = new ReservedSearchParameters();
         reserved.setResourceTypes(Arrays.asList(ResourceType.PROJECT));
         reserved.setStatuses(Arrays.asList(Status.ACTIVE));
-        
         if (what != null) {
             List<String> terms = new ArrayList<String>();
             for (SubjectType type : what.getSubjectTerm()) {
@@ -262,12 +258,9 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         if (StringUtils.isNotBlank(freetext) && !"*:*".equals(freetext)) {
             params.getAllFields().add(freetext);
         }
-        searchService.initializeReservedSearchParameters(reserved, null);
-        QueryPartGroup reservedPart = reserved.toQueryPartGroup(null);
-        qb.append(reservedPart);
-        qb.append(params, null);
-        // initialize detail values for results
-        return qb;
+        asqo.setReservedParams(reserved);
+        asqo.getSearchParameters().add(params);
+        return asqo;
     }
 
     @Override
@@ -286,17 +279,6 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
         this.version = version;
     }
 
-    public void setSearchService(SearchService searchService) {
-        this.searchService = searchService;
-    }
-
-    public void setUrlService(UrlService urlService) {
-        this.urlService = urlService;
-    }
-
-    public void setProjectService(ProjectService projectService) {
-        this.projectService = projectService;
-    }
 
     public void setSiteTypeQueryMapper(SiteTypeQueryMapper siteTypeQueryMapper) {
         this.siteTypeQueryMapper = siteTypeQueryMapper;

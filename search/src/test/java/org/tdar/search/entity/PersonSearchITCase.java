@@ -23,19 +23,14 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.EntityService;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.builder.PersonQueryBuilder;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchIndexService;
-import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Autowired
-    SearchService searchService;
-
-    @Autowired
-    CreatorSearchService creatorSearchService;
+    CreatorSearchService<Person> creatorSearchService;
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -68,15 +63,15 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
             updateAndIndex(p);
         }
 
-        SearchResult result = searchPerson("Mary Whelan");
+        SearchResult<Person> result = searchPerson("Mary Whelan");
 
-        List<Person> results = ((List<Person>) (List<?>) result.getResults());
+        List<Person> results = result.getResults();
         logger.debug("Results: {}", results);
         assertTrue(results.get(0).equals(whelan));
         assertTrue(results.size() == 1);
 
         result = searchPerson("Mary McCready");
-        results = ((List<Person>) (List<?>) result.getResults());
+        results = result.getResults();
         logger.debug("Results: {}", results);
         assertTrue(results.contains(mmc));
         assertTrue(results.contains(mmc2));
@@ -88,10 +83,9 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         searchIndexService.index(doc);
     }
 
-    private SearchResult searchPerson(String term) throws ParseException, SolrServerException, IOException {
-        PersonQueryBuilder queryBuilder = creatorSearchService.findPerson(term);
-        SearchResult result = new SearchResult();
-        searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
+    private SearchResult<Person> searchPerson(String term) throws ParseException, SolrServerException, IOException {
+        SearchResult<Person> result = new SearchResult<>();
+        creatorSearchService.findPerson(term,result, MessageHelper.getInstance());
         assertResultsOkay(term, result);
         return result;
     }
@@ -110,7 +104,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         searchPerson(term);
     }
 
-    private void assertResultsOkay(String term, SearchResult controller_) {
+    private void assertResultsOkay(String term, SearchResult<Person> controller_) {
         assertNotEmpty(controller_.getResults());
         for (Object obj : controller_.getResults()) {
             Person inst = (Person) obj;
@@ -131,8 +125,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testPersonLookupWithNoResults() throws SolrServerException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         Person person_ = setupPerson("bobby", null, null, null);
-        SearchResult result = findPerson(person_, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min);
+        List<Person> people = result.getResults();
         assertEquals("person list should be empty", people.size(), 0);
     }
 
@@ -140,9 +134,9 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Rollback
     public void testUserLookupWithrelevancy() throws SolrServerException, IOException, ParseException {
         TdarUser person = setupMScottPeople();
-        SearchResult result = findPerson(null, "M Scott Thompson", true, min, SortOption.RELEVANCE);
+        SearchResult<Person> result = findPerson(null, "M Scott Thompson", true, min, SortOption.RELEVANCE);
 
-        List<Indexable> people = result.getResults();
+        List<Person> people = result.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
 
@@ -163,8 +157,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testUserLastNameSpaceWithRelevancy() throws SolrServerException, IOException, ParseException {
         TdarUser person = setupMScottPeople();
         Person person_ = setupPerson(null, "Scott Th", null, null);
-        SearchResult result = findPerson(person_, null, null, min, SortOption.RELEVANCE);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min, SortOption.RELEVANCE);
+        List<Person> people = result.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
 
@@ -200,24 +194,24 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     public void testPersonLookupTooShortOverride() throws SolrServerException, IOException, ParseException {
         Person person_ = setupPerson(null, "B", null, null);
-        SearchResult result = findPerson(person_, null, null, 0);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, 0);
+        List<Person> people = result.getResults();
         assertFalse("person list should have exactly 0 items", people.size() == 0);
     }
 
     @Test
     public void testPersonLookupTooShort() throws SolrServerException, IOException, ParseException {
         Person person_ = setupPerson(null, "Br", null, null);
-        SearchResult result = findPerson(person_, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min);
+        List<Person> people = result.getResults();
         assertEquals("person list should have exactly 0 items", people.size(), 0);
     }
 
     @Test
     public void testPersonLookupWithOneResult() throws SolrServerException, IOException, ParseException {
         Person person_ = setupPerson(null, null, "test@tdar.org", null);
-        SearchResult result = findPerson(person_, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min);
+        List<Person> people = result.getResults();
         assertEquals("person list should have exactly one item", people.size(), 1);
     }
 
@@ -227,8 +221,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // FIXME: need more invalid input examples than just paren
         Person person_ = setupPerson(null, " (     ", null, null);
-        SearchResult result = findPerson(person_, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min);
+        List<Person> people = result.getResults();
     }
 
     @Test
@@ -241,9 +235,9 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         genericService.saveOrUpdate(user);
         searchIndexService.indexAll(getAdminUser(), Person.class);
         Person person_ = setupPerson(null, null, null, null);
-        SearchResult result = findPerson(person_, "billingAdmin", true, min);
+        SearchResult<Person> result = findPerson(person_, "billingAdmin", true, min);
 
-        List<Indexable> people = result.getResults();
+        List<Person> people = result.getResults();
         assertNotEmpty(people);
         assertTrue(people.contains(user));
     }
@@ -251,8 +245,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     public void testRegisteredPersonLookupWithResults() throws SolrServerException, IOException, ParseException {
         Person person_ = setupPerson("Keit", null, null, null);
-        SearchResult result = findPerson(person_, null, true, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, true, min);
+        List<Person> people = result.getResults();
         assertEquals("person list should have exactly three items", 3, people.size());
     }
 
@@ -272,8 +266,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         logger.debug("{}", person);
         searchIndexService.index(person);
         Person person_ = setupPerson(null, null, email, institution);
-        SearchResult result = findPerson(person_, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min);
+        List<Person> people = result.getResults();
         assertTrue("person list should contain the person created", people.contains(person));
     }
 
@@ -283,7 +277,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         // based on our test data this should return at least two records (john doe and jane doe)
         String partialLastName = "Mann";
         Person person_ = setupPerson(null, partialLastName, null, null);
-        SearchResult result = findPerson(person_, null, null, min);
+        SearchResult<Person> result = findPerson(person_, null, null, min);
         if (result.getResults() != null) {
             logger.debug("people size:" + result.getResults().size() + "value:" + result.getResults());
         }
@@ -298,8 +292,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         // based on our test data this should return at least two records (john doe and jane doe)
         String name = "John H";
         Person person_ = setupPerson(null, null, null, null);
-        SearchResult result = findPerson(person_, name, null, 0);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, name, null, 0);
+        List<Person> people = result.getResults();
         logger.debug("people: {}", people);
         if (people != null) {
             logger.debug("people size:" + people.size() + "value:" + people);
@@ -343,7 +337,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         // okay now "log in" and make sure that email lookup is still working
         String email = "james.t.devos@dasu.edu";
         Person person_ = setupPerson(null, null, email, null);
-        SearchResult result = findPerson(person_, null, null, 0);
+        SearchResult<Person> result = findPerson(person_, null, null, 0);
 
         assertEquals(1, result.getResults().size());
         Person jim = (Person) result.getResults().get(0);
@@ -360,8 +354,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         genericService.saveOrUpdate(inst);
         searchIndexService.indexAll(getAdminUser(), Person.class);
         Person person_ = setupPerson(null, null, null, "TQF");
-        SearchResult result = findPerson(person_, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person_, null, null, min);
+        List<Person> people = result.getResults();
         assertTrue("person list should countain the person", people.contains(person));
     }
 
@@ -370,12 +364,11 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testValidInstitutionWithSpace() throws SolrServerException, IOException, ParseException {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         Person person = setupPerson(null, null, null, "University of");
-        SearchResult result = findPerson(person, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person, null, null, min);
+        List<Person> people = result.getResults();
         logger.info("{}", people);
         assertTrue("person list should have at least two items", people.size() >= 2);
-        for (Indexable p : result.getResults()) {
-            Person pers = (Person) p;
+        for (Person pers : result.getResults()) {
             assertTrue(pers.getInstitution().getName().contains(" "));
         }
     }
@@ -386,8 +379,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         searchIndexService.indexAll(getAdminUser(), Person.class);
         // FIXME: should not need to be quoted
         Person person = setupPerson(null, null, null, "University ABCD");
-        SearchResult result = findPerson(person, null, null, min);
-        List<Indexable> people = result.getResults();
+        SearchResult<Person> result = findPerson(person, null, null, min);
+        List<Person> people = result.getResults();
         assertEquals("person list should have 0 item(s)", 0, people.size());
     }
 
@@ -399,16 +392,15 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return person;
     }
 
-    private SearchResult findPerson(Person person_, String term, Boolean registered, int min2, SortOption relevance)
+    private SearchResult<Person> findPerson(Person person_, String term, Boolean registered, int min2, SortOption relevance)
             throws ParseException, SolrServerException, IOException {
-        PersonQueryBuilder builder = creatorSearchService.findPerson(person_, term, registered, min2);
-        SearchResult result = new SearchResult();
+        SearchResult<Person> result = new SearchResult<>();
         result.setSortField(relevance);
-        searchService.handleSearch(builder, result, MessageHelper.getInstance());
+        creatorSearchService.findPerson(person_, term, registered, result, MessageHelper.getInstance(), min2);
         return result;
     }
 
-    private SearchResult findPerson(Person person, String term, Boolean registered, int min2) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2) throws ParseException, SolrServerException, IOException {
         return findPerson(person, term, registered, min2, null);
     }
 }

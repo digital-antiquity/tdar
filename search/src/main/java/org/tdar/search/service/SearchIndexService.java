@@ -43,6 +43,7 @@ import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.converter.AnnotationKeyDocumentConverter;
 import org.tdar.search.converter.CollectionDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
@@ -95,7 +96,7 @@ public class SearchIndexService {
     private SolrClient template;
 
     private String generateId(Persistable pers) {
-        return pers.getClass().getSimpleName() + "-" + pers.getId();
+        return SearchUtils.createKey(pers);
     }
 
     /**
@@ -162,12 +163,13 @@ public class SearchIndexService {
                 // fullTextSession.purgeAll(toIndex);
                 // sf.optimize(toIndex);
                 Number total = genericDao.count(toIndex);
+                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", percent);
                 ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
                 indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
                 // fullTextSession.flushToIndexes();
                 // fullTextSession.clear();
                 percent += maxPer;
-                String message = "finished indexing all " + toIndex.getSimpleName() + "(s).";
+                String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
                 updateAllStatuses(updateReceiver, activity, message, percent);
             }
 
@@ -213,9 +215,6 @@ public class SearchIndexService {
      */
     private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, float percent, float maxPer,
             Class<? extends Indexable> toIndex, Number total, ScrollableResults scrollableResults, boolean deleteFirst) {
-        if (ResourceAnnotationKey.class.isAssignableFrom(toIndex)) {
-            return;
-        }
         String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
         updateAllStatuses(updateReceiver, activity, message, 0f);
         int divisor = getDivisor(total);
@@ -225,7 +224,6 @@ public class SearchIndexService {
         Long prevId = 0L;
         Long currentId = 0L;
         String coreForClass = getCoreForClass(toIndex);
-//        purge(coreForClass);
         while (scrollableResults.next()) {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
@@ -306,6 +304,9 @@ public class SearchIndexService {
             }
             if (item instanceof Keyword) {
                 document = KeywordDocumentConverter.convert((Keyword)item);
+            }
+            if (item instanceof ResourceAnnotationKey) {
+                document = AnnotationKeyDocumentConverter.convert((ResourceAnnotationKey)item);
             }
             template.add(core,document);
             return document;
@@ -446,7 +447,10 @@ public class SearchIndexService {
         }
         if (Keyword.class.isAssignableFrom(item)) {
             return CoreNames.KEYWORDS;
-        }        // TODO Auto-generated method stub
+        }
+        if (ResourceAnnotationKey.class.isAssignableFrom(item)) {
+            return CoreNames.ANNOTATION_KEY;
+        }
         return null;
     }
 

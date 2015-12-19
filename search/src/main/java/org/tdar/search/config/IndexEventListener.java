@@ -135,7 +135,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
 
     private void index(Object entity) {
-        logger.debug("{}", entity);
+        logger.trace("{}", entity);
         if (entity instanceof Indexable && isEnabled()) {
             try {
                 logger.debug("indexing: {}", entity);

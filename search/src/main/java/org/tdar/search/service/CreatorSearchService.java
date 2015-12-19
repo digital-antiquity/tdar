@@ -1,26 +1,25 @@
 package org.tdar.search.service;
 
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.query.builder.PersonQueryBuilder;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralCreatorQueryPart;
 import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
@@ -31,33 +30,15 @@ import com.opensymphony.xwork2.TextProvider;
 
 @Service
 @Transactional
-public class CreatorSearchService<I extends Indexable> {
+public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
     private SearchService<Person> searchService;
 
-    /**
-     * Generates a query for resources created by or releated to in some way to a @link Creator given a creator and a user
-     *
-     * @param creator
-     * @param user
-     * @return
-     */
-    public QueryBuilder generateQueryForRelatedResources(Creator creator, TdarUser user, TextProvider provider) {
-        QueryBuilder queryBuilder = new ResourceQueryBuilder();
-        queryBuilder.setOperator(Operator.AND);
-        SearchParameters params = new SearchParameters(Operator.AND);
-        params.setCreatorOwner(new ResourceCreatorProxy(creator, null));
-        queryBuilder.append(params, provider);
-        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-        searchService.initializeReservedSearchParameters(reservedSearchParameters, user);
-        queryBuilder.append(reservedSearchParameters, provider);
-        return queryBuilder;
-    }
 
-    public InstitutionQueryBuilder searchInstitution(String name) {
+    public SearchResultHandler<I> searchInstitution(String name, SearchResultHandler<I> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         InstitutionQueryBuilder iqb = new InstitutionQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
@@ -65,7 +46,8 @@ public class CreatorSearchService<I extends Indexable> {
             group.append(new GeneralCreatorQueryPart(new Institution(name)));
             iqb.append(group);
         }
-        return iqb;
+        searchService.handleSearch(iqb, result, provider);
+        return result;
     }
 
     protected boolean isFindAll(String query) {
@@ -75,7 +57,7 @@ public class CreatorSearchService<I extends Indexable> {
         return StringUtils.equals(StringUtils.trim(query), "*");
     }
 
-    public PersonQueryBuilder findPerson(String name) {
+    public SearchResultHandler<I> findPerson(String name, SearchResultHandler<I> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         PersonQueryBuilder pqb = new PersonQueryBuilder();
         QueryPartGroup group = new QueryPartGroup(Operator.AND);
         group.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Arrays.asList(Status.ACTIVE)));
@@ -84,10 +66,11 @@ public class CreatorSearchService<I extends Indexable> {
             group.append(new GeneralCreatorQueryPart(person));
             pqb.append(group);
         }
-        return pqb;
+        searchService.handleSearch(pqb, result, provider);
+        return result;
     }
 
-    public InstitutionQueryBuilder findInstitution(String institution, int min) {
+    public SearchResultHandler<I> findInstitution(String institution, SearchResultHandler<I> result, TextProvider provider, int min) throws ParseException, SolrServerException, IOException {
         InstitutionQueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
         InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
         Institution testInstitution = new Institution(institution);
@@ -96,13 +79,14 @@ public class CreatorSearchService<I extends Indexable> {
             q.append(iqp);
         }
         if (min > 0 && q.size() == 0) {
-            return q;
+            return result;
         }
         q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        return q;
+        searchService.handleSearch(q, result, provider);
+        return result;
     }
 
-    public PersonQueryBuilder findPerson(Person person_, String term, Boolean registered, int min) {
+    public SearchResultHandler<I> findPerson(Person person_, String term, Boolean registered, SearchResultHandler<I> result, TextProvider provider, int min) throws ParseException, SolrServerException, IOException {
         Person person = person_;
         if (person == null) {
             person = new Person();
@@ -141,8 +125,9 @@ public class CreatorSearchService<I extends Indexable> {
                 logger.trace("{}", pqp.toString());
             }
             q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        }
-        return q;
+            searchService.handleSearch(q, result, provider);
+        } 
+        return result;
     }
 
 }

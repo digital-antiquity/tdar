@@ -19,9 +19,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.service.CollectionSearchService;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -36,9 +34,6 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
     private static final long serialVersionUID = -4107940683143336985L;
 
     private List<SortOption> sortOptions = SortOption.getOptionsForContext(ResourceCollection.class);
-
-    @Autowired
-    private transient SearchService searchService;
 
     @Autowired
     private transient CollectionSearchService collectionSearchService;
@@ -62,11 +57,9 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         setLookupSource(LookupSource.COLLECTION);
         setMode("COLLECTION SEARCH:");
         determineCollectionSearchTitle();
-        ResourceCollectionQueryBuilder queryBuilder = collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()));
 
         try {
-            getLogger().trace("queryBuilder: {}", queryBuilder);
-            searchService.handleSearch(queryBuilder, this, this);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()),this,this);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());

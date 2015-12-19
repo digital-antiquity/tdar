@@ -45,9 +45,7 @@ import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.service.CollectionSearchService;
-import org.tdar.search.service.ResourceSearchService;
 import org.tdar.search.service.SearchFieldType;
 import org.tdar.search.service.SearchParameters;
 import org.tdar.search.service.SearchService;
@@ -77,9 +75,6 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     private boolean hideFacetsAndSort = false;
 
     @Autowired
-    private transient ResourceSearchService resourceSearchService;
-
-    @Autowired
     private transient CollectionSearchService collectionSearchService;
 
     @Autowired
@@ -107,12 +102,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
     private ArrayList<FacetValue> integratableOptionFacets = new ArrayList<>();
 
     private boolean showLeftSidebar = false;
-    
+
     @Override
     public boolean isLeftSidebar() {
         return showLeftSidebar;
     }
-    
+
     @Action(value = "results", results = {
             @Result(name = SUCCESS, location = "results.ftl"),
             @Result(name = INPUT, location = ADVANCED_FTL) })
@@ -147,11 +142,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     @SuppressWarnings("unchecked")
     private void searchCollectionsToo() throws SolrServerException, IOException {
-        QueryBuilder queryBuilder = collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields());
 
         try {
-            getLogger().trace("queryBuilder: {}", queryBuilder);
-            SearchResult result = new SearchResult();
+            SearchResult<ResourceCollection> result = new SearchResult<>();
             result.setSortField(getSortField());
             result.setSecondarySortField(getSecondarySortField());
             result.setAuthenticatedUser(getAuthenticatedUser());
@@ -160,7 +153,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
             result.setMode("COLLECTION MINI");
             result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-            searchService.handleSearch(queryBuilder, result, this);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields(), result, this);
             setMode("SEARCH");
             setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
             getCollectionResults().removeAll(Collections.singleton(null));
@@ -435,13 +428,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
             setOrientation(DisplayOrientation.MAP);
         }
     }
-    
-    
+
     @Override
     public List<Status> getAllStatuses() {
         return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
-    
+
     @Override
     public boolean isNavSearchBoxVisible() {
         return searchBoxVisible;

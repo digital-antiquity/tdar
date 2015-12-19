@@ -1,17 +1,22 @@
 package org.tdar.search.service;
 
+import java.io.IOException;
+
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
@@ -21,15 +26,15 @@ import com.opensymphony.xwork2.TextProvider;
 
 @Service
 @Transactional
-public class KeywordSearchService<I extends Indexable> {
+public class KeywordSearchService<I extends Keyword> extends AbstractSearchService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private SearchService searchService;
+    private SearchService<I> searchService;
 
-
-    public KeywordQueryBuilder findKeyword(String term, String keywordType, TextProvider provider, int min) {
+    public SearchResultHandler<I> findKeyword(String term, String keywordType, SearchResultHandler<I> result, TextProvider provider, int min)
+            throws ParseException, SolrServerException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
             if (StringUtils.isNotBlank(term) && SiteCodeTokenizingAnalyzer.pattern.matcher(term).matches()) {
@@ -45,7 +50,7 @@ public class KeywordSearchService<I extends Indexable> {
         QueryPartGroup group = new QueryPartGroup();
 
         group.setOperator(Operator.AND);
-        if (SearchUtils.checkMinString(term,min)) {
+        if (SearchUtils.checkMinString(term, min)) {
             FieldQueryPart<String> fqp = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, StringUtils.trim(term));
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             q.append(fqp);
@@ -56,7 +61,8 @@ public class KeywordSearchService<I extends Indexable> {
         subgroup.append(group);
         q.append(subgroup);
         q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        return q;
+        searchService.handleSearch(q, result, provider);
+        return result;
     }
 
 }

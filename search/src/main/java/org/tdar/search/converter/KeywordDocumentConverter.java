@@ -12,6 +12,7 @@ import org.tdar.search.query.QueryFieldNames;
 
 public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
 
+
     public static SolrInputDocument convert(Keyword kwd) {
         
         SolrInputDocument doc = convertPersistable(kwd);

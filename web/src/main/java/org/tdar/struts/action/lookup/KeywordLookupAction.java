@@ -65,9 +65,8 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         }
 
         setMode("keywordLookup");
-        KeywordQueryBuilder q = keywordSearchService.findKeyword(getTerm(), getKeywordType(), this, getMinLookupLength());
         try {
-            handleSearch(q);
+            keywordSearchService.findKeyword(getTerm(), getKeywordType(), this, this, getMinLookupLength());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
             return ERROR;

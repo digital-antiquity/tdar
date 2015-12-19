@@ -71,6 +71,7 @@ public class EditWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Override
     @Test
     public void testProjectView() {
+        reindex();
         super.testProjectView();
         clickLinkWithText("edit");
         assertButtonPresentWithText("Save");

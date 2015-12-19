@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -86,13 +87,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     @Autowired
     private CreatorSearchService creatorSearchService;
 
-
     @Autowired
     ObfuscationService obfuscationService;
-
-    protected void handleSearch(QueryBuilder q) throws ParseException, SolrServerException, IOException {
-        searchService.handleSearch(q, this, this);
-    }
 
     public String getCallback() {
         return callback;
@@ -160,14 +156,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     @Override
     public int getTotalRecords() {
         return totalRecords;
-    }
-
-
-    // deal with the terms that correspond w/ the "narrow your search" section
-    // and from facets
-    protected QueryPartGroup processReservedTerms(ActionSupport support) {
-        searchService.initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
-        return getReservedSearchParameters().toQueryPartGroup(support);
     }
 
     @Override
@@ -347,10 +335,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.PERSON);
         // TODO Auto-generated method stub
-        PersonQueryBuilder q = creatorSearchService.findPerson(person, term, registered, getMinLookupLength());
-        if (!q.isEmpty() || getMinLookupLength() == 0) {
             try {
-                handleSearch(q);
+                creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
                 // sanitize results if the user is not logged in
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
@@ -361,7 +347,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
             } else {
                 jsonifyResult(JsonLookupFilter.class);
             }
-        }
         return SUCCESS;
     }
 
@@ -400,9 +385,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public String findInstitution(String institution) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.INSTITUTION);
         if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
-            InstitutionQueryBuilder q = creatorSearchService.findInstitution(institution, getMinLookupLength());
             try {
-                handleSearch(q);
+                creatorSearchService.findInstitution(institution, this, this, getMinLookupLength());
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
@@ -472,6 +456,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     @Override
     public int getDefaultRecordsPerPage() {
         return DEFAULT_RESULT_SIZE;
+    }
+
+    @Override
+    public <C> void facetBy(Class<C> c, Collection<C> vals) {
+        searchService.facetBy(c, vals, this);
     }
 
 }

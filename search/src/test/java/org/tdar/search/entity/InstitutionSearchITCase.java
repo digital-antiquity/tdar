@@ -16,14 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.EntityService;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchIndexService;
-import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCase {
@@ -34,8 +31,6 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Autowired
     EntityService entityService;
 
-    @Autowired
-    SearchService<Institution> searchService;
 
     @Autowired
     CreatorSearchService<Institution> creatorSearchService;
@@ -73,18 +68,17 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         searchInstitution(term);
     }
 
-    private SearchResult searchInstitution(String term) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Institution> searchInstitution(String term) throws ParseException, SolrServerException, IOException {
         return searchInstitution(term, MIN,true);
     }
 
-    private SearchResult searchInstitution(String term,boolean testResults) throws ParseException, SolrServerException, IOException {
+    private SearchResult<Institution> searchInstitution(String term,boolean testResults) throws ParseException, SolrServerException, IOException {
         return searchInstitution(term, MIN, testResults);
     }
 
-    private SearchResult searchInstitution(String term, int min, boolean testResults) throws ParseException, SolrServerException, IOException {
-        InstitutionQueryBuilder queryBuilder = creatorSearchService.findInstitution(term, min);
-        SearchResult result = new SearchResult();
-        searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
+    private SearchResult<Institution> searchInstitution(String term, int min, boolean testResults) throws ParseException, SolrServerException, IOException {
+        SearchResult<Institution> result = new SearchResult<>();
+        creatorSearchService.findInstitution(term, result, MessageHelper.getInstance(), min);
         if (testResults) {
             assertResultsOkay(term, result);
         }
@@ -95,7 +89,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Rollback
     public void testInstitutionSearchWordPlacement() throws SolrServerException, IOException, ParseException {
         List<Institution> insts = setupInstitutionSearch();
-        SearchResult result = searchInstitution("Air Force");
+        SearchResult<Institution> result = searchInstitution("Air Force");
         assertTrue(CollectionUtils.containsAll(result.getResults(), insts));
 
         result = searchInstitution("Force");
@@ -107,7 +101,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Rollback
     public void testInstitutionSearchCaseInsensitive() throws SolrServerException, IOException, ParseException {
         List<Institution> insts = setupInstitutionSearch();
-        SearchResult result = searchInstitution("air force");
+        SearchResult<Institution> result = searchInstitution("air force");
         assertTrue(CollectionUtils.containsAll(result.getResults(), insts));
 
         result = searchInstitution("force");
@@ -126,8 +120,8 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         genericService.saveOrUpdate(inst);
         genericService.saveOrUpdate(inst);
         searchIndexService.indexAll(getAdminUser(), Institution.class);
-        SearchResult result = searchInstitution("ASU");
-        List<Indexable> institutions = result.getResults();
+        SearchResult<Institution> result = searchInstitution("ASU");
+        List<Institution> institutions = result.getResults();
         logger.debug("institutions: {} ", institutions);
         assertTrue("inst list should contain acronym item", institutions.contains(inst));
     }
@@ -140,16 +134,16 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
 
     @Test
     public void testInstitutionLookupWithOneResult() throws SolrServerException, IOException, ParseException {
-        SearchResult result = searchInstitution("tfqa");
-        List<Indexable> institutions = result.getResults();
+        SearchResult<Institution> result = searchInstitution("tfqa");
+        List<Institution> institutions = result.getResults();
         assertTrue("only one result expected", institutions.size() == 1);
     }
 
     // given test script, searching 'digital' should return multiple results that start with 'Digital Antiquity'
     @Test
     public void testInstitutionLookupWithMultiple() throws SolrServerException, IOException, ParseException {
-        SearchResult result = searchInstitution("University");
-        List<Indexable> institutions = result.getResults();
+        SearchResult<Institution> result = searchInstitution("University");
+        List<Institution> institutions = result.getResults();
         assertTrue("more than one result expected", institutions.size() > 1);
     }
 
@@ -162,10 +156,9 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     }
 
     private void searchAssertEmpty(String blanks) throws ParseException, SolrServerException, IOException {
-        InstitutionQueryBuilder queryBuilder = creatorSearchService.findInstitution(blanks, 1);
-        SearchResult result = new SearchResult();
-        searchService.handleSearch(queryBuilder, result, MessageHelper.getInstance());
-        List<Indexable> results = result.getResults();
+        SearchResult<Institution> result = new SearchResult<>();
+        creatorSearchService.findInstitution(blanks, result, MessageHelper.getInstance(), 1);
+        List<Institution> results = result.getResults();
         Assert.assertEquals("expecting zero results", 0, results.size());
     }
 
@@ -176,8 +169,8 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         String term = "U.S. Department of";
 
         List<Institution> insts = setupInstitutionsForLookup();
-        SearchResult result = searchInstitution(term);
-        List<Indexable> results = result.getResults();
+        SearchResult<Institution> result = searchInstitution(term);
+        List<Institution> results = result.getResults();
         logger.debug("results:{}", results);
         assertTrue(results.contains(insts.get(0)));
         assertTrue(results.contains(insts.get(insts.size() - 1)));
@@ -188,11 +181,10 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     public void testPrefixUppercase() throws SolrServerException, IOException, ParseException {
         List<Institution> insts = setupInstitutionsForLookup();
         String lookingFor = "U.S.";
-        SearchResult result = searchInstitution(lookingFor);
-        List<Indexable> results = result.getResults();
+        SearchResult<Institution> result = searchInstitution(lookingFor);
+        List<Institution> results = result.getResults();
         logger.debug("results:{}", results);
-        for (Indexable indx : results) {
-            Institution inst = (Institution) indx;
+        for (Institution inst : results) {
             logger.info(inst.getName());
             assertTrue("expecting 'u.s.' contained in " + inst.getName(), inst.getName().toLowerCase().contains(lookingFor.toLowerCase()));
         }
@@ -202,11 +194,10 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Rollback(true)
     public void testPrefixLowercase() throws SolrServerException, IOException, ParseException {
         List<Institution> insts = setupInstitutionsForLookup();
-        SearchResult result = searchInstitution("u.s.");
-        List<Indexable> results = result.getResults();
+        SearchResult<Institution> result = searchInstitution("u.s.");
+        List<Institution> results = result.getResults();
         logger.debug("results:{}", results);
-        for (Indexable indx : results) {
-            Institution inst = (Institution) indx;
+        for (Institution inst : results) {
             assertTrue(inst.getName().toLowerCase().contains("u.s."));
         }
     }
@@ -218,12 +209,11 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         Institution in2 = new Institution("US Depoartment of Agriculture");
         genericService.save(in1);
         genericService.save(in2);
-        SearchResult results = searchInstitution("US",false);
+        SearchResult<Institution> results = searchInstitution("US",false);
         logger.debug("results:{}", results);
         boolean seenPeriod = false;
         boolean seenWithoutPeriod = false;
-        for (Indexable indx : results.getResults()) {
-            Institution inst = (Institution) indx;
+        for (Institution inst : results.getResults()) {
             logger.debug("{}", inst.getName());
             if (inst.getName().toLowerCase().contains("u.s.")) {
                 seenPeriod = true;
@@ -248,10 +238,9 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         return insts;
     }
 
-    private void assertResultsOkay(String term, SearchResult controller_) {
+    private void assertResultsOkay(String term, SearchResult<Institution> controller_) {
         assertNotEmpty(controller_.getResults());
-        for (Object obj : controller_.getResults()) {
-            Creator inst = (Creator) obj;
+        for (Institution inst : controller_.getResults()) {
             assertTrue(String.format("Creator %s should match %s", inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
         }
         logger.info("{}", controller_.getResults());

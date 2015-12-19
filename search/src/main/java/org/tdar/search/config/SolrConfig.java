@@ -70,7 +70,7 @@ public class SolrConfig {
     @Bean
     public SolrClient solrServerFactoryBean() {
         SimpleAppConfiguration resolveConfig = resolveConfig();
-        logger.debug("config:({}) {}", resolveConfig, config);
+        logger.trace("config:({}) {}", resolveConfig, config);
         if (resolveConfig.disableHibernateSearch()) {
             return null;
         }

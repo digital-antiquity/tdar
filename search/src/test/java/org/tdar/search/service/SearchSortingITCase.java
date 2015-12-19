@@ -1,17 +1,20 @@
-package org.tdar.search;
+package org.tdar.search.service;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.BeforeClass;
@@ -23,12 +26,12 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
@@ -37,7 +40,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 
     @Autowired
-    SearchService searchService;
+    SearchService<Resource> searchService;
     
     public static class SortTestStruct {
         public SortTestStruct(Class<? extends Indexable> type, QueryBuilder queryBuilder) {
@@ -126,11 +129,12 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testYearSorting() throws ParseException {
+    public void testYearSorting() throws ParseException, SolrServerException, IOException {
         resourceQueryBuilder = new ResourceQueryBuilder();
         // get information resources only
-        resourceQueryBuilder
-                .setRawQuery("+(resourceType:DOCUMENT resourceType:CODING_SHEET resourceType:IMAGE resourceType:SENSORY_DATA resourceType:DATASET resourceType:ONTOLOGY)");
+        FieldQueryPart<ResourceType> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, ResourceType.PROJECT);
+        fqp.setInverse(true);
+        resourceQueryBuilder.append(fqp);
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
             @Override
             public int compare(Resource arg0, Resource arg1) {
@@ -146,7 +150,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @SuppressWarnings({ "unused", "rawtypes" })
     @Test
-    public void testDateSorting() throws ParseException {
+    public void testDateSorting() throws ParseException, SolrServerException, IOException {
         DesignatedComparable<Resource> dateCreatedComparator = new DesignatedComparable<Resource>() {
             @Override
             public Comparable getComparableFor(Resource t) {
@@ -156,7 +160,9 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         DesignatedComparable<Resource> dateUpdatedComparator = new DesignatedComparable<Resource>() {
             @Override
             public Comparable getComparableFor(Resource t) {
-                return t.getDateUpdated();
+                Date now = t.getDateUpdated();
+                Date nearest = DateUtils.round(now, Calendar.SECOND);
+                return nearest;
             }
         };
 
@@ -165,7 +171,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testResourceTypeSorting() throws ParseException {
+    public void testResourceTypeSorting() throws ParseException, SolrServerException, IOException {
         DesignatedComparable<Resource> resourceTypeComparator = new DesignatedComparable<Resource>() {
             @SuppressWarnings("rawtypes")
             @Override
@@ -192,7 +198,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
                 
                 SearchResult result = new SearchResult();
                 result.setSortField(entry.getKey());
-                sortTestInfo.qb.append(new FieldQueryPart<>(QueryFieldNames.NAME,"*"));;
+//                sortTestInfo.qb.append(new FieldQueryPart<>(QueryFieldNames.NAME,"*"));;
                 searchService.handleSearch(sortTestInfo.qb, result, MessageHelper.getInstance());
                 List results = result.getResults();
                 assertFalse("list should not be empty", results.isEmpty());
@@ -204,9 +210,9 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
                     Object item2 = results.get(i + 1);
                     String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);
                     if (sortOption.isReversed()) {
-                        assertTrue(msg, comparator.compare(item1, item2) >= 0);
-                    } else {
                         assertTrue(msg, comparator.compare(item1, item2) <= 0);
+                    } else {
+                        assertTrue(msg, comparator.compare(item1, item2) >= 0);
                     }
                 }
             }
@@ -214,36 +220,38 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     }
 
     @Test
-    public void testTitleSort() throws ParseException {
+    public void testTitleSort() throws ParseException, SolrServerException, IOException {
         assertSortOrder(SortOption.TITLE, titleComparator);
         assertSortOrder(SortOption.TITLE_REVERSE, titleComparator);
     }
 
     @Test
-    public void testIdSort() throws ParseException {
+    public void testIdSort() throws ParseException, SolrServerException, IOException {
         assertSortOrder(SortOption.ID, idComparator);
         assertSortOrder(SortOption.ID_REVERSE, idComparator);
     }
 
     // @Test
-    public void testProjectSort() throws ParseException {
+    public void testProjectSort() throws ParseException, SolrServerException, IOException {
         assertSortOrder(SortOption.PROJECT, projectComparator);
     }
 
-    private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException {
-//        FullTextQuery ftq = searchService.search(resourceQueryBuilder, sortOption);
-//        List<Resource> resources = ftq.list();
-//        assertFalse("results should not be empty", resources.isEmpty());
-//        for (int i = 0; i < (resources.size() - 2); i++) {
-//            Resource item1 = resources.get(i);
-//            Resource item2 = resources.get(i + 1);
-//            String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);
-//            if (sortOption.isReversed()) {
-//                assertTrue(msg, comparator.compare(item1, item2) >= 0);
-//            } else {
-//                assertTrue(msg, comparator.compare(item1, item2) <= 0);
-//            }
-//        }
+    private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException, SolrServerException, IOException {
+        SearchResult<Resource> result = new SearchResult<>();
+        result.setSortField(sortOption);
+        searchService.handleSearch(resourceQueryBuilder, result, MessageHelper.getInstance());
+        List<Resource> resources = result.getResults();
+        assertFalse("results should not be empty", resources.isEmpty());
+        for (int i = 0; i < (resources.size() - 2); i++) {
+            Resource item1 = resources.get(i);
+            Resource item2 = resources.get(i + 1);
+            String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);
+            if (sortOption.isReversed()) {
+                assertTrue(msg, comparator.compare(item1, item2) <= 0);
+            } else {
+                assertTrue(msg, comparator.compare(item1, item2) >= 0);
+            }
+        }
     }
 
 }

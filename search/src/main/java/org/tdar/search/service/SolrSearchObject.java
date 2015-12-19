@@ -35,14 +35,7 @@ public class SolrSearchObject<I extends Indexable> {
     private String filterString;
     private Integer totalResults = 0;
 
-    /*
-     * Query query = new MatchAllDocsQuery();
-     * if (!queryBuilder.isEmpty()) {
-     * query = queryBuilder.buildQuery();
-     * }
-     * 
-     */
-    public SolrSearchObject(QueryBuilder queryBuilder, SortOption[] sortOptions, SearchResultHandler handler) {
+    public SolrSearchObject(QueryBuilder queryBuilder, SortOption[] sortOptions, SearchResultHandler<I> handler) {
         this.builder = queryBuilder;
         this.coreName = queryBuilder.getCoreName();
         this.setMaxResults(handler.getRecordsPerPage());
@@ -96,10 +89,10 @@ public class SolrSearchObject<I extends Indexable> {
             case PROJECT:
                 return QueryFieldNames.PROJECT_TITLE_SORT;
             case RELEVANCE:
-                break;
+                return "score";
             case RESOURCE_TYPE:
             case RESOURCE_TYPE_REVERSE:
-                return QueryFieldNames.RESOURCE_TYPE;
+                return QueryFieldNames.RESOURCE_TYPE_SORT;
             default:
                 break;
         }
@@ -158,7 +151,9 @@ public class SolrSearchObject<I extends Indexable> {
 
     public void processResults(SolrDocumentList results) {
         this.setDocumentList(results);
-        logger.debug("results:{}", results);
+        if (logger.isTraceEnabled()) {
+            logger.trace("results:{}", results);
+        }
         setTotalResults((int) results.getNumFound());
         for (SolrDocument doc : results) {
             idList.add((Long) doc.get(QueryFieldNames.ID));

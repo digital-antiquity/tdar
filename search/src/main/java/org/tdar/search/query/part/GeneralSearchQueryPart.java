@@ -16,7 +16,7 @@ import org.tdar.search.service.SearchFieldType;
 import com.opensymphony.xwork2.TextProvider;
 
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
-    protected static final float TITLE_BOOST = 6f;
+    protected static final float TITLE_BOOST = 8f;
     protected static final float CREATOR_BOOST = 5f;
     protected static final float DESCRIPTION_BOOST = 4f;
     protected static final float PHRASE_BOOST = 3.2f;

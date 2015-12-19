@@ -3,6 +3,7 @@ package org.tdar.struts.action.collection;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,6 +37,7 @@ import org.tdar.search.query.FacetValue;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
@@ -68,7 +70,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient GenericService genericService;
     @Autowired
     private transient AuthorizationService authorizationService;
-
+    @Autowired
+    private transient SearchService searchService;
+    
     private static final long serialVersionUID = 5710621983240752457L;
     // private List<Resource> resources = new ArrayList<>();
     private List<ResourceCollection> allResourceCollections = new LinkedList<>();
@@ -578,5 +582,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public <C> void facetBy(Class<C> c, Collection<C> vals) {
+        searchService.facetBy(c, vals,this);
     }
 }

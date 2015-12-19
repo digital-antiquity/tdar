@@ -7,5 +7,6 @@ public interface CoreNames {
     String KEYWORDS = "keywords";
     String INSTITUTIONS = "institutions";
     String PEOPLE = "people";
+    String ANNOTATION_KEY = "annotationKeys";
 
 }

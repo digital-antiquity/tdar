@@ -19,10 +19,8 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.service.KeywordSearchService;
 import org.tdar.search.service.SearchIndexService;
-import org.tdar.search.service.SearchService;
 import org.tdar.utils.MessageHelper;
 
 public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
@@ -30,9 +28,6 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
     
     @Autowired
     SearchIndexService searchIndexService;
-
-    @Autowired
-    SearchService searchService;
 
     @Autowired
     GenericKeywordService genericKeywordService;
@@ -56,9 +51,8 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
 
 
     private SearchResult processSearch(String term, String type, int min) throws ParseException, SolrServerException, IOException {
-        KeywordQueryBuilder findKeyword = keywordSearchService.findKeyword(term, type, MessageHelper.getInstance(), min);
         SearchResult result = new SearchResult();
-        searchService.handleSearch(findKeyword, result, MessageHelper.getInstance());
+        keywordSearchService.findKeyword(term, type,result, MessageHelper.getInstance(), min);
         return result;
     }
 

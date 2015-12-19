@@ -1,6 +1,8 @@
 package org.tdar.search.query;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +12,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 
-public class SearchResult implements SearchResultHandler<Indexable>, Serializable {
+public class SearchResult<I extends Indexable> implements SearchResultHandler<I>, Serializable {
 
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
@@ -19,7 +21,7 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     private int startRecord = 0;
     private int recordsPerPage = getDefaultRecordsPerPage();
     private boolean debug;
-    private List<Indexable> results;
+    private List<I> results = new ArrayList<>();
     private String mode;
     private boolean reindexing;
     private TdarUser authenticatedUser;
@@ -95,12 +97,12 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
     }
 
     @Override
-    public List<Indexable> getResults() {
+    public List<I> getResults() {
         return results;
     }
 
     @Override
-    public void setResults(List<Indexable> results) {
+    public void setResults(List<I> results) {
         this.results = results;
     }
 
@@ -176,6 +178,12 @@ public class SearchResult implements SearchResultHandler<Indexable>, Serializabl
 
     public boolean hasMore() {
         return (getTotalRecords() > getStartRecord() + getRecordsPerPage());
+    }
+
+    @Override
+    public <C> void facetBy(Class<C> c, Collection<C> vals) {
+        // TODO Auto-generated method stub
+        
     }
 
 }

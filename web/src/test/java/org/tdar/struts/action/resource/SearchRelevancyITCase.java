@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.search.dao.SearchDao;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.search.service.SearchParameters;
 import org.tdar.struts.action.TdarActionException;
@@ -40,8 +39,6 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     private GenericKeywordService genericKeywordService;
     @Autowired
     SearchIndexService searchIndexService;
-    @Autowired
-    SearchDao hibernateSearchDao;
 
     Document resourceWithTitleMatch;
     Document resourceWithKeywordMatch;
@@ -107,7 +104,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // assert title match appears before keywordmatch, and keywordmatch before docmatch and docmatch
     @Test
     @Rollback
-    public void testLocationRelevancy() throws IOException, TdarActionException {
+    public void testLocationOfPhraseRelevancy() throws IOException, TdarActionException {
         prepareInformationResources();
         runIndex();
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
@@ -132,13 +129,12 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         Assert.assertTrue("expecting test resource in results", indexOfTitleMatch > -1);
         Assert.assertTrue("expecting test resource in results", indexOfKeywordMatch > -1);
         Assert.assertTrue("expecting test resource in results", indexOfAttachmentMatch > -1);
-        logger.debug("indexOfTitleMatch:" + indexOfTitleMatch);
-        logger.debug("indexOfKeywordMatch:" + indexOfKeywordMatch);
-        logger.debug("indexOfAttachmentMatch:" + indexOfAttachmentMatch);
+        logger.debug("{} indexOfTitleMatch:{}" , resourceWithTitleMatch.getId(), indexOfTitleMatch);
+        logger.debug("{} indexOfKeywordMatch:{} " , resourceWithKeywordMatch.getId(), indexOfKeywordMatch);
+        logger.debug("{} indexOfAttachmentMatch: {}" , resourceWithAttachmentMatch.getId(),indexOfAttachmentMatch);
 
         // make sure they're in the right order...
         Assert.assertTrue("expecting test resource in results", indexOfTitleMatch < indexOfKeywordMatch);
-        Assert.assertTrue("expecting test resource in results", indexOfKeywordMatch < indexOfAttachmentMatch);
         Assert.assertTrue("expecting test resource in results", indexOfKeywordMatch < indexOfAttachmentMatch);
 
         Assert.assertTrue("indexOfTitleMatch < indexOfKeywordMatch.  indexOfTitleMatch:" + indexOfTitleMatch + " indexOfKeywordMatch:" + indexOfKeywordMatch
@@ -169,7 +165,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         List<MaterialKeyword> materialKeywords = genericService.findRandom(MaterialKeyword.class, 3);
         p.getMaterialKeywords().addAll(materialKeywords);
         genericService.saveOrUpdate(p);
-        searchIndexService.index(p);
+        searchIndexService.index(p,document);
         SearchParameters sp = new SearchParameters();
         controller.getGroups().add(sp);
         sp.getMaterialKeywordIdLists().add(Arrays.asList(materialKeywords.get(0).getId().toString()));

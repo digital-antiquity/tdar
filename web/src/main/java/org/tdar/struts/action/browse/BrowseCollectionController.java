@@ -29,8 +29,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.service.ResourceSearchService;
+import org.tdar.search.service.CollectionSearchService;
 import org.tdar.search.service.SearchFieldType;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
@@ -65,7 +64,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
     @Autowired
-    private ResourceSearchService resourceSearchService;
+    private CollectionSearchService collectionSearchService;
     
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
@@ -92,11 +91,9 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     }
 
     private void performLuceneQuery() throws TdarActionException {
-        QueryBuilder qb = resourceSearchService.buildCollectionResourceSearch();
         setMode("browseCollections");
-        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         try {
-            handleSearch(qb);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), null, this, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, spe);
         } catch (TdarRecoverableRuntimeException tdre) {

@@ -12,7 +12,6 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,8 +19,6 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,8 +69,6 @@ import com.opensymphony.xwork2.TextProvider;
 
      private final SearchDao<I> searchDao;
 
-     private final AuthorizationService authorizationService;
-     private final AuthenticationService authenticationService;
 
      @Autowired
      public SearchService(SessionFactory sessionFactory, GenericService genericDao, 
@@ -84,12 +79,6 @@ import com.opensymphony.xwork2.TextProvider;
          this.authorizationService = authorizationService;
      }
 
-     protected static final transient Logger logger = LoggerFactory.getLogger(SearchService.class);
-     private static final String[] LUCENE_RESERVED_WORDS = new String[] { "AND", "OR", "NOT" };
-     private static final Pattern luceneSantizeQueryPattern = Pattern.compile("(^|\\W)(" + StringUtils.join(LUCENE_RESERVED_WORDS, "|") + ")(\\W|$)");
-
-
-     public static final int MAX_FTQ_RESULTS = 50_000;
 
      /**
       * Perform a search based on the @link QueryBuilder and @link SortOption array.
@@ -101,7 +90,7 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws IOException 
      * @throws SolrServerException 
       */
-     public SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler<I> handler, SortOption... sortOptions) throws ParseException, SolrServerException, IOException {
+     protected SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler<I> handler, SortOption... sortOptions) throws ParseException, SolrServerException, IOException {
          return searchDao.search(new SolrSearchObject<I>(queryBuilder, sortOptions, handler), handler);
      } 
 
@@ -116,9 +105,9 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws SolrServerException 
       */
      @SuppressWarnings({ "unchecked", "rawtypes" })
-     public void handleSearch(QueryBuilder q, SearchResultHandler resultHandler, TextProvider textProvider) throws ParseException, SolrServerException, IOException {
+     protected void handleSearch(QueryBuilder q, SearchResultHandler resultHandler, TextProvider textProvider) throws ParseException, SolrServerException, IOException {
          if (q.isEmpty()) {
-             q.setRawQuery("*:*");
+             q.append(new FieldQueryPart<>("*","*"));;
          }
          long num = System.currentTimeMillis();
          hydrateQueryParts(q);
@@ -132,7 +121,7 @@ import com.opensymphony.xwork2.TextProvider;
          logger.trace("completed adding facets");
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
-logger.debug(queryText);
+         logger.debug(queryText);
          Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                  lucene, (System.currentTimeMillis() - num),
                  ftq.getTotalResults(),
@@ -356,7 +345,7 @@ logger.debug(queryText);
          q.append(new FieldQueryPart<>("status", Status.ACTIVE));
          List<Creator> list = null;
          logger.trace(q.generateQueryString());
-         SearchResultHandler<I> handler = (SearchResultHandler<I>) new SearchResult();
+         SearchResultHandler<I> handler = new SearchResult<>();
         SolrSearchObject<I> search = searchDao.search(new SolrSearchObject<I>(q, ((SortOption[]) null),handler), handler );
          search.setMaxResults(maxToResolve);
          list = (List<Creator>)search.getResultList();
@@ -391,7 +380,7 @@ logger.debug(queryText);
          params.getStatuses().add(Status.ACTIVE);
          ResourceQueryBuilder qb = new ResourceQueryBuilder();
          qb.append(params.toQueryPartGroup(MessageHelper.getInstance()));
-         SearchResult result = new SearchResult();
+         SearchResult<Resource> result = new SearchResult<>();
          result.setAuthenticatedUser(authenticatedUser);
          result.setSortField(SortOption.ID_REVERSE);
          result.setSecondarySortField(SortOption.TITLE);
@@ -408,7 +397,7 @@ logger.debug(queryText);
          ResourceQueryBuilder qb = new ResourceQueryBuilder();
          params.getRegisteredDates().add(new DateRange(d, null));
          qb.append(params.toQueryPartGroup(MessageHelper.getInstance()));
-         SearchResult result = new SearchResult();
+         SearchResult<Resource> result = new SearchResult<>();
          result.setAuthenticatedUser(authenticatedUser);
          result.setSortField(SortOption.ID_REVERSE);
          result.setSecondarySortField(SortOption.TITLE);
@@ -417,6 +406,12 @@ logger.debug(queryText);
          handleSearch(qb, result, provider);
          return (List<Resource>) ((List<?>) result.getResults());
      }
+
+
+    public <C>  void facetBy(Class<C> c, Collection<C> vals, SearchResultHandler<Indexable> handler) {
+        // TODO Auto-generated method stub
+        
+    }
 
 
  }

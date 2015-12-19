@@ -2,6 +2,7 @@ package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -76,19 +77,19 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
 
     private void handleSearch() throws TdarActionException {
         Project project = (Project) getResource();
-        ResourceQueryBuilder qb = resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this);
+
         setSortField(project.getSortBy());
         setSecondarySortField(SortOption.TITLE);
         if (project.getSecondarySortBy() != null) {
             setSecondarySortField(project.getSecondarySortBy());
         }
-        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+        facetBy(ResourceType.class, selectedResourceTypes);
         Date dateUpdated = project.getDateUpdated();
         if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
             projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
         }
         try {
-            searchService.handleSearch(qb, this, this);
+            resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
             reSortFacets(this, project);
 
@@ -274,5 +275,10 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public <C> void facetBy(Class<C> c, Collection<C> vals) {
+        searchService.facetBy(c, vals,this);
     }
 }
