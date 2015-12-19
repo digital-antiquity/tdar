@@ -1,4 +1,4 @@
-package org.tdar.core.service.processes;
+package org.tdar.search.service.processes;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -16,9 +16,14 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.processes.AbstractAnalysisTask;
+import org.tdar.search.query.SearchResult;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.utils.ImmutableScrollableCollection;
+import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -26,8 +31,8 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
     private static final long serialVersionUID = 581887107336388520L;
 
-//    @Autowired
-//    private transient SearchService searchService;
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
 
     @Autowired
     private transient EntityService entityService;
@@ -120,30 +125,24 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
             if (!creator.isActive()) {
                 continue;
             }
-            throw new TdarRecoverableRuntimeException();
-//            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
-//            Set<Long> resourceIds = new HashSet<>();
-//            try {
-//                FullTextQuery search = searchService.search(query);
-//                // change to ID only projection
-//                // search.setProjection(arg0)
-//                ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
-//                total = search.getResultSize();
-//                if (total == 0) {
-//                    continue;
-//                }
-//                while (results.next()) {
-//                    Resource resource = (Resource) results.get()[0];
-//                    resourceIds.add(resource.getId());
-//                }
-//            } catch (Exception e) {
-//                getLogger().warn("Exception", e);
-//            }
-//            try {
-//                generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
-//            } catch (Exception e) {
-//                getLogger().warn("Exception", e);
-//            }
+            Set<Long> resourceIds = new HashSet<>();
+            try {
+                SearchResult<Resource> result = new SearchResult<>();
+                result.setProjectionModel(ProjectionModel.LUCENE);
+                resourceSearchService.generateQueryForRelatedResources(creator, null, result, MessageHelper.getInstance());
+                total = result.getTotalRecords();
+                if (total == 0) {
+                    continue;
+                }
+                resourceIds.addAll(PersistableUtils.extractIds(result.getResults()));
+                } catch (Exception e) {
+                getLogger().warn("Exception", e);
+            }
+            try {
+                generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
+            } catch (Exception e) {
+                getLogger().warn("Exception", e);
+            }
         }
     }
 

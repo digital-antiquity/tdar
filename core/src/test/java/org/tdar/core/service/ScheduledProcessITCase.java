@@ -22,33 +22,23 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
-import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
-import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
-import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
 import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.upgradeTasks.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
-import org.tdar.core.service.processes.weekly.WeeklyResourcesAdded;
 
 /**
  * $Id$
@@ -67,8 +57,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Autowired
     private DailyEmailProcess dailyEmailProcess;
 
-    @Autowired
-    private CreatorAnalysisProcess pap;
     @Autowired
     private SalesforceSyncProcess salesforce;
 
@@ -141,22 +129,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         scheduledProcessService.runNextScheduledProcessesInQueue();
 //        assertTrue(dailyEmailProcess.isCompleted());
     }
-    
-    @Test
-    @Rollback
-    @Ignore("temporarilly disabling")
-    public void testResourceReport() {
-        Dataset dataset = createAndSaveNewDataset();
-//        searchIndexService.index(dataset);
-//        searchIndexService.flushToIndexes();
-        scheduledProcessService.queue(WeeklyResourcesAdded.class);
-        scheduledProcessService.runNextScheduledProcessesInQueue();
-        assertTrue(dailyEmailProcess.isCompleted());
-        scheduledProcessService.queue(SendEmailProcess.class);
-        scheduledProcessService.runNextScheduledProcessesInQueue();
         
-    }
-    
     @Autowired
     SendEmailProcess sep;
 
@@ -285,17 +258,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         }
     }
 
-    @Test
-    @Rollback(true)
-    @Ignore("FIXME:disabled for searching")
-    public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
-        pap.setDaysToRun(3000);
-        pap.execute();
-        pap.cleanup();
-        pap.setAllIds(null);
-        // resetting
-        pap.execute();
-    }
     
     @Test
     @Rollback(true)
@@ -310,29 +272,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testOccurranceStats() throws InstantiationException, IllegalAccessException {
         ocur.execute();
-    }
-
-    @Autowired
-    DailyTimedAccessRevokingProcess dtarp;
-    
-    @Test
-    public void testDailyTimedAccessRevokingProcess() {
-        Dataset dataset = createAndSaveNewDataset();
-        ResourceCollection collection = new ResourceCollection(dataset, getAdminUser());
-        collection.setType(CollectionType.SHARED);
-        AuthorizedUser e = new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL);
-        e.setDateExpires(DateTime.now().minusDays(4).toDate());
-        collection.setName("test");
-        collection.setDescription("test");
-        collection.markUpdated(getAdminUser());
-        collection.getAuthorizedUsers().add(e);
-        collection.getResources().add(dataset);
-        genericService.saveOrUpdate(collection);
-        genericService.saveOrUpdate(e);
-        dataset.getResourceCollections().add(collection);
-        genericService.saveOrUpdate(dataset);
-        
-        dtarp.execute();
     }
     
     @Test

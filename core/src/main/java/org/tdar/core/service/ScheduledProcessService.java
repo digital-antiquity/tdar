@@ -41,7 +41,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.AbstractPersistableScheduledProcess;
 import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
-import org.tdar.core.service.processes.CreatorAnalysisProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
@@ -53,8 +52,6 @@ import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
-import org.tdar.core.service.processes.weekly.WeeklyResourcesAdded;
-import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 
 import com.google.common.collect.Sets;
 
@@ -112,21 +109,6 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     private Set<Class<? extends ScheduledProcess>> scheduledProcessQueue = Sets.newConcurrentHashSet();
     private ApplicationContext applicationContext;
     private ScheduledTaskRegistrar taskRegistrar;
-
-    /**
-     * Once a week, on Sundays, generate some static, cached stats for use by
-     * the admin area and general system
-     */
-    @Scheduled(cron = "12 0 0 * * SUN")
-    public void cronGenerateWeeklyStats() {
-        queue(WeeklyStatisticsLoggingProcess.class);
-        queue(CreatorAnalysisProcess.class);
-    }
-
-    @Scheduled(cron = "12 0 0 * * THU")
-    public void cronWeeklyAdded() {
-        queue(WeeklyResourcesAdded.class);
-    }
 
     /**
      * Send emails at midnight
@@ -245,7 +227,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         runNextScheduledProcessesInQueue();
     }
 
-    protected void runNextScheduledProcessesInQueue() {
+    public void runNextScheduledProcessesInQueue() {
         logger.debug("processes in Queue: {}", getScheduledProcessQueue());
         if (getScheduledProcessQueue().size() <= 0) {
             return;

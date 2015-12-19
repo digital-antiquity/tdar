@@ -619,6 +619,10 @@ public class SearchIndexService {
     public void purge(Indexable entity) throws SolrServerException, IOException {
         String core = getCoreForClass(entity.getClass());
         template.deleteById(core,generateId(entity));
+//        if (entity instanceof ResourceCollection) {
+//            ResourceCollection rc = (ResourceCollection)entity;
+//            
+//        }
         // TODO Auto-generated method stub
         
     }

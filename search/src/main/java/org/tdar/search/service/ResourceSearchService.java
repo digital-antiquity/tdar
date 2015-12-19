@@ -180,6 +180,7 @@ public class ResourceSearchService extends AbstractSearchService {
      */
     public SearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        result.setRecordsPerPage(MAX_FTQ_RESULTS);
         queryBuilder.setOperator(Operator.AND);
         SearchParameters params = new SearchParameters(Operator.AND);
         params.setCreatorOwner(new ResourceCreatorProxy(creator, null));
