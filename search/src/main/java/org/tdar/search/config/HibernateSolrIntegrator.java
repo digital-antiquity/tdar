@@ -34,6 +34,7 @@ public class HibernateSolrIntegrator implements Integrator {
         listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_RECREATE).appendListener( eventListener );
         listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_REMOVE).appendListener( eventListener );
         listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_UPDATE).appendListener( eventListener );
+        listenerRegistry.getEventListenerGroup( EventType.PRE_COLLECTION_UPDATE).appendListener( eventListener );
         listenerRegistry.getEventListenerGroup( EventType.FLUSH).appendListener( eventListener );
     }
 
@@ -60,7 +61,7 @@ public class HibernateSolrIntegrator implements Integrator {
         IndexEventListener eventListener = new IndexEventListener();
         registerHibernateSearchEventListener( eventListener, serviceRegistry );
 
-        ClassLoaderService hibernateClassLoaderService = serviceRegistry.getService( ClassLoaderService.class );
+//        ClassLoaderService hibernateClassLoaderService = serviceRegistry.getService( ClassLoaderService.class );
 //        SessionFactoryObserver observer = new SessionFactoryObserver(
 //                metadata,
 //                configurationService,
