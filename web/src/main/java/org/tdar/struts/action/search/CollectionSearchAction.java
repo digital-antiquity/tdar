@@ -59,7 +59,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         determineCollectionSearchTitle();
 
         try {
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()),this,this);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()),false, this,this);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());

@@ -635,6 +635,12 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller_.setRecordsPerPage(1000);
         assertEquals(Action.SUCCESS, controller_.browseCollections());
         List<ResourceCollection> collections = controller_.getResults();
+        for (ResourceCollection result : collections) {
+            if (result != null) {
+                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(),result.isHidden(), result.isTopLevel());
+            }
+            logger.debug("NULL");
+        }
         assertFalse(collections.contains(collection1));
         assertFalse(collections.contains(collection2));
         // FIXME: @ManyToMany directional issue
@@ -644,13 +650,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(parentCollection.isShared());
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
-        for (ResourceCollection result : collections) {
-            logger.debug("{} {} {} {} ", result.getTitle(), result.getId(),result.isHidden(), result.isTopLevel());
-        }
-        logger.debug("results:{}", collections);
         assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
         assertFalse(childCollection.isHidden());
-        assertTrue(collections.contains(childCollection));
+        assertFalse(collections.contains(childCollection));
         assertFalse(collections.contains(childCollectionHidden));
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         // TESTING ANONYMOUS USER

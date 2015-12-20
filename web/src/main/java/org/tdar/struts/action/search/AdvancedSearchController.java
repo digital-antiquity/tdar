@@ -154,7 +154,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
             result.setMode("COLLECTION MINI");
             result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields(), result, this);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields(), false,  result, this);
             setMode("SEARCH");
             setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
             getCollectionResults().removeAll(Collections.singleton(null));

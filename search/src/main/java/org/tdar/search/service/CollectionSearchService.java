@@ -1,6 +1,6 @@
- package org.tdar.search.service;
+package org.tdar.search.service;
 
- import java.io.IOException;
+import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,48 +28,52 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
- @Service
- @Transactional
- public class CollectionSearchService extends AbstractSearchService {
+@Service
+@Transactional
+public class CollectionSearchService extends AbstractSearchService {
 
-     @Autowired
-     private transient AuthorizationService authorizationService;
-     
-     @Autowired
-     private transient SearchService<ResourceCollection> searchService;
-     
-     public SearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, List<String> allFields, SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
-         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
-         queryBuilder.setOperator(Operator.AND);
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
-         if (CollectionUtils.isNotEmpty(allFields)) {
-             queryBuilder.append(new GeneralSearchQueryPart(allFields));
-         }
-         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+    @Autowired
+    private transient SearchService<ResourceCollection> searchService;
 
-         // either it's not hidden and you can see it, or it is hidden but you have rights to it.
+    public SearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, List<String> allFields, boolean limitToTopLevel,
+            SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+        ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
+        queryBuilder.setOperator(Operator.AND);
 
-         QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
-         rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
-         if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
-             QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
-             qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "true"));
-             if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                 // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
-                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
-                 rightsPart.append(qpg);
-             }  else {
-                 // if we're admin, drop the hidden check
-                 rightsPart.clear();
-             }
-         }
-         queryBuilder.append(rightsPart);
-         searchService.handleSearch(queryBuilder, result, provider);
-         return result;
+        if (CollectionUtils.isNotEmpty(allFields)) {
+            queryBuilder.append(new GeneralSearchQueryPart(allFields));
+        }
+        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+        if (limitToTopLevel) {
+            queryBuilder.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, true));
+        }
+        // either it's not hidden and you can see it, or it is hidden but you have rights to it.
 
-     }
+        QueryPartGroup rightsPart = new QueryPartGroup(Operator.OR);
+        rightsPart.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "false"));
+        if (PersistableUtils.isNotNullOrTransient(authenticatedUser)) {
+            QueryPartGroup qpg = new QueryPartGroup(Operator.AND);
+            qpg.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_HIDDEN, "true"));
+            if (!authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+                // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
+                qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
+                rightsPart.append(qpg);
+            } else {
+                // if we're admin, drop the hidden check
+                rightsPart.clear();
+            }
+        }
+        queryBuilder.append(rightsPart);
+        searchService.handleSearch(queryBuilder, result, provider);
+        return result;
 
-    public SearchResultHandler<ResourceCollection> findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title, SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    }
+
+    public SearchResultHandler<ResourceCollection> findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title,
+            SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
         q.append(new AutocompleteTitleQueryPart(title));
         boolean admin = false;
@@ -82,7 +86,5 @@ import com.opensymphony.xwork2.TextProvider;
         return result;
 
     }
-
-     
 
 }

@@ -93,7 +93,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private void performLuceneQuery() throws TdarActionException {
         setMode("browseCollections");
         try {
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), null, this, this);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), null, true, this, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
