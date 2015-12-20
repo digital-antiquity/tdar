@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -213,9 +214,13 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         if (logger.isTraceEnabled()) {
             logger.trace("preUpdate: {} - {}", key, event.getCollection());
         }
+        if (event.getCollection() instanceof Map) {
         HashMap snapshot = (HashMap) event.getCollection().getStoredSnapshot();
         //set values are also stored as map values with same key and valu
         idChangeMap.put(key, snapshot.values());
+        } else {
+            idChangeMap.put(key, (Collection)event.getCollection());
+        }
     }
 
     private String getCollectionKey(AbstractCollectionEvent event) {
