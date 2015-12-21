@@ -50,6 +50,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.search.config.IndexEventListener;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
@@ -85,6 +86,14 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     CollectionController controller;
 
     static int indexCount = 0;
+
+    @Autowired
+    IndexEventListener listener;
+
+    @Before
+    public void reset() {
+        listener.reset();
+    }
 
     /**
      * Make sure that case in-sensitive queries return the same thing
@@ -602,8 +611,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public void testBrowseControllerVisibleCollections() throws Exception {
+        genericService.synchronize();
+        logger.debug("------------------------------------------------------------------------------------------------------------------");
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        TdarUser testPerson2 = createAndSaveNewPerson("aa@basda.com", "12345");
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("INTERNAL", "", CollectionType.INTERNAL, false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
@@ -618,6 +628,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         ResourceCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
         // genericService.saveOrUpdate(parentCollection);
+        Long parentCollectionId = parentCollection.getId();
         parentCollection = null;
         BrowseCollectionController controller_ = generateNewInitializedController(BrowseCollectionController.class);
         initAnonymousUser(controller_);
@@ -626,7 +637,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.synchronize();
         searchIndexService.indexAll(getAdminUser(), Resource.class);
         testFile = null;
-        evictCache();
+        listener.reset();
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
         testFile = genericService.find(Document.class, fileId);
@@ -634,36 +645,51 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         controller_.setRecordsPerPage(1000);
         assertEquals(Action.SUCCESS, controller_.browseCollections());
-        List<ResourceCollection> collections = controller_.getResults();
-        for (ResourceCollection result : collections) {
+        List<ResourceCollection> collections_ = controller_.getResults();
+        for (ResourceCollection result : collections_) {
             if (result != null) {
-                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(),result.isHidden(), result.isTopLevel());
+                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(), result.isHidden(), result.isTopLevel());
             }
             logger.debug("NULL");
         }
-        assertFalse(collections.contains(collection1));
-        assertFalse(collections.contains(collection2));
-        // FIXME: @ManyToMany directional issue
-        // assertEquals(1,parentCollection.getResources().size());
+        List<Long> collections = PersistableUtils.extractIds(collections_);
+        collections_ = null;
+        Long childCollectionId = childCollection.getId();
+        Long childCollectionHiddenId = childCollectionHidden.getId();
+        Long collection1Id = collection1.getId();
+        Long collection2Id = collection2.getId();
+        
+        childCollection = null;
+        childCollectionHidden = null;
+        collection1 = null;
+        collection2 = null;
+        assertFalse(collections.contains(collection1Id));
+        assertFalse(collections.contains(collection2Id));
+
         assertEquals(1, testFile.getResourceCollections().size());
         parentCollection = genericService.find(ResourceCollection.class, id);
         assertTrue(parentCollection.isShared());
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
-        assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
-        assertFalse(childCollection.isHidden());
-        assertFalse(collections.contains(childCollection));
-        assertFalse(collections.contains(childCollectionHidden));
+        String slug = parentCollection.getSlug();
+        parentCollection = null;
+        assertTrue(String.format("collections %s should contain %s", collections, parentCollectionId), collections.contains(parentCollectionId));
+        // assertFalse(childCollection.isHidden());
+        assertFalse(collections.contains(childCollectionId));
+        assertFalse(collections.contains(childCollectionHiddenId));
+        // genericService.synchronize();
+        collections = null;
+
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         // TESTING ANONYMOUS USER
         initAnonymousUser(vc);
         vc.setId(id);
-        vc.setSlug(parentCollection.getSlug());
+        vc.setSlug(slug);
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
-        collections = vc.getCollections();
-        assertTrue(collections.contains(childCollection));
-        assertFalse(collections.contains(childCollectionHidden));
+        collections = PersistableUtils.extractIds(vc.getCollections());
+        assertTrue(collections.contains(childCollectionId));
+        assertFalse(collections.contains(childCollectionHiddenId));
         assertEquals(1, vc.getResults().size());
 
         // TESTING MORE ADVANCED VIEW RIGHTS
@@ -671,13 +697,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc = generateNewController(CollectionViewAction.class);
         init(vc, testPerson);
         vc.setId(id);
-        vc.setSlug(parentCollection.getSlug());
+        vc.setSlug(slug);
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
-        collections = vc.getCollections();
+        collections = PersistableUtils.extractIds(vc.getCollections());
         assertEquals(2, collections.size());
-        assertTrue(collections.contains(childCollection));
-        assertTrue(collections.contains(childCollectionHidden));
+        assertTrue(collections.contains(childCollectionId));
+        assertTrue(collections.contains(childCollectionHiddenId));
 
         logger.info("{}", vc.getActionErrors());
 

@@ -119,7 +119,6 @@ public class SolrSearchObject<I extends Indexable> {
         solrQuery.setParam("rows", Integer.toString(resultSize));
         if (StringUtils.isNotBlank(filterString)) {
             solrQuery.setParam("fq", filterString);
-            logger.debug(filterString);
         }
         if (StringUtils.isNotBlank(sortParam)) {
             solrQuery.setParam("sort", sortParam);

@@ -124,7 +124,7 @@ import com.opensymphony.xwork2.TextProvider;
          logger.trace("completed adding facets");
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
-         logger.debug(queryText);
+         logger.trace(queryText);
          Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
                  lucene, (System.currentTimeMillis() - num),
                  ftq.getTotalResults(),

@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -157,66 +156,7 @@ public class SearchDao<I extends Indexable> {
             }
         }
         resultHandler.setResults(toReturn);
-        logger.debug("results: {}", toReturn);
         results.setResultList(toReturn);
     }
-
-    // /**
-    // * This method takes the projects from the search handler (if there are any) and adds them to a projection list that we're managing
-    // *
-    // * @param resultHandler
-    // * @param ftq
-    // * @return
-    // */
-    // private List<String> setupProjectionsForSearch(SearchResultHandler<?> resultHandler, SolrSearchObject ftq) {
-    // List<String> projections = new ArrayList<>();
-    // projections.add(ProjectionConstants.THIS); // Hibernate Object
-    // projections.add(ProjectionConstants.OBJECT_CLASS); // class to project
-    //
-    // ProjectionModel projectionModel = resultHandler.getProjectionModel();
-    // if (projectionModel == null) {
-    // projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
-    // }
-    //
-    // if (projectionModel != ProjectionModel.HIBERNATE_DEFAULT) { // OVERRIDE CASE, PROJECTIONS SET IN RESULTS HANDLER
-    // projections.remove(ProjectionConstants.THIS);
-    // projections.addAll(resultHandler.getProjectionModel().getProjections());
-    // }
-    //
-    // projections.add(ProjectionConstants.SCORE);
-    // if (resultHandler.isDebug()) {
-    // logger.debug("debug mode on for results handling");
-    // projections.add(ProjectionConstants.EXPLANATION);
-    // }
-    // return projections;
-    // }
-
-    // /**
-    // * Takes the projected object and list of projections and turns them back into an object we can use, often just with Id
-    // *
-    // * @param resultHandler
-    // * @param projections
-    // * @param ids
-    // * @return
-    // */
-    // private void createSpareObjectFromProjection(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
-    // List<I> toReturn = new ArrayList<>();
-    // ProjectionModel projectionModel = resultHandler.getProjectionModel();
-    // if (projectionModel == null) {
-    // projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
-    // }
-    // for (Long id : results.getIdList()) {
-    //
-    // try {
-    // I p = results.getObjectClass().newInstance();
-    // p.setId(id);
-    // toReturn.add(p);
-    // } catch (Exception e) {
-    // throw new TdarRecoverableRuntimeException(e);
-    // }
-    //
-    // }
-    // results.getResultList().addAll(toReturn);
-    // }
 
 }

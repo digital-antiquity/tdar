@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -63,6 +62,10 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     private SearchIndexService searchIndexService;
     private SolrClient solrClient;
 
+    public void reset() {
+        idChangeMap.clear();
+    }
+    
     private boolean isEnabled() {
         if (searchIndexService == null) {
             AutowireHelper.autowire(this, searchIndexService, solrClient);
@@ -124,7 +127,11 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
                 return;
             }
 
-            Collection<?> old = idChangeMap.get(getCollectionKey(event));
+            String key = getCollectionKey(event);
+            Collection<?> old = idChangeMap.get(key);
+            if (old != null) {
+                idChangeMap.remove(key);
+            }
             if (old == null) {
                 old = Collections.emptyList();
             }

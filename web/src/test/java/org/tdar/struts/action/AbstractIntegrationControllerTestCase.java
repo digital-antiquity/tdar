@@ -155,6 +155,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     public void announceTestStarting() {
         setIgnoreActionErrors(false);
         getActionErrors().clear();
+        searchIndexService.purgeAll();
     }
 
     // Called when your test fails. Did I say "when"? I meant "if".
