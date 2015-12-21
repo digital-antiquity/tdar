@@ -65,7 +65,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     public void reset() {
         idChangeMap.clear();
     }
-    
+
     private boolean isEnabled() {
         if (searchIndexService == null) {
             AutowireHelper.autowire(this, searchIndexService, solrClient);
@@ -137,6 +137,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
             }
             Collection<?> intersection = CollectionUtils.intersection((Collection<?>) persistentCollection, old);
             Collection<?> disjunction = CollectionUtils.disjunction((Collection<?>) persistentCollection, old);
+            logger.trace("{} ({}) i:{} d:{}", event.getClass().getSimpleName(), key, intersection, disjunction);
             index(intersection);
             index(disjunction);
         }
@@ -219,9 +220,9 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     @Override
     public void onPreUpdateCollection(PreCollectionUpdateEvent event) {
         String key = getCollectionKey(event);
-        if (logger.isTraceEnabled()) {
-            logger.trace("preUpdate: {} - {}", key, event.getCollection());
-        }
+        // hack -- manifesting the collection appears to get hibernate to recognize changes
+        logger.debug("preUpdate: {} - {}", key, event.getCollection());
+
         Serializable serializedSnapshot = event.getCollection().getStoredSnapshot();
         if (serializedSnapshot instanceof Map) {
             Map snapshot = (Map) serializedSnapshot;
@@ -236,7 +237,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     private String getCollectionKey(AbstractCollectionEvent event) {
         String role = event.getCollection().getRole();
         Long id = (Long) event.getAffectedOwnerIdOrNull();
-        String key = id + role;
+        String key = id + "-" + role;
         return key;
     }
 
