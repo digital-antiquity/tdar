@@ -1,6 +1,7 @@
 package org.tdar.search.config;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,6 +47,7 @@ import org.tdar.search.service.SearchIndexService;
  * 
  * also useful
  * http://stackoverflow.com/questions/812364/how-to-determine-collection-changes-in-a-hibernate-postupdateeventlistener
+ * 
  * @author abrin
  *
  */
@@ -57,7 +59,6 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
 
     protected static final transient Logger logger = LoggerFactory.getLogger(HibernateSolrIntegrator.class);
 
-    
     private WeakHashMap<String, Collection<?>> idChangeMap = new WeakHashMap<>();
     private SearchIndexService searchIndexService;
     private SolrClient solrClient;
@@ -111,12 +112,12 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
             return;
         }
         Object entity = event.getAffectedOwnerOrNull();
-//        logger.debug("--------");
-//        logger.debug("postUpdate: {} - {}", getCollectionKey(event), event.getCollection());
+        // logger.debug("--------");
+        // logger.debug("postUpdate: {} - {}", getCollectionKey(event), event.getCollection());
         if (entity == null) {
             return;
         }
-                
+
         PersistentCollection persistentCollection = event.getCollection();
         if (persistentCollection != null) {
             if (!persistentCollection.wasInitialized()) {
@@ -171,7 +172,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         }
         if (entity instanceof Collection<?>) {
             logger.trace("indexing collection: {}", entity);
-            for (Object obj : (Collection<?>)entity) {
+            for (Object obj : (Collection<?>) entity) {
                 index(obj);
             }
         }
@@ -214,18 +215,20 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         if (logger.isTraceEnabled()) {
             logger.trace("preUpdate: {} - {}", key, event.getCollection());
         }
-        if (event.getCollection() instanceof Map) {
-        HashMap snapshot = (HashMap) event.getCollection().getStoredSnapshot();
-        //set values are also stored as map values with same key and valu
-        idChangeMap.put(key, snapshot.values());
-        } else {
-            idChangeMap.put(key, (Collection)event.getCollection());
+        Serializable serializedSnapshot = event.getCollection().getStoredSnapshot();
+        if (serializedSnapshot instanceof Map) {
+            Map snapshot = (Map) serializedSnapshot;
+            // set values are also stored as map values with same key and valu
+            idChangeMap.put(key, snapshot.values());
+        }
+        if (serializedSnapshot instanceof Collection) {
+            idChangeMap.put(key, (Collection) serializedSnapshot);
         }
     }
 
     private String getCollectionKey(AbstractCollectionEvent event) {
         String role = event.getCollection().getRole();
-        Long id = (Long)event.getAffectedOwnerIdOrNull();
+        Long id = (Long) event.getAffectedOwnerIdOrNull();
         String key = id + role;
         return key;
     }
