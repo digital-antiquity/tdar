@@ -196,9 +196,11 @@ View freemarker macros
         'VIDEO': 'film'
         } />
         <#local ext = "" >
-        <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
-        <#if !ext?has_content>
-            <#local ext = extensionMap[resource.resourceType ] />
+        <#if irfile.latestUploadedOrArchivalVersion??>
+            <#local ext = extensionMap[irfile.latestUploadedOrArchivalVersion.extension?lower_case ]!'' />
+            <#if !ext?has_content>
+                <#local ext = extensionMap[resource.resourceType ] />
+            </#if>
         </#if>
     <i class="iconf ${ext} ${extraClass!""}"></i>
     </#macro>
