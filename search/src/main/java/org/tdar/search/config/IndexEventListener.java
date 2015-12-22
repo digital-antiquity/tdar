@@ -167,7 +167,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     }
 
     private void index(Object entity) {
-        if (!isEnabled()) {
+        if (!isEnabled()|| entity == null) {
             return;
         }
         if (entity instanceof Indexable) {
