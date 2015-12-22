@@ -19,12 +19,9 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
@@ -33,6 +30,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.DatasetMappingService;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -48,6 +46,8 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
     @Autowired
     private transient AuthorizationService authorizationService;
 
+    @Autowired
+    private transient DatasetMappingService datasetMappingService;
     @Autowired
     private transient DatasetService datasetService;
 
@@ -151,9 +151,9 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
     protected void postSaveColumnMetadataCleanup() {
         if (CollectionUtils.isNotEmpty(columnsToRemap)) {
             if (isAsync()) {
-                datasetService.remapColumnsAsync(columnsToRemap, getDataResource().getProject());
+                datasetMappingService.remapColumnsAsync(columnsToRemap, getDataResource().getProject());
             } else {
-                datasetService.remapColumns(columnsToRemap, getDataResource().getProject());
+                datasetMappingService.remapColumns(columnsToRemap, getDataResource().getProject());
             }
         }
     }

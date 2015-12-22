@@ -405,4 +405,24 @@ public class DatasetDao extends ResourceDao<Dataset> {
         
     }
 
+    public void remapColumns(List<DataTableColumn> columns, Project project) {
+        getLogger().info("remapping columns: {} in {} ", columns, project);
+        if (CollectionUtils.isNotEmpty(columns) && (project != null)) {
+            resetColumnMappings(project);
+            // mapping columns to the resource runs a raw sql update, refresh the state of the Project.
+            refresh(project);
+            // have to reindex...
+            /*
+             * Take the distinct column values mapped and associate them with files in tDAR based on:
+             * - shared project
+             * - filename matches column value either (a) with extension or (b) with separator eg: file1.jpg;file2.jpg
+             * NOTE: a manual reindex happens at the end
+             */
+            for (DataTableColumn column : columns) {
+                mapColumnToResource(column, tdarDataImportDatabase.selectNonNullDistinctValues(column,false));
+            }
+        }
+        
+    }
+
 }

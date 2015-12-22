@@ -713,24 +713,13 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
     }
 
     /*
-     * convenience method, used for Asynchronous as opposed to the Synchronous version by the Controller
-     */
-    @Async
-    @Transactional
-    public void remapColumnsAsync(final List<DataTableColumn> columns, final Project project) {
-        remapColumns(columns, project);
-    }
-
-    /*
      * A special feature of a @link Dataset is if it's associated with a @link Project, we can use data from a @link DataTable to associate additional data with
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
+    @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         remapColumnsWithoutIndexing(columns, project);
-        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
-            logger.error("REINDEX !!!");
-        }
     }
 
     @Transactional
