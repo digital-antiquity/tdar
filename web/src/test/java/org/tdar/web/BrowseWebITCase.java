@@ -12,7 +12,7 @@ import org.apache.http.HttpStatus;
 import org.junit.Test;
 
 public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
-    boolean indexed = false;
+    static boolean indexed = false;
 
     public void reindexOnce() {
         if (indexed) {
