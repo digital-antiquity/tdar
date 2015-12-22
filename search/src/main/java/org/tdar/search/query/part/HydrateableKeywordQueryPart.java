@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.search.query.QueryFieldNames;
@@ -26,11 +28,10 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydrateableQueryPart<K> {
 
-//    private static final String ID = ".id";
     private static final String LABEL_KEYWORD = "_label";
     private static final String LABEL = "_label_phrase";
-//    private static final String INFORMATION_RESOURCES = "informationResources.";
     private boolean includeChildren = true;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unchecked")
     public HydrateableKeywordQueryPart(KeywordType type, List<K> fieldValues_) {

@@ -52,16 +52,7 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
     private transient DatasetService datasetService;
 
     @Autowired
-    private transient CategoryVariableService categoryVariableService;
-
-    @Autowired
     private transient DataTableService dataTableService;
-
-    @Autowired
-    private transient OntologyService ontologyService;
-
-    @Autowired
-    private transient SerializationService serializationService;
 
     private Dataset persistable;
 

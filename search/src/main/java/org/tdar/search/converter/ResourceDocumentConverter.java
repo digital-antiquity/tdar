@@ -120,9 +120,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
 
             doc.setField(QueryFieldNames.RESOURCE_ACCESS_TYPE, ir.getResourceAccessType().name());
-            // getContent
-
-//            doc.setField(QueryFieldNames.CONTENT, "");
 
         }
 
