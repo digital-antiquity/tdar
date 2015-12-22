@@ -56,10 +56,10 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
     private String collectionSearch() throws SolrServerException, IOException {
         setLookupSource(LookupSource.COLLECTION);
         setMode("COLLECTION SEARCH:");
-        determineCollectionSearchTitle();
 
         try {
             collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()),false, this,this);
+            determineCollectionSearchTitle();
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());
             addActionError(tdre.getMessage());
@@ -76,7 +76,7 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
     }
 
     protected void determineCollectionSearchTitle() {
-        if (StringUtils.isEmpty(getQuery())) {
+        if (StringUtils.isBlank(getQuery())) {
             setSearchTitle(getText("advancedSearchController.title_all_collections"));
         } else {
             setSearchTitle(getQuery());
