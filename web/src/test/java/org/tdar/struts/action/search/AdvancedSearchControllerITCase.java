@@ -34,8 +34,6 @@ import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceAnnotation;
-import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -237,26 +235,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
             logger.info(msg);
             Assert.assertEquals(msg, expectedCount, controller.getTotalRecords());
         }
-    }
-
-    
-    @Test
-    @Rollback
-    public void testResourceAnnotationSearch() {
-        Document doc = createAndSaveNewResource(Document.class);
-        ResourceAnnotationKey key = new ResourceAnnotationKey("MAC Lab Lot Number");
-        genericService.saveOrUpdate(key);
-        String code = "18ST659/158";
-        ResourceAnnotation ann = new ResourceAnnotation(key, code);
-        ResourceAnnotation ann2 = new ResourceAnnotation(key, "18ST659/143");
-        doc.getResourceAnnotations().add(ann);
-        doc.getResourceAnnotations().add(ann2);
-        genericService.saveOrUpdate(doc);
-        searchIndexService.index(doc);
-        firstGroup().getAllFields().add(code);
-        doSearch();
-        assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
-        assertTrue(controller.getResults().contains(doc));
     }
 
     @Test

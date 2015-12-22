@@ -113,7 +113,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     @Rollback
-    public void testResourceAnnotationSearch() {
+    public void testResourceAnnotationSearch() throws SolrServerException, IOException, ParseException {
         Document doc = createAndSaveNewResource(Document.class);
         ResourceAnnotationKey key = new ResourceAnnotationKey("MAC Lab Lot Number");
         genericService.saveOrUpdate(key);
