@@ -51,6 +51,10 @@ public class APIViewAction extends AuthenticationAware.Base {
     public String view() throws Exception {
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             Resource resource = resourceService.find(getId());
+            if (resource == null) {
+                getLogger().debug("could not find resource: {}", getId());
+                return INPUT;
+            }
             if (!isAdministrator() && !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
                 obfuscationService.obfuscate(resource, getAuthenticatedUser());
             }

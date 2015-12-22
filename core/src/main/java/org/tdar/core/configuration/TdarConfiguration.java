@@ -915,4 +915,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public Long getAdminUserId() {
         return assistant.getLongProperty("admin.userid", 135028);
     }
+
+    public Long getAdminBillingAccountId() {
+        return assistant.getLongProperty("admin.billingAccount", 216);
+    }
 }
