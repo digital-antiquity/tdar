@@ -42,6 +42,14 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
 
     private static final long serialVersionUID = 6596067112791213904L;
 
+    
+    public ResourceAnnotationKey() {
+    }
+
+    public ResourceAnnotationKey(String key) {
+        this.key = key;
+        this.resourceAnnotationType = ResourceAnnotationType.IDENTIFIER;
+    }
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_annotation_type", length = FieldLength.FIELD_LENGTH_255)
     private ResourceAnnotationType resourceAnnotationType;
