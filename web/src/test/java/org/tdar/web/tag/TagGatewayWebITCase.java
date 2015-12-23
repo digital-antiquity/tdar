@@ -167,8 +167,9 @@ public class TagGatewayWebITCase extends AbstractWebTestCase {
         query.setWhere(where);
         SearchResults results = getResults(query, sessionId);
 
-        assertTrue(titleInResults(results.getResults().getResult(),
-                "The Archaeology of Tuzigoot National Monument and Montezuma Castle National Monument"));
+        assertTrue(titleInResults(results.getResults().getResult(), "Ojo Bonito Archaeological Project (OBAP)"));
+        assertTrue(titleInResults(results.getResults().getResult(), "Heshotauthla Archaeological Research Project (HARP)"));
+        assertTrue(titleInResults(results.getResults().getResult(), "Cibola Archaeological Research Project (CARP)"));
         query.setWhere(null);
     }
 

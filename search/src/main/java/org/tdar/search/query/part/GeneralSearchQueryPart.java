@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.query.QueryFieldNames;
 
-import com.mchange.v2.util.CollectionUtils;
 import com.opensymphony.xwork2.TextProvider;
 
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
@@ -48,7 +47,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
-        allFields.setPhraseFormatters(PhraseFormatter.ESCAPED);
+
         List<String> fields = new ArrayList<String>();
         for (String txt : StringUtils.split(cleanedQueryString)) {
             if (!ArrayUtils.contains(QueryPart.LUCENE_RESERVED_WORDS, txt)) {
@@ -80,10 +79,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         primary.append(titlePart.setBoost(TITLE_BOOST));
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
         primary.append(allFields);
-
-        if (CollectionUtils.size(fields)> 1) {
-            primary.append(allFieldsAsPart);
-        }
+        primary.append(allFieldsAsPart);
 
         primary.setOperator(Operator.OR);
         return primary;
