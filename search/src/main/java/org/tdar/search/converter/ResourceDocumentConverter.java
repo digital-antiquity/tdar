@@ -3,7 +3,6 @@ package org.tdar.search.converter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -59,14 +58,11 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         SolrInputDocument doc = convertPersistable(resource);
         doc.setField(QueryFieldNames.NAME, resource.getName());
-        doc.setField(QueryFieldNames.NAME_PHRASE, resource.getName());
         doc.setField(QueryFieldNames.NAME_SORT, resource.getTitleSort());
-        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, resource.getName());
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
         doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
-        doc.setField(QueryFieldNames.DESCRIPTION_PHRASE, resource.getDescription());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, resource.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, resource.getUsersWhoCanView());
 
@@ -83,7 +79,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             if (ir.getProject() != null) {
                 doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
                 doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
-                doc.setField(QueryFieldNames.PROJECT_TITLE_AUTOCOMPLETE, ir.getProjectTitle());
                 doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
             }
             doc.setField(QueryFieldNames.DATE, ir.getDate());
@@ -250,10 +245,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, directCollectionIds);
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionIds);
-        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME_AUTOCOMPLETE, collectionNames);
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, collectionNames);
-        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME_PHRASE, collectionNames);
-
     }
 
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
@@ -338,7 +330,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
         if (CollectionUtils.isNotEmpty(ids)) {
             doc.setField(prefix, ids);
-            doc.setField(prefix + "_label_phrase", labels);
             doc.setField(prefix + "_label", labels);
         }
 

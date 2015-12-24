@@ -10,14 +10,11 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         
         SolrInputDocument doc = convertPersistable(collection);
         doc.setField(QueryFieldNames.NAME, collection.getName());
-        doc.setField(QueryFieldNames.NAME_SORT, collection.getName());
-        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, collection.getName());
         doc.setField(QueryFieldNames.RESOURCE_IDS, collection.getResourceIds());
         doc.setField(QueryFieldNames.RESOURCE_OWNER, collection.getOwner().getId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT, collection.getParentId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, collection.getParentIds());
         doc.setField(QueryFieldNames.DESCRIPTION, collection.getDescription());
-        doc.setField(QueryFieldNames.DESCRIPTION_PHRASE, collection.getDescription());
         doc.setField(QueryFieldNames.TOP_LEVEL, collection.isTopLevel());
         doc.setField(QueryFieldNames.TYPE, collection.getType());
         doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
@@ -25,7 +22,6 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, collection.getUsersWhoCanAdminister());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, collection.getUsersWhoCanView());
         doc.setField(QueryFieldNames.ALL, collection.getAllFieldSearch());
-        doc.setField(QueryFieldNames.ALL_PHRASE, collection.getAllFieldSearch());
         return doc;
     }
 }

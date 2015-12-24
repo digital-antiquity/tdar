@@ -18,7 +18,6 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         SolrInputDocument doc = convertPersistable(kwd);
         List<String> names = new ArrayList<>();
         names.add(kwd.getLabel());
-        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, kwd.getLabel());
         doc.setField(QueryFieldNames.TYPE, kwd.getKeywordType());
         if (kwd instanceof HierarchicalKeyword<?>) {
             HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>)kwd;

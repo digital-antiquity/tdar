@@ -3,12 +3,21 @@
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
+    <copyField source="name" dest="name_autocomplete" />
+    <copyField source="name" dest="name_sort" />
+    <copyField source="name" dest="name_phrase" />
+
     <field name="type" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="description_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <copyField source="description" dest="description_phrase" />
+
+
     <field name="all" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="allPhrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="all_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <copyField source="all" dest="all_phrase" />
+
     <field name="hidden" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="visibleInSearch" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="topLevel" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />

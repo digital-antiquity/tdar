@@ -4,10 +4,15 @@
     <field name="firstName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="firstName_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
     <field name="firstName_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <copyField source="firstName" dest="firstName_autocomplete" />
+    <copyField source="firstName" dest="firstName_sort" />
+
     <field name="lastName_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="lastName" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="email" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="lastName_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
+    <copyField source="lastName" dest="lastName_autocomplete" />
+    <copyField source="lastName" dest="lastName_sort" />
+    <field name="email" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="registered" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="contributor" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="institution.name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
@@ -15,9 +20,12 @@
     
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="username" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <copyField source="name" dest="name_autocomplete" />
+    <copyField source="name" dest="name_sort" />
+    <copyField source="name" dest="name_phrase" />
+    <field name="username" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
     <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>

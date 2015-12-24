@@ -10,10 +10,8 @@ public class AnnotationKeyDocumentConverter extends AbstractSolrDocumentConverte
     public static SolrInputDocument convert(ResourceAnnotationKey key) {
         
         SolrInputDocument doc = convertPersistable(key);
-        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, key.getKey());
         doc.setField(QueryFieldNames.NAME, key.getKey());
         doc.setField(QueryFieldNames.TYPE, key.getAnnotationDataType());
-        doc.setField(QueryFieldNames.NAME_SORT, key.getKey());
         return doc;
     }
 }

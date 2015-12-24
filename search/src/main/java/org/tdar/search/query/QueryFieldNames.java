@@ -49,7 +49,7 @@ public interface QueryFieldNames {
     String EMAIL = "email";
     String ID = "id";
     String ALL = "all";
-    String ALL_PHRASE = "allPhrase";
+    String ALL_PHRASE = "all_phrase";
     String CONTENT = "content";
     String DESCRIPTION = "description";
     String PROJECT_TITLE_SORT = "project.name_sort";

@@ -11,15 +11,9 @@ public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
 
     public static SolrInputDocument convert(Person person) {
         SolrInputDocument doc = convertPersistable(person);
-//        addField(doc, QueryFieldNames.FIRST_NAME, person.getFirstName());
-//        addField(doc, QueryFieldNames.LAST_NAME, person.getLastName());
         doc.setField(QueryFieldNames.FIRST_NAME, person.getFirstName());
         doc.setField(QueryFieldNames.LAST_NAME, person.getLastName());
-        doc.setField(QueryFieldNames.FIRST_NAME_SORT, person.getFirstName());
-        doc.setField(QueryFieldNames.LAST_NAME_SORT, person.getLastName());
-        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, person.getProperName());
         doc.setField(QueryFieldNames.NAME, person.getProperName());
-        doc.setField(QueryFieldNames.NAME_PHRASE, person.getProperName());
         doc.setField(QueryFieldNames.EMAIL, person.getEmail());
         doc.setField(QueryFieldNames.REGISTERED, person.isRegistered());
         if (person instanceof TdarUser) {
@@ -34,9 +28,4 @@ public class PersonDocumentConverter extends AbstractSolrDocumentConverter{
         return doc;
     }
 
-    private static void addField(SolrInputDocument doc, String fieldName, final String text) {
-        String txt = StringUtils.trim(text).toLowerCase();
-        doc.setField(fieldName, txt);
-        
-    }
 }
