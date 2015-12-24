@@ -17,11 +17,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.search.query.FacetWrapper;
-import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
 
 /**
  * This is a wrapper around the SOLRJ request

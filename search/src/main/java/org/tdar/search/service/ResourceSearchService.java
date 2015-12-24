@@ -31,6 +31,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
+import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;

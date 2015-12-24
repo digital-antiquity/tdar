@@ -7,6 +7,8 @@ import java.util.List;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
 
 public class SearchResult<I extends Indexable> implements FacetedResultHandler<I>, Serializable {
 

@@ -1,10 +1,8 @@
-package org.tdar.search.service;
+package org.tdar.search.bean;
 
 import java.io.Serializable;
 
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.search.bean.ReservedSearchParameters;
-import org.tdar.search.bean.SearchParameters;
 
 public class ResourceLookupObject implements Serializable {
 

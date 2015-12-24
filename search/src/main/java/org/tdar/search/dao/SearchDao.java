@@ -29,11 +29,11 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.query.Facet;
-import org.tdar.search.query.FacetWrapper;
-import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -82,9 +82,7 @@ public class SearchDao<I extends Indexable> {
         if (!(handler instanceof FacetedResultHandler) || CollectionUtils.isEmpty(rsp.getFacetFields() )) {
             return;
         }
-        // if (resultHandler.getFacetFields() == null) {
-        // return;
-        // }
+
         logger.trace("begin adding facets");
         FacetedResultHandler facetHandler = (FacetedResultHandler) handler;
 

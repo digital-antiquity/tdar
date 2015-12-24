@@ -1,10 +1,12 @@
-package org.tdar.search.query;
+package org.tdar.search.query.facet;
 
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.tdar.search.query.Facet;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
