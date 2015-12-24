@@ -14,7 +14,6 @@ import java.net.URISyntaxException;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.List;
 
 import javax.imageio.ImageIO;

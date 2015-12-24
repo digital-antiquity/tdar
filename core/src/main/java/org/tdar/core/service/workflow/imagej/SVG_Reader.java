@@ -1,11 +1,5 @@
 package org.tdar.core.service.workflow.imagej;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.GenericDialog;
-import ij.io.OpenDialog;
-import ij.plugin.PlugIn;
-
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.io.File;
@@ -18,6 +12,12 @@ import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.gvt.renderer.StaticRenderer;
 import org.w3c.dom.svg.SVGDocument;
 import org.w3c.dom.svg.SVGSVGElement;
+
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.GenericDialog;
+import ij.io.OpenDialog;
+import ij.plugin.PlugIn;
 
 /*
  * Licensed under GPL/Public Domain by Johannes Schindelin (Dscho) and generously authorized to reuse and 

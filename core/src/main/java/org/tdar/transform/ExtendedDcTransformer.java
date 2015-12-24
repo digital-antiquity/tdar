@@ -19,7 +19,6 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
@@ -43,8 +42,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.ResourceCitationFormatter;
-
-import com.google.common.base.Objects;
 
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 

@@ -2,9 +2,7 @@ package org.tdar.search.query;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
