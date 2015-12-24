@@ -26,7 +26,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
-import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;

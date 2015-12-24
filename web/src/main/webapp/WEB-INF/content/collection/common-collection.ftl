@@ -94,11 +94,7 @@
                 There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
                 <#if selectedResourceTypes?has_content>
-                    <#if paginationHelper.totalNumberOfItems == 1>
-                        <@s.text name="${resourceTypeFacets[0].key}" />
-                    <#else>
-                        <@s.text name="${resourceTypeFacets[0].pluralKey}" />
-                    </#if>
+                    <@s.text name="${resourceTypeFacets[0].label}" />
                 <#else>
                     <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
                 </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "

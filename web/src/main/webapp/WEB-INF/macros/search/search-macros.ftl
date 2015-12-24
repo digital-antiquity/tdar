@@ -204,11 +204,8 @@
             <#if label != ''>
             <h4>${label}:</h4>
             </#if>
-
         <ul class="media-list tools">
             <#list facetlist as facet>
-                <#assign facetLabel = facet />
-                <#assign facetLabel = facet.value />
                 <li class="${liCssClass}">
                     <#if (facetlist?size > 1)>
 

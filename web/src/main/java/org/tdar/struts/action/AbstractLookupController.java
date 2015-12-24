@@ -23,7 +23,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;

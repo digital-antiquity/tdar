@@ -23,6 +23,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -103,9 +104,17 @@ public class SearchDao<I extends Indexable> {
                 } 
                 
                 if (cls.isEnum()) {
+                    if (cls.equals(IntegratableOptions.class)) {
+                        if (name.equalsIgnoreCase("false")) {
+                            name ="NO";
+                        } else if (name.equalsIgnoreCase("true")) {
+                            name = "YES";
+                        }
+                    }
+                    
                     @SuppressWarnings("unchecked")
                     Enum enum1 = Enum.valueOf(cls, name);
-                    if (enum1 instanceof PluralLocalizable) {
+                    if (enum1 instanceof PluralLocalizable && c.getCount() > 1) {
                         label = ((PluralLocalizable)enum1).getPluralLocaleKey();
                     } else  {
                         label = ((Localizable)enum1).getLocaleKey();
@@ -113,7 +122,9 @@ public class SearchDao<I extends Indexable> {
                     label = provider.getText(label);
                 }
                 logger.trace("  {} - {}",c.getCount(), label);
-                facet.add(new Facet(name, label,c.getCount()));
+                if (c.getCount() > 0) {
+                    facet.add(new Facet(name, label,c.getCount()));
+                }
             }
             FacetWrapper wrapper = facetHandler.getFacetWrapper();
             wrapper.getFacetResults().put(fieldName, facet);
