@@ -57,7 +57,6 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.bean.SearchFieldType;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.search.service.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -333,11 +332,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public void setCreator(Creator creator) {
         this.creator = creator;
-    }
-
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public Addressable getPersistable() {

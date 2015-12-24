@@ -2,17 +2,13 @@ package org.tdar.search.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 
-public class SearchResult<I extends Indexable> implements SearchResultHandler<I>, Serializable {
+public class SearchResult<I extends Indexable> implements FacetedResultHandler<I>, Serializable {
 
     private static final long serialVersionUID = 8370261049894410532L;
     private SortOption sortField;
@@ -27,17 +23,9 @@ public class SearchResult<I extends Indexable> implements SearchResultHandler<I>
     private TdarUser authenticatedUser;
     private String searchTitle;
     private String searchDescription;
-    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
-    private Map<String, Class<? extends Persistable>> facetMap = new HashMap<>();
-
-    public void facetBy(String facetField, Class<? extends Persistable> facetClass) {
-        facetMap.put(facetField, facetClass);
-    }
-
-    public Map<String, Class<? extends Persistable>> getFacetMap() {
-        return facetMap;
-    }
-
+    private FacetWrapper facetWrapper;
+    private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;    
+    
     @Override
     public SortOption getSortField() {
         return sortField;
@@ -181,9 +169,12 @@ public class SearchResult<I extends Indexable> implements SearchResultHandler<I>
     }
 
     @Override
-    public <C> void facetBy(Class<C> c, Collection<C> vals) {
-        // TODO Auto-generated method stub
-        
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
+    }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
     }
 
 }

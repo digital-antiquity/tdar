@@ -1,7 +1,6 @@
 package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
@@ -11,7 +10,6 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.struts.action.AbstractLookupController;
 
 /**
@@ -36,12 +34,6 @@ public class InstitutionLookupAction extends AbstractLookupController<Institutio
     public String lookupInstitution() throws SolrServerException, IOException {
         setMode("institutionLookup");
         return findInstitution(getInstitution());
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public String getInstitution() {

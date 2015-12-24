@@ -208,18 +208,14 @@
         <ul class="media-list tools">
             <#list facetlist as facet>
                 <#assign facetLabel = facet />
-                <#if facet.plural?has_content>
-                    <#assign facetLabel = facet.plural />
-                <#elseif facet.label?has_content>
-                    <#assign facetLabel = facet.label />
-                </#if>
+                <#assign facetLabel = facet.value />
                 <li class="${liCssClass}">
                     <#if (facetlist?size > 1)>
 
                         <span class="media-body">
                 
                 <a rel="noindex" href="<@s.url action=action includeParams="all">
-                    <@s.param name="${facetParam}">${facet.value}</@s.param>
+                    <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if (documentType!'') == '' && facetParam != 'documentType'>
                         <@s.param name="documentType" value=""/>
@@ -233,11 +229,11 @@
                     <#nested>
                 </@s.url>">
                     <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                <@s.text name="${facet.pluralKey}"/></a> <span>(${facet.count})</span></span>
+                <@s.text name="${facet.label}"/></a> <span>(${facet.count})</span></span>
                     <#elseif (currentValues?size > 0) >
                         <@removeFacet facetlist=currentValues facetParam=facetParam />
                     <#else>
-                        <span class="media-body"> <@s.text name="${facet.pluralKey}"/> <span>(${facet.count})</span></span>
+                        <span class="media-body"> <@s.text name="${facet.label}"/> <span>(${facet.count})</span></span>
                     </#if>
                 </li>
             </#list>

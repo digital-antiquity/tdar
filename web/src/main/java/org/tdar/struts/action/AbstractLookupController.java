@@ -11,7 +11,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,8 +31,8 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.FacetWrapper;
+import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchService;
 import org.tdar.search.service.SearchUtils;
@@ -45,7 +44,7 @@ import org.tdar.utils.json.JsonLookupFilter;
  * @author Adam Brin
  * 
  */
-public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements SearchResultHandler<I> {
+public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements FacetedResultHandler<I> {
 
     private static final long serialVersionUID = 2357805482356017885L;
 
@@ -66,6 +65,7 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String mode;
     private String searchTitle;
     private String searchDescription;
+    private FacetWrapper facetWrapper = new FacetWrapper();
     // execute a query even if query is empty
 
     private LookupSource lookupSource;
@@ -96,7 +96,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return minLookupLength;
     }
 
-    public abstract List<FacetGroup<? extends Enum>> getFacetFields();
 
     public void setMinLookupLength(int minLookupLength) {
         this.minLookupLength = minLookupLength;
@@ -452,9 +451,12 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return DEFAULT_RESULT_SIZE;
     }
 
-    @Override
-    public <C> void facetBy(Class<C> c, Collection<C> vals) {
-        searchService.facetBy(c, vals, this);
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
+    }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
     }
 
 }

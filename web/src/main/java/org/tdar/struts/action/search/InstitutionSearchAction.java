@@ -16,8 +16,6 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
@@ -64,11 +62,6 @@ public class InstitutionSearchAction extends AbstractLookupController<Institutio
 
     public void setSortOptions(List<SortOption> sortOptions) {
         this.sortOptions = sortOptions;
-    }
-
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public String getQuery() {

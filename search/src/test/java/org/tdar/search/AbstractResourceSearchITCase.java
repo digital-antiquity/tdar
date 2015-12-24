@@ -11,6 +11,7 @@ import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -164,6 +165,11 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     public boolean resultsContainId(SearchResult<? extends Resource> result, long l) {
         List<Long> extractIds = PersistableUtils.extractIds(result.getResults());
         return extractIds.contains(l);
+    }
+
+    protected void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
+        genericService.saveOrUpdate(doc);
+        searchIndexService.index(doc);
     }
 
 }

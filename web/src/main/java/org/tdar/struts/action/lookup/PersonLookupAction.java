@@ -1,7 +1,6 @@
 package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -13,7 +12,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.struts.action.AbstractLookupController;
 
 /**
@@ -105,12 +103,6 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
      */
     public String getTerm() {
         return term;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
 }

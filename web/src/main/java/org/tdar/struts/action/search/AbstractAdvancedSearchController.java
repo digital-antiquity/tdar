@@ -29,6 +29,8 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
@@ -39,8 +41,10 @@ import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.FacetWrapper;
+import org.tdar.search.query.FacetedResultHandler;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.ResourceSearchService;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -54,8 +58,6 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
     private static final String SEARCH_RSS = "/search/rss";
     private boolean hideFacetsAndSort = false;
 
-    @Autowired
-    private transient SearchService searchService;
     @Autowired
     private transient ResourceSearchService resourceSearchService;
 

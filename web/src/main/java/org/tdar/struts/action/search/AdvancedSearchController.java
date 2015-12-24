@@ -31,6 +31,7 @@ import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -44,12 +45,13 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.Facet;
+import org.tdar.search.query.FacetWrapper;
+import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.CollectionSearchService;
-import org.tdar.search.service.SearchService;
+import org.tdar.search.service.ResourceSearchService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -68,18 +70,19 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpOnlyIfUnauthenticated
-public class AdvancedSearchController extends AbstractAdvancedSearchController {
+public class AdvancedSearchController extends AbstractAdvancedSearchController implements FacetedResultHandler<Resource> {
 
     private static final String ADVANCED_FTL = "advanced.ftl";
     private static final long serialVersionUID = -2615014247540428072L;
     private static final String SEARCH_RSS = "/search/rss";
     private boolean hideFacetsAndSort = false;
+    private FacetWrapper facetWrapper = new FacetWrapper();
 
     @Autowired
     private transient CollectionSearchService collectionSearchService;
-
+    
     @Autowired
-    private transient SearchService searchService;
+    private transient ResourceSearchService resourceSearchService;
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -95,13 +98,6 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
     private List<ResourceCollection> collectionResults = new ArrayList<>();
     private int collectionTotalRecords = 0;
-
-    // facet statistics for results.ftl
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
-    private ArrayList<FacetValue> documentTypeFacets = new ArrayList<>();
-    private ArrayList<FacetValue> fileAccessFacets = new ArrayList<>();
-    private ArrayList<FacetValue> integratableOptionFacets = new ArrayList<>();
-
     private boolean showLeftSidebar = false;
 
     @Override
@@ -118,6 +114,11 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         // needs manual care, but, when the TdarActionException is processed, it returns a blank page instead of
         // not_found
         try {
+            getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+            getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
+            getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
+            getFacetWrapper().facetBy(QueryFieldNames.DOCUMENT_TYPE, DocumentType.class);
+
             result = performResourceSearch();
             getLogger().trace(result);
             if (SUCCESS.equals(result)) {
@@ -207,7 +208,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
         // if refining a search, make sure we inflate any deflated terms
         for (SearchParameters sp : getGroups()) {
-            searchService.inflateSearchParameters(sp);
+            resourceSearchService.inflateSearchParameters(sp);
             try {
                 sp.toQueryPartGroup(null);
                 getLogger().debug("inflating parameters for group {}", sp);
@@ -316,34 +317,19 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         throw new NotImplementedException(getText("advancedSearchController.admin_not_implemented"));
     }
 
-    public List<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
+    public List<Facet> getResourceTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
-    public List<FacetValue> getIntegratableOptionFacets() {
-        return integratableOptionFacets;
+    public List<Facet> getIntegratableOptionFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.INTEGRATABLE);
+    }
+    public List<Facet> getDocumentTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.DOCUMENT_TYPE);
     }
 
-    public List<FacetValue> getDocumentTypeFacets() {
-        return documentTypeFacets;
-    }
-
-    public List<FacetValue> getFileAccessFacets() {
-        return fileAccessFacets;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        group.add(new FacetGroup<IntegratableOptions>(IntegratableOptions.class, QueryFieldNames.INTEGRATABLE, integratableOptionFacets,
-                IntegratableOptions.YES));
-        group.add(new FacetGroup<ResourceAccessType>(ResourceAccessType.class, QueryFieldNames.RESOURCE_ACCESS_TYPE, fileAccessFacets,
-                ResourceAccessType.CITATION));
-        group.add(new FacetGroup<DocumentType>(DocumentType.class, QueryFieldNames.DOCUMENT_TYPE, documentTypeFacets, DocumentType.BOOK));
-        return group;
+    public List<Facet> getFileAccessFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_ACCESS_TYPE);
     }
 
     public List<SearchFieldType> getAllSearchFieldTypes() {
@@ -406,8 +392,8 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
 
         if (CollectionUtils.isNotEmpty(getResourceTypeFacets())) {
             boolean allImages = true;
-            for (FacetValue val : getResourceTypeFacets()) {
-                if (val.getCount() > 0 && !ResourceType.isImageName(val.getValue())) {
+            for (Facet val : getResourceTypeFacets()) {
+                if (val.getCount() > 0 && !ResourceType.isImageName(val.getRaw())) {
                     allImages = false;
                 }
             }
@@ -440,4 +426,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController {
         return searchBoxVisible;
     }
 
+    @Override
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
+    }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
+    }
 }

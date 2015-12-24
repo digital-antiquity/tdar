@@ -93,8 +93,8 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws IOException 
      * @throws SolrServerException 
       */
-     protected SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler<I> handler, SortOption... sortOptions) throws ParseException, SolrServerException, IOException {
-         return searchDao.search(new SolrSearchObject<I>(queryBuilder, sortOptions, handler), handler);
+     protected SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler<I> handler, TextProvider provider) throws ParseException, SolrServerException, IOException {
+         return searchDao.search(new SolrSearchObject<I>(queryBuilder, handler), handler, provider);
      } 
 
      /**
@@ -114,14 +114,11 @@ import com.opensymphony.xwork2.TextProvider;
          }
          long num = System.currentTimeMillis();
          hydrateQueryParts(q);
-         SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, resultHandler.getSortField(), resultHandler.getSecondarySortField());
+         SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, textProvider);
 
          resultHandler.setTotalRecords(ftq.getTotalResults());
          long lucene = System.currentTimeMillis() - num;
          num = System.currentTimeMillis();
-         logger.trace("begin adding facets");
-         searchDao.processFacets(ftq, resultHandler);
-         logger.trace("completed adding facets");
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
          logger.trace(queryText);
@@ -241,32 +238,6 @@ import com.opensymphony.xwork2.TextProvider;
      }
 
      /**
-      * Take any of the @link SearchParameter properties that can support skeleton resources and inflate them so we can display something in the search title /
-      * description that isn't just creatorId=4
-      *
-      * @param searchParameters
-      */
-     public void inflateSearchParameters(SearchParameters searchParameters) {
-         // FIXME: refactor to ue genericService.populateSparseObjectsById() which optimizes the qeries to the DB
-         // Also, consider moving into genericService
-         List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
-         for (List<? extends Persistable> list : lists) {
-             logger.debug("inflating list of sparse objects: {}", list);
-             // making unchecked cast so compiler accepts call to set()
-             @SuppressWarnings("unchecked")
-             ListIterator<Persistable> itor = (ListIterator<Persistable>) list.listIterator();
-             while (itor.hasNext()) {
-                 Persistable sparse = itor.next();
-                 if (sparse != null) {
-                     Persistable persistable = genericService.find(sparse.getClass(), sparse.getId());
-                     logger.debug("\t inflating {}({}) -> {}", sparse.getClass().getSimpleName(), sparse.getId(), persistable);
-                     itor.set(persistable);
-                 }
-             }
-         }
-     }
-
-     /**
       * Takes a set of @link ResourceCreator entities from the @link SearchParameters and resolves them in tDAR before doing an ID search in Lucene
       *
       * @param group
@@ -349,7 +320,7 @@ import com.opensymphony.xwork2.TextProvider;
          List<Creator> list = null;
          logger.trace(q.generateQueryString());
          SearchResultHandler<I> handler = new SearchResult<>();
-        SolrSearchObject<I> search = searchDao.search(new SolrSearchObject<I>(q, ((SortOption[]) null),handler), handler );
+         SolrSearchObject<I> search = searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
          search.setMaxResults(maxToResolve);
          list = (List<Creator>)search.getResultList();
          if (CollectionUtils.isNotEmpty(list)) {

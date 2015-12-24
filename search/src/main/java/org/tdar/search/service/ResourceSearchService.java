@@ -1,7 +1,12 @@
 package org.tdar.search.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,6 +26,8 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
@@ -45,13 +52,15 @@ import com.opensymphony.xwork2.TextProvider;
 public class ResourceSearchService extends AbstractSearchService {
 
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    private final GenericService genericService;
+    private final SearchService<Resource> searchService;
 
     @Autowired
-    public ResourceSearchService(SearchService<Resource> searchService) {
+    public ResourceSearchService(SearchService<Resource> searchService, GenericService genericService) {
         this.searchService = searchService;
+        this.genericService = genericService;
     }
 
-    private final SearchService<Resource> searchService;
 
     public SearchResultHandler<Resource> buildCollectionResourceSearch(SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
@@ -76,7 +85,7 @@ public class ResourceSearchService extends AbstractSearchService {
     public <P extends Persistable> SearchResultHandler<Resource> buildResourceContainedInSearch(String fieldName, P indexable, TdarUser user, SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-        searchService.initializeReservedSearchParameters(reservedSearchParameters, user);
+        initializeReservedSearchParameters(reservedSearchParameters, user);
         qb.append(reservedSearchParameters, provider);
         qb.setOperator(Operator.AND);
         qb.append(new FieldQueryPart<>(fieldName, indexable.getId()));
@@ -164,9 +173,37 @@ public class ResourceSearchService extends AbstractSearchService {
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
     protected QueryPartGroup processReservedTerms(ReservedSearchParameters reserved, TdarUser tdarUser, TextProvider provider) {
-        searchService.initializeReservedSearchParameters(reserved, tdarUser);
+        initializeReservedSearchParameters(reserved, tdarUser);
         return reserved.toQueryPartGroup(provider);
     }
+    
+    /**
+     * Take any of the @link SearchParameter properties that can support skeleton resources and inflate them so we can display something in the search title /
+     * description that isn't just creatorId=4
+     *
+     * @param searchParameters
+     */
+    public void inflateSearchParameters(SearchParameters searchParameters) {
+        // FIXME: refactor to ue genericService.populateSparseObjectsById() which optimizes the qeries to the DB
+        // Also, consider moving into genericService
+        List<List<? extends Persistable>> lists = searchParameters.getSparseLists();
+        for (List<? extends Persistable> list : lists) {
+            logger.debug("inflating list of sparse objects: {}", list);
+            // making unchecked cast so compiler accepts call to set()
+            @SuppressWarnings("unchecked")
+            ListIterator<Persistable> itor = (ListIterator<Persistable>) list.listIterator();
+            while (itor.hasNext()) {
+                Persistable sparse = itor.next();
+                if (sparse != null) {
+                    Persistable persistable = genericService.find(sparse.getClass(), sparse.getId());
+                    logger.debug("\t inflating {}({}) -> {}", sparse.getClass().getSimpleName(), sparse.getId(), persistable);
+                    itor.set(persistable);
+                }
+            }
+        }
+    }
+
+
 
     /**
      * Generates a query for resources created by or releated to in some way to a @link Creator given a creator and a user
@@ -186,10 +223,36 @@ public class ResourceSearchService extends AbstractSearchService {
         params.setCreatorOwner(new ResourceCreatorProxy(creator, null));
         queryBuilder.append(params, provider);
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
-        searchService.initializeReservedSearchParameters(reservedSearchParameters, user);
+        initializeReservedSearchParameters(reservedSearchParameters, user);
         queryBuilder.append(reservedSearchParameters, provider);
         searchService.handleSearch(queryBuilder, result, provider);
         return result;
     }
 
+    /*
+     * The @link AdvancedSearchController's ReservedSearchParameters is a proxy object for handling advanced boolean searches. We initialize it with the search
+     * parameters
+     * that are AND-ed with the user's search to ensure appropriate search results are returned (such as a Resource's @link Status).
+     */
+    protected void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, TdarUser user) {
+        if (reservedSearchParameters == null) {
+            return;
+        }
+        reservedSearchParameters.setAuthenticatedUser(user);
+        reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
+        Set<Status> allowedSearchStatuses = authorizationService.getAllowedSearchStatuses(user);
+        List<Status> statuses = reservedSearchParameters.getStatuses();
+        statuses.removeAll(Collections.singletonList(null));
+
+        if (CollectionUtils.isEmpty(statuses)) {
+            statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        }
+
+        statuses.retainAll(allowedSearchStatuses);
+        reservedSearchParameters.setStatuses(statuses);
+        if (statuses.isEmpty()) {
+            throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
+        }
+
+    }
 }

@@ -2,7 +2,6 @@ package org.tdar.struts.action.collection;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashSet;
@@ -39,12 +38,11 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.Facet;
+import org.tdar.search.query.FacetWrapper;
+import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.service.ResourceSearchService;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -64,7 +62,7 @@ import org.tdar.utils.PersistableUtils;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction,
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
@@ -82,8 +80,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     @Autowired
     private transient ResourceSearchService resourceSearchService;
     @Autowired
-    private transient SearchService searchService;
-    @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient ResourceService resourceService;
@@ -94,8 +90,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
-
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -107,8 +101,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private PaginationHelper paginationHelper;
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
-
     private boolean showNavSearchBox = true;
+    private FacetWrapper facetWrapper = new FacetWrapper();
+    
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -228,10 +223,18 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return getPersistable().isWhiteLabelCollection();
     }
 
+
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
+    }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
+    }
+
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
-        facetBy(ResourceType.class, selectedResourceTypes);
-
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
         setSortField(getPersistable().getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
@@ -372,15 +375,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return getSearchTitle();
     }
 
-    @SuppressWarnings("rawtypes")
-//    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        return group;
-    }
-
     public PaginationHelper getPaginationHelper() {
         if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
@@ -393,12 +387,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     }
 
-    public ArrayList<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
-    }
-
-    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
-        this.resourceTypeFacets = resourceTypeFacets;
+    public List<Facet> getResourceTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
     public ArrayList<ResourceType> getSelectedResourceTypes() {
@@ -521,10 +511,5 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
         
-    }
-
-    @Override
-    public <C> void facetBy(Class<C> c, Collection<C> vals) {
-        searchService.facetBy(c, vals,this);
     }
 }

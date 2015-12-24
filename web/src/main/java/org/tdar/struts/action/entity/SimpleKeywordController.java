@@ -1,6 +1,5 @@
 package org.tdar.struts.action.entity;
 
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -14,10 +13,8 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.service.ResourceSearchService;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
@@ -32,8 +29,6 @@ public class SimpleKeywordController extends AbstractKeywordController implement
 
     @Autowired
     private transient ResourceSearchService resourceSearchService;
-    @Autowired
-    private transient SearchService searchService;
 
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -165,13 +160,6 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         return startRecord - recordsPerPage;
     }
 
-    @SuppressWarnings("rawtypes")
-//    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public int getDefaultRecordsPerPage() {
         return 100;
@@ -180,12 +168,6 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     @Override
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public <C> void facetBy(Class<C> c, Collection<C> vals) {
-        searchService.facetBy(c, vals,this);
     }
 
 }

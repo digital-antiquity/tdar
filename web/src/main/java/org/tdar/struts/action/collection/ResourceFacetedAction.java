@@ -1,11 +1,11 @@
 package org.tdar.struts.action.collection;
 
-import java.util.ArrayList;
+import java.util.List;
 
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.Facet;
 
 public interface ResourceFacetedAction {
 
-    ArrayList<FacetValue> getResourceTypeFacets();
+    List<Facet> getResourceTypeFacets();
 
 }

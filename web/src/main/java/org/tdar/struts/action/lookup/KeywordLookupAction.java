@@ -2,7 +2,6 @@ package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -16,8 +15,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.service.KeywordSearchService;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.struts.action.AbstractLookupController;
@@ -74,12 +71,6 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
 
         jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public String getKeywordType() {

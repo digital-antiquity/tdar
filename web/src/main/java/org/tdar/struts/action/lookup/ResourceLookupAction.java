@@ -2,7 +2,6 @@ package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -20,8 +19,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.service.ResourceLookupObject;
 import org.tdar.search.service.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
@@ -113,12 +110,6 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             jsonifyResult(JsonLookupFilter.class);
         }
         return SUCCESS;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public String getTerm() {

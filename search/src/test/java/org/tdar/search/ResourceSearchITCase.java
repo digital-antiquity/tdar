@@ -147,10 +147,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         }
     }
 
-    private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {
-        genericService.saveOrUpdate(doc);
-        searchIndexService.index(doc);
-    }
     @Test
     public void testTitleCaseSensitivity() throws SolrServerException, IOException, ParseException {
         Document doc = createAndSaveNewResource(Document.class);
@@ -572,7 +568,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         for (Resource r : results) {
             if (r instanceof InformationResource) {
                 InformationResource ir = (InformationResource)r;
-                logger.debug("{} {} {}", r.getId(), r.getName(), ((InformationResource) r).getProjectId());
+                logger.debug("{} {} {}", r.getId(), r.getName(), ir.getProjectId());
             } else {
                 logger.debug("{} {}", r.getId(), r.getName());
             }

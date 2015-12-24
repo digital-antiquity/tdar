@@ -6,26 +6,36 @@ import java.util.Collection;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.FacetField;
+import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
+import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.search.bean.SolrSearchObject;
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.Facet;
+import org.tdar.search.query.FacetWrapper;
+import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.utils.PersistableUtils;
+
+import com.opensymphony.xwork2.TextProvider;
 
 @Component
 public class SearchDao<I extends Indexable> {
@@ -51,11 +61,11 @@ public class SearchDao<I extends Indexable> {
      * @throws IOException
      * @throws SolrServerException
      */
-    public SolrSearchObject<I> search(SolrSearchObject<I> query, SearchResultHandler<I> resultHandler) throws ParseException, SolrServerException, IOException {
+    public SolrSearchObject<I> search(SolrSearchObject<I> query, SearchResultHandler<I> resultHandler, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
-        query.processResults(rsp.getResults());
+        query.processResults(rsp);
         convertProjectedResultIntoObjects(resultHandler, query);
-        processFacets(query, resultHandler);
+        processFacets(rsp, resultHandler, provider);
         logger.trace("completed fulltextquery setup");
         return query;
     }
@@ -67,20 +77,48 @@ public class SearchDao<I extends Indexable> {
      * @param resultHandler
      */
     @SuppressWarnings("rawtypes")
-    public <F extends FacetValue> void processFacets(SolrSearchObject ftq, SearchResultHandler<?> resultHandler) {
+    public void processFacets(QueryResponse rsp, SearchResultHandler<?> handler,TextProvider provider) {
+        if (!(handler instanceof FacetedResultHandler) || CollectionUtils.isEmpty(rsp.getFacetFields() )) {
+            return;
+        }
         // if (resultHandler.getFacetFields() == null) {
         // return;
         // }
+        logger.trace("begin adding facets");
+        FacetedResultHandler facetHandler = (FacetedResultHandler) handler;
 
-        // for (FacetGroup<? extends Enum> facet : resultHandler.getFacetFields()) {
-        // FacetingRequest facetRequest = queryBuilder.facet().name(facet.getFacetField())
-        // .onField(facet.getFacetField()).discrete().orderedBy(FacetSortOrder.COUNT_DESC)
-        // .includeZeroCounts(false).createFacetingRequest();
-        // ftq.getFacetManager().enableFaceting(facetRequest);
-        // for (Facet facetResult : ftq.getFacetManager().getFacets(facet.getFacetField())) {
-        // facet.add(facetResult.getValue(), facetResult.getCount());
-        // }
-        // }
+        for (FacetField field : rsp.getFacetFields()) {
+            List<Facet> facet = new ArrayList<>();
+            String fieldName = field.getName();
+            for (Count c : field.getValues()) {
+                String name = c.getName();
+                String label = null;
+                FacetWrapper facetWrapper = facetHandler.getFacetWrapper();
+                Class cls = facetWrapper.getFacetClass(fieldName);
+                logger.trace("{}", cls.getName());
+                if (NumberUtils.isDigits(name)) {
+                    Long id = Long.parseLong(name);
+                    HasLabel find = (HasLabel)datasetDao.find(cls, id);
+                    label = find.getLabel();
+                } 
+                
+                if (cls.isEnum()) {
+                    @SuppressWarnings("unchecked")
+                    Enum enum1 = Enum.valueOf(cls, name);
+                    if (enum1 instanceof PluralLocalizable) {
+                        label = ((PluralLocalizable)enum1).getPluralLocaleKey();
+                    } else  {
+                        label = ((Localizable)enum1).getLocaleKey();
+                    }
+                    label = provider.getText(label);
+                }
+                logger.trace("  {} - {}",c.getCount(), label);
+                facet.add(new Facet(name, label,c.getCount()));
+            }
+            FacetWrapper wrapper = facetHandler.getFacetWrapper();
+            wrapper.getFacetResults().put(fieldName, facet);
+        }
+        logger.trace("completed adding facets");
     }
 
     /**

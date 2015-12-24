@@ -1085,7 +1085,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         controller.edit();
         // logger.info("resources:{}", controller.getResources());
-        logger.info("?:{}", controller.getResults());
         logger.info("?:{}", controller.getResourceCollection().getResources());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
     }

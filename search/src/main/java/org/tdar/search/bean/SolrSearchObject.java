@@ -2,12 +2,14 @@ package org.tdar.search.bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.solr.client.solrj.SolrQuery;
+import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
@@ -15,10 +17,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
+import org.tdar.search.query.FacetWrapper;
+import org.tdar.search.query.FacetedResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.QueryBuilder;
 
+/**
+ * This is a wrapper around the SOLRJ request
+ * @author abrin
+ *
+ * @param <I>
+ */
 public class SolrSearchObject<I extends Indexable> {
 
     private List<Long> idList = new ArrayList<>();
@@ -32,29 +42,52 @@ public class SolrSearchObject<I extends Indexable> {
     private List<I> resultList;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private String queryString;
+    private List<String> facetFields = new ArrayList<>();
     private String filterString;
     private Integer totalResults = 0;
+    private Integer facetLimit;
+    private Integer facetMinCount;
 
-    public SolrSearchObject(QueryBuilder queryBuilder, SortOption[] sortOptions, SearchResultHandler<I> handler) {
+    public SolrSearchObject(QueryBuilder queryBuilder, SearchResultHandler<I> handler) {
         this.builder = queryBuilder;
         this.coreName = queryBuilder.getCoreName();
         this.setMaxResults(handler.getRecordsPerPage());
         this.setFirstResult(handler.getStartRecord());
 
         List<String> sort = new ArrayList<>();
-        if (!ArrayUtils.isEmpty(sortOptions)) {
-            for (SortOption option : sortOptions) {
-                String sortName = getSortFieldName(option);
-                logger.trace("{} - {}", option, sortName);
-                if (sortName != null) {
-                    sort.add( sortName+ " " + option.getSortOrder());
-                }
-            }
-            if (CollectionUtils.isNotEmpty(sort)) {
-                setSortParam(StringUtils.join(sort, ","));
-            }
+        if (handler.getSortField() != null) {
+            addSortField(handler.getSortField(), sort);
+        }
+        if (handler.getSecondarySortField() != null) {
+            addSortField(handler.getSecondarySortField(), sort);
+        }
+        if (CollectionUtils.isNotEmpty(sort)) {
+            setSortParam(StringUtils.join(sort, ","));
         }
         this.filterString = StringUtils.join(queryBuilder.getFilters(), " ");
+        handleFacets(handler);
+    }
+
+    private void handleFacets(SearchResultHandler<I> handler) {
+        if (handler instanceof FacetedResultHandler) {
+            FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
+            FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
+            if (wrap != null) {
+                for (String facet : wrap.getFacetFieldNames()) {
+                    if (StringUtils.isNotBlank(facet)) {
+                        facetFields.add(facet);
+                    }
+                }
+            }
+        }
+    }
+
+    private void addSortField(SortOption option, List<String> sort) {
+        String sortName = getSortFieldName(option);
+        logger.trace("{} - {}", option, sortName);
+        if (sortName != null) {
+            sort.add( sortName+ " " + option.getSortOrder());
+        }
     }
 
     private String getSortFieldName(SortOption sortField) {
@@ -120,11 +153,30 @@ public class SolrSearchObject<I extends Indexable> {
         if (StringUtils.isNotBlank(filterString)) {
             solrQuery.setParam("fq", filterString);
         }
+
+        if (CollectionUtils.isNotEmpty(facetFields)) {
+            solrQuery.addFacetField(facetFields.toArray(new String[0]));
+            solrQuery.setParam("facet","on");
+        }
+        if (facetLimit != null) {
+            solrQuery.setFacetLimit(facetLimit);
+        }
+        if (facetMinCount != null) {
+            solrQuery.setFacetMinCount(facetMinCount);
+        }
+
+        //        solrQuery.setFacetSort(sort)
+
         if (StringUtils.isNotBlank(sortParam)) {
             solrQuery.setParam("sort", sortParam);
         }
-        solrQuery.setParam("fl", StringUtils.join(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"), ","));
-
+        Set<String> fieldList = new HashSet<>();
+        fieldList.addAll(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"));
+//        fieldList.addAll(facetFields);
+        solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}", solrQuery);
+        }
         return solrQuery;
     }
 
@@ -148,7 +200,8 @@ public class SolrSearchObject<I extends Indexable> {
         this.coreName = coreName;
     }
 
-    public void processResults(SolrDocumentList results) {
+    public void processResults(QueryResponse rsp) {
+        SolrDocumentList results = rsp.getResults();
         this.setDocumentList(results);
         if (logger.isTraceEnabled()) {
             logger.trace("results:{}", results);
@@ -189,6 +242,30 @@ public class SolrSearchObject<I extends Indexable> {
 
     public void setTotalResults(Integer totalResults) {
         this.totalResults = totalResults;
+    }
+
+    public List<String> getFacetFields() {
+        return facetFields;
+    }
+
+    public void setFacetFields(List<String> facetFields) {
+        this.facetFields = facetFields;
+    }
+
+    public Integer getFacetMinCount() {
+        return facetMinCount;
+    }
+
+    public void setFacetMinCount(Integer facetMinCount) {
+        this.facetMinCount = facetMinCount;
+    }
+
+    public Integer getFacetLimit() {
+        return facetLimit;
+    }
+
+    public void setFacetLimit(Integer facetLimit) {
+        this.facetLimit = facetLimit;
     }
 
 }

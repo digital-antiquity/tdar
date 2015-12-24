@@ -29,7 +29,6 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.SearchFieldType;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.search.service.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
@@ -45,7 +44,6 @@ import org.tdar.utils.PersistableUtils;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-@SuppressWarnings("rawtypes")
 @Namespace("/browse")
 @ParentPackage("default")
 @Component
@@ -126,10 +124,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
-    }
 
     public Persistable getPersistable() {
         return persistable;
@@ -186,4 +180,5 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     public void setViewCount(Long viewCount) {
         this.viewCount = viewCount;
     }
+
 }

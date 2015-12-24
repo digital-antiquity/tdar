@@ -1,7 +1,5 @@
 package org.tdar.struts.action.browse;
 
-import java.util.List;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -25,7 +23,6 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.service.ResourceSearchService;
-import org.tdar.search.service.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -48,8 +45,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     private static final long serialVersionUID = 5267144668224536569L;
 
-    @Autowired
-    private transient SearchService searchService;
     @Autowired
     private transient ResourceSearchService resourceSearchService;
     @Autowired
@@ -165,12 +160,6 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         } catch (Exception e) {
             addActionErrorWithException(getText("browseKeywordController.error_searching_contents"), e);
         }
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public List getFacetFields() {
-        return null;
     }
 
     public DisplayOrientation getOrientation() {

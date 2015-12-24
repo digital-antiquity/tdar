@@ -1,7 +1,6 @@
 package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -16,7 +15,6 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.search.service.CollectionSearchService;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.struts.action.AbstractLookupController;
@@ -65,12 +63,6 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
 
         jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public GeneralPermissions getPermission() {

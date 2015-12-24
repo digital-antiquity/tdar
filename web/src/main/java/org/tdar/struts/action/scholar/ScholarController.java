@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
@@ -53,11 +52,6 @@ public class ScholarController extends AbstractLookupController {
             authorizationService.applyTransientViewableFlag(p, getAuthenticatedUser());
         }
         return SUCCESS;
-    }
-
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
 }

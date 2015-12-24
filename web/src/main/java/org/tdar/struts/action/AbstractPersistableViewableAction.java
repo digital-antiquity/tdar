@@ -29,7 +29,7 @@ import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.Facet;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -340,13 +340,13 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         // sort facets A-Z unless sortOption explicitly otherwise
         if (PersistableUtils.isNotNullOrTransient(getPersistable()) && CollectionUtils.isNotEmpty(handler.getResourceTypeFacets())) {
             final boolean reversed = persistable.getSortBy() == SortOption.RESOURCE_TYPE_REVERSE;
-            Collections.sort(handler.getResourceTypeFacets(), new Comparator<FacetValue>() {
+            Collections.sort(handler.getResourceTypeFacets(), new Comparator<Facet>() {
                 @Override
-                public int compare(FacetValue o1, FacetValue o2) {
+                public int compare(Facet o1, Facet o2) {
                     if (reversed) {
-                        return o2.getKey().compareTo(o1.getKey());
+                        return o2.getRaw().compareTo(o1.getRaw());
                     } else {
-                        return o1.getKey().compareTo(o2.getKey());
+                        return o1.getRaw().compareTo(o2.getRaw());
                     }
                 }
             });

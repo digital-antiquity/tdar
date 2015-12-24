@@ -1,7 +1,6 @@
 package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -14,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
 import org.tdar.search.service.ResourceAnnotationKeySearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -56,12 +54,6 @@ public class ResourceAnnotationKeyLookupAction extends AbstractLookupController<
 
         jsonifyResult(JsonLookupFilter.class);
         return SUCCESS;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public String getTerm() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
@@ -92,8 +93,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     int getPrevPageStartRecord();
 
-    <C> void facetBy(Class<C> c, Collection<C> vals);
-    
     int getDefaultRecordsPerPage();
 
     void setSearchTitle(String description);
