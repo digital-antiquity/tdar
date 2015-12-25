@@ -25,7 +25,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
@@ -42,7 +42,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     SearchIndexService searchIndexService;
 
     @Autowired
-    ExcelService excelService;
+    ExcelWorkbookWriter excelService;
 
     private TdarUser currentUser = null;
 

@@ -1,7 +1,12 @@
 package org.tdar.core.dao.resource;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.URL;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,9 +17,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.dbutils.ResultSetIterator;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
@@ -31,8 +40,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -43,13 +54,20 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
+import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.NamedNativeQueries;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.excel.SheetProxy;
+import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
+import org.tdar.filestore.FileAnalyzer;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
 
@@ -71,6 +89,8 @@ import com.redfin.sitemapgenerator.GoogleImageSitemapUrl.ImageTag;
 public class DatasetDao extends ResourceDao<Dataset> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
+
 
     public DatasetDao() {
         super(Dataset.class);
@@ -425,4 +445,141 @@ public class DatasetDao extends ResourceDao<Dataset> {
         
     }
 
+    public boolean translate(DataTableColumn column, CodingSheet codingSheet) {
+        if (codingSheet == null) {
+            return false;
+        }
+        getLogger().debug("translating {} with {}", column.getName(), codingSheet);
+        // FIXME: if we eventually offer on-the-fly coding sheet translation we cannot modify the actual dataset in place
+        tdarDataImportDatabase.translateInPlace(column, codingSheet);
+        return true;
+    }
+
+    public void retranslate(Dataset dataset) {
+        for (DataTable table : dataset.getDataTables()) {
+            retranslate(table.getDataTableColumns());
+        }
+    }
+
+    public boolean retranslate(DataTableColumn column) {
+        untranslate(column);
+        return translate(column, column.getDefaultCodingSheet());
+    }
+
+    public void untranslate(DataTableColumn column) {
+        tdarDataImportDatabase.untranslate(column);        
+    }
+
+    public void translate(Set<DataTableColumn> columns, CodingSheet codingSheet) {
+        for (DataTableColumn column : columns) {
+            translate(column, codingSheet);
+        }
+    }
+
+    public void retranslate(Collection<DataTableColumn> columns) {
+        for (DataTableColumn column : columns) {
+            retranslate(column);
+        }
+    }
+
+    public InformationResourceFile createTranslatedFile(Dataset dataset, FileAnalyzer analyzer, InformationResourceFileDao informationResourceFileDao) {
+        // assumes that Datasets only have a single file
+        Set<InformationResourceFile> activeFiles = dataset.getActiveInformationResourceFiles();
+        InformationResourceFile file = null;
+        if (!activeFiles.isEmpty()) {
+            file = dataset.getActiveInformationResourceFiles().iterator().next();
+        }
+
+        if (file == null) {
+            getLogger().warn("Trying to translate {} with a null file payload.", dataset);
+            return null;
+        }
+        informationResourceFileDao.deleteTranslatedFiles(dataset);
+        // FIXME: remove synchronize once Hibernate learns more about unique constraints
+        // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
+
+        // getDao().synchronize();
+
+        InformationResourceFile irFile = null;
+        FileOutputStream translatedFileOutputStream = null;
+        try {
+            File tempFile = File.createTempFile("translated", ".xls", TdarConfiguration.getInstance().getTempDirectory());
+            translatedFileOutputStream = new FileOutputStream(tempFile);
+            SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
+            String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
+            FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
+            fileProxy.setRestriction(file.getRestriction());
+            fileProxy.setFileId(file.getId());
+            FileProxyWrapper wrapper = new FileProxyWrapper(dataset, analyzer, this, Arrays.asList(fileProxy));
+            wrapper.processMetadataForFileProxies();
+            irFile = fileProxy.getInformationResourceFile();
+        } catch (IOException exception) {
+            getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
+        } finally {
+            IOUtils.closeQuietly(translatedFileOutputStream);
+        }        return null;
+    }
+
+    /*
+     * Converts a @link Dataset to a Microsoft Excel File; this includes the Translated data values
+     */
+    private SheetProxy toExcel(Dataset dataset, OutputStream outputStream) throws IOException {
+        Set<DataTable> dataTables = dataset.getDataTables();
+        ExcelWorkbookWriter workbookWriter = new ExcelWorkbookWriter();
+        if ((dataTables == null) || dataTables.isEmpty()) {
+            return null;
+        }
+        final SheetProxy proxy = new SheetProxy();
+
+        for (final DataTable dataTable : dataTables) {
+            // each table becomes a sheet.
+            String tableName = dataTable.getDisplayName();
+            getLogger().debug(tableName);
+            proxy.setName(tableName);
+            ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
+                @Override
+                public Boolean extractData(ResultSet resultSet) throws SQLException {
+                    List<String> headerLabels = getColumnNames(resultSet, dataTable);
+                    proxy.setHeaderLabels(headerLabels);
+                    proxy.setData(new ResultSetIterator(resultSet));
+                    getLogger().debug("column names: " + headerLabels);
+                    workbookWriter.addSheets(proxy);
+                    return true;
+                }
+            };
+            tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
+        }
+        proxy.getWorkbook().write(outputStream);
+        return proxy;
+    }
+
+    /*
+     * For a given @link ResultSet and a @link DataTable this returns a list of Column names based on the display name instead of the internal table names
+     */
+    private List<String> getColumnNames(ResultSet resultSet, DataTable dataTable) throws SQLException {
+        List<String> columnNames = new ArrayList<String>();
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        for (int columnIndex = 0; columnIndex < metadata.getColumnCount(); columnIndex++) {
+            String columnName = metadata.getColumnName(columnIndex + 1);
+            // if (columnName.equals(DataTableColumn.TDAR_ROW_ID.getName())) {
+            // continue;
+            // }
+            String lookupName = columnName;
+            Matcher match = originalColumnPattern.matcher(columnName);
+            String suffix = "";
+            if (match.matches()) {
+                lookupName = match.group(1);
+                suffix = " (original)";
+            }
+            DataTableColumn column = dataTable.getColumnByName(lookupName);
+            logger.trace("name: {} - {}", columnName, column);
+            if (column != null) {
+                columnName = column.getDisplayName();
+            }
+            columnName += suffix;
+
+            columnNames.add(columnName);
+        }
+        return columnNames;
+    }
 }

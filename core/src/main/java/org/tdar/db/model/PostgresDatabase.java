@@ -55,7 +55,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
@@ -807,11 +807,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * and preview data.
      */
     @Transactional(value = "tdarDataTx", readOnly = false)
-    public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService) {
+    public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider) {
         logger.debug("Context: {}", proxy);
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")
-        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, excelService, result);
+        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, result);
         createIntegrationTempTable(proxy, provider);
         populateTempInterationTable(proxy);
         applyOntologyMappings(proxy);

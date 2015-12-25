@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.integration.IntegrationContext;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 
@@ -92,7 +91,7 @@ public interface TargetDatabase extends Database {
     int getMaxColumnNameLength();
 
     @Transactional(value = "tdarDataTx", readOnly = false)
-    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider, ExcelService excelService);
+    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,

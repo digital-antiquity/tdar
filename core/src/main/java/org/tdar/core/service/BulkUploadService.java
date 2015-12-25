@@ -97,9 +97,6 @@ public class BulkUploadService {
     private FileAnalyzer analyzer;
 
     @Autowired
-    private ExcelService excelService;
-
-    @Autowired
     private BulkUploadTemplateService bulkUploadTemplateService;
 
     @Autowired
@@ -146,7 +143,7 @@ public class BulkUploadService {
                 manifestProxy = validateManifestFile(workbook.getSheetAt(0), resourceTemplate, submitter, fileProxies, ticketId);
             } catch (Exception e) {
                 logger.debug("exception happened when reading excel file", e);
-                manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
+                manifestProxy = new BulkManifestProxy(null, null, null, bulkUploadTemplateService, entityService, reflectionService);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
                 if (PersistableUtils.isNotNullOrTransient(ticketId)) {
                     asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
@@ -207,7 +204,7 @@ public class BulkUploadService {
 
         // the manifest proxy might be null if no excel file was provided.
         if (manifestProxy == null) {
-            manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
+            manifestProxy = new BulkManifestProxy(null, null, null, bulkUploadTemplateService, entityService, reflectionService);
         }
         manifestProxy.setFileProxies(fileProxies);
         // If there are errors, then stop...
@@ -460,14 +457,14 @@ public class BulkUploadService {
 
         LinkedHashSet<CellMetadata> allValidFields = bulkUploadTemplateService.getAllValidFieldNames();
         Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
-        BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService,
+        BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, bulkUploadTemplateService, entityService,
                 reflectionService);
         if (PersistableUtils.isNotNullOrTransient(ticketId)) {
             asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
         }
         proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
-        proxy.setColumnNamesRow(sheet.getRow(ExcelService.FIRST_ROW));
+        proxy.setColumnNamesRow(sheet.getRow(ExcelWorkbookWriter.FIRST_ROW));
 
         // capture all of the column names and make sure they're valid in general
         proxy.initializeColumnMetadata(cellLookupMap, evaluator);
@@ -488,7 +485,7 @@ public class BulkUploadService {
             throw new TdarRecoverableRuntimeException("bulkUploadService.the_manifest_file_uploaded_appears_to_be_empty_no_columns_found");
         }
 
-        if (!proxy.getColumnNames().get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
+        if (!proxy.getColumnNames().get(ExcelWorkbookWriter.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
             throw new TdarRecoverableRuntimeException("bulkUploadService.the_first_column_must_be_the_filename");
         }
 

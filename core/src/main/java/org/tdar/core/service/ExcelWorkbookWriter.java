@@ -34,7 +34,6 @@ import org.apache.poi.ss.util.CellRangeAddressList;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.excel.CellFormat;
@@ -49,8 +48,7 @@ import org.tdar.utils.DataUtil;
  * @author abrin
  * 
  */
-@Service
-public class ExcelService {
+public class ExcelWorkbookWriter {
 
     private static final String TRUNCATED = "[TRUNCATED]";
 

@@ -11,7 +11,7 @@ import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 
 /**
  * A sheet proxy holds context needed to construct one or more sheets; it's goal is to attempt to hide Excel / POI from whatever is writing to it
@@ -27,8 +27,8 @@ public class SheetProxy implements Serializable {
     private String name;
     private transient Workbook workbook;
     private List<String> headerLabels = new ArrayList<String>();
-    private int startRow = ExcelService.FIRST_ROW;
-    private int startCol = ExcelService.FIRST_COLUMN;
+    private int startRow = ExcelWorkbookWriter.FIRST_ROW;
+    private int startCol = ExcelWorkbookWriter.FIRST_COLUMN;
     private String noteRow;
     private Iterator<Object[]> data;
 
@@ -47,7 +47,7 @@ public class SheetProxy implements Serializable {
     }
 
     public SheetProxy() {
-        this(ExcelService.DEFAULT_EXCEL_VERSION);
+        this(ExcelWorkbookWriter.DEFAULT_EXCEL_VERSION);
     }
 
     public SheetProxy(SpreadsheetVersion version) {

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.CellFormat.Style;
 
@@ -40,12 +40,12 @@ public class BulkUploadTemplate implements Serializable {
 
     private static final String EXCEL_MAX_NUM = "99999999999999";
     private static final String EXCEL_MIN_NUM = "-99999999999999";
-    private transient ExcelService excelService;
     public static final String BULK_TEMPLATE_TITLE = "BULK_TEMPLATE_TITLE";
     public static final String EXAMPLE_TIFF = "TDAR_EXAMPLE.TIFF";
     public static final String EXAMPLE_PDF = "TDAR_EXAMPLE.PDF";
     public static final String FILENAME = "filename";
-
+    ExcelWorkbookWriter excelWriter  = new ExcelWorkbookWriter();
+    
     @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -54,8 +54,7 @@ public class BulkUploadTemplate implements Serializable {
      * 
      * @param excelService
      */
-    public BulkUploadTemplate(ExcelService excelService) {
-        this.setExcelService(excelService);
+    public BulkUploadTemplate() {
     }
 
     /**
@@ -74,7 +73,7 @@ public class BulkUploadTemplate implements Serializable {
         HSSFRow row = sheet.createRow(0);
         // When the comment box is visible, have it show in a 1x3 space
 
-        CellStyle defaultStyle = getExcelService().createSummaryStyle(workbook);
+        CellStyle defaultStyle = excelWriter.createSummaryStyle(workbook);
         CellStyle resourceCreatorRoleStyle = CellFormat.build(Style.NORMAL).createStyle(workbook);
         resourceCreatorRoleStyle.setBorderRight(CellStyle.BORDER_MEDIUM);
         resourceCreatorRoleStyle.setRightBorderColor(IndexedColors.BLACK.getIndex());
@@ -134,19 +133,19 @@ public class BulkUploadTemplate implements Serializable {
             row.getCell(i).setCellStyle(style);
 
             if (CollectionUtils.isNotEmpty(field.getEnumList())) {
-                getExcelService().addColumnValidation(sheet, i, validationHelper, field.getEnumList().toArray(new Enum[0]));
+                excelWriter.addColumnValidation(sheet, i, validationHelper, field.getEnumList().toArray(new Enum[0]));
                 enumFields.add(field);
             }
 
             if (field.isNumeric()) {
                 if (field.isFloatNumber()) {
-                    getExcelService().addNumericColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
+                    excelWriter.addNumericColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
                 } else {
-                    getExcelService().addIntegerColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
+                    excelWriter.addIntegerColumnValidation(sheet, i, validationHelper, EXCEL_MIN_NUM, EXCEL_MAX_NUM);
                 }
             }
 
-            getExcelService().addComment(factory, drawing, row.getCell(i), field.getComment());
+            excelWriter.addComment(factory, drawing, row.getCell(i), field.getComment());
 
             i++;
         }
@@ -171,7 +170,7 @@ public class BulkUploadTemplate implements Serializable {
 
         HSSFSheet referenceSheet = workbook.createSheet("REFERENCE");
 
-        CellStyle summaryStyle = getExcelService().createSummaryStyle(workbook);
+        CellStyle summaryStyle = excelWriter.createSummaryStyle(workbook);
 
         i = 0;
         for (CellMetadata field : enumFields) {
@@ -204,21 +203,13 @@ public class BulkUploadTemplate implements Serializable {
      */
     public <T extends Enum<T>> void addReferenceColumn(Sheet wb, T[] labels, String header, CellStyle summaryStyle, int col) {
         int rowNum = 0;
-        Row row = getExcelService().createRow(wb, rowNum);
+        Row row = excelWriter.createRow(wb, rowNum);
         row.createCell(col).setCellValue(header);
         row.getCell(col).setCellStyle(summaryStyle);
         for (T type : labels) {
             rowNum++;
-            getExcelService().createRow(wb, rowNum).createCell(col).setCellValue(type.name());
+            excelWriter.createRow(wb, rowNum).createCell(col).setCellValue(type.name());
         }
-    }
-
-    public ExcelService getExcelService() {
-        return excelService;
-    }
-
-    public void setExcelService(ExcelService excelService) {
-        this.excelService = excelService;
     }
 
 }

@@ -43,7 +43,7 @@ import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -83,9 +83,6 @@ public class DataIntegrationService {
 
     @Autowired
     private PersonalFilestoreService filestoreService;
-
-    @Autowired
-    private ExcelService excelService;
 
     @Autowired
     private DatasetDao datasetDao;
@@ -499,7 +496,7 @@ public class DataIntegrationService {
 
         validateIntegrationContext(context);
 
-        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider, excelService);
+        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider);
         storeResult(result);
         return result;
     }
@@ -583,7 +580,7 @@ public class DataIntegrationService {
         // }
         //
 
-        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, provider, excelService);
+        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, provider);
         storeResult(result);
         return result;
     }

@@ -1,7 +1,9 @@
 package org.tdar.core.service.workflow;
 
 import java.util.Arrays;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,13 +14,17 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
+import org.tdar.core.service.resource.DatasetImportService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.OntologyService;
@@ -39,19 +45,19 @@ public class WorkflowContextService {
     private InformationResourceFileVersionService informationResourceFileVersionService;
     private GenericDao genericDao;
     private SerializationService serializationService;
-    private DatasetService datasetService;
     private OntologyService ontologyService;
     private CodingSheetService codingSheetService;
+    private DatasetImportService datasetImportService;
 
     @Autowired
     public WorkflowContextService(TargetDatabase tdarDataImportDatabase, InformationResourceFileVersionService informationResourceFileVersionService,
-            GenericDao genericDao, SerializationService serializationService, DatasetService datasetService,
+            GenericDao genericDao, SerializationService serializationService, DatasetImportService datasetImportService,
             OntologyService ontologyService, CodingSheetService codingSheetService) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;
         this.informationResourceFileVersionService = informationResourceFileVersionService;
         this.genericDao = genericDao;
-        this.datasetService = datasetService;
         this.serializationService = serializationService;
+        this.datasetImportService = datasetImportService;
         this.ontologyService = ontologyService;
         this.codingSheetService = codingSheetService;
 
@@ -97,7 +103,7 @@ public class WorkflowContextService {
                     if (count == 1) {
                         genericDao.detachFromSessionAndWarn(ctx.getTransientResource());
                         logger.info("data tables: {}", ((Dataset) ctx.getTransientResource()).getDataTables());
-                        datasetService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
+                        datasetImportService.reconcileDataset(irFile, dataset, (Dataset) ctx.getTransientResource());
                         genericDao.saveOrUpdate(dataset);
                     }
                     break;
@@ -111,7 +117,7 @@ public class WorkflowContextService {
                     CodingSheet codingSheet = (CodingSheet) resource;
                     codingSheetService.ingestCodingSheet(codingSheet, ctx);
                     genericDao.saveOrUpdate(codingSheet);
-                    datasetService.refreshAssociatedDataTables(codingSheet);
+                    datasetImportService.refreshAssociatedDataTables(codingSheet);
                     break;
                 case ARCHIVE:
                 case AUDIO:
@@ -192,13 +198,5 @@ public class WorkflowContextService {
         return ctx;
     }
 
-    /**
-     * @param datasetService
-     *            the datasetService to set
-     */
-
-    public DatasetService getDatasetService() {
-        return datasetService;
-    }
 
 }

@@ -27,7 +27,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.UrlService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -40,9 +40,6 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchController {
 
     private static final long serialVersionUID = 7426286742246468225L;
-
-    @Autowired
-    private transient ExcelService excelService;
 
     @Autowired
     private transient UrlService urlService;
@@ -70,7 +67,8 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                 maxRow = getTotalRecords();
             }
             if (getTotalRecords() > 0) {
-                Sheet sheet = excelService.createWorkbook("results");
+                ExcelWorkbookWriter excelWriter  = new ExcelWorkbookWriter();
+                Sheet sheet = excelWriter.createWorkbook("results");
 
                 List<String> fieldNames = new ArrayList<String>(Arrays.asList(
                         "id", "resourcetype", "title", "date", "authors",
@@ -88,16 +86,16 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
 
                 // ADD HEADER ROW THAT SHOWS URL and SEARCH PHRASE
                 sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 0, fieldNames.size()));
-                excelService.addDocumentHeaderRow(sheet, rowNum, 0,
+                excelWriter.addDocumentHeaderRow(sheet, rowNum, 0,
                         Arrays.asList(getText("advancedSearchController.excel_search_results", TdarConfiguration.getInstance().getSiteAcronym(),
                                 getSearchPhrase())));
                 rowNum++;
                 List<String> headerValues = Arrays.asList(getText("advancedSearchController.search_url"), UrlService.getBaseUrl()
                         + getServletRequest().getRequestURI()
                                 .replace("/download", "/results") + "?" + getServletRequest().getQueryString());
-                excelService.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
+                excelWriter.addPairedHeaderRow(sheet, rowNum, 0, headerValues);
                 rowNum++;
-                excelService.addPairedHeaderRow(sheet, rowNum, 0,
+                excelWriter.addPairedHeaderRow(sheet, rowNum, 0,
                         Arrays.asList(getText("advancedSearchController.downloaded_by"),
                                 getText("advancedSearchController.downloaded_on", getAuthenticatedUser().getProperName(), new Date())));
                 rowNum++;
@@ -106,7 +104,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                     fieldNames.set(i, getText("advancedSearchController." + fieldNames.get(i)));
                 }
 
-                excelService.addHeaderRow(sheet, rowNum, 0, fieldNames);
+                excelWriter.addHeaderRow(sheet, rowNum, 0, fieldNames);
                 int startRecord = 0;
                 int currentRecord = 0;
                 while (currentRecord < maxRow) {
@@ -156,14 +154,14 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                             data.add(r.getUpdatedBy().getProperName());
                         }
 
-                        excelService.addDataRow(sheet, rowNum, 0, data);
+                        excelWriter.addDataRow(sheet, rowNum, 0, data);
                     }
                     if (startRecord < getTotalRecords()) {
                         performResourceSearch();
                     }
                 }
 
-                excelService.setColumnWidth(sheet, 0, 5000);
+                excelWriter.setColumnWidth(sheet, 0, 5000);
 
                 File tempFile = File.createTempFile("results", ".xls");
                 FileOutputStream fos = new FileOutputStream(tempFile);
