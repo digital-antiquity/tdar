@@ -58,7 +58,7 @@ fi
 cd /home/tdar/tdar.src/
 hg pull
 hg update -C
-mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base
+mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base,search
 mvn clean compile war:war -Pminify-web-resources -pl web,oai-pmh,dataone
 mvn process-resources -Pliquibase -pl web
 
