@@ -38,7 +38,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
         <@commonCollection.descriptionSection/>
 
         <@commonCollection.resultsSection/>
-${rightSidebar?c}
+
         <@commonCollection.adminSection/>
     </#if>
 

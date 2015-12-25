@@ -132,10 +132,6 @@ public class SolrSearchObject<I extends Indexable> {
         return null;
     }
 
-    public int getResultSize() {
-        return resultSize;
-    }
-
     public void setFirstResult(int startRecord) {
         this.startRecord = startRecord;
     }
