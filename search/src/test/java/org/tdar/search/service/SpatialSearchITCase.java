@@ -21,6 +21,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -36,7 +37,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     SearchIndexService searchIndexService;
 
     @Autowired
-    SearchService searchService;
+    SearchService<Resource> searchService;
 
     @Autowired
     GenericKeywordService genericKeywordService;
@@ -45,7 +46,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Override
     public void reindex() {
-        searchIndexService.purgeAll(Arrays.asList(Resource.class));
+        searchIndexService.purgeAll(LookupSource.RESOURCE);
     }
     
     private Document createGeoDoc(String title, double minLatY, double minLongX, double maxLatY, double maxLongX) throws SolrServerException, IOException {
@@ -67,7 +68,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return doc;
     }
 
-    private SearchResult performGeoSearch(double minLatY, double minLongX, double maxLatY, double maxLongX)
+    private SearchResult<Resource> performGeoSearch(double minLatY, double minLongX, double maxLatY, double maxLongX)
             throws ParseException, SolrServerException, IOException {
         searchBox = new LatitudeLongitudeBox(minLongX, minLatY, maxLongX, maxLatY);
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
@@ -75,7 +76,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         SpatialQueryPart sqp = new SpatialQueryPart(searchBox);
         rqb.append(sqp);
         rqb.append(new FieldQueryPart<>(QueryFieldNames.STATUS, Status.ACTIVE));
-        SearchResult result = new SearchResult();
+        SearchResult<Resource> result = new SearchResult<>();
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
         return result;
     }
@@ -84,7 +85,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Rollback
     public void testGeoDocNotFoundTexasAZ() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("dyess", 32.388, -99.885, 32.474, -99.796);
-        SearchResult result = performGeoSearch(31.50362930577303, -114.78515625, 33.284619968887675, -112.67578125);
+        SearchResult<Resource> result = performGeoSearch(31.50362930577303, -114.78515625, 33.284619968887675, -112.67578125);
         assertFalse(result.getResults().contains(doc));
     }
 
@@ -93,7 +94,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testGeoDocScale() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("dyess1", 1.388, -120, 85.474, -99.796); // should not be found because scale is too big
         Document doc2 = createGeoDoc("dyess2", 31, -115, 34, -112); // should be found b/c on similar scale
-        SearchResult result = performGeoSearch(31.50362930577303, -114.78515625, 33.284619968887675, -112.67578125);
+        SearchResult<Resource> result = performGeoSearch(31.50362930577303, -114.78515625, 33.284619968887675, -112.67578125);
         logger.info("searchScale:{}", searchBox.getScale());
         logger.info("bb1Scale:{}", doc.getFirstActiveLatitudeLongitudeBox().getScale());
         logger.info("bb2Scale:{}", doc2.getFirstActiveLatitudeLongitudeBox().getScale());
@@ -109,7 +110,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testGeoSearchFoundWhenSpanningPrimeMeridian() throws SolrServerException, IOException, ParseException {
         // document w/ coords that abut the prime meridian
         Document doc = createGeoDoc("foo", 1d, 0d, 1.1d, 5d);
-        SearchResult result = performGeoSearch(-10d, -10d, 10d, 10d);
+        SearchResult<Resource> result = performGeoSearch(-10d, -10d, 10d, 10d);
         assertTrue(result.getResults().contains(doc));
     }
 
@@ -120,7 +121,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         // document w/ coords that are around equator (Mali)
         Document doc = createGeoDoc("foo", 12.726084296948184, -7.646484375, 21.37124437061831, 3.427734375);
         // box around Micronesia
-        SearchResult result = performGeoSearch(-14.602, -30d, 20.617, 146.154);
+        SearchResult<Resource> result = performGeoSearch(-14.602, -30d, 20.617, 146.154);
         assertTrue(result.getResults().contains(doc));
     }
 
@@ -130,7 +131,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testGeoSearchNotFoundWhenSpanningPrimeMeridian() throws SolrServerException, IOException, ParseException {
         // document w/ coords that are outside of our search (within lat coords but east of long coords)
         Document doc = createGeoDoc("foo", 1d, 11d, 2d, 12d);
-        SearchResult result = performGeoSearch(-10d, -10d, 10d, 10d); // block around equator and PM (South Atlantic)
+        SearchResult<Resource> result = performGeoSearch(-10d, -10d, 10d, 10d); // block around equator and PM (South Atlantic)
         assertFalse(result.getResults().contains(doc));
         // should be TRUE????
         result = performGeoSearch(-10d, -10d, 10d, 10d);
@@ -144,7 +145,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testGeoSearchNotFoundWhenSpanningPrimeMeridianLondon() throws SolrServerException, IOException, ParseException {
         // document w/ coords that are outside of our search (within lat coords but east of long coords)
         Document doc = createGeoDoc("foo", 55d, 11d, 58d, 12d);
-        SearchResult result = performGeoSearch(50d, -10d, 60d, 10d); // block around UK
+        SearchResult<Resource> result = performGeoSearch(50d, -10d, 60d, 10d); // block around UK
         assertFalse(result.getResults().contains(doc));
         // should be TRUE????
         result = performGeoSearch(-10d, -10d, 10d, 10d);
@@ -157,7 +158,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testGeoSearchFoundWhenSpanningAntiMeridian() throws SolrServerException, IOException, ParseException {
         // document outside our search bounds.
         Document doc = createGeoDoc("foo", 1d, 168d, 2d, 169d);
-        SearchResult result = performGeoSearch(-10d, -170d, 10d, 170d);
+        SearchResult<Resource> result = performGeoSearch(-10d, -170d, 10d, 170d);
         assertTrue(result.getResults().contains(doc));
     }
 
@@ -166,7 +167,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     // a document within a search's geobound should be found when geobounds span the equator
     public void testGeoSearchFoundWhenSpanningEquator() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("foo", 0d, 5d, 1d, 6d);
-        SearchResult result = performGeoSearch(-10d, -10d, 10d, 10d);
+        SearchResult<Resource> result = performGeoSearch(-10d, -10d, 10d, 10d);
         assertTrue(result.getResults().contains(doc));
     }
 
@@ -175,14 +176,14 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     // a document to the west of a search's geobounds should not be found when geobounds span the equator
     public void testGeoSearchNotFoundWhenSpanningEquator() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("foo", 11d, 5d, 12d, 6d);
-        SearchResult result = performGeoSearch(-10d, -10d, 10d, 10d);
+        SearchResult<Resource> result = performGeoSearch(-10d, -10d, 10d, 10d);
         assertFalse(result.getResults().contains(doc));
     }
 
     @Rollback
     public void testGeoSearchWithDocumentThatSpansAntiMeridian() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("antimeridian doc", 1d, -170d, 2d, 170d);
-        SearchResult result = performGeoSearch(-10d, -160d, 10d, 160d);
+        SearchResult<Resource> result = performGeoSearch(-10d, -160d, 10d, 160d);
         assertTrue(result.getResults().contains(doc));
     }
 
@@ -192,7 +193,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         Document doc1 = createGeoDoc("Camina", -19.3525d, -69.4720458984375d, -19.26447980049709d, -69.378662109375d);
         Document doc2 = createGeoDoc("Monte Patria", -30.8692253480408, -70.77944444444444d, -30.741835717889778d, -70.6146240234375d);
         Document doc3 = createGeoDoc("Isla Gordon", -54.987070078948776d, -69.67527777777778d, -54.91451400766525d, -69.510498046875d);
-        SearchResult result = performGeoSearch(-56.36527777777778d, -76.2890625d, -16.97274101999902d, -66.97265625d);
+        SearchResult<Resource> result = performGeoSearch(-56.36527777777778d, -76.2890625d, -16.97274101999902d, -66.97265625d);
         assertTrue(result.getResults().contains(doc1));
         assertTrue(result.getResults().contains(doc2));
         assertTrue(result.getResults().contains(doc3));
@@ -203,7 +204,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     public void testGeoSearchThatSpansGreenland() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("Nuuk", 64.17472222222223d, -51.73888888888889d, 64.17500000000001d, -51.7385d);
         Document doc2 = createGeoDoc("Nord", 81.69784444971418d, -17.226666666666667d, 81.82379431564337d, -15.46875d);
-        SearchResult result = performGeoSearch(57.70414723434193d, -75.234375, 83.71554430601263d, -12.65625d);
+        SearchResult<Resource> result = performGeoSearch(57.70414723434193d, -75.234375, 83.71554430601263d, -12.65625d);
         assertTrue(result.getResults().contains(doc));
         assertTrue(result.getResults().contains(doc2));
     }
@@ -212,7 +213,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Rollback
     public void testGeoSearchThatSpansIceland() throws SolrServerException, IOException, ParseException {
         Document doc = createGeoDoc("Stafnsvötn", 65.18518697818304d, -18.776578903198242d, 65.18614154408306d, -18.773725032806396d);
-        SearchResult result = performGeoSearch(63.35212928507874d, -24.345703125d, 66.8265202749748d, -13.271484375d);
+        SearchResult<Resource> result = performGeoSearch(63.35212928507874d, -24.345703125d, 66.8265202749748d, -13.271484375d);
         assertTrue(result.getResults().contains(doc));
     }
 
@@ -266,7 +267,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(searchPart);
-        SearchResult result = new SearchResult();
+        SearchResult<Resource> result = new SearchResult<>();
         searchService.handleSearch(rqb, result, MessageHelper.getInstance());
         assertTrue(result.getResults().contains(file));
     }

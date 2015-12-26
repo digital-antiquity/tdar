@@ -917,4 +917,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public Long getAdminBillingAccountId() {
         return assistant.getLongProperty("admin.billingAccount", 216);
     }
+
+    public boolean isFilestoreReadOnly() {
+        return assistant.getBooleanProperty("filestore.readonly", false);
+    }
 }

@@ -11,13 +11,10 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
-import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.KeywordSearchService;
 import org.tdar.search.service.SearchIndexService;
@@ -33,25 +30,25 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
     GenericKeywordService genericKeywordService;
 
     @Autowired
-    KeywordSearchService keywordSearchService;
+    KeywordSearchService<Keyword> keywordSearchService;
 
     public void reindex() {
-        searchIndexService.purgeAll(Arrays.asList(Keyword.class));
-        searchIndexService.indexAll(getAdminUser(), GeographicKeyword.class, CultureKeyword.class, SiteNameKeyword.class, SiteTypeKeyword.class);
+        searchIndexService.purgeAll(LookupSource.KEYWORD);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.KEYWORD);
     };
     
 
     @Test
     public void testKeywordLookup() throws SolrServerException, IOException, ParseException {
         
-        SearchResult result = processSearch("Folsom","CultureKeyword",2);
-        List<Indexable> resources = result.getResults();
+        SearchResult<Keyword> result = processSearch("Folsom","CultureKeyword",2);
+        List<Keyword> resources = result.getResults();
         assertTrue("at least one document", resources.size() >= 1);
     }
 
 
-    private SearchResult processSearch(String term, String type, int min) throws ParseException, SolrServerException, IOException {
-        SearchResult result = new SearchResult();
+    private SearchResult<Keyword> processSearch(String term, String type, int min) throws ParseException, SolrServerException, IOException {
+        SearchResult<Keyword> result = new SearchResult<>();
         keywordSearchService.findKeyword(term, type,result, MessageHelper.getInstance(), min);
         return result;
     }
@@ -61,11 +58,10 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
         SiteNameKeyword keyword = new SiteNameKeyword();
         keyword.setLabel("18-ST-389");
         genericService.saveOrUpdate(keyword);
-        Long id = keyword.getId();
-        searchIndexService.indexAll(getAdminUser(), SiteNameKeyword.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.KEYWORD);
 
-        SearchResult result = processSearch("18-ST-389","SiteNameKeyword",2);
-        List<Indexable> resources = result.getResults();
+        SearchResult<Keyword> result = processSearch("18-ST-389","SiteNameKeyword",2);
+        List<Keyword> resources = result.getResults();
         assertTrue("at least one document", resources.size() >= 1);
 
         result = processSearch("18ST389","SiteNameKeyword",2);

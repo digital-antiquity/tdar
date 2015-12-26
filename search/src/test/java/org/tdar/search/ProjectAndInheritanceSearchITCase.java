@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 
 public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITCase {
@@ -28,7 +29,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
     @Test
     @Rollback(true)
     public void testForInheritedCulturalInformationFromProject() throws ParseException, SolrServerException, IOException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         SearchResult result = doSearch("Archaic",null,null,rparams);

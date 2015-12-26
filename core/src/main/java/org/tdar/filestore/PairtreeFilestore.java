@@ -21,6 +21,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 //import org.tdar.core.bean.resource.InformationResourceFileVersion;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.filestore.Filestore.BaseFilestore;
@@ -85,7 +86,9 @@ public class PairtreeFilestore extends BaseFilestore {
     public String storeAndRotate(FilestoreObjectType type, InputStream content, FileStoreFileProxy version, StorageMethod rotate) throws IOException {
         OutputStream outputStream = null;
         String path = getAbsoluteFilePath(type, version);
-
+        if (TdarConfiguration.getInstance().isFilestoreReadOnly()) {
+            return null;
+        }
         File outFile = new File(path);
         outFile = rotateFileIfNeeded(rotate, outFile);
 

@@ -14,6 +14,7 @@ import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.core.service.GenericService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.utils.MessageHelper;
 
@@ -28,7 +29,7 @@ public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrat
 
     @Override
     public void reindex() {
-        searchIndexService.indexAll(getAdminUser(), ResourceAnnotationKey.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE_ANNOTATION_KEY);
     }
     @Test
     public void testAllSearch() throws ParseException, SolrServerException, IOException {
@@ -48,7 +49,7 @@ public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrat
         key2.setResourceAnnotationType(ResourceAnnotationType.IDENTIFIER);
         genericService.save(key2);
 
-        searchIndexService.indexAll(getAdminUser(), ResourceAnnotationKey.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE_ANNOTATION_KEY);
         SearchResult<ResourceAnnotationKey> result = new SearchResult<>();
         resourceAnnotationKeySearchService.buildAnnotationSearch("IS", result, 2, MessageHelper.getInstance());
         List<ResourceAnnotationKey> resources = result.getResults();

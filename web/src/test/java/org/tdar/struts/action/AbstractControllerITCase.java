@@ -43,6 +43,7 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.collection.CollectionController;
@@ -441,9 +442,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         return execute;
     }
 
-    @SuppressWarnings("unchecked")
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), Resource.class, ResourceCollection.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE, LookupSource.COLLECTION);
     }
 }

@@ -22,11 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.external.session.SessionData;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 
@@ -41,16 +40,13 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Autowired
     SearchIndexService searchIndexService;
 
-    @Autowired
-    ExcelWorkbookWriter excelService;
-
     private TdarUser currentUser = null;
 
     @Test
     @Rollback(true)
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             InvalidFormatException, TdarActionException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         // currentUser = getBasicUser();
         AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
                 genericService.find(TdarUser.class, getBasicUserId()));
@@ -76,7 +72,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             TdarActionException {
         setIgnoreActionErrors(true);
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         currentUser = null;
         AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
                 genericService.find(TdarUser.class, getBasicUserId()));

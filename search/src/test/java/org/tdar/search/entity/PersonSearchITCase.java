@@ -22,6 +22,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.EntityService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.CreatorSearchService;
 import org.tdar.search.service.SearchIndexService;
@@ -42,8 +43,8 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Override
     public void reindex() {
-        searchIndexService.purgeAll(Arrays.asList(Person.class));
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.purgeAll(LookupSource.PERSON);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
     };
 
     @Test
@@ -123,7 +124,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     public void testPersonLookupWithNoResults() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         Person person_ = setupPerson("bobby", null, null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min);
         List<Person> people = result.getResults();
@@ -187,7 +188,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         genericService.saveOrUpdate(person);
         person = new TdarUser("M", "Scott Thompson", "mscottthompson@sua.edu", "mscottthompson@sua.edu");
         genericService.saveOrUpdate(person);
-        searchIndexService.indexAll(getAdminUser(), Person.class, TdarUser.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         return person;
     }
 
@@ -218,7 +219,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     // we should properly escape input
     public void testPersonWithInvalidInput() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // FIXME: need more invalid input examples than just paren
         Person person_ = setupPerson(null, " (     ", null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min);
@@ -233,7 +234,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         user.setUsername("billingAdmin");
         user.markUpdated(getAdminUser());
         genericService.saveOrUpdate(user);
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         Person person_ = setupPerson(null, null, null, null);
         SearchResult<Person> result = findPerson(person_, "billingAdmin", true, min);
 
@@ -273,7 +274,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     public void testPersonLookupWithSeveralResults() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // based on our test data this should return at least two records (john doe and jane doe)
         String partialLastName = "Mann";
         Person person_ = setupPerson(null, partialLastName, null, null);
@@ -288,7 +289,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Rollback
     public void testUserLookup() throws SolrServerException, IOException, ParseException {
         setupUsers();
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // based on our test data this should return at least two records (john doe and jane doe)
         String name = "John H";
         Person person_ = setupPerson(null, null, null, null);
@@ -352,7 +353,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         genericService.saveOrUpdate(person);
         person.setInstitution(inst);
         genericService.saveOrUpdate(inst);
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         Person person_ = setupPerson(null, null, null, "TQF");
         SearchResult<Person> result = findPerson(person_, null, null, min);
         List<Person> people = result.getResults();
@@ -362,7 +363,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testValidInstitutionWithSpace() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         Person person = setupPerson(null, null, null, "University of");
         SearchResult<Person> result = findPerson(person, null, null, min);
         List<Person> people = result.getResults();
@@ -376,7 +377,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testInstitutionEmpty() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), Person.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
         // FIXME: should not need to be quoted
         Person person = setupPerson(null, null, null, "University ABCD");
         SearchResult<Person> result = findPerson(person, null, null, min);

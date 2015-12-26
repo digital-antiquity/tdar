@@ -20,6 +20,7 @@ import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.CollectionSearchService;
 import org.tdar.utils.MessageHelper;
@@ -28,8 +29,8 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
 
     @Override
     public void reindex() {
-        searchIndexService.purgeAll(Arrays.asList(ResourceCollection.class));
-        searchIndexService.indexAll(getAdminUser(),ResourceCollection.class);
+        searchIndexService.purgeAll(LookupSource.COLLECTION);
+        searchIndexService.indexAll(getAdminUser(),LookupSource.COLLECTION);
     };
 
     @Autowired

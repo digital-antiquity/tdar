@@ -9,6 +9,7 @@ import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 
 public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
@@ -16,7 +17,7 @@ public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
     @Override
     public void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
     }
 
     @Test

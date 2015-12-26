@@ -19,10 +19,10 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchIndexService;
 
 public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchControllerITCase {
@@ -49,7 +49,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testForInheritedCulturalInformationFromProject1() {
         logger.info("{}", getUser());
         Long imgId = setupImage();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         setResourceTypes(getInheritingTypes());
         List<String> approvedCultureKeywordIds = new ArrayList<String>();
         approvedCultureKeywordIds.add("9");
@@ -66,7 +66,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
         controller = generateNewInitializedController(AdvancedSearchController.class, getAdminUser());
         controller.setRecordsPerPage(50);
         Long datasetId = setupDataset();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         doSearch("precambrian");
@@ -77,7 +77,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Rollback(true)
     public void testDeletedMaterialsAreNotVisible() {
         Long datasetId = setupDataset();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DELETED);
         setIgnoreActionErrors(true);
@@ -104,7 +104,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     @Rollback(true)
     public void testDraftMaterialsAreIndexed() {
         Long imgId = setupImage();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         setResourceTypes(allResourceTypes);
         setStatuses(Status.DRAFT);
         doSearch("description");
@@ -116,7 +116,7 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     public void testHierarchicalCultureKeywordsAreIndexed() {
         Long imgId = setupImage();
         logger.info("Created new image: " + imgId);
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         setResourceTypes(allResourceTypes);
         setStatusAll();
         doSearch("PaleoIndian");

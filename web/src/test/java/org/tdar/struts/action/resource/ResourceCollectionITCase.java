@@ -51,6 +51,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.search.config.IndexEventListener;
+import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
@@ -635,7 +636,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         Long fileId = testFile.getId();
         searchIndexService.flushToIndexes();
         genericService.synchronize();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         testFile = null;
         listener.reset();
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE

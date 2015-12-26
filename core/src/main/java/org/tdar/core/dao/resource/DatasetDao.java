@@ -517,7 +517,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
-        }        return null;
+        }
+        return irFile;
     }
 
     /*

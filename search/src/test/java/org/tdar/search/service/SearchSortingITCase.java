@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
@@ -43,12 +44,12 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     SearchService<Resource> searchService;
     
     public static class SortTestStruct {
-        public SortTestStruct(Class<? extends Indexable> type, QueryBuilder queryBuilder) {
+        public SortTestStruct(LookupSource type, QueryBuilder queryBuilder) {
             this.type = type;
             this.qb = queryBuilder;
         }
 
-        public Class<? extends Indexable> type;
+        public LookupSource type;
         public QueryBuilder qb;
         public Map<SortOption, Comparator<?>> comparators = new HashMap<SortOption, Comparator<?>>();
 
@@ -118,7 +119,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @BeforeClass
     public static void before() {
-        SortTestStruct resourceInfo = new SortTestStruct(Resource.class, new ResourceQueryBuilder());
+        SortTestStruct resourceInfo = new SortTestStruct(LookupSource.RESOURCE, new ResourceQueryBuilder());
         resourceInfo.comparators.put(SortOption.TITLE, titleComparator);
         resourceInfo.comparators.put(SortOption.TITLE_REVERSE, titleComparator);
         resourceInfo.comparators.put(SortOption.ID, idComparator);
@@ -205,7 +206,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
                 Comparator comparator = entry.getValue();
 
                 for (int i = 0; i < (results.size() - 2); i++) {
-                    logger.info("now testing sorting for {}.{}", sortTestInfo.type.getSimpleName(), sortOption.getSortField());
+                    logger.info("now testing sorting for {}.{}", sortTestInfo.type, sortOption.getSortField());
                     Object item1 = results.get(i);
                     Object item2 = results.get(i + 1);
                     String msg = String.format("when sorting by %s, item1:[%s] should appear before item2:[%s] ", sortOption, item1, item2);

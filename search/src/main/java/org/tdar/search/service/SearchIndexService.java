@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -89,7 +91,7 @@ public class SearchIndexService {
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
     public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
-        indexAll(updateReceiver, getDefaultClassesToIndex(), person);
+        indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
 
     @Autowired
@@ -134,7 +136,7 @@ public class SearchIndexService {
      */
     @SuppressWarnings("deprecation")
     @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver, List<Class<? extends Indexable>> classesToIndex, Person person) {
+    public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> sources, Person person) {
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
         }
@@ -142,32 +144,28 @@ public class SearchIndexService {
         activity.setName(BUILD_LUCENE_INDEX_ACTIVITY_NAME);
         activity.setIndexingActivity(true);
         activity.setUser(person);
-        activity.setMessage(String.format("reindexing %s", StringUtils.join(classesToIndex, ", ")));
+        activity.setMessage(String.format("reindexing %s", StringUtils.join(sources, ", ")));
         activity.start();
         ActivityManager.getInstance().addActivityToQueue(activity);
 
         try {
             genericDao.synchronize();
-            // solrTemplate.
-            // FullTextSession fullTextSession = getFullTextSession();
-            // FlushMode previousFlushMode = prepare(fullTextSession);
-            // SearchFactory sf = fullTextSession.getSearchFactory();
             float percent = 0f;
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
-            float maxPer = (1f / classesToIndex.size()) * 100f;
+            float maxPer = (1f / sources.size()) * 100f;
             
+            Set<Class<? extends Indexable>> classesToIndex = new HashSet<>();
+            for (LookupSource src : sources) {
+                CollectionUtils.addAll(classesToIndex, src.getClasses());
+            }
             for (Class<? extends Indexable> toIndex : classesToIndex) {
                 purgeCore(getCoreForClass(toIndex));
             }            
             for (Class<? extends Indexable> toIndex : classesToIndex) {
-                // fullTextSession.purgeAll(toIndex);
-                // sf.optimize(toIndex);
                 Number total = genericDao.count(toIndex);
                 updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", percent);
                 ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
                 indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
-                // fullTextSession.flushToIndexes();
-                // fullTextSession.clear();
                 percent += maxPer;
                 String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
                 updateAllStatuses(updateReceiver, activity, message, percent);
@@ -192,10 +190,7 @@ public class SearchIndexService {
      * @param previousFlushMode
      */
     private void complete(AsyncUpdateReceiver updateReceiver, Activity activity, Object fullTextSession, FlushMode previousFlushMode) {
-        // fullTextSession.flushToIndexes();
-        // fullTextSession.clear();
         updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
-        // fullTextSession.setFlushMode(previousFlushMode);
         if (activity != null) {
             activity.end();
         }
@@ -483,7 +478,7 @@ public class SearchIndexService {
      * @param person
      */
     public void indexAll(Person person) {
-        indexAll(getDefaultUpdateReceiver(), getDefaultClassesToIndex(), person);
+        indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
     }
 
     /**
@@ -493,8 +488,8 @@ public class SearchIndexService {
      * @param classes
      */
     @SuppressWarnings("unchecked")
-    public void indexAll(Person person, Class<? extends Indexable>... classes) {
-        indexAll(getDefaultUpdateReceiver(), Arrays.asList(classes), person);
+    public void indexAll(Person person, LookupSource ... sources) {
+        indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
     }
 
     /**
@@ -511,7 +506,7 @@ public class SearchIndexService {
      * 
      */
     public void purgeAll() {
-        purgeAll(getDefaultClassesToIndex());
+        purgeAll(LookupSource.values());
     }
 
     /**
@@ -519,9 +514,11 @@ public class SearchIndexService {
      * 
      * @param classes
      */
-    public void purgeAll(List<Class<? extends Indexable>> classes) {
-        for (Class<? extends Indexable> clss : classes) {
-            purgeCore(getCoreForClass(clss));
+    public void purgeAll(LookupSource ... sources) {
+        for (LookupSource src : sources) {
+            for (Class<? extends Indexable> clss : src.getClasses()) {
+                purgeCore(getCoreForClass(clss));
+            }
         }
     }
 
@@ -595,7 +592,7 @@ public class SearchIndexService {
 
     @Async
     @Transactional(readOnly = false)
-    public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<Class<? extends Indexable>> toReindex, final Person person) {
+    public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex, final Person person) {
         logger.info("reindexing indexall");
         indexAll(reciever, toReindex, person);
         sendEmail(toReindex);
@@ -603,7 +600,7 @@ public class SearchIndexService {
     }
 
     @Transactional(readOnly = false)
-    public void sendEmail(final List<Class<? extends Indexable>> toReindex) {
+    public void sendEmail(final List<LookupSource> toReindex) {
         Date date = new Date();
         TdarConfiguration CONFIG = TdarConfiguration.getInstance();
         if (CONFIG.isProductionEnvironment()) {

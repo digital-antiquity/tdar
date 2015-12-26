@@ -19,12 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.external.EmailService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchIndexService;
 import org.tdar.struts.action.AuthenticationAware;
@@ -60,9 +58,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Autowired
     private transient SerializationService serializationService;
 
-    @Autowired
-    private transient EmailService emailService;
-
     private InputStream jsonInputStream;
 
     @IgnoreActivity
@@ -71,8 +66,10 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     })
     public String startIndex() {
         if (!isReindexing()) {
-            List<Class<? extends Indexable>> toReindex = new ArrayList<>();
-            toReindex = searchIndexService.getClassesToReindex(getIndexesToRebuild());
+            List<LookupSource> toReindex = getIndexesToRebuild();
+            if (CollectionUtils.isEmpty(toReindex)) {
+                toReindex = Arrays.asList(LookupSource.values());
+            }
 
             getLogger().info("to reindex: {}", toReindex);
             Person person = null;
@@ -80,18 +77,13 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
                 person = getGenericService().find(Person.class, getUserId());
             }
 
-            List<Class<? extends Indexable>> clss = searchIndexService.getDefaultClassesToIndex();
-            if (CollectionUtils.isNotEmpty(toReindex)) {
-                clss = toReindex;
-            }
-
             getLogger().info("reindexing");
             if (isAsyncSave()) {
                 getLogger().info("reindexing async");
-                searchIndexService.indexAllAsync(null, clss, person);
+                searchIndexService.indexAllAsync(null, toReindex, person);
             } else {
                 getLogger().info("reindexing sync");
-                searchIndexService.indexAll(this, clss, person);
+                searchIndexService.indexAll(this, toReindex, person);
             }
         }
         getLogger().info("return");

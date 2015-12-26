@@ -23,6 +23,7 @@ import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 
 /**
@@ -190,7 +191,11 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         reindex();
         for (ResourceType type : ResourceType.values()) {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?");
-            clickLinkOnPage(type.getPlural());
+            if (getPageLink(type.getPlural()) != null) {
+                clickLinkOnPage(type.getPlural());
+            } else {
+                clickLinkOnPage(type.getLabel());
+            }
             boolean sawSomething = false;
             for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("h3 a")) {
                 Element element = (Element) element_;
@@ -206,6 +211,15 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.info("{} - {}", type, sawSomething);
             assertTrue(String.format("should have at least one result for: %s", type.name()), sawSomething);
         }
+    }
+
+    private HtmlAnchor getPageLink(String plural) {
+        try {
+            return getHtmlPage().getAnchorByText(plural);
+        } catch (Exception e) {
+            
+        }
+        return null;
     }
 
     @Test
