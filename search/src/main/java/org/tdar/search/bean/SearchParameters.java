@@ -350,7 +350,7 @@ public class SearchParameters {
         // managed keywords (in the form of lists of lists of ids)
         appendKeywordQueryParts(queryPartGroup, KeywordType.MATERIAL_TYPE, this.getMaterialKeywordIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getApprovedSiteTypeIdLists());
-        appendKeywordQueryParts(queryPartGroup, KeywordType.SITE_TYPE_KEYWORD, this.getInvestigationTypeIdLists());
+        appendKeywordQueryParts(queryPartGroup, KeywordType.INVESTIGATION_TYPE, this.getInvestigationTypeIdLists());
         appendKeywordQueryParts(queryPartGroup, KeywordType.CULTURE_KEYWORD, this.getApprovedCultureKeywordIdLists());
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.PROJECT_ID, support.getText("searchParameter.project"), "project.", Resource.class,
