@@ -44,6 +44,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         login();
         setIgnorePageErrorChecks(true);
         gotoPage(url);
+        gotoPage(url);
         // assert that the page has the resources
         assertPageNotViewable(titles);
         logout();
@@ -134,6 +135,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         logout();
         login();
+        gotoEdit(url);
         gotoEdit(url);
         // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));

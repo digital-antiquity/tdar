@@ -114,7 +114,7 @@ import com.opensymphony.xwork2.TextProvider;
          long num = System.currentTimeMillis();
          hydrateQueryParts(q);
          SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, textProvider);
-
+         
          resultHandler.setTotalRecords(ftq.getTotalResults());
          long lucene = System.currentTimeMillis() - num;
          num = System.currentTimeMillis();

@@ -111,12 +111,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Autowired
     EntityService entityService;
 
-    @Test
-    public void reindexTest() {
-        reindex();
-    }
-    
-    
+
     @Test
     @Rollback
     public void testResourceAnnotationSearch() throws SolrServerException, IOException, ParseException {

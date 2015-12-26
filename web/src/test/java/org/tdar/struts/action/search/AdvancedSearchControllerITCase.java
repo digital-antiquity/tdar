@@ -343,7 +343,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     protected void reindex() {
         evictCache();
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON, LookupSource.COLLECTION, LookupSource.INSTITUTION, LookupSource.KEYWORD);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON, LookupSource.COLLECTION, LookupSource.INSTITUTION, LookupSource.KEYWORD,LookupSource.RESOURCE);
     }
 
     protected void doSearch() {
