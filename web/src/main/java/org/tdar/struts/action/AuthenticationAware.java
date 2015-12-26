@@ -144,7 +144,7 @@ public interface AuthenticationAware extends SessionDataAware {
 
         public boolean isContributor() {
             TdarUser authenticatedUser = getAuthenticatedUser();
-            return isAuthenticated() && authenticatedUser.isRegistered() && authenticatedUser.getContributor();
+            return isAuthenticated() && authenticatedUser.isRegistered() && authenticatedUser.isContributor();
         }
 
         @Override
