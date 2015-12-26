@@ -545,6 +545,12 @@
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-java8</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
         <!-- <dependency> -->
         <!-- <groupId>org.hibernate</groupId> -->
         <!-- <artifactId>hibernate-entitymanager</artifactId> -->

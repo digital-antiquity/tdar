@@ -108,10 +108,6 @@ public class TdarUser extends Person {
         this.username = username;
     }
 
-    public Boolean getContributor() {
-        return contributor;
-    }
-
     public Boolean isContributor() {
         return contributor;
     }

@@ -8,7 +8,6 @@
     <name>tDAR (base)</name>
 
     <properties>
-        <hibernate.version>4.3.10.Final</hibernate.version>
         <poi.version>3.12</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->

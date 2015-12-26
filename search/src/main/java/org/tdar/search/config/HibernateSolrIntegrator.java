@@ -1,12 +1,13 @@
 package org.tdar.search.config;
 
-import org.hibernate.cfg.Configuration;
+import org.hibernate.SessionFactoryObserver;
+import org.hibernate.boot.Metadata;
+import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.DuplicationStrategy;
 import org.hibernate.event.service.spi.EventListenerRegistry;
 import org.hibernate.event.spi.EventType;
 import org.hibernate.integrator.spi.Integrator;
-import org.hibernate.metamodel.source.MetadataImplementor;
 import org.hibernate.service.spi.SessionFactoryServiceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +57,7 @@ public class HibernateSolrIntegrator implements Integrator {
     }
 
     @Override
-    public void integrate(Configuration configuration, SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
+    public void integrate(Metadata arg0, SessionFactoryImplementor arg1, SessionFactoryServiceRegistry serviceRegistry) {
         IndexEventListener eventListener = new IndexEventListener();
         registerHibernateSearchEventListener( eventListener, serviceRegistry );
 
@@ -68,13 +69,7 @@ public class HibernateSolrIntegrator implements Integrator {
 //                hibernateClassLoaderService
 //        );
 //        sessionFactory.addObserver( observer );
-//        // TODO Auto-generated method stub
-                
-    }
-
-    @Override
-    public void integrate(MetadataImplementor metadata, SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
-
+        
     }
 
 }

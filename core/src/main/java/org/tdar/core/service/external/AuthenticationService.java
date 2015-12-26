@@ -512,7 +512,7 @@ public class AuthenticationService {
             notifications.add(AuthNotice.TOS_AGREEMENT);
         }
 
-        if (user.getContributor() && (user.getContributorAgreementVersion() < contributorAgreementLatestVersion)) {
+        if (user.isContributor() && (user.getContributorAgreementVersion() < contributorAgreementLatestVersion)) {
             notifications.add(AuthNotice.CONTRIBUTOR_AGREEMENT);
         }
         return notifications;

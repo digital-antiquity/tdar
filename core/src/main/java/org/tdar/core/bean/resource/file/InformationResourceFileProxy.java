@@ -58,10 +58,6 @@ public class InformationResourceFileProxy implements Serializable {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public Boolean getPartOfComposite() {
-        return partOfComposite;
-    }
-
     public void setPartOfComposite(Boolean partOfComposite) {
         this.partOfComposite = partOfComposite;
     }
