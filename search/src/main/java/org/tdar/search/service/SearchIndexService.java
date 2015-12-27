@@ -16,6 +16,7 @@ import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
+import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
@@ -148,6 +149,7 @@ public class SearchIndexService {
         activity.start();
         ActivityManager.getInstance().addActivityToQueue(activity);
 
+        CacheMode cacheMode = genericDao.getCacheModeForCurrentSession();
         try {
             genericDao.synchronize();
             float percent = 0f;
@@ -161,9 +163,11 @@ public class SearchIndexService {
             for (Class<? extends Indexable> toIndex : classesToIndex) {
                 purgeCore(getCoreForClass(toIndex));
             }            
+            genericDao.setCacheModeForCurrentSession(CacheMode.IGNORE);
             for (Class<? extends Indexable> toIndex : classesToIndex) {
                 Number total = genericDao.count(toIndex);
                 updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", percent);
+
                 ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
                 indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
                 percent += maxPer;
@@ -178,6 +182,7 @@ public class SearchIndexService {
                 updateReceiver.addError(ex);
             }
         }
+        genericDao.setCacheModeForCurrentSession(cacheMode);
         activity.end();
     }
 
