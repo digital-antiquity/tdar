@@ -687,4 +687,8 @@ public class GenericDao {
         sessionFactory.getCache().evictEntity(id.getClass(), id);
     }
 
+	public CacheMode getCacheModeForCurrentSession() {
+		return getCurrentSession().getCacheMode();
+	}
+
 }
