@@ -237,6 +237,11 @@ public class SearchIndexService {
                 message = String.format("indexed %s %s %s %% (flushing)", numProcessed, MIDDLE, totalProgress);
                 updateAllStatuses(updateReceiver, activity, message, totalProgress);
                 logger.trace("flushing search index");
+                try {
+                    template.commit(coreForClass);
+                } catch (SolrServerException | IOException e) {
+                    logger.error("error committing: {}", e);
+                }
                 // fullTextSession.flushToIndexes();
                 // fullTextSession.clear();
                 logger.trace("flushed search index");
