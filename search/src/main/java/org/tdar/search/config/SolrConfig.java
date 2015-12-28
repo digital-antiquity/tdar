@@ -79,6 +79,7 @@ public class SolrConfig {
         String solrServerUrl = environment.getProperty("solr.server.url");
         if (StringUtils.isNotBlank(solrServerUrl)) {
             solrServer = new HttpSolrClient(solrServerUrl);
+            
             logger.debug("initializing http Solr:{}", solrServer);
             return solrServer;
         }

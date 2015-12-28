@@ -28,6 +28,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.Video;
+import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
@@ -70,5 +71,24 @@ public enum LookupSource implements HasLabel, Localizable {
     public Class<? extends Indexable>[] getClasses() {
         return classes;
     }
+    
+    public String getCoreName() {
+    	switch (this) {
+		case COLLECTION:
+			return CoreNames.COLLECTIONS;
+		case INSTITUTION:
+			return CoreNames.INSTITUTIONS;
+		case KEYWORD:
+			return CoreNames.KEYWORDS;
+		case PERSON:
+			return CoreNames.PEOPLE;
+		case RESOURCE:
+			return CoreNames.RESOURCES;
+		case RESOURCE_ANNOTATION_KEY:
+			return CoreNames.ANNOTATION_KEY;
+		}
+    	return null;
+    }
+    
 
 }

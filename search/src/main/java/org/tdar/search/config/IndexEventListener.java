@@ -38,6 +38,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.AutowireHelper;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchIndexService;
 
 /**
@@ -85,8 +86,10 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     public void onFlush(FlushEvent event) throws HibernateException {
         if (isEnabled()) {
             try {
-                getSolrClient().commit();
-            } catch (SolrServerException | IOException e) {
+            	for (LookupSource src :LookupSource.values()) {
+            		getSolrClient().commit(src.getCoreName());
+            	}
+            } catch (Throwable e) {
                 logger.error("error flushing", e);
             }
         }
