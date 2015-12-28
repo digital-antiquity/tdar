@@ -223,6 +223,7 @@ public class SearchIndexService {
             currentId = item.getId();
             currentProgress = numProcessed / total.floatValue();
             index(item, deleteFirst);
+//            genericDao.evictFromCache(item);
             numProcessed++;
             float totalProgress = ((currentProgress * maxPer) + percent);
             if ((numProcessed % divisor) == 0) {

@@ -7,7 +7,6 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -23,7 +22,7 @@ import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
 public enum LookupSource implements HasLabel, Localizable {
-    PERSON("people", Person.class, TdarUser.class),
+    PERSON("people", Person.class),
     INSTITUTION("institutions", Institution.class),
     KEYWORD("items", CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class, OtherKeyword.class, TemporalKeyword.class,
             SiteNameKeyword.class, SiteTypeKeyword.class),
