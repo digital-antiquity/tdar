@@ -242,6 +242,7 @@ public class SearchIndexService {
                 } catch (SolrServerException | IOException e) {
                     logger.error("error committing: {}", e);
                 }
+                genericDao.clearCurrentSession();
                 // fullTextSession.flushToIndexes();
                 // fullTextSession.clear();
                 logger.trace("flushed search index");
