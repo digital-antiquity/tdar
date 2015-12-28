@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -11,6 +12,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.collection.spi.PersistentCollection;
 import org.hibernate.event.spi.AbstractCollectionEvent;
 import org.hibernate.event.spi.FlushEvent;
@@ -59,19 +62,20 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
 
     protected static final transient Logger logger = LoggerFactory.getLogger(HibernateSolrIntegrator.class);
 
-    private WeakHashMap<String, Collection<?>> idChangeMap = new WeakHashMap<>();
+    private WeakHashMap<Session, Map<String,Collection<?>>> idChangeMap = new WeakHashMap<>();
+//    private WeakHashMap<String, Collection<?>> idChangeMap = new WeakHashMap<>();
     private SearchIndexService searchIndexService;
     private SolrClient solrClient;
-
+    private SessionFactory sessionFactory;
     public void reset() {
         idChangeMap.clear();
     }
 
     private boolean isEnabled() {
         if (searchIndexService == null) {
-            AutowireHelper.autowire(this, searchIndexService, solrClient);
+            AutowireHelper.autowire(this, searchIndexService, solrClient, sessionFactory);
         }
-        if (getSolrClient() != null) {
+        if (solrClient != null) {
             return true;
         }
         return false;
@@ -87,7 +91,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         if (isEnabled()) {
             try {
             	for (LookupSource src :LookupSource.values()) {
-            		getSolrClient().commit(src.getCoreName());
+            		solrClient.commit(src.getCoreName());
             	}
             } catch (Throwable e) {
                 logger.error("error flushing", e);
@@ -113,6 +117,10 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         processCollectionEvent(event);
     }
 
+    public Session getCurrentSession() {
+    	return sessionFactory.getCurrentSession();
+    }
+    
     private void processCollectionEvent(AbstractCollectionEvent event) {
         if (!isEnabled()) {
             return;
@@ -130,8 +138,13 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
                 return;
             }
 
+            Map<String, Collection<?>> map = idChangeMap.get(getCurrentSession());
+            if (map == null) {
+            	return;
+            }
+            
             String key = getCollectionKey(event);
-            Collection<?> old = idChangeMap.get(key);
+            Collection<?> old = map.get(key);
             if (old != null) {
                 idChangeMap.remove(key);
             }
@@ -156,7 +169,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         if (entity instanceof Indexable) {
             try {
                 logger.debug("purging: {}", entity);
-                getSearchIndexService().purge((Indexable) entity);
+                searchIndexService.purge((Indexable) entity);
             } catch (SolrServerException | IOException e) {
                 logger.error("error purging", e);
             }
@@ -176,7 +189,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         if (entity instanceof Indexable) {
             try {
                 logger.trace("indexing: {}", entity);
-                getSearchIndexService().index((Indexable) entity);
+                searchIndexService.index((Indexable) entity);
             } catch (SolrServerException | IOException e) {
                 logger.error("error indexing", e);
             }
@@ -202,22 +215,20 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         return false;
     }
 
-    public SolrClient getSolrClient() {
-        return solrClient;
-    }
-
     @Autowired
     public void setSolrClient(SolrClient solrClient) {
         this.solrClient = solrClient;
     }
 
-    public SearchIndexService getSearchIndexService() {
-        return searchIndexService;
-    }
-
     @Autowired
     public void setSearchIndexService(SearchIndexService searchIndexService) {
         this.searchIndexService = searchIndexService;
+    }
+
+
+    @Autowired
+    public void setSessionFactory(SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 
     @Override
@@ -227,14 +238,25 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         logger.debug("preUpdate: {} - {}", key, event.getCollection());
 
         Serializable serializedSnapshot = event.getCollection().getStoredSnapshot();
+        
+        if (sessionFactory.getCurrentSession().isDefaultReadOnly()) {
+        	return;
+        } else {
+        	if (!idChangeMap.containsKey(getCurrentSession())) {
+        		idChangeMap.put(getCurrentSession(), new HashMap<>());
+        	}
+        }
+
+        Map<String, Collection<?>> map = idChangeMap.get(getCurrentSession());
         if (serializedSnapshot instanceof Map) {
             Map snapshot = (Map) serializedSnapshot;
             // set values are also stored as map values with same key and valu
-            idChangeMap.put(key, snapshot.values());
+            map.put(key, snapshot.values());
         }
         if (serializedSnapshot instanceof Collection) {
-            idChangeMap.put(key, (Collection) serializedSnapshot);
+        	map.put(key, (Collection) serializedSnapshot);
         }
+        logger.debug("added to changemap");
     }
 
     private String getCollectionKey(AbstractCollectionEvent event) {

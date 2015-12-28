@@ -217,6 +217,10 @@ public class GenericDao {
         query.setReadOnly(true);
         return query.list();
     }
+    
+    public boolean isSessionReadOnly() {
+    	return getCurrentSession().isDefaultReadOnly();
+    }
 
     public <P extends Persistable> P loadFromSparseEntity(P item, Class<P> cls) {
         if (item == null) {

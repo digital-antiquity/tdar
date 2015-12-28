@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -155,7 +153,7 @@ public class SearchIndexService {
             float percent = 0f;
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
             float maxPer = (1f / sources.size()) * 100f;
-            
+            genericDao.markReadOnly();
             genericDao.setCacheModeForCurrentSession(CacheMode.IGNORE);
             for (LookupSource src : sources) {
                 purgeCore(src.getCoreName());
