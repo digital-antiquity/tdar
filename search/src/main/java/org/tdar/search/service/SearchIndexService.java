@@ -156,23 +156,19 @@ public class SearchIndexService {
             updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
             float maxPer = (1f / sources.size()) * 100f;
             
-            Set<Class<? extends Indexable>> classesToIndex = new HashSet<>();
-            for (LookupSource src : sources) {
-                CollectionUtils.addAll(classesToIndex, src.getClasses());
-            }
-            for (Class<? extends Indexable> toIndex : classesToIndex) {
-                purgeCore(getCoreForClass(toIndex));
-            }            
             genericDao.setCacheModeForCurrentSession(CacheMode.IGNORE);
-            for (Class<? extends Indexable> toIndex : classesToIndex) {
-                Number total = genericDao.count(toIndex);
-                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", percent);
-
-                ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
-                indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
-                percent += maxPer;
-                String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
-                updateAllStatuses(updateReceiver, activity, message, percent);
+            for (LookupSource src : sources) {
+                purgeCore(src.getCoreName());
+	            for (Class<? extends Indexable> toIndex : src.getClasses()) {
+	                Number total = genericDao.count(toIndex);
+	                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", percent);
+	
+	                ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
+	                indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
+	                percent += maxPer;
+	                String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
+	                updateAllStatuses(updateReceiver, activity, message, percent);
+	            }            
             }
 
             complete(updateReceiver, activity, null, null);

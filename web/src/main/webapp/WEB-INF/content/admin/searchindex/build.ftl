@@ -97,7 +97,7 @@
         <button type="button" class="close" data-dismiss="alert">&times;</button>
         <strong>Hey!</strong> You are on the production server. Please do be careful.
     </div>
-    <input type='button' value='Build Index on core.tdar.org' id='idxBtn' class="btn btn-danger"/>
+    <input type='button' value='Build Index on ${hostName}' id='idxBtn' class="btn btn-danger"/>
 <#else>
     <input type='button' value='Build Index' id='idxBtn' class="btn"/>
 </#if>
