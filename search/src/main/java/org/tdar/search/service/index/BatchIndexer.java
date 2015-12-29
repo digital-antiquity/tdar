@@ -87,6 +87,7 @@ public class BatchIndexer implements Serializable {
 	                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
 	                ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
 	                counter.setSubTotal(totals.get(toIndex).longValue());
+	                counter.getSubCount().set(0);
 	                indexScrollable(updateReceiver, activity, counter, toIndex, scrollableResults, false);
 	                String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
 	                updateAllStatuses(updateReceiver, activity, message, counter.getPercent());
@@ -129,7 +130,8 @@ public class BatchIndexer implements Serializable {
             Indexable item = (Indexable) scrollableResults.get(0);
             currentId = item.getId();
             searchIndexService.index(item, deleteFirst);
-            long numProcessed = count.getCount().incrementAndGet();
+            count.getCount().incrementAndGet();
+            long numProcessed = count.getSubCount().incrementAndGet();
             float totalProgress = count.getPercent();
             if ((numProcessed % divisor) == 0) {
                 String range = String.format("(%s - %s)", prevId, currentId);

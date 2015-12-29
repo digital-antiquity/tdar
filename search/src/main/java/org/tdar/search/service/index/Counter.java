@@ -7,6 +7,7 @@ public class Counter implements Serializable {
 
 	private static final long serialVersionUID = -5010809939738705044L;
 	private AtomicLong count = new AtomicLong(0);
+	private AtomicLong subCount = new AtomicLong(0);
 	private Long subTotal = 0L;
 	private Long total = 0L;
 
@@ -61,6 +62,14 @@ public class Counter implements Serializable {
     }
 	public int getDivisor() {
 		return getDivisor(subTotal);
+	}
+
+	public AtomicLong getSubCount() {
+		return subCount;
+	}
+
+	public void setSubCount(AtomicLong subCount) {
+		this.subCount = subCount;
 	}
 
 }

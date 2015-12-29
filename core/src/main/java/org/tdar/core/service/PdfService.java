@@ -373,7 +373,6 @@ public class PdfService {
 //            logger.debug("{}", str);
 //        }
         Transliterator instance = Transliterator.getInstance("Latin-ASCII");
-        logger.error("check that I work properly");
         String text = instance.transliterate(utf8Text);
         return text;
     }
