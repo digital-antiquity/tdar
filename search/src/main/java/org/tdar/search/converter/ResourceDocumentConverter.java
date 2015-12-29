@@ -84,8 +84,12 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
+            try {
             data = resourceService.getMappedDataForInformationResource(ir);
-            indexTdarDataDatabaseValues(doc, data);
+            	indexTdarDataDatabaseValues(doc, data);
+            } catch (Throwable t) {
+            	logger.error("exception in metadata indexing", t);
+            }
             if (ir.getMetadataLanguage() != null) {
                 doc.setField(QueryFieldNames.METADATA_LANGUAGE, ir.getMetadataLanguage().name());
             }

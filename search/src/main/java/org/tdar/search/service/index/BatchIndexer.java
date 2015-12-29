@@ -143,7 +143,7 @@ public class BatchIndexer implements Serializable {
                 updateAllStatuses(updateReceiver, activity, message, totalProgress);
                 logger.trace("flushing search index");
                 try {
-                    template.commit(coreForClass);
+                    searchIndexService.commit(coreForClass);
                 } catch (SolrServerException | IOException e) {
                     logger.error("error committing: {}", e);
                 }
@@ -152,7 +152,7 @@ public class BatchIndexer implements Serializable {
             }
         }
         try {
-            template.commit(coreForClass);
+        	searchIndexService.commit(coreForClass);
         } catch (SolrServerException | IOException e) {
             logger.error("error committing: {}", e);
         }

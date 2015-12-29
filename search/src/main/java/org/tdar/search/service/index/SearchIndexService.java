@@ -250,8 +250,7 @@ public class SearchIndexService {
             }
             logger.trace("begin flushing");
             // fullTextSession.flushToIndexes();
-            UpdateResponse commit = template.commit(core);
-            logger.trace("response: {}", commit.getResponseHeader());
+            commit(core);
 //            processBatch(docs);
         }
         
@@ -261,6 +260,11 @@ public class SearchIndexService {
         }
         return exceptions;
     }
+
+	void commit(String core) throws SolrServerException, IOException {
+		UpdateResponse commit = template.commit(core);
+		logger.trace("response: {}", commit.getResponseHeader());
+	}
 
 
 //    private void processBatch(List<SolrInputDocument> docs) throws SolrServerException, IOException {
@@ -336,7 +340,7 @@ public class SearchIndexService {
     void purgeCore(String core) {
         try {
             template.deleteByQuery(core, "*:*");
-            template.commit(core);
+            commit(core);
         } catch (SolrServerException | IOException e) {
             logger.error("error purging index: {}", core, e);
         }
