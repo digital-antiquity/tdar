@@ -24,7 +24,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;

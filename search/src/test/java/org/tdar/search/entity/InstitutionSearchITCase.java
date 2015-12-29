@@ -20,8 +20,8 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.EntityService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.CreatorSearchService;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.utils.MessageHelper;
 
 public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCase {

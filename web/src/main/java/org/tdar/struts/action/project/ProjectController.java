@@ -20,7 +20,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.resource.ProjectService;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 

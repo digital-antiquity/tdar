@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.configuration.TdarSearchAppConfiguration;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 
 @ContextConfiguration(classes = TdarSearchAppConfiguration.class)
 public abstract class AbstractWithIndexIntegrationTestCase extends AbstractIntegrationTestCase {

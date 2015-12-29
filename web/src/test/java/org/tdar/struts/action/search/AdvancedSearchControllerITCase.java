@@ -46,7 +46,7 @@ import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractControllerITCase;
 
 @Transactional

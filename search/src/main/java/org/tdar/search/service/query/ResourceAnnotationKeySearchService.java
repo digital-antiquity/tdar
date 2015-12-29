@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.service.query;
 
 import java.io.IOException;
 
@@ -12,6 +12,7 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.ResourceAnnotationKeyQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
+import org.tdar.search.service.SearchUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 

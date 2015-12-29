@@ -14,7 +14,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.service.ResourceSearchService;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;

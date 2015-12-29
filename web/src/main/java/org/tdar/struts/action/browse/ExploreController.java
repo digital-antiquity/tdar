@@ -34,7 +34,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.SearchFieldType;
-import org.tdar.search.service.SearchService;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 

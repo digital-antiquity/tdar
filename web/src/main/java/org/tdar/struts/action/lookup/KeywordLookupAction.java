@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.KeywordSearchService;
 import org.tdar.search.service.SearchUtils;
+import org.tdar.search.service.query.KeywordSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.json.JsonLookupFilter;
 

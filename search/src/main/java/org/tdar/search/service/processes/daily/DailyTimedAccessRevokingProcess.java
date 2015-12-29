@@ -14,7 +14,7 @@ import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 
 /**
  * $Id$

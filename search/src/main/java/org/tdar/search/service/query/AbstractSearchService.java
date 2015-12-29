@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.service.query;
 
 import java.util.regex.Pattern;
 

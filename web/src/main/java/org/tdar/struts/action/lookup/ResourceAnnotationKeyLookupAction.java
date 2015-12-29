@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.ResourceAnnotationKeySearchService;
+import org.tdar.search.service.query.ResourceAnnotationKeySearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.json.JsonLookupFilter;
 

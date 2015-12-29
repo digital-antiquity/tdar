@@ -10,7 +10,7 @@ import org.apache.solr.common.SolrDocumentList;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 

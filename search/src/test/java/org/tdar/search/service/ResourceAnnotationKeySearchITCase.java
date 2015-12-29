@@ -16,6 +16,8 @@ import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
+import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.search.service.query.ResourceAnnotationKeySearchService;
 import org.tdar.utils.MessageHelper;
 
 public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrationTestCase {

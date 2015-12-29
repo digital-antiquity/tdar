@@ -18,6 +18,8 @@ import org.tdar.core.service.GenericService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.SearchResult;
+import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
 
 public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestCase {

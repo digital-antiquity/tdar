@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.service.query;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -33,6 +33,7 @@ import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")

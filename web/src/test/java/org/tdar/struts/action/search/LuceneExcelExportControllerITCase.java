@@ -26,7 +26,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;

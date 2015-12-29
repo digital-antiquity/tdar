@@ -22,7 +22,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.CollectionSearchService;
+import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.utils.MessageHelper;
 
 public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase {

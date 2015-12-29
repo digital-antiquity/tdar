@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.service.query;
 
 import java.io.IOException;
 import java.util.ArrayList;

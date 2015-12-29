@@ -16,7 +16,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.CreatorSearchService;
+import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;

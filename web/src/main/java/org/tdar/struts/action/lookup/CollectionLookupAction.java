@@ -15,8 +15,8 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.CollectionSearchService;
 import org.tdar.search.service.SearchUtils;
+import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.json.JsonLookupFilter;
 

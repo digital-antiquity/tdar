@@ -27,7 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 import org.xml.sax.SAXException;
 

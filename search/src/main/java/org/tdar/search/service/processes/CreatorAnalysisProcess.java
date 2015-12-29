@@ -20,7 +20,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.processes.AbstractAnalysisTask;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
-import org.tdar.search.service.ResourceSearchService;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;

@@ -42,7 +42,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.service.AutowireHelper;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 
 /**
  * See for major changes:

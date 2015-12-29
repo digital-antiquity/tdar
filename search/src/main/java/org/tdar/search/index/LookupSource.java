@@ -10,6 +10,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -21,47 +22,45 @@ import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
-public enum LookupSource implements HasLabel, Localizable {
-    PERSON("people", Person.class),
-    INSTITUTION("institutions", Institution.class),
-    KEYWORD("items", CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class, OtherKeyword.class, TemporalKeyword.class,
-            SiteNameKeyword.class, SiteTypeKeyword.class),
-    RESOURCE("resources", Resource.class),
-    COLLECTION("collections", ResourceCollection.class),
-    RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class);
+public enum LookupSource implements HasLabel,Localizable {
+	PERSON("people", Person.class), INSTITUTION("institutions", Institution.class), KEYWORD("items",
+			CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class,
+			OtherKeyword.class, TemporalKeyword.class, SiteNameKeyword.class,
+			SiteTypeKeyword.class), RESOURCE("resources", Resource.class), COLLECTION("collections",
+					ResourceCollection.class), RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class);
 
-    private String collectionName;
-    private Class<? extends Indexable>[] classes;
+	private String collectionName;
+	private Class<? extends Indexable>[] classes;
 
-    private LookupSource(String name, Class<? extends Indexable>... classes) {
-        this.collectionName = name;
-        this.classes = classes;
-    }
+	private LookupSource(String name, Class<? extends Indexable>... classes) {
+		this.collectionName = name;
+		this.classes = classes;
+	}
 
-    @Override
-    public String getLabel() {
-        return collectionName;
-    }
+	@Override
+	public String getLabel() {
+		return collectionName;
+	}
 
-    @Override
-    public String getLocaleKey() {
-        return MessageHelper.formatLocalizableKey(this);
-    }
+	@Override
+	public String getLocaleKey() {
+		return MessageHelper.formatLocalizableKey(this);
+	}
 
-    public String getCollectionName() {
-        return collectionName;
-    }
+	public String getCollectionName() {
+		return collectionName;
+	}
 
-    public String getProper() {
-        return StringUtils.capitalize(name().toLowerCase());
-    }
+	public String getProper() {
+		return StringUtils.capitalize(name().toLowerCase());
+	}
 
-    public Class<? extends Indexable>[] getClasses() {
-        return classes;
-    }
-    
-    public String getCoreName() {
-    	switch (this) {
+	public Class<? extends Indexable>[] getClasses() {
+		return classes;
+	}
+
+	public String getCoreName() {
+		switch (this) {
 		case COLLECTION:
 			return CoreNames.COLLECTIONS;
 		case INSTITUTION:
@@ -75,8 +74,29 @@ public enum LookupSource implements HasLabel, Localizable {
 		case RESOURCE_ANNOTATION_KEY:
 			return CoreNames.ANNOTATION_KEY;
 		}
-    	return null;
-    }
-    
+		return null;
+	}
+
+	public static String getCoreForClass(Class<? extends Indexable> item) {
+		if (Person.class.isAssignableFrom(item)) {
+			return CoreNames.PEOPLE;
+		}
+		if (Institution.class.isAssignableFrom(item)) {
+			return CoreNames.INSTITUTIONS;
+		}
+		if (Resource.class.isAssignableFrom(item)) {
+			return CoreNames.RESOURCES;
+		}
+		if (ResourceCollection.class.isAssignableFrom(item)) {
+			return CoreNames.COLLECTIONS;
+		}
+		if (Keyword.class.isAssignableFrom(item)) {
+			return CoreNames.KEYWORDS;
+		}
+		if (ResourceAnnotationKey.class.isAssignableFrom(item)) {
+			return CoreNames.ANNOTATION_KEY;
+		}
+		return null;
+	}
 
 }

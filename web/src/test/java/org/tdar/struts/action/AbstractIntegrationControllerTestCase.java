@@ -62,8 +62,8 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.service.SearchIndexService;
-import org.tdar.search.service.SearchService;
+import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.ErrorListener;
 import org.tdar.utils.PersistableUtils;
 

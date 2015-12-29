@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.resource.DatasetDao;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 
 @Service
 public class DatasetMappingService {

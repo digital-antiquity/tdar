@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.service.index;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -8,14 +8,11 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.UpdateResponse;
 import org.apache.solr.common.SolrInputDocument;
-import org.hibernate.CacheMode;
-import org.hibernate.FlushMode;
 import org.hibernate.ScrollableResults;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +37,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService;
@@ -51,8 +47,8 @@ import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
 import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.ImmutableScrollableCollection;
-import org.tdar.utils.activity.Activity;
 
 
 @Service
@@ -82,16 +78,17 @@ public class SearchIndexService {
     private ProjectDao projectDao;
 
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
-
-    private static final int INDEXER_BATCH_SIZE_TO_LOAD_OBJECTS = 50;
-    private static final int INDEXER_THREADS_FOR_SUBSEQUENT_FETCHING = 5;
-    private static final int INDEXER_THREADS_TO_LOAD_OBJECTS = 5;
-
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
     public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
         indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
+
+	public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex,
+			Person person) {
+    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+        batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
+	}
 
     @Autowired
     private SolrClient template;
@@ -126,144 +123,6 @@ public class SearchIndexService {
         return toReindex;
     }
 
-    /**
-     * Index all of the @link Indexable items. Uses a ScrollableResult to manage memory and object complexity
-     * 
-     * @param updateReceiver
-     * @param classesToIndex
-     * @param person
-     */
-    @SuppressWarnings("deprecation")
-    @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> sources, Person person) {
-        if (updateReceiver == null) {
-            updateReceiver = getDefaultUpdateReceiver();
-        }
-        Activity activity = new Activity();
-        activity.setName(BUILD_LUCENE_INDEX_ACTIVITY_NAME);
-        activity.setIndexingActivity(true);
-        activity.setUser(person);
-        activity.setMessage(String.format("reindexing %s", StringUtils.join(sources, ", ")));
-        activity.start();
-        ActivityManager.getInstance().addActivityToQueue(activity);
-
-        CacheMode cacheMode = genericDao.getCacheModeForCurrentSession();
-        try {
-            genericDao.synchronize();
-            float percent = 0f;
-            updateAllStatuses(updateReceiver, activity, "initializing...", 0f);
-            float maxPer = (1f / sources.size()) * 100f;
-            genericDao.markReadOnly();
-            genericDao.setCacheModeForCurrentSession(CacheMode.IGNORE);
-            for (LookupSource src : sources) {
-                purgeCore(src.getCoreName());
-	            for (Class<? extends Indexable> toIndex : src.getClasses()) {
-	                Number total = genericDao.count(toIndex);
-	                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", percent);
-	
-	                ScrollableResults scrollableResults = genericDao.findAllScrollable(toIndex);
-	                indexScrollable(updateReceiver, activity, percent, maxPer, toIndex, total, scrollableResults, false);
-	                percent += maxPer;
-	                String message = "finished indexing all " + toIndex.getSimpleName() + "(s)";
-	                updateAllStatuses(updateReceiver, activity, message, percent);
-	            }            
-            }
-
-            complete(updateReceiver, activity, null, null);
-        } catch (Throwable ex) {
-            logger.warn("exception: {}", ex);
-            if (updateReceiver != null) {
-                updateReceiver.addError(ex);
-            }
-        }
-        genericDao.setCacheModeForCurrentSession(cacheMode);
-        activity.end();
-    }
-
-    /**
-     * Completes the reindexing process and resets the flush mode
-     * 
-     * @param updateReceiver
-     * @param activity
-     * @param fullTextSession
-     * @param previousFlushMode
-     */
-    private void complete(AsyncUpdateReceiver updateReceiver, Activity activity, Object fullTextSession, FlushMode previousFlushMode) {
-        updateAllStatuses(updateReceiver, activity, "index all complete", 100f);
-        if (activity != null) {
-            activity.end();
-        }
-    }
-
-    /**
-     * Extracting out the indexing for scrollable results so that it can be used and shared between methods.
-     * 
-     * @param updateReceiver
-     * @param activity
-     * @param fullTextSession
-     * @param percent
-     * @param maxPer
-     * @param toIndex
-     * @param total
-     * @param scrollableResults
-     */
-    private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, float percent, float maxPer,
-            Class<? extends Indexable> toIndex, Number total, ScrollableResults scrollableResults, boolean deleteFirst) {
-        String message = total + " " + toIndex.getSimpleName() + "(s) to be indexed";
-        updateAllStatuses(updateReceiver, activity, message, 0f);
-        int divisor = getDivisor(total);
-        float currentProgress = 0f;
-        int numProcessed = 0;
-        String MIDDLE = " of " + total.intValue() + " " + toIndex.getSimpleName() + "(s) ";
-        Long prevId = 0L;
-        Long currentId = 0L;
-        String coreForClass = getCoreForClass(toIndex);
-        while (scrollableResults.next()) {
-            Indexable item = (Indexable) scrollableResults.get(0);
-            currentId = item.getId();
-            currentProgress = numProcessed / total.floatValue();
-            index(item, deleteFirst);
-            numProcessed++;
-            float totalProgress = ((currentProgress * maxPer) + percent);
-            if ((numProcessed % divisor) == 0) {
-                String range = String.format("(%s - %s)", prevId, currentId);
-                message = String.format("indexed %s %s %s %% %s", numProcessed, MIDDLE, totalProgress, range);
-                updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                logger.debug("last indexed: {}", item);
-                prevId = ((Indexable) item).getId();
-            }
-            if ((numProcessed % FLUSH_EVERY) == 0) {
-                message = String.format("indexed %s %s %s %% (flushing)", numProcessed, MIDDLE, totalProgress);
-                updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                logger.trace("flushing search index");
-                try {
-                    template.commit(coreForClass);
-                } catch (SolrServerException | IOException e) {
-                    logger.error("error committing: {}", e);
-                }
-                genericDao.clearCurrentSession();
-                logger.trace("flushed search index");
-            }
-        }
-        try {
-            template.commit(coreForClass);
-        } catch (SolrServerException | IOException e) {
-            logger.error("error committing: {}", e);
-        }
-        scrollableResults.close();
-    }
-
-    private void updateAllStatuses(AsyncUpdateReceiver updateReceiver, Activity activity, String status, float complete) {
-        if (updateReceiver != null) {
-            updateReceiver.setPercentComplete(complete);
-            updateReceiver.setStatus(status);
-        }
-        if (activity != null) {
-            activity.setMessage(status);
-            activity.setPercentDone(complete);
-        }
-        logger.debug("status: {} [{}%]", status, complete);
-    }
 
     /**
      * Index an item of some sort.
@@ -271,22 +130,14 @@ public class SearchIndexService {
      * @param fullTextSession
      * @param item
      */
-    private SolrInputDocument index(Indexable item, boolean deleteFirst) {
+    SolrInputDocument index(Indexable item, boolean deleteFirst) {
         try {
-            String core = getCoreForClass(item.getClass());
+            String core = LookupSource.getCoreForClass(item.getClass());
             if (deleteFirst) {
                 purge(item);
                 // fullTextSession.purge(item.getClass(), item.getId());
             }
 
-//            if (item instanceof Project) {
-//                Project project = (Project) item;
-//                if (null == project.getCachedInformationResources()) {
-//                    setupProjectForIndexing(project);
-//                    // logger.debug("project contents null: {} {}", project, project.getCachedInformationResources());
-//                }
-//            }
-            
             SolrInputDocument document = null;
             if (item instanceof Person) {
                 document = PersonDocumentConverter.convert((Person)item);
@@ -322,12 +173,10 @@ public class SearchIndexService {
     @Transactional
     public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
         logger.trace("indexing collection async");
-        Long count = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
+        Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
-        // FlushMode previousFlushMode = prepare(getFullTextSession());
-        AsyncUpdateReceiver updateReceiver = getDefaultUpdateReceiver();
-        indexScrollable(updateReceiver, null, 0f, 100f, Resource.class, count, results, true);
-        complete(updateReceiver, null, null, null);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+    	batch.indexScrollable(total, Resource.class, results);
     }
 
     /**
@@ -352,27 +201,6 @@ public class SearchIndexService {
         indexCollection(collectionToReindex);
     }
 
-    /**
-     * help's calcualate the percentage complete
-     * 
-     * @param total
-     * @return
-     */
-    public int getDivisor(Number total) {
-        int divisor = 5;
-        if (total.intValue() < 50) {
-            divisor = 2;
-        } else if (total.intValue() < 100) {
-            divisor = 20;
-        } else if (total.intValue() < 1000) {
-            divisor = 50;
-        } else if (total.intValue() < 10000) {
-            divisor = 500;
-        } else {
-            divisor = 5000;
-        }
-        return divisor;
-    }
 
     /**
      * @see #indexCollection(Collection)
@@ -404,7 +232,7 @@ public class SearchIndexService {
             String core = "";
             for (C toIndex : indexable) {
                 count++;
-                core = getCoreForClass(toIndex.getClass());
+                core = LookupSource.getCoreForClass(toIndex.getClass());
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
@@ -434,27 +262,6 @@ public class SearchIndexService {
         return exceptions;
     }
 
-    private String getCoreForClass(Class<? extends Indexable> item) {
-        if (Person.class.isAssignableFrom(item)) {
-            return CoreNames.PEOPLE;
-        }
-        if (Institution.class.isAssignableFrom(item)) {
-            return CoreNames.INSTITUTIONS;
-        }
-        if (Resource.class.isAssignableFrom(item)) {
-            return CoreNames.RESOURCES;
-        }
-        if (ResourceCollection.class.isAssignableFrom(item)) {
-            return CoreNames.COLLECTIONS;
-        }
-        if (Keyword.class.isAssignableFrom(item)) {
-            return CoreNames.KEYWORDS;
-        }
-        if (ResourceAnnotationKey.class.isAssignableFrom(item)) {
-            return CoreNames.ANNOTATION_KEY;
-        }
-        return null;
-    }
 
 //    private void processBatch(List<SolrInputDocument> docs) throws SolrServerException, IOException {
 //        UpdateRequest req = new UpdateRequest();
@@ -481,7 +288,8 @@ public class SearchIndexService {
      * @param person
      */
     public void indexAll(Person person) {
-        indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+    	batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
     }
 
     /**
@@ -490,9 +298,9 @@ public class SearchIndexService {
      * @param person
      * @param classes
      */
-    @SuppressWarnings("unchecked")
     public void indexAll(Person person, LookupSource ... sources) {
-        indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+        batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
     }
 
     /**
@@ -520,12 +328,12 @@ public class SearchIndexService {
     public void purgeAll(LookupSource ... sources) {
         for (LookupSource src : sources) {
             for (Class<? extends Indexable> clss : src.getClasses()) {
-                purgeCore(getCoreForClass(clss));
+                purgeCore(LookupSource.getCoreForClass(clss));
             }
         }
     }
 
-    private void purgeCore(String core) {
+    void purgeCore(String core) {
         try {
             template.deleteByQuery(core, "*:*");
             template.commit(core);
@@ -541,7 +349,7 @@ public class SearchIndexService {
     public void optimizeAll() {
         for (Class<? extends Indexable> toIndex : getDefaultClassesToIndex()) {
             logger.info("optimizing {}", toIndex.getSimpleName());
-            String core = getCoreForClass(toIndex);
+            String core = LookupSource.getCoreForClass(toIndex);
             try {
                 template.optimize(core);
             } catch (SolrServerException | IOException e) {
@@ -561,9 +369,9 @@ public class SearchIndexService {
         setupProjectForIndexing(project);
         index(project);
         logger.debug("reindexing project contents");
-        int total = 0;
         ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
-        indexScrollable(getDefaultUpdateReceiver(), null, 0f, 100f, Resource.class, total, scrollableResults, true);
+        BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+        batch.indexScrollable(0L, Resource.class, scrollableResults);
         logger.debug("completed reindexing project contents");
         return false;
     }
@@ -597,7 +405,8 @@ public class SearchIndexService {
     @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex, final Person person) {
         logger.info("reindexing indexall");
-        indexAll(reciever, toReindex, person);
+        BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+        batch.indexAll(reciever, toReindex, person);
         sendEmail(toReindex);
 
     }
@@ -617,13 +426,8 @@ public class SearchIndexService {
 
     @Transactional(readOnly=true)
     public void purge(Indexable entity) throws SolrServerException, IOException {
-        String core = getCoreForClass(entity.getClass());
+        String core = LookupSource.getCoreForClass(entity.getClass());
         template.deleteById(core,generateId(entity));
-//        if (entity instanceof ResourceCollection) {
-//            ResourceCollection rc = (ResourceCollection)entity;
-//            
-//        }
-        // TODO Auto-generated method stub
-        
     }
+
 }

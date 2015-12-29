@@ -1,4 +1,4 @@
-package org.tdar.search.service;
+package org.tdar.search.service.query;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -25,6 +25,7 @@ import org.tdar.search.query.part.GeneralCreatorQueryPart;
 import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.service.SearchUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 

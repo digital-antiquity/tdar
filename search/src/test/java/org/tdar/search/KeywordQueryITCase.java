@@ -16,8 +16,8 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.KeywordSearchService;
-import org.tdar.search.service.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.search.service.query.KeywordSearchService;
 import org.tdar.utils.MessageHelper;
 
 public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{

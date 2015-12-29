@@ -41,7 +41,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.service.SearchService;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 

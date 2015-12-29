@@ -40,7 +40,7 @@ import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.ResourceSearchService;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.tag.Query.What;
 import org.tdar.tag.Query.When;
 import org.tdar.tag.Query.Where;

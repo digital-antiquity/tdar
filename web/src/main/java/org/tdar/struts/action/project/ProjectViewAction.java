@@ -24,7 +24,7 @@ import org.tdar.search.query.Facet;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
-import org.tdar.search.service.ResourceSearchService;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
