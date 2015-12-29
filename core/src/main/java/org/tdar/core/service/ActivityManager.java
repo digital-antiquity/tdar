@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -87,6 +88,10 @@ public class ActivityManager {
                 return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
             }
         });
+        if (CollectionUtils.isEmpty(found)) {
+        	return null;
+        }
+        
         logger.debug("{}",found);
         return found.get(0);
     }
