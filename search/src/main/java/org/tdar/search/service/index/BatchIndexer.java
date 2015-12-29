@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.hibernate.CacheMode;
 import org.hibernate.FlushMode;
@@ -33,14 +32,12 @@ public class BatchIndexer implements Serializable {
 	private GenericDao genericDao;
 	private SearchIndexService searchIndexService;
     private final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
-    private SolrClient template;
 
 
 
-    public BatchIndexer(GenericDao genericDao, SearchIndexService searchIndexService, SolrClient template) {
+    public BatchIndexer(GenericDao genericDao, SearchIndexService searchIndexService) {
 		this.genericDao = genericDao;
 		this.searchIndexService = searchIndexService;
-		this.template = template;
 	}
     
     /**

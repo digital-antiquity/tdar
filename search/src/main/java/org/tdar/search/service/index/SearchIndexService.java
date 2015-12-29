@@ -86,7 +86,7 @@ public class SearchIndexService {
 
 	public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex,
 			Person person) {
-    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this);
         batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
 	}
 
@@ -175,7 +175,7 @@ public class SearchIndexService {
         logger.trace("indexing collection async");
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
-    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this);
     	batch.indexScrollable(total, Resource.class, results);
     }
 
@@ -292,7 +292,7 @@ public class SearchIndexService {
      * @param person
      */
     public void indexAll(Person person) {
-    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this);
     	batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
     }
 
@@ -303,7 +303,7 @@ public class SearchIndexService {
      * @param classes
      */
     public void indexAll(Person person, LookupSource ... sources) {
-    	BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+    	BatchIndexer batch = new BatchIndexer(genericDao, this);
         batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
     }
 
@@ -374,7 +374,7 @@ public class SearchIndexService {
         index(project);
         logger.debug("reindexing project contents");
         ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
-        BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+        BatchIndexer batch = new BatchIndexer(genericDao, this);
         batch.indexScrollable(0L, Resource.class, scrollableResults);
         logger.debug("completed reindexing project contents");
         return false;
@@ -409,7 +409,7 @@ public class SearchIndexService {
     @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex, final Person person) {
         logger.info("reindexing indexall");
-        BatchIndexer batch = new BatchIndexer(genericDao, this, template);
+        BatchIndexer batch = new BatchIndexer(genericDao, this);
         batch.indexAll(reciever, toReindex, person);
         sendEmail(toReindex);
 
