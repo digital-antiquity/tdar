@@ -88,7 +88,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             data = resourceService.getMappedDataForInformationResource(ir);
             	indexTdarDataDatabaseValues(doc, data);
             } catch (Throwable t) {
-            	logger.error("exception in metadata indexing", t);
+            	logger.warn("exception in metadata indexing", t);
             }
             if (ir.getMetadataLanguage() != null) {
                 doc.setField(QueryFieldNames.METADATA_LANGUAGE, ir.getMetadataLanguage().name());
