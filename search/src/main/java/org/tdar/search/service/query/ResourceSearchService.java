@@ -109,9 +109,6 @@ public class ResourceSearchService extends AbstractSearchService {
             colQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
 
-        if (look.getPermission() != null) {
-            logger.error("PERMISSIONS ARE SET, but PARAMS not DEFINED");
-        }
         if (PersistableUtils.isNotNullOrTransient(look.getCollectionId())) {
             q.append(new FieldQueryPart<Long>(colQueryField, look.getCollectionId()));
         }
