@@ -1,6 +1,7 @@
 package org.tdar.core.bean.billing;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -55,7 +56,7 @@ public class Coupon extends Base {
     @CollectionTable(name = "coupon_resource", joinColumns = @JoinColumn(name = "coupon_id") )
     @Column(name = "resource_id")
     @Immutable
-    private Set<Long> resourceIds;
+    private Set<Long> resourceIds = new HashSet<>();
 
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE })

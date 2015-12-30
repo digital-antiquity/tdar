@@ -438,6 +438,7 @@ public class InvoiceService {
         }
         // find and validate the coupon
         Coupon coupon = locateRedeemableCoupon(code, user);
+        logger.debug("{}",coupon);
         if (coupon == null) {
             throw new TdarRecoverableRuntimeException("invoiceService.cannot_redeem_coupon");
         }
@@ -689,7 +690,7 @@ public class InvoiceService {
      * 
      * @param invoice
      */
-    @Transactional
+    @Transactional(readOnly=false)
     public void updateInvoiceStatus(Invoice invoice) {
         // Assume that an invoice owner will always want to see the contributor menus.
         invoice.getOwner().setContributor(true);
@@ -705,14 +706,14 @@ public class InvoiceService {
                 break;
             case INVOICE:
             case MANUAL:
-                invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
-                genericDao.saveOrUpdate(invoice);
+                completeInvoice(invoice);
                 break;
         }
     }
 
     @Transactional(readOnly = false)
     public void completeInvoice(Invoice invoice) {
+    	logger.debug("completing invoice");
         invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
         invoice.getOwner().setContributor(true);
         BillingAccount account = accountDao.getAccountForInvoice(invoice);
@@ -739,9 +740,13 @@ public class InvoiceService {
         			rc = new ResourceCollection(CollectionType.INTERNAL);
         			rc.markUpdated(invoice.getOwner());
         			genericDao.saveOrUpdate(rc);
+        			res.getResourceCollections().add(rc);
         		}
+        		rc.getResources().add(res);
         		rc.getAuthorizedUsers().add(new AuthorizedUser(invoice.getOwner(), GeneralPermissions.MODIFY_RECORD));
         		genericDao.saveOrUpdate(rc);
+        		genericDao.saveOrUpdate(res);
+        		logger.debug("{}",res);
         	}
         }
 
