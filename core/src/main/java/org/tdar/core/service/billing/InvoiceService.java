@@ -28,10 +28,15 @@ import org.tdar.core.bean.billing.BillingTransactionLog;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.Address;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
@@ -721,6 +726,23 @@ public class InvoiceService {
             }
         } catch (Exception e) {
             logger.error("exception ocurred in processing FLAGGED ACCOUNT", e);
+        }
+        
+        Coupon coupon = invoice.getCoupon();
+        // grant rights to resource(s)
+        if (coupon != null && !CollectionUtils.isEmpty(coupon.getResourceIds())) {
+        	List<Resource> findAll = genericDao.findAll(Resource.class, coupon.getResourceIds());
+        	for (Resource res : findAll) {
+        		res = genericDao.markWritableOnExistingSession(res);
+        		ResourceCollection rc = res.getInternalResourceCollection();
+        		if (rc == null) {
+        			rc = new ResourceCollection(CollectionType.INTERNAL);
+        			rc.markUpdated(invoice.getOwner());
+        			genericDao.saveOrUpdate(rc);
+        		}
+        		rc.getAuthorizedUsers().add(new AuthorizedUser(invoice.getOwner(), GeneralPermissions.MODIFY_RECORD));
+        		genericDao.saveOrUpdate(rc);
+        	}
         }
 
     }
