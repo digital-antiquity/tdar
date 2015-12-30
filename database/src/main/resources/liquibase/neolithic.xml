@@ -1145,7 +1145,7 @@
         </update>
     </changeSet>
 
-	<changeSet id="neolithic-11" author="abrin">
+	<changeSet id="neolithic-12" author="abrin">
         <createTable tableName="coupon_resource">
             <column name="resource_id" type="INT8">
                 <constraints nullable="false" />
