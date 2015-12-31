@@ -33,7 +33,7 @@ import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
 import com.opensymphony.xwork2.Action;
 
-public class AbstractCartControllerITCase extends AbstractResourceControllerITCase {
+public abstract class AbstractCartControllerITCase extends AbstractResourceControllerITCase {
 
 	@Autowired
 	NelNetPaymentDao dao;
