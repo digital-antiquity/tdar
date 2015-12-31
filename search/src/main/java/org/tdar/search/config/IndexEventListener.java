@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -40,9 +41,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.service.AutowireHelper;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * See for major changes:
@@ -63,7 +66,6 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     protected static final transient Logger logger = LoggerFactory.getLogger(HibernateSolrIntegrator.class);
 
     private WeakHashMap<Session, Map<String,Collection<?>>> idChangeMap = new WeakHashMap<>();
-//    private WeakHashMap<String, Collection<?>> idChangeMap = new WeakHashMap<>();
     private SearchIndexService searchIndexService;
     private SolrClient solrClient;
     private SessionFactory sessionFactory;
@@ -235,7 +237,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
     public void onPreUpdateCollection(PreCollectionUpdateEvent event) {
         String key = getCollectionKey(event);
         // hack -- manifesting the collection appears to get hibernate to recognize changes
-        logger.debug("preUpdate: {} - {}", key, event.getCollection());
+        List<Long> ids = PersistableUtils.extractIds((Collection<Persistable>)event.getCollection());
 
         Serializable serializedSnapshot = event.getCollection().getStoredSnapshot();
         
@@ -256,7 +258,7 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
         if (serializedSnapshot instanceof Collection) {
         	map.put(key, (Collection) serializedSnapshot);
         }
-        logger.debug("added to changemap");
+        logger.trace("added to changemap");
     }
 
     private String getCollectionKey(AbstractCollectionEvent event) {
