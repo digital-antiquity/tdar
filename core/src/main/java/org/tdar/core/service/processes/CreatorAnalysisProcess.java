@@ -28,148 +28,141 @@ import org.tdar.utils.MessageHelper;
 @Scope("prototype")
 public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
-    private static final long serialVersionUID = 581887107336388520L;
+	private static final long serialVersionUID = 581887107336388520L;
 
-    @Autowired
-    private transient SearchService searchService;
+	@Autowired
+	private transient SearchService searchService;
 
-    @Autowired
-    private transient EntityService entityService;
+	@Autowired
+	private transient EntityService entityService;
 
-    @Autowired
-    private transient DatasetDao datasetDao;
+	@Autowired
+	private transient DatasetDao datasetDao;
 
-    @Autowired
-    private transient ProjectDao projectDao;
+	@Autowired
+	private transient ProjectDao projectDao;
 
-    private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
+	private int daysToRun = TdarConfiguration.getInstance().getDaysForCreatorProcess();
 
-    private boolean findRecent = true;
+	private boolean findRecent = true;
 
-    @Override
-    public String getDisplayName() {
-        return "Creator Analytics Process";
-    }
+	@Override
+	public String getDisplayName() {
+		return "Creator Analytics Process";
+	}
 
-    @Override
-    public int getBatchSize() {
-        return 100;
-    }
+	@Override
+	public int getBatchSize() {
+		return 100;
+	}
 
-    @Override
-    public Class<Creator> getPersistentClass() {
-        return Creator.class;
-    }
+	@Override
+	public Class<Creator> getPersistentClass() {
+		return Creator.class;
+	}
 
-    @Override
-    public List<Long> findAllIds() {
-        /*
-         * We could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to find all resources modified in the
-         * last wwek, and then use those resources to grab all associated creators, and then process those
-         */
-        if (findRecent) {
-            return findCreatorsOfRecentlyModifiedResources();
-        } else {
-            return findEverything();
-        }
+	@Override
+	public List<Long> findAllIds() {
+		/*
+		 * We could use the DatasetDao.findRecentlyUpdatedItemsInLastXDays to
+		 * find all resources modified in the last wwek, and then use those
+		 * resources to grab all associated creators, and then process those
+		 */
+		if (findRecent) {
+			return findCreatorsOfRecentlyModifiedResources();
+		} else {
+			return findEverything();
+		}
 
-    }
+	}
 
-    private List<Long> findCreatorsOfRecentlyModifiedResources() {
-        // this could be optimized to get the list of creator ids from the database
-        List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
-        Set<Long> ids = new HashSet<>();
-        getLogger().debug("dealing with {} resource(s) updated in the last {} days", results.size(), getDaysToRun());
-        while (!results.isEmpty()) {
-            Resource resource = results.remove(0);
-            // add all children of project if project was modified (inheritance check)
-            if (resource instanceof Project) {
-                ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) resource);
-                for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(findAllResourcesInProject)) {
-                    results.add(ir);
-                }
-            }
-            getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
-            for (Creator creator : resource.getRelatedCreators()) {
-                if (creator == null) {
-                    continue;
-                }
-                if (creator.isDuplicate()) {
-                    creator = entityService.findAuthorityFromDuplicate(creator);
-                }
-                if ((creator == null) || !creator.isActive()) {
-                    continue;
-                }
-                ids.add(creator.getId());
-            }
-        }
-        return new ArrayList<>(ids);
-    }
+	private List<Long> findCreatorsOfRecentlyModifiedResources() {
+		// this could be optimized to get the list of creator ids from the
+		// database
+		List<Resource> results = datasetDao.findRecentlyUpdatedItemsInLastXDays(getDaysToRun());
+		Set<Long> ids = new HashSet<>();
+		getLogger().debug("dealing with {} resource(s) updated in the last {} days", results.size(), getDaysToRun());
+		while (!results.isEmpty()) {
+			Resource resource = results.remove(0);
+			// add all children of project if project was modified (inheritance
+			// check)
+			if (resource instanceof Project) {
+				ScrollableResults findAllResourcesInProject = projectDao.findAllResourcesInProject((Project) resource);
+				for (InformationResource ir : new ImmutableScrollableCollection<InformationResource>(
+						findAllResourcesInProject)) {
+					results.add(ir);
+				}
+			}
+			getLogger().trace(" - adding {} creators", resource.getRelatedCreators().size());
+			for (Creator creator : resource.getRelatedCreators()) {
+				if (creator == null) {
+					continue;
+				}
+				if (creator.isDuplicate()) {
+					creator = entityService.findAuthorityFromDuplicate(creator);
+				}
+				if ((creator == null) || !creator.isActive()) {
+					continue;
+				}
+				ids.add(creator.getId());
+			}
+		}
+		return new ArrayList<>(ids);
+	}
 
-    @Override
-    public void execute() {
-        List<Creator> creators = genericDao.findAll(getPersistentClass(), getNextBatch());
-        boolean seen = false;
-        for (Creator creator : creators) {
-            getLogger().trace("~~~~~ {} ~~~~~~", creator);
-            if (!seen) {
-                getLogger().debug("~~~~~ {} ~~~~~~", creator);
-                seen = true;
-            }
-            List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
-            if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
-                continue;
-            }
-            int total = 0;
-            if (!creator.isActive()) {
-                continue;
-            }
-            QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
-            Set<Long> resourceIds = new HashSet<>();
-            try {
-                FullTextQuery search = searchService.search(query);
-                // change to ID only projection
-                // search.setProjection(arg0)
-                ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
-                total = search.getResultSize();
-                if (total == 0) {
-                    continue;
-                }
-                while (results.next()) {
-                    Resource resource = (Resource) results.get()[0];
-                    resourceIds.add(resource.getId());
-                }
-            } catch (Exception e) {
-                getLogger().warn("Exception", e);
-            }
-            try {
-                generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
-            } catch (Exception e) {
-                getLogger().warn("Exception", e);
-            }
-        }
-    }
 
-    @Override
-    public void process(Creator account) throws Exception {
-    }
+	@Override
+	public void process(Creator creator) throws Exception {
+		getLogger().debug("~~~~~ {} ~~~~~~", creator);
+		List<Long> userIdsToIgnoreInLargeTasks = getTdarConfiguration().getUserIdsToIgnoreInLargeTasks();
+		if (userIdsToIgnoreInLargeTasks.contains(creator.getId())) {
+			return;
+		}
+		int total = 0;
+		if (!creator.isActive()) {
+			return;
+		}
+		QueryBuilder query = searchService.generateQueryForRelatedResources(creator, null, MessageHelper.getInstance());
+		Set<Long> resourceIds = new HashSet<>();
+		try {
+			FullTextQuery search = searchService.search(query);
+			// change to ID only projection
+			// search.setProjection(arg0)
+			ScrollableResults results = search.scroll(ScrollMode.FORWARD_ONLY);
+			total = search.getResultSize();
+			if (total == 0) {
+				return;
+			}
+			while (results.next()) {
+				Resource resource = (Resource) results.get()[0];
+				resourceIds.add(resource.getId());
+			}
+		} catch (Exception e) {
+			getLogger().warn("Exception", e);
+		}
+		try {
+			generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
+		} catch (Exception e) {
+			getLogger().warn("Exception", e);
+		}
+	}
 
-    @Override
-    public boolean isEnabled() {
-        return true;
-    }
+	@Override
+	public boolean isEnabled() {
+		return true;
+	}
 
-    @Override
-    public boolean isSingleRunProcess() {
-        return false;
-    }
+	@Override
+	public boolean isSingleRunProcess() {
+		return false;
+	}
 
-    public void setDaysToRun(int i) {
-        this.daysToRun = i;
-    }
+	public void setDaysToRun(int i) {
+		this.daysToRun = i;
+	}
 
-    private int getDaysToRun() {
-        return daysToRun;
-    }
+	private int getDaysToRun() {
+		return daysToRun;
+	}
 
 }
