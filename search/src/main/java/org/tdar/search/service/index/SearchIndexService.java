@@ -385,7 +385,6 @@ public class SearchIndexService {
                 Status.ACTIVE,
                 Status.DRAFT));
         project.setCachedInformationResources(irs);
-        project.setReadyToIndex(true);
     }
 
     /**

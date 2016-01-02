@@ -117,7 +117,7 @@ public class BatchIndexer implements Serializable {
     private void indexScrollable(AsyncUpdateReceiver updateReceiver, Activity activity, Counter count, 
             Class<? extends Indexable> toIndex, ScrollableResults scrollableResults, boolean deleteFirst) {
         String message = count.getTotal() + " " + toIndex.getSimpleName() + "(s) to be indexed";
-        updateAllStatuses(updateReceiver, activity, message, 0f);
+        updateAllStatuses(updateReceiver, activity, message, count.getPercent());
         int divisor = count.getDivisor();
         String MIDDLE = " of " + count.getTotal() + " " + toIndex.getSimpleName() + "(s) ";
         Long prevId = 0L;
