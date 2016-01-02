@@ -7,11 +7,13 @@ import java.io.IOException;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
@@ -39,7 +41,32 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     
     @Test
     @Rollback(true)
+    @Ignore("not really a test, but trying to use to bind save of collections...")
+    public void testFlush() {
+        ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
+        Dataset dc = createAndSaveNewDataset();
+        for (int i=0;i < 10; i++) {
+        	Image image = createAndSaveNewInformationResource(Image.class);
+        	image.setTitle(i + ":"+ image.getTitle() );
+        	collection.getResources().add(image);
+        	image.getResourceCollections().add(collection);
+        	genericService.saveOrUpdate(image);
+        	genericService.saveOrUpdate(collection);
+        }
+        genericService.synchronize();
+        searchIndexService.flushToIndexes();
+        logger.debug("===================");
+        collection.getResources().add(dc);
+        dc.getResourceCollections().add(collection);
+        genericService.synchronize();
+        logger.debug("===================");
+
+    }
+    
+    @Test
+    @Rollback(true)
     public void testIndexing() throws SolrServerException, IOException, ParseException {
+//    	sessionFactory.getCurrentSession().
         ResourceCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Image image = createAndSaveNewInformationResource(Image.class);
         genericService.synchronize();

@@ -91,11 +91,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Autowired
     IndexEventListener listener;
 
-    @Before
-    public void reset() {
-        listener.reset();
-    }
-
     /**
      * Make sure that case in-sensitive queries return the same thing
      */
@@ -638,7 +633,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         genericService.synchronize();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         testFile = null;
-        listener.reset();
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
         testFile = genericService.find(Document.class, fileId);

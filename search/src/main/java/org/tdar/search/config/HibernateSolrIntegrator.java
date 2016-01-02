@@ -1,8 +1,6 @@
 package org.tdar.search.config;
 
-import org.hibernate.SessionFactoryObserver;
 import org.hibernate.boot.Metadata;
-import org.hibernate.boot.registry.classloading.spi.ClassLoaderService;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.event.service.spi.DuplicationStrategy;
 import org.hibernate.event.service.spi.EventListenerRegistry;
@@ -31,11 +29,14 @@ public class HibernateSolrIntegrator implements Integrator {
         listenerRegistry.getEventListenerGroup( EventType.POST_INSERT).appendListener( eventListener );
         listenerRegistry.getEventListenerGroup( EventType.POST_UPDATE).appendListener( eventListener );
         listenerRegistry.getEventListenerGroup( EventType.POST_DELETE).appendListener( eventListener );
-        listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_RECREATE).appendListener( eventListener );
-        listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_REMOVE).appendListener( eventListener );
-        listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_UPDATE).appendListener( eventListener );
-        listenerRegistry.getEventListenerGroup( EventType.PRE_COLLECTION_UPDATE).appendListener( eventListener );
+//        listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_RECREATE).appendListener( eventListener );
+//        listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_REMOVE).appendListener( eventListener );
+//        listenerRegistry.getEventListenerGroup( EventType.POST_COLLECTION_UPDATE).appendListener( eventListener );
+//        listenerRegistry.getEventListenerGroup( EventType.PRE_COLLECTION_UPDATE).appendListener( eventListener );
+//        listenerRegistry.getEventListenerGroup( EventType.DIRTY_CHECK).appendListener( eventListener );
+        listenerRegistry.getEventListenerGroup( EventType.SAVE_UPDATE).appendListener( eventListener );
         listenerRegistry.getEventListenerGroup( EventType.FLUSH).appendListener( eventListener );
+        listenerRegistry.getEventListenerGroup( EventType.FLUSH_ENTITY).appendListener( eventListener );
     }
 
     public static class DuplicationStrategyImpl implements DuplicationStrategy {

@@ -1,21 +1,12 @@
-package org.tdar.core.configuration;
+package org.tdar.search.config;
 
 import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.context.annotation.ImportResource;
+import org.tdar.core.configuration.TdarAppConfiguration;
 
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration()
-@ComponentScan(basePackages = { "org.tdar" },
-excludeFilters = {
-        @Filter(type = FilterType.ASSIGNABLE_TYPE,
-                value = {
-                        SimpleAppConfiguration.class
-                })
-})
 @EnableCaching
 public class TdarSearchAppConfiguration extends TdarAppConfiguration {
 
@@ -25,5 +16,6 @@ public class TdarSearchAppConfiguration extends TdarAppConfiguration {
     public boolean disableHibernateSearch() {
         return false;
     }
+    
 
 }

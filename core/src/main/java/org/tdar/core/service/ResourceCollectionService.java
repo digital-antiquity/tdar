@@ -747,8 +747,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 resources.remove(resource);
             }
         }
-
         saveOrUpdate(persistable);
+        getDao().saveOrUpdate(resourcesToAdd);
+        getDao().saveOrUpdate(resourcesToRemove);
         if (ineligibleToAdd.size() > 0) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add", ineligibleToAdd);
         }

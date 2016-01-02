@@ -1,6 +1,7 @@
 package org.tdar.struts.action.collection;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -8,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -136,6 +138,12 @@ public class CollectionController extends AbstractPersistableController<Resource
         getLogger().debug("toRemove: {}", resourcesToRemove);
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
                 resourcesToRemove, publicResourcesToAdd, publicResourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
+//        try {
+//			searchIndexService.indexCollection(resourcesToRemove);
+//			searchIndexService.indexCollection(resourcesToAdd);
+//		} catch (SolrServerException | IOException e) {
+//			getLogger().error("errorINdexing:{}", e);
+//		}
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
