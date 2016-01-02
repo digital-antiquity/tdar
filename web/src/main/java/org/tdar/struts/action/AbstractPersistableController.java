@@ -176,9 +176,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
                 if (persistable instanceof Updatable) {
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
                 }
-                if (persistable instanceof Indexable) {
-                    ((Indexable) persistable).setReadyToIndex(false);
-                }
+
                 if (persistable instanceof XmlLoggable) {
                     ((XmlLoggable) persistable).setReadyToStore(false);
                 }
@@ -251,7 +249,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     protected void indexPersistable() throws SolrServerException, IOException {
         if (persistable instanceof Indexable) {
-            ((Indexable) persistable).setReadyToIndex(true);
             searchIndexService.index((Indexable) persistable);
         }
     }

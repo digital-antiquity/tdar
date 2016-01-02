@@ -95,23 +95,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         }
 
         private transient Float score = -1f;
-        private transient boolean readyToIndex = true;
-
-        // @Column(name = "date_created")
-        // @NotNull
-        // private Date dateCreated;
-
-        @Transient
-        @XmlTransient
-        @Override
-        public boolean isReadyToIndex() {
-            return readyToIndex;
-        }
-
-        @Override
-        public void setReadyToIndex(boolean readyToIndex) {
-            this.readyToIndex = readyToIndex;
-        }
 
         @Override
         public int compareTo(T o) {

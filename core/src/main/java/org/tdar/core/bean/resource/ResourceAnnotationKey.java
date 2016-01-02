@@ -72,19 +72,6 @@ public class ResourceAnnotationKey extends Persistable.Base implements Indexable
     private String formatString;
 
     private transient Float score = -1f;
-    private transient boolean readyToIndex = true;
-
-    @Transient
-    @XmlTransient
-    @Override
-    public boolean isReadyToIndex() {
-        return readyToIndex;
-    }
-
-    @Override
-    public void setReadyToIndex(boolean readyToIndex) {
-        this.readyToIndex = readyToIndex;
-    }
 
     @XmlAttribute
     public ResourceAnnotationType getResourceAnnotationType() {

@@ -462,7 +462,6 @@ public class Resource implements Persistable,
     private String externalId;
 
     private transient Float score = -1f;
-    private transient boolean readyToIndex = true;
     private transient boolean readyToStore = true;
 
     @Transient
@@ -473,18 +472,6 @@ public class Resource implements Persistable,
 
     public void setReadyToStore(boolean readyToStore) {
         this.readyToStore = readyToStore;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isReadyToIndex() {
-        return readyToIndex;
-    }
-
-    @Override
-    public void setReadyToIndex(boolean readyToIndex) {
-        this.readyToIndex = readyToIndex;
     }
 
     @XmlElementWrapper(name = "cultureKeywords")

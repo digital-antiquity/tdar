@@ -124,7 +124,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Integer maxWidth;
     private transient VersionType maxSize;
 
-    // private transient boolean readyToIndex = true;
     public enum CollectionType {
         INTERNAL("Internal"), SHARED("Shared"), PUBLIC("Public");
 
@@ -653,20 +652,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
 
     public void setReadyToStore(boolean readyToStore) {
         this.readyToStore = readyToStore;
-    }
-
-    @Override
-    @XmlTransient
-    @Transient
-    public boolean isReadyToIndex() {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public void setReadyToIndex(boolean ready) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override

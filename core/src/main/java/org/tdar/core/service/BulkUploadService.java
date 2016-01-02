@@ -383,7 +383,6 @@ public class BulkUploadService {
                 try {
                     cols.addAll(resource.getResourceCollections());
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
-                    resource.setReadyToIndex(true);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
                     receiver.addError(trex);
@@ -579,7 +578,6 @@ public class BulkUploadService {
         if (InformationResource.class.isAssignableFrom(resourceClass)) {
             logger.info("saving " + fileName + "..." + suggestTypeForFile);
             InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
-            informationResource.setReadyToIndex(false);
             informationResource.setTitle(fileName);
             informationResource.markUpdated(proxy.getSubmitter());
             informationResource.setDescription(" ");

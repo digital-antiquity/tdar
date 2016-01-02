@@ -224,7 +224,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     private Set<Address> addresses = new LinkedHashSet<>();
 
     private transient Float score = -1f;
-    private transient boolean readyToIndex = true;
     private transient Integer maxHeight;
     private transient Integer maxWidth;
     private transient VersionType maxSize;
@@ -450,18 +449,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     }
 
     public abstract boolean hasNoPersistableValues();
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isReadyToIndex() {
-        return readyToIndex;
-    }
-
-    @Override
-    public void setReadyToIndex(boolean readyToIndex) {
-        this.readyToIndex = readyToIndex;
-    }
 
     public Set<Address> getAddresses() {
         return addresses;
