@@ -21,6 +21,7 @@ vim:sts=2:sw=2:filetype=jsp
 
 <div class="well">
 <@s.form id='loginForm' method="post" action="/login/process" cssClass="form-horizontal">
+redirectUrl: ${url!''}
 	<@auth.loginWarning />
     <@auth.login>    
     <@s.hidden name="url" />

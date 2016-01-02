@@ -44,7 +44,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         login();
         setIgnorePageErrorChecks(true);
         gotoPage(url);
-        gotoPage(url);
         // assert that the page has the resources
         assertPageNotViewable(titles);
         logout();
