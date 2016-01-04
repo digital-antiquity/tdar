@@ -533,8 +533,8 @@ public class InvoiceService {
                 // accountService.redeemCode(invoice, invoice.getOwner(), invoice.getCoupon().getCode());
                 checkCouponStillValidForCheckout(invoice.getCoupon(), invoice);
             }
-            invoice.setTransactionStatus(TransactionStatus.TRANSACTION_SUCCESSFUL);
             genericDao.saveOrUpdate(invoice);
+            completeInvoice(invoice);
             handlePurchaseNotifications(invoice);
         } else {
             invoice.setTransactionStatus(TransactionStatus.PENDING_TRANSACTION);
@@ -742,8 +742,12 @@ public class InvoiceService {
         			genericDao.saveOrUpdate(rc);
         			res.getResourceCollections().add(rc);
         		}
+        		rc = genericDao.markWritableOnExistingSession(rc);
         		rc.getResources().add(res);
-        		rc.getAuthorizedUsers().add(new AuthorizedUser(invoice.getOwner(), GeneralPermissions.MODIFY_RECORD));
+        		AuthorizedUser e = new AuthorizedUser(invoice.getOwner(), GeneralPermissions.MODIFY_RECORD);
+        		e = genericDao.markWritableOnExistingSession(e);
+                rc.getAuthorizedUsers().add(e);
+                res.markUpdated(invoice.getOwner());
         		genericDao.saveOrUpdate(rc);
         		genericDao.saveOrUpdate(res);
         		logger.debug("{}",res);
