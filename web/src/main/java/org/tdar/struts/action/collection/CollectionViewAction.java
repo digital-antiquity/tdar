@@ -120,7 +120,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         if (getResourceCollection() == null) {
             throw new TdarActionException(StatusCode.NOT_FOUND, "not found");
         }
-        return authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        boolean val = authorizationService.canViewCollection(getResourceCollection(), getAuthenticatedUser());
+        getLogger().debug("{} ({})", getAuthenticatedUser(), val);
+        return val;
     }
 
     public boolean isVisible() {

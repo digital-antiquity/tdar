@@ -37,7 +37,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, true);
+        String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true);
         logger.debug("URL: {}", url);
         logout();
         // make sure basic user cannot see restricted page
@@ -90,7 +90,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, true);
+        String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true);
         gotoEdit(url);
         applyEditPageHacks();
 
@@ -123,7 +123,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, false);
+        String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false);
         gotoEdit(url);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
         submitForm();
@@ -153,7 +153,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionInGeneralSearch() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
-        String url = setupCollectionForTest(titles, false);
+        String url = setupCollectionForTest(TITLE + " (general search)", titles, false);
         logout();
         gotoPage(url);
         Assert.assertTrue(getText().contains(TITLE));
@@ -211,7 +211,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertEquals("should see every title on each page", seen, titles.size());
     }
 
-    private String setupCollectionForTest(List<String> titles, Boolean visible) {
+    private String setupCollectionForTest(String title_, List<String> titles, Boolean visible) {
         gotoPage("/dashboard");
         find(By.linkText("UPLOAD")).click();
         waitForPageload();
@@ -221,7 +221,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
 
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
-        setFieldByName("resourceCollection.name", TITLE);
+        setFieldByName("resourceCollection.name", title_);
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
