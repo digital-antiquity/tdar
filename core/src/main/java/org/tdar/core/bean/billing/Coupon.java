@@ -55,7 +55,6 @@ public class Coupon extends Base {
     @ElementCollection
     @CollectionTable(name = "coupon_resource", joinColumns = @JoinColumn(name = "coupon_id") )
     @Column(name = "resource_id")
-    @Immutable
     private Set<Long> resourceIds = new HashSet<>();
 
 
