@@ -748,6 +748,9 @@ public class InvoiceService {
         		e = genericDao.markWritableOnExistingSession(e);
                 rc.getAuthorizedUsers().add(e);
                 res.markUpdated(invoice.getOwner());
+                res.setAccount(account);
+                account.getResources().add(res);
+                accountDao.updateQuota(account, account.getResources());
         		genericDao.saveOrUpdate(rc);
         		genericDao.saveOrUpdate(res);
         		logger.debug("{}",res);
