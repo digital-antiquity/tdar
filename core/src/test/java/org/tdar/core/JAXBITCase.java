@@ -44,7 +44,6 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.utils.jaxb.JaxbParsingException;
-import org.tdar.utils.jaxb.JaxbValidationEvent;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
@@ -239,8 +238,8 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
             logger.debug("parsing exception", e);
             logger.debug("exception events:{}", e.getEvents());
             assertEquals(2, e.getEvents().size());
-            for (JaxbValidationEvent event : e.getEvents()) {
-                Assert.assertTrue(event.getEvent().getMessage().contains(BAD_LANGUAGE));
+            for (String event : e.getEvents()) {
+                Assert.assertTrue(event.contains(BAD_LANGUAGE));
             }
         }
         logger.debug("{}", obj);
