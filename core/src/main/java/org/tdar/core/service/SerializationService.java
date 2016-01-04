@@ -272,14 +272,14 @@ public class SerializationService {
         unmarshaller.setAdapter(JaxbResourceCollectionRefConverter.class, collectionRefConverter);
         unmarshaller.setAdapter(JaxbPersistableConverter.class, persistableConverter);
 
-        final List<JaxbValidationEvent> errors = new ArrayList<>();
+        final List<String> errors = new ArrayList<>();
         unmarshaller.setEventHandler(new ValidationEventHandler() {
 
             @Override
             public boolean handleEvent(ValidationEvent event) {
                 // TODO Auto-generated method stub
                 JaxbValidationEvent err = new JaxbValidationEvent(event, lines.get(event.getLocator().getLineNumber() - 1));
-                errors.add(err);
+                errors.add(err.toString());
                 logger.warn("an XML parsing exception occurred: {}", err);
                 return true;
             }

@@ -125,7 +125,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
             try {
                 return find(result.get(0).longValue());
             } catch (Exception e) {
-                logger.error("could not find master for {} {}", dup, result);
+                logger.error("could not find master for {} {}", dup, result,e);
             }
         }
         return null;

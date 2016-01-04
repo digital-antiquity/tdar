@@ -14,6 +14,7 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -63,6 +65,7 @@ public class APIController extends AuthenticationAware.Base {
     private String msg;
     private StatusCode status;
     private Long projectId; // note this will override projectId value specified in record
+    
     // on the receiving end
     private List<String> processedFileNames;
 
@@ -84,6 +87,8 @@ public class APIController extends AuthenticationAware.Base {
     private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
 
     private Long accountId;
+
+    private Long couponNumberOfFiles = -1L;
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
@@ -119,7 +124,8 @@ public class APIController extends AuthenticationAware.Base {
             processIncomingFileProxies(fileProxies);
 
             Resource loadedRecord = importService.bringObjectOntoSession(incoming, authenticatedUser, fileProxies, projectId, true);
-            updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
+            BillingAccount billingAccount = getGenericService().find(BillingAccount.class, getAccountId());
+            updateQuota(billingAccount, loadedRecord);
 
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
@@ -141,6 +147,11 @@ public class APIController extends AuthenticationAware.Base {
 
             logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
+            if (getCouponNumberOfFiles() > 0 && billingAccount != null) {
+                Coupon coupon = accountService.generateCouponCode(billingAccount, getCouponNumberOfFiles(), null, DateTime.now().plusYears(1).toDate());
+                coupon.getResourceIds().add(loadedRecord.getId());
+                getGenericService().saveOrUpdate(coupon);
+            }
             getXmlResultObject().setStatusCode(statuscode);
             getXmlResultObject().setStatus(code.toString());
             resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
@@ -153,11 +164,9 @@ public class APIController extends AuthenticationAware.Base {
             message = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
-                final List<JaxbValidationEvent> events = ((JaxbParsingException) e).getEvents();
+                final List<String> events = ((JaxbParsingException) e).getEvents();
                 List<String> errors = new ArrayList<>();
-                for (JaxbValidationEvent event : events) {
-                    errors.add(event.toString());
-                }
+                errors.addAll(events);
 
                 errorResponse(StatusCode.BAD_REQUEST);
                 getXmlResultObject().setMessage(message);
@@ -266,11 +275,9 @@ public class APIController extends AuthenticationAware.Base {
             message = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
-                final List<JaxbValidationEvent> events = ((JaxbParsingException) e).getEvents();
+                final List<String> events = ((JaxbParsingException) e).getEvents();
                 List<String> errors = new ArrayList<>();
-                for (JaxbValidationEvent event : events) {
-                    errors.add(event.toString());
-                }
+                errors.addAll(events);
 
                 errorResponse(StatusCode.BAD_REQUEST);
                 getXmlResultObject().setMessage(message);
@@ -458,6 +465,14 @@ public class APIController extends AuthenticationAware.Base {
 
     public void setXmlResultObject(JaxbResultContainer xmlResultContainer) {
         this.xmlResultObject = xmlResultContainer;
+    }
+
+    public Long getCouponNumberOfFiles() {
+        return couponNumberOfFiles;
+    }
+
+    public void setCouponNumberOfFiles(Long couponNumberOfFiles) {
+        this.couponNumberOfFiles = couponNumberOfFiles;
     }
 
 }

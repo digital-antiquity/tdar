@@ -5,21 +5,22 @@ import java.util.List;
 public class JaxbParsingException extends Exception {
 
     private static final long serialVersionUID = 7526380541101762764L;
-    private List<JaxbValidationEvent> events;
+    private List<String> events;
 
-    public JaxbParsingException(String message, List<JaxbValidationEvent> errors) {
+    public JaxbParsingException(String message, List<String> errors) {
         this.setEvents(errors);
     }
 
-    public List<JaxbValidationEvent> getEvents() {
+    public List<String> getEvents() {
         return events;
     }
 
-    public void setEvents(List<JaxbValidationEvent> errors) {
+    public void setEvents(List<String> errors) {
         this.events = errors;
     }
 
-    /*
-     * FIXME: make me print error messages better!!!
-     */
+    @Override
+    public String getMessage() {
+        return String.format("%s [%s]",super.getMessage(), events);
+    }
 }
