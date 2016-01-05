@@ -92,6 +92,10 @@
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-aop</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>bean-validator</artifactId>
+                    <groupId>org.glassfish.hk2.external</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
     </dependencies>
