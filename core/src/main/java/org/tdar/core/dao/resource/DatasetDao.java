@@ -425,6 +425,19 @@ public class DatasetDao extends ResourceDao<Dataset> {
         
     }
 
+    public ScrollableResults findMappedResources(Project p) {
+        Query query = getCurrentSession().getNamedQuery(MAPPED_RESOURCES);
+        Long id = null;
+        if (PersistableUtils.isNotNullOrTransient(p)) {
+            id = p.getId();
+            query.setLong("projectId", id);
+        } else {
+            query.setLong("projectId", -1);
+        }
+        ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
+        return scroll;
+    }
+
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         getLogger().info("remapping columns: {} in {} ", columns, project);
         if (CollectionUtils.isNotEmpty(columns) && (project != null)) {

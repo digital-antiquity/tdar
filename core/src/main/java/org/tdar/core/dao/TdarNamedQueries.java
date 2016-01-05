@@ -153,19 +153,19 @@ public interface TdarNamedQueries {
     String USERS_IN_COLLECTION = "query.users.in.collection";
     String COLLECTION_TIME_LIMITED_IDS = "query.collection_time_limited";
     String QUERY_SIMILAR_PEOPLE = "query.similar_people";
-    
+    String MAPPED_RESOURCES = "query.mapped_resources";
+
     // raw SQL/HQL queries
 
     /**
      * Static HQL and SQL queries that cannot be represented as annotations because they are either pure SQL or use String replacement.
      */
-    String QUERY_SQL_DASHBOARD =
-            "select id, status, resource_type from resource " +
-                    "where id in " +
-                    "(select resource_id from collection_resource,collection, authorized_user " +
-                    "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
-                    "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
-                    "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
+    String QUERY_SQL_DASHBOARD = "select id, status, resource_type from resource " +
+            "where id in " +
+            "(select resource_id from collection_resource,collection, authorized_user " +
+            "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
+            "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
+            "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
 
     String QUERY_SQL_COUNT = "SELECT COUNT(*) FROM %1$s";
     String QUERY_FIND_ALL = "FROM %s";
@@ -187,21 +187,15 @@ public interface TdarNamedQueries {
     String QUERY_KEYWORD_MERGE_ID = "select merge_keyword_id from %1$s where id=%2$s";
 
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
-    String QUERY_HQL_MANY_TO_MANY_REFERENCES =
-            "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
+    String QUERY_HQL_MANY_TO_MANY_REFERENCES = "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
     // e.g. "from Resource r1 where submitter_id in (:idlist)"
-    String QUERY_HQL_MANY_TO_ONE_REFERENCES =
-            "from %1$s r1 where %2$s.id in (:idlist)";
+    String QUERY_HQL_MANY_TO_ONE_REFERENCES = "from %1$s r1 where %2$s.id in (:idlist)";
 
-    String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES =
-            "select count(*) as referenceCount from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
-    String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES =
-            "select count(*) as referenceCount from %1$s r1 where %2$s.id in (:idlist)";
+    String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES = "select count(*) as referenceCount from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
+    String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES = "select count(*) as referenceCount from %1$s r1 where %2$s.id in (:idlist)";
 
-    String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES_MAP =
-            "select new map(ck.id as id, count(*) as referenceCount) from %1$s r2 inner join r2.%2$s ck where ck.id in (:idlist) group by ck.id";
-    String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP =
-            "select new map(%2$s.id as id, count(*) as referenceCount) from %1$s r1 where %2$s.id in (:idlist) group by %2$s.id";
+    String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES_MAP = "select new map(ck.id as id, count(*) as referenceCount) from %1$s r2 inner join r2.%2$s ck where ck.id in (:idlist) group by ck.id";
+    String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP = "select new map(%2$s.id as id, count(*) as referenceCount) from %1$s r1 where %2$s.id in (:idlist) group by %2$s.id";
 
     String QUERY_HQL_UPDATE_MANY_TO_MANY_REFERENCES = ""; // TODO: //Not possible, I think.
     String QUERY_HQL_UPDATE_MANY_TO_ONE_REFERENCES = ""; // TODO: use many_to_one_count in exists clause.
@@ -292,6 +286,6 @@ public interface TdarNamedQueries {
     String CREATOR_ANALYSIS_KWD_SELECT_COUNTS = "select count(id), kwd_id from temp_kwd where kwd_id is not null group by kwd_id";
     String CREATOR_ANALYSIS_KWD_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id in :resourceIds";
     String CREATOR_ANALYSIS_KWD_INHERIT_INSERT = "insert into temp_kwd (kwd_id) select %s from %s tp, %s kwd, information_resource where kwd.id=tp.%s and status in ('ACTIVE', 'DUPLICATE')  and resource_id=project_id and information_resource.id in :resourceIds";
-    
+
     String HOMEPAGE_GEOGRAPHIC = "select code, resource_type, sum(count), id from ( ( select code, count(*), r.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.geographic_keyword_id join resource r on r.id = rgk.resource_id left join information_resource ir on (ir.id = r.id and ir.inheriting_spatial_information = false) where (code !='') and r.status = 'ACTIVE' group by code, r.resource_type, gk.id ) union all select code, count(*), irr.resource_type, gk.id from geographic_keyword gk join resource_managed_geographic_keyword rgk on gk.id = rgk.geographic_keyword_id join resource p on p.id = rgk.resource_id join information_resource ir on (ir.project_id = p.id and ir.inheriting_spatial_information = true) join resource irr on (irr.id = ir.id) where (code !='') and irr.status = 'ACTIVE' group by code, irr.resource_type, gk.id ) as allrecs group by code, resource_type, id order by 1, 2";
 }

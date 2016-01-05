@@ -33,6 +33,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -42,6 +43,8 @@ import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.converter.AnnotationKeyDocumentConverter;
 import org.tdar.search.converter.CollectionDocumentConverter;
+import org.tdar.search.converter.ContentDocumentConverter;
+import org.tdar.search.converter.DataValueDocumentConverter;
 import org.tdar.search.converter.InstitutionDocumentConverter;
 import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
@@ -135,7 +138,6 @@ public class SearchIndexService {
             String core = LookupSource.getCoreForClass(item.getClass());
             if (deleteFirst) {
                 purge(item);
-                // fullTextSession.purge(item.getClass(), item.getId());
             }
 
             SolrInputDocument document = null;
@@ -157,6 +159,16 @@ public class SearchIndexService {
             if (item instanceof ResourceAnnotationKey) {
                 document = AnnotationKeyDocumentConverter.convert((ResourceAnnotationKey)item);
             }
+            if (item instanceof InformationResourceFile) {
+            	document =  ContentDocumentConverter.convert((InformationResourceFile) item);
+            }
+//            if (item instanceof null) {
+//            	document =  DataValueDocumentConverter.convertPersistable(persist);
+//            }
+            if (document == null) {
+            	return null;
+            }
+            
             template.add(core,document);
             return document;
         } catch (Throwable t) {

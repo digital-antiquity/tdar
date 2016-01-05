@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class CrossCoreFieldJoinQueryPart<T extends FieldQueryPart<?>> implements QueryPart<T> {
+public class CrossCoreFieldJoinQueryPart<T extends QueryPart> implements QueryPart<T> {
 
     //http://comments.gmane.org/gmane.comp.jakarta.lucene.solr.user/95646
     
@@ -17,10 +17,11 @@ public class CrossCoreFieldJoinQueryPart<T extends FieldQueryPart<?>> implements
     private String innerFieldName;
     private String coreName;
 
-    public CrossCoreFieldJoinQueryPart(String innerFieldName, String outerFieldName, T part) {
+    public CrossCoreFieldJoinQueryPart(String innerFieldName, String outerFieldName, T part, String coreName) {
         this.innerFieldName = innerFieldName;
         this.outerFieldName = outerFieldName;
         this.part = part;
+        this.coreName = coreName;
     }
     
     @Override

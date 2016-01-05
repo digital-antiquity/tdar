@@ -39,6 +39,7 @@ import org.hibernate.annotations.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.resource.InformationResource;
@@ -64,7 +65,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
         })
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResourceFile")
 @Cacheable
-public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable {
+public class InformationResourceFile extends Persistable.Sequence<InformationResourceFile> implements Viewable, Indexable {
 
     private static final long serialVersionUID = -6957336216505367012L;
 
@@ -537,4 +538,16 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
     }
+
+	@Override
+	public void setScore(Float score) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public Float getScore() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

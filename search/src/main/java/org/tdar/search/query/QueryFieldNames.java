@@ -120,4 +120,7 @@ public interface QueryFieldNames {
     String COLLECTION_PARENT = "parentId";
     String COLLECTION_PARENT_LIST = "parentIdList";
     String _ID = "_id";
+    String VALUE = "value";
+    String COLUMN_ID = "columnId";
+    String VALUE_PHRASE = "value_phrase";
     }

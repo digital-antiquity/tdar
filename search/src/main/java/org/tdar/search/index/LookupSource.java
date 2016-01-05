@@ -18,16 +18,23 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
 public enum LookupSource implements HasLabel,Localizable {
-	PERSON("people", Person.class), INSTITUTION("institutions", Institution.class), KEYWORD("items",
+	PERSON("people", Person.class), 
+	INSTITUTION("institutions", Institution.class), 
+	KEYWORD("items",
 			CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class,
 			OtherKeyword.class, TemporalKeyword.class, SiteNameKeyword.class,
-			SiteTypeKeyword.class), RESOURCE("resources", Resource.class), COLLECTION("collections",
-					ResourceCollection.class), RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class);
+			SiteTypeKeyword.class), 
+	RESOURCE("resources", Resource.class), 
+	COLLECTION("collections",ResourceCollection.class), 
+	RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class),
+	CONTENTS("content",InformationResourceFile.class);
+//	DATA("data",null);
 
 	private String collectionName;
 	private Class<? extends Indexable>[] classes;
@@ -73,6 +80,8 @@ public enum LookupSource implements HasLabel,Localizable {
 			return CoreNames.RESOURCES;
 		case RESOURCE_ANNOTATION_KEY:
 			return CoreNames.ANNOTATION_KEY;
+		case CONTENTS:
+			return CoreNames.CONTENTS;
 		}
 		return null;
 	}
@@ -96,6 +105,12 @@ public enum LookupSource implements HasLabel,Localizable {
 		if (ResourceAnnotationKey.class.isAssignableFrom(item)) {
 			return CoreNames.ANNOTATION_KEY;
 		}
+		if (InformationResourceFile.class.isAssignableFrom(item)) {
+			return CoreNames.CONTENTS;
+		}
+//		if (InformationResourceFile.class.isAssignableFrom(item)) {
+//			return CoreNames.DATA_MAPPINGS;
+//		}
 		return null;
 	}
 

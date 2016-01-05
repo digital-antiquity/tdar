@@ -884,4 +884,15 @@ public class ResourceService {
         
     }
 
+    @Transactional(readOnly=true)
+    public ScrollableResults findMappedResources() {
+        return findMappedResources(null);
+    }
+
+
+    @Transactional(readOnly=true)
+    public ScrollableResults findMappedResources(Project p) {
+        return datasetDao.findMappedResources(p);
+    }
+
 }

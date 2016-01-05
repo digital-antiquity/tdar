@@ -1558,7 +1558,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         ReservedSearchParameters params = initControllerFields();
         SearchResult<Resource> result = performSearch(TestConstants.TEST_DOCUMENT_ID, null, null, null, null, null, params, 1000);
 
-        boolean seen = true;
         Long id = Long.parseLong(TestConstants.TEST_DOCUMENT_ID);
         for (Indexable idx : result.getResults()) {
             assertEquals(id, idx.getId());
