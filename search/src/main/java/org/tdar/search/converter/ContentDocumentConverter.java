@@ -1,6 +1,5 @@
 package org.tdar.search.converter;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
@@ -15,20 +14,19 @@ public class ContentDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
-	public static SolrInputDocument convert(InformationResourceFile irf) {
-        	if (irf == null || irf.getIndexableVersion() == null) {
-        		return null;
-        	}
+    public static SolrInputDocument convert(InformationResourceFile irf) {
+        if (irf == null || irf.getIndexableVersion() == null) {
+            return null;
+        }
         SolrInputDocument doc = convertPersistable(irf);
         if (irf.getIndexableVersion() != null && irf.isPublic()) {
             try {
-                doc.setField(QueryFieldNames.CONTENT, FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
-            } catch (FileNotFoundException fnf) {
-                
+                doc.setField(QueryFieldNames.CONTENT,
+                        FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
             } catch (IOException e) {
                 logger.error("{}", e);
             }
-	        doc.setField(QueryFieldNames.FILENAME, irf.getFilename());
+            doc.setField(QueryFieldNames.FILENAME, irf.getFilename());
         }
 
         return doc;

@@ -134,6 +134,9 @@ public class SearchIndexService {
      * @param item
      */
     SolrInputDocument index(Indexable item, boolean deleteFirst) {
+        if (item == null) {
+            return null;
+        }
         try {
             String core = LookupSource.getCoreForClass(item.getClass());
             if (deleteFirst) {
