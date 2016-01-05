@@ -48,6 +48,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private String callback;
     private Long userId;
     private boolean asyncSave = true;
+    private boolean forceClear = false;
     private LinkedList<Throwable> errors = new LinkedList<>();
 
     private List<LookupSource> indexesToRebuild = new ArrayList<>();
@@ -117,6 +118,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public String build() {
         try {
             getLogger().info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
+            if (forceClear) {
+                searchIndexService.clearIndexingActivities();
+            }
         } catch (Exception e) {
             getLogger().error("weird exception {} ", e);
         }
@@ -243,6 +247,14 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     public void setAsyncSave(boolean asyncSave) {
         this.asyncSave = asyncSave;
+    }
+
+    public boolean isForceClear() {
+        return forceClear;
+    }
+
+    public void setForceClear(boolean forceClear) {
+        this.forceClear = forceClear;
     }
 
 }

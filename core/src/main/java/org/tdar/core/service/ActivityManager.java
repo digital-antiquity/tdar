@@ -137,4 +137,15 @@ public class ActivityManager {
         }
         return latest;
     }
+
+
+    public synchronized void clearIndexingActivities() {
+        Iterator<Activity> iter = activityQueue.iterator();
+        while (iter.hasNext()) {
+            Activity item = iter.next();
+            if (item.isIndexingActivity()) {
+                iter.remove();
+            }
+        }
+    }
 }

@@ -881,8 +881,8 @@ public abstract class AbstractSeleniumWebITCase {
     public void reindex() {
         logout();
         loginAdmin();
-        gotoPage("/admin/searchindex/build");
-        find("#idxBtn").click();
+        gotoPage("/admin/searchindex/build?forceClear=true");
+        
         find("#idxBtn").click();
         waitFor("#buildStatus",120);
         waitFor("#spanDone", 120);
