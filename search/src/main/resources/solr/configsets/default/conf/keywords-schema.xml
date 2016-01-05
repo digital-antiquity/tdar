@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<schema name="annotationKeys" version="1.5">
+<schema name="keywords" version="1.5">
     
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="name_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />

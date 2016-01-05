@@ -883,6 +883,8 @@ public abstract class AbstractSeleniumWebITCase {
         loginAdmin();
         gotoPage("/admin/searchindex/build");
         find("#idxBtn").click();
+        find("#idxBtn").click();
+        waitFor("#buildStatus",120);
         waitFor("#spanDone", 120);
         logout();
         AbstractSeleniumWebITCase.setReindexed(true);
