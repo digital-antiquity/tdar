@@ -21,7 +21,7 @@
     </#if>
 
 ${resourceCollection.name!"untitled collection"}</h1>
-	visible: ${visible?c} hidden:${resourceCollection.hidden?c}  
+
     <#if !visible>
     This collection is not accessible
     <#else>

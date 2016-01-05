@@ -3,6 +3,7 @@ package org.tdar.functional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -228,12 +229,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
         setFieldByName("resourceCollection.hidden", visible.toString().toLowerCase());
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
-                + config.getEditorUserId(),
-                GeneralPermissions.MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
-                + config.getAdminUserId(),
-                GeneralPermissions.MODIFY_RECORD);
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
+        		"person-"+ config.getEditorUserId(), GeneralPermissions.MODIFY_RECORD);
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
+        		"michelle elliott",  "Michelle Elliott", "person-121", GeneralPermissions.MODIFY_RECORD);
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
