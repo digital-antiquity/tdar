@@ -121,9 +121,9 @@ public class SearchDao<I extends Indexable> {
 				// issue with how solr handles Yes/no values, it treats them as
 				// booleans
 				if (name.equalsIgnoreCase("false")) {
-					name = "NO";
+					name = IntegratableOptions.NO.name();
 				} else if (name.equalsIgnoreCase("true")) {
-					name = "YES";
+					name = IntegratableOptions.YES.name();
 				}
 			}
 
