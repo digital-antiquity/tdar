@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -244,7 +245,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     }
 
     private void newWay(Long... id) {
-        List<Resource> docs = resourceService.findSkeletonsForSearch(false, id);
+        List<Resource> docs = resourceService.findSkeletonsForSearch(false, Arrays.asList(id));
         for (Resource rec : docs) {
             logForTiming(rec);
         }

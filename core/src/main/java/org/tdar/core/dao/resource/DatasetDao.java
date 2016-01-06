@@ -41,6 +41,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -274,28 +275,31 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
+    public <I extends Indexable> List<I> findSkeletonsForSearch(boolean trustCache, List<Long> ids) {
         Session session = getCurrentSession();
+        if (CollectionUtils.isEmpty(ids)) {
+        	return Collections.EMPTY_LIST;
+        }
         // distinct prevents duplicates
         // left join res.informationResourceFiles
         long time = System.currentTimeMillis();
         Query query = session.getNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
         // if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
-        if (ids.length > 1) {
+        if (ids.size() > 1) {
             query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
         if (!trustCache) {
             query.setCacheable(false);
             query.setCacheMode(CacheMode.REFRESH);
         }
-        query.setParameterList("ids", Arrays.asList(ids));
+        query.setParameterList("ids", ids);
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
         List<ResourceProxy> results = query.list();
         long queryTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
-        List<Resource> toReturn = new ArrayList<>();
-        Map<Long, Resource> resultMap = new HashMap<>();
+        List<I> toReturn = new ArrayList<>();
+        Map<Long, I> resultMap = new HashMap<>();
         logger.trace("convert proxy to resource");
         for (ResourceProxy prox : results) {
             try {

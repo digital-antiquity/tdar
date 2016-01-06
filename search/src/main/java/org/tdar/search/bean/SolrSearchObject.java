@@ -2,8 +2,10 @@ package org.tdar.search.bean;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -31,22 +33,34 @@ import org.tdar.search.query.facet.FacetedResultHandler;
  */
 public class SolrSearchObject<I extends Indexable> {
 
-    private List<Long> idList = new ArrayList<>();
     private String sortParam = "";
     private int resultSize;
     private int startRecord;
     private String coreName;
 
     private QueryBuilder builder;
+    // solr documents returned
     private SolrDocumentList documentList;
+    @Deprecated
     private List<I> resultList;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    
+    //final solr/lucene  query string
     private String queryString;
+    // fields to facet on
     private List<String> facetFields = new ArrayList<>();
-    private String filterString;
+    
     private Integer totalResults = 0;
+    // max # of facets
     private Integer facetLimit;
+    // min # of items to show in a facet
     private Integer facetMinCount;
+
+    // a list of the (persistable) ids returned by the query in the appropriate order 
+    private List<Long> idList = new ArrayList<>();
+    // a map of the class (as string) and list of ids grouped, lists are in order.  Theoretically
+    // this map should only ever have one key
+	private Map<String, List<Long>> searchByMap = new HashMap<>();
 
     public SolrSearchObject(QueryBuilder queryBuilder, SearchResultHandler<I> handler) {
         this.builder = queryBuilder;
@@ -64,7 +78,6 @@ public class SolrSearchObject<I extends Indexable> {
         if (CollectionUtils.isNotEmpty(sort)) {
             setSortParam(StringUtils.join(sort, ","));
         }
-        this.filterString = StringUtils.join(queryBuilder.getFilters(), " ");
         handleFacets(handler);
     }
 
@@ -146,9 +159,6 @@ public class SolrSearchObject<I extends Indexable> {
         solrQuery.setParam("q", getQueryString());
         solrQuery.setParam("start", Integer.toString(startRecord));
         solrQuery.setParam("rows", Integer.toString(resultSize));
-        if (StringUtils.isNotBlank(filterString)) {
-            solrQuery.setParam("fq", filterString);
-        }
 
         if (CollectionUtils.isNotEmpty(facetFields)) {
             solrQuery.addFacetField(facetFields.toArray(new String[0]));
@@ -204,7 +214,13 @@ public class SolrSearchObject<I extends Indexable> {
         }
         setTotalResults((int) results.getNumFound());
         for (SolrDocument doc : results) {
-            idList.add((Long) doc.get(QueryFieldNames.ID));
+            Long id = (Long) doc.get(QueryFieldNames.ID);
+            String  key = (String) doc.get(QueryFieldNames.CLASS);
+			if (searchByMap.get(key) == null) {
+            	searchByMap.put(key, new ArrayList<>());
+            }
+			idList.add(id);
+			searchByMap.get(key).add(id);
         }
     }
 
@@ -263,5 +279,9 @@ public class SolrSearchObject<I extends Indexable> {
     public void setFacetLimit(Integer facetLimit) {
         this.facetLimit = facetLimit;
     }
+
+	public Map<String, List<Long>> getSearchByMap() {
+		return this.searchByMap ;
+	}
 
 }

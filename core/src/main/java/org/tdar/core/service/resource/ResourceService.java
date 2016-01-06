@@ -105,7 +105,7 @@ public class ResourceService {
     private GeoSearchService geoSearchService;
 
     @Transactional(readOnly = true)
-    public List<Resource> findSkeletonsForSearch(boolean trustCache, Long... ids) {
+    public List<Resource> findSkeletonsForSearch(boolean trustCache, List<Long> ids) {
         return datasetDao.findSkeletonsForSearch(trustCache, ids);
     }
 

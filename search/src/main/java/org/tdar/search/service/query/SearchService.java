@@ -245,6 +245,7 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws IOException 
      * @throws SolrServerException 
       */
+     @Deprecated
      public void updateResourceCreators(SearchParameters group, Integer maxCreatorsToResolve) throws ParseException, SolrServerException, IOException {
          logger.trace("updating proxies");
          int maxToResolve = 1000;
