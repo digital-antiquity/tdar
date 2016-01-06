@@ -154,7 +154,7 @@ public interface TdarNamedQueries {
     String COLLECTION_TIME_LIMITED_IDS = "query.collection_time_limited";
     String QUERY_SIMILAR_PEOPLE = "query.similar_people";
     String MAPPED_RESOURCES = "query.mapped_resources";
-
+    String COUNT_MAPPED_RESOURCES = "query.count_mapped_resources";
     // raw SQL/HQL queries
 
     /**

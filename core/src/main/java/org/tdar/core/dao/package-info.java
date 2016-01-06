@@ -538,7 +538,11 @@
                 query = "select rc.id from ResourceCollection rc inner join rc.authorizedUsers as au where au.dateExpires != null and au.dateExpires < now()"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.MAPPED_RESOURCES,
-                query = "from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col where :projectId = -1 or project.id=:projectId")
+                query = "from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col where :projectId = -1 or project.id=:projectId"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.COUNT_MAPPED_RESOURCES,
+                query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col")
+        
 })
 package org.tdar.core.dao;
 

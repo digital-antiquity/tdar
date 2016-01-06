@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.ActivityManager;
@@ -78,6 +79,9 @@ public class SearchIndexService {
     private ResourceService resourceService;
 
     @Autowired
+    private DatasetDao datasetDao;
+
+    @Autowired
     private ProjectDao projectDao;
 
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
@@ -89,7 +93,7 @@ public class SearchIndexService {
 
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex,
             Person person) {
-        BatchIndexer batch = new BatchIndexer(genericDao, this);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
         batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
 
@@ -112,16 +116,7 @@ public class SearchIndexService {
     public List<Class<? extends Indexable>> getClassesToReindex(List<LookupSource> values) {
         List<Class<? extends Indexable>> toReindex = new ArrayList<>();
         for (LookupSource source : values) {
-            switch (source) {
-                case RESOURCE:
-                    toReindex.add(Resource.class);
-                    break;
-                case PERSON:
-                    toReindex.add(Person.class);
-                    break;
-                default:
-                    toReindex.addAll(Arrays.asList(source.getClasses()));
-            }
+            toReindex.addAll(Arrays.asList(source.getClasses()));
         }
         return toReindex;
     }
@@ -132,7 +127,7 @@ public class SearchIndexService {
      * @param fullTextSession
      * @param item
      */
-    SolrInputDocument index(Indexable item, boolean deleteFirst) {
+    SolrInputDocument index(LookupSource src, Indexable item, boolean deleteFirst) {
         if (item == null) {
             return null;
         }
@@ -141,6 +136,15 @@ public class SearchIndexService {
             if (deleteFirst) {
                 purge(item);
             }
+
+            if (src != null && src == LookupSource.DATA) {
+            	if (deleteFirst) {
+            		template.deleteByQuery("id:"+item.getId());
+            	}
+            	List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource)item, resourceService);
+                template.add(core, convert);
+                return null;
+           }
 
             SolrInputDocument document = null;
             if (item instanceof Person) {
@@ -164,9 +168,7 @@ public class SearchIndexService {
             if (item instanceof InformationResourceFile) {
                 document = ContentDocumentConverter.convert((InformationResourceFile) item);
             }
-            // if (item instanceof null) {
-            // document = DataValueDocumentConverter.convertPersistable(persist);
-            // }
+
             if (document == null) {
                 return null;
             }
@@ -189,7 +191,7 @@ public class SearchIndexService {
         logger.trace("indexing collection async");
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
-        BatchIndexer batch = new BatchIndexer(genericDao, this);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
         batch.indexScrollable(total, Resource.class, results);
     }
 
@@ -249,7 +251,7 @@ public class SearchIndexService {
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
-                    index(toIndex, true);
+					index(null, toIndex, true);
                     if (count % FLUSH_EVERY == 0) {
                         logger.debug("indexing: {}", toIndex);
                         logger.debug("flush to index ... every {}", FLUSH_EVERY);
@@ -303,7 +305,7 @@ public class SearchIndexService {
      * @param person
      */
     public void indexAll(Person person) {
-        BatchIndexer batch = new BatchIndexer(genericDao, this);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
         batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
     }
 
@@ -314,7 +316,7 @@ public class SearchIndexService {
      * @param classes
      */
     public void indexAll(Person person, LookupSource... sources) {
-        BatchIndexer batch = new BatchIndexer(genericDao, this);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
         batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
     }
 
@@ -385,7 +387,7 @@ public class SearchIndexService {
         index(project);
         logger.debug("reindexing project contents");
         ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
-        BatchIndexer batch = new BatchIndexer(genericDao, this);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
         batch.indexScrollable(0L, Resource.class, scrollableResults);
         logger.debug("completed reindexing project contents");
         return false;
@@ -419,7 +421,7 @@ public class SearchIndexService {
     @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex, final Person person) {
         logger.info("reindexing indexall");
-        BatchIndexer batch = new BatchIndexer(genericDao, this);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
         batch.indexAll(reciever, toReindex, person);
         sendEmail(toReindex);
 

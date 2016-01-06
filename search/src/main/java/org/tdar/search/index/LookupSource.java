@@ -18,6 +18,7 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.datatable.DataTableRow;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
@@ -33,8 +34,8 @@ public enum LookupSource implements HasLabel,Localizable {
 	RESOURCE("resources", Resource.class), 
 	COLLECTION("collections",ResourceCollection.class), 
 	RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class),
-	CONTENTS("content",InformationResourceFile.class);
-//	DATA("data",null);
+	CONTENTS("content",InformationResourceFile.class),
+	DATA("data",DataTableRow.class);
 
 	private String collectionName;
 	private Class<? extends Indexable>[] classes;
@@ -68,20 +69,22 @@ public enum LookupSource implements HasLabel,Localizable {
 
 	public String getCoreName() {
 		switch (this) {
-		case COLLECTION:
-			return CoreNames.COLLECTIONS;
-		case INSTITUTION:
-			return CoreNames.INSTITUTIONS;
-		case KEYWORD:
-			return CoreNames.KEYWORDS;
-		case PERSON:
-			return CoreNames.PEOPLE;
-		case RESOURCE:
-			return CoreNames.RESOURCES;
-		case RESOURCE_ANNOTATION_KEY:
-			return CoreNames.ANNOTATION_KEY;
-		case CONTENTS:
-			return CoreNames.CONTENTS;
+			case COLLECTION:
+				return CoreNames.COLLECTIONS;
+			case INSTITUTION:
+				return CoreNames.INSTITUTIONS;
+			case KEYWORD:
+				return CoreNames.KEYWORDS;
+			case PERSON:
+				return CoreNames.PEOPLE;
+			case RESOURCE:
+				return CoreNames.RESOURCES;
+			case RESOURCE_ANNOTATION_KEY:
+				return CoreNames.ANNOTATION_KEY;
+			case CONTENTS:
+				return CoreNames.CONTENTS;
+			case DATA:
+				return CoreNames.DATA_MAPPINGS;
 		}
 		return null;
 	}
@@ -108,9 +111,9 @@ public enum LookupSource implements HasLabel,Localizable {
 		if (InformationResourceFile.class.isAssignableFrom(item)) {
 			return CoreNames.CONTENTS;
 		}
-//		if (InformationResourceFile.class.isAssignableFrom(item)) {
-//			return CoreNames.DATA_MAPPINGS;
-//		}
+		if (DataTableRow.class.isAssignableFrom(item)) {
+			return CoreNames.DATA_MAPPINGS;
+		}
 		return null;
 	}
 

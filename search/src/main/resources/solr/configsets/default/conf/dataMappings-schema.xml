@@ -4,6 +4,7 @@
     <field name="projectId" type="long" indexed="true" stored="false" />
     <field name="value" type="string" indexed="true" stored="false"/>
     <field name="value_phrase" type="text_en" indexed="true" stored="false"/>
+    <copyField source="value" dest="value_phrase" />
     <field name="name" type="string" indexed="true" stored="false" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 

@@ -16,39 +16,39 @@ import com.opensymphony.xwork2.interceptor.annotations.Before;
 
 public class SolrSetupITCase extends AbstractWithIndexIntegrationTestCase {
 
-    @Autowired
-    private SolrClient template;
-    
-    @Autowired
-    SearchIndexService searchIndexService;
-    
-    @Before
-    public void index() {
-        searchIndexService.indexAll(getAdminUser());
-    }
-    
-    @Test
-    public void testPeople() throws SolrServerException, IOException {
-        SolrQuery solrQuery = new  SolrQuery();
-        solrQuery.setParam("fl","id,score");
-        String string = "S*";
-        
-        solrQuery.setParam("q","name_autocomplete:"+ string);
-        QueryResponse rsp = template.query("people",solrQuery);
-        SolrDocumentList docs = rsp.getResults();
-        logger.debug("{}", docs);
-    }
+	@Autowired
+	private SolrClient template;
 
-    @Test
-    public void testInstitutions() throws SolrServerException, IOException {
-        SolrQuery solrQuery = new  SolrQuery();
-        solrQuery.setParam("fl","id,score");
-        String string = "University\\ of*";
-        
-        solrQuery.setParam("q","name_autocomplete:"+ string);
-        QueryResponse rsp = template.query("institutions",solrQuery);
-        SolrDocumentList docs = rsp.getResults();
-        logger.debug("{}", docs);
-    }
+	@Autowired
+	SearchIndexService searchIndexService;
+
+	@Before
+	public void index() {
+		searchIndexService.indexAll(getAdminUser());
+	}
+
+	@Test
+	public void testPeople() throws SolrServerException, IOException {
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setParam("fl", "id,score");
+		String string = "S*";
+
+		solrQuery.setParam("q", "name_autocomplete:" + string);
+		QueryResponse rsp = template.query("people", solrQuery);
+		SolrDocumentList docs = rsp.getResults();
+		logger.debug("{}", docs);
+	}
+
+	@Test
+	public void testInstitutions() throws SolrServerException, IOException {
+		SolrQuery solrQuery = new SolrQuery();
+		solrQuery.setParam("fl", "id,score");
+		String string = "University\\ of*";
+
+		solrQuery.setParam("q", "name_autocomplete:" + string);
+		QueryResponse rsp = template.query("institutions", solrQuery);
+		SolrDocumentList docs = rsp.getResults();
+		logger.debug("{}", docs);
+	}
 
 }

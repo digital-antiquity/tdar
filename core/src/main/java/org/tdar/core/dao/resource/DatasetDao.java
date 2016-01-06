@@ -325,7 +325,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
         return results;
     }
 
-    @SuppressWarnings("unchecked")
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
         Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
         query.setCacheMode(CacheMode.IGNORE);
@@ -436,6 +435,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         return scroll;
+    }
+
+    public Number countMappedResources() {
+        Query query = getCurrentSession().getNamedQuery(COUNT_MAPPED_RESOURCES);
+        return (Number) query.uniqueResult();
     }
 
     public void remapColumns(List<DataTableColumn> columns, Project project) {
