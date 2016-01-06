@@ -286,7 +286,7 @@ public class SearchDao<I extends Indexable> {
 				logger.error("exception in searching", e);
 			}
 		}
-		return (List<I>) Arrays.asList(elements);
+		return (List<I>)(List) Arrays.asList(elements);
 	}
 
 }

@@ -11,7 +11,6 @@
     <properties>
         <struts2.version>2.3.24.1</struts2.version>
         <servlet.api.version>3.0.1</servlet.api.version>
-        <apache.cxf.version>3.1.1</apache.cxf.version>
         <wro4j.version>1.7.9</wro4j.version>
         <display.port></display.port>
         <skipWebTests>false</skipWebTests>
@@ -64,6 +63,12 @@
             <groupId>org.tdar</groupId>
             <artifactId>search</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>tag</artifactId>
+            <version>${project.version}</version>
+            <type>war</type>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -154,25 +159,6 @@
         <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-convention-plugin</artifactId>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <!-- CXF for web-services endpoint -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${apache.cxf.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${apache.cxf.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>asm</artifactId>
-                    <groupId>asm</groupId>
-                </exclusion>
-            </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>

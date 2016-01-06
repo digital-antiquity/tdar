@@ -23,6 +23,7 @@
         <!-- the tdar webapp -->
         <module>web-base</module>
         <module>web</module>
+        <module>tag</module>
         <module>dataone</module>
         <module>odata</module>
         <module>oai-pmh</module>

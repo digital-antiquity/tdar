@@ -16,6 +16,8 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.tag.GetXsltTemplate;
@@ -32,7 +34,6 @@ import org.tdar.tag.TagGateway;
 import org.tdar.tag.TagGatewayPort;
 import org.tdar.tag.TagGatewayService;
 import org.tdar.utils.TestConfiguration;
-import org.tdar.web.AbstractWebTestCase;
 import org.w3c.dom.Element;
 
 /**
@@ -41,30 +42,18 @@ import org.w3c.dom.Element;
  * @author abrin
  *
  */
-public class TagGatewayWebITCase extends AbstractWebTestCase {
+public class TagGatewayWebITCase  {
 
-    private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "services/TagGatewayService?wsdl";
+    public transient Logger logger = LoggerFactory.getLogger(getClass());
+    
+    private static final String WSDL_LOCATION = TestConfiguration.getInstance().getBaseUrl() + "TagGatewayService?wsdl";
     private static final String SERVICE_NAMESPACE = "http://archaeologydataservice.ac.uk/tag/schema";
     private static final String SERVICE_NAME = "TagGatewayService";
     private TagGatewayPort port;
 
     @Autowired
-    TagGateway gateway;
-    private static boolean setUpIsDone = false;
+    TagGateway gateway;    
 
-    public TagGatewayWebITCase() throws MalformedURLException {
-        if (setUpIsDone) {
-            return;
-        }
-        setUpIsDone = true;
-        TestConfiguration TEST = TestConfiguration.getInstance();
-        initializeAndConfigureWebClient();
-        login(TEST.getAdminUsername(), TEST.getAdminPassword());
-        reindex();
-        logout();
-        logger.debug("-----------------------------------------------------------------------------------------------");
-    }
-    
     @Before
     public void setupServiceClient() throws MalformedURLException {
         // use this to run the TAG Gateway with a direct connection, not a socket connection

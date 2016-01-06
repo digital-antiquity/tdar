@@ -28,12 +28,12 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.UrlService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
@@ -74,15 +74,11 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     private ResourceSearchService resourceSearchService;
 
     @Autowired
-    private AuthorizationService authenticationAndAuthorizationService;
-
-    @Autowired
     private GenericKeywordService genericKeywordService;
 
     @Autowired
     private ProjectService projectService;
-    @Autowired
-    private UrlService urlService;
+    
     private SiteTypeQueryMapper siteTypeQueryMapper;
 
     static { // initialize the XSLT for inclusion in the SOAP response
@@ -114,7 +110,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             When when = query.getWhen();
             String freetext = query.getFreetext();
 
-            SearchResult q = new SearchResult();
+            SearchResult<Resource> q = new SearchResult<>();
             List<Project> resources = Collections.emptyList();
             int totalRecords = 0;
             int firstRec = 0;
@@ -171,7 +167,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
     private void getAllProjectIds(AdvancedSearchQueryObject asqo, boolean totalExceedsRequested, List<Long> projIds) {
         if (totalExceedsRequested) { // query again to get all of the projectIds
             try {
-                SearchResult q = new SearchResult();
+                SearchResult<Resource> q = new SearchResult<>();
                 resourceSearchService.buildAdvancedSearch(asqo, null, q, MessageHelper.getInstance());
                 projIds.addAll(PersistableUtils.extractIds(q.getResults()));
             } catch (ParseException e) {

@@ -71,8 +71,12 @@ public class IndexEventListener implements PostInsertEventListener, PostUpdateEv
 	private SessionFactory sessionFactory;
 
 	private boolean isEnabled() {
+		try {
 		if (searchIndexService == null) {
 			AutowireHelper.autowire(this, searchIndexService, solrClient, sessionFactory);
+		}
+		} catch (Exception e) {
+			logger.warn("Exception in IndexEventListener enableCheck",e.getMessage());
 		}
 		if (solrClient != null) {
 			return true;

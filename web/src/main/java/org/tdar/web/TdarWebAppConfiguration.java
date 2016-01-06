@@ -8,6 +8,7 @@ import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 @ImportResource(value = { "classpath:spring-local-settings.xml",
         "classpath:META-INF/cxf/cxf.xml",
         "classpath:META-INF/cxf/cxf-servlet.xml" })
+
 public class TdarWebAppConfiguration extends TdarBaseWebAppConfiguration {
 
     private static final long serialVersionUID = 3444580855012578739L;

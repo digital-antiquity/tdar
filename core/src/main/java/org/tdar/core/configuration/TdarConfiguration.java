@@ -921,4 +921,15 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean isFilestoreReadOnly() {
         return assistant.getBooleanProperty("filestore.readonly", false);
     }
+
+	public boolean tagEnabled() {
+		return assistant.getBooleanProperty("tag.enabled", false);
+	}
+
+	public boolean tagEmbedded() {
+		if (tagEnabled()) {
+			return assistant.getBooleanProperty("tag.embedded", false);
+		}
+		return false;
+	}
 }

@@ -303,7 +303,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         logger.trace("convert proxy to resource");
         for (ResourceProxy prox : results) {
             try {
-                resultMap.put(prox.getId(), prox.generateResource());
+                resultMap.put(prox.getId(), (I)prox.generateResource());
             } catch (Exception e) {
                 logger.error("{}", e);
             }

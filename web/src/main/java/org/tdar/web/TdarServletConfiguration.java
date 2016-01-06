@@ -33,7 +33,7 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 	public TdarServletConfiguration() {
 		super("Initializing tDAR Servlet");
 	}
-
+	
 	@Override
 	public String getAppPropertyPrefix() {
 	    return "tdar";
@@ -75,7 +75,9 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 
 		setupOpenSessionInViewFilter(container);
 
-        configureCxfForTag(container);
+		if (configuration.tagEnabled()) {
+			configureCxfForTag(container);
+		}
         configureFreemarker(container);
 
 		configureStrutsAndSiteMeshFilters(container);
@@ -94,18 +96,6 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 			throw new IllegalStateException("dev startup tasks not allowed in production");
 		}
 //		logServerInfo(container);
-	}
-
-	/**
-	 * Logs out basic server information for the specified condtainer
-	 */
-	private void logServerInfo(ServletContext container) {
-		logger.info(BAR);
-		logger.info("SERVER INFO");
-		logger.info("\t       server:{}", container.getServerInfo());
-		logger.info("\t servlet spec:{}.{}", container.getMajorVersion(), container.getMinorVersion());
-		logger.info("\t context name:{}", container.getServletContextName());
-		logger.info(BAR);
 	}
 
 	private void configureFreemarker(ServletContext container) {
