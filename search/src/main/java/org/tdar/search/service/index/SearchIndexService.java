@@ -52,6 +52,7 @@ import org.tdar.search.converter.KeywordDocumentConverter;
 import org.tdar.search.converter.PersonDocumentConverter;
 import org.tdar.search.converter.ResourceDocumentConverter;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.ImmutableScrollableCollection;
 
@@ -139,10 +140,10 @@ public class SearchIndexService {
 
             if (src != null && src == LookupSource.DATA) {
             	if (deleteFirst) {
-            		template.deleteByQuery("id:"+item.getId());
+            		template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:"+item.getId());
             	}
             	List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource)item, resourceService);
-                template.add(core, convert);
+                template.add(CoreNames.DATA_MAPPINGS, convert);
                 return null;
            }
 

@@ -26,7 +26,7 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
 				doc.setField(QueryFieldNames.ID, ir.getId());
 				doc.setField(QueryFieldNames.CLASS, ir.getClass().getName());
 				doc.setField(QueryFieldNames._ID, SearchUtils.createKey(ir) + "-" + key.getId());
-				String keyName = ((DataTableColumn) key).getName();
+				String keyName = key.getName();
 				doc.setField(QueryFieldNames.NAME, keyName);
 				doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
 				doc.setField(QueryFieldNames.COLUMN_ID, key.getId());
