@@ -1,4 +1,4 @@
-package org.tdar.tag;
+package org.tdar.tag.bean;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;

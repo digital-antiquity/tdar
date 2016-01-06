@@ -930,6 +930,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 		if (tagEnabled()) {
 			return assistant.getBooleanProperty("tag.embedded", false);
 		}
-		return false;
+		return true;
 	}
 }

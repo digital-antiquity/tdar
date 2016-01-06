@@ -1,4 +1,4 @@
-package org.tdar.tag;
+package org.tdar.tag.config;
 
 import java.io.Serializable;
 
@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.WebApplicationInitializer;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.tag.server.TagGateway;
 import org.tdar.web.AbstractServletConfiguration;
 
 public class TagServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {

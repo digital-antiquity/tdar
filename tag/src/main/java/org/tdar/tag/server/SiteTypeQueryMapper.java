@@ -1,8 +1,11 @@
-package org.tdar.tag;
+package org.tdar.tag.server;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import org.tdar.tag.bean.QueryMapper;
+import org.tdar.tag.bean.SubjectType;
 
 public class SiteTypeQueryMapper implements QueryMapper<SubjectType> {
 

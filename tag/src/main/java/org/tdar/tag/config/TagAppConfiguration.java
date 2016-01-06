@@ -1,4 +1,4 @@
-package org.tdar.tag;
+package org.tdar.tag.config;
 
 import javax.annotation.PostConstruct;
 

@@ -1,4 +1,4 @@
-package org.tdar.tag;
+package org.tdar.tag.server;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,13 +24,13 @@ public class TagGatewayService
     public static final String TAG_SCHEMA_LOCATION = "http://archaeologydataservice.ac.uk/tag/schema";
     public static final String WSDL = "/wsdl/tag/tag_gateway_service.wsdl";
     public final static URL TAGGATEWAYSERVICE_WSDL_LOCATION;
-    private final static Logger logger = Logger.getLogger(org.tdar.tag.TagGatewayService.class.getName());
+    private final static Logger logger = Logger.getLogger(org.tdar.tag.server.TagGatewayService.class.getName());
 
     static {
         URL url = null;
         try {
             URL baseUrl;
-            baseUrl = org.tdar.tag.TagGatewayService.class.getResource(".");
+            baseUrl = org.tdar.tag.server.TagGatewayService.class.getResource(".");
             url = new URL(baseUrl, WSDL);
         } catch (MalformedURLException e) {
             logger.warning("Failed to create URL for the wsdl Location: '/wsdl/tag/tag_gateway_service.wsdl', retrying as a local file");
