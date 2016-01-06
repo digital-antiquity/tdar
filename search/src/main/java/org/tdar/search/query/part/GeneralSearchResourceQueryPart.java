@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
+import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
@@ -43,7 +43,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     @Override
     protected QueryPartGroup getQueryPart(String value) {
         boolean siteCodeSearch = false;
-        if (SiteCodeTokenizingAnalyzer.pattern.matcher(value).matches()) {
+        if (SiteCodeExtractor.matches(value)) {
             siteCodeSearch = true;
             setUseProximity(false);
         }

@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
+import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
@@ -38,7 +38,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
             throws ParseException, SolrServerException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
-            if (StringUtils.isNotBlank(term) && SiteCodeTokenizingAnalyzer.pattern.matcher(term).matches()) {
+            if (StringUtils.isNotBlank(term) && SiteCodeExtractor.matches(term)) {
                 FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, term);
                 siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
                 siteCodePart.setDisplayName(provider.getText("searchParameters.site_code"));

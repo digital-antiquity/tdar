@@ -7,6 +7,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 
 
@@ -17,14 +20,20 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         
         SolrInputDocument doc = convertPersistable(kwd);
         List<String> names = new ArrayList<>();
-        names.add(kwd.getLabel());
+        String label = kwd.getLabel();
+		names.add(label);
         doc.setField(QueryFieldNames.TYPE, kwd.getKeywordType());
         if (kwd instanceof HierarchicalKeyword<?>) {
             HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>)kwd;
             CollectionUtils.addAll(names, hk.getParentLabelList());
         }
+        
+        if ((kwd instanceof SiteNameKeyword || kwd instanceof OtherKeyword) && SiteCodeExtractor.matches(label)) {
+        	doc.setField(QueryFieldNames.SITE_CODE, SiteCodeExtractor.extractSiteCodeTokens(label));
+        }
+        
         doc.setField(QueryFieldNames.NAME, names);
-        doc.setField(QueryFieldNames.NAME_SORT, kwd.getLabel());
+        doc.setField(QueryFieldNames.NAME_SORT, label);
         return doc;
     }
 }

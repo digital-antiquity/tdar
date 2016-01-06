@@ -25,6 +25,8 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -43,6 +45,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.index.GeneralKeywordBuilder;
+import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.DataUtil;
 import org.tdar.utils.PersistableUtils;
@@ -167,6 +170,17 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addKeyword(doc, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, KeywordType.SITE_TYPE_KEYWORD, resource.getActiveSiteTypeKeywords());
         addKeyword(doc, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, KeywordType.TEMPORAL_KEYWORD, resource.getActiveTemporalKeywords());
 
+        
+        HashSet<String> kwds = new HashSet<>();
+        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle()));
+        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getDescription()));
+        for (SiteNameKeyword kwd : resource.getActiveSiteNameKeywords()) {
+        	kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+        }
+        for (OtherKeyword kwd : resource.getActiveOtherKeywords()) {
+        	kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+        }
+        
         GeneralKeywordBuilder gkb = new GeneralKeywordBuilder(resource, data);
         String text = gkb.getKeywords();
         doc.setField(QueryFieldNames.ALL, text);

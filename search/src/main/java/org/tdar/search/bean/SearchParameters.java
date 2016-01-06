@@ -26,7 +26,7 @@ import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
+import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.CreatorOwnerQueryPart;
 import org.tdar.search.query.part.CreatorQueryPart;
@@ -330,7 +330,7 @@ public class SearchParameters {
         if (CollectionUtils.isNotEmpty(siteNames)) {
             QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
             for (String q : siteNames) {
-                if (StringUtils.isNotBlank(q) && SiteCodeTokenizingAnalyzer.pattern.matcher(q).matches()) {
+                if (StringUtils.isNotBlank(q) && SiteCodeExtractor.matches(q)) {
                     FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, q);
                     siteCodePart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
                     siteCodePart.setDisplayName(support.getText("searchParameters.site_code"));

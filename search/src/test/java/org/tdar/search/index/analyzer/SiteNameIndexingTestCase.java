@@ -1,19 +1,17 @@
-package org.tdar.search;
+package org.tdar.search.index.analyzer;
 
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.io.StringReader;
+import java.util.Iterator;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.search.index.analyzer.SiteCodeTokenizingAnalyzer;
 
 public class SiteNameIndexingTestCase {
 
@@ -21,7 +19,7 @@ public class SiteNameIndexingTestCase {
 
     @Test
     public void testRegexp() {
-        Pattern compile = SiteCodeTokenizingAnalyzer.pattern;
+        Pattern compile = SiteCodeExtractor.pattern;
         assertMatches(compile, "CA-AAA-0001");
         assertMatches(compile, "GA-AA-0001");
         assertMatches(compile, "AZ AA:01:01(XXX)");
@@ -43,28 +41,26 @@ public class SiteNameIndexingTestCase {
 
     @Test
     public void testReader() throws IOException {
-        StringReader reader = new StringReader(" CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462");
-        SiteCodeTokenizingAnalyzer tokenizer = new SiteCodeTokenizingAnalyzer();
-        TokenStream tokenStream = tokenizer.tokenStream("test", reader);
-        while (tokenStream.incrementToken()) {
-            String term = tokenStream.getAttribute(CharTermAttribute.class).toString();
+        String reader = " CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462";
+        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader);
+        Iterator<String> iterator = found.iterator();
+        while (iterator.hasNext()) {
+            String term = iterator.next();
             logger.debug(term);
-            assertMatches(SiteCodeTokenizingAnalyzer.pattern, term);
+            assertMatches(SiteCodeExtractor.pattern, term);
         }
-        tokenizer.close();
     }
 
     @Test
     public void testReader2() throws IOException {
-        StringReader reader = new StringReader("44PG0462");
-        SiteCodeTokenizingAnalyzer tokenizer = new SiteCodeTokenizingAnalyzer();
-        TokenStream tokenStream = tokenizer.tokenStream("test", reader);
-        while (tokenStream.incrementToken()) {
-            String term = tokenStream.getAttribute(CharTermAttribute.class).toString();
+        String reader = "44PG0462";
+        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader);
+        Iterator<String> iterator = found.iterator();
+        while (iterator.hasNext()) {
+            String term = iterator.next();
             logger.debug(term);
-            assertMatches(SiteCodeTokenizingAnalyzer.pattern, term);
+            assertMatches(SiteCodeExtractor.pattern, term);
         }
-        tokenizer.close();
     }
 
     public void assertMatches(Pattern pattern, String text) {
