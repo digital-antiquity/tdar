@@ -42,7 +42,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.search.index.bridge.GeneralKeywordBuilder;
+import org.tdar.search.index.GeneralKeywordBuilder;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.DataUtil;
 import org.tdar.utils.PersistableUtils;

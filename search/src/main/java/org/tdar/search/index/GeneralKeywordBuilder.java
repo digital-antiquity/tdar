@@ -1,4 +1,4 @@
-package org.tdar.search.index.bridge;
+package org.tdar.search.index;
 
 import java.io.Serializable;
 import java.util.Collection;
