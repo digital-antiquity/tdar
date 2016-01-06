@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.math.NumberUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -229,7 +228,6 @@ public class SearchDao<I extends Indexable> {
 			}
 		}
 		resultHandler.setResults(toReturn);
-		results.setResultList(toReturn);
 	}
 
 	private void obfuscateAndMarkViewable(SearchResultHandler<I> resultHandler, I p) {

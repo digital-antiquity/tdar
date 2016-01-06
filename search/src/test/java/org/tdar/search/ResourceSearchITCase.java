@@ -1196,8 +1196,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(authorDocument);
         searchIndexService.index(hiddenDocument);
 
-        SearchResultHandler<Resource> result = new SearchResult<>();
-        result.setRecordsPerPage(Integer.MAX_VALUE);
+        SearchResultHandler<Resource> result = new SearchResult<>(Integer.MAX_VALUE);
         result.setSortField(SortOption.RELEVANCE);
         resourceSearchService.generateQueryForRelatedResources(getAdminUser(), null, result, MessageHelper.getInstance());
         for (Resource r : result.getResults()) {
@@ -1617,9 +1616,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     public SearchResult<Resource> performSearch(String term, Long projectId, Long collectionId, Boolean includeParent, Long categoryId, TdarUser user,
             ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws ParseException, SolrServerException, IOException {
-        SearchResult<Resource> result = new SearchResult<>();
+        SearchResult<Resource> result = new SearchResult<>(max);
         logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
-        result.setRecordsPerPage(max);
         ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent, collectionId, categoryId, permission, reservedSearchParameters);
         resourceSearchService.lookupResource(user, rl, result, MessageHelper.getInstance());
         return result;

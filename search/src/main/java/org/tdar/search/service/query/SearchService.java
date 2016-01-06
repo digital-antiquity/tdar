@@ -319,11 +319,9 @@ import com.opensymphony.xwork2.TextProvider;
          q.append(new FieldQueryPart<>("status", Status.ACTIVE));
          List<Creator> list = null;
          logger.trace(q.generateQueryString());
-         SearchResultHandler<I> handler = new SearchResult<>();
-         SolrSearchObject<I> search = searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
-         search.setMaxResults(maxToResolve);
-         list = (List<Creator>)search.getResultList();
-         if (CollectionUtils.isNotEmpty(list)) {
+         SearchResultHandler<I> handler = new SearchResult<>(maxToResolve);
+         searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
+         if (CollectionUtils.isNotEmpty(handler.getResults())) {
              for (Creator c : list) {
                  values.add(new ResourceCreatorProxy(c, rc.getRole()));
              }
@@ -354,12 +352,11 @@ import com.opensymphony.xwork2.TextProvider;
          params.getStatuses().add(Status.ACTIVE);
          ResourceQueryBuilder qb = new ResourceQueryBuilder();
          qb.append(params.toQueryPartGroup(MessageHelper.getInstance()));
-         SearchResult<Resource> result = new SearchResult<>();
+         SearchResult<Resource> result = new SearchResult<>(10);
          result.setAuthenticatedUser(authenticatedUser);
          result.setSortField(SortOption.ID_REVERSE);
          result.setSecondarySortField(SortOption.TITLE);
          result.setStartRecord(0);
-         result.setRecordsPerPage(10);
          handleSearch(qb, result, provider);
          return (List<Resource>) ((List<?>) result.getResults());
      }
@@ -371,12 +368,11 @@ import com.opensymphony.xwork2.TextProvider;
          ResourceQueryBuilder qb = new ResourceQueryBuilder();
          params.getRegisteredDates().add(new DateRange(d, null));
          qb.append(params.toQueryPartGroup(MessageHelper.getInstance()));
-         SearchResult<Resource> result = new SearchResult<>();
+         SearchResult<Resource> result = new SearchResult<>(1000);
          result.setAuthenticatedUser(authenticatedUser);
          result.setSortField(SortOption.ID_REVERSE);
          result.setSecondarySortField(SortOption.TITLE);
          result.setStartRecord(0);
-         result.setRecordsPerPage(1000);
          handleSearch(qb, result, provider);
          return (List<Resource>) ((List<?>) result.getResults());
      }

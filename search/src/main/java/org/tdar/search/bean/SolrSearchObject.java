@@ -41,8 +41,6 @@ public class SolrSearchObject<I extends Indexable> {
     private QueryBuilder builder;
     // solr documents returned
     private SolrDocumentList documentList;
-    @Deprecated
-    private List<I> resultList;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     
     //final solr/lucene  query string
@@ -222,14 +220,6 @@ public class SolrSearchObject<I extends Indexable> {
 			idList.add(id);
 			searchByMap.get(key).add(id);
         }
-    }
-
-    public void setResultList(List<I> resultList) {
-        this.resultList = resultList;
-    }
-
-    public List<I> getResultList() {
-        return resultList;
     }
 
     public String getQueryString() {

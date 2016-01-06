@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -66,8 +65,7 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     }
 
     private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title) throws ParseException, SolrServerException, IOException {
-        SearchResult<ResourceCollection> results = new SearchResult();
-        results.setRecordsPerPage(100);
+        SearchResult<ResourceCollection> results = new SearchResult<>(100);
         collectionSearchService.findCollection(user, permission, title,results, MessageHelper.getInstance());
         return results;
     }

@@ -27,8 +27,14 @@ public class SearchResult<I extends Indexable> implements FacetedResultHandler<I
     private String searchDescription;
     private FacetWrapper facetWrapper;
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;    
+
+    public SearchResult() {}
     
-    @Override
+    public SearchResult(int i) {
+    	this.recordsPerPage = i;
+	}
+
+	@Override
     public SortOption getSortField() {
         return sortField;
     }
