@@ -1,4 +1,4 @@
-package org.tdar.tag.bean;
+package org.tdar.tag;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;

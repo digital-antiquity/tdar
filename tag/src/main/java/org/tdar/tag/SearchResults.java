@@ -1,4 +1,4 @@
-package org.tdar.tag.bean;
+package org.tdar.tag;
 
 import java.util.ArrayList;
 import java.util.List;

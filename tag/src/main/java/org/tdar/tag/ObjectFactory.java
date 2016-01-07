@@ -1,15 +1,15 @@
-package org.tdar.tag.bean;
+package org.tdar.tag;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;
 import javax.xml.bind.annotation.XmlRegistry;
 import javax.xml.namespace.QName;
 
-import org.tdar.tag.bean.Query.What;
-import org.tdar.tag.bean.Query.When;
-import org.tdar.tag.bean.Query.Where;
-import org.tdar.tag.bean.SearchResults.Meta;
-import org.tdar.tag.bean.SearchResults.Results;
+import org.tdar.tag.Query.What;
+import org.tdar.tag.Query.When;
+import org.tdar.tag.Query.Where;
+import org.tdar.tag.SearchResults.Meta;
+import org.tdar.tag.SearchResults.Results;
 
 /**
  * This object contains factory methods for each

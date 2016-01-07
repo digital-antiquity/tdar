@@ -1,4 +1,4 @@
-package org.tdar.tag.server;
+package org.tdar.tag;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,17 +41,11 @@ import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.tag.bean.GetXsltTemplate;
-import org.tdar.tag.bean.GetXsltTemplateResponse;
-import org.tdar.tag.bean.Query;
-import org.tdar.tag.bean.ResultType;
-import org.tdar.tag.bean.SearchResults;
-import org.tdar.tag.bean.SubjectType;
-import org.tdar.tag.bean.Query.What;
-import org.tdar.tag.bean.Query.When;
-import org.tdar.tag.bean.Query.Where;
-import org.tdar.tag.bean.SearchResults.Meta;
-import org.tdar.tag.bean.SearchResults.Results;
+import org.tdar.tag.Query.What;
+import org.tdar.tag.Query.When;
+import org.tdar.tag.Query.Where;
+import org.tdar.tag.SearchResults.Meta;
+import org.tdar.tag.SearchResults.Results;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.w3c.dom.Document;

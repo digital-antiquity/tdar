@@ -1,4 +1,4 @@
-package org.tdar.tag.bean;
+package org.tdar.tag;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
