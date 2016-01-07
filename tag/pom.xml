@@ -27,31 +27,6 @@
 		<name>The Digital Archaeological Record</name>
 		<url>http://www.tdar.org</url>
 	</organization>
-    <dependencyManagement>
-        <dependencies>
-        <!-- CXF for web-services endpoint -->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${apache.cxf.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${apache.cxf.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>asm</artifactId>
-                    <groupId>asm</groupId>
-                </exclusion>
-            </exclusions>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-
-        </dependencies>
-    </dependencyManagement>
-
 	<!-- 3rd party dependencies and libraries -->
 	<dependencies>
 		<dependency>
@@ -78,6 +53,25 @@
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
+        <!-- CXF for web-services endpoint -->
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-transports-http</artifactId>
+            <version>${apache.cxf.version}</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.cxf</groupId>
+            <artifactId>cxf-rt-frontend-jaxws</artifactId>
+            <version>${apache.cxf.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>asm</artifactId>
+                    <groupId>asm</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
 		
 	</dependencies>
 
@@ -96,9 +90,7 @@
 				<directory>${basedir}/src/main/resources</directory>
 				<excludes>
 					<exclude>tdar.properties</exclude>
-					<exclude>crowd.properties</exclude>
 					<exclude>hibernate.properties</exclude>
-					<exclude>common.json</exclude>
 					<exclude>liquibase.properties</exclude>
 				</excludes>
 			</resource>
@@ -157,16 +149,6 @@
 					<!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                     <!-- <outputDirectory>${webapp.deploy.dir}</outputDirectory> -->
 					<!--<webXml>${webXmlPath}</webXml> -->
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
-				<configuration>
-					<excludes>
-						<exclude>org/tdar/tag/TagAppConfiguration.*</exclude>
-					</excludes>
 				</configuration>
 			</plugin>
 			<plugin>
