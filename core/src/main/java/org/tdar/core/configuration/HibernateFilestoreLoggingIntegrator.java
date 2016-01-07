@@ -10,7 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.dao.FilestoreLoggingEventListener;
 
-public class HibernateIntegrator implements Integrator {
+public class HibernateFilestoreLoggingIntegrator implements Integrator {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 

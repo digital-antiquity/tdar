@@ -317,11 +317,11 @@ import com.opensymphony.xwork2.TextProvider;
          }
 
          q.append(new FieldQueryPart<>("status", Status.ACTIVE));
-         List<Creator> list = null;
          logger.trace(q.generateQueryString());
          SearchResultHandler<I> handler = new SearchResult<>(maxToResolve);
          searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
-         if (CollectionUtils.isNotEmpty(handler.getResults())) {
+         List<Creator> list = (List<Creator>)handler.getResults();
+		if (CollectionUtils.isNotEmpty(list)) {
              for (Creator c : list) {
                  values.add(new ResourceCreatorProxy(c, rc.getRole()));
              }
