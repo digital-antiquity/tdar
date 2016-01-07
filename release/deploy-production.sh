@@ -59,7 +59,7 @@ cd /home/tdar/tdar.src/
 hg pull
 hg update -C
 mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base,search
-mvn clean compile war:war -Pminify-web-resources -pl web,oai-pmh,dataone
+mvn clean compile war:war -Pminify-web-resources -pl tag,web,oai-pmh,dataone
 mvn process-resources -Pliquibase -pl web
 
 if [ $? -ne 0 ] 
@@ -77,5 +77,7 @@ if [ $? -ne 0 ]
       sudo rm -Rrf ~tdar/app/oai-pmh
       # sudo cp dataone/target/tdar-dataone.war ~tdar/app/dataone.war
       # sudo rm -Rrf ~tdar/app/dataone
+      # sudo cp tag/target/tdar-tag.war ~tdar/app/services.war
+      # sudo rm -Rrf ~tdar/app/services
       sudo service tomcat7 restart
 fi
