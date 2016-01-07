@@ -23,6 +23,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.utils.MessageHelper;
 
@@ -36,6 +37,8 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
 
     @Autowired
     private transient SearchService<Resource> searchService;
+    @Autowired
+    private transient SearchIndexService searchIndexService;
 
     @Autowired
     private transient EmailService emailService;
@@ -52,7 +55,6 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
         ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
         try {
             logger.error("disabeld");
-         resources = searchService.findRecentResourcesSince(time.toDate(), null, MessageHelper.getInstance());
             MessageHelper messageHelper = MessageHelper.getInstance();
             resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
             collection.markUpdated(genericService.find(TdarUser.class, config.getAdminUserId()));
@@ -61,8 +63,13 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
                     Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY), config.getSiteAcronym())));
             collection.setSortBy(SortOption.RESOURCE_TYPE);
             genericService.saveOrUpdate(collection);
-            collection.getResources().addAll(resources);
+            for (Resource r : resources) {
+            	collection.getResources().add(r);
+            	r.getResourceCollections().add(collection);
+                genericService.saveOrUpdate(r);
+            }
             genericService.saveOrUpdate(collection);
+            searchIndexService.indexCollection(resources);
         } catch (Exception e) {
             logger.error("issue in recent resources report", e);
         }

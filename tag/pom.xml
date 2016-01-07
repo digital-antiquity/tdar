@@ -205,7 +205,7 @@
 						<display.port>${display.port}</display.port>
 					</systemPropertyVariables>
 					<argLine>${jvm.args}
-						-DenableContextSwitchingConfig=true</argLine>
+						-DenableContextSwitchingConfig=true  -Dsolr.data.dir=target/solr-failsafe</argLine>
 				</configuration>
 			</plugin>
 		</plugins>

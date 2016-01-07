@@ -8,7 +8,7 @@ import org.tdar.core.configuration.TdarAppConfiguration;
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
 @Configuration()
 @EnableCaching
-public class TdarSearchAppConfiguration extends TdarAppConfiguration {
+public class TdarSearchAppConfiguration extends TdarAppConfiguration implements HasSearchIndex {
 
 
     private static final long serialVersionUID = -4500782466973090097L;

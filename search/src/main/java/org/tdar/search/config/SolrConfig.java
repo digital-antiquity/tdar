@@ -2,6 +2,7 @@ package org.tdar.search.config;
 
 import java.io.File;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PreDestroy;
@@ -26,7 +27,9 @@ import org.tdar.core.configuration.SimpleAppConfiguration;
 @PropertySource(value = "file://${TDAR_CONFIG_PATH}/" + SolrConfig.SEARCH_PROPERTIES, ignoreResourceNotFound = true)
 public class SolrConfig {
     
-    public static final String SEARCH_PROPERTIES = "search.properties";
+    private static final String TARGET_CLASSES_SOLR = "target/classes/solr/";
+
+	public static final String SEARCH_PROPERTIES = "search.properties";
     
     @Resource
     private Environment environment;
@@ -83,12 +86,15 @@ public class SolrConfig {
         }
         
         String solrServerPath = environment.getProperty("solr.server.path");
-        File defaultTestPath = new File("target/classes/solr/");
+        File defaultTestPath = new File(TARGET_CLASSES_SOLR);
         Path path = defaultTestPath.toPath();
         //fixme: brittle
-        File globalTestPath = new File("web/target/classes/solr/");
-        if (globalTestPath.exists()) {
-            path = globalTestPath.toPath();
+        List<String> paths = Arrays.asList("","web/","tag/");
+        for (String path_ : paths) {
+        	File globalTestPath = new File(path_ + TARGET_CLASSES_SOLR);
+	        if (globalTestPath.exists()) {
+	            path = globalTestPath.toPath();
+	        }
         }
         if (StringUtils.isNotBlank(solrServerPath)) {
             File dir = new File(solrServerPath);
@@ -96,6 +102,7 @@ public class SolrConfig {
                 path = dir.toPath();
             }
         }
+        logger.debug("solr server path: {}", path);
         solrServer = new EmbeddedSolrServer(path, "resources");
         logger.debug("initializing embedded Solr:{}", solrServer);
         return solrServer;

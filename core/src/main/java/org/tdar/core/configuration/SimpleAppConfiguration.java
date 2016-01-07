@@ -106,10 +106,6 @@ public abstract class SimpleAppConfiguration implements Serializable {
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
         builder.scanPackages(new String[] { "org.tdar" });
         builder.addProperties(properties);
-        if (disableHibernateSearch()) {
-            builder.setProperty("hibernate.search.autoregister_listeners", "false");
-            builder.setProperty("hibernate.search.indexing_strategy", "manual");
-        }
         return builder.buildSessionFactory();
     }
 
