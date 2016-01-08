@@ -68,6 +68,7 @@
         <#if results?has_content>
         <div id="divResultsSortControl">
             <h2>Resources Inside This Collection</h2>
+	        <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
             <div class="row">
                 <div class="span4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
@@ -75,6 +76,7 @@
                 <div class="span5"></div>
             </div>
         </div>
+        
         
         
         <div class="collection-facets">

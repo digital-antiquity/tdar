@@ -127,7 +127,7 @@ public class SearchDao<I extends Indexable> {
 				FacetField fld = new FacetField(field);
 				for (Object obj : list) {
 					SimpleOrderedMap f = (SimpleOrderedMap)obj;
-					fld.add((String)f.get("val"),((Number)f.get("count")).longValue());
+					fld.add(f.get("val").toString(),((Number)f.get("count")).longValue());
 					
 				}
 				rsp.getFacetFields().add(fld);

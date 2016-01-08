@@ -199,18 +199,18 @@
     </#macro>
 
 
-    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" liCssClass="media" action=actionName>
+    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true >
         <#if (facetlist?? && !facetlist.empty)>
             <#if label != ''>
             <h4>${label}:</h4>
             </#if>
-        <ul class="media-list tools">
+        <ul class="${ulClass}">
             <#list facetlist as facet>
                 <li class="${liCssClass}">
                     <#if (facetlist?size > 1)>
 
                         <span class="media-body">
-                
+                <#if link>
                 <a rel="noindex" href="<@s.url action=action includeParams="all">
                     <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
@@ -225,8 +225,11 @@
                     </#if>
                     <#nested>
                 </@s.url>">
-                    <i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i>
-                <@s.text name="${facet.label}"/></a> <span>(${facet.count})</span></span>
+                </#if>
+                    <#if icon><i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i></#if>
+                <@s.text name="${facet.label}"/>
+				<#if link></a></#if>
+				 <span>(${facet.count})</span></span>
                     <#elseif (currentValues?size > 0) >
                         <@removeFacet facetlist=currentValues facetParam=facetParam />
                     <#else>

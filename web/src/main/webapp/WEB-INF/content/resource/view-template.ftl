@@ -554,6 +554,10 @@
     </#if>
     <#if !resource.resourceType.project>
         <@view.uploadedFileInfo />
+	<#else>
+		<p>Project Contents</p>
+        <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
+	
     </#if>
         <ul class="inline">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
