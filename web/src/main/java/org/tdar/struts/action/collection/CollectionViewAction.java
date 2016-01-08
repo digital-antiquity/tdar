@@ -234,7 +234,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
-        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, selectedResourceTypes);
         setSortField(getPersistable().getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);

@@ -1,8 +1,9 @@
 package org.tdar.search;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -18,6 +19,8 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.utils.MessageHelper;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
@@ -43,6 +46,35 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
                 seenDatasets = true;
             }
         }
+        assertTrue(seenDatasets);
+        assertTrue(seenDocuments);
+    }
+    
+    @Test
+    @Rollback
+    public void testFacetByEnumWithLimit() throws SolrServerException, IOException, ParseException {
+        SearchResult<Resource> result = new SearchResult<>();
+        FacetWrapper facetWrapper = new FacetWrapper();
+        ArrayList<ResourceType> lst = new ArrayList<>();
+        lst.add(ResourceType.DOCUMENT);
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class,lst);
+        result.setFacetWrapper(facetWrapper);
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
+        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        logger.debug("{}", result.getFacetWrapper().getFacetResults());
+        List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
+        assertNotEmpty(list);
+        boolean seenDocuments = false;
+        boolean seenDatasets = false;
+        for (Facet facet : list) {
+            if (facet.getLabel().contains("Documents") && facet.getCount() > 0) {
+                seenDocuments = true;
+            }
+            if (facet.getLabel().contains("Datasets") && facet.getCount() > 0) {
+                seenDatasets = true;
+            }
+        }
+        assertEquals(5, result.getTotalRecords());
         assertTrue(seenDatasets);
         assertTrue(seenDocuments);
     }

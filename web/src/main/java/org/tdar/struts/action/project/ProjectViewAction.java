@@ -78,7 +78,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         if (project.getSecondarySortBy() != null) {
             setSecondarySortField(project.getSecondarySortBy());
         }
-        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class);
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class, selectedResourceTypes);
         Date dateUpdated = project.getDateUpdated();
         if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
             projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;

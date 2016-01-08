@@ -27,251 +27,271 @@ import org.tdar.search.query.facet.FacetedResultHandler;
 
 /**
  * This is a wrapper around the SOLRJ request
+ * 
  * @author abrin
  *
  * @param <I>
  */
 public class SolrSearchObject<I extends Indexable> {
 
-    private String sortParam = "";
-    private int resultSize;
-    private int startRecord;
-    private String coreName;
+	private String sortParam = "";
+	private int resultSize;
+	private int startRecord;
+	private String coreName;
 
-    private QueryBuilder builder;
-    // solr documents returned
-    private SolrDocumentList documentList;
-    private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    
-    //final solr/lucene  query string
-    private String queryString;
-    // fields to facet on
-    private List<String> facetFields = new ArrayList<>();
-    
-    private Integer totalResults = 0;
-    // max # of facets
-    private Integer facetLimit;
-    // min # of items to show in a facet
-    private Integer facetMinCount;
+	private QueryBuilder builder;
+	// solr documents returned
+	private SolrDocumentList documentList;
+	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    // a list of the (persistable) ids returned by the query in the appropriate order 
-    private List<Long> idList = new ArrayList<>();
-    // a map of the class (as string) and list of ids grouped, lists are in order.  Theoretically
-    // this map should only ever have one key
+	// final solr/lucene query string
+	private String queryString;
+	// fields to facet on
+	private List<String> facetFields = new ArrayList<>();
+	private List<String> filters = new ArrayList<>();
+	private Integer totalResults = 0;
+	// max # of facets
+	private Integer facetLimit;
+	// min # of items to show in a facet
+	private Integer facetMinCount;
+
+	// a list of the (persistable) ids returned by the query in the appropriate
+	// order
+	private List<Long> idList = new ArrayList<>();
+	// a map of the class (as string) and list of ids grouped, lists are in
+	// order. Theoretically
+	// this map should only ever have one key
 	private Map<String, List<Long>> searchByMap = new HashMap<>();
+	private StringBuilder facetText = new StringBuilder();
 
-    public SolrSearchObject(QueryBuilder queryBuilder, SearchResultHandler<I> handler) {
-        this.builder = queryBuilder;
-        this.coreName = queryBuilder.getCoreName();
-        this.setMaxResults(handler.getRecordsPerPage());
-        this.setFirstResult(handler.getStartRecord());
+	public SolrSearchObject(QueryBuilder queryBuilder, SearchResultHandler<I> handler) {
+		this.builder = queryBuilder;
+		this.coreName = queryBuilder.getCoreName();
+		this.setMaxResults(handler.getRecordsPerPage());
+		this.setFirstResult(handler.getStartRecord());
 
-        List<String> sort = new ArrayList<>();
-        if (handler.getSortField() != null) {
-            addSortField(handler.getSortField(), sort);
-        }
-        if (handler.getSecondarySortField() != null) {
-            addSortField(handler.getSecondarySortField(), sort);
-        }
-        if (CollectionUtils.isNotEmpty(sort)) {
-            setSortParam(StringUtils.join(sort, ","));
-        }
-        handleFacets(handler);
-    }
+		List<String> sort = new ArrayList<>();
+		if (handler.getSortField() != null) {
+			addSortField(handler.getSortField(), sort);
+		}
+		if (handler.getSecondarySortField() != null) {
+			addSortField(handler.getSecondarySortField(), sort);
+		}
+		if (CollectionUtils.isNotEmpty(sort)) {
+			setSortParam(StringUtils.join(sort, ","));
+		}
+		handleFacets(handler);
+	}
 
-    private void handleFacets(SearchResultHandler<I> handler) {
-        if (handler instanceof FacetedResultHandler) {
-            FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
-            FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
-            if (wrap != null) {
-                for (String facet : wrap.getFacetFieldNames()) {
-                    if (StringUtils.isNotBlank(facet)) {
-                        facetFields.add(facet);
-                    }
-                }
-            }
-        }
-    }
+	private void handleFacets(SearchResultHandler<I> handler) {
+		if (handler instanceof FacetedResultHandler) {
+			FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
+			FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
+			if (wrap != null) {
+				for (String facet : wrap.getFacetFieldNames()) {
+					if (StringUtils.isNotBlank(facet)) {
+						if (facetText.length() > 0) {
+							facetText.append(", ");
+						}
+						String exclude = "";
+						String filter = wrap.getFilter(facet);
+						if (StringUtils.isNotBlank(filter)) {
+							filters.add(String.format("{!tag=%s}%s:(%s)", facet, facet, filter));
+							exclude = String.format(", domain:{excludeTags:%s}", facet);
+						}
+						facetText.append(String.format("%s:{field:%s, type:terms %s}", facet, facet, exclude));
+					}
+				}
+				if (facetText.length() > 0 ) {
+					facetText.insert(0, "{");
+					facetText.append("}");
+				}
+			}
+		}
+	}
 
-    private void addSortField(SortOption option, List<String> sort) {
-        String sortName = getSortFieldName(option);
-        logger.trace("{} - {}", option, sortName);
-        if (sortName != null) {
-            sort.add( sortName+ " " + option.getSortOrder());
-        }
-    }
+	private void addSortField(SortOption option, List<String> sort) {
+		String sortName = getSortFieldName(option);
+		logger.trace("{} - {}", option, sortName);
+		if (sortName != null) {
+			sort.add(sortName + " " + option.getSortOrder());
+		}
+	}
 
-    private String getSortFieldName(SortOption sortField) {
-        if (sortField == null) {
-            return null;
-        }
-        switch (sortField) {
-            case COLLECTION_TITLE:
-            case COLLECTION_TITLE_REVERSE:
-            case CREATOR_NAME:
-            case CREATOR_NAME_REVERSE:
-            case LABEL:
-            case LABEL_REVERSE:
-            case TITLE:
-            case TITLE_REVERSE:
-                return QueryFieldNames.NAME_SORT;
-            case DATE:
-            case DATE_REVERSE:
-                return QueryFieldNames.DATE;
-            case DATE_UPDATED:
-            case DATE_UPDATED_REVERSE:
-                return QueryFieldNames.DATE_UPDATED;
-            case FIRST_NAME:
-            case FIRST_NAME_REVERSE:
-                return QueryFieldNames.FIRST_NAME_SORT;
-            case ID:
-            case ID_REVERSE:
-                return QueryFieldNames.ID;
-            case LAST_NAME:
-            case LAST_NAME_REVERSE:
-                return QueryFieldNames.LAST_NAME_SORT;
-            case PROJECT:
-                return QueryFieldNames.PROJECT_TITLE_SORT;
-            case RELEVANCE:
-                return "score";
-            case RESOURCE_TYPE:
-            case RESOURCE_TYPE_REVERSE:
-                return QueryFieldNames.RESOURCE_TYPE_SORT;
-            default:
-                break;
-        }
-        return null;
-    }
+	private String getSortFieldName(SortOption sortField) {
+		if (sortField == null) {
+			return null;
+		}
+		switch (sortField) {
+		case COLLECTION_TITLE:
+		case COLLECTION_TITLE_REVERSE:
+		case CREATOR_NAME:
+		case CREATOR_NAME_REVERSE:
+		case LABEL:
+		case LABEL_REVERSE:
+		case TITLE:
+		case TITLE_REVERSE:
+			return QueryFieldNames.NAME_SORT;
+		case DATE:
+		case DATE_REVERSE:
+			return QueryFieldNames.DATE;
+		case DATE_UPDATED:
+		case DATE_UPDATED_REVERSE:
+			return QueryFieldNames.DATE_UPDATED;
+		case FIRST_NAME:
+		case FIRST_NAME_REVERSE:
+			return QueryFieldNames.FIRST_NAME_SORT;
+		case ID:
+		case ID_REVERSE:
+			return QueryFieldNames.ID;
+		case LAST_NAME:
+		case LAST_NAME_REVERSE:
+			return QueryFieldNames.LAST_NAME_SORT;
+		case PROJECT:
+			return QueryFieldNames.PROJECT_TITLE_SORT;
+		case RELEVANCE:
+			return "score";
+		case RESOURCE_TYPE:
+		case RESOURCE_TYPE_REVERSE:
+			return QueryFieldNames.RESOURCE_TYPE_SORT;
+		default:
+			break;
+		}
+		return null;
+	}
 
-    public void setFirstResult(int startRecord) {
-        this.startRecord = startRecord;
-    }
+	public void setFirstResult(int startRecord) {
+		this.startRecord = startRecord;
+	}
 
-    public void setMaxResults(int recordsPerPage) {
-        this.resultSize = recordsPerPage;
-    }
+	public void setMaxResults(int recordsPerPage) {
+		this.resultSize = recordsPerPage;
+	}
 
-    public SolrParams getSolrParams() {
-        SolrQuery solrQuery = new SolrQuery();
-        setQueryString(builder.generateQueryString());
-        solrQuery.setParam("q", getQueryString());
-        solrQuery.setParam("start", Integer.toString(startRecord));
-        solrQuery.setParam("rows", Integer.toString(resultSize));
+	public SolrParams getSolrParams() {
+		SolrQuery solrQuery = new SolrQuery();
+		setQueryString(builder.generateQueryString());
+		solrQuery.setParam("q", getQueryString());
+		solrQuery.setParam("start", Integer.toString(startRecord));
+		solrQuery.setParam("rows", Integer.toString(resultSize));
 
-        if (CollectionUtils.isNotEmpty(facetFields)) {
-            solrQuery.addFacetField(facetFields.toArray(new String[0]));
-            solrQuery.setParam("facet","on");
-        }
-        if (facetLimit != null) {
-            solrQuery.setFacetLimit(facetLimit);
-        }
-        if (facetMinCount != null) {
-            solrQuery.setFacetMinCount(facetMinCount);
-        }
+		if (facetText.length() > 0) {
+			solrQuery.setParam("json.facet",facetText.toString());
+			solrQuery.setParam("facet", "on");
+		}
+		if (CollectionUtils.isNotEmpty(filters)) {
+			solrQuery.setParam("fq",filters.toArray(new String[0]));
+		}
+		if (facetLimit != null) {
+			solrQuery.setFacetLimit(facetLimit);
+		}
+		if (facetMinCount != null) {
+			solrQuery.setFacetMinCount(facetMinCount);
+		}
 
-        //        solrQuery.setFacetSort(sort)
+		// solrQuery.setFacetSort(sort)
 
-        if (StringUtils.isNotBlank(sortParam)) {
-            solrQuery.setParam("sort", sortParam);
-        }
-        Set<String> fieldList = new HashSet<>();
-        fieldList.addAll(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"));
-//        fieldList.addAll(facetFields);
-        solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}", solrQuery);
-        }
-        return solrQuery;
-    }
+		if (StringUtils.isNotBlank(sortParam)) {
+			solrQuery.setParam("sort", sortParam);
+		}
+		Set<String> fieldList = new HashSet<>();
+		fieldList.addAll(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"));
+		// fieldList.addAll(facetFields);
+		solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
+		if (logger.isTraceEnabled()) {
+			logger.trace("{}", solrQuery);
+		}
+		return solrQuery;
+	}
 
-    public List<Long> getIdList() {
-        return idList;
-    }
+	public List<Long> getIdList() {
+		return idList;
+	}
 
-    public String getSortParam() {
-        return sortParam;
-    }
+	public String getSortParam() {
+		return sortParam;
+	}
 
-    public void setSortParam(String sortParam) {
-        this.sortParam = sortParam;
-    }
+	public void setSortParam(String sortParam) {
+		this.sortParam = sortParam;
+	}
 
-    public String getCoreName() {
-        return coreName;
-    }
+	public String getCoreName() {
+		return coreName;
+	}
 
-    public void setCoreName(String coreName) {
-        this.coreName = coreName;
-    }
+	public void setCoreName(String coreName) {
+		this.coreName = coreName;
+	}
 
-    public void processResults(QueryResponse rsp) {
-        SolrDocumentList results = rsp.getResults();
-        this.setDocumentList(results);
-        if (logger.isTraceEnabled()) {
-            logger.trace("results:{}", results);
-        }
-        setTotalResults((int) results.getNumFound());
-        for (SolrDocument doc : results) {
-            Long id = (Long) doc.get(QueryFieldNames.ID);
-            String  key = (String) doc.get(QueryFieldNames.CLASS);
+	public void processResults(QueryResponse rsp) {
+		SolrDocumentList results = rsp.getResults();
+		this.setDocumentList(results);
+		if (logger.isTraceEnabled()) {
+			logger.trace("results:{}", results);
+		}
+		setTotalResults((int) results.getNumFound());
+		for (SolrDocument doc : results) {
+			Long id = (Long) doc.get(QueryFieldNames.ID);
+			String key = (String) doc.get(QueryFieldNames.CLASS);
 			if (searchByMap.get(key) == null) {
-            	searchByMap.put(key, new ArrayList<>());
-            }
+				searchByMap.put(key, new ArrayList<>());
+			}
 			idList.add(id);
 			searchByMap.get(key).add(id);
-        }
-    }
+		}
+	}
 
-    public String getQueryString() {
-        return queryString;
-    }
+	public String getQueryString() {
+		return queryString;
+	}
 
-    public void setQueryString(String queryString) {
-        this.queryString = queryString;
-    }
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+	}
 
-    public SolrDocumentList getDocumentList() {
-        return documentList;
-    }
+	public SolrDocumentList getDocumentList() {
+		return documentList;
+	}
 
-    public void setDocumentList(SolrDocumentList documentList) {
-        this.documentList = documentList;
-    }
+	public void setDocumentList(SolrDocumentList documentList) {
+		this.documentList = documentList;
+	}
 
-    public Integer getTotalResults() {
-        return totalResults;
-    }
+	public Integer getTotalResults() {
+		return totalResults;
+	}
 
-    public void setTotalResults(Integer totalResults) {
-        this.totalResults = totalResults;
-    }
+	public void setTotalResults(Integer totalResults) {
+		this.totalResults = totalResults;
+	}
 
-    public List<String> getFacetFields() {
-        return facetFields;
-    }
+	public List<String> getFacetFields() {
+		return facetFields;
+	}
 
-    public void setFacetFields(List<String> facetFields) {
-        this.facetFields = facetFields;
-    }
+	public void setFacetFields(List<String> facetFields) {
+		this.facetFields = facetFields;
+	}
 
-    public Integer getFacetMinCount() {
-        return facetMinCount;
-    }
+	public Integer getFacetMinCount() {
+		return facetMinCount;
+	}
 
-    public void setFacetMinCount(Integer facetMinCount) {
-        this.facetMinCount = facetMinCount;
-    }
+	public void setFacetMinCount(Integer facetMinCount) {
+		this.facetMinCount = facetMinCount;
+	}
 
-    public Integer getFacetLimit() {
-        return facetLimit;
-    }
+	public Integer getFacetLimit() {
+		return facetLimit;
+	}
 
-    public void setFacetLimit(Integer facetLimit) {
-        this.facetLimit = facetLimit;
-    }
+	public void setFacetLimit(Integer facetLimit) {
+		this.facetLimit = facetLimit;
+	}
 
 	public Map<String, List<Long>> getSearchByMap() {
-		return this.searchByMap ;
+		return this.searchByMap;
 	}
 
 }

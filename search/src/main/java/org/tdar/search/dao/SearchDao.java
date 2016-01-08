@@ -15,6 +15,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.util.SimpleOrderedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.resource.IntegratableOptions;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -72,6 +74,8 @@ public class SearchDao<I extends Indexable> {
 	public SolrSearchObject<I> search(SolrSearchObject<I> query, SearchResultHandler<I> resultHandler,
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
 		QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
+//		logger.debug("{}",query.getSolrParams());
+//		logger.debug("{}",rsp);
 		query.processResults(rsp);
 		convertProjectedResultIntoObjects(resultHandler, query);
 		processFacets(rsp, resultHandler, provider);
@@ -88,15 +92,18 @@ public class SearchDao<I extends Indexable> {
 	 */
 	@SuppressWarnings("rawtypes")
 	public void processFacets(QueryResponse rsp, SearchResultHandler<?> handler, TextProvider provider) {
-		if (!(handler instanceof FacetedResultHandler) || CollectionUtils.isEmpty(rsp.getFacetFields())) {
+		// the JSON faceting API is not supported by solrJ -- supporting here
+		SimpleOrderedMap facetMap = (SimpleOrderedMap) rsp.getResponse().get("facets");
+		if (!(handler instanceof FacetedResultHandler) || (CollectionUtils.isEmpty(rsp.getFacetFields()) && 
+				facetMap == null)) {
 			return;
 		}
-
 		logger.trace("begin adding facets");
 		FacetedResultHandler facetHandler = (FacetedResultHandler) handler;
 		FacetWrapper wrapper = facetHandler.getFacetWrapper();
-		Map<String, List<Facet>> facetResults = wrapper.getFacetResults();
+		handleJsonFacetingApi(rsp, facetMap, wrapper);
 
+		Map<String, List<Facet>> facetResults = wrapper.getFacetResults();
 		for (FacetField field : rsp.getFacetFields()) {
 			String fieldName = field.getName();
 			Class facetClass = facetHandler.getFacetWrapper().getFacetClass(fieldName);
@@ -109,6 +116,23 @@ public class SearchDao<I extends Indexable> {
 			}
 		}
 		logger.trace("completed adding facets");
+	}
+
+	//http://yonik.com/multi-select-faceting/
+	private void handleJsonFacetingApi(QueryResponse rsp, SimpleOrderedMap facetMap, FacetWrapper wrapper) {
+		if (facetMap != null) {
+			for (String field : wrapper.getFacetFieldNames()) {
+				SimpleOrderedMap object = (SimpleOrderedMap) facetMap.get(field);
+				List list = (List) object.get("buckets");
+				FacetField fld = new FacetField(field);
+				for (Object obj : list) {
+					SimpleOrderedMap f = (SimpleOrderedMap)obj;
+					fld.add((String)f.get("val"),((Number)f.get("count")).longValue());
+					
+				}
+				rsp.getFacetFields().add(fld);
+			}
+		}
 	}
 
 	
@@ -205,6 +229,32 @@ public class SearchDao<I extends Indexable> {
 					toReturn.add(obj);
 				}
 				break;
+			case LUCENE_EXPERIMENTAL:
+				List<Long> submitterIds = new ArrayList<>();
+				List<List<Long>> rcIds = new ArrayList<>();
+				for (SolrDocument doc : results.getDocumentList()) {
+					I obj = null;
+					Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
+					String cls_ = (String) doc.getFieldValue(QueryFieldNames.CLASS);
+					try {
+						Class<I> cls = (Class<I>) Class.forName(cls_);
+						I r = cls.newInstance();
+						r.setId(id);
+						if (r instanceof Resource) {
+							Resource r_ = (Resource)r;
+							r_.setTitle((String) doc.getFieldValue(QueryFieldNames.NAME_SORT));
+							submitterIds.add((Long)doc.getFieldValue(QueryFieldNames.SUBMITTER_ID));
+							
+						}
+					} catch (ClassNotFoundException e) {
+						logger.error("error finding {}: {}", cls_, id, e);
+					} catch (InstantiationException | IllegalAccessException e) {
+						logger.error("error finding {}: {}", cls_, id, e);
+					}
+					toReturn.add(obj);
+				}
+				break;
+
 			case HIBERNATE_DEFAULT:
 				if (groupedSearchMode) {
 					// try to group the results together to improve the DB query

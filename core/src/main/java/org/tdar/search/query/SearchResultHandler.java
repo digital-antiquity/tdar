@@ -31,7 +31,8 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
         HIBERNATE_DEFAULT,
         LUCENE,
         RESOURCE_PROXY,
-        RESOURCE_PROXY_INVALIDATE_CACHE;
+        RESOURCE_PROXY_INVALIDATE_CACHE, 
+        LUCENE_EXPERIMENTAL;
 
         private List<String> projections = new ArrayList<>();
 
