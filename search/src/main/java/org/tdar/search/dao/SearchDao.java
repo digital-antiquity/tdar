@@ -28,6 +28,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -233,7 +234,6 @@ public class SearchDao<I extends Indexable> {
 				List<Long> submitterIds = new ArrayList<>();
 				List<List<Long>> rcIds = new ArrayList<>();
 				for (SolrDocument doc : results.getDocumentList()) {
-					I obj = null;
 					Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
 					String cls_ = (String) doc.getFieldValue(QueryFieldNames.CLASS);
 					try {
@@ -242,16 +242,20 @@ public class SearchDao<I extends Indexable> {
 						r.setId(id);
 						if (r instanceof Resource) {
 							Resource r_ = (Resource)r;
-							r_.setTitle((String) doc.getFieldValue(QueryFieldNames.NAME_SORT));
+							String title = (String) doc.getFieldValue(QueryFieldNames.NAME_SORT);
+							r_.setStatus(Status.valueOf((String)doc.getFieldValue(QueryFieldNames.STATUS)));
+							r_.setTitle(title);
+							Collection<Long> collectionIds = (Collection<Long>)(Collection)doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
+							obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r_,
+									resultHandler.getAuthenticatedUser(), collectionIds);
 							submitterIds.add((Long)doc.getFieldValue(QueryFieldNames.SUBMITTER_ID));
-							
 						}
+						toReturn.add(r);
 					} catch (ClassNotFoundException e) {
 						logger.error("error finding {}: {}", cls_, id, e);
 					} catch (InstantiationException | IllegalAccessException e) {
 						logger.error("error finding {}: {}", cls_, id, e);
 					}
-					toReturn.add(obj);
 				}
 				break;
 

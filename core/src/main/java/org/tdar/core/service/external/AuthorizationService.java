@@ -481,21 +481,8 @@ public class AuthorizationService implements Accessible {
         logger.trace("applying transient viewable flag to : {}", p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': {}", p);
-            boolean viewable = false; // by default -- not allowed to view
             Viewable item = (Viewable) p;
-            if (item instanceof HasStatus) { // if we have status, then work off that
-                logger.trace("item 'has status': {}", p);
-                HasStatus status = ((HasStatus) item);
-                if (!status.isActive()) { // if not active, check other permissions
-                    logger.trace("item 'is not active': {}", p);
-                    if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                        logger.trace("\tuser is special': {}", p);
-                        viewable = true;
-                    }
-                } else {
-                    viewable = true;
-                }
-            }
+            boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
                 if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isHidden()) {
@@ -515,6 +502,24 @@ public class AuthorizationService implements Accessible {
             item.setViewable(viewable);
         }
     }
+
+	private boolean setupViewable(TdarUser authenticatedUser, Viewable item) {
+		boolean viewable = false;
+		if (item instanceof HasStatus) { // if we have status, then work off that
+		    logger.trace("item 'has status': {}", item);
+		    HasStatus status = ((HasStatus) item);
+		    if (!status.isActive()) { // if not active, check other permissions
+		        logger.trace("item 'is not active': {}", item);
+		        if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+		            logger.trace("\tuser is special': {}", item);
+		            viewable = true;
+		        }
+		    } else {
+		        viewable = true;
+		    }
+		}
+		return viewable;
+	}
 
     /*
      * sets the @link Viewable status on @link InformationResourceFile and @link InformationResourceFileVersion to simplify lookups on the view layer
@@ -631,5 +636,18 @@ public class AuthorizationService implements Accessible {
         return false;
 
     }
+
+	public void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds) {
+        Viewable item = (Viewable) r_;
+        boolean viewable = setupViewable(authenticatedUser, item);
+        if (viewable) {
+        	item.setViewable(true);
+        	return;
+        }
+        logger.debug("hi");
+		if (authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds)) {
+			r_.setViewable(true);
+		}
+	}
 
 }

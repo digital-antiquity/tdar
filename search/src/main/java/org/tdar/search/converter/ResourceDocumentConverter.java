@@ -245,6 +245,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     private static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
+        Set<Long> allCollectionIds = new HashSet<Long>();
         Set<Long> collectionIds = new HashSet<Long>();
         Set<Long> directCollectionIds = new HashSet<Long>();
         Set<String> collectionNames = new HashSet<>();
@@ -257,12 +258,16 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 directCollectionNames.add(collection.getName());
                 collectionIds.addAll(collection.getParentIds());
                 collectionNames.addAll(collection.getParentNameList());
+            } else if (collection.isInternal()) {
+            	allCollectionIds.add(collection.getId());
             }
         }
         collectionIds.addAll(directCollectionIds);
+        allCollectionIds.addAll(collectionIds);
 
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, directCollectionIds);
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionIds);
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_IDS, allCollectionIds);
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, collectionNames);
     }
 

@@ -123,4 +123,5 @@ public interface QueryFieldNames {
     String VALUE = "value";
     String COLUMN_ID = "columnId";
     String VALUE_PHRASE = "value_phrase";
+	String RESOURCE_COLLECTION_IDS = "allCollectionIds";
     }

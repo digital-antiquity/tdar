@@ -21,6 +21,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
@@ -63,13 +64,14 @@ public class SolrSearchObject<I extends Indexable> {
 	// this map should only ever have one key
 	private Map<String, List<Long>> searchByMap = new HashMap<>();
 	private StringBuilder facetText = new StringBuilder();
+	private ProjectionModel projection;
 
 	public SolrSearchObject(QueryBuilder queryBuilder, SearchResultHandler<I> handler) {
 		this.builder = queryBuilder;
 		this.coreName = queryBuilder.getCoreName();
 		this.setMaxResults(handler.getRecordsPerPage());
 		this.setFirstResult(handler.getStartRecord());
-
+		this.projection = handler.getProjectionModel();
 		List<String> sort = new ArrayList<>();
 		if (handler.getSortField() != null) {
 			addSortField(handler.getSortField(), sort);
@@ -197,6 +199,13 @@ public class SolrSearchObject<I extends Indexable> {
 		Set<String> fieldList = new HashSet<>();
 		fieldList.addAll(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"));
 		// fieldList.addAll(facetFields);
+		if (projection == ProjectionModel.LUCENE_EXPERIMENTAL) {
+			fieldList.add(QueryFieldNames.NAME_SORT);
+			fieldList.add(QueryFieldNames.SUBMITTER_ID);
+			fieldList.add(QueryFieldNames.PROJECT_TITLE_SORT);
+			fieldList.add( QueryFieldNames.STATUS);
+			fieldList.add(QueryFieldNames.RESOURCE_TYPE);
+		}
 		solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
 		if (logger.isTraceEnabled()) {
 			logger.trace("{}", solrQuery);

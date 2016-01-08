@@ -56,7 +56,8 @@
     <field name="activeResourceCreators.role" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="crid" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="bookmarkedResource.person.id" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="collectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="collectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="allCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="directSharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="sharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
 

@@ -90,6 +90,7 @@ public class ResourceSearchService extends AbstractSearchService {
         qb.append(reservedSearchParameters, provider);
         qb.setOperator(Operator.AND);
         qb.append(new FieldQueryPart<>(fieldName, indexable.getId()));
+        
         searchService.handleSearch(qb, result, provider);
         return result;
     }
