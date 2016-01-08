@@ -124,6 +124,9 @@ public class SearchDao<I extends Indexable> {
 		if (facetMap != null) {
 			for (String field : wrapper.getFacetFieldNames()) {
 				SimpleOrderedMap object = (SimpleOrderedMap) facetMap.get(field);
+				if (object == null || object.get("buckets") == null) {
+					continue;
+				}
 				List list = (List) object.get("buckets");
 				FacetField fld = new FacetField(field);
 				for (Object obj : list) {
