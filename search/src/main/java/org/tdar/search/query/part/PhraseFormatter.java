@@ -22,6 +22,9 @@ public enum PhraseFormatter {
             case ESCAPED:
                 return QueryParser.escape(value.trim());
             case WILDCARD:
+            	if (StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
+            		return value;
+            	}
                 if (StringUtils.endsWith(value, "\"") && !StringUtils.endsWith(value, "\\\"")) {
                     logger.error("trying to wildcard a quoted element {}", value);
                 }
