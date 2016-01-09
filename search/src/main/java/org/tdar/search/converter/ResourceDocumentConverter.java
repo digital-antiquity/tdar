@@ -3,6 +3,7 @@ package org.tdar.search.converter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -102,8 +103,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
             Set<String> filenames = new HashSet<>();
             StringBuilder sb = new StringBuilder();
+            Set<Long> fileIds = new HashSet<>();
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 filenames.add(irf.getFilename());
+                fileIds.add(irf.getId());
                 if (irf.getIndexableVersion() != null && irf.isPublic()) {
                     try {
                         sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
@@ -116,6 +119,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
             doc.setField(QueryFieldNames.CONTENT, sb.toString());
             doc.setField(QueryFieldNames.FILENAME, filenames);
+            doc.setField(QueryFieldNames.FILE_IDS, fileIds);
             doc.setField(QueryFieldNames.DOI, ir.getDoi());
             if (PersistableUtils.isNotNullOrTransient(ir.getResourceProviderInstitution())) {
                 doc.setField(QueryFieldNames.RESOURCE_PROVIDER_ID, ir.getResourceProviderInstitution().getId());
@@ -282,6 +286,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             map.get(ResourceCreatorRole.RESOURCE_PROVIDER).add(informationRessource.getResourceProviderInstitution());
             map.get(ResourceCreatorRole.PUBLISHER).add(informationRessource.getPublisher());
         }
+        doc.setField(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS, PersistableUtils.extractIds(resource.getPrimaryCreators()));
+        
         map.get(ResourceCreatorRole.SUBMITTER).add(resource.getSubmitter());
         map.get(ResourceCreatorRole.UPDATER).add(resource.getUpdatedBy());
         Set<String> roles = new HashSet<>();
@@ -324,14 +330,17 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void indexLatitudeLongitudeBoxes(Resource resource, SolrInputDocument doc) {
         List<String> envelops = new ArrayList<>();
         List<Integer> scales = new ArrayList<>();
+        List<Long> llibId = new ArrayList<>();
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
             Envelope env = new Envelope(llb.getMinObfuscatedLongitude(), llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLatitude(),
                     llb.getMaxObfuscatedLatitude());
+            llibId.add(llb.getId());
             WKTWriter wrt = new WKTWriter();
             String str = wrt.write(JTS.toGeometry(env));
             envelops.add(str);
             scales.add(llb.getScale());
         }
+        doc.setField(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS, llibId);
         doc.setField(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES, envelops);
         doc.setField(QueryFieldNames.SCALE, scales);
     }

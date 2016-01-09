@@ -103,6 +103,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
     private boolean showNavSearchBox = true;
     private FacetWrapper facetWrapper = new FacetWrapper();
+
+	private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -401,7 +403,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     @Override
     public ProjectionModel getProjectionModel() {
-        return ProjectionModel.RESOURCE_PROXY;
+        return projectionModel;
+    }
+    
+    public void setProjectionModel(ProjectionModel model) {
+    	this.projectionModel  = model;
     }
 
     /**

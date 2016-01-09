@@ -200,9 +200,15 @@ public class SolrSearchObject<I extends Indexable> {
 		fieldList.addAll(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"));
 		// fieldList.addAll(facetFields);
 		if (projection == ProjectionModel.LUCENE_EXPERIMENTAL) {
+			fieldList.add(QueryFieldNames.NAME);
+			fieldList.add(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
 			fieldList.add(QueryFieldNames.NAME_SORT);
 			fieldList.add(QueryFieldNames.SUBMITTER_ID);
-			fieldList.add(QueryFieldNames.PROJECT_TITLE_SORT);
+			fieldList.add(QueryFieldNames.PROJECT_TITLE);
+			fieldList.add(QueryFieldNames.DESCRIPTION);
+			fieldList.add(QueryFieldNames.DATE);
+			fieldList.add(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
+			fieldList.add(QueryFieldNames.FILE_IDS);
 			fieldList.add( QueryFieldNames.STATUS);
 			fieldList.add(QueryFieldNames.RESOURCE_TYPE);
 		}

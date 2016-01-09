@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="resources" version="1.5">
-    <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name" type="text_en" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
@@ -13,7 +13,7 @@
     <copyField source="resourceCollections.name" dest="resourceCollections.name_autocomplete" />
     <copyField source="resourceCollections.name" dest="resourceCollections.name_phrase" />
 
-    <field name="description" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="description" type="text_en" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="description_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <copyField source="description" dest="description_phrase" />
 
@@ -23,13 +23,13 @@
     <copyField source="all" dest="all_phrase" />
 
     <field name="submitter.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="project.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
-    <field name="project.name" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="project.id" type="long" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="project.name" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="project.name_autocomplete" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="project.name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <copyField source="project.name" dest="project.name_autocomplete" />
     
-    <field name="date" type="int" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="date" type="int" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="decadeCreated" type="int" indexed="true" stored="false" required="false" multiValued="false" />
 
     <field name="resourceType" type="string" indexed="true" stored="false" required="true" multiValued="false" />
@@ -52,6 +52,7 @@
     <field name="integratable" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="resourceAccessType" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="filename" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="file.id" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
 
     <field name="activeResourceCreators.role" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="crid" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
@@ -64,6 +65,8 @@
     <field name="usersWhoCanModify" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="usersWhoCanView" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
 
+	
+    <field name="rcroleIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="CONTACT" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="AUTHOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="CONTRIBUTOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
@@ -90,6 +93,7 @@
     <field name="activeResourceCreators.creator.properName" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
 
 
+    <field name="activeLatitudeLongitudeBoxes.id" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="activeLatitudeLongitudeBoxes" type="location_rpt" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeLatitudeLongitudeBoxes.scale" type="ints" indexed="true" stored="false" required="false" multiValued="true" />
 

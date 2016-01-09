@@ -644,7 +644,6 @@ public class AuthorizationService implements Accessible {
         	item.setViewable(true);
         	return;
         }
-        logger.debug("hi");
 		if (authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds)) {
 			r_.setViewable(true);
 		}
