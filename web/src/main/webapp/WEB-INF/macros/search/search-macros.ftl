@@ -210,8 +210,8 @@
                     <#if (facetlist?size > 1)>
 
                         <span class="media-body">
-                <#if link>
-                <a rel="noindex" href="<@s.url action=action includeParams="all">
+                <#if link><#t>
+                <a rel="noindex" href="<#compress><@s.url action=action includeParams="all">
                     <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if (documentType!'') == '' && facetParam != 'documentType'>
@@ -224,12 +224,12 @@
                         <@s.param name="integratableOptions" value=""/>
                     </#if>
                     <#nested>
-                </@s.url>">
-                </#if>
+                </@s.url></#compress>"></#if>
+<#compress>
                     <#if icon><i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i></#if>
                 <@s.text name="${facet.label}"/>
 				<#if link></a></#if>
-				 <span>(${facet.count})</span></span>
+				 <span>(${facet.count})</span></span></#compress>
                     <#elseif (currentValues?size > 0) >
                         <@removeFacet facetlist=currentValues facetParam=facetParam />
                     <#else>
