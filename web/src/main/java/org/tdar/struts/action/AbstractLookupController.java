@@ -19,6 +19,7 @@ import java.util.Map;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Creator;
@@ -458,5 +459,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return null;
+	}
 
 }

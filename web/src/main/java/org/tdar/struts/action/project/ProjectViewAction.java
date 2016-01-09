@@ -1,7 +1,6 @@
 package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -215,11 +214,6 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         return options;
     }
 
-    public List<DisplayOrientation> getResultsOrientations() {
-        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
-        return options;
-    }
-
     public PaginationHelper getPaginationHelper() {
         if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
@@ -267,4 +261,9 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return getPersistable().getOrientation();
+	}
 }

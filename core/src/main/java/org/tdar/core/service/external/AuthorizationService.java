@@ -390,16 +390,9 @@ public class AuthorizationService implements Accessible {
             return false;
         }
 
-        if (Objects.equals(resource.getSubmitter(), person)) {
-            logger.trace("person was submitter");
-            return true;
+        if (isAdminOrOwner(person, resource, equivalentAdminRight)) {
+        	return true;
         }
-
-        if (can(equivalentAdminRight, person)) {
-            logger.trace("person is admin");
-            return true;
-        }
-
         if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
             logger.trace("person is an authorized user");
             return true;
@@ -415,7 +408,20 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
-    /*
+    private boolean isAdminOrOwner(TdarUser person, HasSubmitter resource, InternalTdarRights equivalentAdminRight) {
+        if (Objects.equals(resource.getSubmitter(), person)) {
+            logger.trace("person was submitter");
+            return true;
+        }
+
+        if (can(equivalentAdminRight, person)) {
+            logger.trace("person is admin");
+            return true;
+        }
+		return false;
+	}
+
+	/*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
     public boolean canDownload(InformationResourceFileVersion irFileVersion, TdarUser person) {
@@ -640,13 +646,34 @@ public class AuthorizationService implements Accessible {
 	public void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds) {
         Viewable item = (Viewable) r_;
         boolean viewable = setupViewable(authenticatedUser, item);
-        if (viewable) {
+        boolean allowedToViewAll = authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds);
+		if (viewable) {
         	item.setViewable(true);
-        	return;
-        }
-		if (authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds)) {
+        } else if (allowedToViewAll) {
 			r_.setViewable(true);
 		}
+
+        if (r_ instanceof InformationResource) {
+			InformationResource ir = (InformationResource)r_;
+			for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
+		        if (irFile == null) {
+		            continue;
+		        }
+		        if (irFile.isDeleted() && PersistableUtils.isNullOrTransient(authenticatedUser)) {
+		            continue;
+		        }
+		        if (!isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO) && 
+		        		!irFile.isPublic() && !allowedToViewAll) {
+		            continue;
+		        }
+		        irFile.setViewable(true);
+		        for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
+		            vers.setViewable(true);
+		        }
+
+			}
+		}
+
 	}
 
 }

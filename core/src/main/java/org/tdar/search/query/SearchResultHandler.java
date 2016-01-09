@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
@@ -95,5 +96,7 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
     int getDefaultRecordsPerPage();
 
     void setSearchTitle(String description);
+    
+    DisplayOrientation getOrientation();
 
 }

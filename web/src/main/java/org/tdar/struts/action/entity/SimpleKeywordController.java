@@ -9,6 +9,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
@@ -38,6 +39,8 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     private SortOption sortField;
     private String mode = "KeywordBrowse";
     private PaginationHelper paginationHelper;
+
+	private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Action("edit")
     @HttpsOnly
@@ -170,4 +173,10 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         // TODO Auto-generated method stub
     }
 
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return orientation ;
+	}
 }

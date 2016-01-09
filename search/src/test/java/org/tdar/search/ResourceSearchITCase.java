@@ -2128,5 +2128,4 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     }
 
 
-
 }

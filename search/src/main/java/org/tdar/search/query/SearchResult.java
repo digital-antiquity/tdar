@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
@@ -184,5 +185,10 @@ public class SearchResult<I extends Indexable> implements FacetedResultHandler<I
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return null;
+	}
 
 }

@@ -340,6 +340,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         return exploreKeyword;
     }
 
+    @Override
     public DisplayOrientation getOrientation() {
         return orientation;
     }

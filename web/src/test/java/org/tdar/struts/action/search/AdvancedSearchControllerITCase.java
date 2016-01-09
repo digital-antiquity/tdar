@@ -10,6 +10,7 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +49,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
@@ -140,6 +142,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         testResourceCounts(p);
     }
 
+    
     @Test
     @Rollback(true)
     public void testResultCountsAsBasicContributor() throws SolrServerException, IOException {
@@ -372,7 +375,19 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
         Institution institution = new Institution(name);
         lookForCreatorNameInResult(name, institution);
     }
-    
+
+
+    @Test
+    @Rollback
+    public void testCollectionSearchLabelText() throws SolrServerException, IOException, TdarActionException {
+    	ResourceCollection collection = createAndSaveNewResourceCollection("abecd");
+    	controller.setCollectionId(collection.getId());
+    	controller.setQuery("ab");
+    	controller.search();
+    	logger.debug(controller.getSearchPhrase());
+    	assertFalse(StringUtils.contains(controller.getSearchPhrase(), "null"));
+    }
+
 
     private void lookForCreatorNameInResult(String namePart, Creator creator_) {
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));

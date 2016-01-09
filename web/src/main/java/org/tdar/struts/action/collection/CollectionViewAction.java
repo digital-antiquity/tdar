@@ -153,11 +153,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return SortOption.getOptionsForResourceCollectionPage();
     }
 
-    public List<DisplayOrientation> getResultsOrientations() {
-        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
-        return options;
-    }
-
     @Override
     public String loadViewMetadata() {
         setParentId(getPersistable().getParentId());
@@ -518,4 +513,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         // TODO Auto-generated method stub
         
     }
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return getPersistable().getOrientation();
+	}
 }
