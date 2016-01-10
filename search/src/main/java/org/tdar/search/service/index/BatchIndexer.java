@@ -133,7 +133,7 @@ public class BatchIndexer implements Serializable {
         String message = count.getTotal() + " " + toIndex.getSimpleName() + "(s) to be indexed";
         updateAllStatuses(updateReceiver, activity, message, count.getPercent());
         int divisor = count.getDivisor();
-        String MIDDLE = " of " + count.getTotal() + " " + toIndex.getSimpleName() + "(s) ";
+        String MIDDLE = " of " + count.getSubTotal() + " " + toIndex.getSimpleName() + "(s) ";
         Long prevId = 0L;
         Long currentId = 0L;
         String coreForClass = LookupSource.getCoreForClass(toIndex);
@@ -146,6 +146,7 @@ public class BatchIndexer implements Serializable {
             float totalProgress = count.getPercent();
             if ((numProcessed % divisor) == 0) {
                 String range = String.format("(%s - %s)", prevId, currentId);
+                //[6:05:41 PM PST] indexed 600 of 805539 SiteTypeKeyword(s) 48.528873 % (818 - 868)
                 message = String.format("indexed %s %s %s %% %s", numProcessed, MIDDLE, totalProgress, range);
                 updateAllStatuses(updateReceiver, activity, message, totalProgress);
                 logger.debug("last indexed: {}", item);
