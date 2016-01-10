@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 public final class SiteCodeExtractor {
 
     /*
@@ -30,6 +32,9 @@ public final class SiteCodeExtractor {
 
 
     public static Set<String> extractSiteCodeTokens(String str) {
+    	if (str == null) {
+    		return Collections.emptySet();
+    	}
     	Set<String> toReturn = new HashSet<>();
     	Matcher matcher = pattern.matcher(str);
     	while (matcher.find()) {
