@@ -111,18 +111,15 @@ import com.opensymphony.xwork2.TextProvider;
          if (q.isEmpty()) {
              q.append(new FieldQueryPart<>("*","*"));;
          }
-         long num = System.currentTimeMillis();
          hydrateQueryParts(q);
          SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, textProvider);
          
          resultHandler.setTotalRecords(ftq.getTotalResults());
-         long lucene = System.currentTimeMillis() - num;
-         num = System.currentTimeMillis();
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
          logger.trace(queryText);
          Object searchMetadata[] = { resultHandler.getMode(), StringUtils.left(queryText, 100), resultHandler.getSortField(), resultHandler.getSecondarySortField(),
-                 lucene, (System.currentTimeMillis() - num),
+                 ftq.getLuceneTime(), ftq.getHydrationTime(),
                  ftq.getTotalResults(),
                  resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);

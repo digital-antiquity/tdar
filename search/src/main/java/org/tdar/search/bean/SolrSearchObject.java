@@ -40,6 +40,11 @@ public class SolrSearchObject<I extends Indexable> {
 	private int startRecord;
 	private String coreName;
 
+	private Long searchStartTime;
+	private Long hydrationStartTime;
+	private Long facetStartTime;
+	private Long endSearchTime;
+	
 	private QueryBuilder builder;
 	// solr documents returned
 	private SolrDocumentList documentList;
@@ -307,6 +312,39 @@ public class SolrSearchObject<I extends Indexable> {
 
 	public Map<String, List<Long>> getSearchByMap() {
 		return this.searchByMap;
+	}
+
+	public void markStartHydration() {
+		hydrationStartTime = System.currentTimeMillis();
+	}
+
+	public void markStartSearch() {
+		searchStartTime = System.currentTimeMillis();
+		
+	}
+
+	public void markEndSearch() {
+		endSearchTime = System.currentTimeMillis();
+	}
+
+	public void markStartFacetSearch() {
+		facetStartTime = System.currentTimeMillis();
+	}
+
+	public Long getLuceneTime() {
+		return hydrationStartTime - searchStartTime;
+	}
+
+	public Long getHydrationTime() {
+		return facetStartTime - hydrationStartTime;
+	}
+
+	public Long getFacetTime() {
+		return endSearchTime - facetStartTime;
+	}
+	
+	public Long getTotalSearchTime() {
+		return endSearchTime - searchStartTime;
 	}
 
 }

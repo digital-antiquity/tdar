@@ -86,13 +86,15 @@ public class SearchDao<I extends Indexable> {
 	 */
 	public SolrSearchObject<I> search(SolrSearchObject<I> query, SearchResultHandler<I> resultHandler,
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
+		query.markStartSearch();
 		QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
-		// logger.debug("{}",query.getSolrParams());
-		// logger.debug("{}",rsp);
+
 		query.processResults(rsp);
 		convertProjectedResultIntoObjects(resultHandler, query);
+		query.markStartFacetSearch();
 		processFacets(rsp, resultHandler, provider);
 		logger.trace("completed fulltextquery setup");
+		query.markEndSearch();
 		return query;
 	}
 
@@ -221,6 +223,7 @@ public class SearchDao<I extends Indexable> {
 	@SuppressWarnings("unchecked")
 	private void convertProjectedResultIntoObjects(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
 		List<I> toReturn = new ArrayList<>();
+		results.markStartHydration();
 		ProjectionModel projectionModel = resultHandler.getProjectionModel();
 		if (projectionModel == null) {
 			projectionModel = ProjectionModel.HIBERNATE_DEFAULT;
