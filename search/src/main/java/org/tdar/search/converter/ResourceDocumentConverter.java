@@ -3,7 +3,6 @@ package org.tdar.search.converter;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -75,7 +74,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         indexTemporalInformation(doc, resource);
         Map<DataTableColumn, String> data = null;
         if (resource instanceof Project) {
-            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ((Project)resource).getTitleSort());
+            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ((Project) resource).getTitleSort());
+            doc.setField(QueryFieldNames.TOTAL_FILES, 0);
 
         }
         if (resource instanceof InformationResource) {
@@ -89,10 +89,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
             try {
-            data = resourceService.getMappedDataForInformationResource(ir);
-            	indexTdarDataDatabaseValues(doc, data);
+                data = resourceService.getMappedDataForInformationResource(ir);
+                indexTdarDataDatabaseValues(doc, data);
             } catch (Throwable t) {
-            	logger.warn("exception in metadata indexing", t);
+                logger.warn("exception in metadata indexing", t);
             }
             if (ir.getMetadataLanguage() != null) {
                 doc.setField(QueryFieldNames.METADATA_LANGUAGE, ir.getMetadataLanguage().name());
@@ -104,20 +104,31 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             Set<String> filenames = new HashSet<>();
             StringBuilder sb = new StringBuilder();
             Set<Long> fileIds = new HashSet<>();
+            int total = 0;
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
                 filenames.add(irf.getFilename());
                 fileIds.add(irf.getId());
+
+                if (!irf.isDeleted() && !irf.isPartOfComposite()) {
+                    total++;
+                }
+
                 if (irf.getIndexableVersion() != null && irf.isPublic()) {
                     try {
                         sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
                     } catch (FileNotFoundException fnf) {
-                        
+
                     } catch (IOException e) {
                         logger.error("{}", e);
                     }
                 }
             }
             doc.setField(QueryFieldNames.CONTENT, sb.toString());
+            if (ir.getResourceType().allowsMultipleFIles()) {
+                doc.setField(QueryFieldNames.TOTAL_FILES, total);
+            } else {
+                doc.setField(QueryFieldNames.TOTAL_FILES, 1);
+            }
             doc.setField(QueryFieldNames.FILENAME, filenames);
             doc.setField(QueryFieldNames.FILE_IDS, fileIds);
             doc.setField(QueryFieldNames.DOI, ir.getDoi());
@@ -174,17 +185,16 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addKeyword(doc, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, KeywordType.SITE_TYPE_KEYWORD, resource.getActiveSiteTypeKeywords());
         addKeyword(doc, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, KeywordType.TEMPORAL_KEYWORD, resource.getActiveTemporalKeywords());
 
-        
         HashSet<String> kwds = new HashSet<>();
         kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle()));
         kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getDescription()));
         for (SiteNameKeyword kwd : resource.getActiveSiteNameKeywords()) {
-        	kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
         }
         for (OtherKeyword kwd : resource.getActiveOtherKeywords()) {
-        	kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
         }
-        
+
         GeneralKeywordBuilder gkb = new GeneralKeywordBuilder(resource, data);
         String text = gkb.getKeywords();
         doc.setField(QueryFieldNames.ALL, text);
@@ -263,7 +273,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 collectionIds.addAll(collection.getParentIds());
                 collectionNames.addAll(collection.getParentNameList());
             } else if (collection.isInternal()) {
-            	allCollectionIds.add(collection.getId());
+                allCollectionIds.add(collection.getId());
             }
         }
         collectionIds.addAll(directCollectionIds);
@@ -277,7 +287,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
         List<String> crids = new ArrayList<>();
-        Map<ResourceCreatorRole,HashSet<Creator<? extends Creator>>> map = new HashMap<>();
+        Map<ResourceCreatorRole, HashSet<Creator<? extends Creator>>> map = new HashMap<>();
         for (ResourceCreatorRole r : ResourceCreatorRole.values()) {
             map.put(r, new HashSet<>());
         }
@@ -287,7 +297,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             map.get(ResourceCreatorRole.PUBLISHER).add(informationRessource.getPublisher());
         }
         doc.setField(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS, PersistableUtils.extractIds(resource.getPrimaryCreators()));
-        
+
         map.get(ResourceCreatorRole.SUBMITTER).add(resource.getSubmitter());
         map.get(ResourceCreatorRole.UPDATER).add(resource.getUpdatedBy());
         Set<String> roles = new HashSet<>();
@@ -295,7 +305,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
             map.get(rc.getRole()).add(rc.getCreator());
         }
-        
+
         for (ResourceCreatorRole role_ : map.keySet()) {
             Set<Creator<? extends Creator>> creators = map.get(role_);
             creators.removeAll(Collections.singleton(null));
@@ -311,17 +321,17 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 names.add(creator.getProperName());
                 typeIds.add(creator.getId());
                 crids.add(ResourceCreator.getCreatorRoleIdentifier(creator, role_));
-//                if (CollectionUtils.isNotEmpty(creator.getSynonyms())) {
-//                    for (Creator syn : (Collection<Creator>)creator.getSynonyms()) {
-//                        names.add(syn.getProperName());
-//                        crids.add(ResourceCreator.getCreatorRoleIdentifier(syn, role_));
-//                        typeIds.add(syn.getId());
-//                    }
-//                }
+                // if (CollectionUtils.isNotEmpty(creator.getSynonyms())) {
+                // for (Creator syn : (Collection<Creator>)creator.getSynonyms()) {
+                // names.add(syn.getProperName());
+                // crids.add(ResourceCreator.getCreatorRoleIdentifier(syn, role_));
+                // typeIds.add(syn.getId());
+                // }
+                // }
             }
             doc.setField(role_.name(), typeIds);
         }
-        
+
         doc.setField(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, names);
         doc.setField(QueryFieldNames.CREATOR_ROLE, roles);
         doc.setField(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, crids);

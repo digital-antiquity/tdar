@@ -128,4 +128,5 @@ public interface QueryFieldNames {
 	String FILE_IDS = "file.id";
 	String ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS = "activeLatitudeLongitudeBoxes.id";
 	String RESOURCE_CREATOR_ROLE_IDS = "rcroleIds";
+	String TOTAL_FILES = "totalFiles";
 }
