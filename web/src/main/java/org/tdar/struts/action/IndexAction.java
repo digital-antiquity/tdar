@@ -69,7 +69,9 @@ public class IndexAction extends AuthenticationAware.Base {
 
 
     @Actions(value={
-            @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") })
+            @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") }),
+            @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") }),
+
     })
     @SkipValidation
     @HttpOnlyIfUnauthenticated
