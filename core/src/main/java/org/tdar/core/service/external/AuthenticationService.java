@@ -366,7 +366,8 @@ public class AuthenticationService {
             personDao.save(institution);
         }
         person.setInstitution(institution);
-
+        person.setAffiliation(reg.getAffiliation());
+        person.setContributorReason(reg.getContributorReason());
         AuthenticationResult addResult = getAuthenticationProvider().addUser(person, reg.getPassword());
         if (!addResult.getType().isValid()) {
             throw new TdarRecoverableRuntimeException(addResult.getType().getMessage());
