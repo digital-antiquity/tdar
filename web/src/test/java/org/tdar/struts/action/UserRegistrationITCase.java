@@ -33,8 +33,6 @@ import org.tdar.utils.MessageHelper;
 import com.opensymphony.xwork2.Action;
 import com.vividsolutions.jts.util.Assert;
 
-import freemarker.template.Configuration;
-
 /**
  * $Id$
  * 

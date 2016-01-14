@@ -2,18 +2,22 @@ package org.tdar.struts.action.collection;
 
 import java.util.List;
 
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
-import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
@@ -29,13 +33,15 @@ import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
+@Component
+@Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/collection/usage")
+@Namespace("/collection/report")
 @HttpsOnly
-public class CollectionReportView extends TdarActionSupport implements SearchResultHandler<Resource>, PersistableLoadingAction<ResourceCollection> {
+public class CollectionReportView extends AuthenticationAware.Base implements SearchResultHandler<Resource>, PersistableLoadingAction<ResourceCollection> {
 
 	private static final long serialVersionUID = 5515399574166871914L;
 	@Autowired
@@ -45,20 +51,23 @@ public class CollectionReportView extends TdarActionSupport implements SearchRes
 	private ResourceCollection resourceCollection;
 	private Long id;
 
+
 	@Override
+    @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "../report.ftl") })
 	public String execute() throws Exception {
 		AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
-		asqo.getReservedParams().getCollections().add(resourceCollection);
-		facetWrapper.facetBy("people", Person.class);
-		facetWrapper.facetBy("institutions", Institution.class);
-		facetWrapper.facetBy("cultureKeyword", CultureKeyword.class);
-		facetWrapper.facetBy("investigationType", InvestigationType.class);
-		facetWrapper.facetBy("materialKeyword", MaterialKeyword.class);
-		facetWrapper.facetBy("temporalKeyword", TemporalKeyword.class);
-		facetWrapper.facetBy("otherKeyword", OtherKeyword.class);
-		facetWrapper.facetBy("siteTypeKeyword", SiteTypeKeyword.class);
-		facetWrapper.facetBy("siteNameKeyword", SiteNameKeyword.class);
-		facetWrapper.facetBy("geographicKeyword", GeographicKeyword.class);
+		asqo.getReservedParams().getCollections().add(getResourceCollection());
+		getFacetWrapper().facetBy("people", Person.class);
+		getFacetWrapper().facetBy("institutions", Institution.class);
+		getFacetWrapper().facetBy("cultureKeyword", CultureKeyword.class);
+		getFacetWrapper().facetBy("investigationType", InvestigationType.class);
+		getFacetWrapper().facetBy("materialKeyword", MaterialKeyword.class);
+		getFacetWrapper().facetBy("temporalKeyword", TemporalKeyword.class);
+		getFacetWrapper().facetBy("otherKeyword", OtherKeyword.class);
+		getFacetWrapper().facetBy("siteTypeKeyword", SiteTypeKeyword.class);
+		getFacetWrapper().facetBy("siteNameKeyword", SiteNameKeyword.class);
+		getFacetWrapper().facetBy("p"+ResourceCreatorRole.AUTHOR.name(), Person.class);
+		getFacetWrapper().facetBy("i"+ResourceCreatorRole.AUTHOR.name(), Institution.class);
 		resourceSearchService.buildAdvancedSearch(asqo, getAuthenticatedUser(), this, this);
 		return SUCCESS;
 	}
@@ -66,12 +75,12 @@ public class CollectionReportView extends TdarActionSupport implements SearchRes
 
 	@Override
 	public boolean authorize() throws TdarActionException {
-		return false;
+		return true;
 	}
 
 	@Override
 	public Persistable getPersistable() {
-		return resourceCollection;
+		return getResourceCollection();
 	}
 
 	@Override
@@ -86,7 +95,7 @@ public class CollectionReportView extends TdarActionSupport implements SearchRes
 
 	@Override
 	public void setPersistable(ResourceCollection persistable) {
-		this.resourceCollection = persistable;
+		this.setResourceCollection(persistable);
 	}
 
 	@Override
@@ -258,6 +267,31 @@ public class CollectionReportView extends TdarActionSupport implements SearchRes
 	public DisplayOrientation getOrientation() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+
+	public void setId(Long id) {
+		this.id = id;
+	}
+
+
+	public ResourceCollection getResourceCollection() {
+		return resourceCollection;
+	}
+
+
+	public void setResourceCollection(ResourceCollection resourceCollection) {
+		this.resourceCollection = resourceCollection;
+	}
+
+
+	public FacetWrapper getFacetWrapper() {
+		return facetWrapper;
+	}
+
+
+	public void setFacetWrapper(FacetWrapper facetWrapper) {
+		this.facetWrapper = facetWrapper;
 	}
 
 	
