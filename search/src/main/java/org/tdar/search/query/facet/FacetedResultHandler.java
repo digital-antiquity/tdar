@@ -8,4 +8,5 @@ public interface FacetedResultHandler<I extends Indexable> extends SearchResultH
     
     FacetWrapper getFacetWrapper();
 
+    
 }
