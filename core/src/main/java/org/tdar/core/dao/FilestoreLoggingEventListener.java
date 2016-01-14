@@ -23,7 +23,6 @@ import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
@@ -105,7 +104,7 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener, P
 		if (idChangeMap.get(event.getSession()) == null) {
 			idChangeMap.put(event.getSession(), new HashSet<>());
 		}
-		idChangeMap.get(event.getSession()).add((Indexable) event.getEntity());
+		idChangeMap.get(event.getSession()).add(event.getEntity());
 
 	}
 
