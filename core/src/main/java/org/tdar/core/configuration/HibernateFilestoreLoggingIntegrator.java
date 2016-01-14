@@ -28,6 +28,9 @@ public class HibernateFilestoreLoggingIntegrator implements Integrator {
             registry.getEventListenerGroup(EventType.POST_COMMIT_INSERT).appendListener(listener);
             registry.getEventListenerGroup(EventType.POST_COMMIT_UPDATE).appendListener(listener);
             registry.getEventListenerGroup(EventType.POST_COMMIT_DELETE).appendListener(listener);
+            registry.getEventListenerGroup( EventType.SAVE_UPDATE).appendListener( listener );
+            registry.getEventListenerGroup( EventType.FLUSH).appendListener( listener );
+//            registry.getEventListenerGroup( EventType.FLUSH_ENTITY).appendListener( listener );
         } catch (Exception e) {
             logger.error("could not add listener: {}", e);
         }

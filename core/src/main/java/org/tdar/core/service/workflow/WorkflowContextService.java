@@ -1,9 +1,7 @@
 package org.tdar.core.service.workflow;
 
 import java.util.Arrays;
-import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,18 +12,14 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.datatable.DataTable;
-import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetImportService;
-import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceFileVersionService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.core.service.workflow.workflows.Workflow;
