@@ -14,7 +14,7 @@ import org.tdar.core.service.external.session.SessionData;
 
 public class Activity implements Serializable {
 
-    private static final String USER_AGENT = "User-Agent";
+    public static final String USER_AGENT = "User-Agent";
 
     private static final long serialVersionUID = 1078566853797118113L;
 
