@@ -43,7 +43,6 @@ import org.tdar.core.dao.resource.DataTableColumnDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;

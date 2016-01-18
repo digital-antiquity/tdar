@@ -1,4 +1,4 @@
-package org.tdar.search.query;
+package org.tdar.search.query.facet;
 
 import java.io.Serializable;
 

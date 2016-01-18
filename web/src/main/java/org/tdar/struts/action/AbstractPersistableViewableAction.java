@@ -29,7 +29,7 @@ import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.search.query.Facet;
+import org.tdar.search.query.facet.Facet;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;

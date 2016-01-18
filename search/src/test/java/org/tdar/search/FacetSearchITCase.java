@@ -14,9 +14,9 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
-import org.tdar.search.query.Facet;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
+import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.utils.MessageHelper;
 

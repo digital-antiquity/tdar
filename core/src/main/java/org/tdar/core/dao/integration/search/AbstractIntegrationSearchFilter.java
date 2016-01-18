@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.hibernate.annotations.AttributeAccessor;
 import org.tdar.core.bean.entity.TdarUser;
 
 /**

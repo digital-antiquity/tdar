@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.hadoop.util.StringUtils;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.search.query.Facet;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
