@@ -9,7 +9,6 @@ import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.auth.AUTH;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -32,6 +31,7 @@ import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Project;
@@ -41,7 +41,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.query.Facet;
 import org.tdar.search.query.QueryFieldNames;
@@ -51,8 +50,6 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.utils.PersistableUtils;
 
-import com.hp.hpl.jena.sparql.util.QueryUtils;
-import com.ibm.icu.text.IDNA.Info;
 import com.opensymphony.xwork2.TextProvider;
 
 @Component
@@ -193,14 +190,17 @@ public class SearchDao<I extends Indexable> {
 			}
 		}
 
-		Map<Long, Persistable> idMap = PersistableUtils
-				.createIdMap((Collection<Persistable>) datasetDao.findAll(facetClass, ids));
+		Map<Long, Persistable> idMap = PersistableUtils.createIdMap((Collection<Persistable>) datasetDao.findAll(facetClass, ids));
 		for (Count c : field.getValues()) {
 			if (c.getCount() > 0) {
 				HasLabel persistable = (HasLabel) idMap.get(Long.parseLong(c.getName()));
 				String label = persistable.getLabel();
 				logger.trace("  {} - {}", c.getCount(), label);
-				facet.add(new Facet(c.getName(), label, c.getCount()));
+				Facet f = new Facet(c.getName(), label, c.getCount());
+				if (persistable instanceof Addressable) {
+					f.setUrl(((Addressable) persistable).getDetailUrl());
+				}
+				facet.add(f);
 			}
 		}
 		return facet;

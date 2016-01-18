@@ -13,8 +13,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.CultureKeyword;
@@ -27,13 +26,14 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
-import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Component
@@ -41,7 +41,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 @ParentPackage("secured")
 @Namespace("/collection/report")
 @HttpsOnly
-public class CollectionReportView extends AuthenticationAware.Base implements SearchResultHandler<Resource>, PersistableLoadingAction<ResourceCollection> {
+public class CollectionReportViewAction extends AuthenticationAware.Base implements FacetedResultHandler<Resource>, PersistableLoadingAction<ResourceCollection> {
 
 	private static final long serialVersionUID = 5515399574166871914L;
 	@Autowired
@@ -50,6 +50,7 @@ public class CollectionReportView extends AuthenticationAware.Base implements Se
 	private FacetWrapper facetWrapper = new FacetWrapper();
 	private ResourceCollection resourceCollection;
 	private Long id;
+	private List<Resource> results;
 
 
 	@Override
@@ -57,17 +58,18 @@ public class CollectionReportView extends AuthenticationAware.Base implements Se
 	public String execute() throws Exception {
 		AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
 		asqo.getReservedParams().getCollections().add(getResourceCollection());
-		getFacetWrapper().facetBy("people", Person.class);
-		getFacetWrapper().facetBy("institutions", Institution.class);
-		getFacetWrapper().facetBy("cultureKeyword", CultureKeyword.class);
-		getFacetWrapper().facetBy("investigationType", InvestigationType.class);
-		getFacetWrapper().facetBy("materialKeyword", MaterialKeyword.class);
-		getFacetWrapper().facetBy("temporalKeyword", TemporalKeyword.class);
-		getFacetWrapper().facetBy("otherKeyword", OtherKeyword.class);
-		getFacetWrapper().facetBy("siteTypeKeyword", SiteTypeKeyword.class);
-		getFacetWrapper().facetBy("siteNameKeyword", SiteNameKeyword.class);
-		getFacetWrapper().facetBy("p"+ResourceCreatorRole.AUTHOR.name(), Person.class);
-		getFacetWrapper().facetBy("i"+ResourceCreatorRole.AUTHOR.name(), Institution.class);
+//		getFacetWrapper().facetBy("people", Person.class);
+//		getFacetWrapper().facetBy("institutions", Institution.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, TemporalKeyword.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_OTHER_KEYWORDS, OtherKeyword.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, SiteTypeKeyword.class);
+		getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
+		for (ResourceCreatorRole role : ResourceCreatorRole.values()) {
+			getFacetWrapper().facetBy(role.name(), Creator.class);
+		}
 		resourceSearchService.buildAdvancedSearch(asqo, getAuthenticatedUser(), this, this);
 		return SUCCESS;
 	}
@@ -147,7 +149,7 @@ public class CollectionReportView extends AuthenticationAware.Base implements Se
 	@Override
 	public int getRecordsPerPage() {
 		// TODO Auto-generated method stub
-		return 0;
+		return 10;
 	}
 
 
@@ -188,15 +190,13 @@ public class CollectionReportView extends AuthenticationAware.Base implements Se
 
 	@Override
 	public void setResults(List<Resource> toReturn) {
-		// TODO Auto-generated method stub
-		
+		this.results = toReturn;
 	}
 
 
 	@Override
 	public List<Resource> getResults() {
-		// TODO Auto-generated method stub
-		return null;
+		return results;
 	}
 
 
@@ -251,8 +251,7 @@ public class CollectionReportView extends AuthenticationAware.Base implements Se
 
 	@Override
 	public int getDefaultRecordsPerPage() {
-		// TODO Auto-generated method stub
-		return 0;
+		return 10;
 	}
 
 

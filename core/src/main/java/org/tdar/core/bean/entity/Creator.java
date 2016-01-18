@@ -44,6 +44,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasImage;
+import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
@@ -81,7 +82,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.Creator")
 public abstract class Creator<T extends Creator<?>> implements Persistable, HasName, HasStatus, Indexable, Updatable, OaiDcProvider,
-        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage,Slugable, HasEmail {
+        Obfuscatable, Validatable, Addressable, XmlLoggable, HasImage,Slugable, HasEmail,HasLabel {
 
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
@@ -238,6 +239,11 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @JsonView(JsonLookupFilter.class)
     public abstract String getName();
 
+    
+    
+    public String getLabel() {
+    	return getName();
+    }
     //@Fields({ //@Field(name = QueryFieldNames.PROPER_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
             //@Field(name = QueryFieldNames.PROPER_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
 //    })
