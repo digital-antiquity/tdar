@@ -79,6 +79,7 @@ import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.service.index.SearchIndexService;
@@ -1196,7 +1197,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(authorDocument);
         searchIndexService.index(hiddenDocument);
 
-        SearchResultHandler<Resource> result = new SearchResult<>(Integer.MAX_VALUE);
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>(Integer.MAX_VALUE);
         result.setSortField(SortOption.RELEVANCE);
         resourceSearchService.generateQueryForRelatedResources(getAdminUser(), null, result, MessageHelper.getInstance());
         for (Resource r : result.getResults()) {

@@ -15,8 +15,8 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
@@ -34,7 +34,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
     @Autowired
     private SearchService<I> searchService;
 
-    public SearchResultHandler<I> findKeyword(String term, String keywordType, SearchResultHandler<I> result, TextProvider provider, int min)
+    public LuceneSearchResultHandler<I> findKeyword(String term, String keywordType, LuceneSearchResultHandler<I> result, TextProvider provider, int min)
             throws ParseException, SolrServerException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {

@@ -26,6 +26,7 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
@@ -160,12 +161,6 @@ public class CollectionReportViewAction extends AuthenticationAware.Base impleme
 	}
 
 
-	@Override
-	public org.tdar.search.query.SearchResultHandler.ProjectionModel getProjectionModel() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	@Override
 	public void setTotalRecords(int resultSize) {
@@ -292,6 +287,14 @@ public class CollectionReportViewAction extends AuthenticationAware.Base impleme
 	public void setFacetWrapper(FacetWrapper facetWrapper) {
 		this.facetWrapper = facetWrapper;
 	}
+
+
+	@Override
+	public ProjectionModel getProjectionModel() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	
 }

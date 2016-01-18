@@ -14,7 +14,8 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.query.SearchResultHandler;
+import org.tdar.search.query.LuceneSearchResultHandler;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -24,7 +25,7 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/keyword")
-public class SimpleKeywordController extends AbstractKeywordController implements SearchResultHandler<Resource> {
+public class SimpleKeywordController extends AbstractKeywordController implements LuceneSearchResultHandler<Resource> {
 
     private static final long serialVersionUID = 8576078075798508582L;
 

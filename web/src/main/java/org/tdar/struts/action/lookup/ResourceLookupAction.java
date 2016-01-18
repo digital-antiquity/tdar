@@ -21,6 +21,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.PersistableUtils;

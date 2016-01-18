@@ -10,9 +10,9 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.utils.MessageHelper;
 

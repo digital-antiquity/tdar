@@ -28,29 +28,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     SortOption getSecondarySortField();
 
-    public enum ProjectionModel {
-        HIBERNATE_DEFAULT,
-        LUCENE,
-        RESOURCE_PROXY,
-        RESOURCE_PROXY_INVALIDATE_CACHE, 
-        LUCENE_EXPERIMENTAL;
-
-        private List<String> projections = new ArrayList<>();
-
-        public List<String> getProjections() {
-            if (this == RESOURCE_PROXY || this == RESOURCE_PROXY_INVALIDATE_CACHE) {
-                return Arrays.asList("id");
-            }
-            return projections;
-        }
-
-        public void setProjections(List<String> projections) {
-            this.projections = projections;
-        }
-
-    }
-
-    ProjectionModel getProjectionModel();
 
     /**
      * Sets the total number of records found by the SearchService.

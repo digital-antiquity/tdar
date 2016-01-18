@@ -43,9 +43,10 @@ import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.query.Facet;
+import org.tdar.search.query.LuceneSearchResultHandler;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.utils.PersistableUtils;
@@ -81,7 +82,7 @@ public class SearchDao<I extends Indexable> {
 	 * @throws IOException
 	 * @throws SolrServerException
 	 */
-	public SolrSearchObject<I> search(SolrSearchObject<I> query, SearchResultHandler<I> resultHandler,
+	public SolrSearchObject<I> search(SolrSearchObject<I> query, LuceneSearchResultHandler<I> resultHandler,
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
 		query.markStartSearch();
 		QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
@@ -221,7 +222,7 @@ public class SearchDao<I extends Indexable> {
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private void convertProjectedResultIntoObjects(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
+	private void convertProjectedResultIntoObjects(LuceneSearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
 		List<I> toReturn = new ArrayList<>();
 		results.markStartHydration();
 		ProjectionModel projectionModel = resultHandler.getProjectionModel();

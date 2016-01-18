@@ -43,6 +43,7 @@ import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.dao.SearchDao;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.SearchResultHandler;
@@ -92,7 +93,7 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws IOException 
      * @throws SolrServerException 
       */
-     protected SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, SearchResultHandler<I> handler, TextProvider provider) throws ParseException, SolrServerException, IOException {
+     protected SolrSearchObject<I> constructSolrSearch(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler, TextProvider provider) throws ParseException, SolrServerException, IOException {
          return searchDao.search(new SolrSearchObject<I>(queryBuilder, handler), handler, provider);
      } 
 
@@ -107,7 +108,7 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws SolrServerException 
       */
      @SuppressWarnings({ "unchecked", "rawtypes" })
-     protected void handleSearch(QueryBuilder q, SearchResultHandler resultHandler, TextProvider textProvider) throws ParseException, SolrServerException, IOException {
+     protected void handleSearch(QueryBuilder q, LuceneSearchResultHandler resultHandler, TextProvider textProvider) throws ParseException, SolrServerException, IOException {
          if (q.isEmpty()) {
              q.append(new FieldQueryPart<>("*","*"));;
          }
@@ -315,7 +316,7 @@ import com.opensymphony.xwork2.TextProvider;
 
          q.append(new FieldQueryPart<>("status", Status.ACTIVE));
          logger.trace(q.generateQueryString());
-         SearchResultHandler<I> handler = new SearchResult<>(maxToResolve);
+         LuceneSearchResultHandler<I> handler = new SearchResult<>(maxToResolve);
          searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
          List<Creator> list = (List<Creator>)handler.getResults();
 		if (CollectionUtils.isNotEmpty(list)) {

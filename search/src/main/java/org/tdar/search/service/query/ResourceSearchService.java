@@ -33,8 +33,8 @@ import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -63,7 +63,7 @@ public class ResourceSearchService extends AbstractSearchService {
     }
 
 
-    public SearchResultHandler<Resource> buildCollectionResourceSearch(SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<Resource> buildCollectionResourceSearch(LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
         qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
@@ -83,7 +83,7 @@ public class ResourceSearchService extends AbstractSearchService {
      * @throws SolrServerException 
      * @throws ParseException 
      */
-    public <P extends Persistable> SearchResultHandler<Resource> buildResourceContainedInSearch(String fieldName, P indexable, TdarUser user, SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public <P extends Persistable> LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(String fieldName, P indexable, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
         initializeReservedSearchParameters(reservedSearchParameters, user);
@@ -95,7 +95,7 @@ public class ResourceSearchService extends AbstractSearchService {
         return result;
     }
 
-    public SearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject look, SearchResultHandler<Resource> result, TextProvider support) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject look, LuceneSearchResultHandler<Resource> result, TextProvider support) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder q = new ResourceQueryBuilder();
         if (StringUtils.isNotBlank(look.getTerm()) || look.getCategoryId() != null) {
             q.append(new CategoryTermQueryPart(look.getTerm(), look.getCategoryId()));
@@ -124,7 +124,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     }
 
-    public SearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(keywordType, Arrays.asList(keyword)));
         rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
@@ -132,8 +132,8 @@ public class ResourceSearchService extends AbstractSearchService {
         return result;
     }
 
-    public SearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
-            SearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
+    public LuceneSearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
+            LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
         QueryPartGroup topLevelQueryPart;
@@ -214,7 +214,7 @@ public class ResourceSearchService extends AbstractSearchService {
      * @throws SolrServerException 
      * @throws ParseException 
      */
-    public SearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, SearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
         result.setRecordsPerPage(MAX_FTQ_RESULTS);
         queryBuilder.setOperator(Operator.AND);

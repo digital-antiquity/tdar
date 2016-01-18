@@ -15,13 +15,15 @@ import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
+import org.geotools.data.PrjFileReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
+import org.tdar.search.query.LuceneSearchResultHandler;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SearchResultHandler.ProjectionModel;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
@@ -71,7 +73,7 @@ public class SolrSearchObject<I extends Indexable> {
 	private StringBuilder facetText = new StringBuilder();
 	private ProjectionModel projection;
 
-	public SolrSearchObject(QueryBuilder queryBuilder, SearchResultHandler<I> handler) {
+	public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
 		this.builder = queryBuilder;
 		this.coreName = queryBuilder.getCoreName();
 		this.setMaxResults(handler.getRecordsPerPage());
@@ -201,21 +203,9 @@ public class SolrSearchObject<I extends Indexable> {
 		if (StringUtils.isNotBlank(sortParam)) {
 			solrQuery.setParam("sort", sortParam);
 		}
-		Set<String> fieldList = new HashSet<>();
-		fieldList.addAll(Arrays.asList(QueryFieldNames._ID, QueryFieldNames.ID, QueryFieldNames.CLASS, "score"));
-		// fieldList.addAll(facetFields);
-		if (projection == ProjectionModel.LUCENE_EXPERIMENTAL) {
-			fieldList.add(QueryFieldNames.NAME);
-			fieldList.add(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
-			fieldList.add(QueryFieldNames.NAME_SORT);
-			fieldList.add(QueryFieldNames.SUBMITTER_ID);
-			fieldList.add(QueryFieldNames.PROJECT_TITLE);
-			fieldList.add(QueryFieldNames.DESCRIPTION);
-			fieldList.add(QueryFieldNames.DATE);
-			fieldList.add(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
-			fieldList.add(QueryFieldNames.FILE_IDS);
-			fieldList.add( QueryFieldNames.STATUS);
-			fieldList.add(QueryFieldNames.RESOURCE_TYPE);
+		Set<String> fieldList = new HashSet<>(ProjectionModel.getDefaultProjections());
+		if (projection != null) {
+			fieldList.addAll(projection.getProjections());
 		}
 		solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
 		if (logger.isTraceEnabled()) {

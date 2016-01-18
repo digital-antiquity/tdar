@@ -16,8 +16,8 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.part.AutocompleteTitleQueryPart;
 import org.tdar.search.query.part.CollectionAccessQueryPart;
@@ -38,8 +38,8 @@ public class CollectionSearchService extends AbstractSearchService {
     @Autowired
     private transient SearchService<ResourceCollection> searchService;
 
-    public SearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, List<String> allFields, boolean limitToTopLevel,
-            SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<ResourceCollection> buildResourceCollectionQuery(TdarUser authenticatedUser, List<String> allFields, boolean limitToTopLevel,
+            LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceCollectionQueryBuilder queryBuilder = new ResourceCollectionQueryBuilder();
         queryBuilder.setOperator(Operator.AND);
 
@@ -72,8 +72,8 @@ public class CollectionSearchService extends AbstractSearchService {
 
     }
 
-    public SearchResultHandler<ResourceCollection> findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title,
-            SearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<ResourceCollection> findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title,
+            LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
         q.append(new AutocompleteTitleQueryPart(title));
         boolean admin = false;
