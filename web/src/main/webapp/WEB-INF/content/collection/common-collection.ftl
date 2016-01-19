@@ -132,6 +132,12 @@
         <h3>Administrative Information</h3>
 
             <@common.resourceUsageInfo />
+		<#if editor>
+			<div class="row">
+			<p><b>Admin Tools</b><br>
+			&#8226; <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></p>
+			</div>
+		</#if>
         <div class="row">
             <div class="span4">
                 <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type}" />

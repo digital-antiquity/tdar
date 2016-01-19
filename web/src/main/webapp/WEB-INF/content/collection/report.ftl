@@ -10,20 +10,22 @@
 
 <h1>${resourceCollection.name!"untitled collection"}</h1>
 <#list facetWrapper.facetResults?keys as key>
-<h3>${key}</h3>
-<ul>
-	<#list facetWrapper.facetResults[key] as val>
-	<#compress>
-	<li>
-		<#if val.url?? >
-			<a href="${val.url}">${val.label}</a> (${val.count?c})
-		<#else>
-		${val}			
-		</#if>
-	</li>
-	</#compress>
+	<#list facetWrapper.facetResults[key]>
+	<h3>${key}</h3>
+	<ul>
+	<#items  as val>
+		<#compress>
+		<li>
+			<#if val.url?? >
+				<a href="${val.url}">${val.label}</a> (${val.count?c})
+			<#else>
+			${val}			
+			</#if>
+		</li>
+		</#compress>
+	</#items>
+	</ul>
 	</#list>
-</ul>
 
 </#list>
 </body>
