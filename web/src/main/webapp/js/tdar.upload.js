@@ -186,14 +186,12 @@ TDAR.fileupload = (function (TDAR, $) {
         //to remove/disable the fileproxy form fields associated with this upload so they aren't sent in the request upon submit
         $fileupload.bind("fileuploadfailed", function (e, data) {
             var $row = data.context;
-            //$row.find("input, select").remove();
-            //a delete button probably doesn't help us either.
-            //$row.find("button").remove();
+            $row.find("input, select, button").prop("disabled", true).addClass("disabled");
 
             //Keep the row around for a few seconds so that the user can see the error information,  then remove the row
             setTimeout(function () {
                         $row.fadeOut("slow", function () {
-                            $row.remove()
+                            $row.remove();
                         })
                     }, ERROR_TIMEOUT);
         });

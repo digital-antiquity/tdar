@@ -70,6 +70,12 @@ public class UploadController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
+
+    @Override
+    public void validate() {
+        addActionError("forcing upload to fail");
+    }
+
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }),
