@@ -49,8 +49,12 @@ public class TagHelper {
      * @return
      */
     public String tagify(String message) {
-        if(message == null) return "nullhash";
-        if("".equals(message)) return "emptyhash";
+        if(message == null) {
+        	return "nullhash";
+        }
+        if("".equals(message)) {
+        	return "emptyhash";
+        }
         HashCode hashCode = murmur128.hashString(message, Charset.defaultCharset());
         String str = base64.encodeToString(hashCode.asBytes());
         return str.substring(0, 8);
