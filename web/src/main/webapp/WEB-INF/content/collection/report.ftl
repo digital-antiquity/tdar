@@ -9,25 +9,35 @@
 <body>
 
 <h1>${resourceCollection.name!"untitled collection"}</h1>
+<h3>Occurence Counts</h3>
+<table class="table tableFormat sortable" id="ocur">
+<thead>
+	<tr><th>type</th><th>subtype</th><th>label</th><th>count</th></tr>
+		</thead>
+		<tbody>
 <#list facetWrapper.facetResults?keys as key>
 	<#list facetWrapper.facetResults[key]>
-	<h3>${key}</h3>
-	<ul>
 	<#items  as val>
 		<#compress>
-		<li>
+		<tr><td>${val.simpleName}</td><td>${key}</td><td>
 			<#if val.url?? >
-				<a href="${val.url}">${val.label}</a> (${val.count?c})
+				<a href="${val.url}">${val.label}</a>
 			<#else>
-			${val}			
+			${val.label}			
 			</#if>
-		</li>
+		</td>
+		<td>${val.count?c}</td></tr>
 		</#compress>
 	</#items>
-	</ul>
 	</#list>
-
 </#list>
+</tbody>
+</table>
+<script>
+$(function() {
+	$("#ocur").dataTable({"bPaginate": false});
+});
+</script>
 </body>
 
 </#escape>
