@@ -103,6 +103,14 @@ public class DashboardController extends AuthenticationAware.Base implements Dat
 	private List<UserNotification> currentNotifications;
 	private String statusData;
 	private String resourceTypeData;
+	
+	@Override
+	public void validate() {
+		if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+			addActionError(getText("dashboardController.user_must_login"));
+		}
+		super.validate();
+	}
 
 	// remove when we track down what exactly the perf issue is with the
 	// dashboard;

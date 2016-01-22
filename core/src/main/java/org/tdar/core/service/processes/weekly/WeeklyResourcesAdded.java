@@ -36,6 +36,8 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
 
     @Autowired
     private transient SearchService searchService;
+    @Autowired
+    private transient SearchIndexService searchIndexService;
 
     @Autowired
     private transient EmailService emailService;
@@ -60,7 +62,11 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             collection.setSortBy(SortOption.RESOURCE_TYPE);
             genericService.saveOrUpdate(collection);
             collection.getResources().addAll(resources);
+//            for (Resource r : resources) {
+//            	r.getResourceCollections().add(collection);
+//            }
             genericService.saveOrUpdate(collection);
+            searchIndexService.index(collection);
         } catch (Exception e) {
             logger.error("issue in recent resources report", e);
         }

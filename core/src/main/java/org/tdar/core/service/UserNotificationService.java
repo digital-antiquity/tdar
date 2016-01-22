@@ -16,6 +16,7 @@ import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.notification.UserNotificationType;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -64,6 +65,9 @@ public class UserNotificationService {
     @Transactional(readOnly = true)
     @SuppressWarnings("unchecked")
     public List<UserNotification> getCurrentNotifications(final TdarUser user) {
+    	if (PersistableUtils.isNullOrTransient(user)) {
+    		return Collections.emptyList();
+    	}
         List<UserNotification> notifications =
                 genericDao.getNamedQuery(TdarNamedQueries.QUERY_CURRENT_USER_NOTIFICATIONS).setLong("userId", user.getId()).list();
         Date dismissedNotificationsDate = user.getDismissedNotificationsDate();
