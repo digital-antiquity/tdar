@@ -22,6 +22,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
+import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.core.service.search.SearchService;
 import org.tdar.search.query.SortOption;
 import org.tdar.utils.MessageHelper;
