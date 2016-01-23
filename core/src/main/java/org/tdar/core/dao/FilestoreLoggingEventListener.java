@@ -51,7 +51,7 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener, P
 	}
 
 	private void logToXml(Session session, Object obj) {
-		if (session.isReadOnly(obj)) {
+		if (!session.contains(obj) || session.isReadOnly(obj)) {
 			return;
 		}
 		
