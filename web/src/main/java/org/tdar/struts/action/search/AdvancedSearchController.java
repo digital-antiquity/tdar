@@ -436,4 +436,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
+
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.LUCENE_EXPERIMENTAL;
+    };
 }

@@ -191,4 +191,9 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 	public DisplayOrientation getOrientation() {
 		return DisplayOrientation.LIST;
 	}
+
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.LUCENE_EXPERIMENTAL;
+    };
 }

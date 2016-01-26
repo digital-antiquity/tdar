@@ -22,6 +22,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -215,4 +216,9 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
     }
+
+    @Override
+    public ProjectionModel getProjectionModel() {
+        return ProjectionModel.LUCENE_EXPERIMENTAL;
+    };
 }
