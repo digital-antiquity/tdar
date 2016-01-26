@@ -23,6 +23,12 @@ TDAR.advancedSearch = (function () {
             // figure out which group, rownum we are in, and then update attribute
             // values of the cloned row
             var groupnum = $(this).closest(".grouptable").data("groupnum");
+
+            var $searchType = $(".searchType",$controlGroup);
+            var name = $searchType.attr("name");
+            name = name.replace(/groups\[(\d+)\](.+)/,"groups["+groupnum+"]$2");
+//            console.log($(".searchType",$controlGroup).attr("name"),name);
+            $searchType.attr("name",name);
             var rownum = $(this).closest(".grouptable").children(".termrow:visible").index($(this).closest(".termrow"));
             _updateAttributesForRow($(row), groupnum, rownum);
 
