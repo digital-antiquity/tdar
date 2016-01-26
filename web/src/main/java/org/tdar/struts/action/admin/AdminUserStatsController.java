@@ -50,6 +50,7 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
     private Map<Date, Map<StatisticType, Long>> historicalUserStats;
     private List<TdarUser> recentLogins;
     private Map<UserAffiliation, Long> affiliationCounts;
+    private Map<UserAffiliation, Long> contributorAffiliationCounts;
     private Map<AgreementTypes, Long> agreementCounts;
 
     @Action("user")
@@ -59,6 +60,7 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
             setRecentUsers(entityService.findAllRegisteredUsers(10));
             setUserLoginStats(statisticService.getUserLoginStats());
             setAffiliationCounts(entityService.getAffiliationCounts());
+            setContributorAffiliationCounts(entityService.getAffiliationCounts(true));
             setAgreementCounts(entityService.getAgreementCounts());
         } catch (Exception e) {
             getLogger().error("error in userInfo", e);
@@ -118,6 +120,14 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
 
     public void setAgreementCounts(Map<AgreementTypes, Long> agreementCounts) {
         this.agreementCounts = agreementCounts;
+    }
+
+    public Map<UserAffiliation, Long> getContributorAffiliationCounts() {
+        return contributorAffiliationCounts;
+    }
+
+    public void setContributorAffiliationCounts(Map<UserAffiliation, Long> contributorAffiliationCounts) {
+        this.contributorAffiliationCounts = contributorAffiliationCounts;
     }
 
 }

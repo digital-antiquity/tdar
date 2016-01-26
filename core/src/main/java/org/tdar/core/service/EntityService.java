@@ -517,12 +517,17 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = true)
     public Map<UserAffiliation, Long> getAffiliationCounts() {
-        return getDao().getAffiliationCounts();
+        return getDao().getAffiliationCounts(false);
     }
 
     @Transactional(readOnly = true)
     public Map<Creator, Integer> getRelatedCreatorCounts(Set<Long> resourceIds) {
         return getDao().getRelatedCreatorCounts(resourceIds);
+    }
+
+    @Transactional(readOnly=true)
+    public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
+        return getDao().getAffiliationCounts(true);
     }
 
 }
