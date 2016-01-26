@@ -43,10 +43,10 @@ public class OaiPmhDao {
 				break;
 			}
 		}
-
-		Query query = genericDao.getNamedQuery(qn);
+		
+		Query query = genericDao.getNamedQuery(qn + "_count");
 		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
-		search.setTotalRecords(query.list().size());
+		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
 
 		query = genericDao.getNamedQuery(qn);
 		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
