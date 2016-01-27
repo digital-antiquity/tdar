@@ -2,6 +2,7 @@ package org.tdar.oai.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -150,6 +151,11 @@ public class OaiPmhService {
 
 		// now actually build the queries and execute them
 
+		if (!OaiPmhConfiguration.getInstance().enableTdarFormatInOAI() && Objects.equals(metadataFormat, OAIMetadataFormat.TDAR)) {
+	          throw new OAIException(MessageHelper.getInstance().getText("oaiRecordType.unknown_type",Arrays.asList(OAIMetadataFormat.TDAR)),
+	                    OAIPMHerrorcodeType.NO_RECORDS_MATCH);
+
+		}
 
 		OaiSearchResult persons = null;
 		OaiSearchResult institutions = null;

@@ -37,8 +37,13 @@ public class CollectionRightsComparator {
     }
 
     public boolean rightsDifferent() {
-        Map<Long, String> map = new HashMap<>();
+        Map<Long, String> userIdMap = new HashMap<>();
         // iterate through current users, add them to the map
+        List<Long> changeUserIds = new ArrayList<>();
+        if (logger.isTraceEnabled()) {
+            logger.trace("incoming:{}", incomingUsers);
+            logger.trace("current:{}", currentUsers);
+        }
         for (AuthorizedUser user : currentUsers) {
             if (user == null) {
                 continue;
@@ -47,7 +52,7 @@ public class CollectionRightsComparator {
                 logger.debug(">> {}", user);
                 return true;
             }
-            addRemoveMap(map, user, true);
+            addRemoveMap(userIdMap, user, true);
         }
 
         //iterate through the incoming list
@@ -55,11 +60,12 @@ public class CollectionRightsComparator {
             if (user == null || PersistableUtils.isNullOrTransient(user.getUser())) {
                 continue;
             }
-            addRemoveMap(map, user, false);
+            changeUserIds.add(user.getUser().getId());
+            addRemoveMap(userIdMap, user, false);
         }
 
         // if there are no changes and no additions, and the map is empty, then, we're done
-        if (MapUtils.isEmpty(map) && CollectionUtils.isEmpty(getAdditions()) && CollectionUtils.isEmpty(getChanges())) {
+        if (MapUtils.isEmpty(userIdMap) && CollectionUtils.isEmpty(getAdditions()) && CollectionUtils.isEmpty(getChanges())) {
             logger.debug("skipping rights section b/c no-changes");
             return false;
         }
@@ -69,7 +75,12 @@ public class CollectionRightsComparator {
             if (user == null || PersistableUtils.isNullOrTransient(user.getUser())) {
                 continue;
             }
-            for (Long id : map.keySet()) {
+            for (Long id : userIdMap.keySet()) {
+            	// skip changes
+            	if (changeUserIds.contains(id)) {
+            		continue;
+            	}
+            	
                 if (Objects.equals(user.getUser().getId(),id)) {
                     getDeletions().add(user);
                 }

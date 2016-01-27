@@ -273,6 +273,7 @@
                 name = TdarNamedQueries.QUERY_RECENT_USERS_ADDED,
                 query = "select p from TdarUser p where status='ACTIVE' order by p.id desc"
         ),
+        // add boolean for contributor, (left join on resource exists
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_USAGE_STATS,
                 query = "from AggregateStatistic where recordedDate between :fromDate and :toDate and statisticType in (:statTypes) order by recordedDate desc"
@@ -515,6 +516,9 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.AFFILIATION_COUNTS,
                 query = "select affiliation, count(id) from TdarUser user where status='ACTIVE' group by affiliation"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.AFFILIATION_COUNTS_CONTRIBUTOR,
+                query = "select affiliation, count(id) from TdarUser user where status='ACTIVE' and id in (select distinct uploader.id from Resource) group by affiliation"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS,
                 query = "DELETE FROM DataTableColumnRelationship rel where rel.id in (select distinct cr.id from DataTableRelationship dtr join dtr.columnRelationships as cr where dtr.id in (:ids))"),
