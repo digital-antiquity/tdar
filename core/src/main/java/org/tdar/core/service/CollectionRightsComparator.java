@@ -39,6 +39,7 @@ public class CollectionRightsComparator {
     public boolean rightsDifferent() {
         Map<Long, String> map = new HashMap<>();
         // iterate through current users, add them to the map
+        List<Long> changeUserIds = new ArrayList<>();
         for (AuthorizedUser user : currentUsers) {
             if (user == null) {
                 continue;
@@ -47,6 +48,7 @@ public class CollectionRightsComparator {
                 logger.debug(">> {}", user);
                 return true;
             }
+            changeUserIds.add(user.getUser().getId());
             addRemoveMap(map, user, true);
         }
 
@@ -70,6 +72,11 @@ public class CollectionRightsComparator {
                 continue;
             }
             for (Long id : map.keySet()) {
+            	// skip changes
+            	if (changeUserIds.contains(id)) {
+            		continue;
+            	}
+            	
                 if (Objects.equals(user.getUser().getId(),id)) {
                     getDeletions().add(user);
                 }

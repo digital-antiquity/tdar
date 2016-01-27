@@ -263,9 +263,24 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resourceCollection.getAuthorizedUsers().removeAll(comparator.getDeletions());
 
             if (CollectionUtils.isNotEmpty(comparator.getChanges())) {
+            	Map<Long,AuthorizedUser> idMap2 = null;
+            	
                 Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resourceCollection.getAuthorizedUsers());
                 for (AuthorizedUser user : comparator.getChanges()) {
-                    AuthorizedUser actual = idMap.get(user.getUser().getId());
+                    AuthorizedUser actual = idMap.get(user.getId());
+                    if (actual == null) {
+                    	// it's possible that the authorizedUserId was not passed back from the client
+                    	// if so, build a secondary map using the TdarUser (authorizedUser.user) id.
+                    	if (idMap2 == null) {
+                        	idMap2 = new HashMap<>();
+                        	for (AuthorizedUser au : resourceCollection.getAuthorizedUsers()) {
+                        		idMap2.put(au.getUser().getId(),au);
+                        	}
+                    	}
+                    	
+                    	actual = idMap2.get(user.getUser().getId());
+                    	logger.debug("actual was null, now: {}", actual);
+                    }
                     checkSelfEscalation(actor, user.getUser(), source, user.getGeneralPermission());
                     actual.setGeneralPermission(user.getGeneralPermission());
                     ;
