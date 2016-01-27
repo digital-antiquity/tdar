@@ -273,6 +273,7 @@
                 name = TdarNamedQueries.QUERY_RECENT_USERS_ADDED,
                 query = "select p from TdarUser p where status='ACTIVE' order by p.id desc"
         ),
+        // add boolean for contributor, (left join on resource exists
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_USAGE_STATS,
                 query = "from AggregateStatistic where recordedDate between :fromDate and :toDate and statisticType in (:statTypes) order by recordedDate desc"
