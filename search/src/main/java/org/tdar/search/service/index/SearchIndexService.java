@@ -134,16 +134,13 @@ public class SearchIndexService {
         }
         try {
             String core = LookupSource.getCoreForClass(item.getClass());
-            if (deleteFirst) {
-                purge(item);
-            }
 
             if (src != null && src == LookupSource.DATA) {
-            	if (deleteFirst) {
-            		template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:"+item.getId());
-            	}
             	List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource)item, resourceService);
                 template.add(CoreNames.DATA_MAPPINGS, convert);
+                if (deleteFirst) {
+                    template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:"+item.getId());
+                }
                 return null;
            }
 
@@ -168,6 +165,10 @@ public class SearchIndexService {
             }
             if (item instanceof InformationResourceFile) {
                 document = ContentDocumentConverter.convert((InformationResourceFile) item);
+            }
+
+            if (deleteFirst) {
+                purge(item);
             }
 
             if (document == null) {
