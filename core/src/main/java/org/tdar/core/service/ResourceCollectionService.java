@@ -250,6 +250,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (resourceCollection == null) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_save");
         }
+        logger.trace("------------------------------------------------------");
         logger.debug("current users (start): {}", resourceCollection.getAuthorizedUsers());
         logger.debug("incoming authorized users (start): {}", resourceCollection.getAuthorizedUsers());
 
@@ -293,6 +294,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (shouldSaveResource) {
             getDao().saveOrUpdate(resourceCollection);
         }
+        logger.trace("------------------------------------------------------");
     }
 
     private void checkSelfEscalation(TdarUser actor, TdarUser transientUser, HasSubmitter source, GeneralPermissions generalPermission) {
