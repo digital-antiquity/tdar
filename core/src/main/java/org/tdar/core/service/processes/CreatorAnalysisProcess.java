@@ -137,6 +137,7 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 				Resource resource = (Resource) results.get()[0];
 				resourceIds.add(resource.getId());
 			}
+			genericDao.clearCurrentSession();
 		} catch (Exception e) {
 			getLogger().warn("Exception", e);
 		}
