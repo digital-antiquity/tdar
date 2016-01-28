@@ -193,16 +193,15 @@ TDAR.autocomplete = (function () {
      * if all of the fields in a person autocomplete fieldset have empty value attributes, this function would return true.
      *
      * @param element any child element contained by an autocomplete parent
-     * @param minCount minimum number of "blank" form fields that constitute an empty record
+     * @param ignoredFields property names to exclude when evaluating which properties are non-blank
      * @returns {boolean} true if the function determines the autcomplete control to be "empty"
      */
-    function _evaluateAutocompleteRowAsEmpty(element, minCount) {
+    function _evaluateAutocompleteRowAsEmpty(element, ignoredFields) {
         var req = _buildRequestData($(element));
         var total = 0;
-        //FIXME:  I think 'ignored' is irrelevant as defined here.  Can we remove this?
-        var ignored = new Array();
-        if (minCount != undefined) {
-            ignored = minCount;
+        var _ignoredFields = [];
+        if (ignoredFields != undefined) {
+            _ignoredFields = ignoredFields;
         }
 
         var $idElement = $($(element).attr("autocompleteIdElement"));
@@ -212,7 +211,7 @@ TDAR.autocomplete = (function () {
         // for each item in the request
         for (var p in req) {
             total++;
-            if ($.inArray(p, ignored) == -1 && req[p] != undefined && req[p] != '') {
+            if ($.inArray(p, _ignoredFields) == -1 && req[p] != undefined && req[p] != '') {
                 nonempty++;
             }
             if (p == "id") {
@@ -417,12 +416,12 @@ TDAR.autocomplete = (function () {
                 var $element = $(this);
                 // if the existing autocomplete value stored in the "autoVal" attribute does is not undefined and is not the same as the current
                 // evaluate it for being significant (important when trying to figure out if a minimum set of fields have been filled in
-                if (($element.attr("autoVal") != undefined && $element.attr("autoVal") != $element.val())
-                    | _evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? [] : options.ignoreRequestOptionsWhenEvaluatingEmptyRow)) {
+                var autovalChanged = $element.attr("autoVal") !== $element.val();
+                var rowIsEmpty = _evaluateAutocompleteRowAsEmpty(this, options.ignoreRequestOptionsWhenEvaluatingEmptyRow == undefined ? [] : options.ignoreRequestOptionsWhenEvaluatingEmptyRow);
+                if (autovalChanged | rowIsEmpty) {
                     if ($element.attr("autocompleteIdElement")) {
                         var $idElement = $($element.attr("autocompleteIdElement"));
                         $idElement.val("");
-
                     }
                 }
                 return true;
