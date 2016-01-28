@@ -190,11 +190,11 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     public String toString() {
     	String pstring = "null (-1)";
     	if (person != null) {
-    		pstring = String.format(person.getProperName(), person.getId());
+    		pstring = String.format("%s (%s)", person.getProperName(), person.getId());
     	}
     	String istring = "null (-1)";
     	if (institution != null) {
-    		istring = String.format(institution.getProperName(), institution.getId());
+    		istring = String.format("%s (%s)", institution.getName(), institution.getId());
     	}
     	
         return String.format("[ResourceCreatorProxy@%s  role:%s rc:%s  p:%s  i:%s]", this.hashCode(), role, resourceCreator, pstring, istring);

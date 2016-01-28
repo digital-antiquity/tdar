@@ -63,10 +63,11 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             collection.setSortBy(SortOption.RESOURCE_TYPE);
             genericService.saveOrUpdate(collection);
             collection.getResources().addAll(resources);
-//            for (Resource r : resources) {
-//            	r.getResourceCollections().add(collection);
-//            }
+            for (Resource r : resources) {
+            	r.getResourceCollections().add(collection);
+            }
             genericService.saveOrUpdate(collection);
+            genericService.saveOrUpdate(resources);
             searchIndexService.index(collection);
         } catch (Exception e) {
             logger.error("issue in recent resources report", e);
