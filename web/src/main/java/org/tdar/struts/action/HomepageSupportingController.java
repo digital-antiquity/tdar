@@ -67,19 +67,19 @@ public class HomepageSupportingController extends AuthenticationAware.Base {
 
     @HttpOnlyIfUnauthenticated
     @Actions({
-            @Action(value = "page-not-found", results = { @Result(name = ERROR, type = "freemarkerhttp",
+            @Action(value = "page-not-found", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP,
                     location = "/WEB-INF/content/errors/page-not-found.ftl", params = { "status", "404" }) }),
-            @Action(value = "not-found", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/page-not-found.ftl",
+            @Action(value = "not-found", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/page-not-found.ftl",
                     params = { "status", "404" }) }),
-            @Action(value = "gone", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/resource-deleted.ftl",
+            @Action(value = "gone", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/resource-deleted.ftl",
                     params = { "status", "410" }) }),
             // used by the AuthenticationInterceptor which seems to not be able to work with the FreemarkerHttpResult properly
-            @Action(value = TdarActionSupport.UNAUTHORIZED, results = { @Result(name = ERROR, type = "freemarkerhttp",
+            @Action(value = TdarActionSupport.UNAUTHORIZED, results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP,
                     location = "/WEB-INF/content/errors/unauthorized.ftl",
                     params = { "status", "401" }) }),
-            @Action(value = "access-denied", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/access-denied.ftl",
+            @Action(value = "access-denied", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/access-denied.ftl",
                     params = { "status", "403" }) }),
-            @Action(value = "invalid-token", results = { @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/double-submit.ftl",
+            @Action(value = "invalid-token", results = { @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/double-submit.ftl",
                     params = { "status", "500" }) })
     })
     public String error() {
