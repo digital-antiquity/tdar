@@ -1155,9 +1155,4 @@
             </column>
         </createTable>
 	</changeSet>    
-    
-    <changeSet id="neolithic-13" author="abrin">
-        <addNotNullConstraint tableName="resource_creator" columnName="sequence_number"/>
-        <sql>update resource_creator rc set sequence_number=(select 1+max(sequence_number) from resource_creator rc2 where rc.resource_id=rc2.resource_id) where sequence_number is null</sql>    
-    </changeSet>
 </databaseChangeLog>
