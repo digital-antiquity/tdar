@@ -53,7 +53,7 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
 	@Override
 	public int getBatchSize() {
-		return 100;
+		return 10;
 	}
 
 	@Override
@@ -61,6 +61,11 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 		return Creator.class;
 	}
 
+	@Override
+	public boolean clearBeforeBatch() {
+		return true;
+	}
+	
 	@Override
 	public List<Long> findAllIds() {
 		/*
@@ -137,7 +142,6 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 				Resource resource = (Resource) results.get()[0];
 				resourceIds.add(resource.getId());
 			}
-			genericDao.clearCurrentSession();
 		} catch (Exception e) {
 			getLogger().warn("Exception", e);
 		}
