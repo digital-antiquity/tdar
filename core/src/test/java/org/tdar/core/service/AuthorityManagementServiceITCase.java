@@ -38,8 +38,8 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.AuthorityManagementService.AuthorityManagementLog;
-import org.tdar.core.service.AuthorityManagementService.DupeMode;
+import org.tdar.core.service.authority.AuthorityManagementLog;
+import org.tdar.core.service.authority.DupeMode;
 
 public class AuthorityManagementServiceITCase extends AbstractIntegrationTestCase {
 
