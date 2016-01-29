@@ -9,7 +9,7 @@
 
     <@admin.header />
 
-<a class="button" href="<@s.url value="user-mailchimp" />">Import for Mailchimp</a>
+<a class="button" href="<@s.url value="user-mailchimp" />">Import for Mailchimp/ full user report</a>
 <br/>
     <@admin.statsTable historicalUserStats "User Statistics" "userstats" />
 <h3>Repeated Logins</h3>
