@@ -143,7 +143,7 @@ public interface Persistable extends Serializable {
     public abstract static class Sequence<E extends Sequence<E>> extends Persistable.Base implements Sequenceable<E> {
         private static final long serialVersionUID = -2667067170953144064L;
 
-        @Column(name = "sequence_number", nullable=false)
+        @Column(name = "sequence_number", nullable=true)
         private Integer sequenceNumber = 0;
 
         @Override
