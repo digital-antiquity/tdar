@@ -143,15 +143,15 @@ public interface Persistable extends Serializable {
     public abstract static class Sequence<E extends Sequence<E>> extends Persistable.Base implements Sequenceable<E> {
         private static final long serialVersionUID = -2667067170953144064L;
 
-        @Column(name = "sequence_number")
-        protected Integer sequenceNumber = 0;
+        @Column(name = "sequence_number", nullable=false)
+        private Integer sequenceNumber = 0;
 
         @Override
         public final int compareTo(E other) {
-            if ((sequenceNumber == null) || (other.sequenceNumber == null)) {
+            if ((sequenceNumber == null) || (other.getSequenceNumber() == null)) {
                 return 0;
             }
-            return sequenceNumber.compareTo(other.sequenceNumber);
+            return sequenceNumber.compareTo(other.getSequenceNumber());
         }
 
         @Override

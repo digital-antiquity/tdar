@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
@@ -189,6 +191,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         getLogger().trace("getprojectasjson called");
         Object result = new HashMap<String, Object>();
 
+        List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
+        Collections.sort(rc);
+        project.setResourceCreators(new HashSet<>(rc));
         try {
             if (PersistableUtils.isNotNullOrTransient(project)) {
                 getLogger().trace("Trying to convert blank or null project to json: " + project);

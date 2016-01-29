@@ -15,6 +15,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,9 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
@@ -47,6 +51,8 @@ import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
@@ -127,6 +133,40 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         logger.info(sw.toString());
         assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));
+    }
+
+    
+    @Test
+    @Rollback
+    public void testJsonExportRCorder() throws Exception {
+        Project p = new Project();
+        p.setTitle("test");
+        p.setDescription("test");
+        p.markUpdated(getAdminUser());
+        for (int i=1 ; i < 10; i++) {
+            ResourceCreator rc = new ResourceCreator(new Institution(i + " I"), ResourceCreatorRole.CONTACT);
+            genericService.saveOrUpdate(rc.getCreator());
+//            rc.setSequenceNumber(10-i);
+            p.getResourceCreators().add(rc);
+        }
+        
+        genericService.saveOrUpdate(p);
+        StringWriter sw = new StringWriter();
+        Long pid = p.getId();
+        p = null;
+        evictCache();
+        p = genericService.find(Project.class, pid);
+    //    List<ResourceCreator> lst = new ArrayList<>(p.getResourceCreators());
+  //      Collections.sort(lst);
+//        p.setResourceCreators(new LinkedHashSet<>(lst));
+        logger.debug("{}", p.getResourceCreators());
+        serializationService.convertToJson(p, sw, null, null);
+        for (String l : sw.toString().split("\n")) {
+            if (l.contains("properName") || l.contains("sequenceNumber")) {
+                logger.debug(l);
+            }
+        }
+//        logger.info(sw.toString());
     }
 
     
