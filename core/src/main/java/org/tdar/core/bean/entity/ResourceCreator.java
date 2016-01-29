@@ -68,7 +68,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, key = "RESOURCE_CREATOR", order = 1)
     @JsonView(JsonLookupFilter.class)
-    private Creator<?> creator;
+    private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @Field
@@ -81,7 +81,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     private transient boolean obfuscated;
 
-    public ResourceCreator(Creator<?> creator, ResourceCreatorRole role) {
+    public ResourceCreator(Creator creator, ResourceCreatorRole role) {
         setCreator(creator);
         setRole(role);
     }
@@ -90,11 +90,11 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @XmlElementRef
-    public Creator<?> getCreator() {
+    public Creator getCreator() {
         return creator;
     }
 
-    public void setCreator(Creator<?> creator) {
+    public void setCreator(Creator creator) {
         this.creator = creator;
     }
 
@@ -160,7 +160,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     }
 
     @Transient
-    public static final String getCreatorRoleIdentifier(Creator<?> creatorToFormat, ResourceCreatorRole creatorRole) {
+    public static final String getCreatorRoleIdentifier(Creator creatorToFormat, ResourceCreatorRole creatorRole) {
         String toReturn = "";
         if ((creatorToFormat != null) && (creatorToFormat.getCreatorType() != null)) {
             String code = creatorToFormat.getCreatorType().getCode();
