@@ -56,6 +56,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
     private static final int USE_DEFAULT_EXCEL_ROWS = -1;
+	private static final String[] defaultColors = new String[] {"#2C4D56", "#EBD790","#4B514D","#C3AA72","#DC7612","#BD3200","#A09D5B","#F6D86B", "#660000", "#909D5B"};
 
     private TdarConfiguration() {
         this("/tdar.properties");
@@ -932,4 +933,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 		}
 		return true;
 	}
+	
+	public List<String> getBarColors() {
+		return Arrays.asList(assistant.getStringArray("tdar.colors", defaultColors));
+	}
+	
 }
