@@ -191,11 +191,11 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
         getLogger().trace("getprojectasjson called");
         Object result = new HashMap<String, Object>();
 
-        List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
-        Collections.sort(rc);
-        project.setResourceCreators(new HashSet<>(rc));
         try {
             if (PersistableUtils.isNotNullOrTransient(project)) {
+            	List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
+            	Collections.sort(rc);
+            	project.setResourceCreators(new HashSet<>(rc));
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 // obfuscationService.obfuscate(project, user);
                 result = project;
