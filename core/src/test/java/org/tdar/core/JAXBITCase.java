@@ -146,7 +146,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         for (int i=1 ; i < 10; i++) {
             ResourceCreator rc = new ResourceCreator(new Institution(i + " I"), ResourceCreatorRole.CONTACT);
             genericService.saveOrUpdate(rc.getCreator());
-//            rc.setSequenceNumber(10-i);
+            rc.setSequenceNumber(10-i);
             p.getResourceCreators().add(rc);
         }
         
@@ -156,9 +156,10 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         p = null;
         evictCache();
         p = genericService.find(Project.class, pid);
-    //    List<ResourceCreator> lst = new ArrayList<>(p.getResourceCreators());
-  //      Collections.sort(lst);
-//        p.setResourceCreators(new LinkedHashSet<>(lst));
+        List<ResourceCreator> lst = new ArrayList<>(p.getResourceCreators());
+        p.getResourceCreators().clear();
+        Collections.sort(lst);
+        p.getResourceCreators().addAll(lst);
         logger.debug("{}", p.getResourceCreators());
         serializationService.convertToJson(p, sw, null, null);
         for (String l : sw.toString().split("\n")) {
