@@ -290,16 +290,15 @@ public class SearchDao<I extends Indexable> {
 				I r = cls.newInstance();
 				r.setId(id);
 				if (r instanceof Resource) {
+					logger.trace("{}",doc);
 					Resource r_ = (Resource) r;
 					r_.setStatus(Status.valueOf((String) doc.getFieldValue(QueryFieldNames.STATUS)));
 					r_.setTitle((String) doc.getFieldValue(QueryFieldNames.NAME));
 					r_.setDescription((String) doc.getFieldValue(QueryFieldNames.DESCRIPTION));
-					Collection<Long> collectionIds = (Collection<Long>) (Collection) doc
-							.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
+					Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_IDS);
+//					logger.debug("cids:{} {}", collectionIds, doc.getFieldValue(QueryFieldNames.RESOURCE_COLLECTION_IDS));
 					Long submitterId = (Long) doc.getFieldValue(QueryFieldNames.SUBMITTER_ID);
-					submitterIds.add(submitterId);
-					TdarUser user = datasetDao.find(TdarUser.class, submitterId);
-					r_.setSubmitter(user);
+					r_.setSubmitter(datasetDao.find(TdarUser.class, submitterId));
 					
 					Collection<Long> llIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
 					List<LatitudeLongitudeBox> findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);

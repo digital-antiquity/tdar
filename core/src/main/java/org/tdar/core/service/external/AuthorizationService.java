@@ -647,6 +647,8 @@ public class AuthorizationService implements Accessible {
         Viewable item = (Viewable) r_;
         boolean viewable = setupViewable(authenticatedUser, item);
         boolean allowedToViewAll = authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds);
+        logger.trace("::applytransientViewable: r:{} u:{} c:{}", r_.getId(), authenticatedUser.getId(), collectionIds);
+        logger.trace(":: st:{} admin:{} submitter:{}", r_.getStatus(),isAdministrator(authenticatedUser), r_.getSubmitter().getId());
 		if (viewable) {
         	item.setViewable(true);
         } else if (allowedToViewAll) {

@@ -1141,6 +1141,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.setAsync(false);
         controller.save();
         evictCache();
+        genericService.synchronize();
         searchIndexService.flushToIndexes();
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource
