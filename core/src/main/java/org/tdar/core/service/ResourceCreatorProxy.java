@@ -188,7 +188,16 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     @Override
     public String toString() {
-        return String.format("[ResourceCreatorProxy@%s  role:%s rc:%s  p:%s  i:%s]", this.hashCode(), role, resourceCreator, person, institution);
+    	String pstring = "null (-1)";
+    	if (person != null) {
+    		pstring = String.format("%s (%s)", person.getProperName(), person.getId());
+    	}
+    	String istring = "null (-1)";
+    	if (institution != null) {
+    		istring = String.format("%s (%s)", institution.getName(), institution.getId());
+    	}
+    	
+        return String.format("[ResourceCreatorProxy@%s  role:%s rc:%s  p:%s  i:%s]", this.hashCode(), role, resourceCreator, pstring, istring);
     }
 
     @Override

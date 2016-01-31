@@ -93,14 +93,14 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
 //                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
 //    })
     public String getName() {
-        if (parentInstitution != null) {
-            return parentInstitution.getName() + " : " + name;
-        }
         return name;
     }
 
     @Override
     public String getProperName() {
+        if (parentInstitution != null) {
+            return parentInstitution.getName() + " : " + getName();
+        }
         return getName();
     }
 

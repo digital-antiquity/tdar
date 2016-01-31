@@ -88,8 +88,15 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
             batch = getNextBatch();
         }
     }
+    
+    public boolean clearBeforeBatch() {
+    	return false;
+    }
 
     public synchronized List<Long> getNextBatch() {
+    	if (clearBeforeBatch()) {
+			genericDao.clearCurrentSession();
+    	}
         List<Long> queue = getBatchIdQueue();
         if (queue.isEmpty()) {
             logger.trace("No more ids to process");
