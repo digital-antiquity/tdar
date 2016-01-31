@@ -228,11 +228,11 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());
-            genericService.save(file);
+            genericService.saveOrUpdate(file);
             flush();
             file.setStatus(FileStatus.PROCESSED);
             assertTrue(file.isProcessed());
-            genericService.save(file);
+            genericService.saveOrUpdate(file);
             flush();
             genericService.synchronize();
 

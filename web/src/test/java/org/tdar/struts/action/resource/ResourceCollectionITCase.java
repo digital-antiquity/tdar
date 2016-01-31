@@ -970,6 +970,25 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     }
 
     @Test
+    @Rollback
+    public void testReadUserChangeRights() throws Exception {
+        Dataset dataset = createAndSaveNewInformationResource(Dataset.class);
+        Long datasetId = dataset.getId();
+        addAuthorizedUser(dataset, getAdminUser(), GeneralPermissions.VIEW_ALL);
+        genericService.save(dataset);
+        dataset = null;
+        DatasetController controller = generateNewInitializedController(DatasetController.class);
+        controller.setId(datasetId);
+        controller.prepare();
+        controller.edit();
+        controller.getAuthorizedUsers().add(new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_METADATA));
+        controller.setServletRequest(getServletPostRequest());
+        controller.save();
+        dataset = datasetService.find(datasetId);
+        assertEquals(1, dataset.getInternalResourceCollection().getAuthorizedUsers().size());
+    }
+
+    @Test
     @Rollback(true)
     public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
         controller = generateNewInitializedController(CollectionController.class, getUser());

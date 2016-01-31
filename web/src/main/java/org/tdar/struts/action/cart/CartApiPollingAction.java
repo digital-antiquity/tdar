@@ -8,6 +8,7 @@ import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -59,7 +60,7 @@ public class CartApiPollingAction extends AbstractCartController {
         }
 
         if (userCannot(InternalTdarRights.EDIT_BILLING_INFO)) {
-            if (!getAuthenticatedUser().equals(getInvoice().getOwner())) {
+            if (!Objects.equals(getAuthenticatedUser(),getInvoice().getOwner())) {
                 addActionError(getText("cartApiPollingController.invoice_lookup_not_authorized"));
             }
         }

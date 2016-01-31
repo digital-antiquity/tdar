@@ -941,5 +941,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isRightSidebar() {
         return false;
     }
-    
+ 
+    public List<String> getBarColors() {
+    	return getTdarConfiguration().getBarColors();
+    }
 }

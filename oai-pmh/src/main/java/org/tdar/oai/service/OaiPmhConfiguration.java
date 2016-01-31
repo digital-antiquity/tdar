@@ -40,7 +40,7 @@ public class OaiPmhConfiguration extends AbstractConfigurationFile {
 
 
     public boolean enableTdarFormatInOAI() {
-        return assistant.getBooleanProperty("oai.repository.enableTdarMetadataFormat", true);
+        return assistant.getBooleanProperty("oai.repository.enableTdarMetadataFormat", false);
     }
 
     public String getRepositoryNamespaceIdentifier() {

@@ -47,13 +47,18 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener, P
 			logger.error("trying to logToXML: {} but session is closed", event.getEntity());
 			return;
 		}
-		logToXml(event.getEntity());
+		logToXml(event.getSession(), event.getEntity());
 	}
 
-	private void logToXml(Object obj) {
+	private void logToXml(Session session, Object obj) {
+		if (!session.contains(obj) || session.isReadOnly(obj)) {
+			return;
+		}
+		
 		if (obj == null) {
 			return;
 		}
+		
 
 		try {
 			if (obj instanceof Persistable) {
@@ -78,7 +83,8 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener, P
 			return;
 		}
 
-		logToXml(obj);
+		logToXml(event.getSession(), event.getEntity());
+
 	}
 
 	private boolean testSession(EventSource session) {
@@ -91,7 +97,8 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener, P
 			logger.error("trying to logToXML: {} but session is closed", event.getEntity());
 			return;
 		}
-		logToXml(event.getEntity());
+		logToXml(event.getSession(), event.getEntity());
+
 	}
 
 	@Override
@@ -115,7 +122,7 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener, P
 			logger.debug("flush to filestore ({})", set.size());
 			for (Object obj : set) {
 				try {
-					logToXml(obj);
+					logToXml(event.getSession(), obj);
 				} catch (Exception e) {
 					logger.error("error writing to filestore", e);
 				}

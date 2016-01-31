@@ -181,7 +181,8 @@
                             <#escape x as x?html>
                                 <@_textfield "Agreement Version" creator.contributorAgreementVersion true />
                                 <br/>
-                                <@_textfield "Affiliation" creator.affilliation />
+                                <#assign term><@s.text name="${(creator.affiliation.localeKey)!''}" /></#assign>
+                                <@_textfield "Affiliation" term />
 
                             </#escape>
                         </td>

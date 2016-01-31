@@ -272,9 +272,12 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return toReturn;
     }
 
-    public Map<UserAffiliation, Long> getAffiliationCounts() {
+    public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
         HashMap<UserAffiliation, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AFFILIATION_COUNTS);
+        if (b) {
+            query = getCurrentSession().getNamedQuery(TdarNamedQueries.AFFILIATION_COUNTS_CONTRIBUTOR);
+        }
         for (Object row_ : query.list()) {
             Object[] row = (Object[]) row_;
             toReturn.put((UserAffiliation) row[0], ((Number) row[1]).longValue());

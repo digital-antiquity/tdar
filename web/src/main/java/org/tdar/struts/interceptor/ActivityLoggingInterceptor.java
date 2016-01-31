@@ -12,12 +12,15 @@ import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.TagHelper;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * $Id$
@@ -40,6 +43,8 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
     private transient GenericService genericService;
     private SessionData sessionData;
 
+    private TagHelper tagHelper = new TagHelper();
+
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
         Object action = invocation.getAction();
@@ -52,7 +57,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
         }
 
         Activity activity = null;
-        MDC.put("path", Activity.formatRequest(ServletActionContext.getRequest()));
+        setupMDC(ServletActionContext.getRequest());
         if (!ReflectionService.methodOrActionContainsAnnotation(invocation, IgnoreActivity.class)) {
             activity = new Activity(ServletActionContext.getRequest(), null);
             if ((getSessionData() != null) && getSessionData().isAuthenticated()) {
@@ -64,6 +69,7 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
 
         // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
         logger.trace(String.format("marking %s/%s session", action.getClass().getSimpleName(), methodName));
+
         String invoke = TdarActionSupport.SUCCESS;
         try {
             invoke = invocation.invoke();
@@ -77,14 +83,23 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
                 activity.end();
                 logger.debug(activity.getEndString());
             }
-            MDC.remove("path");
+            teardownMDC();
         }
         return invoke;
     }
 
+    private void setupMDC(HttpServletRequest request) {
+        MDC.put("tag_path", tagHelper.tagify(request.getServletPath() + request.getQueryString()));
+        MDC.put("tag_ua", tagHelper.tagify(request.getHeader(Activity.USER_AGENT)));
+        MDC.put("tag_rid", tagHelper.tagify(System.nanoTime()));
+    }
+
+    private void teardownMDC() {
+        MDC.clear();
+    }
+
     @Override
     public void destroy() {
-
     }
 
     @Override

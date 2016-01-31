@@ -6,6 +6,7 @@
 
 package org.tdar.web.resource;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -30,10 +31,10 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
-@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
 public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-
-    private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
+	
+    private static final String TITLE = "My Sample Image";
+	private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
     private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxies.person.lastName";
     private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
             COPYRIGHT_HOLDER_PERSON_LAST_NAME });
@@ -46,7 +47,7 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
 
     public CompleteImageWebITCase() {
         docValMap.put("projectId", "1");
-        docValMap.put("image.title", "My Sample Image");
+        docValMap.put("image.title", TITLE);
         docValMap.put("image.description", "A resource description");
         docValMap.put("image.date", "1923");
         docMultiValMap.put("investigationTypeIds", Arrays.asList(new String[] { "1", "2", "3", "5" }));
@@ -124,8 +125,31 @@ public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCas
         docValMap.put("image.copyLocation", "test");
     }
 
+    
     @Test
     @Rollback(true)
+    public void testImageAuthorizedRightsIssue() {
+        gotoPage("/image/add");
+        for (String key : docValMap.keySet()) {
+            setInput(key, docValMap.get(key));
+        }
+        for (String key : docMultiValMap.keySet()) {
+            setInput(key, docMultiValMap.get(key).toArray(new String[0]));
+        }
+        logger.trace(getPageText());
+        submitForm();
+        clickLinkWithText("edit");
+        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        setInput("authorizedUsers[1].generalPermission", GeneralPermissions.VIEW_ALL.name());
+        submitForm();
+        assertFalse(getCurrentUrlPath().contains("edit"));
+        assertFalse(getPageCode().contains(GeneralPermissions.MODIFY_METADATA.name()));
+        assertTextPresentInPage(TITLE);
+    }
+    
+    @Test
+    @Rollback(true)
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.FAIMS })
     public void testCreateImageRecord() {
         // upload a file ahead of submitting the form
         String ticketId = getPersonalFilestoreTicketId();

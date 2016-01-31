@@ -176,7 +176,7 @@ public class SearchDao<I extends Indexable> {
 			label = provider.getText(label);
 			logger.trace("  {} - {}", c.getCount(), label);
 			if (c.getCount() > 0) {
-				facet.add(new Facet(name, label, c.getCount()));
+				facet.add(new Facet(name, label, c.getCount(), facetClass));
 			}
 		}
 		return facet;
@@ -197,7 +197,7 @@ public class SearchDao<I extends Indexable> {
 				HasLabel persistable = (HasLabel) idMap.get(Long.parseLong(c.getName()));
 				String label = persistable.getLabel();
 				logger.trace("  {} - {}", c.getCount(), label);
-				Facet f = new Facet(c.getName(), label, c.getCount());
+				Facet f = new Facet(c.getName(), label, c.getCount(), facetClass);
 				if (persistable instanceof Addressable) {
 					f.setUrl(((Addressable) persistable).getDetailUrl());
 				}

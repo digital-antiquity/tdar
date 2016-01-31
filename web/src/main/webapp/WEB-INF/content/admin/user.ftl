@@ -41,12 +41,21 @@
 
 
 <h3>User Affiliation Stats</h3>
+<h4>All Users</h4>
 <table class="table tableFormat">
         <#list affiliationCounts?keys as key>
         <tr>
-			<th><@s.text name="UserAffiliation.${key}" /> </th><td>${affiliationCounts.get(key)}</td>	
+            <th><@s.text name="UserAffiliation.${key}" /> </th><td>${affiliationCounts.get(key)}</td>   
         </tr>
-		</#list>
+        </#list>
+</table>
+<h4>Contributors</h4>
+<table class="table tableFormat">
+        <#list contributorAffiliationCounts?keys as key>
+        <tr>
+            <th><@s.text name="UserAffiliation.${key}" /> </th><td>${contributorAffiliationCounts.get(key)}</td>   
+        </tr>
+        </#list>
 </table>
 
 

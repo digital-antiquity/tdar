@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>tDAR (web-base)</name>
     <properties>
-        <jetty.version>9.3.6.v20151106</jetty.version>
+        <jetty.version>9.3.7.v20160115</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>14.1.0-NEOLITHIC-SEARCH-SNAPSHOT</version>
+        <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencies>
