@@ -86,7 +86,7 @@
         <dependency>
             <groupId>nu.validator</groupId>
             <artifactId>validator</artifactId>
-            <version>15.6.29</version>
+            <version>16.1.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>httpcore</artifactId>

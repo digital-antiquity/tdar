@@ -9,7 +9,7 @@
     <name>tDAR (search)</name>
 
     <properties>
-        <lucene.version>5.4.0</lucene.version>
+        <lucene.version>5.4.1</lucene.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
