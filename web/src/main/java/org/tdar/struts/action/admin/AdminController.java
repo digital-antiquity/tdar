@@ -35,6 +35,7 @@ import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.CreatorAnalysisProcess;
+import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
@@ -158,6 +159,16 @@ public class AdminController extends AuthenticationAware.Base {
         scheduledProcessService.queue(SitemapGeneratorProcess.class);
         scheduledProcessService.queue(RebuildHomepageCache.class);
         getActionMessages().add("Scheduled... check admin activity controller to test");
+        return SUCCESS;
+    }
+
+    
+    @Action(value = "embargoNoticies", results = {
+            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+    })
+    public String embargoNoticies() {
+        scheduledProcessService.queue(EmbargoedFilesUpdateProcess.class);
+        getActionMessages().add("Scheduled... embargo notices");
         return SUCCESS;
     }
 
