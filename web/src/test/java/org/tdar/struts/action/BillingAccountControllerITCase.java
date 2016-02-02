@@ -25,6 +25,7 @@ import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.billing.BillingAccountController;
+import org.tdar.struts.action.billing.BillingAccountSelectionAction;
 import org.tdar.struts.action.billing.CouponCreationAction;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 import org.tdar.utils.MessageHelper;
@@ -40,11 +41,11 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Rollback
     public void testAccountControllerChoicesNoAccount() throws TdarActionException {
         // test fence for Invoice
-        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+    	BillingAccountSelectionAction controller = generateNewInitializedController(BillingAccountSelectionAction.class);
         controller.prepare();
         String msg = null;
         try {
-            assertEquals(BillingAccountController.NEW_ACCOUNT, controller.selectAccount());
+            assertEquals(BillingAccountSelectionAction.NEW_ACCOUNT, controller.selectAccount());
         } catch (Exception e) {
             msg = e.getMessage();
         }
@@ -58,7 +59,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         Invoice invoice = new Invoice(user, PaymentMethod.INVOICE, 10L, 0L, null);
         genericService.saveOrUpdate(invoice);
 
-        BillingAccountController controller = generateNewController(BillingAccountController.class);
+        BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         init(controller, user);
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
@@ -69,7 +70,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testAccountControllerChoicesNoRightsToAssign() throws TdarActionException {
-        BillingAccountController controller = generateNewController(BillingAccountController.class);
+    	BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         Invoice invoice = createTrivialInvoice();
         String msg = null;
         init(controller, createAndSaveNewPerson());
@@ -89,7 +90,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         Invoice invoice = createTrivialInvoice();
         invoice.setOwner(getAdminUser());
         BillingAccount account = createAccount(getAdminUser());
-        BillingAccountController controller = generateNewController(BillingAccountController.class);
+        BillingAccountSelectionAction controller = generateNewController(BillingAccountSelectionAction.class);
         init(controller, getAdminUser());
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
@@ -140,7 +141,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         invoice.getResources().add(doc);
         invoice.getResources().add(doc2);
         invoice.getResources().add(project);
-        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
+        BillingAccountController controller = generateNewInitializedController(BillingAccountController.class, person);
         controller.setId(invoice.getId());
         controller.prepare();
         controller.updateQuotas();
