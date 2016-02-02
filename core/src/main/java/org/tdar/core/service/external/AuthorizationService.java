@@ -512,11 +512,15 @@ public class AuthorizationService implements Accessible {
 	private boolean setupViewable(TdarUser authenticatedUser, Viewable item) {
 		boolean viewable = false;
 		if (item instanceof HasStatus) { // if we have status, then work off that
-		    logger.trace("item 'has status': {}", item);
+//		    logger.trace("item 'has status': {}", item);
 		    HasStatus status = ((HasStatus) item);
 		    if (!status.isActive()) { // if not active, check other permissions
-		        logger.trace("item 'is not active': {}", item);
-		        if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+//		        logger.trace("item 'is not active': {}", item);
+		    	TdarUser submitter = null;
+		    	if (item instanceof HasSubmitter) {
+		    		submitter = ((HasSubmitter)item).getSubmitter();
+		    	}
+		        if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser) || Objects.equals(submitter, authenticatedUser)) {
 		            logger.trace("\tuser is special': {}", item);
 		            viewable = true;
 		        }
@@ -657,7 +661,8 @@ public class AuthorizationService implements Accessible {
 	        if (r_.getSubmitter() != null) {
 	        	rid = r_.getSubmitter().getId();
 	        }
-	        logger.trace(":: st:{} admin:{} submitter:{}", r_.getStatus(),isAdministrator(authenticatedUser), rid);
+	        logger.trace(":: st:{} admin:{} submitter:{}", r_.getStatus(), isAdministrator(authenticatedUser), rid);
+	        logger.trace(":: viewable:{} ({}) ", viewable, allowedToViewAll);
         }
 		if (viewable) {
         	item.setViewable(true);
@@ -667,6 +672,7 @@ public class AuthorizationService implements Accessible {
 
         if (r_ instanceof InformationResource) {
 			InformationResource ir = (InformationResource)r_;
+			boolean adminOrOwner = isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO);
 			for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
 		        if (irFile == null) {
 		            continue;
@@ -674,7 +680,7 @@ public class AuthorizationService implements Accessible {
 		        if (irFile.isDeleted() && PersistableUtils.isNullOrTransient(authenticatedUser)) {
 		            continue;
 		        }
-		        if (!isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO) && 
+				if (!adminOrOwner && 
 		        		!irFile.isPublic() && !allowedToViewAll) {
 		            continue;
 		        }
