@@ -42,6 +42,10 @@ public abstract class AbstractStatisticsAction extends AuthenticationAware.Base 
 
     
     protected void setupJson() {
+        if (getStatsForAccount() == null) {
+            addActionError("abstractStatisticsAction.no_data");
+            return;
+        }
         try {
             setJson(serializationService.convertToJson(getStatsForAccount().getObjectForJson()));
         } catch (IOException e) {
