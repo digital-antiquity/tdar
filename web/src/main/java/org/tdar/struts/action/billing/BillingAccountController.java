@@ -68,27 +68,14 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @SkipValidation
-    @Action(value = CHOOSE, results = {
-            @Result(name = SUCCESS, location = "select-account.ftl"),
-            @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = REDIRECT)
-    })
-    public String selectAccount() throws TdarActionException {
-        Invoice invoice = getInvoice();
-        if (invoice == null) {
-            throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
-        }
-        if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
-            throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
-        }
-        setAccounts(accountService
-                .listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
-        if (CollectionUtils.isNotEmpty(getAccounts())) {
-            return SUCCESS;
-        }
-        return NEW_ACCOUNT;
+    @Override
+    public boolean authorize() {
+    	if (PersistableUtils.isNullOrTransient(getPersistable())) {
+    		return true;
+    	}
+    	return authorizationService.canEditAccount(getPersistable(), getAuthenticatedUser());
     }
-
+    
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
     }
@@ -155,22 +142,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return SUCCESS;
     }
 
-    public String loadViewMetadata() {
-        setAccountGroup(accountService.getAccountGroup(getAccount()));
-        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
-        getResources().addAll(getAccount().getResources());
-        PersistableUtils.sortByUpdatedDate(getResources());
-
-        for (TdarUser au : getAuthorizedMembers()) {
-            String name = null;
-            if (au != null) {
-                name = au.getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
-
-        return SUCCESS;
-    }
 
     // This is temporary until we break out CreateCouponCodeAction
     public List<Invoice> getInvoices() {
