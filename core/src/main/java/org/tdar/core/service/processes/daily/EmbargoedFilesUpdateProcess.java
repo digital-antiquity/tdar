@@ -30,10 +30,10 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 	
 	private static final long serialVersionUID = 5134091457634096415L;
 
-	private static final String SUBJECT = SITE_ACRONYM + ": Expiration Warning";
+	private static final String SUBJECT = SITE_ACRONYM + ": Embargo Expiration Warning";
 
 	private static final String SUBJECT_WARNING = SITE_ACRONYM + ": Embargo about to expire";
-	private static final String SUBJECT_EXPIRED = SITE_ACRONYM + ": Expired";
+	private static final String SUBJECT_EXPIRED = SITE_ACRONYM + ": Embargo Expired";
 
 	@Autowired
 	private transient EmailService emailService;
