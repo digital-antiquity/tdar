@@ -190,7 +190,7 @@
     <#if resource.resourceType.dataTableSupported>
         <#if (resource.dataTables?has_content)>
             <#if resource.viewable && authenticated && (resource.publicallyAccessible || ableToViewConfidentialFiles)>
-            <h3 id="browseTable" data-namespace="${namespace}">Browse the Data Set</h3>
+            <h3 id="browseTable" data-namespace="${namespace}">Browse ${resource.title}</h3>
 
                 <#if (resource.dataTables?size > 1)>
                 <form>
