@@ -86,12 +86,14 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 	private Map<TdarUser, Set<InformationResourceFile>> createMap(List<InformationResourceFile> expired) {
 		Map<TdarUser, Set<InformationResourceFile>> expiredMap = new HashMap<>();
 		for (InformationResourceFile file : expired) {
-			InformationResource r = file.getInformationResource();
+            InformationResource r = file.getInformationResource();
 			TdarUser submitter = r.getSubmitter();
 			if (!expiredMap.containsKey(submitter)) {
 				expiredMap.put(submitter, new HashSet<>());
 			}
-			expiredMap.get(submitter).add(file);
+			if (r.isActive() || r.isDraft()) {
+			    expiredMap.get(submitter).add(file);
+			}
 		}
 		return expiredMap;
 	}
