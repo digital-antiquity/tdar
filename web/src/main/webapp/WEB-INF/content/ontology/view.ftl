@@ -42,7 +42,7 @@
             </#list>
         </ul>
         </#if>
-    <h3>Ontology</h3>
+    <h3>${resource.title}</h3>
 
 <#if orgchart!false>
     <div id="ontologyViewer" class="" style="overflow:scroll;height:400px;">

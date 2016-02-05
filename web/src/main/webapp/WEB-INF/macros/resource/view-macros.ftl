@@ -370,8 +370,11 @@ View freemarker macros
         <#if creator.role?has_content && creator.role.partOfSchemaOrg >
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
-
+    <#local alt="${c.properName}"/>
+    <#if c.institutionName?has_content><#local alt="${c.properName?xhtml} (${c.institutionName?xhtml})"/></#if>
+    <span class="creator" title="${alt}" alt="${alt}">
         <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
+    </span>
     </#compress>
     </#macro>
 

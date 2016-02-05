@@ -44,7 +44,7 @@
                         <br><img src="<@s.url value="/files/sm/${file.latestThumbnail.id?c}"/>">
                     </#if>
                 </td>
-                <td>${file.informationResourceFileType}</td>
+                <td>${file.informationResourceFileType!'UNKNOWN'}</td>
                 <td>${file.latestVersion}</td>
                 <td>${file.restriction}</td>
                 <td>${file.status!""} ${file.deleted?string("(deleted)", "")}</td>
