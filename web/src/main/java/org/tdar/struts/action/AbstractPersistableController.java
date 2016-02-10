@@ -18,7 +18,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -28,6 +27,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -161,6 +161,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public String save() throws TdarActionException {
         // checkSession();
         // genericService.setCacheModeForCurrentSession(CacheMode.REFRESH);
+        SessionProxy.getInstance().registerSession(getGenericService().getCurrentSessionHashCode());
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
@@ -177,10 +178,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
                 }
 
-                if (persistable instanceof XmlLoggable) {
-                    ((XmlLoggable) persistable).setReadyToStore(false);
-                }
-
                 actionReturnStatus = save(persistable);
 
                 try {
@@ -191,14 +188,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
                 // should there not be "one" save at all? I think this should be here
                 if (shouldSaveResource()) {
-                    if (persistable instanceof XmlLoggable) {
-                        ((XmlLoggable) persistable).setReadyToStore(true);
-                    }
                     getGenericService().saveOrUpdate(persistable);
-                    // NOTE: the below should not be necessary with the hibernate listener, but it seems like the saveOrUpdate above
-                    // does not catch the change of the transient readyToStore boolean
-                    XMLFilestoreLogger xmlLogger = new XMLFilestoreLogger();
-                    xmlLogger.logRecordXmlToFilestore(persistable);
                 }
 
                 indexPersistable();
@@ -234,6 +224,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
+        
         return actionReturnStatus;
     }
 
@@ -248,9 +239,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     protected void indexPersistable() throws SolrServerException, IOException {
-        if (persistable instanceof Indexable) {
-            searchIndexService.index((Indexable) persistable);
-        }
+//        if (persistable instanceof Indexable) {
+//            searchIndexService.index((Indexable) persistable);
+//        }
+        SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
     }
 
     private void logAction(String action_) {

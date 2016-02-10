@@ -12,6 +12,7 @@ import java.util.Properties;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.SessionBuilder;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,11 +31,14 @@ import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.orm.hibernate5.HibernateTemplate;
 import org.springframework.orm.hibernate5.HibernateTransactionManager;
 import org.springframework.orm.hibernate5.LocalSessionFactoryBuilder;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 import org.springframework.web.context.WebApplicationContext;
+import org.tdar.core.dao.FilestoreLoggingEventListener;
+import org.tdar.core.dao.FilestoreLoggingSessionEventListener;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.processes.manager.BaseProcessManager;
 import org.tdar.core.service.processes.manager.ProcessManager;
@@ -86,6 +90,7 @@ public abstract class SimpleAppConfiguration implements Serializable {
 
     @Autowired
     protected Environment env;
+    private SessionFactory buildSessionFactory;
 
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
@@ -106,6 +111,7 @@ public abstract class SimpleAppConfiguration implements Serializable {
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
         builder.scanPackages(new String[] { "org.tdar" });
         builder.addProperties(properties);
+//        SessionBuilder sessionBuilder = builder.buildSessionFactory().withOptions().eventListeners(new FilestoreLoggingSessionEventListener());
         return builder.buildSessionFactory();
     }
 
