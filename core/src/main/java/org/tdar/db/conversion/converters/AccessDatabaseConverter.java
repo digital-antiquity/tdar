@@ -1,8 +1,7 @@
 package org.tdar.db.conversion.converters;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
@@ -15,7 +14,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.io.IOUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +25,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnRelationshipType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.TargetDatabase;
 
@@ -38,6 +36,7 @@ import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.util.CollectionUtil;
 
 /**
  * The class reads an access db file, and converts it into other types of db
@@ -86,7 +85,24 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
+        Iterator<Table> iterator = getDatabase().iterator();
+        Set<String> linked = new HashSet<>();
+        while (iterator.hasNext()) {
+            Table table = iterator.next();
+            if (getDatabase().isLinkedTable(table)) {
+                linked.add(table.getName());
+            }
+        }
+        if (CollectionUtils.isNotEmpty(linked)) {
+            getMessages().add(String.format("Database had the following linked tables that were NOT imported: %s", linked));
+        }
+
         for (String tableName : getDatabase().getTableNames()) {
+
+            if (linked.contains(tableName)) {
+                logger.warn("LinkedTable: {}", tableName);
+                continue;
+            }
             // generate and sanitize new table name
             DataTable dataTable = createDataTable(tableName);
             dataTableNameMap.put(tableName, dataTable);
@@ -94,6 +110,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
             targetDatabase.dropTable(dataTable);
 
             Table currentTable = getDatabase().getTable(tableName);
+
             List<? extends Column> columnList = currentTable.getColumns();
             for (Column currentColumn : columnList) {
                 DataTableColumnType dataType = DataTableColumnType.VARCHAR;

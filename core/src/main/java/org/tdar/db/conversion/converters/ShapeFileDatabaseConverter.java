@@ -119,7 +119,11 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         String typeName = typeNames[0];
         logger.info(typeName);
         System.out.println("Reading content " + typeName);
+        try {
         logger.info("infO: {} {} ({})", dataStore.getInfo().getTitle(), dataStore.getInfo().getDescription(), dataStore.getInfo().getKeywords());
+        } catch (Error e) {
+            logger.warn("exception in shapefile processing", e);
+        }
         FeatureSource<?, ?> featureSource = dataStore.getFeatureSource(typeName);
         FeatureCollection<?, ?> collection = featureSource.getFeatures();
         FeatureIterator<?> iterator = collection.features();
