@@ -482,7 +482,7 @@ View freemarker macros
                 <#assign contents = "" />
                 <#list proxyList as proxy>
                     <#if proxy.valid && proxy.role == role && !proxy.resourceCreator.creator.deleted >
-                        <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if>
+                        <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>;</#if>
                         <@browse creator=proxy.resourceCreator /><#t/></#assign>
                     </#if>
                 </#list>
