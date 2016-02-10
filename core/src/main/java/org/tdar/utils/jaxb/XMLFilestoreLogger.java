@@ -46,7 +46,7 @@ public class XMLFilestoreLogger implements Serializable {
      * 
      * @param resource
      */
-//    @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public <T extends Persistable> void logRecordXmlToFilestore(T resource) {
         if (!CONFIG.shouldLogToFilestore()) {
             return;
@@ -110,7 +110,7 @@ public class XMLFilestoreLogger implements Serializable {
      * @return
      * @throws JAXBException
      */
-//    @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
         // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
         if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
@@ -130,7 +130,7 @@ public class XMLFilestoreLogger implements Serializable {
      * @return
      * @throws Exception
      */
-//    @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
         StringWriter sw = new StringWriter();
         convertToXML(object, sw);

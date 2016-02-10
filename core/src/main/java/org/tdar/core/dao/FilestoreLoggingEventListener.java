@@ -21,13 +21,10 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.dao.hibernateEvents.EventListener;
-import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLoggable> implements PostInsertEventListener, PostUpdateEventListener,
         PostDeleteEventListener, FlushEntityEventListener, FlushEventListener, SaveOrUpdateEventListener, EventListener {
-
-    private static final SessionProxy EVENT_PROXY = SessionProxy.getInstance();
 
     private static final long serialVersionUID = -2773973927518207238L;
 

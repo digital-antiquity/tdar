@@ -78,7 +78,7 @@ public class IndexEventListener extends AbstractEventListener<Indexable> impleme
     }
 
     @Override
-    // @Transactional(readOnly = true)
+     @Transactional(readOnly = true)
     public void onFlush(FlushEvent event) throws HibernateException {
         if (isEnabled()) {
             flush(event);
@@ -100,7 +100,7 @@ public class IndexEventListener extends AbstractEventListener<Indexable> impleme
     }
 
     @Override
-    // @Transactional(readOnly = true)
+     @Transactional(readOnly = true)
     public void onPostDelete(PostDeleteEvent event) {
         if (!isEnabled()) {
             return;
@@ -111,7 +111,7 @@ public class IndexEventListener extends AbstractEventListener<Indexable> impleme
     }
 
     @Override
-    // @Transactional(readOnly = true)
+     @Transactional(readOnly = true)
     public void onPostUpdate(PostUpdateEvent event) {
         if (event.getEntity() instanceof Indexable) {
             addToSession(event.getSession(), (Indexable) event.getEntity());
@@ -148,7 +148,6 @@ public class IndexEventListener extends AbstractEventListener<Indexable> impleme
 
     @Transactional(readOnly = true)
     public boolean requiresPostCommitHanding(EntityPersister persister) {
-        // TODO Auto-generated method stub
         return false;
     }
 
