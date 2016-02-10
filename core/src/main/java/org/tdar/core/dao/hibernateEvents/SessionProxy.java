@@ -50,4 +50,9 @@ public class SessionProxy {
             listener.flush(sessionId);
         }
     }
+
+	public void flushAll() {
+		// TODO Auto-generated method stub
+		
+	}
 }

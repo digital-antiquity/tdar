@@ -47,135 +47,139 @@ import org.tdar.search.service.index.SearchIndexService;
  *
  */
 @Component
-public class IndexEventListener extends AbstractEventListener<Indexable> implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener,
-        FlushEventListener, FlushEntityEventListener, SaveOrUpdateEventListener, EventListener {
+public class IndexEventListener extends AbstractEventListener<Indexable>
+		implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener, FlushEventListener,
+		FlushEntityEventListener, SaveOrUpdateEventListener, EventListener {
 
-    private static final long serialVersionUID = -1947369283868859290L;
+	private static final long serialVersionUID = -1947369283868859290L;
 
-    protected static final transient Logger logger = LoggerFactory.getLogger(HibernateSolrIntegrator.class);
+	protected static final transient Logger logger = LoggerFactory.getLogger(HibernateSolrIntegrator.class);
 
-    private SearchIndexService searchIndexService;
-    private SolrClient solrClient;
-    private SessionFactory sessionFactory;
+	private SearchIndexService searchIndexService;
+	private SolrClient solrClient;
+	private SessionFactory sessionFactory;
 
-    private boolean isEnabled() {
-        try {
-            if (searchIndexService == null) {
-                AutowireHelper.autowire(this, searchIndexService, solrClient, sessionFactory);
-            }
-        } catch (Exception e) {
-            logger.warn("Exception in IndexEventListener enableCheck", e.getMessage());
-        }
-        if (solrClient != null) {
-            return true;
-        }
-        return false;
-    }
+	private boolean isEnabled() {
+		try {
+			if (searchIndexService == null) {
+				AutowireHelper.autowire(this, searchIndexService, solrClient, sessionFactory);
+			}
+		} catch (Exception e) {
+			logger.warn("Exception in IndexEventListener enableCheck", e.getMessage());
+		}
+		if (solrClient != null) {
+			return true;
+		}
+		return false;
+	}
 
-    public IndexEventListener() {
-        super("solr");
-        SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-    }
+	public IndexEventListener() {
+		super("solr");
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
+	}
 
-    @Override
-     @Transactional(readOnly = true)
-    public void onFlush(FlushEvent event) throws HibernateException {
-        if (isEnabled()) {
-            flush(event);
-        }
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public void onFlush(FlushEvent event) throws HibernateException {
+		if (isEnabled()) {
+			flush(event);
+		} else {
+			logger.error("NOT ENABLED");
+		}
+	}
 
-    protected void cleanup() {
-        try {
-            for (LookupSource src : LookupSource.values()) {
-                solrClient.commit(src.getCoreName());
-            }
-        } catch (Throwable e) {
-            logger.error("error flushing", e);
-        }
-    }
+	protected void cleanup() {
+		try {
+			for (LookupSource src : LookupSource.values()) {
+				solrClient.commit(src.getCoreName());
+			}
+		} catch (Throwable e) {
+			logger.error("error flushing", e);
+		}
+	}
 
-    public Session getCurrentSession() {
-        return sessionFactory.getCurrentSession();
-    }
+	public Session getCurrentSession() {
+		return sessionFactory.getCurrentSession();
+	}
 
-    @Override
-     @Transactional(readOnly = true)
-    public void onPostDelete(PostDeleteEvent event) {
-        if (!isEnabled()) {
-            return;
-        }
-        if (event.getEntity() instanceof Indexable) {
-            addToSession(event.getSession(), (Indexable) event.getEntity());
-        }
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public void onPostDelete(PostDeleteEvent event) {
+		if (!isEnabled()) {
+			return;
+		}
+		if (event.getEntity() instanceof Indexable) {
+			addToSession(event.getSession(), (Indexable) event.getEntity());
+		}
+	}
 
-    @Override
-     @Transactional(readOnly = true)
-    public void onPostUpdate(PostUpdateEvent event) {
-        if (event.getEntity() instanceof Indexable) {
-            addToSession(event.getSession(), (Indexable) event.getEntity());
-        }
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public void onPostUpdate(PostUpdateEvent event) {
+		if (event.getEntity() instanceof Indexable) {
+			addToSession(event.getSession(), (Indexable) event.getEntity());
+		}
+	}
+	
+	@Override
+	protected void process(Object entity) {
+		if (!isEnabled() || entity == null) {
+			return;
+		}
+		if (entity instanceof Indexable) {
+			try {
+				logger.debug("indexing: {}", entity);
+				searchIndexService.index((Indexable) entity);
+			} catch (SolrServerException | IOException e) {
+				logger.error("error indexing", e);
+			}
+		}
+		if (entity instanceof Collection<?>) {
+			logger.trace("indexing collection: {}", entity);
+			for (Object obj : (Collection<?>) entity) {
+				process(obj);
+			}
+		}
+	}
 
-    protected void process(Object entity) {
-        if (!isEnabled() || entity == null) {
-            return;
-        }
-        if (entity instanceof Indexable) {
-            try {
-                logger.trace("indexing: {}", entity);
-                searchIndexService.index((Indexable) entity);
-            } catch (SolrServerException | IOException e) {
-                logger.error("error indexing", e);
-            }
-        }
-        if (entity instanceof Collection<?>) {
-            logger.trace("indexing collection: {}", entity);
-            for (Object obj : (Collection<?>) entity) {
-                process(obj);
-            }
-        }
-    }
+	@Override
+	@Transactional(readOnly = true)
+	public void onPostInsert(PostInsertEvent event) {
+		if (event.getEntity() instanceof Indexable) {
+			addToSession(event.getSession(), (Indexable) event.getEntity());
+		}
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public void onPostInsert(PostInsertEvent event) {
-        if (event.getEntity() instanceof Indexable) {
-            addToSession(event.getSession(), (Indexable) event.getEntity());
-        }
-    }
+	@Transactional(readOnly = true)
+	public boolean requiresPostCommitHanding(EntityPersister persister) {
+		return false;
+	}
 
-    @Transactional(readOnly = true)
-    public boolean requiresPostCommitHanding(EntityPersister persister) {
-        return false;
-    }
+	@Autowired
+	public void setSolrClient(SolrClient solrClient) {
+		this.solrClient = solrClient;
+	}
 
-    @Autowired
-    public void setSolrClient(SolrClient solrClient) {
-        this.solrClient = solrClient;
-    }
+	@Autowired
+	public void setSearchIndexService(SearchIndexService searchIndexService) {
+		this.searchIndexService = searchIndexService;
+	}
 
-    @Autowired
-    public void setSearchIndexService(SearchIndexService searchIndexService) {
-        this.searchIndexService = searchIndexService;
-    }
+	@Autowired
+	public void setSessionFactory(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
 
-    @Autowired
-    public void setSessionFactory(SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
-    }
+	@Override
+	public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
+		flush(event);
+	}
 
-    @Override
-    public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
-        flush(event);
-    }
-
-    @Override
-    public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
-        if (event.getEntity() instanceof Indexable && !event.getSession().isReadOnly(event.getEntity())) {
-            addToSession(event.getSession(), (Indexable) event.getEntity());
-        }
-    }
+	@Override
+	public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
+		if (event.getEntity() instanceof Indexable && !event.getSession().isReadOnly(event.getEntity())) {
+			addToSession(event.getSession(), (Indexable) event.getEntity());
+		}
+	}
 
 }

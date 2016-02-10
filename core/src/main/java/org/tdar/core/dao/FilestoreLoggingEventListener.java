@@ -49,10 +49,7 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
     }
 
     @Override
-    protected void process(Session session, Object obj) {
-        if (!session.contains(obj) || session.isReadOnly(obj)) {
-            return;
-        }
+    protected void process(Object obj) {
 
         if (obj == null) {
             return;

@@ -27,13 +27,14 @@ public abstract class AbstractEventListener<C> implements EventListener {
         EVENT_PROXY.registerEventListener(this);
     }
 
-    protected void process(Session session, Object obj) {
+    protected void process(Object obj) {
 
     }
 
     protected void flush(AbstractEvent event) {
         EventSource session = event.getSession();
         if (EVENT_PROXY.isSessionManaged(session)) {
+        	logger.trace("skipping session managed");
             return;
         }
 
@@ -62,7 +63,10 @@ public abstract class AbstractEventListener<C> implements EventListener {
             for (Object obj : set) {
                 try {
                     // logger.debug("fl:{}",obj);
-                    process(session, obj);
+                    if (!session.contains(obj) || session.isReadOnly(obj)) {
+                        continue;
+                    }
+                    process(obj);
                 } catch (Exception e) {
                     logger.error("error batch processing {}", name, e);
                 }
