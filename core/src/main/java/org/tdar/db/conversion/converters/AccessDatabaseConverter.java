@@ -85,7 +85,7 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
-        Iterator<Table> iterator = getDatabase().iterator();
+        Iterator<Table> iterator = getDatabase().newIterable().setIncludeLinkedTables(true).iterator();
         Set<String> linked = new HashSet<>();
         while (iterator.hasNext()) {
             Table table = iterator.next();
