@@ -44,6 +44,12 @@
             <artifactId>keytool-api</artifactId>
             <version>1.5</version>
             <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -105,6 +111,10 @@
                 <exclusion>
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils-core</artifactId>
+                    <groupId>commons-beanutils</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -211,6 +221,10 @@
                     <artifactId>httpclient-cache</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -258,6 +272,12 @@
             <artifactId>rome</artifactId>
             <version>1.5.1</version>
             <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jdom</artifactId>
+                    <groupId>org.jdom</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.rometools</groupId>
@@ -288,6 +308,10 @@
                 <exclusion>
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jdom</artifactId>
+                    <groupId>org.jdom</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -345,6 +369,12 @@
             <artifactId>gt-shapefile</artifactId>
             <version>${geotools.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jdom</artifactId>
+                    <groupId>org.jdom</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
@@ -356,6 +386,12 @@
           <groupId>org.geotools</groupId>
           <artifactId>gt-geometry</artifactId>
           <version>${geotools.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>jdom</artifactId>
+                  <groupId>org.jdom</groupId>
+              </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
@@ -734,12 +770,24 @@
             <artifactId>owlapi-apibinding</artifactId>
             <version>4.0.2</version>
             <!-- LICENSE: APACHE 2.0 / LGPL -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-api</artifactId>
             <version>4.0.2</version>
             <!-- LICENSE: APACHE 2.0 / LGPL -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- CXF for web-services endpoint -->
         <dependency>
@@ -852,6 +900,10 @@
                 <exclusion>
                     <artifactId>httpmime</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>c3p0</artifactId>
+                    <groupId>c3p0</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
