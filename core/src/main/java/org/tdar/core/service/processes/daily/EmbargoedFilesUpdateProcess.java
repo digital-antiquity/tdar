@@ -103,6 +103,7 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 			Set<InformationResourceFile> expired = expiredMap.get(submitter);
 			for (InformationResourceFile file : expired) {
 				file.setRestriction(FileAccessRestriction.PUBLIC);
+				file.setDateMadePublic(null);
 				genericDao.saveOrUpdate(file);
 			}
 			sendEmail(submitter, expired, true);
