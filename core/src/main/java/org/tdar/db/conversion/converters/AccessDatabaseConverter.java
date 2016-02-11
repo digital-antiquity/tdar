@@ -85,22 +85,20 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
     public void dumpData() throws Exception {
         // start dumping ...
         Map<String, DataTable> dataTableNameMap = new HashMap<String, DataTable>();
-        Iterator<Table> iterator = getDatabase().newIterable().setIncludeLinkedTables(true).iterator();
+        Iterator<Table> iterator = getDatabase().newIterable().setIncludeLinkedTables(false).iterator();
+        Set<String> notLinked = new HashSet<>();
         Set<String> linked = new HashSet<>();
+
         while (iterator.hasNext()) {
             Table table = iterator.next();
-            if (getDatabase().isLinkedTable(table)) {
-                linked.add(table.getName());
-            }
-        }
-        if (CollectionUtils.isNotEmpty(linked)) {
-            getMessages().add(String.format("Database had the following linked tables that were NOT imported: %s", linked));
+            notLinked.add(table.getName());
         }
 
         for (String tableName : getDatabase().getTableNames()) {
 
-            if (linked.contains(tableName)) {
+            if (!notLinked.contains(tableName)) {
                 logger.warn("LinkedTable: {}", tableName);
+                linked.add(tableName);
                 continue;
             }
             // generate and sanitize new table name
@@ -225,6 +223,12 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 completePreparedStatements();
             }
         }
+
+        if (CollectionUtils.isNotEmpty(linked)) {
+            getMessages().add(String.format("Database had the following linked tables that were NOT imported: %s", linked));
+        }
+
+
         Set<DataTableRelationship> relationships = new HashSet<DataTableRelationship>();
         for (String tableName1 : getDatabase().getTableNames()) {
             for (String tableName2 : getDatabase().getTableNames()) {
