@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.utils.db;
+package org.tdar.utils;
 
 /**
  * @author Adam Brin
