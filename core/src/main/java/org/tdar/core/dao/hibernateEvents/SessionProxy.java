@@ -37,6 +37,7 @@ public class SessionProxy {
     }
 
     public synchronized void registerSession(Integer sessionId) {
+        logger.trace("register session: {}", sessionId);
         sessionQueue.add(sessionId);
     }
 
@@ -45,6 +46,7 @@ public class SessionProxy {
     }
 
     public synchronized void registerSessionClose(Integer sessionId) {
+        logger.trace("register sessionClosed: {}", sessionId);
         sessionQueue.remove(sessionId);
         for (EventListener listener : listeners) {
             listener.flush(sessionId);

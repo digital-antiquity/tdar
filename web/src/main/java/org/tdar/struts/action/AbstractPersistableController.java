@@ -191,6 +191,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
                     getGenericService().saveOrUpdate(persistable);
                 }
 
+                SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
@@ -242,7 +243,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 //        if (persistable instanceof Indexable) {
 //            searchIndexService.index((Indexable) persistable);
 //        }
-        SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
     }
 
     private void logAction(String action_) {

@@ -34,7 +34,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
     protected void flush(AbstractEvent event) {
         EventSource session = event.getSession();
         if (EVENT_PROXY.isSessionManaged(session)) {
-        	logger.trace("skipping session managed");
+            logger.trace("skipping session managed");
             return;
         }
 
@@ -79,6 +79,9 @@ public abstract class AbstractEventListener<C> implements EventListener {
     protected void addToSession(EventSource session, C entity) {
         if (idChangeMap.get(session) == null) {
             idChangeMap.put(session, new HashSet<>());
+        }
+        if (logger.isTraceEnabled()) {
+            logger.trace("adding to session: {}", entity);
         }
         idChangeMap.get(session).add((C) entity);
     }
