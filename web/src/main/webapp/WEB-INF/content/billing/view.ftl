@@ -17,7 +17,6 @@
 
     <@view.pageStatusCallout />
 
-
     <#if account.description?has_content>
     <p>${account.description!""}</p>
     </#if>

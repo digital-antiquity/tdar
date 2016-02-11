@@ -502,14 +502,15 @@ View freemarker macros
                 <#local status="info"/>
             </#if>
 
-            <#if persistable.status.flaggedForBilling && namespace=='/billing'>
-            <#else>
                 <@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
+            <#if persistable.status.flaggedForBilling && namespace=='/billing'>
+                This account has been marked as <strong>${persistable.status.label}</strong>, please add funds to it.
+            <#else>
                 This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of
                 <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>.
                     <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
-                </@_statusCallout>
             </#if>
+                </@_statusCallout>
 
         </#if>
     </#macro>
