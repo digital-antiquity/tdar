@@ -247,7 +247,10 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         Person person_ = setupPerson("Keit", null, null, null);
         SearchResult<Person> result = findPerson(person_, null, true, min);
         List<Person> people = result.getResults();
-        assertEquals("person list should have exactly three items", 3, people.size());
+        for (Person p : people) {
+            logger.debug("{} {} {}",p.getClass().getSimpleName(), p.getId(), p.isRegistered());
+        }
+        assertEquals("person list should have exactly two items", 2, people.size());
     }
 
     @Test
