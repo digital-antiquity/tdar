@@ -235,6 +235,11 @@ public class AccessDatabaseConverter extends DatasetConverter.Base {
                 if (tableName1.equals(tableName2)) {
                     continue;
                 }
+                
+                if (linked.contains(tableName1) || linked.contains(tableName2)) {
+                    continue;
+                }
+                
                 for (Relationship relationship : getDatabase().getRelationships(getDatabase().getTable(tableName1), getDatabase().getTable(tableName2))) {
                     if (!tableName1.equals(relationship.getFromTable().getName())) {
                         continue;
