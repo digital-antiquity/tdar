@@ -347,6 +347,12 @@
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-opengis</artifactId>
+            <version>${geotools.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
           <groupId>org.geotools</groupId>
           <artifactId>gt-geometry</artifactId>
           <version>${geotools.version}</version>
