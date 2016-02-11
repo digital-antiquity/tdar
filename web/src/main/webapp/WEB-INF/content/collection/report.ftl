@@ -9,6 +9,31 @@
 <body>
 
 <h1>${resourceCollection.name!"untitled collection"}</h1>
+<div class="row">
+<div class="span6">
+<h3>Status Breakdown</h3>
+<#list facetWrapper.facetResults['status']>
+    <#items  as val>
+        <#compress>
+        <p><b>${val.label}</b>:${val.count?c}</p>
+        </#compress>
+    </#items>
+
+</#list>
+</div>
+<div class="span6">
+<h3>ResourceType Breakdown</h3>
+<#list facetWrapper.facetResults['resourceType']>
+    <#items  as val>
+        <#compress>
+        <p><b>${val.label}</b>:${val.count?c}</p>
+        </#compress>
+    </#items>
+
+</#list>
+</div>
+</div>
+${authenticatedUser!'NO USER'}
 <h3>Occurence Counts</h3>
 <table class="table tableFormat sortable" id="ocur">
 <thead>
@@ -16,6 +41,7 @@
 		</thead>
 		<tbody>
 <#list facetWrapper.facetResults?keys as key>
+    <#if key != 'status' && key != 'resourceType'>
 	<#list facetWrapper.facetResults[key]>
 	<#items  as val>
 		<#compress>
@@ -30,6 +56,7 @@
 		</#compress>
 	</#items>
 	</#list>
+    </#if>
 </#list>
 </tbody>
 </table>

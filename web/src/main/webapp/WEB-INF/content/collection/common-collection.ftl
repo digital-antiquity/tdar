@@ -133,10 +133,14 @@
 
             <@common.resourceUsageInfo />
 		<#if editor>
-			<div class="row">
-			<p><b>Admin Tools</b><br>
-			&#8226; <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></p>
-			</div>
+		<div class="row">
+		  <div class="span6">
+			<p><b>Admin Tools</b>
+			<ul>
+			 <li> <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></li>
+			 <li> <a href="<@s.url value="/search/download?collectionId=${resourceCollection.id?c}"/>">Export to Excel</a></li>
+            </div>
+            </div>
 		</#if>
         <div class="row">
             <div class="span4">
