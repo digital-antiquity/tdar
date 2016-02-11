@@ -1,4 +1,4 @@
-<#escape _untrusted as _untrusted?html>
+facetWrapper<#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "common-collection.ftl" as commonCollection>
@@ -33,7 +33,7 @@
 </#list>
 </div>
 </div>
-${authenticatedUser!'NO USER'}
+
 <h3>Occurence Counts</h3>
 <table class="table tableFormat sortable" id="ocur">
 <thead>
