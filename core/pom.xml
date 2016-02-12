@@ -13,21 +13,21 @@
         <poi.version>3.13</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
-        <apache.cxf.version>3.1.3</apache.cxf.version>
+        <apache.cxf.version>3.1.4</apache.cxf.version>
         <jena.version>2.13.0</jena.version>
         <exec-maven-version>1.3.2</exec-maven-version>
         <!-- /end managed versions -->
-        <geotools.version>14.0</geotools.version>
+        <geotools.version>14.2</geotools.version>
         <tika.version>1.11</tika.version>
         <batik.version>1.7</batik.version>
-        <jackson.version>2.6.3</jackson.version>
-        <http-components.version>4.4.3</http-components.version>
+        <jackson.version>2.7.0</jackson.version>
+        <http-components.version>4.4.4</http-components.version>
         <http-client.version>4.5.1</http-client.version>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>14.0.0-NEOLITHIC</version>
+        <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
 
@@ -44,6 +44,12 @@
             <artifactId>keytool-api</artifactId>
             <version>1.5</version>
             <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>junit</groupId>
@@ -106,6 +112,10 @@
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>commons-beanutils-core</artifactId>
+                    <groupId>commons-beanutils</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -152,7 +162,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.8.5</version>
+            <version>1.8.8</version>
         </dependency>
         <dependency>
             <groupId>javax.media.jai</groupId>
@@ -211,6 +221,10 @@
                     <artifactId>httpclient-cache</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -258,6 +272,12 @@
             <artifactId>rome</artifactId>
             <version>1.5.1</version>
             <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jdom</artifactId>
+                    <groupId>org.jdom</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.rometools</groupId>
@@ -288,6 +308,10 @@
                 <exclusion>
                     <artifactId>log4j</artifactId>
                     <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jdom</artifactId>
+                    <groupId>org.jdom</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -345,6 +369,12 @@
             <artifactId>gt-shapefile</artifactId>
             <version>${geotools.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jdom</artifactId>
+                    <groupId>org.jdom</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
@@ -356,6 +386,12 @@
           <groupId>org.geotools</groupId>
           <artifactId>gt-geometry</artifactId>
           <version>${geotools.version}</version>
+          <exclusions>
+              <exclusion>
+                  <artifactId>jdom</artifactId>
+                  <groupId>org.jdom</groupId>
+              </exclusion>
+          </exclusions>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
@@ -551,6 +587,12 @@
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-java8</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
         <!-- <dependency> -->
         <!-- <groupId>org.hibernate</groupId> -->
         <!-- <artifactId>hibernate-entitymanager</artifactId> -->
@@ -568,22 +610,6 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
-        </dependency>
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-search</artifactId>
-            <version>${hibernate.search.version}</version>
-            <!-- LICENSE: LGPL 2.1 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>jackson-core-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-mapper-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -685,7 +711,7 @@
         <dependency>
             <groupId>com.healthmarketscience.jackcess</groupId>
             <artifactId>jackcess</artifactId>
-            <version>2.1.2</version>
+            <version>2.1.3</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
         <!-- OpenCSV -->
@@ -705,7 +731,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
-            <version>3.5</version>
+            <version>3.6</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -744,12 +770,24 @@
             <artifactId>owlapi-apibinding</artifactId>
             <version>4.0.2</version>
             <!-- LICENSE: APACHE 2.0 / LGPL -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-api</artifactId>
             <version>4.0.2</version>
             <!-- LICENSE: APACHE 2.0 / LGPL -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsr305</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!-- CXF for web-services endpoint -->
         <dependency>
@@ -788,7 +826,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
-            <version>4.0</version>
+            <version>4.1</version>
             <type>jar</type>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
@@ -862,6 +900,10 @@
                 <exclusion>
                     <artifactId>httpmime</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>c3p0</artifactId>
+                    <groupId>c3p0</groupId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.opengis</groupId>
@@ -948,7 +990,7 @@
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.8.2</version>
+            <version>2.9.1</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -1164,7 +1206,11 @@
                         </executions>
                         <!-- We only care about class collisions, not resource files.  What could possibly go wrong?? -->
                         <configuration>
-                            <ignoredResourcePatterns>.*</ignoredResourcePatterns>
+                            <checkCompileClasspath>false</checkCompileClasspath>
+                            <checkRuntimeClasspath>true</checkRuntimeClasspath>
+                            <checkTestClasspath>false</checkTestClasspath>
+     
+                            <!-- <ignoredResourcePatterns>.*</ignoredResourcePatterns> -->
                         </configuration>
 
                     </plugin>

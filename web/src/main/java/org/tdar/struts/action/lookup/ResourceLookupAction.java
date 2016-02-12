@@ -1,28 +1,28 @@
 package org.tdar.struts.action.lookup;
 
+import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.CategoryTermQueryPart;
-import org.tdar.search.query.part.ProjectIdLookupQueryPart;
+import org.tdar.search.query.ProjectionModel;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -56,11 +56,13 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 
     private Long selectResourcesFromCollectionid;
 
+    @Autowired
+    private ResourceSearchService resourceSearchService;
+    
     @Action(value = "resource", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
-    public String lookupResource() {
-        QueryBuilder q = new ResourceQueryBuilder();
+    public String lookupResource() throws SolrServerException, IOException {
         setLookupSource(LookupSource.RESOURCE);
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
@@ -69,24 +71,21 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
-        q.append(new CategoryTermQueryPart(getTerm(), getSortCategoryId()));
-
-        if (PersistableUtils.isNotNullOrTransient(getProjectId())) {
-            q.append(new ProjectIdLookupQueryPart(getProjectId()));
-        }
-
-        String colQueryField = isParentCollectionsIncluded() ?
-                QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS : QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
-
-        appendIf(PersistableUtils.isNotNullOrTransient(getCollectionId()), q, colQueryField, getCollectionId());
-
+        ResourceLookupObject look = new ResourceLookupObject();
+        look.setTerm(term);
+        look.setProjectId(projectId);
+        look.setCollectionId(collectionId);
+        look.setCategoryId(sortCategoryId);
+        look.setReservedSearchParameters(getReservedSearchParameters());
+        look.setPermission(permission);
+        
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
 
-        q.append(processReservedTerms(this));
         try {
-            handleSearch(q);
+            // includeComplete?
+            resourceSearchService.lookupResource(getAuthenticatedUser(),look,this,this);
             getLogger().trace("jsonResults: {}", getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
@@ -113,12 +112,6 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
             jsonifyResult(JsonLookupFilter.class);
         }
         return SUCCESS;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public String getTerm() {
@@ -192,4 +185,10 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     public void setParentCollectionsIncluded(boolean parentCollectionsIncluded) {
         this.parentCollectionsIncluded = parentCollectionsIncluded;
     }
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return DisplayOrientation.LIST;
+	}
 }

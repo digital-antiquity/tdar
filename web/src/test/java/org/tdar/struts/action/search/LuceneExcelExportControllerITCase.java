@@ -11,7 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -22,12 +22,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.external.session.SessionData;
-import org.tdar.core.service.search.SearchIndexService;
+import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
@@ -41,16 +40,13 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     @Autowired
     SearchIndexService searchIndexService;
 
-    @Autowired
-    ExcelService excelService;
-
     private TdarUser currentUser = null;
 
     @Test
     @Rollback(true)
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             InvalidFormatException, TdarActionException {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         // currentUser = getBasicUser();
         AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
                 genericService.find(TdarUser.class, getBasicUserId()));
@@ -76,7 +72,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
     public void testExcelFailUnauthenticatedExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,
             TdarActionException {
         setIgnoreActionErrors(true);
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         currentUser = null;
         AdvancedSearchDownloadAction controller = generateNewInitializedController(AdvancedSearchDownloadAction.class,
                 genericService.find(TdarUser.class, getBasicUserId()));

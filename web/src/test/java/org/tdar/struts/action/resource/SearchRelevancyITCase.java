@@ -8,26 +8,26 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.HibernateSearchDao;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchParameters;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.search.AdvancedSearchController;
 
@@ -39,8 +39,6 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     private GenericKeywordService genericKeywordService;
     @Autowired
     SearchIndexService searchIndexService;
-    @Autowired
-    HibernateSearchDao hibernateSearchDao;
 
     Document resourceWithTitleMatch;
     Document resourceWithKeywordMatch;
@@ -69,7 +67,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     }
 
     private void runIndex() {
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
     }
 
     @Before
@@ -106,7 +104,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // assert title match appears before keywordmatch, and keywordmatch before docmatch and docmatch
     @Test
     @Rollback
-    public void testLocationRelevancy() throws IOException, TdarActionException {
+    public void testLocationOfPhraseRelevancy() throws IOException, TdarActionException {
         prepareInformationResources();
         runIndex();
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
@@ -131,13 +129,12 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         Assert.assertTrue("expecting test resource in results", indexOfTitleMatch > -1);
         Assert.assertTrue("expecting test resource in results", indexOfKeywordMatch > -1);
         Assert.assertTrue("expecting test resource in results", indexOfAttachmentMatch > -1);
-        logger.debug("indexOfTitleMatch:" + indexOfTitleMatch);
-        logger.debug("indexOfKeywordMatch:" + indexOfKeywordMatch);
-        logger.debug("indexOfAttachmentMatch:" + indexOfAttachmentMatch);
+        logger.debug("{} indexOfTitleMatch:{}" , resourceWithTitleMatch.getId(), indexOfTitleMatch);
+        logger.debug("{} indexOfKeywordMatch:{} " , resourceWithKeywordMatch.getId(), indexOfKeywordMatch);
+        logger.debug("{} indexOfAttachmentMatch: {}" , resourceWithAttachmentMatch.getId(),indexOfAttachmentMatch);
 
         // make sure they're in the right order...
         Assert.assertTrue("expecting test resource in results", indexOfTitleMatch < indexOfKeywordMatch);
-        Assert.assertTrue("expecting test resource in results", indexOfKeywordMatch < indexOfAttachmentMatch);
         Assert.assertTrue("expecting test resource in results", indexOfKeywordMatch < indexOfAttachmentMatch);
 
         Assert.assertTrue("indexOfTitleMatch < indexOfKeywordMatch.  indexOfTitleMatch:" + indexOfTitleMatch + " indexOfKeywordMatch:" + indexOfKeywordMatch
@@ -150,7 +147,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
     // given resource1 and resource2, where both have same title/desc/keywords, assert resource1 is more relevant because it has an attachment
     @Test
     @Rollback
-    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException {
+    public void testInheritanceInSearching() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         AdvancedSearchController controller = generateNewInitializedController(AdvancedSearchController.class);
         controller.setRecordsPerPage(50);
         Project p = new Project();
@@ -168,7 +165,7 @@ public class SearchRelevancyITCase extends AbstractResourceControllerITCase {
         List<MaterialKeyword> materialKeywords = genericService.findRandom(MaterialKeyword.class, 3);
         p.getMaterialKeywords().addAll(materialKeywords);
         genericService.saveOrUpdate(p);
-        searchIndexService.index(p);
+        searchIndexService.index(p,document);
         SearchParameters sp = new SearchParameters();
         controller.getGroups().add(sp);
         sp.getMaterialKeywordIdLists().add(Arrays.asList(materialKeywords.get(0).getId().toString()));

@@ -5,12 +5,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
 import javax.naming.Name;
-import javax.naming.ldap.LdapName;
 
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -18,7 +16,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.ldap.AuthenticationException;
 import org.springframework.ldap.NameNotFoundException;
-import org.springframework.ldap.NamingException;
 import org.springframework.ldap.core.AttributesMapper;
 import org.springframework.ldap.core.ContextMapper;
 import org.springframework.ldap.core.DirContextAdapter;
@@ -30,8 +27,6 @@ import org.springframework.ldap.support.LdapUtils;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.exception.TdarRuntimeException;
 
 /**
  * We know that the Spring LDAP code is tested by SpringSource. We simply need to test that our interface between tdar and that code works as we expect it to.

@@ -2,7 +2,6 @@ package org.tdar.functional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 import java.util.ArrayList;
@@ -19,9 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.utils.TestConfiguration;
-import org.tdar.functional.util.Bool;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.utils.TestConfiguration;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
@@ -39,7 +37,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, true);
+        String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true);
         logger.debug("URL: {}", url);
         logout();
         // make sure basic user cannot see restricted page
@@ -92,7 +90,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, true);
+        String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true);
         gotoEdit(url);
         applyEditPageHacks();
 
@@ -125,7 +123,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(titles, false);
+        String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false);
         gotoEdit(url);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
         submitForm();
@@ -136,6 +134,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         logout();
         login();
+        gotoEdit(url);
         gotoEdit(url);
         // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
@@ -154,7 +153,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionInGeneralSearch() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
-        String url = setupCollectionForTest(titles, false);
+        String url = setupCollectionForTest(TITLE + " (general search)", titles, false);
         logout();
         gotoPage(url);
         Assert.assertTrue(getText().contains(TITLE));
@@ -212,7 +211,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertEquals("should see every title on each page", seen, titles.size());
     }
 
-    private String setupCollectionForTest(List<String> titles, Boolean visible) {
+    private String setupCollectionForTest(String title_, List<String> titles, Boolean visible) {
         gotoPage("/dashboard");
         find(By.linkText("UPLOAD")).click();
         waitForPageload();
@@ -222,19 +221,17 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
 
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
-        setFieldByName("resourceCollection.name", TITLE);
+        setFieldByName("resourceCollection.name", title_);
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
         setFieldByName("resourceCollection.hidden", visible.toString().toLowerCase());
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), "person-"
-                + config.getEditorUserId(),
-                GeneralPermissions.MODIFY_RECORD);
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission", "admin user", config.getAdminUsername(), "person-"
-                + config.getAdminUserId(),
-                GeneralPermissions.MODIFY_RECORD);
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
+        		"person-"+ config.getEditorUserId(), GeneralPermissions.MODIFY_RECORD);
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
+        		"michelle elliott",  "Michelle Elliott", "person-121", GeneralPermissions.MODIFY_RECORD);
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);

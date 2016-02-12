@@ -9,8 +9,10 @@ package org.tdar.struts.action.resource;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
 import java.util.Set;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.TdarUser;
@@ -28,7 +30,7 @@ public class DashboardControllerITCase extends AbstractResourceControllerITCase 
 
     @Test
     @Rollback
-    public void testProjectLists() throws InstantiationException, IllegalAccessException {
+    public void testProjectLists() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         // used for setting up project
         Project projectWithDifferentSubmitterAndFullUser = new Project();
         projectWithDifferentSubmitterAndFullUser.setTitle("project with different submitter and user");

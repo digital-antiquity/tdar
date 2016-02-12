@@ -11,17 +11,10 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SortOption;
 
 /**
  * Represents a Project. Projects allow for inheritance of metadata from the project to resources within the project and thus simplifying metadata entry.
@@ -32,7 +25,7 @@ import org.tdar.search.query.SortOption;
 
 @Entity
 @Table(name = "project")
-@Indexed
+//@Indexed
 @XmlRootElement(name = "project")
 public class Project extends Resource implements Sortable {
 
@@ -99,7 +92,7 @@ public class Project extends Resource implements Sortable {
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Transient
-    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitle() {
         return getTitleSort();
     }
@@ -110,7 +103,7 @@ public class Project extends Resource implements Sortable {
         return getTitle().trim().replaceAll("^[T|t]he\\s", "").replaceAll("\\s[P|p]roject$", "");
     }
 
-    @IndexedEmbedded(prefix = "informationResources.")
+    //@IndexedEmbedded(prefix = "informationResources.")
     @XmlTransient
     // @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Collection<InformationResource> getCachedInformationResources() {

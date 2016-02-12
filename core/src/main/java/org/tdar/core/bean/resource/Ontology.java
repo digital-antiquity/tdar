@@ -24,8 +24,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
@@ -42,7 +40,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @version $Revision $
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "ontology", indexes = { @Index(name = "ontology_catvar_id", columnList = "category_variable_id") })
 @XmlRootElement(name = "ontology")
 public class Ontology extends InformationResource implements SupportsResource {
@@ -51,7 +49,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
-    @IndexedEmbedded(depth = 1)
+    //@IndexedEmbedded(depth = 1)
     private CategoryVariable categoryVariable;
 
     @OneToMany(mappedBy = "ontology", cascade = CascadeType.ALL)

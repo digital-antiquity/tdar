@@ -44,7 +44,6 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbResultContainer;
-import org.tdar.utils.jaxb.JaxbValidationEvent;
 
 @SuppressWarnings("serial")
 @Namespace("/api/ingest")

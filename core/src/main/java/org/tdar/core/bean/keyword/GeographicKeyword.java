@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.FieldLength;
 
 /**
@@ -34,7 +33,7 @@ import org.tdar.core.bean.FieldLength;
  */
 @Entity
 @Table(name = "geographic_keyword")
-@Indexed(index = "Keyword")
+//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable

@@ -24,6 +24,18 @@ TDAR.namespace = function () {
     return o;
 };
 
+TDAR.configureJiraCollector = function(ctx, username) {
+    if(!username) return;
+
+    if(!ctx.ATL_JQ_PAGE_PROPS) {
+        ctx.ATL_JQ_PAGE_PROPS = {};
+    };
+    if(ctx.ATL_JQ_PAGE_PROPS){
+        ctx.ATL_JQ_PAGE_PROPS.fieldValues = {
+            summary: "bug report from " + username + "."
+        };
+    }
+};
 
 /**
  * Load a script asynchronously. If jQuery is available, this function returns a promise object.  If the caller

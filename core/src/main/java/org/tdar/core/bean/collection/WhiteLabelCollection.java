@@ -16,7 +16,6 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Indexed;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
 
@@ -26,7 +25,7 @@ import org.tdar.core.bean.resource.Resource;
 @Entity
 @Table(name = "whitelabel_collection")
 @Inheritance(strategy = InheritanceType.JOINED)
-@Indexed
+//@Indexed
 @XmlRootElement(name = "whiteLabelCollection")
 public class WhiteLabelCollection extends ResourceCollection {
 

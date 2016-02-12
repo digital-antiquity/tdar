@@ -167,7 +167,7 @@
                 <#if resource.project??>
                     <#assign key = resource.project.title />
                 <#elseif resource.resourceType.project >
-                    <#assign key = resource.title />
+                    <#assign key = resource.title!'' />
                 </#if>
             </#if>
         <#-- print special header and group/list tag -->

@@ -1,7 +1,6 @@
 package org.tdar.core.service.processes.manager;
 
 import java.util.LinkedHashSet;
-import java.util.Map;
 import java.util.Set;
 
 import org.tdar.core.service.processes.ScheduledProcess;

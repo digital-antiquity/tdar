@@ -22,6 +22,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -59,6 +60,7 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
                     @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
             })
+    @WriteableSession
     public String delete() throws TdarActionException {
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return INPUT;

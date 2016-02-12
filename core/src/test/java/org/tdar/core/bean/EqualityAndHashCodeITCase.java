@@ -10,7 +10,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
@@ -26,7 +25,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
-import org.tdar.search.index.LookupSource;
 import org.tdar.utils.PersistableUtils;
 
 public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
@@ -77,17 +75,20 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
             // sanity check on other subtypes
             if (dataset.getClass().equals(Dataset.class)) {
                 // only deal with datasets in this test
-                Class<? extends Indexable>[] classes = LookupSource.RESOURCE.getClasses();
-                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Dataset.class);
-                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Resource.class);
-                for (Class<? extends Indexable> subtype : classes) {
-                    Class<? extends Resource> resourceSubtype = (Class<? extends Resource>) subtype;
+//                Class<? extends Indexable>[] classes = LookupSource.RESOURCE.getClasses();
+//                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Dataset.class);
+//                classes = (Class<? extends Indexable>[]) ArrayUtils.removeElement(classes, Resource.class);
+//                for (Class<? extends Indexable> subtype : classes) {
+//                    Class<? extends Resource> resourceSubtype = (Class<? extends Resource>) subtype;
 
-                    for (Resource r : genericService.findAll(resourceSubtype)) {
+                    for (Resource r : genericService.findAll(Resource.class)) {
+                        if (r.getResourceType().isDataset()) {
+                            continue;
+                        }
                         assertFalse(dataset.equals(r));
                         assertFalse(dataset.hashCode() == r.hashCode());
                     }
-                }
+//                }
             }
         }
     }

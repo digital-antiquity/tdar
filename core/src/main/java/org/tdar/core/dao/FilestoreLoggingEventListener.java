@@ -1,21 +1,30 @@
 package org.tdar.core.dao;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.event.spi.EventSource;
+import org.hibernate.event.spi.FlushEntityEvent;
+import org.hibernate.event.spi.FlushEntityEventListener;
+import org.hibernate.event.spi.FlushEvent;
+import org.hibernate.event.spi.FlushEventListener;
 import org.hibernate.event.spi.PostDeleteEvent;
 import org.hibernate.event.spi.PostDeleteEventListener;
 import org.hibernate.event.spi.PostInsertEvent;
 import org.hibernate.event.spi.PostInsertEventListener;
 import org.hibernate.event.spi.PostUpdateEvent;
 import org.hibernate.event.spi.PostUpdateEventListener;
+import org.hibernate.event.spi.SaveOrUpdateEvent;
+import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
+import org.tdar.core.dao.hibernateEvents.EventListener;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
-public class FilestoreLoggingEventListener implements PostInsertEventListener,
-        PostUpdateEventListener, PostDeleteEventListener {
+public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLoggable> implements PostInsertEventListener, PostUpdateEventListener,
+        PostDeleteEventListener, FlushEntityEventListener, FlushEventListener, SaveOrUpdateEventListener, EventListener {
 
     private static final long serialVersionUID = -2773973927518207238L;
 
@@ -23,6 +32,7 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
     XMLFilestoreLogger xmlLogger;
 
     public FilestoreLoggingEventListener() throws ClassNotFoundException {
+        super("Filestore");
         xmlLogger = new XMLFilestoreLogger();
     }
 
@@ -32,10 +42,15 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
             logger.error("trying to logToXML: {} but session is closed", event.getEntity());
             return;
         }
-        logToXml(event.getEntity());
+        if (event.getEntity() instanceof XmlLoggable) {
+            addToSession(event.getSession(), (XmlLoggable)event.getEntity());
+        }
+        flush(event);
     }
 
-    private void logToXml(Object obj) {
+    @Override
+    protected void process(Object obj) {
+
         if (obj == null) {
             return;
         }
@@ -56,14 +71,11 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
             return;
         }
 
-        Object obj = event.getEntity();
-        // only skip on updates
-        if (obj instanceof XmlLoggable && !((XmlLoggable) obj).isReadyToStore()) {
-            logger.debug("skipping xml logging for: {}", obj);
-            return;
+        if (event.getEntity() instanceof XmlLoggable) {
+            addToSession(event.getSession(), (XmlLoggable)event.getEntity());
         }
+        flush(event);
 
-        logToXml(obj);
     }
 
     private boolean testSession(EventSource session) {
@@ -76,12 +88,34 @@ public class FilestoreLoggingEventListener implements PostInsertEventListener,
             logger.error("trying to logToXML: {} but session is closed", event.getEntity());
             return;
         }
-        logToXml(event.getEntity());
+        if (event.getEntity() instanceof XmlLoggable) {
+            addToSession(event.getSession(), (XmlLoggable)event.getEntity());
+        }
+        flush(event);
+
     }
 
     @Override
     public boolean requiresPostCommitHanding(EntityPersister persister) {
         return false;
+    }
+
+    @Override
+    public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
+        if (event.getEntity() instanceof XmlLoggable) {
+            addToSession(event.getSession(), (XmlLoggable)event.getEntity());
+        }
+    }
+
+    @Override
+    public void onFlush(FlushEvent event) throws HibernateException {
+        flush(event);
+    }
+
+    @Override
+    public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
+        // TODO Auto-generated method stub
+
     }
 
 }

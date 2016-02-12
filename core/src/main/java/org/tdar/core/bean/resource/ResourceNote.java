@@ -11,15 +11,10 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -40,14 +35,14 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     private static final long serialVersionUID = -3161092447810925887L;
 
     @Column(length = FieldLength.FIELD_LENGTH_5000)
-    @Field
+    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_5000)
     @JsonView(JsonProjectLookupFilter.class)
     private String note;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type", length = FieldLength.FIELD_LENGTH_255)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @JsonView(JsonProjectLookupFilter.class)
     private ResourceNoteType type;
 

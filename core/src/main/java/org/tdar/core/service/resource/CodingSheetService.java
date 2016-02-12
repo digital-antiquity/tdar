@@ -15,7 +15,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,8 +42,6 @@ import org.tdar.filestore.WorkflowContext;
 import org.tdar.utils.ExceptionWrapper;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-
-import com.opensymphony.xwork2.TextProvider;
 
 /**
  * Provides coding sheet upload, parsing/import, and persistence functionality.

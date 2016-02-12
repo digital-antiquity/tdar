@@ -1,8 +1,5 @@
 package org.tdar.struts.action.browse;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -14,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Addressable;
@@ -23,12 +21,8 @@ import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.core.service.GenericService;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -55,11 +49,13 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private static final long serialVersionUID = 5267144668224536569L;
 
     @Autowired
-    private transient SearchService searchService;
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
     @Autowired
     private transient GenericKeywordService genericKeywordService;
+    @Autowired
+    private transient GenericService genericService;
 
     private Long id;
     private KeywordType keywordType;
@@ -110,7 +106,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             return;
         }
         getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
-        setKeyword(genericKeywordService.find(getKeywordType().getKeywordClass(), getId()));
+        setKeyword(genericService.find(getKeywordType().getKeywordClass(), getId()));
 
         if (PersistableUtils.isNotNullOrTransient(keyword) && getKeyword().isDuplicate()) {
             keyword = genericKeywordService.findAuthority(keyword);
@@ -155,27 +151,18 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private void prepareLuceneQuery() throws TdarActionException {
 
         setMode("KeywordBrowse");
-        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
-        rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         if (keywordType == KeywordType.GEOGRAPHIC_KEYWORD) {
             // setOrientation(DisplayOrientation.MAP);
         }
         try {
             setSortField(SortOption.TITLE);
-            searchService.handleSearch(rqb, this, this);
+            resourceSearchService.buildKeywordQuery(keyword, keywordType, this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
         } catch (Exception e) {
             addActionErrorWithException(getText("browseKeywordController.error_searching_contents"), e);
         }
-    }
-
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-    @Override
-    public List getFacetFields() {
-        return null;
     }
 
     public DisplayOrientation getOrientation() {

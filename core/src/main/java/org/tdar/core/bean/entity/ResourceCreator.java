@@ -21,8 +21,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.IndexedEmbedded;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.BulkImportField;
@@ -63,7 +61,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, key = "RESOURCE_CREATOR", order = 1)
@@ -71,7 +69,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
-    @Field
+    //@Field
     @BulkImportField(key = "CREATOR_ROLE", order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)

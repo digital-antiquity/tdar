@@ -1,7 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.io.ByteArrayInputStream;
-import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -10,10 +9,9 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SerializationService;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.SortOption;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -71,11 +69,6 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
 
     public void setGeoMode(GeoRssMode geoMode) {
         this.geoMode = geoMode;
-    }
-
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
 }

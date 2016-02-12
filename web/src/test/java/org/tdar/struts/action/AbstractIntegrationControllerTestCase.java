@@ -3,7 +3,6 @@ package org.tdar.struts.action;
 import static org.junit.Assert.fail;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsStatics;
 import org.custommonkey.xmlunit.jaxp13.Validator;
@@ -32,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -62,8 +61,9 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchService;
+import org.tdar.search.config.TdarSearchAppConfiguration;
+import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.ErrorListener;
 import org.tdar.utils.PersistableUtils;
 
@@ -77,6 +77,7 @@ import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
 import com.opensymphony.xwork2.util.LocalizedTextUtil;
 import com.opensymphony.xwork2.util.ValueStack;
 
+@ContextConfiguration(classes = TdarSearchAppConfiguration.class)
 @SuppressWarnings("rawtypes")
 public abstract class AbstractIntegrationControllerTestCase extends AbstractIntegrationTestCase implements ErrorListener {
 
@@ -154,6 +155,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     public void announceTestStarting() {
         setIgnoreActionErrors(false);
         getActionErrors().clear();
+        searchIndexService.purgeAll();
     }
 
     // Called when your test fails. Did I say "when"? I meant "if".

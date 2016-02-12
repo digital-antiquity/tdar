@@ -2,7 +2,6 @@ package org.tdar.core.service.processes.daily;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Resource;
@@ -35,15 +36,14 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.facet.Facet;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -63,7 +63,7 @@ import org.tdar.utils.PersistableUtils;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements SearchResultHandler<Resource>, SlugViewAction,
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
@@ -79,7 +79,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
     @Autowired
-    private transient SearchService searchService;
+    private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
@@ -91,8 +91,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
-
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -104,8 +102,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private PaginationHelper paginationHelper;
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
-
     private boolean showNavSearchBox = true;
+    private FacetWrapper facetWrapper = new FacetWrapper();
+
+	private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
+    
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -151,11 +152,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     public List<SortOption> getSortOptions() {
         return SortOption.getOptionsForResourceCollectionPage();
-    }
-
-    public List<DisplayOrientation> getResultsOrientations() {
-        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
-        return options;
     }
 
     @Override
@@ -225,12 +221,18 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return getPersistable().isWhiteLabelCollection();
     }
 
+
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
+    }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
+    }
+
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
-        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                getResourceCollection(), getAuthenticatedUser(), this);
-        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
-
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, selectedResourceTypes);
         setSortField(getPersistable().getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
@@ -240,7 +242,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         }
 
         try {
-            searchService.handleSearch(qb, this, this);
+            resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
+                    getResourceCollection(), getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);
@@ -276,11 +279,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     @Override
     public boolean isDebug() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowAll() {
         return false;
     }
 
@@ -375,15 +373,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return getSearchTitle();
     }
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        return group;
-    }
-
     public PaginationHelper getPaginationHelper() {
         if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
@@ -396,12 +385,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     }
 
-    public ArrayList<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
-    }
-
-    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
-        this.resourceTypeFacets = resourceTypeFacets;
+    public List<Facet> getResourceTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
     public ArrayList<ResourceType> getSelectedResourceTypes() {
@@ -414,7 +399,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
     @Override
     public ProjectionModel getProjectionModel() {
-        return ProjectionModel.RESOURCE_PROXY;
+        return projectionModel;
+    }
+    
+    public void setProjectionModel(ProjectionModel model) {
+    	this.projectionModel  = model;
     }
 
     /**
@@ -519,4 +508,16 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public boolean isNavSearchBoxVisible() {
         return showNavSearchBox;
     }
+
+    @Override
+    public void setSearchTitle(String description) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return getPersistable().getOrientation();
+	}
 }

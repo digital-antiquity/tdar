@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
@@ -55,7 +54,7 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         return Arrays.asList(text);
     };
 
-    @Field
+    //@Field
     public String getText() {
         return text;
     }

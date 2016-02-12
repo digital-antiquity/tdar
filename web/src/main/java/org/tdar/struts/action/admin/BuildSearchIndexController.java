@@ -19,14 +19,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.external.EmailService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -50,6 +48,7 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     private String callback;
     private Long userId;
     private boolean asyncSave = true;
+    private boolean forceClear = false;
     private LinkedList<Throwable> errors = new LinkedList<>();
 
     private List<LookupSource> indexesToRebuild = new ArrayList<>();
@@ -60,9 +59,6 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     @Autowired
     private transient SerializationService serializationService;
 
-    @Autowired
-    private transient EmailService emailService;
-
     private InputStream jsonInputStream;
 
     @IgnoreActivity
@@ -71,8 +67,10 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     })
     public String startIndex() {
         if (!isReindexing()) {
-            List<Class<? extends Indexable>> toReindex = new ArrayList<>();
-            toReindex = searchIndexService.getClassesToReindex(getIndexesToRebuild());
+            List<LookupSource> toReindex = getIndexesToRebuild();
+            if (CollectionUtils.isEmpty(toReindex)) {
+                toReindex = Arrays.asList(LookupSource.values());
+            }
 
             getLogger().info("to reindex: {}", toReindex);
             Person person = null;
@@ -80,18 +78,13 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
                 person = getGenericService().find(Person.class, getUserId());
             }
 
-            List<Class<? extends Indexable>> clss = searchIndexService.getDefaultClassesToIndex();
-            if (CollectionUtils.isNotEmpty(toReindex)) {
-                clss = toReindex;
-            }
-
             getLogger().info("reindexing");
             if (isAsyncSave()) {
                 getLogger().info("reindexing async");
-                searchIndexService.indexAllAsync(null, clss, person);
+                searchIndexService.indexAllAsync(null, toReindex, person);
             } else {
                 getLogger().info("reindexing sync");
-                searchIndexService.indexAll(this, clss, person);
+                searchIndexService.indexAll(this, toReindex, person);
             }
         }
         getLogger().info("return");
@@ -125,6 +118,9 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
     public String build() {
         try {
             getLogger().info("{} IS REBUILDING SEARCH INDEXES", getAuthenticatedUser().getEmail().toUpperCase());
+            if (forceClear) {
+                searchIndexService.clearIndexingActivities();
+            }
         } catch (Exception e) {
             getLogger().error("weird exception {} ", e);
         }
@@ -251,6 +247,14 @@ public class BuildSearchIndexController extends AuthenticationAware.Base impleme
 
     public void setAsyncSave(boolean asyncSave) {
         this.asyncSave = asyncSave;
+    }
+
+    public boolean isForceClear() {
+        return forceClear;
+    }
+
+    public void setForceClear(boolean forceClear) {
+        this.forceClear = forceClear;
     }
 
 }

@@ -7,6 +7,7 @@
 package org.tdar.struts.action;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -15,48 +16,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser.Operator;
-import org.hibernate.search.FullTextQuery;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.resource.Dataset.IntegratableOptions;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.ReservedSearchParameters;
-import org.tdar.core.service.search.SearchService;
+import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.index.LookupSource;
-import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.InstitutionQueryBuilder;
-import org.tdar.search.query.builder.PersonQueryBuilder;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
-import org.tdar.search.query.part.PersonQueryPart;
-import org.tdar.search.query.part.PhraseFormatter;
-import org.tdar.search.query.part.QueryGroup;
-import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.ProjectionModel;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.search.service.SearchUtils;
+import org.tdar.search.service.query.CreatorSearchService;
+import org.tdar.search.service.query.SearchService;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.json.JsonAdminLookupFilter;
 import org.tdar.utils.json.JsonLookupFilter;
-
-import com.opensymphony.xwork2.ActionSupport;
 
 /**
  * @author Adam Brin
  * 
  */
-public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements SearchResultHandler<I> {
+public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements FacetedResultHandler<I> {
 
     private static final long serialVersionUID = 2357805482356017885L;
 
@@ -77,8 +67,8 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private String mode;
     private String searchTitle;
     private String searchDescription;
+    private FacetWrapper facetWrapper = new FacetWrapper();
     // execute a query even if query is empty
-    private boolean showAll = false;
 
     private LookupSource lookupSource;
 
@@ -91,14 +81,10 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
     private transient SearchService searchService;
 
     @Autowired
-    private transient AuthorizationService authorizationService;
+    private CreatorSearchService creatorSearchService;
 
     @Autowired
     ObfuscationService obfuscationService;
-
-    protected void handleSearch(QueryBuilder q) throws ParseException {
-        searchService.handleSearch(q, this, this);
-    }
 
     public String getCallback() {
         return callback;
@@ -112,9 +98,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return minLookupLength;
     }
 
-    public void addFacets(FullTextQuery ftq) {
-        // empty method, overriden if needed
-    }
 
     public void setMinLookupLength(int minLookupLength) {
         this.minLookupLength = minLookupLength;
@@ -170,66 +153,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return totalRecords;
     }
 
-    /**
-     * Return true if the specified string meets the minimum length requirement (or if there is no minimum length requirement). Not to be confused w/
-     * checking if the specified string is blank.
-     */
-    public boolean checkMinString(String value) {
-        if (getMinLookupLength() == 0) {
-            return true;
-        }
-        return StringUtils.isNotEmpty(value) && (value.trim().length() >= getMinLookupLength());
-    }
-
-    // return true if ALL of the specified strings meet the minimum length. Otherwise false;
-    public boolean checkMinString(String... candidates) {
-        for (String candidate : candidates) {
-            if (!checkMinString(candidate)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    protected void addEscapedWildcardField(QueryGroup q, String field, String value) {
-        if (checkMinString(value) && StringUtils.isNotBlank(value)) {
-            getLogger().trace("{}:{}", field, value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
-            fqp.setPhraseFormatters(PhraseFormatter.WILDCARD);
-            q.append(fqp);
-        }
-    }
-
-    protected void addQuotedEscapedField(QueryGroup q, String field, String value) {
-        if (checkMinString(value)) {
-            getLogger().trace("{}:{}", field, value);
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(field, StringUtils.trim(value));
-            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            q.append(fqp);
-        }
-    }
-
-    protected <C> void appendIf(boolean test, QueryGroup q, String field, C value) {
-        if (test) {
-            q.append(new FieldQueryPart<C>(field, value));
-        }
-    }
-
-    protected void addResourceTypeQueryPart(QueryGroup q, List<ResourceType> list) {
-        if (!CollectionUtils.isEmpty(list)) {
-            FieldQueryPart<ResourceType> fqp = new FieldQueryPart<ResourceType>("resourceType", list.toArray(new ResourceType[0]));
-            fqp.setOperator(Operator.OR);
-            q.append(fqp);
-        }
-    }
-
-    // deal with the terms that correspond w/ the "narrow your search" section
-    // and from facets
-    protected QueryPartGroup processReservedTerms(ActionSupport support) {
-        authorizationService.initializeReservedSearchParameters(getReservedSearchParameters(), getAuthenticatedUser());
-        return getReservedSearchParameters().toQueryPartGroup(support);
-    }
-
     @Override
     public int getNextPageStartRecord() {
         return startRecord + recordsPerPage;
@@ -279,15 +202,6 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
-    }
-
-    @Override
-    public boolean isShowAll() {
-        return showAll;
-    }
-
-    public void setShowAll(boolean ignoringEmptyQuery) {
-        this.showAll = ignoringEmptyQuery;
     }
 
     /**
@@ -413,73 +327,21 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         getReservedSearchParameters().setResourceTypes(resourceTypes);
     }
 
-    public String findPerson(String firstName, String term, String lastName, String institution, String email, String registered) {
+    public String findPerson(String term, Person person, boolean registered) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.PERSON);
-        QueryBuilder q = new PersonQueryBuilder(Operator.AND);
-        boolean valid = false;
-
-        Person incomingPerson = new Person();
-        if (checkMinString(firstName)) {
-            incomingPerson.setFirstName(firstName);
-            valid = true;
-        }
-
-        if (checkMinString(lastName)) {
-            incomingPerson.setLastName(lastName);
-            valid = true;
-        }
-
-        if (StringUtils.isEmpty(firstName) && StringUtils.isEmpty(lastName) && checkMinString(term)) {
-            incomingPerson.setWildcardName(term);
-            valid = true;
-        }
-
-        if (checkMinString(institution)) {
-            valid = true;
-            Institution incomingInstitution = new Institution(institution);
-            incomingPerson.setInstitution(incomingInstitution);
-            // FIXME: I believe this detach is unnecessary - object was never on the session
-            // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
-            getGenericService().detachFromSessionAndWarn(incomingInstitution);
-        }
-
-        // ignore email field for unauthenticated users.
-        if (isAuthenticated() && checkMinString(email)) {
-            incomingPerson.setEmail(email);
-            valid = true;
-        }
-        // FIXME: I believe this detach is unnecessary - object was never on the session
-        // AB: OpenSessionInView makes me nervous with this, don't want to take a chance
-        getGenericService().detachFromSessionAndWarn(incomingPerson);
-
-        PersonQueryPart pqp = new PersonQueryPart();
-        pqp.add(incomingPerson);
-        q.append(pqp);
-        getLogger().debug("{}", pqp.toString());
-        q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
-        if (valid || (getMinLookupLength() == 0)) {
-            if (StringUtils.isNotBlank(registered)) {
-                try {
-                    pqp.setRegistered(Boolean.parseBoolean(registered));
-                } catch (Exception e) {
-                    addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
-                    return ERROR;
-                }
-            }
-
+        // TODO Auto-generated method stub
             try {
-                handleSearch(q);
+                creatorSearchService.findPerson(person, term, registered, this, this, getMinLookupLength());
                 // sanitize results if the user is not logged in
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
             }
-        }
-        if (isEditor()) {
-            jsonifyResult(JsonAdminLookupFilter.class);
-        } else {
-            jsonifyResult(JsonLookupFilter.class);
-        }
+            if (isEditor()) {
+                jsonifyResult(JsonAdminLookupFilter.class);
+            } else {
+                jsonifyResult(JsonLookupFilter.class);
+            }
         return SUCCESS;
     }
 
@@ -515,19 +377,11 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return getLookupSource().getCollectionName();
     }
 
-    public String findInstitution(String institution) {
+    public String findInstitution(String institution) throws SolrServerException, IOException {
         this.setLookupSource(LookupSource.INSTITUTION);
-        QueryBuilder q = new InstitutionQueryBuilder(Operator.AND);
-        if (checkMinString(institution)) {
-            InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
-            Institution testInstitution = new Institution(institution);
-            if (StringUtils.isNotBlank(institution)) {
-                iqp.add(testInstitution);
-                q.append(iqp);
-            }
-            q.append(new FieldQueryPart<Status>("status", Status.ACTIVE));
+        if (SearchUtils.checkMinString(institution, getMinLookupLength())) {
             try {
-                handleSearch(q);
+                creatorSearchService.findInstitution(institution, this, this, getMinLookupLength());
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;
@@ -599,10 +453,18 @@ public abstract class AbstractLookupController<I extends Indexable> extends Auth
         return DEFAULT_RESULT_SIZE;
     }
 
-    protected boolean isFindAll(String query) {
-        if (StringUtils.isBlank(query)) {
-            return true;
-        }
-        return StringUtils.equals(StringUtils.trim(query), "*");
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
     }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
+    }
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return null;
+	}
+
 }

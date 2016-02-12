@@ -1,9 +1,6 @@
 package org.tdar.core.service.resource;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -17,13 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.dbutils.ResultSetIterator;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +24,11 @@ import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -46,32 +36,23 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnRelationship;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.core.bean.resource.file.FileAction;
-import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DataTableColumnDao;
-import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.InformationResourceFileDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ExcelService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
-import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
-import org.tdar.core.service.resource.dataset.DatasetChangeLogger;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.core.service.resource.dataset.TdarDataResultSetExtractor;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -87,13 +68,8 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, DatasetDao> {
 
-    Pattern originalColumnPattern = Pattern.compile("^(.+)_original_(\\d+)$");
-
     @Autowired
     private TargetDatabase tdarDataImportDatabase;
-
-    @Autowired
-    private SearchIndexService searchIndexService;
 
     @Autowired
     private ResourceService resourceService;
@@ -108,14 +84,9 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
     private DataTableColumnDao dataTableColumnDao;
 
     @Autowired
-    private ExcelService excelService;
-
-    @Autowired
     private SerializationService serializationService;
 
     @Autowired
-    private DataTableDao dataTableDao;
-
     private FileAnalyzer analyzer;
 
     /*
@@ -123,7 +94,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public void translate(DataTableColumn column) {
-        translate(column, column.getDefaultCodingSheet());
+        getDao().translate(column, column.getDefaultCodingSheet());
     }
 
     /*
@@ -132,20 +103,12 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public boolean translate(final DataTableColumn column, final CodingSheet codingSheet) {
-        if (codingSheet == null) {
-            return false;
-        }
-        getLogger().debug("translating {} with {}", column.getName(), codingSheet);
-        // FIXME: if we eventually offer on-the-fly coding sheet translation we cannot modify the actual dataset in place
-        tdarDataImportDatabase.translateInPlace(column, codingSheet);
-        return true;
+        return getDao().translate(column, codingSheet);
     }
 
     @Transactional(readOnly = false)
     public void retranslate(Dataset dataset) {
-        for (DataTable table : dataset.getDataTables()) {
-            retranslate(table.getDataTableColumns());
-        }
+        getDao().retranslate(dataset);
     }
 
     /*
@@ -153,8 +116,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public boolean retranslate(DataTableColumn column) {
-        untranslate(column);
-        return translate(column, column.getDefaultCodingSheet());
+        return getDao().retranslate(column);
     }
 
     /*
@@ -162,9 +124,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public void retranslate(Collection<DataTableColumn> columns) {
-        for (DataTableColumn column : columns) {
-            retranslate(column);
-        }
+        getDao().retranslate(columns);
     }
 
     /*
@@ -174,7 +134,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public void untranslate(DataTableColumn column) {
-        tdarDataImportDatabase.untranslate(column);
+        getDao().untranslate(column);
     }
 
     /*
@@ -182,9 +142,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public void translate(Set<DataTableColumn> columns, final CodingSheet codingSheet) {
-        for (DataTableColumn column : columns) {
-            translate(column, codingSheet);
-        }
+        getDao().translate(columns, codingSheet);
     }
 
     /*
@@ -194,42 +152,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public InformationResourceFile createTranslatedFile(Dataset dataset) {
-        // assumes that Datasets only have a single file
-        Set<InformationResourceFile> activeFiles = dataset.getActiveInformationResourceFiles();
-        InformationResourceFile file = null;
-        if (!activeFiles.isEmpty()) {
-            file = dataset.getActiveInformationResourceFiles().iterator().next();
-        }
-
-        if (file == null) {
-            getLogger().warn("Trying to translate {} with a null file payload.", dataset);
-            return null;
-        }
-        informationResourceFileDao.deleteTranslatedFiles(dataset);
-        // FIXME: remove synchronize once Hibernate learns more about unique constraints
-        // http://community.jboss.org/wiki/HibernateFAQ-AdvancedProblems#Hibernate_is_violating_a_unique_constraint
-
-        // getDao().synchronize();
-
-        InformationResourceFile irFile = null;
-        FileOutputStream translatedFileOutputStream = null;
-        try {
-            File tempFile = File.createTempFile("translated", ".xls", TdarConfiguration.getInstance().getTempDirectory());
-            translatedFileOutputStream = new FileOutputStream(tempFile);
-            SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
-            String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
-            FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
-            fileProxy.setRestriction(file.getRestriction());
-            fileProxy.setFileId(file.getId());
-            FileProxyWrapper wrapper = new FileProxyWrapper(dataset, getAnalyzer(), getDao(),Arrays.asList(fileProxy));
-            wrapper.processMetadataForFileProxies();
-            irFile = fileProxy.getInformationResourceFile();
-        } catch (IOException exception) {
-            getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
-        } finally {
-            IOUtils.closeQuietly(translatedFileOutputStream);
-        }
-        return irFile;
+        return getDao().createTranslatedFile(dataset, analyzer, informationResourceFileDao);
     }
 
     /**
@@ -253,7 +176,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
                 latestVersions.add(latestUploadedVersion);
             }
 
-            getAnalyzer().processFiles(latestVersions,true);
+            analyzer.processFiles(latestVersions,true);
             if (dataset.hasCodingColumns()) {
                 createTranslatedFile(dataset);
             }
@@ -262,67 +185,6 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         }
     }
 
-    /*
-     * For a given @link ResultSet and a @link DataTable this returns a list of Column names based on the display name instead of the internal table names
-     */
-    private List<String> getColumnNames(ResultSet resultSet, DataTable dataTable) throws SQLException {
-        List<String> columnNames = new ArrayList<String>();
-        ResultSetMetaData metadata = resultSet.getMetaData();
-        for (int columnIndex = 0; columnIndex < metadata.getColumnCount(); columnIndex++) {
-            String columnName = metadata.getColumnName(columnIndex + 1);
-            // if (columnName.equals(DataTableColumn.TDAR_ROW_ID.getName())) {
-            // continue;
-            // }
-            String lookupName = columnName;
-            Matcher match = originalColumnPattern.matcher(columnName);
-            String suffix = "";
-            if (match.matches()) {
-                lookupName = match.group(1);
-                suffix = " (original)";
-            }
-            DataTableColumn column = dataTable.getColumnByName(lookupName);
-            logger.trace("name: {} - {}", columnName, column);
-            if (column != null) {
-                columnName = column.getDisplayName();
-            }
-            columnName += suffix;
-
-            columnNames.add(columnName);
-        }
-        return columnNames;
-    }
-
-    /*
-     * Converts a @link Dataset to a Microsoft Excel File; this includes the Translated data values
-     */
-    private SheetProxy toExcel(Dataset dataset, OutputStream outputStream) throws IOException {
-        Set<DataTable> dataTables = dataset.getDataTables();
-        if ((dataTables == null) || dataTables.isEmpty()) {
-            return null;
-        }
-        final SheetProxy proxy = new SheetProxy();
-
-        for (final DataTable dataTable : dataTables) {
-            // each table becomes a sheet.
-            String tableName = dataTable.getDisplayName();
-            getLogger().debug(tableName);
-            proxy.setName(tableName);
-            ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
-                @Override
-                public Boolean extractData(ResultSet resultSet) throws SQLException {
-                    List<String> headerLabels = getColumnNames(resultSet, dataTable);
-                    proxy.setHeaderLabels(headerLabels);
-                    proxy.setData(new ResultSetIterator(resultSet));
-                    getLogger().debug("column names: " + headerLabels);
-                    excelService.addSheets(proxy);
-                    return true;
-                }
-            };
-            tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
-        }
-        proxy.getWorkbook().write(outputStream);
-        return proxy;
-    }
 
     /*
      * Checks whether a @link Dataset can be mapped to an @link Ontology and thus, whether specific CodingValues can be mapped to that Ontology
@@ -330,201 +192,6 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
     @Transactional(readOnly = true)
     public boolean canLinkDataToOntology(Dataset dataset) {
         return getDao().canLinkDataToOntology(dataset);
-    }
-
-    /*
-     * When we import a @link Dataset, if there's an existing set of @link DataTable entries mapped to a Dataset, we reconcile each @link DataTable and @link
-     * DataTableColunn on import such that if the old DataTables and Columns match the incomming, then we'll re-use the mappings. If they're different, their
-     * either added or dropped respectively.
-     */
-    @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
-    public void reconcileDataset(InformationResourceFile datasetFile, Dataset dataset, Dataset transientDatasetToPersist) {
-        // helper Map to manage existing tables - all remaining entries in this existingTablesMap will be purged at the end of this process
-        // take the dataset off the session at the last moment, and then bring it back on
-
-        DatasetChangeLogger dsChangeLog = new DatasetChangeLogger(dataset);
-
-        Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables = reconcileTables(dataset, transientDatasetToPersist);
-
-        getDao().deleteRelationships(dataset.getRelationships());
-        reconcileRelationships(dataset, transientDatasetToPersist);
-        getDao().cleanupUnusedTablesAndColumns(dataset, reconcileTables.getFirst(), reconcileTables.getSecond());
-        reconcileTables = null; // resetting and removing references
-        getLogger().debug("dataset: {} id: {}", dataset.getTitle(), dataset.getId());
-        for (DataTable dataTable : dataset.getDataTables()) {
-            getLogger().debug("dataTable: {}", dataTable);
-            List<DataTableColumn> columns = dataTable.getDataTableColumns();
-            getLogger().debug("dataTableColumns: {}", columns);
-            for (DataTableColumn column : columns) {
-                translate(column);
-            }
-        }
-        datasetFile.setStatus(FileStatus.PROCESSED);
-        datasetFile.setInformationResource(dataset);
-        transientDatasetToPersist = null;
-
-        dataset = getDao().merge(dataset);
-        dsChangeLog.compare(dataset);
-    }
-
-    /*
-     * Reconciles two @link Dataset entities together based on the transient entries coming from the @link WorkflowContext and the existing ones. First, it
-     * tries to match name-by-name. Second, if there is "just" a in both, eg. in a CSV, TAB, or other Format, then don't match on name, assume that they're the
-     * same table, as table name was generated by us instead of the user.
-     */
-    private Pair<Collection<DataTable>, Collection<DataTableColumn>> reconcileTables(Dataset dataset, Dataset transientDatasetToPersist) {
-        HashMap<String, DataTable> existingTablesMap = new HashMap<String, DataTable>();
-        HashMap<String, String> secondaryLookupMap = new HashMap<>();
-        for (DataTable existingDataTable : dataset.getDataTables()) {
-            String internalName = existingDataTable.getInternalName();
-            existingTablesMap.put(internalName, existingDataTable);
-            getLogger().debug("existingTableName: {}", internalName);
-            // note there may be failures to match here as table names are too long and thus get arbitrary numbers that cannot be matched
-            String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingDataTable.getDisplayName());
-            if (!StringUtils.equals(name, internalName)) {
-                secondaryLookupMap.put(name, internalName);
-            }
-
-        }
-        dataset.getDataTables().clear();
-        getLogger().debug("Existing name to table map: {}", existingTablesMap);
-        Set<DataTableColumn> columnsToUnmap = new HashSet<DataTableColumn>();
-
-        for (DataTable tableToPersist : transientDatasetToPersist.getDataTables()) {
-            // first check that the incoming data table has data table columns.
-            String internalTableName = tableToPersist.getInternalName();
-            DataTable existingTable = existingTablesMap.get(internalTableName);
-            if ((existingTable == null) && (existingTablesMap.size() == 1) && (transientDatasetToPersist.getDataTables().size() == 1)) {
-                // the table names did not match, but we have one incoming table and one existing table. Try to match them regardless.
-                existingTable = existingTablesMap.values().iterator().next();
-            }
-
-            // our naming conventions change from time-to-time, fallback to "renormalize" and use that for lookup
-            if (existingTable == null) {
-                if (secondaryLookupMap.containsKey(internalTableName)) {
-                    existingTable = existingTablesMap.get(secondaryLookupMap.get(internalTableName));
-                    internalTableName = secondaryLookupMap.get(internalTableName);
-                }
-            }
-
-            if (existingTable != null) {
-                existingTablesMap.remove(existingTable.getInternalName());
-                Pair<DataTable, Collection<DataTableColumn>> reconcileDataTable = reconcileDataTable(dataset, existingTable, tableToPersist);
-                tableToPersist = reconcileDataTable.getFirst();
-                if (CollectionUtils.isNotEmpty(reconcileDataTable.getSecond())) {
-                    columnsToUnmap.addAll(reconcileDataTable.getSecond());
-                }
-            } else {
-                // continue with the for loop, tableToPersist does not require any metadata merging because
-                // we can't find an existing table to merge it with
-                getLogger().trace("No analogous existing table to merge with incoming data table {}, moving on", tableToPersist);
-            }
-            tableToPersist.setDataset(dataset);
-            dataset.getDataTables().add(tableToPersist);
-        }
-
-        // any tables left in existingTables didn't have an analog in the incoming dataset, so clean them up
-        Collection<DataTable> tablesToRemove = existingTablesMap.values();
-        return new Pair<Collection<DataTable>, Collection<DataTableColumn>>(tablesToRemove, columnsToUnmap);
-    }
-
-    /*
-     * Reconciles DataTableRelationships between two datasets, this is not well supported at the moment.
-     */
-    private void reconcileRelationships(Dataset dataset, Dataset transientDatasetToPersist) {
-        // refresh the column relationships so that they refer to new versions of the columns which have the same names as the old columns
-        // dataset.getRelationships().clear();
-
-        for (DataTableRelationship rel : transientDatasetToPersist.getRelationships()) {
-            dataset.getRelationships().add(rel);
-        }
-    }
-
-    /*
-     * Iterate through each @link DataTableColumn on the @link DataTable and reconcile them by name.
-     */
-    private Pair<DataTable, Collection<DataTableColumn>> reconcileDataTable(Dataset dataset, DataTable existingTable, DataTable tableToPersist) {
-        Pair<DataTable, Collection<DataTableColumn>> toReturn = new Pair<DataTable, Collection<DataTableColumn>>(null, null);
-        if (CollectionUtils.isNotEmpty(tableToPersist.getDataTableColumns())) {
-            // if there is an analogous existing table, try to reconcile all the columns from the incoming data table
-            // with the columns from the existing data table.
-            HashMap<String, DataTableColumn> existingColumnsMap = new HashMap<String, DataTableColumn>();
-            HashMap<String, String> secondaryLookupMap = new HashMap<>();
-            for (DataTableColumn existingColumn : existingTable.getDataTableColumns()) {
-                String key = existingColumn.getName().toLowerCase().trim();
-                existingColumnsMap.put(key, existingColumn);
-                String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingColumn.getDisplayName());
-                if (!StringUtils.equals(name, key)) {
-                    secondaryLookupMap.put(name, key);
-                }
-            }
-            getLogger().debug("existing columns: {}", existingColumnsMap);
-            List<DataTableColumn> columnsToPersist = tableToPersist.getDataTableColumns();
-            // for each incoming data table column, try to match it with an equivalent column
-            // from existingTable using the existingNameToColumnMap
-            for (int i = 0; i < columnsToPersist.size(); i++) {
-                DataTableColumn incomingColumn = columnsToPersist.get(i);
-                String normalizedColumnName = incomingColumn.getName().toLowerCase().trim();
-
-                DataTableColumn existingColumn = existingColumnsMap.get(normalizedColumnName);
-                // our naming conventions change from time-to-time, fallback to "renormalize" and use that for lookup
-                if (existingColumn == null) {
-                    if (secondaryLookupMap.containsKey(normalizedColumnName)) {
-                        existingColumn = existingColumnsMap.get(secondaryLookupMap.get(normalizedColumnName));
-                        normalizedColumnName = secondaryLookupMap.get(normalizedColumnName);
-                    }
-                }
-                getLogger().debug("Reconciling existing {} with incoming column {}", existingColumn, incomingColumn);
-                reconcileColumn(tableToPersist, existingColumnsMap, normalizedColumnName, incomingColumn, existingColumn);
-            }
-
-            getLogger().debug("deleting unmerged columns: {}", existingColumnsMap);
-            getLogger().debug("result: {}", columnsToPersist);
-            getDao().detachFromSession(existingTable);
-            toReturn.setSecond(existingColumnsMap.values());
-            tableToPersist.setId(existingTable.getId());
-
-            getLogger().debug("merged data table is now {}", tableToPersist);
-            getLogger().debug("actual data table columns {}, incoming data table columns {}", tableToPersist.getDataTableColumns(), columnsToPersist);
-        }
-        toReturn.setFirst(tableToPersist);
-        return toReturn;
-    }
-
-    
-    /**
-     * Using the existing column map, we try and find a matching @link DataTableColumn, if we do, we copy the values off of the
-     * existing column before returning.
-     * 
-     * @param incomingTable
-     * @param existingNameToColumnMap
-     * @param normalizedColumnName
-     * @param incomingColumn
-     * @param existingColumn
-     * @return
-     */
-    @Transactional
-    private void reconcileColumn(DataTable incomingTable, HashMap<String, DataTableColumn> existingNameToColumnMap,
-            String normalizedColumnName, DataTableColumn incomingColumn, DataTableColumn existingColumn) {
-        // FIXME: check that types are compatible before merging
-
-        if (existingColumn == null) {
-            return;
-        }
-        /*
-         * if we've gotten this far, we know that the incoming column should be saved onto the existing table instead of the transient table that it was
-         * originally set on. copy all values that should be retained
-         */
-        getLogger().trace("Merging incoming column with existing column");
-        incomingColumn.setDataTable(incomingTable);
-        incomingColumn.setId(existingColumn.getId());
-        incomingColumn.setDefaultCodingSheet(existingColumn.getDefaultCodingSheet());
-
-        incomingColumn.setCategoryVariable(existingColumn.getCategoryVariable());
-
-        incomingColumn.copyUserMetadataFrom(existingColumn);
-        incomingColumn.copyMappingMetadataFrom(existingColumn);
-        existingNameToColumnMap.remove(normalizedColumnName);
     }
 
     /*
@@ -718,24 +385,13 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
     }
 
     /*
-     * convenience method, used for Asynchronous as opposed to the Synchronous version by the Controller
-     */
-    @Async
-    @Transactional
-    public void remapColumnsAsync(final List<DataTableColumn> columns, final Project project) {
-        remapColumns(columns, project);
-    }
-
-    /*
      * A special feature of a @link Dataset is if it's associated with a @link Project, we can use data from a @link DataTable to associate additional data with
      * other resources in the project, e.g. a database of images. The mapping here is created using a field in the column that contains the filename of the file
      * to be mapped, and is associated with the filename associated with @InformationResourceFileVersion of any @link Resource in that @link Project.
      */
+    @Transactional
     public void remapColumns(List<DataTableColumn> columns, Project project) {
         remapColumnsWithoutIndexing(columns, project);
-        if (PersistableUtils.isNotNullOrTransient(project) && project != Project.NULL) {
-            searchIndexService.indexProject(project);
-        }
     }
 
     @Transactional
@@ -924,24 +580,6 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         }
         else {
             return true;
-        }
-    }
-
-    /*
-     * Each @link CodingSheet is mapped to one or many @link Dataset records. Because of this, when we re-map a @link CodingSheet to a @link Ontology, we need
-     * to retranslate each of the @link Dataset records
-     */
-    @Transactional
-    public void refreshAssociatedDataTables(CodingSheet codingSheet) {
-        // retranslate associated datatables, and recreate translated files
-        Set<DataTableColumn> associatedDataTableColumns = codingSheet.getAssociatedDataTableColumns();
-        if (CollectionUtils.isEmpty(associatedDataTableColumns)) {
-            return;
-        }
-
-        translate(associatedDataTableColumns, codingSheet);
-        for (DataTable dataTable : dataTableDao.findDataTablesUsingResource(codingSheet)) {
-            createTranslatedFile(dataTable.getDataset());
         }
     }
 

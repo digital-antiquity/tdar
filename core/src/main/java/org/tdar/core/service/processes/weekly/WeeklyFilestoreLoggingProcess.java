@@ -21,7 +21,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersionProxy;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FreemarkerService;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledProcess;
 import org.tdar.core.service.resource.InformationResourceFileService;

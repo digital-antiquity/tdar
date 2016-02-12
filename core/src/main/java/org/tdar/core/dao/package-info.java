@@ -539,7 +539,14 @@
                 query = "select p from Person p where lower(lastName) like lower(:lastName) and (lower(firstName) like lower(:firstName) or lower(firstName) like lower(:initial) or lower(firstName) like lower(:initial2) ) and status='ACTIVE' and p.id not in (select id from TdarUser)"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS,
-                query = "select rc.id from ResourceCollection rc inner join rc.authorizedUsers as au where au.dateExpires != null and au.dateExpires < now()")
+                query = "select rc.id from ResourceCollection rc inner join rc.authorizedUsers as au where au.dateExpires != null and au.dateExpires < now()"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.MAPPED_RESOURCES,
+                query = "from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col where :projectId = -1 or project.id=:projectId"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.COUNT_MAPPED_RESOURCES,
+                query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col")
+        
 })
 package org.tdar.core.dao;
 

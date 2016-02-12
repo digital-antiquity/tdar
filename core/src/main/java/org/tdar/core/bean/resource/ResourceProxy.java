@@ -33,9 +33,6 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Resolution;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +78,7 @@ public class ResourceProxy implements Serializable {
     private Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = new LinkedHashSet<>();
 
     @Column(name = "date_created")
-    @DateBridge(resolution = Resolution.DAY)
+//    @DateBridge(resolution = Resolution.DAY)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
 
@@ -102,7 +99,7 @@ public class ResourceProxy implements Serializable {
     private TdarUser updatedBy;
 
     @Column(name = "date_updated")
-    @DateBridge(resolution = Resolution.MILLISECOND)
+//    @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
@@ -129,7 +126,7 @@ public class ResourceProxy implements Serializable {
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @IndexedEmbedded(depth = 1)
+    //@IndexedEmbedded(depth = 1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 

@@ -6,12 +6,11 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.hibernate.search.annotations.Indexed;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "video")
 @XmlRootElement(name = "video")
 /**

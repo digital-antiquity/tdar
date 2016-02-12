@@ -19,7 +19,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 
 /**
  * Evaluates the first N rows of a single POI Sheet to determine the bounding indexes for the data and the headers.
@@ -42,9 +42,9 @@ public class SheetEvaluator {
     private int headerRowIndex = -1;
     private List<String> headerColumnNames;
     // 0-based row index specifying where the actual data begins, after the header row
-    private int dataRowStartIndex = ExcelService.FIRST_ROW;
+    private int dataRowStartIndex = ExcelWorkbookWriter.FIRST_ROW;
     // 0-based column index specifying where the actual data begins
-    private int dataColumnStartIndex = ExcelService.FIRST_COLUMN;
+    private int dataColumnStartIndex = ExcelWorkbookWriter.FIRST_COLUMN;
     // 0-based column index specifying where the actual data ends
     private int dataColumnEndIndex = -1;
     // 0-based column index for the last cell column reported by POI / Excel
@@ -67,8 +67,8 @@ public class SheetEvaluator {
         headerRowIndex = -1;
         headerColumnNames = null;
         maxCellCount = -1;
-        dataRowStartIndex = ExcelService.FIRST_ROW;
-        dataColumnStartIndex = ExcelService.FIRST_COLUMN;
+        dataRowStartIndex = ExcelWorkbookWriter.FIRST_ROW;
+        dataColumnStartIndex = ExcelWorkbookWriter.FIRST_COLUMN;
         dataColumnEndIndex = -1;
     }
 
@@ -89,7 +89,7 @@ public class SheetEvaluator {
         formulaEvaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
         List<DataRow> dataRows = new ArrayList<>();
 
-        for (int rowIndex = ExcelService.FIRST_ROW; rowIndex < endRow; rowIndex++) {
+        for (int rowIndex = ExcelWorkbookWriter.FIRST_ROW; rowIndex < endRow; rowIndex++) {
             Row row = sheet.getRow(rowIndex);
             if (row == null) {
                 continue;

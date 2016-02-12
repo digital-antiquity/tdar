@@ -18,25 +18,10 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
-import org.tdar.core.bean.HasLabel;
-import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.json.JsonIntegrationFilter;
-import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
@@ -46,46 +31,15 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @version $Rev$
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "dataset")
 @XmlRootElement(name = "dataset")
 public class Dataset extends InformationResource {
 
     private static final long serialVersionUID = -5796154884019127904L;
 
-    public enum IntegratableOptions implements HasLabel, Localizable {
-        YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
-
-        private String label;
-
-        private IntegratableOptions(String label) {
-            this.label = label;
-        }
-
-        @Override
-        public String getLabel() {
-            return label;
-        }
-
-        @Override
-        public String getLocaleKey() {
-            return MessageHelper.formatLocalizableKey(this);
-        }
-
-        public Boolean getBooleanValue() {
-            switch (this) {
-                case NO:
-                    return Boolean.FALSE;
-
-                default:
-                    return Boolean.TRUE;
-            }
-        }
-
-    }
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataset", orphanRemoval = true)
-    @IndexedEmbedded
+    //@IndexedEmbedded
     private Set<DataTable> dataTables = new LinkedHashSet<DataTable>();
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
@@ -110,19 +64,6 @@ public class Dataset extends InformationResource {
         this.dataTables = dataTables;
     }
 
-    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.INTEGRATABLE, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-    // @Transient
-    @JsonView({ JsonIntegrationFilter.class, JsonIntegrationSearchResultFilter.class })
-    public IntegratableOptions getIntegratableOptions() {
-        for (DataTable dt : getDataTables()) {
-            for (DataTableColumn dtc : dt.getDataTableColumns()) {
-                if (dtc.getMappedOntology() != null) {
-                    return IntegratableOptions.YES;
-                }
-            }
-        }
-        return IntegratableOptions.NO;
-    }
 
     /**
      * @param string

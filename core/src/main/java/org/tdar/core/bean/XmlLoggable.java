@@ -10,8 +10,4 @@ public interface XmlLoggable extends Persistable {
     @Override
     Long getId();
 
-    boolean isReadyToStore();
-
-    void setReadyToStore(boolean ready);
-
 }

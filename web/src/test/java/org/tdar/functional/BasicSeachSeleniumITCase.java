@@ -7,8 +7,8 @@ import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
-import org.tdar.utils.TestConfiguration;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.utils.TestConfiguration;
 
 /**
  * Created by jimdevos on 3/12/14.

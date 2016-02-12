@@ -13,13 +13,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
 
 //import com.sun.xml.txw2.annotation.XmlElement;
 
@@ -68,11 +63,11 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @XmlTransient
     public abstract T getParent();
 
-    @Fields({ @Field(name = "label"),
-            @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    //@Fields({ //@Field(name = "label"),
+            //@Field(name = "labelKeyword", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     @Transient
     @ElementCollection
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
         if (getParent() == null) {

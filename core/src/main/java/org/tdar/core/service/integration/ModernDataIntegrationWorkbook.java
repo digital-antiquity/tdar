@@ -18,13 +18,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.dbutils.ResultSetIterator;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -35,7 +35,7 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.filestore.personal.PersonalFileType;
 import org.tdar.utils.PersistableUtils;
@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class ModernDataIntegrationWorkbook implements Serializable {
 
     private static final long serialVersionUID = -1913436731447584442L;
-    private transient ExcelService excelService;
+    private ExcelWorkbookWriter workbookWriter = new ExcelWorkbookWriter();
     private Workbook workbook;
     private IntegrationContext context;
     private StringBuilder description = new StringBuilder();
@@ -63,8 +63,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
     private Map<List<OntologyNode>, HashMap<Long, IntContainer>> pivot;
     private ModernIntegrationDataResult result;
 
-    public ModernDataIntegrationWorkbook(TextProvider provider, ExcelService excelService, ModernIntegrationDataResult result) {
-        this.setExcelService(excelService);
+    public ModernDataIntegrationWorkbook(TextProvider provider, ModernIntegrationDataResult result) {
         this.result = result;
         result.setWorkbook(this);
         this.context = result.getIntegrationContext();
@@ -109,16 +108,16 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                 continue;
             }
             Sheet ontologySheet = workbook.createSheet(name);
-            excelService.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
+            workbookWriter.addHeaderRow(ontologySheet, 0, 0, Arrays.asList(ontology.getTitle()));
             addMergedRegion(0, 0, 0, 8, ontologySheet);
             rowIndex++;
             String termText = provider.getText("dataIntegrationWorkbook.ontology_term");
             String orderText = provider.getText("dataIntegrationWorkbook.ontology_order");
-            excelService.addHeaderRow(ontologySheet, rowIndex, 0, Arrays.asList(orderText, termText));
+            workbookWriter.addHeaderRow(ontologySheet, rowIndex, 0, Arrays.asList(orderText, termText));
             rowIndex++;
             for (OntologyNode node : ontology.getSortedOntologyNodesByImportOrder()) {
                 String order = Long.toString(node.getImportOrder());
-                excelService.addDataRow(ontologySheet, rowIndex, 0, Arrays.asList(order, node.getDisplayName()));
+                workbookWriter.addDataRow(ontologySheet, rowIndex, 0, Arrays.asList(order, node.getDisplayName()));
                 rowIndex++;
             }
         }
@@ -156,7 +155,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         sheetProxy.setData(ird);
         sheetProxy.setNoteRow(provider.getText("dataIntegrationWorkbook.data_worksheet_note"));
         result.setPivotData(ird.getPivot());
-        getExcelService().addSheets(sheetProxy);
+        workbookWriter.addSheets(sheetProxy);
         List<Object[]> previewData = ird.getPreviewData();
         logger.debug("previewData: {}", previewData);
         Collections.sort(previewData, new Comparator<Object[]>() {
@@ -181,16 +180,16 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      * @param tableList
      */
     private void createDescriptionSheet() {
-        CellStyle summaryStyle = excelService.createSummaryStyle(getWorkbook());
+        CellStyle summaryStyle = workbookWriter.createSummaryStyle(getWorkbook());
         Sheet summarySheet = workbook.createSheet(provider.getText("dataIntegrationWorkbook.description_worksheet"));
 
         // initial header ... Integration run on ... by ...
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), context.getTitle(), new SimpleDateFormat().format(new Date())));
         int currentRow = 0;
-        excelService.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(title));
+        workbookWriter.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(title));
         currentRow++;
-        excelService.addDataRow(summarySheet, currentRow, 0, Arrays.asList(context.getDescription()));
+        workbookWriter.addDataRow(summarySheet, currentRow, 0, Arrays.asList(context.getDescription()));
         currentRow++;
 
         // first and second sub-header:
@@ -215,11 +214,11 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     provider.getText("dataIntegrationWorkbook.col_type"), provider.getText("dataIntegrationWorkbook.col_ontology"),
                     provider.getText("dataIntegrationWorkbook.col_coding_sheet")));
         }
-        excelService.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(ArrayUtils.subarray(datasetNameheader, 0, max + increment)));
+        workbookWriter.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(ArrayUtils.subarray(datasetNameheader, 0, max + increment)));
         currentRow++;
-        excelService.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(ArrayUtils.subarray(dataTableNameheader, 0, max + increment)));
+        workbookWriter.addHeaderRow(summarySheet, currentRow, 0, Arrays.asList(ArrayUtils.subarray(dataTableNameheader, 0, max + increment)));
         currentRow++;
-        excelService.addRow(summarySheet, currentRow, 0, header, summaryStyle);
+        workbookWriter.addRow(summarySheet, currentRow, 0, header, summaryStyle);
         currentRow++;
         // for each integration column, print out all of the column type info, and then add more if it's a true integration column
         for (IntegrationColumn col : context.getIntegrationColumns()) {
@@ -251,18 +250,18 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     size = size + 5;
                 }
             }
-            excelService.addDataRow(summarySheet, currentRow, 0, Arrays.asList(row));
+            workbookWriter.addDataRow(summarySheet, currentRow, 0, Arrays.asList(row));
             // if real integration column, show the mapping info
 
             if (col.isIntegrationColumn()) {
                 List<String> row2 = new ArrayList<>(Arrays.asList(row));
                 row2.set(0, provider.getText("dataIntegrationWorkbook.col_mapped", Arrays.asList(row[0])));
-                excelService.addDataRow(summarySheet, currentRow++, 0, row2);
+                workbookWriter.addDataRow(summarySheet, currentRow++, 0, row2);
             }
             // show selected ontology nodes
-            excelService.addDataRow(summarySheet, currentRow++, 2, Arrays.asList(provider.getText("dataIntegrationWorkbook.selected_nodes")));
+            workbookWriter.addDataRow(summarySheet, currentRow++, 2, Arrays.asList(provider.getText("dataIntegrationWorkbook.selected_nodes")));
             for (OntologyNode node : col.getFilteredOntologyNodes()) {
-                excelService.addDataRow(summarySheet, currentRow++, 3, Arrays.asList(node.getDisplayName()));
+                workbookWriter.addDataRow(summarySheet, currentRow++, 3, Arrays.asList(node.getDisplayName()));
             }
         }
 
@@ -281,19 +280,19 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         logger.debug("{} - {}", provider, person);
         String title = provider.getText("dataIntegrationWorkbook.title",
                 Arrays.asList(person.getProperName(), context.getTitle(), new SimpleDateFormat().format(new Date())));
-        excelService.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
+        workbookWriter.addHeaderRow(pivotSheet, 0, 0, Arrays.asList(title));
         addMergedRegion(0, 0, 0, 8, pivotSheet);
         if (context.hasCountColumn()) {
-            excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
+            workbookWriter.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description")));
         } else {
-            excelService.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description_count_warning")));
+            workbookWriter.addHeaderRow(pivotSheet, 1, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_description_count_warning")));
         }
         addMergedRegion(1, 1, 0, 8, pivotSheet);
 
         rowIndex = 4;
         List<String> rowHeaders = result.getPivotColumnLabels();
 
-        excelService.addHeaderRow(pivotSheet, ExcelService.FIRST_ROW + 3, ExcelService.FIRST_COLUMN, rowHeaders);
+        workbookWriter.addHeaderRow(pivotSheet, ExcelWorkbookWriter.FIRST_ROW + 3, ExcelWorkbookWriter.FIRST_COLUMN, rowHeaders);
 
         for (List<OntologyNode> key : pivot.keySet()) {
             logger.trace("key: {}", key);
@@ -314,9 +313,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
                     rowData.add(Integer.toString(integer.getVal()));
                 }
             }
-            excelService.addDataRow(pivotSheet, rowIndex++, 0, rowData);
+            workbookWriter.addDataRow(pivotSheet, rowIndex++, 0, rowData);
         }
-        excelService.addDataRow(pivotSheet, rowIndex + 2, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_note")));
+        workbookWriter.addDataRow(pivotSheet, rowIndex + 2, 0, Arrays.asList(provider.getText("dataIntegrationWorkbook.pivot_note")));
         addMergedRegion(rowIndex + 2, rowIndex + 3, 0, 8, pivotSheet);
     }
 
@@ -331,14 +330,6 @@ public class ModernDataIntegrationWorkbook implements Serializable {
 
     public static String formatTableName(DataTable table) {
         return String.format("%s - %s", table.getDataset().getTitle(), table.getDisplayName());
-    }
-
-    public ExcelService getExcelService() {
-        return excelService;
-    }
-
-    public void setExcelService(ExcelService excelService) {
-        this.excelService = excelService;
     }
 
     public Workbook getWorkbook() {

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -25,30 +26,25 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.FacetValue;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionController extends AbstractPersistableController<ResourceCollection> implements SearchResultHandler<Resource>, DataTableResourceDisplay {
+public class CollectionController extends AbstractPersistableController<ResourceCollection> implements DataTableResourceDisplay {
 
     /**
-     * Threshold that defines a "big" collection (based on imperical evidence by highly-trained tDAR staff). This number
+     * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
      * refers to the combined count of authorized users +the count of resources associated with a collection. Big
      * collections may adversely affect save/load times as well as cause rendering problems on the client, and so the
      * system may choose to mitigate these effects (somehow)
@@ -64,27 +60,19 @@ public class CollectionController extends AbstractPersistableController<Resource
     @Autowired
     private transient ResourceService resourceService;
     @Autowired
+    private transient GenericService genericService;
+    @Autowired
     private transient AuthorizationService authorizationService;
-
+    
     private static final long serialVersionUID = 5710621983240752457L;
-    // private List<Resource> resources = new ArrayList<>();
     private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private Long parentId;
     private List<Resource> fullUserProjects;
     private List<ResourceCollection> collections = new LinkedList<>();
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
 
     private Long viewCount = 0L;
-    private int startRecord = DEFAULT_START;
-    private int recordsPerPage = getDefaultRecordsPerPage();
-    private int totalRecords;
-    private List<Resource> results;
-    private SortOption secondarySortField;
-    private SortOption sortField;
-    private String mode = "CollectionBrowse";
-    private PaginationHelper paginationHelper;
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
@@ -137,17 +125,23 @@ public class CollectionController extends AbstractPersistableController<Resource
             return INPUT;
         }
 
-        List<Resource> resourcesToRemove = resourceService.findAll(Resource.class, toRemove);
-        List<Resource> resourcesToAdd = resourceService.findAll(Resource.class, toAdd);
+        List<Resource> resourcesToRemove = genericService.findAll(Resource.class, toRemove);
+        List<Resource> resourcesToAdd = genericService.findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
 
-        List<Resource> publicResourcesToRemove = resourceService.findAll(Resource.class, publicToRemove);
-        List<Resource> publicResourcesToAdd = resourceService.findAll(Resource.class, publicToAdd);
+        List<Resource> publicResourcesToRemove = genericService.findAll(Resource.class, publicToRemove);
+        List<Resource> publicResourcesToAdd = genericService.findAll(Resource.class, publicToAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
                 resourcesToRemove, publicResourcesToAdd, publicResourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
+//        try {
+//			searchIndexService.indexCollection(resourcesToRemove);
+//			searchIndexService.indexCollection(resourcesToAdd);
+//		} catch (SolrServerException | IOException e) {
+//			getLogger().error("errorINdexing:{}", e);
+//		}
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -300,51 +294,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         return resourceService.getAllResourceTypes();
     }
 
-    @Override
-    public SortOption getSortField() {
-        return this.sortField;
-    }
-
-    @Override
-    public SortOption getSecondarySortField() {
-        return this.secondarySortField;
-    }
-
-    @Override
-    public void setTotalRecords(int resultSize) {
-        this.totalRecords = resultSize;
-    }
-
-    @Override
-    public int getStartRecord() {
-        return this.startRecord;
-    }
-
-    @Override
-    public int getRecordsPerPage() {
-        return this.recordsPerPage;
-    }
-
-    @Override
-    public boolean isDebug() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
-    public void setStartRecord(int startRecord) {
-        this.startRecord = startRecord;
-    }
-
-    @Override
-    public void setRecordsPerPage(int recordsPerPage) {
-        this.recordsPerPage = recordsPerPage;
-    }
-
     public void setCollections(List<ResourceCollection> findAllChildCollections) {
         getLogger().info("child collections: {}", findAllChildCollections);
         this.collections = findAllChildCollections;
@@ -354,98 +303,9 @@ public class CollectionController extends AbstractPersistableController<Resource
         return this.collections;
     }
 
-    @Override
-    public int getTotalRecords() {
-        return totalRecords;
-    }
-
-    @Override
-    public void setResults(List<Resource> toReturn) {
-        getLogger().trace("setResults: {}", toReturn);
-        this.results = toReturn;
-    }
-
-    @Override
-    public List<Resource> getResults() {
-        return results;
-    }
-
-    public void setSecondarySortField(SortOption secondarySortField) {
-        this.secondarySortField = secondarySortField;
-    }
-
-    @Override
-    public void setSortField(SortOption sortField) {
-        this.sortField = sortField;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.search.query.SearchResultHandler#setMode(java.lang.String)
-     */
-    @Override
-    public void setMode(String mode) {
-        this.mode = mode;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.struts.search.query.SearchResultHandler#getMode()
-     */
-    @Override
-    public String getMode() {
-        return mode;
-    }
-
-    @Override
-    public int getNextPageStartRecord() {
-        return startRecord + recordsPerPage;
-    }
-
-    @Override
-    public int getPrevPageStartRecord() {
-        return startRecord - recordsPerPage;
-    }
-
-    @Override
-    public String getSearchTitle() {
-        return String.format("Resources in the %s Collection", getPersistable().getTitle());
-    }
-
-    @Override
-    public String getSearchDescription() {
-        return getSearchTitle();
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        return group;
-    }
-
-    public PaginationHelper getPaginationHelper() {
-        if (paginationHelper == null) {
-            paginationHelper = PaginationHelper.withSearchResults(this);
-        }
-        return paginationHelper;
-    }
-
     public String getParentCollectionName() {
         return parentCollectionName;
 
-    }
-
-    public ArrayList<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
-    }
-
-    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
-        this.resourceTypeFacets = resourceTypeFacets;
     }
 
     public ArrayList<ResourceType> getSelectedResourceTypes() {
@@ -456,12 +316,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.selectedResourceTypes = selectedResourceTypes;
     }
 
-    @Override
-    public ProjectionModel getProjectionModel() {
-        return ProjectionModel.RESOURCE_PROXY;
-    }
-
-    
     private void setupOwnerField() {
         if (PersistableUtils.isNotNullOrTransient(getOwner()) && StringUtils.isNotBlank(getOwner().getProperName())) {
             if (getOwner().getFirstName() != null && getOwner().getLastName() != null)
@@ -523,11 +377,6 @@ public class CollectionController extends AbstractPersistableController<Resource
         this.file = file;
     }
 
-    @Override
-    public int getDefaultRecordsPerPage() {
-        return 100;
-    }
-
     public String getFileFileName() {
         return fileFileName;
     }
@@ -575,4 +424,5 @@ public class CollectionController extends AbstractPersistableController<Resource
     public void setPublicToRemove(List<Long> publicToRemove) {
         this.publicToRemove = publicToRemove;
     }
+
 }
