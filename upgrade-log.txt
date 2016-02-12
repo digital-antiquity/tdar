@@ -55,3 +55,11 @@
 	sudo npm install -g bower
 	sudo npm install -g karma karma-cli
 - update reference to the theme-dir or comment it out
+
+—————————————————
+::NEOLITHIC (.5):
+—————————————————
+- setup SOLR
+	- define  -Dsolr.data.dir=/home/tdar/solr-indexes/ in /etc/defaults/tomcat7
+	- if standalone version of SOLR include jts-topo-suite (jts-1.13.jar or later, should already be in tDAR dependency tree)
+- 
