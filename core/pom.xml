@@ -1206,7 +1206,11 @@
                         </executions>
                         <!-- We only care about class collisions, not resource files.  What could possibly go wrong?? -->
                         <configuration>
-                            <ignoredResourcePatterns>.*</ignoredResourcePatterns>
+                            <checkCompileClasspath>false</checkCompileClasspath>
+                            <checkRuntimeClasspath>true</checkRuntimeClasspath>
+                            <checkTestClasspath>false</checkTestClasspath>
+     
+                            <!-- <ignoredResourcePatterns>.*</ignoredResourcePatterns> -->
                         </configuration>
 
                     </plugin>
