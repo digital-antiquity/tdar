@@ -1,0 +1,1786 @@
+Vertebrata
+	Mammalia or Aves
+	Mammalia
+		Mammalia very small (Mammalia <0.5 kg eg bats & mice & woodrats)
+		Mammalia small (Mammalia 0.5 to 4 kg eg squirrels & rabbits)
+		Mammalia small to medium (Mammalia 0.5 to 60 kg)
+		Mammalia medium (Mammalia 4 to 60 kg eg opossums & raccoons & foxes & wolves)
+		Mammalia medium to large (Mammalia >4 kg)
+		Mammalia large (Mammalia >60 kg eg deer & elk & moose & bear & bison)
+		Artiodactyla
+			Cervidae (Deer)
+				Large Cervid
+				Alces
+					Alces americanus (Cervus americanus; Moose)
+				Cervus
+					Cervus elaphus (Cervus canadensis; American Elk & Wapiti)
+				Odocoileus
+					Odocoileus hemionus (Mule Deer)
+					Odocoileus virginianus (White-tailed Deer)
+				Rangifer
+					Rangifer tarandus (Caribou & Reindeer)
+			Bovidae
+				Bison or Bos (Bison or Cow)
+					Bison
+						Bison antiquus antiquus (Bison antiquus)
+						Bison antiquus occidentalis (Bison occidentalis)
+						Bison bison (American Bison)
+					Bos
+						Bos taurus (Domestic Cow)
+				Ovis or Capra (Sheep or Goat)
+					Capra (Goat)
+					Ovis (Sheep)
+			Suidae
+				Sus (Pig)
+		Carnivora
+			Carnivora small
+			Carnivora large
+			Carnivora medium
+			Canidae
+				Canis
+					Canis lupus (Gray Wolf)
+					Canis lupus familiaris (Canis familiaris; Domestic Dog)
+					Canis lupus rufus (Canis rufus; Red Wolf)
+					Canis latrans (Coyote)
+				Urocyon or Vulpes (Gray Fox or Red Fox)
+					Urocyon
+						Urocyon cinereoargenteus (Gray Fox)
+					Vulpes
+						Vulpes vulpes (Red Fox)
+			Felidae
+				Lynx
+					Lynx canadensis (Canadian Lynx & Canada Lynx)
+					Lynx rufus (Bobcat)
+				Felis
+					Felis catus (Domestic Cat)
+				Puma
+					Puma concolor (Felis concolor; Cougar & Mountain Lion & Panther & Puma)
+			Mephitidae
+				Mephitis
+					Mephitis mephitis (Striped Skunk)
+				Spilogale
+					Spilogale putorius (Eastern Spotted Skunk)
+			Mustelidae
+				Gulo
+					Gulo gulo (Wolverine)
+				Lontra
+					Lontra canadensis (Lutra canadensis; River Otter)
+				Martes
+					Martes americana (American Marten)
+					Martes pennanti (Fisher)
+				Mustela
+					Mustela erminea (Ermine & Short-tailed Weasel & Stoat)
+					Mustela frenata (Long-tailed Weasel)
+					Mustela nivalus (Least Weasel)
+				Neovison
+					Neovison vison (Mustela vison; Mink)
+			Procyonidae
+				Bassariscus 
+					Bassariscus astutus ( Ringtail)
+					Procyon lotor (Raccoon)
+			Ursidae
+				Ursus
+					Ursus americanus (Black Bear)
+					Ursus arctos (Brown Bear & Grizzly Bear)
+		Chiroptera (bats)
+			Molossidae
+				Tadarida
+					Tadarida brasiliensis (Brazilian free-tailed bat & Mexican Free-tailed bat)
+					Tadarida brasiliensis cynocephala (Brazilian free-tailed bat A & Mexican Free-tailed bat A)
+					Tadarida brasiliensis mexicana (Mexican Free-tailed bat & Brazilian free-tailed bat )
+			Vespertilionidae
+				Eptesicus
+					Eptesicus fuscus (Big Brown Bat)
+				Corynorhinus (Plecotus)
+					Corynorhinus rafinesquii (Plecotus rafinesquii; Rafinesque's Big-eared Bat)
+					Corynorhinus townsendii (Plecotus townsendii; Townsend's Big-eared Bat)
+				Lasionycteris
+					Lasionycteris noctivagans (Silver-haired Bat)
+				Lasiurus
+					Lasiurus borealis (Red Bat)
+					Lasiurus cinereus (Hoary Bat)
+					Lasiurus intermedius (Northern Yellow Bat)
+					Lasiurus seminolus (Seminole Bat)
+				Myotis (Mouse-eared bats)
+					Myotis austroriparius (Southeastern Myotis)
+					Myotis grisescens (Gray Myotis & Gray Bat))
+					Myotis leibii (Eastern Small-footed Myotis)
+					Myotis lucifugus (Little Brown Bat)
+					Myotis septentrionalis (Myotis keenii; Northern long-eared bat & Northern Myotis)
+					Myotis sodalis (Indiana Myotis; Indiana Bat)
+				Nycticeius
+					Nycticeius humeralis (Evening Bat)
+				Perimyotis (Pipistrellus)
+					Perimyotis subflavus (Pipistrellus subflavus; Eastern Pipistrelle & Tri-colored Bat)
+		Cingulata 
+			Dasypodidae 
+				Dasypus
+					Dasypus novemcinctus (Nine-banded Armadillo)
+		Didelphimorphia
+			Didelphidae
+				Didelphis
+					Didelphis virginiana (Didelphis virginianus; Opossum)
+		Lagomorpha
+			Leporidae (Rabbits & Hares)
+				Lepus
+					Lepus americanus (Snowshoe Hare)
+				Sylvilagus
+					Sylvilagus aquaticus (Swamp Rabbit)
+					Sylvilagus floridanus (Eastern Cottontail)
+					Sylvilagus palustris (Marsh Rabbit)
+					Sylvilagus transitionalis (New England Cottontail)
+		Perissodactyla
+			Equidae
+				Equus (Horse)
+		Rodentia
+			Castoridae (Beavers)
+				Castor
+					Castor canadensis (Beaver)
+			Dipodidae (Zapodidae; Jumping Mice) 
+				Napaeozapus
+					Napaeozapus insignis (Zapus insignis; Woodland Jumping Mouse)
+				Zapus
+					Zapus hudsonius (Meadow Jumping Mouse)
+			Erethizontidae
+				Erethizon
+					Erethizon dorsatus (Erethizon dorsatum; North American Porcupine)
+			Geomyidae
+				Geomys 
+					Geomys breviceps (Baird's Pocket Gopher)
+					Geomys bursarius (Plains Pocket Gopher)
+					Geomys pinetis (Southeastern Pocket Gopher; Cumberland Island Pocket Gopher)
+			Muridae (Cricetidae; Mice & Rats & Voles)
+				Clethrionomys
+					Clethrionomys gapperi (Myodes gapperi; Southern Red-backed Vole & Gapper’s Red-backed Mouse)
+				Microtus (Meadow Mice & Meadow Voles)
+					Microtus chrotorrhinus (Rock Vole; Southern Rock Vole)
+					Microtus ochrogaster (Microtus ludovicianus; Prairie Vole)
+					Microtus pennsylvanicus (Meadow Vole)
+					Microtus pinetorum (Pitymys pinetorum;  Pine Mouse)
+				Mus  
+					Mus musculus (House mouse)
+				Neofiber 
+					Neofiber alleni (Round-tailed muskrat)
+				Neotoma
+					Neotoma Floridana (Eastern woodrat)
+					Neotoma magister (Allegheny woodrat & Appalachian woodrat)
+				Ondatra
+					Ondatra zibethicus (Muskrat)
+				Onychomys
+					Onychomys leucogaster (Northern Grasshopper Mouse)
+				Oryzomys
+					Oryzomys palustris (Marsh Rice Rat) 
+				Peromyscus (Deer Mice & White-footed Mice)
+					Peromyscus gossypinus (Cotton Deer-mouse & Cotton Mouse & Key Largo Cotton Mouse)
+					Peromyscus leucopus (White-footed Mouse)
+					Peromyscus maniculatus (Deer Mouse & North American Deermouse)
+				Phenacomys
+					Phenacomys ungava (Eastern Heather Vole)
+				Podomys
+					Podomys floridanus (Florida Deermouse & Florida mouse)
+				Rattus
+					Rattus norvegicus (Norway Rat)
+					Rattus rattus (Black Rat)
+				Reithrodontomys  (Harvest Mice)
+					Reithrodontomys humulis (Eastern Harvest Mouse)
+					Reithrodontomys megalotis (Western Harvest Mouse)
+				Sigmodon 
+					Sigmodon hispidus (Hispid Cotton Rat)
+				Synaptomys
+					Synaptomys borealis (Northern Bog Lemming)
+					Synaptomys cooperi (Southern Bog Lemming)
+			Sciuridae (Woodchucks & Squirrels)
+				Marmota
+					Marmota monax (Woodchuck)
+				Glaucomys
+					Glaucomys volans (Southern Flying Squirrel)
+					Glaucomys sabrinus (Northern Flying Squirrel)
+				Ictidomys (Lined Ground Squirrels)
+					Ictidomys tridecemlineatus (Spermophilus tridecemlineatus; Thirteen-lined Ground Squirrel)
+				Poliocitellus
+					Poliocitellus  franklinii (Citellus franklinii & Spermophilus franklinii; Franklin's Ground Squirrel)
+				Sciurus
+					Sciurus carolinensis (Eastern Gray Squirrel)
+					Sciurus niger (Eastern Fox Squirrel)
+				Tamias (Chipmunks)
+					Tamias striatus (Eastern Chipmunk)
+				Tamiasciurus
+					Tamiasciurus hudsonicus (Red Squirrel)
+		Soricomorpha (Insectivora)
+			Soricidae (Shrews)
+				Blarina (Short-tailed shrews)
+					Blarina brevicauda (Short-tailed shrew)
+					Blarina carolinensis (Southern Short-tailed Shrew)
+					Blarina hylophaga (Elliot's Short-tailed Shrew)
+					Blarina peninsulae  (Everglades Short-tailed Shrew)
+				Cryptotis
+					Cryptotis parva (Least Shrew)
+				Microsorex
+					Microsorex hoyi (Pygmy Shrew)
+				Sorex (Long-tailed shrews)
+					Sorex cinereus (Masked Shrew)
+					Sorex palustris (Water Shrew)
+					Sorex fumeus (Smoky Shrew)
+			Talpidae (moles)
+				Condylura
+					Condylura cristata (Star-nosed Mole)
+				Parascalops
+					Parascalops breweri (Hairy-tailed Mole)
+				Scalopus
+					Scalopus aquaticus (Eastern Mole)
+	Aves
+		Aves small (Aves Passeriform size)
+		Aves small or medium
+		Aves medium (Aves duck size)
+		Aves medium or large
+		Aves  large (Aves turkey or eagle size)
+		Accipitriformes (Hawks) 
+			Accipitridae (Eagles & Hawks & Kites)
+				Accipiter (Bird hawks)
+					Accipiter cooperii (Cooper’s Hawk)
+					Accipiter gentilis (Goshawk)
+					Accipiter striatus (Sharp-shinned Hawk)
+				Aquila (Golden eagles)
+					Aquila chrysaetos (Golden Eagle)
+				Buteo (Buteonine hawks)
+					Buteo jamaicensis (Red-tailed Hawk)
+					Buteo lagopus (Rough-legged Hawk; Roughleg) 
+					Buteo lineatus (Red-shouldered Hawk)
+					Buteo platypterus (Broad-winged Hawk) 
+					Buteo regalis (Ferruginous Hawk)
+					Buteo swainsoni (Swainson's Hawk)
+				Circus (Harriers)
+					Circus cyaneus (Northern Harrier)
+				Elanoides (Swallow-tailed Kites)
+					Elanoides forficatus (American Swallow-tailed Kite & Swallow-tailed Kite)
+					Elanus leucurus (White-tailed Kite)
+				Haliaeetus
+					Haliaeetus leucocephalus (Bald Eagle)
+				Ictinia
+					Ictinia mississippiensis (Mississippi Kite)
+			Cathartidae (American Vultures)
+				Cathartes (American Vultures & New World Vultures)
+					Cathartes aura (Turkey Vulture)
+				Coragyps
+					Coragyps atratus (Black Vulture)
+			Pandionidae (Ospreys)
+				Pandion
+					Pandion haliaetus (Osprey)
+		Anseriformes (Ducks & Geese & Swans & Waterfowl Order)
+			Anatidae (Ducks & Geese & Swans Subfamily)
+				Anatinae (Surface feeding Duck subfamily)
+				Anatinae small
+				Anatinae medium
+				Anatinae large
+					Aix
+						Aix sponsa (Wood Duck)
+					Anas (Dabbling Ducks)
+						Anas acuta (Pintail & Northern Pintail)
+						Anas americana (Mareca americana; Baldpate & American Wigeon)
+						Anas clypeata (Shoveler & Northern Shoveler)
+						Anas crecca (Anas carolinensis; Green-winged Teal)
+						Anas crecca or discors (Green-winged or Blue-winged teal)
+						Anas discors (Blue-winged Teal)
+						Anas platyrhynchos (Mallard)
+						Anas rubripes (Black Duck)
+						Anas platyrhynchos or rubripes (Mallard or Black Duck)
+						Anas strepera (Gadwall)
+					Aythya (Diving Ducks)
+						Aythya affinis (Lesser Scaup)
+						Aythya americana (Redhead)
+						Aythya collaris (Ring-necked Duck)
+						Aythya marila (Great Scaup)
+						Aythya valisneria (Canvasback)
+					Bucephala (Glaucionetta; Goldeneyes)
+						Bucephala albeola (Buffle-head)
+						Bucephala clangula (Common Goldeneye)
+					Clangula (Oldsquaws)
+						Clangula hyemalis (Oldsquaw; Long-tailed Duck)
+					Histrionicus (Harlequin Ducks)
+						Histrionicus histrionicus (Harlequin duck)
+					Lophodytes (Hooded Mergansers)
+						Lophodytes cucullatus (Mergus cucullatus; Hooded Merganser)
+					Melanitta (Scoters)
+						Melanitta fusca (White-winged Scoter)
+						Melanitta nigra (Melanitta Americana; Black scoter)
+						Melanitta perspicillata (Surf scoter)
+					Mergus (Greater Mergansers)
+						Mergus merganser (Common Merganser)
+						Mergus serrator (Red-breasted Merganser)
+					Oxyura (Erismatura; Stiff-tailed Ducks)
+						Oxyura jamaicensis (Erismatura jamaicensis; Ruddy Duck)
+					Somateria (Greater Eiders & Typical Eiders)
+						Somateria mollissima (Anas mollissima; Common Eider) 
+						Somateria spectabilis (Anas spectabilis; King Eider)
+				Anserinae (Geese subfamily)
+					Branta
+						Branta canadensis (Canada Goose)
+					Chen (Snow Geese)
+						Chen caerulescens (Anser caerulescens & Anser hypeboreus & Chen hyperborean; Snow Goose) 
+					Cygnus(Swans)
+						Cygnus buccinator (Olor buccinator; Trumpeter Swan)
+						Cygnus columbianus (Tundra Swan)
+		Apodiformes (Swifts & Hummingbirds)
+			Apodidae
+				Chaetura pelagica (Chimney Swift)
+			Trochilidae
+				Archilochus colubris (Ruby-throated Hummingbird)
+				Selasphorus rufus (Rufous Hummingbird)
+		Caprimulgiformes (Goatsuckers & Nightjars & Nighhawks)
+			Caprimulgidae
+				Caprimulgus
+					Caprimulgus carolinensis (Chuck-will's-widow)
+					Caprimulgus vociferus (Eastern Whip-poor-will)
+			Chordeiles (Chordeiles) (Nighthawks)
+				Chordeiles minor (Common Nighthawk) 
+		Charadriiformes (Shore Birds & Gulls &  Alcids & Plovers & Oystercatchers)
+			Charadriidae
+				Charadrius
+					Charadrius melodus (Piping Plover)
+					Charadrius semipalmatus (Semipalmated Plover)
+					Charadrius vociferus (Killdeer)
+				Pluvialis
+					Pluvialis dominica (Lesser Golden-Plover & American Golden-Plover)
+					Pluvialis squatarola (Black-bellied Plover)
+			Laridae (Sterninae)
+				Chlidonias
+					Chlidonias niger (Black Tern)
+				Chroicocephalus
+					Chroicocephalus philadelphia (Larus philadelphia; Bonaparte's Gull)
+					Chroicocephalus ridibundus (Common Black-headed Gull & Black-headed Gull)
+				Hydrocoloeus
+					Hydrocoloeus minutus (Little Gull)
+				Hydroprogne 
+					Hydroprogne caspia (Sterna caspia; Caspian Tern)
+				Larus
+					Larus argentatus (Herring Gull)
+					Larus californicus (California Gull)
+					Larus canus (Mew Gull)
+					Larus crassirostris (Black-tailed Gull)
+					Larus delawarensis (Ring-billed Gull)
+					Larus fuscus (Lesser Black-backed Gull)
+					Larus glaucescens (Glaucous-winged Gull)
+					Larus glaucoides (Iceland Gull)
+					Larus hyperboreus (Glaucous Gull)
+					Larus marinus (Great Black-backed Gull)
+					Larus schistisagus (Slaty-backed Gull)
+					Larus thayeri (Thayer's Gull)
+				Leucophaeus
+					Leucophaeus atricilla (Laughing Gull)
+					Leucophaeus pipixcan (Franklin's Gull)
+				Rissa
+					Rissa tridactyla (Black-legged Kittiwake)
+				Sterna 
+					Sterna forsteri (Forster's Tern)
+					Sterna hirundo (Common Tern)
+					Sterna paradisaea (Arctic Tern)
+				Sternula
+					Sternula antillarum (Least Tern)
+				Xema
+					Xema sabini (Sabine's Gull)
+			Recurvirostridae  (Stilts & Avocets)
+				Himantopus (Stilts)
+					Himantopus mexicanus (Black-necked Stilt)
+				Recurvirostra (Avocets)
+					Recurvirostra americana (American Avocet)
+			Scolopacidae (Phalaropodidae)
+				Actitis
+					Actitis macularia (Spotted Sandpiper)
+				Arenaria
+					Arenaria interpres (Ruddy Turnstone)
+				Bartramia
+					Bartramia longicauda (Upland Sandpiper)
+				Calidris (Erolia & Ereunetes & Crocethia)
+					Calidris alba (Sanderling)
+					Calidris alpina (Dunlin)
+					Calidris bairdii (Baird's Sandpiper) 
+					Calidris canutus (Red Knot)
+					Calidris fuscicollis (White-rumped Sandpiper)
+					Calidris himantopus (Stilt Sandpiper)
+					Calidris maritima (Purple Sandpiper)
+					Calidris mauri (Western Sandpiper)
+					Calidris melanotos (Pectoral Sandpiper)
+					Calidris minutilla (Least Sandpiper)
+					Calidris pusilla (Semipalmated Sandpiper)
+				Gallinago (Capella)
+					Gallinago delicata (Gallinago gallinago; Wilson’s Snipe)
+				Limnodromus
+					Limnodromus  griseus (Short-billed Dowitcher)
+					Limnodromus scolopaceus (Long-billed Dowitcher)
+				Limosa
+					Limosa fedoa (Marbled Godwit)
+					Limosa haemastica (Hudsonian Godwit)
+				Numenius (Curlews)
+					Numenius americanus (Long-billed Curlew)
+					Numenius phaeopus (Whimbrel)
+				Phalaropus
+					Phalaropus fulicarius (Red Phalarope)	 
+					Phalaropus lobatus (Red-necked Phalarope)	 
+					Phalaropus tricolor (Wilson's Phalarope) 
+				Philomachus
+					Philomachus pugnax (Ruff)
+				Scolopax (Philohela)
+					Scolopax minor (Philohela minor; Woodcock)
+				Tringa (Totanus)
+					Tringa flavipes (Totanus flavipes; Lesser Yellow-legs)
+					Tringa melanoleuca (Totanus melanoleuca; Greater Yellow-legs)
+					Tringa solitaria (Totanus solitaria; Solitary Sandpiper)
+				Tryngites
+					Tryngites subruficollis (Calidris subruficollis; Buff-breasted Sandpiper)
+			Stercorariidae (Shore Birds & Gulls & Alcids & Plovers & Oystercatchers)
+				Stercorarius (Jaegers)
+					Stercorarius longicaudus (Long-tailed Jaeger) 
+					Stercorarius parasiticus (Parasitic Jaeger)
+					Stercorarius pomarinus (Pomarine Jaeger)
+		Columbiformes
+			Columbidae
+				Ectopistes
+					Ectopistes migratorius (Passenger Pigeon)
+				Zenaidura
+					Zenaida asiatica (White-winged Dove)
+					Zenaidura macroura (Mourning Dove)
+		Coraciiformes
+			Alcedinidae
+				Megaceryle alcyon (Belted Kingfisher)
+		Cuculiformes (Cuckoos)
+			Cuculidae (Anis & Cuckoos & Roadrunners)
+				Coccyzus
+					Coccyzus americanus (Yellow-billed Cuckoo)
+					Coccyzus erythropthalmus (Black-billed Cuckoo)
+				Crotophaga (Anis)
+					Crotophaga sulcirostris (Groove-billed Ani)
+		Falconiformes 
+			Falconidae
+				Falco
+					Falco columbarius (Merlin)
+					Falco mexicanus (Prairie Falcon)
+					Falco peregrinus (Peregrine Falcon)
+					Falco rusticolus (Gyrfalcon)
+					Falco sparverius (Amerian Kestrel)
+		Galliformes (Fowls & Gallinaceous Birds)
+			Odontophoridae (New World Quails)
+				Colinus (Bobwhites)
+					Colinus virginianus (Northern Bobwhite)
+			Phasianidae (Partridges & Turkeys & Grouses & Pheasants & Quails)
+				Meleagridinae
+					Meleagris (Turkeys)
+						Meleagris gallopavo (Wild Turkey)
+				Tetraoninae (Grouses)
+					Bonasa (Ruffed Grouses)
+						Bonasa umbellus (Ruffed Grouse) 
+					Tympanuchus (Prairie-Chickens)
+						Tympanuchus cupido (Greater Prairie-Chicken & Greater Prairie Chicken)
+						Tympanuchus phasianellus (Sharp-tailed Grouse)
+		Gaviiformes (Loons Order)
+			Gaviidae (Loons & Divers)
+				Gavia (Loons)
+					Gavia immer (Common Loon)
+					Gavia pacifica (Pacific Loon  & Pacific Diver)
+					Gavia stellata (Red-throated Loon & Red-throated Diver)
+		Gruiformes 
+			Gruidae 
+				Grus (Cranes)
+					Grus americana (Whooping Crane)
+					Grus canadensis (Sandhill Crane)
+			Rallidae
+				Coturnicops
+					Coturnicops noveboracensis (Yellow Rail)
+				Fulica
+					Fulica americana (Coot)
+				Gallinula (Moorhens)
+					Gallinula chloropus (Common Moorhen)
+					Gallinula galeata (Common Gallinule)
+				Laterallus
+					Laterallus jamaicensis (Black Rail)
+				Porphyrio
+					Porphyrio martinica (Purple Gallinule)
+				Porzana
+					Porzana carolina (Sora)
+				Rallus (Greater Rails)
+					Rallus elegans (King Rail)
+					Rallus limicola (Virginia Rail)
+		Passeriformes
+			Alaudidae
+				Eremophila alpestris (Horned Lark)
+			Ammodramus (Passerherbulus)
+				Ammodramus henslowii (Henslow’s Sparrow)
+				Ammodramus savannarum (Grasshopper Sparrow)
+			Bombycillidae (Waxwings)
+				Bombycilla cedrorus (Cedar Waxwing)
+			Cardinalidae
+				Cardinalis (Richmondena)
+					Cardinalis cardinalis (Cardinal)
+				Passerina
+					Passerina cyanea (Indigo Bunting)
+				Pheucticus
+					Pheucticus ludovicianus (Rose-breasted Grosbeak)
+				Spiza
+					Spiza americana (Dickcissel)
+			Certhidae
+				Certhia familiaris (Brown Creeper)
+			Corvidae (Crows & Jays)
+				Corvus
+					Corvus brachyrhynchos (Crow)
+					Corvus corax (Raven)
+				Cyanocitta
+					Cyanocitta cristata (Blue Jay)
+			Emberizidae
+				Pipilo
+					Pipilo erythropthalmus (Towhee)
+			Fringillidae
+				Carduelis (Spinus)
+					Carduelis pinus (Pine Siskin)
+					Carduelis tristis (Common Goldfinch)
+				Carpodacus
+					Carpodacus purpureus (Purple Finch)
+				Coccothraustes (Hesperiphona)
+					Coccothraustes vespertina (Evening Grosbeak)
+				Loxia
+					Loxia curvirostra (Red Crossbill)
+			Hirundinidae
+				Hirundo
+					Hirundo rustica (Barn Swallow)
+				Petrochelidon
+					Petrochelidon pyrrhonota (Cliff Swallow)
+				Progne
+					Progne subis (Purple Martin)
+				Riparia
+					Riparia riparia (Bank Swallow)
+				Stelgidopterx
+					Stelgidopteryx ruficollis (Rough-winged Swallow)
+				Tachycineta bicolor (Iridoprocne bicolor;Tree Swallow)
+			Icteridae
+				Agelaius
+					Agelaius phoeniceus (Red-wing)
+				Dolichonyx
+					Dolichonyx orizyvours (Bobolink)
+				Euphagus
+					Euphagus carolinus (Rusty Blackbird)
+				Icterus
+					Icterus galbula (Baltimore Oriole)
+					Icterus spurius (Orchard Oriole)
+				Molothrus
+					Molothrus ater (Cowbird)
+				Sturnella
+					Sturnella magna (Meadowlark)
+				Quiscalus
+					Quiscalus versicolor (Bronzed Grackle)
+			Laniidae (Shrikes)
+				Lanius
+					Lanius excubitor (Northern Shrike)
+					Lanius ludovicianus (Loggerhead Shrike)
+			Melospiza
+				Melospiza georgiana (Swamp Sparrow)
+				Melospiza melodia (Song Sparrow)
+			Mimidae
+				Dumetella
+					Dumetella carolinensis (Catbird)
+				Toxostoma
+					Toxostoma rufum (Brown Thrasher)
+			Oenanthe
+				Oenanthe oenanthe (Wheatear)
+			Paridae (Titmice)
+				Parus
+					Parus articapillus (Black-capped Chickadee)
+					Parus bicolor (Tufted Titmouse)
+					Parus hussonicus (Brown-capped Chickadee)
+			Parulidae (New World Warblers)
+				Dendroica
+					Dendroica castanea (Bay-breasted Warbler)
+					Dendroica cerulea (Cerulean Warbler)
+					Dendroica coerulescens (Black-throated Blue Warbler)
+					Dendroica coronata (Myrtle Warbler)
+					Dendroica fusca (Blackburnian Warbler)
+					Dendroica magnolia (Magnolia Warbler)
+					Dendroica palmarum (Palm Warbler)
+					Dendroica pensylvanica (Chestnut-sided Warbler)
+					Dendroica petechia (Yellow Warbler)
+					Dendroica pinus (Pine Warbler)
+					Dendroica striata (Black-poll Warbler)
+					Dendroica tigrina (Cape May Warbler)
+					Dendroica virens (Black-throated Green Warbler)
+				Geothlypis
+					Geothlypis trichas (Yellow-throat)
+				Icteria
+					Icteria virens (Yellow-breatesed Chat)
+				Mniotilta
+					Mniotilta varia (Black and White Warbler)
+				Oporornis
+					Oporornis philadelphia (Mourning Warbler)
+				Protonotaria
+					Protonotaria citrea (Prothonotary Warbler)
+				Seiurus
+					Seirus aurocapillus (Oven-bird)
+					Seirus motacilla (Louisiana Water-Thrush)
+					Seirus noveboracensis (Northern Water-Thrush)
+				Setophaga
+					Setophaga ruticilla (American Redstart)
+				Vermivora
+					Vermivora chrysoptera (Golden-winged Warbler)
+					Vermivora ruficapilla (Nashville Warbler)
+				Wilsonia
+					Wilsonia canadensis (Canada Warbler)
+					Wilsonia citrina (Hooded Warbler)
+			Passerculus
+				Passerculus sandwichensis (Savannah Sparrow)
+			Passerella
+				Passerella iliaca (Fox Sparrow)
+			Pooecetes
+				Pooecetes gramineus (Vesper Sparrow)
+			Sittidae
+				Sitta
+					Sitta canadensis (Red-breasted Nuthatch)
+					Sitta carolinensis (White-breasted Nuthatch)
+			Spizella
+				Spizella passerina (Chipping Sparrow)
+				Spizella pusilla (Field Sparrow)
+			Sturnidae
+				Sturnus vulgaris (Starling)
+			Thraupidae
+				Piranga olicavea (Scarlet Tanager)
+			Troglodytidae
+				Cistothorus (Telmatodytes)
+					Cistothorus palustris (Long-billed Marsh Wren)
+					Cistothrous platensis (Short-billed Marsh Wren)
+				Troglodytes
+					Troglodytes aedon (House Wren)
+					Troglodytes troglodytes (Winter Wren)
+			Turdidae (Thrushes; Robins; & Bluebirds)
+				Hylocichla
+					Hylocichla fuscescens (Veery)
+					Hylocichla guttata (Hermit Thrush)
+					Hylocichla mustelina (Wood Thrush)
+					Hylocichla ustulata (Olive-backed Thrush)
+				Sialia
+					Sialia sialis (Wastern Bluebird)
+				Turdus
+					Turdus migratorius (American Robin)
+			Tyrannidae
+				Contopus
+					Contopus cooperi (Nuttallornis borealis; Olive-sided Flycatcher)
+					Contopus virens (Wood Pewee)
+				Empidonax
+					Empidonax flaviventrus (Yellow-bellied Flycatcher)
+					Empidonax minimus (Least Flycatcher)
+					Empidonax traillii (Willow Flycatcher & Traill’s Flycatcher)
+					Empidonax virescens (Acadian Flycatcher)
+				Myiarchus
+					Myarchus crinitus (Crested Flycatcher)
+				Sayornis
+					Saynoris phoebe (Eastern Phoebe)
+				Tyrannus
+					Tyranus tyrannus (Eastern Kingbird)
+			Vireoniidae
+				Vireo
+					Vireo gilvus (Warbling Vireo)
+					Vireo griseus (White-eyed Vireo)
+					Vireo olivaceus (Red-eyed Vireo)
+					Vireo solitarius (Blue-headed Vireo)
+			Zonotrichia
+				Zonotrichia albicollis (White-throated Sparrow)
+		Pelecaniformes (Pelicans & Ibises & Herons)
+			Ardeidae
+				Ardea (Great Herons)
+					Ardea alba (Great Egret)
+					Ardea herodias (Great Blue Heron)
+				Botaurus (Brown Bitterns)
+					Botaurus lentiginosus (American Bittern)
+
+				Bubulcus (Cattle Egrets)
+					Bubulcus ibis (Cattle Egret)
+				Butorides
+					Butorides virescens (Green Heron)
+				Egretta (Leucophoyx; Plumed Egrets)
+					Egretta caerulea (Little Blue Heron)
+					Egretta rufescens (Reddish Egret)
+					Egretta thula (Snowy Egret)
+					Egretta tricolor (Tricolored Heron)
+				Ixobrychus
+					Ixobrychus exilis (Least Bittern)
+				Nyctanassa
+					Nctanassa violacea (Yellow-crowned night-heron)
+				Nycticorax
+					Nycticorax nycticorax (Black-crowned Night Heron)
+			Pelecanidae (Pelicans)
+				Pelecanus 
+					Pelecanus erythrorhynchos (American White Pelican)
+					Pelecanus occidentalis (Brown Pelican)
+			Threskiornithidae (Ibises; Spoonbills)
+				Eudocimus (White Ibises)
+					Eudocimus albus (White Ibis)
+				Plegadis (Glossy Ibises)
+					Plegadis chihi (White-faced Ibis)
+					Plegadis falcinellus (Glossy Ibis)
+		Piciformes (Woodpeckers)
+			Picidae
+				Campephilius
+					Campephilius principalis (Ivory-billed Woodpecker)
+				Colaptes (Flickers)
+					Colaptes auratus (Northern Flicker)
+				Dryocopus
+					Dryocopus pileatus (Pileated Woodpecker)
+				Melanerpes (Centurus)
+					Melanerpes erythrocephalus (Red-headed Woodpecker)
+					Melanerpes carolinus (Red-bellied Woodpecker)
+				Picoides (Pied Woodpeckers)
+					Picoides arcticus (Black-backed Woodpecker)
+					Picoides borealis (Red-cockaded Woodpecker)
+					Picoides pubescens (Dendrocopus pubescens; Downy Woodpecker) 
+					Picoides villosus (Dendrocopus villosus; Hairy Woodpecker) 
+				Sphyrapicus
+					Sphyrapicus varius (Yellow-bellied Sapsucker)
+		Podicipediformes 
+			Podicipedidae (Grebes)
+				Aechmophorus
+					Aechmophorus occidentalis (Western Grebe)
+				Podiceps
+					Podiceps auritus (Horned Grebe)
+					Podiceps grisegena (Red-necked Grebe)
+					Podiceps nigricollis (Eared Grebe)
+
+				Podilymbus
+					Podilymbus podiceps (Pied-billed Grebe)
+		Psittaciformes (Parrots)
+			Psittacidae
+				Conuropsis carolinensis (Carolina parakeet)
+		Strigiformes (Owls)
+			Strigidae (Typical Owls)
+				Aegolius
+					Aegolius acadicus (Saw-whet Owl)
+					Aegolius funereus (Boreal Owl)
+				Asio (Eared Owls)
+					Asio flammeus (Short-eared Owl)
+					Asio otus (Long-eared Owl)
+				Athene
+					Athene cunicularia (Burrowing Owl)
+				Bubo (Nyctea; Horned Owls)
+					Bobo scandiacus(Snowy Owl)
+					Bubo virginianus (Great Horned Owl)
+				Megascops
+					Megascops asio (Otus asio; Eastern Screech Owl)
+				Strix
+					Strix varia (Barred Owl)
+				Surnia
+					Surnia ulula (Northern Hawk-Owl)
+			Tytonidae
+				Tyto
+					Tyto alba (Barn Owl)
+		Suliformes (Cormorants & Darters & Frigatebirds & Boobies)
+			Anhingidae (Darters & Anhingas)
+				Anhinga
+					Anhinga anhinga (Anhinga)
+			Fregatidae (Frigatebirds)
+				Fregata 
+					Fregata magnificens (Magnificent Frigatebird)
+			Phalacrocoracidae (Cormorants & Shags)
+				Phalacrocorax
+					Phalacrocorax auritus (Double-crested Cormorant)
+					Phalacrocorax brasilianus (Neotropic Cormorant)
+			Sulidae (Boobies & Gannets)
+				Morus
+					Morus bassanus (Northern Gannet)
+	Agnatha
+		Petromyzontiformes (Lampreys)
+			Petromyzontidade
+				Ichthyomyzon
+					Ichthyomyzon bdellium (Ohio lamprey)
+					Ichthyomyzon castaneus (Chestnut Lamprey)
+					Ichthyomyzon fossor (Nothern Brook Lamprey)
+					Ichthyomyzon greeleyi (Mountain Brook Lamprey)
+					Ichthyomyzon unicuspis (Silver Lamprey)
+				Lethenteron
+					Lethenteron appendix (American Brook Lamprey)
+	Osteichthyes
+		Acipenseriformes (Sturgeons & Paddlefishes)
+			Acipenseridae (Sturgeons)
+				Acipenser fulvescens (Lake Sturgeon)
+				Scaphirhynchus 
+					Scaphirhynchus albus (Pallid Sturgeon)
+					Scaphirhynchus platorhynchus (Shovelnose Sturgeon)
+			Polyodontidae
+				Polyodon spathula (American Paddlefish)
+		Amiiformes
+			Amiidae
+				Amia calva (Bowfin)
+		Anguilliformes (Eels)
+			Anguillidae
+				Anguilla rostrata (American Eel)
+		Atheriniformes (Silversides & Topminnows & Livebearers)
+			Atherinopsidae
+				Labidesthes sicculus (Brook silverside)
+		Clupeiformes
+			Clupeidae
+				Alosa
+					Alosa alabamae (Alabama Shad)
+					Alosa chrysochloris (Skipjack Herring)
+				Dorosoma
+					Dorosoma cepedianum (Gizzard Shad)
+		Cypriniformes (Minnows & Suckers)
+			Catostomidae
+				Carpiodes
+					Cariodes carpio (River Carpsucker)
+					Cariodes cyprinus (Quillback Carpsucker)
+					Carpiodes velifer (Highfin Carpsucker)
+				Catostomus
+					Catostomus commersoni (White Sucker)
+					Catostomus catostomus (Longnose Sucker)
+				Cycleptus
+					Cycleptus elongatus (Blue Sucker)
+				Erimyzon
+					Erimyzon oblongus (Creek Chubsucker)
+					Erimyzon sucetta (Lake Chubsucker)
+				Hypentelium
+					Hypentelium nigricans (Northern Hog Sucker)
+				Ictiobus
+					Ictiobus bubalus (Smallmouth Bufalo)
+					Ictiobus cyprinellus (Bigmouth Buffalo)
+					Ictiobus niger (Black Buffalo) 
+				Minytrema
+					Minytrema melanops (Spotted Sucker)
+				Moxostoma
+					Moxostoma anisurum (Silver Redhorse)
+					Moxostoma breviceps (Moxostoma macrolepidotum breviceps; Smallmouth redhorse & Hookfin redhorse)
+					Moxostoma carinatum (River Redhorse)
+					Moxostoma duquesnii (Black Redhorse)
+					Moxostoma erythrurum (Golden Redhorse)
+					Moxostoma macrolepidotum (Shorthead Redhorse)
+					Moxostoma valenciennesi (Greater Redhorse)
+			Cyprinidae (Carps & Minnows)
+				Campostoma
+					Campostoma anomalum (Central Stoneroller)
+					Campostoma oligolepis (Largescale Stoneroller)
+				Chrosomus
+					Chrosomus eos (Phoxinus eos; Northern Redbelly Dace)
+					Chrosomus neogaeus (Phoxinus neogaeus; Finescale Dace)
+				Clinostomus
+					Clinostomus elongatus (Redside Dace)
+				Ctenopharyngodon
+					Ctenopharyngodon idella (Grass Carp)
+				Cyprinella
+					Cyprinella spiloptera (Spotfin Shiner)
+				Cyprinus
+					Cyprinus carpio (Common Carp)
+				Erimystax
+					Erimystax dissimilis (Hybosis dissimilis; Streamline Chub)
+					Erimystax x-punctatus (Hybosis x-punctatus; Gravel Chub)
+				Exoglossum
+					Exoglossum laurae (Tonguetied Minnow)
+				Hybopsis
+					Hybopsis amblops (Bigeye Chub)
+					Hybobsis dorsalis ( Notropis dorsalis; Bigmouth Shine)
+					Hybopsis storeriana (Silver Chub)
+					Nocomis biguttatus (Hornyhead Chub)
+				Nocomis
+					Nocomis micropogon (River Chub)
+				Notemigonus
+					Notemigonus crysoleucas (Golden Shiner)
+				Lythrurus
+					Lythrurus umbratilis (Notropis umbratilis; Redfin Shiner)
+				Luxilus
+					Luxilis chrysocephalus (Notropis crysoleucas; Striped Shiner)
+					Luxilus cornutus (Notropis cornutus; Common Shiner)
+				Margariscus
+					Magariscus margarita (Semotilus magarita; Pearl Dace)
+				Notropis
+					Notropis atherinoides (Emerald Shiner)
+					Notropis heterodon (Blackchin Shiner)
+					Notropis heterolepis (Blacknose Shiner)
+					Notropis hudsonius (Spottail Shiner)
+					Notropis photogenis (Silver Shiner)
+					Notropis rubellus (Rosyface Shiner)
+					Notropis stramineus (Sand Shiner)
+					Notropis volucellus (Mimic Shiner)
+				Pimephales
+					Pimephales notatus (Bluntnose Minnow)
+					Pimephales promelas (Flathead Minnow)
+				Rhinichthys
+					Rhinichthys atratulus (Eastern Blacknose Dace)
+					Rhinichthys cataractae (Longnose Dace)
+					Rhinichthys obtusus (Western Blacknose Dace)
+				Semotilus
+					Semotilus atromaculatus (Creek Chub)
+		Cyprinodontiformes
+			Fundulidae
+				Fundulus
+					Fundulus diaphanus (Banded Killifish)
+		Esociformes (Mudminnows & Pikes)
+			Esocidae 
+				Esox (Pickerel & Pike)
+					Esox americanus (Grass Pickerel)
+					Esox lucius (Northern Pike)
+					Esox masquinongy (Muskellunge)
+			Umbridae
+				Umbra (Mudminnows)
+					Umbra limi (Central Mudminnow)
+		Gadiformes
+			Gadidae
+				Lota lota (Burbot)
+		Gasterosteiformes
+			Gasterosteidae (Sticklebacks)
+				Culaea 
+					Culaea inconstans (Brook Stickleback)
+		Osmeriformes
+			Osmeridae (Smelts) 
+				Osmerus mordax (Rainbow smelt)
+		Ostoglossiformes 
+			Hiodontidae
+				Hiodon
+					Hiodon alosoides (Goldeye)
+					Hiodon tergisus (Mooneye)
+		Perciformes
+			Centrarchidae
+				Ambloplites
+					Ambloplites rupestris (Rock Bass)
+				Centrarchus
+					Centrarchus macropterus (Flier)
+				Lepomis
+					Lepomis cyanellus (Green Sunfish)
+					Lepomis gibbosus (Pumpkinseed)
+					Lepoimis gulosus (Warmouth)
+					Lepomis humilus (Organgespotted Sunfish)
+					Lepomis macrochirus (Bluegill)
+					Lepomis megalotis (Longear Sunfish)
+					Lepomis microlophus  (Redhear Sunfish)
+					Lepomis punctatus (Spotted Sunfish)
+					Lempois symmetricus (Bantam Sunfish)
+				Micropterus
+					Micropterus dolomieui (Smallmouth Bass)
+					Micropterus punctulatus (Spotted Bass)
+					Micropterus salmoides (Largemouth Bass)
+				Pomoxis
+					Pomoxis annularis (White Crappie)
+					Pomoxis nigromaculatus (Black Crappie)
+			Moronidae
+				Morone (Temperate Basses)
+					Morone chrysops (White Bass)
+					Morone mississippiensis (Yellow Bass)
+			Percidae (True Perches)
+				Ammocrypta
+					Ammocrypta pellucida (Eastern Sand Darter)
+				Etheostoma
+					Etheostoma blennioides (Greenside Darter)
+					Etheostoma caeruleum (Rainbow Darter)
+					Etheostoma camurum (Bluebreast Darter)
+					Etheostoma exile (Iowa Darter)
+					Etheostoma flabellare (Fantail Darter)
+					Etheostoma maculatum (Spotted Darter)
+					Etheostoma nigrum (Johnny Darter)
+					Etheostoma variatum (Variegate Darter)
+					Etheostoma zonale (Banded Darter)
+				Perca 
+					Perca flavescens (Yellow Perch)
+				Percina (Roughbelly Darters)
+					Percina caprodes (Logperch)
+					Percina copelandi (Channel Darter)
+					Percina evides (Gilt Darter )
+					Percina macrocephala (Longhead Darter)
+					Percina maculata (Blackside Darter)
+				Sander ( Stizostedion )
+					Sander canadensis (Stizostedion canadensis; Sauger)
+					Sander vitreum (Stizostedion vitreum; Walleye)
+			Sciaenidae
+				Aplodinotus
+					Aplodinotus grunniens (Freshwater Drum)
+		Percopsiformes
+			Aphrododeridae
+				Aphrododerus
+					Aphrododerus sayanus (Pirate Perch)
+			Percopsidae
+				Percopsis
+					Percopsis omiscomaycus (Trout-perch)
+		Salmoniformes
+			Salmonidae
+				Corgoninae (Ciscoes & Whitefish)
+					Coregonus
+						Coregonus alpenae (Longjaw Cisco)
+						Coregonus artedi (Cisco or Lake Herring)
+						Coregonus clupeaformis (Lake Whitefish)
+						Prosopium cylindraceum (Round Whitefish)
+				Salmoninae (Salmon & Char & Trout) 
+					Salmo
+						Salmo trutta (Brown Trout)
+					Salvelinus
+						Salvelinus fontinalis (Brook Trout)
+						Salvelinus namaycush (Lake Trout)
+				Thymallinae (Graylings)
+					Thymallus
+						Thymallus arcticus (Arctic Grayling)
+		Scorpaeniformes
+			Cottidae
+				Cottus
+					Cottus bairdii (Mottled Sculpin)
+					Cottus cognatus (Slimy Sculpin)
+					Cottus ricei (Spoonhead Sculpin)
+				Myoxocephalus
+					Myoxocephalus thompsonii (Deepwater sculpin)
+		Semionotiformes (Gars)
+			Lepisosteidae
+				Atractosteus
+					Atractosteus spatula (Lepisosteus spatula; Alligator Gar)
+				Lepisosteus
+					Lepisosteus oculatus (Spotted Gar)
+					Lepisosteus osseus (Longnose Gar)
+					Lepisosteus platostomus (Shortnose Gar) 
+		Siluriformes (Catfishes)
+			Ictaluridae (Freshwater Catfishes)
+				Ameiurus (Bullheads)
+					Ameiurus melas (Ictalurus melas; Black Bullhead)
+					Ameiurus natalis (Ictalurus natalis; Yellow Bullhead)
+					Ameiurus nebulosus (Ictalurus nebulosus; Brown Bullhead)
+				Ictalurus
+					Ictalurus furcatus (Blue Catfish)
+					Ictalurus punctatus (Channel Catfish)
+				Noturus (Madtoms)
+					Noturus eleutherus (Mountain Madtom)
+					Noturus exilis (Slender Madtom)
+					Noturus flavus (Stonecat)
+					Noturus gyrinus (Tadpole Madtom)
+					Noturus miurus (Brindled Madtom)
+					Noturus nocturnus (Freckled Madtom)
+					Noturus stigmosus (Northern Madtom)
+				Plylodictis
+					Pylodictis olivaris (Flathead Catfish)
+	Reptilia (Reptiles)
+		Crocodilia (Alligators & Crocodiles & Caimans)
+			Alligatoridae
+				Alligator mississippiensis (Crocodilus mississipiensis; American alligator)
+			Crocodylidae
+				Crocodylus acutus (Crocodilus floridanus; American Crocodile)
+		Squamata (Lacertilia & Sauria; Lizards and Snakes)
+			Autarchoglossa (Lizards) 
+				Anguidae (Alligator Lizards & Glass Lizards)
+					Ophisaurus
+						Ophisaurus attenuatus (Slender Glass Lizard)
+						Ophisaurus mimicus (Mimic Glass Lizard)
+						Ophisaurus ventralis ( Eastern Glass Lizard)
+				Scincidae (Skinks)
+					Eumeces (Plestiodon)
+						Eumeces anthacinus (Plestiodon anthacinus; Coal Skink)
+						Eumeces egregius (Plestiodon egregius (Mole Skink)
+						Eumeces fasciatus (Plestiodon fasciatus & Lacerta fasciata; Common Five-lined Skink)
+						Eumeces inexpectatus (Plestiodon inexpectatus; Southeastern Five-lined Skink)
+						Eumeces laticeps (Plestiodon laticeps & Scincus laticeps; Broad-headed Skink)
+					Scincella
+						Scincella lateralis (Lygosoma laterale & Scincus laterale & Leiolopisma unicolor; Ground Skink)
+				Teiidae (Racerunners & Whiptails)
+					Cnemidophorus
+						Cnemidophorus sexlineatus (Aspidoscelis sexlineata & Lacerta sexlineata; Six-lined Racerunner)
+			Iguania (Iguanas)
+				Crotaphytidae (Collared Lizards)
+					Crotaphytus
+						Crotaphytus collaris (Agama collaris & Crotaphytus baileyi; Collared lizard)
+				Polychrotidae (Dactyloidae; Anoloid Lizards)
+					Anolis
+						Anolis carolinensis (Carolina Anole & Green Anole)
+				Phrynosomatidae (North American Spiny Lizards)
+					Sceloporus
+						Sceloporus undulatus (Stellio undulatus; Eastern Fence Lizard)
+			Serpentes (Snakes)
+				Colubridae (Colubrids)
+					Carphophis
+						Carphophis amoenus (Coluber amoenus; Eastern Worm Snake)
+						Carphophis vermis
+					Cemophora
+						Cemophora coccinea (Coluber coccineus; Scarlet Snake)
+					Clonophis
+						Clonophis kirtlandii (Regina kirtlandii & Natrix kirtlandii; Kirtland's Snake)
+					Coluber
+						Coluber constrictor (Eastern Racer)
+					Diadophis
+						Diadophis punctatus (Ring-necked Snake)
+					Drymarchon
+						Drymarchon couperi (Eastern Indigo Snake)
+					Elaphe (Corn Snakes & Fox Snakes & Rat Snakes)
+						Elaphe alleghaniensis (Eastern Ratsnake)
+						Elaphe bairdi (Pantheropis bairdi; Baird's Rat Snake)
+						Elaphe gloydi (Pantherophis vulpinus & Elaphe vulpina gloydi;  Eastern Foxsnake)
+						Elaphe guttata (Pantherophis emoryi; Corn Snake & Cornsnake) 
+						Elaphe guttata emoryi (Pantherophis emoryi & Elaphe emoryi  & Scotophis emoryi; Great Plains Rat Snake)
+						Elaphe obsoleta (Pantherophis obsoletus; Western Ratsnake)
+						Elaphe slowinskii (Patherophis slowinskii; Slowinski's Cornsnake)
+						Elaphe spiloides (Elaphe obsoleta spiloides & Pantherophis spiloides; Gray Rat Snake)
+						Elaphe vulpina (Pantherophis vulpinus & Scotophis vulpinus; Western Fox Snake)
+					Farancia
+						Farancia abacura (Coluber abacurus; Mud Snake & Mudsnake)
+						 Farancia erytrogramma (Rainbow Snake)
+					Heterodon
+						Heterodon nasicus (Western Hog-nosed Snake)
+						Heterodon platirhinos (Heterodon browni; Eastern Hog-nosed Snake)
+						Heterodon simus (Coluber simus; Southern Hog-nosed Snake)
+					Lampropeltis (Kingsnakes & Milknakes)
+						Lampropeltis calligaster (Coluber calligaster; Prairie Kingsnake & Yellow-bellied Kingsnake)
+						Lampropeltis getula (Lampropeltis getulus; Common Kingsnake)
+						Lampropeltis getula floridana (Florida Kingsnake)
+						Lampropeltis getula nigra (Black Kingsnake)
+						Lampropeltis triangulum (Lampropeltis doliata & Coluber doliatus; Milksnake)
+						Lampropeltis triangulum elapsoides (Lampropeltis elapsoides; Scarlet Kingsnake)
+					Masticophis
+						Masticophis flagellum (Coluber flagellum; Coachwhip)
+					Micrurus
+						Micrurus fulvius (Eastern Coral Snake)
+					Nerodia (North American Water Snakes)
+						Nerodia clarkii (Atlantic Saltmarsh Snake)
+						Nerodia cyclopion (Green Water Snake & Mississippi Green Watersnake)
+						Nerodia erythrogaster (Natrix erythrogaster & Coluber erythrogaster; Plain-bellied Water Snake)
+						Nerodia fasciata (Coluber fasciatus & Natrix sipedon fasciata; Southern Water Snake)
+						Nerodia floridana (Florida Green Water Snake) 
+						Nerodia rhombifer (Nerodia rhombifera & Tropidonotus rhombifer & Natrix rhombifer; Diamondback Water Snake)
+						Nerodia sipedon (Natrix sipedon & Coluber sipedon; Northern Water Snake)
+						Nerodia taxispilota  (Natrix taxispilota; Brown Water Snake)
+					Opheodrys
+						Opheodrys aestivus (Coluber aestivus; Rough Green Snake)
+						Opheodrys vernalis (Coluber vernalis & Liochlorophis vernalis; Smooth Green Snake)
+					Pituophis (Bullsnakes & Gopher Snakes & Pine Snakes)
+						Pituophis catenifer (Gophersnake & Bullsnake)
+						Pituophis melanoleucus (Pine Snake)
+						Pituophis ruthveni (Pituophis melanoleucus ruthveni ; Louisiana Pine Snake)
+					Regina
+						Regina alleni (Striped Crayfish Snake)
+						Regina grahamii (Natrix grahamii; Graham's Crayfish Snake)
+						Regina rigida (Glossy Crayfish Snake)
+						Regina septemvittata (Coluber septemvittatus & Natrix septemvittata; Queen Snake)
+					Rhadinaea
+						Rhadinaea flavilata (Pine Woods Littersnake)
+					Seminatrix
+						Seminatrix pygaea (Black Swamp Snake)
+					Storeria
+						Storeria dekayi (Tropidonotus dekayi; Dekay's Brownsnake)
+						Storeria occipitomaculata (Coluber occipitomaculatus; Red-bellied Snake & Redbelly Snake)
+					Tantilla
+						Tantilla coronata (Southeastern Crowned Snake)
+						Tantilla gracilis (Tantilla hallowelli; Flat-headed Snake)
+					Thamnophis
+						Thamnophis brachystoma (Short-headed Garter Snake)
+						Thamnophis butleri (Butler's Garter Snake)
+						Thamnophis proximus (Western Ribbon Snake)
+						Thamnophis radix (Eutaenia radix & Thamnophis radix haydenii & Eutaenia haydenii; Plains Garter Snake)
+						Thamnophis sauritus (Eastern Ribbon Snake)
+						Thamnophis sirtalis (Common Garter Snake)
+					Tropidoclonion
+						Tropidoclonion lineatum (Microps lineatus; Lined Snake)
+					Virginia
+						Virginia striatula (Rough Earthsnake)
+						Virginia valeriae (Haldea valeriae; Eastern Smooth Earthsnake)
+				Viperidae (Pit vipers & Vipers)
+					Agkistrodon
+						Agkistrodon contortrix (Boa contortrix; Copperhead)
+						Agkistrodon piscivorus (Crotalus piscivorus; Cottonmouth)
+					Crotalus
+						Crotalus adamanteus (Eastern Diamondback Rattlesnake)
+						Crotalus horridus (Crotalus atricaudatus; Timber Rattlesnake)
+					Sistrurus
+						Sistrurus catenatus (Crotalinus catenatus; Massasauga)
+						Sistrurus miliarius (Pygmy Rattlesnake)
+		Testudines (Turtles)
+			Cryptodira suborder
+				Chelydridae (Snapping Turtles)
+					Chelydra
+						Chelydra serpentina (Testudo serpentina & Chelydra osceola & Chelydra lacertina & Chelydra emarginata & Devisia mythodes & Chelydra laticarinata & Chelydra sculpta; Snapping Turtle & North American Snapping Turtle & Common Snapping Turtle)
+					Macrochelys
+						Macrochelys apalachicolae (Apalachicola Alligator Snapping Turtle)
+						Macrochelys suwanniensis (Suwannee Alligator Snapping Turtle)
+						Macrochelys temminckii (Macroclemys temminckii & Chelonura temminckii & Testudo planitia; Alligator Snapping Turtle)
+				Emydidae (Pond Turtles & Emydid Turtles & Terrapins)
+					Chrysemys
+						Chrysemys picta (Painted Turtle)
+					Clemmys
+						Clemmys guttata (Testudo guttata & Geoclemmys sebae; Spotted Turtle)
+					Emydoidea
+						Emydoidea blandingii (Cistudo blandingii & Emys blandingii & Testudo flava & Testudo meleagris & Emys twentei & Cistuda blandingii; Blanding's Turtle)
+					Glyptemys
+						Glyptemys insculpta (Clemmys insculpta & Testudo insculpta & Emys speciosa levigata; Wood Turtle)
+						Glyptemys muhlenbergii (Clemmys muhlenbergii & Testudo muhlenbergii & Emys biguttata & Clemmys nuchalis; Muhlenberg's turtle &  Bog turtle)
+					Graptemys (Map Turtles)
+						Graptemys barbouri (Barbour's Map Turtle)
+						Graptemys ernsti (Escambia Map Turtle)
+						Graptemys flavimaculata (Sawback Turtle & Yellow-blotched Map Turtle & Yellow-blotched Sawback)
+						Graptemys geographica (Malacoclemmys geographica & Testudo geographica & Emys lesueurii & Emys megacephala; Map Turtle & Common Map Turtle & Northern Map Turtle)
+						Graptemys gibbonsi (Pascagoula Map Turtle)
+						Graptemys nigrinoda (Black-knobbed Map Turtle & Black-knobbed Sawback)
+						Graptemys nigrinoda nigrinoda (Black-knobbed Map Turtle & Northern Black-knobbed Map Turtle)
+						Graptemys oculifera (Ringed Map Turtle & Ringed Sawbac Turtle)
+						Graptemys ouachitensis (Ouachita Map Turtle & Southern Map Turtle)
+						Graptemys pearlensis (Pearl River Map Turtle)
+						Graptemys pseudogeographica (Emys pseudogeographica; False Map Turtle)
+						Graptemys pulchra (Alabama Map Turtle)
+					Pseudemys
+						Pseudemys alabamensis (Alabama Red-bellied Cooter)
+						Pseudemys concinna (River Cooter & Suwanee Cooter)
+						Pseudemys nelsoni (Chrysemys nelsoni; Florida Red-bellied Cooter)
+						Pseudemys peninsularis (Peninsula Cooter)
+						Pseudemys rubriventris (American red-bellied turtle & Northern Red-bellied Cooter)
+					Terrapene
+						Terrapene carolina (Eastern Box Turtle & Common Box Turtle)
+						Terrapene ornata (Cistudo ornata; Ornate Box Turtle & Western Box Turtle)
+					Trachemys
+						Trachemys scripta (Chrysemys scripta; Pond Slider & Common Slider)
+				Kinosternidae (Mud & Musk Turtles)
+					Kinosternon
+						Kinosternon baurii (Striped Mud Turtle)
+						Kinosternon flavescens (Platythyra flavescens & Cinosternon flavescens; Yellow Mud Turtle)
+						Kinosternon subrubrum (Eastern Mud Turtle & Common Mud Turtle)
+					Sternotherus
+						Sternotherus carinatus (Keeled Musk Turtle & Razor-backed Musk Turtle)
+						Sternotherus depressus (Flattened Musk Turtle)
+						 Sternotherus minor (Loggerhead Musk Turtle & Stripe-necked Musk Turtle)
+						Sternotherus odoratus (Testudo odorata & Testudo glutinata & Kinosternum guttatum & Ozotheca tristycha; Stinkpot & Musk Turtle & Common Musk Turtle & Eastern Musk Turtle)
+				Trionychidae (Softshell Turtles)
+					Apalone
+						Apalone ferox (Florida Softshell Turtle)
+						Apalone mutica (Trionyx muticus; Smooth Softshell Turtle)
+						Apalone spinifera (Trionyx spiniferus & Trionyx ferox spinifera & Amyda ferox spinifera; Spiny Softshell Turtle)
+Mollusca (Mollusks)
+	Bivalvia (Pelecypoda; Bivalves & clams & mussels)
+		Unionoida
+			Unionidae
+				Actinonaias 
+					Actinonaias ligamentina (Actinonaias carinata & Actinonaias carinata carinata & Actinonaias carinata gibba; Mucket)
+					Actinonaias ligamentina form carinata
+					Actinonaias ligamentina form ligamentina
+					Actinonaias pectorosa (Pheasantshell)
+Alasmidonta (Prolasmidonta & Decurambis & Bullella ) 
+					Alasmidonta arcula (Altamaha arcmussel)
+					Alasmidonta atropurpurea (Cumberland elktoe)
+					Alasmidonta heterodon (Dwarf wedge mussel)
+					Alasmidonta marginata (Elktoe)
+					Alasmidonta mccordi (Coosa elktoe)
+					Alasmidonta raveneliana (Appalachian elktoe)
+					Alasmidonta robusta (Carolina elktoe)
+					Alasmidonta triangulata (Southern elktoe)
+					Alasmidonta undulata (Triangle floater)
+					Alasmidonta varicosa (Brook floater)
+					Alasmidonta viridis (Slippershell mussel)
+					Alasmidonta wrightiana (Ochlockonee arcmussel)
+ 				Amblema (Crenodonta) 
+					Amblema elliottii (Coosa fiveridge)
+					Amblema neislerii (Fat threeridge)
+					Amblema plicata (Amblema plicata plicata & Amblema plicata perplicata & Amblema costata & Unio peruvianus; Threeridge)
+					Amblema plicata form costata
+					Amblema plicata form plicata
+ 				Anodonta 
+					Anodonta couperiana (Barrel floater)
+					Anodonta heardi (Apalachicola floater)
+					Anodonta implicata (Alewife floater)
+					Anodonta suborbiculata (Flat floater)
+ 				Anodontoides 
+					Anodontoides denigratus (Cumberland Papershell)
+					Anodontoides ferussacianus (Cylindrical papershell)
+					Anodontoides radiatus (Rayed creekshell)
+ 				Arcidens 
+					Arcidens confragosus (Rock pocketbook)
+ 				Arkansia 
+					Arkansia wheeleri (Arcidens wheeleri; Wheeler's pearly mussel & Ouachita rock pocketbook)
+				Cyclonaias
+					Cyclonaias tuberculata (Purple wartyback)
+ 				Cyprogenia 
+					Cyprogenia aberti (Western fanshell & Edible naiad & Edible pearly mussel)
+					Cyprogenia stegaria (Cyprogenia irrorata & Cyprogenia i irrorata & Cyprogenia i pusilla; Fanshell)
+ 				Dromus
+					Dromus dromas (Dromus dromas caperatus; Dromedary pearly mussel)
+ 				Ellipsaria 
+					Ellipsaria lineolata (Plagiola lineolata; Butterfly)
+ 				Elliptio (Canthyria)
+					Elliptio ahenea (Southern lance)
+					Elliptio angustata (Carolina lance)
+					Elliptio arca (Alabama spike)
+					Elliptio arctata (Delicate spike)
+					Elliptio buckleyi (Popenaias buckleyi; Florida shiny spike)
+					Elliptio chipolaensis (Chipola slabshell)
+					Elliptio cistellaeformis (Box spike)
+					Elliptio complanata (Eastern elliptio)
+					Elliptio congaraea (Carolina slabshell)
+					Elliptio crassidens (Elephantear)
+					Elliptio dariensis (Georgia Elephantear)
+					Elliptio dilatata (Spike)
+					Elliptio downiei (Satilla elephantear)
+					Elliptio errans (Oval Elliptio)
+					Elliptio fisheriana (Northern lance)
+					Elliptio folliculata (Pod lance)
+					Elliptio fraterna (Brother spike)
+					Elliptio fumata (Gulf slabshell)
+					Elliptio hepatica (Brown elliptio)
+					Elliptio hopetonensis (Altamaha slabshell)
+					Elliptio icterina (Variable spike)
+					Elliptio jayensis (Flat spike)
+					Elliptio judithae (Plicate spike)
+					Elliptio lanceolata (Yellow lance)
+					Elliptio lugubris (Sad elliptio)
+					Elliptio marsupiobesa (Cape Fear spike)
+					Elliptio mcmichaeli (Elliptio macmichaeli; Fluted elephantear)
+					Elliptio monroensis (St. Johns elephantear)
+					Elliptio nigella (Winged spike)
+					Elliptio producta (Atlantic spike)
+					Elliptio pullata (Gulf spike)
+					Elliptio purpurella (Inflated Spike)
+					Elliptio raveneli (Carolina spike)
+					Elliptio roanokensis (Roanoke slabshell)
+					Elliptio shepardiana (Altamaha lance)
+					Elliptio spinosa (Altamaha spinymussel)
+					Elliptio steinstansana (Canthyria steinstansana; Tar River spinymussel &Tar spinymussel)
+					Elliptio waccamawensis (Waccamaw spike)
+					Elliptio waltoni (Florida lance)
+ 				Elliptoideus 
+					Elliptoideus sloatianus (Purple bankclimber)
+ 				Epioblasma (Dysnomia)
+					Epioblasma ahlstedti (Duck River oyster mussel)
+					Epioblasma arcaeformis (Dysnomia arcaeformis; Sugarspoon)
+					Epioblasma biemarginata (Dysnomia biemarginata; Angled riffleshell)
+					Epioblasma brevidens (Dysnomia brevidens; Cumberlandian combshell)
+					Epioblasma capsaeformis (Dysnomia capsaeformis; Oyster mussel)
+					Epioblasma cincinnatiensis (Epioblasma phillipsii; Cincinnati riffleshell)
+					Epioblasma flexuosa (Dysnomia flexuosa; Leafshell)
+					Epioblasma florentina (Dysnomia florentina; Yellow blossom)
+					Epioblasma florentina curtisii (Epioblasma florentina curtisi & Dysnomia florentina curtisi; Curtis' pearly mussel)
+					Epioblasma florentina florentina (Dysnomia florentina florentina; Yellow blossom & Yellow blossom pearly mussel)
+					Epioblasma florentina walkeri (Epioblasma walkeri; Tan riffleshell)
+					Epioblasma haysiana (Dysnomia haysiana; Acornshell)
+					Epioblasma lenior (Dysnomia lenior; Narrow catspaw)
+					Epioblasma lewisii (Dysnomia lewisii; Forkshell)
+					Epioblasma metastriata (Upland combshell)
+					Epioblasma obliquata (Dysnomia sulcata & Dysnomia sulcata sulcata & Epioblasma sulcata sulcata & Dysnomia obliquata; Purple cat's paw pearly mussel & Catspaw)
+					Epioblasma obliquata obliquata (Dysnomia obliquata obliquata; Catspaw & Purple cat's paw pearly mussel)
+					Epioblasma obliquata perobliqua (Dysnomia sulcata perobliqua; White cat's paw pearly mussel & White catspaw)
+					Epioblasma othcaloogensis (Dysnomia modicella; Southern acornshell)
+					Epioblasma penita (Dysnomia penita; Penitent mussel & Southern combshell)
+					Epioblasma personata (Dysnomia personata; Round combshell)
+					Epioblasma propinqua (Dysnomia torulosa propinqua; Tennessee riffleshell)
+					Epioblasma sampsonii (Wabash riffleshell)
+					Epioblasma stewardsonii (Dysnomia stewardsoni; Cumberland leafshell)
+					Epioblasma torulosa (Dysnomia torulosa; Tubercled blossom)
+					Epioblasma torulosa gubernaculum (Dysnomia torulosa gubernaculum; (Green blossom & Green-blossom pearly mussel)
+					Epioblasma torulosa rangiana (Dysnomia sulcata delicata & Dysnomia torulosa rangiana; Northern riffleshell)
+					Epioblasma torulosa torulosa (Dysnomia torulosa torulosa; Tubercled blossom & Tubercled blossom pearly mussel)
+					Epioblasma triquetra (Dysnomia triquetra; Snuffbox)
+					Epioblasma turgidula (Turgid blossom & Turgid blossom pearly mussel)
+ 				Fusconaia (Lexingtonia & Quincuncina)
+					Fusconaia apalachicola (Apalachicola ebonyshell)
+					Fusconaia askewi (Texas pigtoe)
+					Fusconaia burkei (Quincuncina burkei; Tapered pigtoe)
+					Fusconaia cerina (Southern pigtoe & Gulf pigtoe)
+					Fusconaia cor (Fusconaia edgariana; Shiny pigtoe)
+					Fusconaia cuneolus (Fine-rayed pigtoe)
+					Fusconaia ebena (Ebonyshell)
+					Fusconaia escambia (Narrow pigtoe)
+					Fusconaia flava (Fusconaia undata; Wabash pigtoe)
+					Fusconaia masoni (Lexingtonia subplana; Atlantic pigtoe)
+					Fusconaia mitchelli (Quadrula mitchelli & Quincuncina mitchelli & Unio mitchelli; False spike)
+					Fusconaia ozarkensis (Ozark pigtoe)
+					Fusconaia rotulata (Obovaria rotulata; Round ebonyshell)
+					Fusconaia subrotunda (Fusconaia maculata & Fusconaia s subrotunda & Fusconaia s pilaris & Fusconaia s kirtlandiana & Fusconaia s lesueuriana; Longsolid)
+					Fusconaia succissa (Amphinaias succissa & Quadrula succissa; Purple pigtoe)
+ 				Glebula 
+					Glebula rotundata (Round pearlshell)
+ 				Hamiota 
+					Hamiota altilis (Lampsilis altilis; Finelined pocketbook)
+					Hamiota australis (Lampsilis australis; Southern sandshell)
+					Hamiota perovalis (Lampsilis perovalis; Orangenacre mucket)
+					Hamiota subangulata (Lampsilis subangulata; Shiny-rayed pocketbook)
+ 				Hemistena 
+					Hemistena lata (Cracking pearly mussel)
+ 				Lampsilis 
+					Lampsilis abrupta (Pink mucket)
+					Lampsilis binominata (Lined pocketbook)
+					Lampsilis cardium (Lampsilis ovata ventricosa & Lampsilis ventricosa & Lampsilis ventricosa cohongoronta; Plain pocketbook)
+					Lampsilis cariosa (Yellow lampmussel)
+					Lampsilis dolabraeformis (Altamaha pocketbook)
+					Lampsilis fasciola (Wavyrayed lampmussel)
+					Lampsilis floridensis (Florida sandshell)
+					Lampsilis fullerkati (Waccamaw fatmucket)
+					Lampsilis haddletoni (Haddleton lampmussel)
+					Lampsilis higginsii (Higgins' eye & Higgins' eye pearly mussel)
+					Lampsilis hydiana (Louisiana fatmucket)
+					Lampsilis ornata (Lampsilis excavatus; Southern pocketbook)
+					Lampsilis ovata (Pocketbook)
+					Lampsilis powellii (Arkansas fatmucket)
+					Lampsilis radiata (Eastern lampmussel)
+					Lampsilis rafinesqueana (Neosho mucket)
+					Lampsilis reeveiana (Arkansas broken-ray) 
+					Lampsilis satura (Sandbank pocketbook)
+					Lampsilis siliquoidea (Lampsilis radiata siliquoidea; Fatmucket)
+					Lampsilis splendida (Lampsilis radiata splendida; Rayed pink fatmucket)
+					Lampsilis straminea (Rough fatmucket)
+					Lampsilis streckeri (Speckled pocketbook)
+					Lampsilis teres (Lampsilis teres anodontoides & Lampsilis teres fallaciosa; Yellow sandshell)
+					Lampsilis teres form anodontoides (Lampsilis teres anodontoides)
+					Lampsilis teres form teres (Lampsilis teres fallaciosa)
+					Lampsilis virescens (Alabama lampmussel & Alabama lamp pearly mussel)
+ 				Lasmigona (Pterosyna)
+					Lasmigona complanata (White heelsplitter)
+					Lasmigona complanata alabamensis (Lasmigona alabamensis; Alabama heelsplitter)
+					Lasmigona complanata complanata (White heel-splitter)
+					Lasmigona compressa (Creek heelsplitter)
+					Lasmigona costata (Flutedshell)
+					Lasmigona decorata (Carolina heelsplitter)
+					Lasmigona etowaensis (Etowah heelsplitter)
+					Lasmigona holstonia (Tennessee heelsplitter)
+					Lasmigona subviridis (Green floater)
+ 				Lemiox 
+					Lemiox rimosus (Birdwing pearly mussel)
+ 				Leptodea 
+					Leptodea fragilis (Medionidus mcglameriae; Fragile papershell)
+					Leptodea leptodon (Scaleshell)
+					Leptodea ochracea (Lampsilis ochracea; Tidewater mucket)
+ 				Ligumia
+					Ligumia nasuta (Unio nasutus & Unio fisherianus & Unio vaughanianus; Eastern pondmussel)
+					Ligumia recta (Ligumia latissima & Ligumia recta latissima & Unio leprosus; Black sandshell)
+					Ligumia subrostrata (Unio nashvillianus & Unio mississippiensis & Lampsilis nashvillensis & Unio rutersvillensis & Unio cocoduensis; Pondmussel) 
+ 				Medionidus 
+					Medionidus acutissimus (Alabama moccasinshell)
+					Medionidus conradicus (Cumberland moccasinshell)
+					Medionidus parvulus (Coosa moccasinshell)
+					Medionidus penicillatus (Gulf moccasinshell)
+					Medionidus simpsonianus (Ochlockonee moccasinshell)
+					Medionidus walkeri (Suwannee moccasinshell)
+ 				Megalonaias 
+					Megalonaias nervosa (Megalonaias boykiniana & Megalonaias gigantea; Washboard)
+ 				Obliquaria 
+					Obliquaria reflexa (Threehorn wartyback)
+ 				Obovaria
+					Obovaria haddeltonii (Haddleton lampmussel)
+					Obovaria jacksoniana (Southern hickorynut)
+					Obovaria olivaria (Hickorynut)
+					Obovaria retusa (Golf stick pearly mussel & Ring pink mussel)
+					Obovaria subrotunda (Lampsilis orbiculata & Obovaria subrotunda lens; Round hickorynut)
+					Obovaria unicolor (Alabama hickorynut)
+ 				Pegias 
+					Pegias fabula (Little-wing pearly mussel)
+ 				Plectomerus
+					Plectomerus dombeyanus (Bankclimber)
+ 				Plethobasus 
+					Plethobasus cicatricosus (White wartyback & White wartyback pearly mussel)
+					Plethobasus cooperianus (Orange-footed pearly mussel & Orangefoot pimpleback)
+					Plethobasus cyphyus (Sheepnose)
+				Pleurobema 
+					Pleurobema athearni (Canoe Creek pigtoe)
+					Pleurobema avellanum (Hazel pigtoe)
+					Pleurobema beadleianum (Elliptio beadleiana; Mississippi pigtoe)
+					Pleurobema bournianum (Scioto pigtoe)
+					Pleurobema chattanoogaense (Painted clubshell)
+					Pleurobema clava (Clubshell)
+					Pleurobema collina (Elliptio collina & Fusconaia collina & Canthyria collina; James River spinymussel & James spinymussel & Virginia spinymussel)
+					Pleurobema cordatum (Pleurobema cordatum cordatum; Ohio pigtoe)
+					Pleurobema curtum (Black clubshell & Curtus' mussel)
+					Pleurobema decisum (Southern clubshell)
+ 					Pleurobema fibuloides (Pleurobema altum; Highnut)
+					Pleurobema flavidulum (Yellow pigtoe)
+					Pleurobema furvum (Dark pigtoe)
+					Pleurobema georgianum (Pleurobema irrasum; Southern pigtoe)
+					Pleurobema hagleri (Brown pigtoe)
+					Pleurobema hanleyianum (Pleurobema aldrichianum; Georgia pigtoe)
+					Pleurobema hartmanianum (Pleurobema showalteri; Cherokee pigtoe)
+					Pleurobema johannis (Alabama pigtoe)
+					Pleurobema marshalli (Flat pigtoe & Marshall's mussel)
+					Pleurobema nucleopsis (Longnut)
+					Pleurobema oviforme (Pleurobema o oviforme & Pleurobema o holstonense & Pleurobema o argenteum; Tennessee clubshell)
+					Pleurobema perovatum (Pleurobema nux & Pleurobema similans & Pleurobema simulans; Ovate clubshell)
+					Pleurobema plenum (Pleurobema cordatum plenum; Rough pigtoe)
+					Pleurobema pyriforme (Oval pigtoe)
+					Pleurobema riddellii (Unio riddellii; Louisiana pigtoe)
+					Pleurobema rubellum (Warrior pigtoe)
+					Pleurobema rubrum (Pleurobema pyramidatum & Pleurobema cordatum pyramidatum; Pyramid pigtoe)
+					Pleurobema sintoxia (Pleurobema coccineum & Pleurobema cordatum coccineum; Round pigtoe)
+					Pleurobema stabile (Pleurobema murrayense & Pleurobema stabilis; Coosa pigtoe)
+					Pleurobema strodeanum (Fuzzy pigtoe)
+					Pleurobema taitianum (Pleurobema tombigbeanum; Heavy pigtoe & Judge Tait's mussel)
+					Pleurobema troschelianum (Alabama clubshell)
+					Pleurobema verum (True pigtoe)
+ 				Pleuronaia
+					Pleuronaia barnesiana (Fusconaia barnesiana & Pleurobema meredithi & Pleurobema meredithii; Tennessee pigtoe)
+					Pleuronaia dolabelloides (Lexingtonia dolabelloides & Lexingtonia d dolabelloides & Lexingtonia d conradi; Slabside pearly mussel)
+					Pleuronaia gibberum (Pleurobema gibberum; Cumberland pigtoe)
+ 				Potamilus (Proptera)
+					Potamilus alatus (Proptera alata; Pink heelsplitter)
+					Potamilus capax (Proptera capax; Fat pocketbook)
+					Potamilus inflatus (Alabama heelsplitter & Inflated heelsplitter)
+					Potamilus ohiensis (Proptera laevissimus & Leptodea laevissima; Pink papershell)
+					Potamilus purpuratus (Proptera purpurata; Bleufer)
+ 				Ptychobranchus (Plagiola)
+					Ptychobranchus fasciolaris (Kidneyshell)
+					Ptychobranchus foremanianus (Rayed kidneyshell)
+					Ptychobranchus greenii (Triangular kidneyshell)
+					Ptychobranchus jonesi (Southern kidneyshell)
+					Ptychobranchus occidentalis (Ouachita kidneyshell)
+					Ptychobranchus subtentus (Ptychobranchus subtentum; Fluted kidneyshell)
+ 				Pyganodon 
+					Pyganodon cataracta (Anodonta cataracta & Anodonta c cataracta & Anodonta c marginata; Eastern floater)
+					Pyganodon fragilis (Anodonta cataracta fragilis; Newfoundland floater)
+					Pyganodon gibbosa (Anodonta gibbosa; Inflated floater)
+					Pyganodon grandis (Anodonta grandis & Anodonta g grandis & Anodonta g simpsoniana & Anodonta g corpulenta; Giant floater) 
+					Pyganodon grandis form corpulenta (Anodonta corpulenta)
+					Pyganodon grandis form grandis (Anodonta grandis)
+					Pyganodon lacustris (Anodonta lacustris; Lake floater)
+ 				Quadrula 
+					Quadrula apiculata (Southern mapleleaf)
+					Quadrula asperata (Amphinaias asperata; Alabama orb)
+					Quadrula cylindrica (Rabbitsfoot)
+					Quadrula fragosa (Quadrula quadrula fragosa; Winged mapleleaf)
+ 					Quadrula infucata (Amphinaias infucata & Quincuncina infucata & Unio infucatus; Sculptured pigtoe)
+					Quadrula intermedia (Cumberland monkeyface & Cumberland monkeyface pearly mussel)
+					Quadrula kieneriana (Coosa orb)
+					Quadrula kleiniana (Amphinaias kieneriana & Quincuncina kleiniana & Unio kleiniana; Suwannee pigtoe)
+					Quadrula metanevra (Monkeyface)
+					Quadrula nobilis (Gulf mapleleaf)
+					Quadrula nodulata (Amphinaias nodulata; Wartyback)
+ 					Quadrula pustulosa (Amphinaias pustulosa; Pimpleback)
+					Quadrula quadrula (Quadrula quadrula quadrula; Mapleleaf)
+					Quadrula refulgens (Amphinaias refulgens; Purple pimpleback)
+					Quadrula rumphiana (Ridged mapleleaf)
+					Quadrula sparsa (Appalachian monkeyface & Appalachian monkeyface pearly mussel)
+					Quadrula stapes (Stirrupshell)
+ 					Quadrula tuberosa (Rough rockshell)
+ 				Simpsonaias (Simpsoniconcha) 
+					Simpsonaias ambigua (Simpsoniconcha ambigua; Salamander mussel)
+ 				Strophitus
+					Strophitus connasaugaensis (Strophitus alabamensis; Alabama creekmussel)
+					Strophitus subvexus (Southern creekmussel)
+					Strophitus undulatus (Strophitus undulatus undulatus & Strophitus undulatus tennesseensis; Squawfoot & Creeper)
+ 				Toxolasma (Carunculina) 
+					Toxolasma corvunculus (Unio corvunculus; Southern purple lilliput)
+					Toxolasma cylindrellus (Carunculina cylindrellus & Unio cylindrellus; Pale lilliput & Pale lilliput pearly mussel)
+					Toxolasma lividum (Toxolasma lividus; Purple lilliput)
+					Toxolasma parvum (Toxolasma parvus & Carunculina parva & Unio parvus; Lilliput)
+					Toxolasma paulum (Toxolasma paulus & Unio paulus; Iridescent lilliput)
+					Toxolasma pullus (Carunculina pulla & Unio pullus; Savannah lilliput)
+ 				Tritogonia 
+					Tritogonia verrucosa (Quadrula verrucosa; Pistolgrip)
+ 				Truncilla 
+					Truncilla donaciformis (Fawnsfoot)
+					Truncilla truncata (Deertoe)
+ 				Uniomerus 
+					Uniomerus carolinianus (Uniomerus caroliniana & Uniomerus obesus; Florida pondhorn)
+					Uniomerus columbensis (Apalachicola pondhorn)
+					Uniomerus declivis (Tapered pondhorn)
+					Uniomerus tetralasmus (Uniomerus excultus; Pondhorn)
+ 				Utterbackia
+					Utterbackia imbecillis (Anodonta imbecillis; Paper pondshell)
+					Utterbackia peggyae (Anodonta peggyae; Florida floater)
+					Utterbackia peninsularis (Peninsular floater)
+ 				Venustaconcha 
+					Venustaconcha ellipsiformis (Actinonaias ellipsiformis; Ellipse)
+					Venustaconcha pleasii (Venustaconcha pleasi; Bleedingtooth mussel)
+				Villosa 
+					Villosa amygdala (Florida rainbow)
+					Villosa arkansasensis (Ouachita creekshell)
+					Villosa choctawensis (Choctaw bean)
+					Villosa constricta (Notched rainbow)
+					Villosa delumbis (Eastern creekshell)
+					Villosa fabalis (Rayed bean)
+					Villosa iris (Rainbow)
+					Villosa lienosa (Little spectaclecase)
+					Villosa nebulosa (Alabama rainbow)
+					Villosa ortmanni (Kentucky creekshell)
+					Villosa perpurpurea (Purple bean)
+					Villosa taeniata (Painted creekshell)
+					Villosa trabalis (Micromya trabalis; Cumberland bean)
+					Villosa umbrans (Villosa vanuxemensis umbrans; Coosa creekshell & Mountain creekshell)
+					Villosa vanuxemensis (Mountain creekshell)
+					Villosa vaughaniana (Carolina creekshell)
+					Villosa vibex (Southern rainbow)
+					Villosa villosa (Downy rainbow)
+			Margaritiferidae
+				Cumberlandia
+					Cumberlandia monodonta (Spectaclecase)
+				Margaritifera
+					Margaritifera falcata (Western pearlshell)
+					Margaritifera hembeli (Louisiana pearlshell)
+					Margaritifera margaritifera (Eastern pearlshell)
+					Margaritifera marrianae (Alabama pearlshell)
+	Gastropoda (Gastropods & Snails)
+		Aquatic snail indeterminate
+		Terrestrial snail indeterminate
+		Gastropoda indeterminate
+			Gastropoda juvenile indeterminate	
+		Veneroida 
+			Pisidiidae (Sphaeriidae; Peaclams)
+				Musculium (some Sphaerium)
+					Musculium partumeium (Sphaerium partumeium; Swamp fingernailclam)
+				Sphaerium
+		Prosobranchia subclass
+		Architaenioglossa
+			Viviparidae (River snails)
+				Campeloma
+					Campeloma decisum (Campeloma integrum; Pointed campeloma)
+				Viviparus
+					Viviparus georgianus (Viviparus contectoides; Banded river snail)
+		Basommatophora
+			Carychiidae  
+				Carychium
+					Carychium exiguum (Obese thorn) 
+			Lymnaeidae (Pond snails)
+				Fossaria
+					Fossaria dalli (Bakerilymnaea dalli & Lymnaea dalli; Dusky fossaria)
+					Fossaria humilis (Lymnaea humilis; Marsh fossaria)
+				Lymnaea
+					Lymnaea palustris (Stagnicola palustris)
+					Lymnaea stagnalis (Swamp lymnaea)
+				Lymnaea or Stagnicola
+				Pseudosuccinea
+					Pseudosuccinea columella (Mimic lymnaea)
+				Stagnicola
+					Stagnicola catascopium (Lymnaea catascopium; Woodland pondsnail)
+					Stagnicola reflexa (Lymnaea reflexa)
+			Physidae
+				Physella
+					Physella gyrina (Physa gyrina; Tadpole physa)
+					Physella integra (Physa integra; Ashy physa)
+					Physella sayi (Physa sayii)
+			Planorbidae
+				Gyraulus
+				Helisoma
+					Heliosoma anceps (Two-ridge rams-horn)
+				Planorbula
+					Planorbula armigera (Thicklip rams-horn)
+					Planorbella trivolvis (Helisoma trivolis; Marsh rams-horn)
+		Heterostropha
+			Valvatidae 
+				Valvata
+					Valvata tricarinata (Three-ridge valvata)
+		Mesogastropoda
+			Pomatiopsidae
+				Pomatiopsis
+					Pomatiopsis cincinnatiensis (Brown walker)
+					Pomatiopsis lapidaria (Slender walker)
+		Neotaenioglossa
+			Hydrobiidae 
+				Amnicola
+					Amnicola limosus (Mud amnicola)
+					Amnicola walkeri (Canadian duskysnail)
+			Naticidae
+				Polinices
+					Polinices duplicatus (Atlantic Moon Snail)
+			Pleuroceridae 
+				Elimia
+					Elimia potosiensis (Goniobasis potosiensis; Pyramid elimia)
+				Goniobasis
+					Goniobasis livescens
+				Leptoxis
+					Leptoxis praerosa (Anculosa praerosa; Onyx rocksnail)
+				Lithasia
+					Lithasia armigera (Armored rocksnail)
+					Lithasia geniculata (Ornate rocksnail)
+					Lithasia verrucosa (Varicose rocksnail)
+				Pleurocera
+					Pleurocera acuta (Sharp hornsnail)
+					Pleurocera canaliculata (Pleurocera caniculatum; Silty hornsnail)
+					Pleurocera gradata (Pleurocera caniculatum gradata; Bottle hornsnail)
+		Neritopsina
+			Helicinidae
+				Hendersonia
+					Hendersonia occulta (Cherrystone drop)
+				Oligyra
+					Oligyra orbiculata (Helicina orbiculata; Globular drop)
+		Stylommatophora (Terrestrial Snails & Terrestrial  pulmonates)
+			Bulimulidae
+				Rabdotus
+					Rabdotus dealbatus (Bulimulus dealbatus; Whitewashed rabdotus)
+			Cionellidae
+				Cionella lubrica (Glossy pillar)
+			Discidae
+				Anguispira (Tigernails)
+					Anguispira alternata
+					Anguispira kochi (Banded globe & Banded tigersnail)
+				Discus
+					Discus macclintocki (Discus macclintocki angulatus; Iowa Pleistocene snail & Pleistocene disc)
+					Discus whitneyi (Discus cronkhitei; Forest disc)
+			Haplotrematidae
+				Haplotrema
+					Haplotrema concavum (Gray-foot lancetooth)
+			Helicarionidae
+				Euconulus
+					Euconulus fulvus (Brown hive)
+				Guppy
+					Guppy sterkii (Sterki's granule)
+			Helicodiscidae
+				Helicodiscus
+					Helicodiscus parallelus (Compound coil)
+					Helicodiscus singleyanus (Smooth coil)
+			Limacidae
+				Deroceras
+					Deroceras laeve (Meadow slug)
+			Polygyridae
+				Allogona
+					Allogona profunda (Broad-banded forestsnail)
+				Euchemotrema
+					Euchemotrema cheatumi (Stenotrema leaii & Helix leai; Palmetto pillsnail)
+					Euchemotrema fraternum (Stenotrema fraternum; Upland pillsnail)
+				Inflectarius
+					Inflectarius inflectus (Mesodon inflectus; Shagreen)
+				Mesodon
+					Mesodon clausus (Yellow globelet)
+					Mesodon elevatus (Proud globe)
+					Mesodon thyroidus (White-lip globe)
+					Mesodon zaletus (Polygyra zaletus; Toothed globe)
+				Patera
+					Patera appressa (Mesodon appressus; Flat bladetooth)
+					Patera pennsylvanica (Mesodon pennsylvanicus & Polygyra pennsylvanicus; Proud globelet)
+				Polygyra
+					Polygyra dorfueilliana (Oakwood liptooth)
+				Stenotrema
+					Stenotrema hirsutum (Hairy slitmouth)
+				Triodopsis
+					Triodopsis albolabris (Whitelip)
+					Triodopsis fosteri (Bladetooth wedge)
+					Triodopsis multilineata (Striped whitelip)
+					Triodopsis tridentata (Northern three-tooth)
+			Pupillidae
+				Columella 
+					Columella columella (Columella columella alticola; Mellow column)
+				Gastrocopta
+					Gastrocopta armifera (Armed snaggletooth)
+					Gastrocopta contracta (Bottleneck snaggletooth)
+					Gastrocopta corticaria  (Bark snaggletooth)
+					Gastrocopta holzingeri (Lambda snaggletooth)
+					Gastrocopta pentodon  (Comb snaggletooth)
+					Gastrocopta procera (Wing snaggletooth)
+				Pupoides
+					Pupoides albilabris (Pupoides marginatus; White-lip dagger)
+				Vertigo
+					Vertigo arthuri (Vertigo hubrichti; Hubricht's vertigo)
+					Vertigo binneyana (Cylindrical vertigo)
+					Vertigo gouldi (Variable vertigo)
+					Vertigo milium (Blade vertigo)
+					Vertigo ovata (Ovate vertigo)
+					Vertigo tridentata (Honey vertigo)
+			Punctidae
+				Punctum
+					Punctum minutissimum (Small spot)
+			Strobilopsidae
+				Strobilops
+					Strobilops affinis (Eightfold pinecone)
+					Strobilops aeneus (Bronze pinecone)
+					Strobilops labyrinthicus (Maze pinecone)
+			Succineidae 
+				Catinella
+					Catinella vermeta (Suboval ambersnail)
+				Oxyloma
+					Oxyloma retusum (Blunt ambersnail)
+				Succinea
+					Succinea grosvenori (Santa Rita ambersnail)
+			Valloniidae 
+				Vallonia
+					Vallonia gracilicosta (Multiribbed vallonia)
+					Vallonia parvula (Trumpet vallonia)
+					Vallonia perspectiva (Thin-lip vallonia)
+					Vallonia pulchella (Lovely vallonia)
+			Zonitidae
+				Glyphyalinia
+					Glyphyalinia indentata (Retinella indentata; Carved glyph)
+				Hawaiia
+					Hawaiia minuscula (Minute gem)
+				Mesomphix
+					Mesomphix cupreus (Copper button)
+					Mesomphix friabilis (Brittle button)
+				Nesovitrea
+					Nesovitrea electrina (Amber glass)
+				Paravitrea
+					Paravitrea capsella (Simple supercoil)
+					Paravitrea significans (Domed supercoil)
+					Paravitrea simpsoni (Amber supercoil)
+				Striatura
+					Striatura milium (Striatum milium & Hyalina milium & Helix milium & Pseudohyalina milium; Fine-ribbed striate)
+				Ventridens
+					Ventridens demissus (Perforate dome)
+					Ventridens ligera (Globose dome)
+				Zonitoides
+					Zonitoides arboreus (Quick gloss)
+					Zonitoides limatulus (Dull gloss)
