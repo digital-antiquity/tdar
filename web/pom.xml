@@ -371,6 +371,7 @@
                             <skip>${skipNode}</skip>
                             <executable>npm</executable>
                             <arguments>
+                                <argument>--cache-min 9999999</argument>
                                 <argument>install</argument>
                             </arguments>
                         </configuration>
