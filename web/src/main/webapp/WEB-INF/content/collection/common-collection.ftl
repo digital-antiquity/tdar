@@ -139,6 +139,7 @@
 			<ul>
 			 <li> <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></li>
 			 <li> <a href="<@s.url value="/search/download?collectionId=${resourceCollection.id?c}"/>">Export to Excel</a></li>
+         </ul>
             </div>
             </div>
 		</#if>
