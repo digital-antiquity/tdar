@@ -1,18 +1,18 @@
 package org.tdar.core.service.pdf;
 
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+
+import java.io.File;
+import java.io.IOException;
+
 import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.io.RandomAccess;
 import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.util.PDFMergerUtility;
 import org.junit.Ignore;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
-
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
 
 
 /**

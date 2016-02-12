@@ -40,7 +40,7 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ExcelService;
+import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.utils.MessageHelper;
@@ -70,8 +70,8 @@ public class BulkManifestProxy implements Serializable {
     private Collection<FileProxy> fileProxies;
     private Sheet sheet;
     private TdarUser submitter;
+    private ExcelWorkbookWriter excelWorkbookWriter = new ExcelWorkbookWriter();
     private AsyncUpdateReceiver asyncUpdateReceiver = new DefaultReceiver();
-    private transient ExcelService excelService;
     private Map<String, Resource> resourcesCreated = new HashMap<>();
 
     private Row columnNamesRow;
@@ -81,12 +81,11 @@ public class BulkManifestProxy implements Serializable {
     private EntityService entityService;
     private BulkUploadTemplateService bulkUploadTemplateService;
 
-    public BulkManifestProxy(Sheet sheet2, LinkedHashSet<CellMetadata> allValidFields2, Map<String, CellMetadata> cellLookupMap2, ExcelService excelService,
+    public BulkManifestProxy(Sheet sheet2, LinkedHashSet<CellMetadata> allValidFields2, Map<String, CellMetadata> cellLookupMap2,
             BulkUploadTemplateService bulkUploadTemplateService, EntityService entityService, ReflectionService reflectionService) {
         this.sheet = sheet2;
         this.allValidFields = allValidFields2;
         this.cellLookupMap = cellLookupMap2;
-        this.excelService = excelService;
         this.bulkUploadTemplateService = bulkUploadTemplateService;
         this.entityService = entityService;
         this.reflectionService = reflectionService;
@@ -134,7 +133,7 @@ public class BulkManifestProxy implements Serializable {
                 continue;
             }
             rowNum++;
-            if (ExcelService.FIRST_ROW == (rowNum - 1)) {
+            if (ExcelWorkbookWriter.FIRST_ROW == (rowNum - 1)) {
                 continue;
             }
             // find the resource for the identifier (based on current title
@@ -143,7 +142,7 @@ public class BulkManifestProxy implements Serializable {
             int endColumnIndex = getLastCellNum();
 
             // find filename and matching resource
-            String filename = excelService.getCellValue(formatter, evaluator, row, startColumnIndex);
+            String filename = excelWorkbookWriter.getCellValue(formatter, evaluator, row, startColumnIndex);
 
             // look in the hashmap for the filename, skip the examples
             Resource resourceToProcess = findResource(filename, getResourcesCreated());
@@ -214,7 +213,7 @@ public class BulkManifestProxy implements Serializable {
         // for each columnm get the value, validate it and set it. For more complex beans like the ResourceCreatorProxy, set the values on the bean and validate
         // when the bean is done
         for (int columnIndex = (startColumnIndex + 1); columnIndex < endColumnIndex; ++columnIndex) {
-            String value = excelService.getCellValue(formatter, evaluator, row, columnIndex);
+            String value = excelWorkbookWriter.getCellValue(formatter, evaluator, row, columnIndex);
             String name = getColumnNames().get(columnIndex);
             CellMetadata cellMetadata = cellLookupMap.get(name);
             logger.trace("cell metadata: {}", cellMetadata);
@@ -401,7 +400,7 @@ public class BulkManifestProxy implements Serializable {
         Map<String, String> caseTest = new TreeMap<String, String>(String.CASE_INSENSITIVE_ORDER);
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            Cell cell = row.getCell(ExcelService.FIRST_COLUMN);
+            Cell cell = row.getCell(ExcelWorkbookWriter.FIRST_COLUMN);
             if (cell == null) {
                 continue;
             }
@@ -548,8 +547,8 @@ public class BulkManifestProxy implements Serializable {
         String tableCellName = CellMetadata.FILENAME.getName();
         for (Row row : sheet) {
             String stringCellValue = null;
-            if (row.getCell(ExcelService.FIRST_COLUMN) != null) {
-                stringCellValue = row.getCell(ExcelService.FIRST_COLUMN).getStringCellValue();
+            if (row.getCell(ExcelWorkbookWriter.FIRST_COLUMN) != null) {
+                stringCellValue = row.getCell(ExcelWorkbookWriter.FIRST_COLUMN).getStringCellValue();
             }
             if (StringUtils.isBlank(stringCellValue) || tableCellName.equals(stringCellValue) || stringCellValue.startsWith(tableCellName)) {
                 continue;
@@ -574,7 +573,7 @@ public class BulkManifestProxy implements Serializable {
         Set<CellMetadata> required = new HashSet<CellMetadata>();
         Row columnNamesRow = getColumnNamesRow();
         for (int i = columnNamesRow.getFirstCellNum(); i <= columnNamesRow.getLastCellNum(); i++) {
-            String name = excelService.getCellValue(formatter, evaluator, columnNamesRow, i);
+            String name = excelWorkbookWriter.getCellValue(formatter, evaluator, columnNamesRow, i);
             name = StringUtils.replace(name, ASTERISK, "").trim();
             // remove required char
             getColumnNames().add(name);

@@ -864,7 +864,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         skipHtmlValidation = false;
     }
 
-    private void initializeAndConfigureWebClient() {
+    protected void initializeAndConfigureWebClient() {
         webClient.getOptions().setUseInsecureSSL(true);
         // webClient.getOptions().setThrowExceptionOnScriptError(false);
         webClient.getOptions().setJavaScriptEnabled(false);
@@ -877,6 +877,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         webClient.getOptions().setTimeout(0);
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
+        
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
 
             @Override
@@ -952,8 +953,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
     public void testProjectView() {
         // this should probably be done @before every test but it would slow things down even more
-        searchIndexService.indexAll(getAdminUser());
-
+//        logger.debug(getCurrentUrlPath());
         gotoPage("/project/3805");
         logger.trace("{}", this);
         assertTextPresentInPage("New Philadelphia Archaeology Project");
@@ -1457,7 +1457,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
             logger.debug(getPageCode());
             int count = 0;
-            while (!getPageCode().matches("(?s)(.*)percentDone\"(\\s*):(\\s*)100(.*)")) {
+            while (!getPageCode().contains("\"percentDone\" : 100") && !getPageCode().contains("index all complete")) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
@@ -1472,7 +1472,10 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
                 }
                 count++;
             }
+            Thread.sleep(1000);
+            logger.debug(getPageCode());
         } catch (Exception e) {
+            logger.error("exception in reindexing",e);
             fail("exception in reindexing");
         }
     }

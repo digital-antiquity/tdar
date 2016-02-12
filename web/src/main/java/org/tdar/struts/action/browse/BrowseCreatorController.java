@@ -3,6 +3,7 @@ package org.tdar.struts.action.browse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -16,7 +17,8 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -27,6 +29,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
@@ -51,13 +54,11 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.QueryBuilder;
+import org.tdar.search.bean.SearchFieldType;
+import org.tdar.search.query.ProjectionModel;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -148,8 +149,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private transient EntityService entityService;
 
     @Autowired
-    private transient SearchService searchService;
-
+    private transient ResourceSearchService resourceSearchService;
+    
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
 
@@ -298,7 +299,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     }
 
     private void prepareLuceneQuery() throws TdarActionException {
-        QueryBuilder queryBuilder = searchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this);
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);
         if (PersistableUtils.isNotNullOrTransient(creator)) {
@@ -308,15 +308,19 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             setRecordsPerPage(50);
             try {
                 setProjectionModel(ProjectionModel.RESOURCE_PROXY);
-                handleSearch(queryBuilder);
+                resourceSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this,this);
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
             } catch (SearchPaginationException spe) {
                 throw new TdarActionException(StatusCode.NOT_FOUND, spe);
-            } catch (TdarRecoverableRuntimeException tdre) {
+            } catch (TdarRecoverableRuntimeException tdre ) {
                 getLogger().warn("search parse exception", tdre);
                 addActionError(tdre.getMessage());
             } catch (ParseException e) {
+                getLogger().warn("search parse exception", e);
+            } catch (SolrServerException e) {
+                getLogger().warn("search parse exception", e);
+            } catch (IOException e) {
                 getLogger().warn("search parse exception", e);
             }
 
@@ -329,11 +333,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public void setCreator(Creator creator) {
         this.creator = creator;
-    }
-
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
     }
 
     public Addressable getPersistable() {

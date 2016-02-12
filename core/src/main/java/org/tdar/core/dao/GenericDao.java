@@ -217,6 +217,10 @@ public class GenericDao {
         query.setReadOnly(true);
         return query.list();
     }
+    
+    public boolean isSessionReadOnly() {
+    	return getCurrentSession().isDefaultReadOnly();
+    }
 
     public <P extends Persistable> P loadFromSparseEntity(P item, Class<P> cls) {
         if (item == null) {
@@ -686,5 +690,9 @@ public class GenericDao {
     public void evictFromCache(Persistable id) {
         sessionFactory.getCache().evictEntity(id.getClass(), id);
     }
+
+	public CacheMode getCacheModeForCurrentSession() {
+		return getCurrentSession().getCacheMode();
+	}
 
 }

@@ -20,7 +20,6 @@ import org.openqa.selenium.interactions.MoveTargetOutOfBoundsException;
 import org.openqa.selenium.support.ui.Select;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 /**
  * This class represents a collection of WebElement objects, and attempts to emulate the WebElement interface while also using the jQuery convention

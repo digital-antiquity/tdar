@@ -69,7 +69,7 @@ public class UserAgreementInterceptor implements SessionDataAware, Interceptor {
         // now we check for any outstanding notices require user attention
         String result = null;
 
-        if (authenticationService.userHasPendingRequirements(user)
+        if (user != null && authenticationService.userHasPendingRequirements(user)
                 // avoid infinite redirect
                 && !(action instanceof AbstractCartController)
                 && !(action instanceof UserAgreementController)

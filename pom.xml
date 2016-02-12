@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>14.0.0-NEOLITHIC</version>
+    <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
@@ -19,9 +19,11 @@
         <module>base</module>
         <!-- tdar "core" files -->
         <module>core</module>
+        <module>search</module>
         <!-- the tdar webapp -->
         <module>web-base</module>
         <module>web</module>
+        <module>tag</module>
         <module>dataone</module>
         <module>odata</module>
         <module>oai-pmh</module>
@@ -30,9 +32,8 @@
 
 
     <properties>
-        <hibernate.version>4.3.10.Final</hibernate.version>
-        <hibernate.search.version>4.5.3.Final</hibernate.search.version>
-        <spring.framework.version>4.2.2.RELEASE</spring.framework.version>
+        <hibernate.version>5.0.7.Final</hibernate.version>
+        <spring.framework.version>4.2.4.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4-1203-jdbc42</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <liquibase.version>3.3.1</liquibase.version>
@@ -43,7 +44,7 @@
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <slf4j.version>1.7.12</slf4j.version>
+        <slf4j.version>1.7.14</slf4j.version>
         <skipTestLiquibase>true</skipTestLiquibase>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
@@ -175,7 +176,7 @@
             <dependency>
                 <groupId>org.apache.logging.log4j</groupId>
                 <artifactId>log4j-bom</artifactId>
-                <version>2.4.1</version>
+                <version>2.5</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
@@ -229,7 +230,7 @@
         <dependency>
             <groupId>com.mattbertolini</groupId>
             <artifactId>liquibase-slf4j</artifactId>
-            <version>1.2.1</version>
+            <version>2.0.0</version>
         </dependency>
 
         <dependency>
@@ -358,18 +359,18 @@
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
-        <dependency>
+        <!-- <dependency> -->
             <!-- this attempts to use the META-INF/ configuraiton for the 
                 right logging source; this allows us to pipe hibernate into slf4j -->
-            <groupId>org.jboss.logging</groupId>
+            <!-- <groupId>org.jboss.logging</groupId>
             <artifactId>jboss-logging</artifactId>
             <version>3.2.0.Final</version>
-        </dependency>
+        </dependency> -->
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>5.1.2.FINAL</version>
+            <version>5.2.2.Final</version>
             <!-- LICENSE: LGPL 2.1 -->
         </dependency>
     </dependencies>
@@ -411,6 +412,7 @@
                                 <goals>
                                     <goal>setup</goal>
                                     <goal>optimize</goal>
+<!--                                    <goal>aggregate</goal>-->
                                     <goal>optimizeIntegration</goal>
                                     <goal>snapshot</goal>
                                 </goals>

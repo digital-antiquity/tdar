@@ -19,7 +19,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Indexed;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -32,7 +31,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Table(name = "site_type_keyword", indexes = {
         @Index(name = "sitetype_appr", columnList = "approved, id") })
-@Indexed(index = "Keyword")
+//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteTypeKeyword")
 @Cacheable

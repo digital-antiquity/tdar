@@ -8,12 +8,12 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.search.query.SimpleSearchResultHandler;
-import org.tdar.search.query.SortOption;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.opensymphony.xwork2.Preparable;

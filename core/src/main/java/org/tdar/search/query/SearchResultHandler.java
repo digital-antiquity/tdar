@@ -1,10 +1,10 @@
 package org.tdar.search.query;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 
 /* further abstracting some of the functions of the search result handler 
@@ -26,28 +26,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     SortOption getSecondarySortField();
 
-    public enum ProjectionModel {
-        HIBERNATE_DEFAULT,
-        LUCENE,
-        RESOURCE_PROXY,
-        RESOURCE_PROXY_INVALIDATE_CACHE;
-
-        private List<String> projections = new ArrayList<>();
-
-        public List<String> getProjections() {
-            if (this == RESOURCE_PROXY || this == RESOURCE_PROXY_INVALIDATE_CACHE) {
-                return Arrays.asList("id");
-            }
-            return projections;
-        }
-
-        public void setProjections(List<String> projections) {
-            this.projections = projections;
-        }
-
-    }
-
-    ProjectionModel getProjectionModel();
 
     /**
      * Sets the total number of records found by the SearchService.
@@ -61,8 +39,6 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
     int getTotalRecords();
 
     boolean isDebug();
-
-    boolean isShowAll();
 
     /**
      * Return a page of results from the SearchService.
@@ -92,9 +68,10 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
 
     int getPrevPageStartRecord();
 
-    @SuppressWarnings("rawtypes")
-    List<FacetGroup<? extends Enum>> getFacetFields();
-
     int getDefaultRecordsPerPage();
+
+    void setSearchTitle(String description);
+    
+    DisplayOrientation getOrientation();
 
 }

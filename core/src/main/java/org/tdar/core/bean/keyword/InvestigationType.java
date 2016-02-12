@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Indexed;
 
 /**
  * Represents the type of Investigation or research described by the resource.
@@ -23,7 +22,7 @@ import org.hibernate.search.annotations.Indexed;
  */
 @Entity
 @Table(name = "investigation_type")
-@Indexed(index = "Keyword")
+//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.InvestigationType")
 @Cacheable

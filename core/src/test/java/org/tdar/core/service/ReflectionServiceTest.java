@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.config.BeanDefinition;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.entity.Creator;

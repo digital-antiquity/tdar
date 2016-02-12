@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -44,6 +46,11 @@ public class PdfServiceITCase extends AbstractIntegrationTestCase {
                 e.printStackTrace();
             } 
         }
+    }
+    
+    @Test
+    public void transliterateTest() {
+        assertEquals("aeiou",pdfService.transliterate("åéîøü"));
     }
     
     @Test

@@ -1,6 +1,5 @@
 <#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/${themeDir}/settings.ftl" as settings />
     <#macro head>
     <script id="ontId" type="application/json" >
     <#noescape>
@@ -10,23 +9,23 @@
 
     <style>
     div.orgChart div.hasChildren {
-        background-color: #${settings.barColors[1]};
+        background-color: #${barColors[1]};
     }
     
     div.orgChart div.node {
-        background-color: #${settings.barColors[0]};
+        background-color: #${barColors[0]};
     }
     
     div.orgChart div.node.level1 {
-        background-color: ${settings.barColors[0]};
+        background-color: ${barColors[0]};
     }
     
     div.orgChart div.node.level2 {
-        background-color: ${settings.barColors[3]};
+        background-color: ${barColors[3]};
     }
     
     div.orgChart div.node.level3 {
-        background-color: ${settings.barColors[4]};
+        background-color: ${barColors[4]};
     }
         
     </style>

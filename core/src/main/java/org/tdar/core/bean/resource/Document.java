@@ -10,17 +10,10 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 
 /**
  * Represents a Document information resource.
@@ -36,7 +29,7 @@ import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
  * @version $Rev$
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "document", indexes = {
         @Index(name = "document_type_index", columnList = "document_type")
 })
@@ -47,24 +40,24 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(key = "DOCUMENT_TYPE")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_subtype", length = FieldLength.FIELD_LENGTH_50)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     private DocumentSubType documentSubType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(key = "DEGREE")
     private DegreeType degree;
 
     @BulkImportField(key = "SERIES_NAME")
     @Column(name = "series_name")
-    @Field
+    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesName;
 
@@ -81,22 +74,22 @@ public class Document extends InformationResource {
     private String edition;
 
     @BulkImportField(key = "ISBN")
-    @Field
+    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
-    @Analyzer(impl = KeywordAnalyzer.class)
+    //@Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
     @BulkImportField(key = "BOOK_TITLE")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "book_title")
-    @Field
+    //@Field
     // @Boost(1.5f)
     private String bookTitle;
 
     @BulkImportField(key = "ISSN")
-    @Field
+    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
-    @Analyzer(impl = KeywordAnalyzer.class)
+    //@Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
     @BulkImportField(key = "START_PAGE", order = 10)
@@ -111,7 +104,7 @@ public class Document extends InformationResource {
 
     @BulkImportField(key = "JOURNAL_NAME")
     @Column(name = "journal_name")
-    @Field
+    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalName;
 

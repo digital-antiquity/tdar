@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -9,6 +10,7 @@ import java.util.TimeZone;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
@@ -16,7 +18,6 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -26,13 +27,14 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.core.service.search.SearchIndexService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -159,6 +161,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public String save() throws TdarActionException {
         // checkSession();
         // genericService.setCacheModeForCurrentSession(CacheMode.REFRESH);
+        SessionProxy.getInstance().registerSession(getGenericService().getCurrentSessionHashCode());
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
@@ -174,12 +177,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
                 if (persistable instanceof Updatable) {
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
                 }
-                if (persistable instanceof Indexable) {
-                    ((Indexable) persistable).setReadyToIndex(false);
-                }
-                if (persistable instanceof XmlLoggable) {
-                    ((XmlLoggable) persistable).setReadyToStore(false);
-                }
 
                 actionReturnStatus = save(persistable);
 
@@ -191,16 +188,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
                 // should there not be "one" save at all? I think this should be here
                 if (shouldSaveResource()) {
-                    if (persistable instanceof XmlLoggable) {
-                        ((XmlLoggable) persistable).setReadyToStore(true);
-                    }
                     getGenericService().saveOrUpdate(persistable);
-                    // NOTE: the below should not be necessary with the hibernate listener, but it seems like the saveOrUpdate above
-                    // does not catch the change of the transient readyToStore boolean
-                    XMLFilestoreLogger xmlLogger = new XMLFilestoreLogger();
-                    xmlLogger.logRecordXmlToFilestore(persistable);
                 }
 
+                SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
@@ -234,6 +225,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
+        
         return actionReturnStatus;
     }
 
@@ -247,11 +239,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         }
     }
 
-    protected void indexPersistable() {
-        if (persistable instanceof Indexable) {
-            ((Indexable) persistable).setReadyToIndex(true);
-            searchIndexService.index((Indexable) persistable);
-        }
+    protected void indexPersistable() throws SolrServerException, IOException {
+//        if (persistable instanceof Indexable) {
+//            searchIndexService.index((Indexable) persistable);
+//        }
     }
 
     private void logAction(String action_) {

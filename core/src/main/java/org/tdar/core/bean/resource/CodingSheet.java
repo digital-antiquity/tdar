@@ -24,9 +24,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.PersistableUtils;
@@ -44,7 +41,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  */
 @Entity
-@Indexed
+//@Indexed
 @Table(name = "coding_sheet", indexes = {
         @Index(name = "coding_catvar_id", columnList = "category_variable_id"),
         @Index(name = "coding_sheet_default_ontology_id_idx", columnList = "default_ontology_id")
@@ -56,11 +53,11 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
-    @IndexedEmbedded(depth = 1)
+    //@IndexedEmbedded(depth = 1)
     private CategoryVariable categoryVariable;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codingSheet")
-    @IndexedEmbedded
+    //@IndexedEmbedded
     private Set<CodingRule> codingRules = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "defaultCodingSheet")
@@ -71,7 +68,7 @@ public class CodingSheet extends InformationResource implements SupportsResource
     @JsonView(JsonLookupFilter.class)
     private Ontology defaultOntology;
 
-    @Field
+    //@Field
     private boolean generated;
 
     private transient Map<Long, CodingRule> idMap = new HashMap<>();

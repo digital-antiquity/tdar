@@ -61,7 +61,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     private void createAndAddTK(String term) {
         TemporalKeyword tk2 = new TemporalKeyword();
         tk2.setLabel(term);
-        genericKeywordService.saveOrUpdate(tk2);
+        genericService.saveOrUpdate(tk2);
     }
 
     // make sure that deleting a hierarchical keyword does not implicitly delete it's parent.
@@ -83,10 +83,10 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
 
         // try to get the parent back. The deletion of the child should not cascade.
         if (parent instanceof SiteTypeKeyword) {
-            HierarchicalKeyword<SiteTypeKeyword> parent2 = genericKeywordService.find(SiteTypeKeyword.class, parentId);
+            HierarchicalKeyword<SiteTypeKeyword> parent2 = genericService.find(SiteTypeKeyword.class, parentId);
             Assert.assertEquals(parent, parent2);
         } else {
-            HierarchicalKeyword<CultureKeyword> parent2 = genericKeywordService.find(CultureKeyword.class, parentId);
+            HierarchicalKeyword<CultureKeyword> parent2 = genericService.find(CultureKeyword.class, parentId);
             Assert.assertEquals(parent, parent2);
 
         }
@@ -95,8 +95,8 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testHierarchicalKeywordChildDeleteNotCascaded() {
-        List<CultureKeyword> cultureKeywords = genericKeywordService.findAll(CultureKeyword.class);
-        List<SiteTypeKeyword> siteTypeKeywords = genericKeywordService.findAll(SiteTypeKeyword.class);
+        List<CultureKeyword> cultureKeywords = genericService.findAll(CultureKeyword.class);
+        List<SiteTypeKeyword> siteTypeKeywords = genericService.findAll(SiteTypeKeyword.class);
         assertKeywordChildDeleteNotCascaded(cultureKeywords);
         assertKeywordChildDeleteNotCascaded(siteTypeKeywords);
     }

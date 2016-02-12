@@ -63,7 +63,7 @@ public class TdarAppConfiguration extends IntegrationAppConfiguration implements
     }
 
     public boolean disableHibernateSearch() {
-        return false;
+        return true;
     }
 
     @Bean(name = "tdarGeoDataSource")

@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.resource.ResourceService;
 
@@ -16,6 +17,9 @@ public class RebuildGeographicKeywordProcess extends AbstractScheduledBatchProce
 
     @Autowired
     private transient ResourceService resourceService;
+
+    @Autowired
+    private transient GenericService genericService;
 
     @Override
     public boolean isSingleRunProcess() {
@@ -43,8 +47,8 @@ public class RebuildGeographicKeywordProcess extends AbstractScheduledBatchProce
             logger.trace("GeoCleanup progress tdarId: " + resource.getId());
             resourceService.processManagedKeywords(resource, resource.getActiveLatitudeLongitudeBoxes());
             logger.debug("final keywords: " + resource.getManagedGeographicKeywords());
-            resourceService.save(resource.getManagedGeographicKeywords());
-            resourceService.saveOrUpdate(resource);
+            genericService.save(resource.getManagedGeographicKeywords());
+            genericService.saveOrUpdate(resource);
         }
     }
 

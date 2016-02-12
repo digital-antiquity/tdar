@@ -5,7 +5,11 @@ import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +29,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
@@ -45,7 +50,8 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.config.IndexEventListener;
+import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
@@ -81,6 +87,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     CollectionController controller;
 
     static int indexCount = 0;
+
+    @Autowired
+    IndexEventListener listener;
 
     /**
      * Make sure that case in-sensitive queries return the same thing
@@ -126,7 +135,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS);
         logger.debug("collections: {}", image.getResourceCollections());
-        
+
         List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
         image.getResourceCollections().clear();
@@ -158,8 +167,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     }
 
     @Before
-    public void setup()
-    {
+    public void setup() {
         controller = generateNewInitializedController(CollectionController.class);
         if (indexCount < 1) {
             reindex();
@@ -192,8 +200,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testDraftResourceIssue() throws Exception
-    {
+    public void testDraftResourceIssue() throws Exception {
         String email = "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
 
@@ -255,14 +262,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertTrue(vc.getResults().contains(draft));
         genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
     }
-    
-    
-    
-    
+
     @Test
     @Rollback(true)
-    public void testPublicCollection() throws Exception
-    {
+    public void testPublicCollection() throws Exception {
         String email = "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
 
@@ -299,12 +302,10 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
     }
-    
 
     @Test
     @Rollback(true)
-    public void testLimitedCollectionPermissions() throws Exception
-    {
+    public void testLimitedCollectionPermissions() throws Exception {
         String email = "a243@basda.com";
         entityService.delete(entityService.findByEmail(email));
 
@@ -335,8 +336,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testRemoveResources() throws Exception
-    {
+    public void testRemoveResources() throws Exception {
         ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         resourceCollection.setName("a resource collection");
         resourceCollection.setDescription("testing add then remove resources");
@@ -391,8 +391,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDeleteResourceCollection() throws Exception
-    {
+    public void testDeleteResourceCollection() throws Exception {
         ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         ResourceCollection resourceCollectionParent = new ResourceCollection(CollectionType.SHARED);
         ResourceCollection resourceCollectionChild = new ResourceCollection(CollectionType.SHARED);
@@ -442,8 +441,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
-        for (ResourceCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED))
-        {
+        for (ResourceCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED)) {
             child.setParent(null);
             genericService.saveOrUpdate(child);
         }
@@ -480,8 +478,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDeleteResourceCollectionWithUser() throws Exception
-    {
+    public void testDeleteResourceCollectionWithUser() throws Exception {
         ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         resourceCollection.setName("a resource collection");
         resourceCollection.setSortBy(SortOption.DATE);
@@ -609,30 +606,33 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testBrowseControllerVisibleCollections() throws Exception
-    {
+    public void testBrowseControllerVisibleCollections() throws Exception {
+        genericService.synchronize();
+        logger.debug("------------------------------------------------------------------------------------------------------------------");
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
-        ResourceCollection collection1 = generateResourceCollection("test 1", "", CollectionType.INTERNAL, false, new ArrayList<>(users),
+        ResourceCollection collection1 = generateResourceCollection("INTERNAL", "", CollectionType.INTERNAL, false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
-        ResourceCollection collection2 = generateResourceCollection("test 2", "", CollectionType.SHARED, false, new ArrayList<>(users),
+        ResourceCollection collection2 = generateResourceCollection("SHARED", "", CollectionType.SHARED, false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
         InformationResource testFile = generateDocumentWithUser();
-        ResourceCollection parentCollection = generateResourceCollection("test 3", "", CollectionType.SHARED, true, new ArrayList<>(users),
+        ResourceCollection parentCollection = generateResourceCollection("PARENT", "", CollectionType.SHARED, true, new ArrayList<>(users),
                 Arrays.asList(testFile), null);
         Long id = parentCollection.getId();
-        ResourceCollection childCollection = generateResourceCollection("test 4", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
+        ResourceCollection childCollection = generateResourceCollection("CHILD", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
-        ResourceCollection childCollectionHidden = generateResourceCollection("test 5", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
+        ResourceCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
         // genericService.saveOrUpdate(parentCollection);
+        Long parentCollectionId = parentCollection.getId();
         parentCollection = null;
         BrowseCollectionController controller_ = generateNewInitializedController(BrowseCollectionController.class);
+        initAnonymousUser(controller_);
         Long fileId = testFile.getId();
         searchIndexService.flushToIndexes();
-        searchIndexService.indexAll(getAdminUser(), Resource.class);
+        genericService.synchronize();
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         testFile = null;
-        evictCache();
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
         testFile = genericService.find(Document.class, fileId);
@@ -640,31 +640,51 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
         controller_.setRecordsPerPage(1000);
         assertEquals(Action.SUCCESS, controller_.browseCollections());
-        List<ResourceCollection> collections = controller_.getResults();
-        assertFalse(collections.contains(collection1));
-        assertFalse(collections.contains(collection2));
-        // FIXME: @ManyToMany directional issue
-        // assertEquals(1,parentCollection.getResources().size());
+        List<ResourceCollection> collections_ = controller_.getResults();
+        for (ResourceCollection result : collections_) {
+            if (result != null) {
+                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(), result.isHidden(), result.isTopLevel());
+            }
+            logger.debug("NULL");
+        }
+        List<Long> collections = PersistableUtils.extractIds(collections_);
+        collections_ = null;
+        Long childCollectionId = childCollection.getId();
+        Long childCollectionHiddenId = childCollectionHidden.getId();
+        Long collection1Id = collection1.getId();
+        Long collection2Id = collection2.getId();
+        
+        childCollection = null;
+        childCollectionHidden = null;
+        collection1 = null;
+        collection2 = null;
+        assertFalse(collections.contains(collection1Id));
+        assertFalse(collections.contains(collection2Id));
+
         assertEquals(1, testFile.getResourceCollections().size());
         parentCollection = genericService.find(ResourceCollection.class, id);
         assertTrue(parentCollection.isShared());
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
-        logger.debug("results:{}", collections);
-        assertTrue(String.format("collections %s should contain %s", collections, parentCollection), collections.contains(parentCollection));
-        assertFalse(childCollection.isHidden());
-        assertFalse(collections.contains(childCollection));
-        assertFalse(collections.contains(childCollectionHidden));
+        String slug = parentCollection.getSlug();
+        parentCollection = null;
+        assertTrue(String.format("collections %s should contain %s", collections, parentCollectionId), collections.contains(parentCollectionId));
+        // assertFalse(childCollection.isHidden());
+        assertFalse(collections.contains(childCollectionId));
+        assertFalse(collections.contains(childCollectionHiddenId));
+        // genericService.synchronize();
+        collections = null;
+
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         // TESTING ANONYMOUS USER
         initAnonymousUser(vc);
         vc.setId(id);
-        vc.setSlug(parentCollection.getSlug());
+        vc.setSlug(slug);
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
-        collections = vc.getCollections();
-        assertTrue(collections.contains(childCollection));
-        assertFalse(collections.contains(childCollectionHidden));
+        collections = PersistableUtils.extractIds(vc.getCollections());
+        assertTrue(collections.contains(childCollectionId));
+        assertFalse(collections.contains(childCollectionHiddenId));
         assertEquals(1, vc.getResults().size());
 
         // TESTING MORE ADVANCED VIEW RIGHTS
@@ -672,13 +692,13 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc = generateNewController(CollectionViewAction.class);
         init(vc, testPerson);
         vc.setId(id);
-        vc.setSlug(parentCollection.getSlug());
+        vc.setSlug(slug);
         vc.prepare();
         assertEquals(Action.SUCCESS, vc.view());
-        collections = vc.getCollections();
+        collections = PersistableUtils.extractIds(vc.getCollections());
         assertEquals(2, collections.size());
-        assertTrue(collections.contains(childCollection));
-        assertTrue(collections.contains(childCollectionHidden));
+        assertTrue(collections.contains(childCollectionId));
+        assertTrue(collections.contains(childCollectionHiddenId));
 
         logger.info("{}", vc.getActionErrors());
 
@@ -687,26 +707,30 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testHiddenParentVisibleChild() throws Exception
-    {
+    public void testHiddenParentVisibleChild() throws Exception {
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
         evictCache();
         searchIndexService.index(collection1, collection2);
+        logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
+        logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
         searchIndexService.flushToIndexes();
-        BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class);
+        genericService.synchronize();
+        BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class, testPerson);
         browseController.setRecordsPerPage(Integer.MAX_VALUE);
         browseController.browseCollections();
+        logger.debug("results:{}", PersistableUtils.extractIds(browseController.getResults()));
         assertTrue("should see child collection of hidden parent", browseController.getResults().contains(collection2));
         assertFalse("should not see hidden collection", browseController.getResults().contains(collection1));
     }
 
     @Test
     @Rollback
-    public void testNestedCollectionEdit() throws Exception
-    {
+    public void testNestedCollectionEdit() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, new ArrayList<Resource>(), null);
@@ -720,8 +744,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testResourceCollectionParentCollectionsFoundProperly() throws Exception
-    {
+    public void testResourceCollectionParentCollectionsFoundProperly() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a2@basda.com", "1234");
         String name = "test collection";
         String description = "test description";
@@ -752,8 +775,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDocumentControllerAssigningResourceCollections() throws Exception
-    {
+    public void testDocumentControllerAssigningResourceCollections() throws Exception {
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, null, new ArrayList<Resource>(), null);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
@@ -777,8 +799,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testDocumentControllerAssigningResourceCollectionsWithLocalRights() throws Exception
-    {
+    public void testDocumentControllerAssigningResourceCollectionsWithLocalRights() throws Exception {
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, true, null, new ArrayList<Resource>(), null);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
@@ -807,8 +828,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testResourceCollectionDraftDisplay() throws Exception
-    {
+    public void testResourceCollectionDraftDisplay() throws Exception {
         Document draftDocument = generateDocumentWithUser();
         Document activeDocument = generateDocumentWithUser();
         draftDocument.setStatus(Status.DRAFT);
@@ -839,8 +859,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testSharedResourceCollectionQuery() throws Exception
-    {
+    public void testSharedResourceCollectionQuery() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)));
 
@@ -853,8 +872,7 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
     @Test
     @Rollback
-    public void testRemoveResourceCollectionButMaintainSome() throws Exception
-    {
+    public void testRemoveResourceCollectionButMaintainSome() throws Exception {
         Document doc = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(doc.getSubmitter(), GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, Arrays.asList(doc), null);
@@ -1081,7 +1099,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         controller.prepare();
         controller.edit();
         // logger.info("resources:{}", controller.getResources());
-        logger.info("?:{}", controller.getResults());
         logger.info("?:{}", controller.getResourceCollection().getResources());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(controller.getResourceCollection().getResources()));
     }
@@ -1165,7 +1182,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
         vc.view();
         assertTrue("resource should be viewable", ((Viewable) vc.getResults().get(0)).isViewable());
     }
-
 
     /**
      * Assert that the sparse resource list returned by findCollectionSparseResources matches the persisted list (for

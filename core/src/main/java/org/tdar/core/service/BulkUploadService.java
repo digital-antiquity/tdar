@@ -52,7 +52,6 @@ import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchIndexService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
@@ -95,13 +94,7 @@ public class BulkUploadService {
     private BillingAccountService accountService;
 
     @Autowired
-    private SearchIndexService searchIndexService;
-
-    @Autowired
     private FileAnalyzer analyzer;
-
-    @Autowired
-    private ExcelService excelService;
 
     @Autowired
     private BulkUploadTemplateService bulkUploadTemplateService;
@@ -150,7 +143,7 @@ public class BulkUploadService {
                 manifestProxy = validateManifestFile(workbook.getSheetAt(0), resourceTemplate, submitter, fileProxies, ticketId);
             } catch (Exception e) {
                 logger.debug("exception happened when reading excel file", e);
-                manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
+                manifestProxy = new BulkManifestProxy(null, null, null, bulkUploadTemplateService, entityService, reflectionService);
                 manifestProxy.getAsyncUpdateReceiver().addError(e);
                 if (PersistableUtils.isNotNullOrTransient(ticketId)) {
                     asyncStatusMap.put(ticketId, manifestProxy.getAsyncUpdateReceiver());
@@ -211,7 +204,7 @@ public class BulkUploadService {
 
         // the manifest proxy might be null if no excel file was provided.
         if (manifestProxy == null) {
-            manifestProxy = new BulkManifestProxy(null, null, null, excelService, bulkUploadTemplateService, entityService, reflectionService);
+            manifestProxy = new BulkManifestProxy(null, null, null, bulkUploadTemplateService, entityService, reflectionService);
         }
         manifestProxy.setFileProxies(fileProxies);
         // If there are errors, then stop...
@@ -281,7 +274,8 @@ public class BulkUploadService {
     private void reindexProject(Long projectId, AsyncUpdateReceiver updateReciever) {
         try {
             if (PersistableUtils.isNotNullOrTransient(projectId)) {
-                boolean exceptions = searchIndexService.indexProject(projectId);
+                logger.debug("REINDEX !!! ");
+                boolean exceptions = false;// searchIndexService.indexProject(projectId);
                 if (exceptions) {
                     throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
                 }
@@ -389,7 +383,6 @@ public class BulkUploadService {
                 try {
                     cols.addAll(resource.getResourceCollections());
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
-                    resource.setReadyToIndex(true);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
                     receiver.addError(trex);
@@ -463,14 +456,14 @@ public class BulkUploadService {
 
         LinkedHashSet<CellMetadata> allValidFields = bulkUploadTemplateService.getAllValidFieldNames();
         Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
-        BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, excelService, bulkUploadTemplateService, entityService,
+        BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, bulkUploadTemplateService, entityService,
                 reflectionService);
         if (PersistableUtils.isNotNullOrTransient(ticketId)) {
             asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
         }
         proxy.setSubmitter(submitter);
         FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
-        proxy.setColumnNamesRow(sheet.getRow(ExcelService.FIRST_ROW));
+        proxy.setColumnNamesRow(sheet.getRow(ExcelWorkbookWriter.FIRST_ROW));
 
         // capture all of the column names and make sure they're valid in general
         proxy.initializeColumnMetadata(cellLookupMap, evaluator);
@@ -491,7 +484,7 @@ public class BulkUploadService {
             throw new TdarRecoverableRuntimeException("bulkUploadService.the_manifest_file_uploaded_appears_to_be_empty_no_columns_found");
         }
 
-        if (!proxy.getColumnNames().get(ExcelService.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
+        if (!proxy.getColumnNames().get(ExcelWorkbookWriter.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
             throw new TdarRecoverableRuntimeException("bulkUploadService.the_first_column_must_be_the_filename");
         }
 
@@ -585,7 +578,6 @@ public class BulkUploadService {
         if (InformationResource.class.isAssignableFrom(resourceClass)) {
             logger.info("saving " + fileName + "..." + suggestTypeForFile);
             InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
-            informationResource.setReadyToIndex(false);
             informationResource.setTitle(fileName);
             informationResource.markUpdated(proxy.getSubmitter());
             informationResource.setDescription(" ");

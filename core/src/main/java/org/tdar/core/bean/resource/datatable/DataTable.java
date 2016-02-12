@@ -25,14 +25,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.IndexedEmbedded;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
@@ -62,8 +58,8 @@ public class DataTable extends Persistable.Base {
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    @Field
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "display_name")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
@@ -73,7 +69,7 @@ public class DataTable extends Persistable.Base {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")
-    @IndexedEmbedded
+    //@IndexedEmbedded
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
     private transient Map<String, DataTableColumn> nameToColumnMap;

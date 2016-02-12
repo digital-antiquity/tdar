@@ -10,7 +10,6 @@ import org.apache.pdfbox.preflight.ValidationResult;
 import org.apache.pdfbox.preflight.ValidationResult.ValidationError;
 import org.apache.pdfbox.preflight.exception.SyntaxValidationException;
 import org.apache.pdfbox.preflight.parser.PreflightParser;
-import org.junit.Test;
 import org.tdar.TestConstants;
 
 public class PdfaTest {

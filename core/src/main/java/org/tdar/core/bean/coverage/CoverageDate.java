@@ -12,18 +12,12 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.Range;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -48,22 +42,22 @@ public class CoverageDate extends Persistable.Base implements HasResource<Resour
     private static final long serialVersionUID = -5878760394443928287L;
 
     @Column(name = "start_date")
-    @Field(name = "startDate", store = Store.YES)
-    // @NumericField
-    @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    //@Field(name = "startDate", store = Store.YES)
+    // //@NumericField
+    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
     @JsonView(JsonLookupFilter.class)
     private Integer startDate;
 
     @Column(name = "end_date")
-    @Field(name = "endDate", store = Store.YES)
-    // @NumericField
-    @FieldBridge(impl = TdarPaddedNumberBridge.class)
+    //@Field(name = "endDate", store = Store.YES)
+    // //@NumericField
+    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
     @JsonView(JsonLookupFilter.class)
     private Integer endDate;
 
     @Enumerated(EnumType.STRING)
-    @Field
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "date_type", length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private CoverageType dateType;

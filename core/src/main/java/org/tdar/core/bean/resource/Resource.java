@@ -55,27 +55,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.lucene.analysis.KeywordAnalyzer;
-import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.ClassBridge;
-import org.hibernate.search.annotations.DateBridge;
-import org.hibernate.search.annotations.DocumentId;
-import org.hibernate.search.annotations.DynamicBoost;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Indexed;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Resolution;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -122,12 +107,6 @@ import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.search.index.DontIndexWhenNotReadyInterceptor;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.index.boost.InformationResourceBoostStrategy;
-import org.tdar.search.index.bridge.ResourceClassBridge;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
@@ -170,9 +149,9 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "resource_type_index", columnList = "resource_type"),
         @Index(name = "idx_created", columnList = "date_created")
 })
-@ClassBridge(impl = ResourceClassBridge.class)
-@Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
-@DynamicBoost(impl = InformationResourceBoostStrategy.class)
+//@ClassBridge(impl = ResourceClassBridge.class)
+//@Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
+//@DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,
@@ -255,7 +234,7 @@ public class Resource implements Persistable,
     }
 
     @Id
-    @DocumentId
+//    @DocumentId
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "resource_sequence")
     @SequenceGenerator(name = "resource_sequence", allocationSize = 1, sequenceName = "resource_sequence")
     @JsonView(JsonLookupFilter.class)
@@ -281,10 +260,10 @@ public class Resource implements Persistable,
 
     
     
-    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_created", nullable=false)
-    @DateBridge(resolution = Resolution.DAY)
+//    @DateBridge(resolution = Resolution.DAY)
     @JsonView({ JsonLookupFilter.class, JsonIntegrationSearchResultFilter.class })
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
@@ -295,15 +274,15 @@ public class Resource implements Persistable,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "resource_type", length = FieldLength.FIELD_LENGTH_255)
-    @Field(norms = Norms.NO, store = Store.YES)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field(norms = Norms.NO, store = Store.YES)
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @JsonView(JsonLookupFilter.class)
     private ResourceType resourceType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
-    @Field(norms = Norms.NO, store = Store.YES)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field(norms = Norms.NO, store = Store.YES)
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @JsonView(JsonLookupFilter.class)
     private Status status = Status.ACTIVE;
 
@@ -311,7 +290,7 @@ public class Resource implements Persistable,
     @Column(name = "previous_status", length = FieldLength.FIELD_LENGTH_50)
     private Status previousStatus = Status.ACTIVE;
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(nullable = false, name = "submitter_id")
     @NotNull
@@ -323,20 +302,20 @@ public class Resource implements Persistable,
     private TdarUser uploader;
 
     // @Boost(.5f)
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "updater_id")
     @NotNull
     private TdarUser updatedBy;
 
-    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @NotNull
     @Column(name = "date_updated", nullable=false)
-    @DateBridge(resolution = Resolution.MILLISECOND)
+//    @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
@@ -453,7 +432,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @IndexedEmbedded(depth = 2)
+    //@IndexedEmbedded(depth = 2)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
 
@@ -462,12 +441,12 @@ public class Resource implements Persistable,
     @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @IndexedEmbedded(depth = 2)
+    //@IndexedEmbedded(depth = 2)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
     private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<ResourceCollection>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
-    @IndexedEmbedded
+    //@IndexedEmbedded
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
 
     private transient BillingAccount account;
@@ -483,32 +462,6 @@ public class Resource implements Persistable,
     private String externalId;
 
     private transient Float score = -1f;
-    private transient boolean readyToIndex = true;
-    private transient boolean readyToStore = true;
-
-    @Transient
-    @XmlTransient
-    public boolean isReadyToStore() {
-        return readyToStore;
-    }
-
-    public void setReadyToStore(boolean readyToStore) {
-        this.readyToStore = readyToStore;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isReadyToIndex() {
-        return readyToIndex;
-    }
-
-    @Override
-    public void setReadyToIndex(boolean readyToIndex) {
-        this.readyToIndex = readyToIndex;
-    }
-
-    private transient Explanation explanation;
 
     @XmlElementWrapper(name = "cultureKeywords")
     @XmlElement(name = "cultureKeyword")
@@ -523,8 +476,8 @@ public class Resource implements Persistable,
      * this function should introduce into the index all of the people who can
      * modify a record which is useful for limiting things on the project page
      */
-    @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
-    @IndexedEmbedded
+    //@Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY)
+    //@IndexedEmbedded
     @ElementCollection
     public List<Long> getUsersWhoCanModify() {
         List<Long> users = new ArrayList<Long>();
@@ -551,8 +504,8 @@ public class Resource implements Persistable,
      * this function should introduce into the index all of the people who can
      * modify a record which is useful for limiting things on the project page
      */
-    @Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
-    @IndexedEmbedded
+    //@Field(name = QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW)
+    //@IndexedEmbedded
     @ElementCollection
     public List<Long> getUsersWhoCanView() {
         List<Long> users = new ArrayList<Long>();
@@ -576,13 +529,13 @@ public class Resource implements Persistable,
         return users;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return getCultureKeywords();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceCreator> getActiveResourceCreators() {
         return getResourceCreators();
@@ -621,7 +574,7 @@ public class Resource implements Persistable,
         return siteTypeKeywords;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
         return getSiteTypeKeywords();
@@ -674,7 +627,7 @@ public class Resource implements Persistable,
         return otherKeywords;
     }
 
-    @IndexedEmbedded(targetElement = OtherKeyword.class)
+    //@IndexedEmbedded(targetElement = OtherKeyword.class)
     @JsonView(JsonProjectLookupFilter.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
         return getOtherKeywords();
@@ -693,7 +646,7 @@ public class Resource implements Persistable,
         return siteNameKeywords;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
         return getSiteNameKeywords();
@@ -712,7 +665,7 @@ public class Resource implements Persistable,
         return materialKeywords;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
         return getMaterialKeywords();
@@ -731,7 +684,7 @@ public class Resource implements Persistable,
         return investigationTypes;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<InvestigationType> getActiveInvestigationTypes() {
         return getInvestigationTypes();
@@ -746,7 +699,7 @@ public class Resource implements Persistable,
     }
 
     @Override
-    @Field(store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
+    //@Field(store = Store.YES, analyzer = //@Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     @XmlAttribute
     public Long getId() {
         return id;
@@ -759,17 +712,17 @@ public class Resource implements Persistable,
 
     // @Boost(1.5f)
     @Override
-    @Fields({
-            @Field,
-            @Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
-                    analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
-            @Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)) })
+    //@Fields({
+            //@Field,
+            //@Field(name = QueryFieldNames.TITLE_PHRASE, norms = Norms.NO, store = Store.NO,
+//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)),
+            //@Field(name = QueryFieldNames.TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)) })
     public String getTitle() {
         return title;
     }
 
     @Override
-    @Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(name = QueryFieldNames.TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getTitleSort() {
         if (getTitle() == null) {
             return "";
@@ -808,10 +761,10 @@ public class Resource implements Persistable,
     }
 
     @Override
-    @Fields({
-            @Field,
-            @Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = @Analyzer(
-                    impl = TdarCaseSensitiveStandardAnalyzer.class)) })
+    //@Fields({
+            //@Field,
+            //@Field(name = QueryFieldNames.DESCRIPTION_PHRASE, norms = Norms.NO, store = Store.NO, analyzer = //@Analyzer(
+//                    impl = TdarCaseSensitiveStandardAnalyzer.class)) })
     public String getDescription() {
         return description;
     }
@@ -870,7 +823,7 @@ public class Resource implements Persistable,
         return latitudeLongitudeBoxes;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView({JsonProjectLookupFilter.class,JsonLookupFilter.class})
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return getLatitudeLongitudeBoxes();
@@ -932,7 +885,7 @@ public class Resource implements Persistable,
         return getGeographicKeywords();
     }
 
-    @IndexedEmbedded(prefix = "activeGeographicKeywords.")
+    //@IndexedEmbedded(prefix = "activeGeographicKeywords.")
     public Set<GeographicKeyword> getIndexedGeographicKeywords() {
         Set<GeographicKeyword> indexed = new HashSet<GeographicKeyword>(
                 getActiveGeographicKeywords());
@@ -963,7 +916,7 @@ public class Resource implements Persistable,
         return temporalKeywords;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
         return getTemporalKeywords();
@@ -991,8 +944,8 @@ public class Resource implements Persistable,
         return resourceType;
     }
 
-    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_TYPE_SORT, analyze = Analyze.NO)
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_TYPE_SORT, analyze = Analyze.NO)
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     public String getResourceTypeSort() {
         return resourceType.getSortName();
     }
@@ -1308,31 +1261,31 @@ public class Resource implements Persistable,
         this.coverageDates = coverageDates;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<CoverageDate> getActiveCoverageDates() {
         return getCoverageDates();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceAnnotation> getActiveResourceAnnotations() {
         return getResourceAnnotations();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<SourceCollection> getActiveSourceCollections() {
         return getSourceCollections();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
         return getRelatedComparativeCollections();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceNote> getActiveResourceNotes() {
         return getResourceNotes();
@@ -1511,29 +1464,6 @@ public class Resource implements Persistable,
         return true;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see org.tdar.core.bean.Indexable#getExplanation()
-     */
-    @Override
-    @XmlTransient
-    public Explanation getExplanation() {
-        return explanation;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see
-     * org.tdar.core.bean.Indexable#setExplanation(org.apache.lucene.search.
-     * Explanation)
-     */
-    @Override
-    public void setExplanation(Explanation ex) {
-        this.explanation = ex;
-    }
-
     @Transient
     public Set<ResourceCollection> getSharedResourceCollections() {
         Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
@@ -1614,32 +1544,13 @@ public class Resource implements Persistable,
      * ResourceCreators, this makes the resource show up in the browse page for
      * that creator
      */
-    @Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
+    //@Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = //@Analyzer(impl = KeywordAnalyzer.class))
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
             return getSubmitter().getId();
         }
         return null;
-    }
-
-    @Field(name = QueryFieldNames.CREATOR_ROLE_IDENTIFIER, analyzer = @Analyzer(impl = KeywordAnalyzer.class))
-    @IndexedEmbedded
-    @ElementCollection
-    @XmlTransient
-    // This field facilitates unified lucene search for submitter, updater,
-    // resourceProvider, and resourceCreators
-    // should be in the form {creartorType}{creatorId}{creatorRole}
-    public List<String> getCreatorRoleIdentifiers() {
-        List<String> list = new ArrayList<String>();
-        for (ResourceCreator resourceCreator : getActiveResourceCreators()) {
-            list.add(resourceCreator.getCreatorRoleIdentifier());
-        }
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getSubmitter(),
-                ResourceCreatorRole.SUBMITTER));
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getUpdatedBy(),
-                ResourceCreatorRole.UPDATER));
-        return list;
     }
 
 
@@ -1882,7 +1793,7 @@ public class Resource implements Persistable,
         return creators;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @JsonView(JsonProjectLookupFilter.class)
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return getIndividualAndInstitutionalCredit();

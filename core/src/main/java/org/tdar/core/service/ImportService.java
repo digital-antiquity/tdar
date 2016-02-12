@@ -394,6 +394,16 @@ public class ImportService {
 
         // obfuscate LatLong and clear collections if no permissions to resource
         ResourceCollection irc = rec.getInternalResourceCollection();
+
+        if (irc != null) {
+            for (AuthorizedUser au : irc.getAuthorizedUsers()) {
+                au.setId(null);
+            }
+            irc.setId(null);
+            irc.getResources().clear();
+            irc.getResources().add(rec);
+        }
+
         if (!canEditResource) {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
@@ -405,11 +415,6 @@ public class ImportService {
             irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            if (irc != null) {
-                for (AuthorizedUser au : irc.getAuthorizedUsers()) {
-                    au.setId(null);
-                }
-            }
             for (ResourceCollection rc : rec.getResourceCollections()) {
                 rc.getResources().add(rec);
             }

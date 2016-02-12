@@ -1,14 +1,17 @@
 package org.tdar.functional.util;
 
-import org.openqa.selenium.*;
+import java.util.Arrays;
+import java.util.stream.Stream;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.*;
-import java.util.stream.Stream;
 
 
 /**

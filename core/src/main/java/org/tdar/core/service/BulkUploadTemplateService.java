@@ -37,9 +37,6 @@ import org.tdar.utils.MessageHelper;
 public class BulkUploadTemplateService {
 
     @Autowired
-    private ExcelService excelService;
-
-    @Autowired
     private ReflectionService reflectionService;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -147,7 +144,7 @@ public class BulkUploadTemplateService {
      * @return
      */
     public HSSFWorkbook createExcelTemplate() {
-        BulkUploadTemplate template = new BulkUploadTemplate(excelService);
+        BulkUploadTemplate template = new BulkUploadTemplate();
         return template.getTemplate(getAllValidFieldNames());
     }
 

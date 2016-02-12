@@ -39,6 +39,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresent(desc);
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
+        gotoPage(currentUrlPath);
         for (Resource resource : someResources) {
             if ((resource.getStatus() == Status.ACTIVE) || (resource.getStatus() == Status.DRAFT)) {
                 assertTextPresent(resource.getTitle());
@@ -48,6 +49,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         // now go back to the edit page, add some users and remove some of the resources
         List<TdarUser> registeredUsers = getSomeUsers();
         clickLinkWithText("edit");
+        logger.debug("adding users: {}" , registeredUsers);
         int i = 1; // start at row '2' of the authorized user list, leaving the first entry blank.
         for (Person user : registeredUsers) {
             if (StringUtils.containsIgnoreCase(user.getProperName(), "user")) {

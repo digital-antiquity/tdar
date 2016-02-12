@@ -13,7 +13,6 @@ import javax.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Indexed;
 
 /**
  * Temporal term coverage
@@ -24,7 +23,7 @@ import org.hibernate.search.annotations.Indexed;
 
 @Entity
 @Table(name = "temporal_keyword")
-@Indexed(index = "Keyword")
+//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.TemporalKeyword")
 @Cacheable

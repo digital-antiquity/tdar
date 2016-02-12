@@ -138,7 +138,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         // this is the list of ids of the keywords we want to find references to.
         // TODO: it would be better to explicitly create our own keywords, and resources that reference them, in this test rather than relying on test database.
         List<Long> idlist = Arrays.asList(120L, 8L, 40L, 25L);
-        Set<CultureKeyword> expectedCultureKeywords = new HashSet<CultureKeyword>(genericKeywordService.findAll(CultureKeyword.class, idlist));
+        Set<CultureKeyword> expectedCultureKeywords = new HashSet<CultureKeyword>(genericService.findAll(CultureKeyword.class, idlist));
 
         // "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
         String hql = String.format(TdarNamedQueries.QUERY_HQL_MANY_TO_MANY_REFERENCES, Resource.class.getSimpleName(), cultureKeywordField.getName());

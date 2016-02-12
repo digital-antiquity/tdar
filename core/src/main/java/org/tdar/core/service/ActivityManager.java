@@ -1,13 +1,20 @@
 package org.tdar.core.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.utils.activity.Activity;
+
 
 /**
  * $Id$
@@ -65,12 +72,28 @@ public class ActivityManager {
      * @return
      */
     public synchronized Activity findActivity(String name) {
+        List<Activity> found = new ArrayList<>();
         for (Activity activity : activityQueue) {
             if (StringUtils.equals(activity.getName(), name)) {
-                return activity;
+                if (!activity.hasEnded()) {
+                    return activity;
+                }
+                found.add(activity);
             }
         }
-        return null;
+        Collections.sort(found, new Comparator<Activity>() {
+
+            @Override
+            public int compare(Activity o1, Activity o2) {
+                return ObjectUtils.compare(o1.getEndDate(), o2.getEndDate());
+            }
+        });
+        if (CollectionUtils.isEmpty(found)) {
+        	return null;
+        }
+        
+        logger.debug("{}",found);
+        return found.get(0);
     }
 
     /**
@@ -113,5 +136,16 @@ public class ActivityManager {
             return active;
         }
         return latest;
+    }
+
+
+    public synchronized void clearIndexingActivities() {
+        Iterator<Activity> iter = activityQueue.iterator();
+        while (iter.hasNext()) {
+            Activity item = iter.next();
+            if (item.isIndexingActivity()) {
+                iter.remove();
+            }
+        }
     }
 }

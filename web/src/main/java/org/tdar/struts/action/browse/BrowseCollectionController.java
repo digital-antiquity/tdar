@@ -1,5 +1,6 @@
 package org.tdar.struts.action.browse;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -8,7 +9,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -24,21 +26,10 @@ import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FileSystemResourceService;
-import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.builder.QueryBuilder;
-import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.bean.SearchFieldType;
+import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
@@ -53,7 +44,6 @@ import org.tdar.utils.PersistableUtils;
  * @author <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Rev$
  */
-@SuppressWarnings("rawtypes")
 @Namespace("/browse")
 @ParentPackage("default")
 @Component
@@ -71,6 +61,9 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
+    @Autowired
+    private CollectionSearchService collectionSearchService;
+    
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
@@ -78,28 +71,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private Long contentLength;
 
     @Autowired
-    private transient BillingAccountService accountService;
-
-    @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
-    private transient AuthenticationService authenticationService;
-
-    @Autowired
-    private transient EntityService entityService;
-
-    @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-
-    @Autowired
-    private transient GenericKeywordService genericKeywordService;
-
-    @Autowired
-    private transient SearchService searchService;
-
-    @Autowired
-    private transient FileSystemResourceService fileSystemResourceService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -117,20 +89,19 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     }
 
     private void performLuceneQuery() throws TdarActionException {
-        QueryBuilder qb = new ResourceCollectionQueryBuilder();
-        qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.COLLECTION_HIDDEN, Boolean.FALSE));
-        qb.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, Boolean.TRUE));
         setMode("browseCollections");
-        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         try {
-            handleSearch(qb);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), null, true, this, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, spe);
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception", tdre);
             addActionError(tdre.getMessage());
         } catch (ParseException e) {
+            getLogger().warn("search parse exception", e);
+        } catch (SolrServerException e) {
+            getLogger().warn("search parse exception", e);
+        } catch (IOException e) {
             getLogger().warn("search parse exception", e);
         }
         setSearchDescription(getText("browseController.all_tdar_collections"));
@@ -153,10 +124,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        return null;
-    }
 
     public Persistable getPersistable() {
         return persistable;
@@ -213,4 +180,5 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     public void setViewCount(Long viewCount) {
         this.viewCount = viewCount;
     }
+
 }

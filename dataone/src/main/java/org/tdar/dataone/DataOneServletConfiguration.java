@@ -34,7 +34,7 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
         if (StringUtils.isNotBlank(getFailureMessage())) {
             throw new ServletException(getFailureMessage());
         }
-//        setupContainer(container);
+
         setupOpenSessionInViewFilter(container);
 
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey

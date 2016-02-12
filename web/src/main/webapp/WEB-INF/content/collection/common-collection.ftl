@@ -68,6 +68,7 @@
         <#if results?has_content>
         <div id="divResultsSortControl">
             <h2>Resources Inside This Collection</h2>
+	        <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
             <div class="row">
                 <div class="span4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
@@ -75,6 +76,7 @@
                 <div class="span5"></div>
             </div>
         </div>
+        
         
         
         <div class="collection-facets">
@@ -94,11 +96,7 @@
                 There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
                 <#if selectedResourceTypes?has_content>
-                    <#if paginationHelper.totalNumberOfItems == 1>
-                        <@s.text name="${resourceTypeFacets[0].key}" />
-                    <#else>
-                        <@s.text name="${resourceTypeFacets[0].pluralKey}" />
-                    </#if>
+                    <@s.text name="${resourceTypeFacets[0].label}" />
                 <#else>
                     <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
                 </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
@@ -134,6 +132,16 @@
         <h3>Administrative Information</h3>
 
             <@common.resourceUsageInfo />
+		<#if editor>
+		<div class="row">
+		  <div class="span6">
+			<p><b>Admin Tools</b>
+			<ul>
+			 <li> <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></li>
+			 <li> <a href="<@s.url value="/search/download?collectionId=${resourceCollection.id?c}"/>">Export to Excel</a></li>
+            </div>
+            </div>
+		</#if>
         <div class="row">
             <div class="span4">
                 <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type}" />

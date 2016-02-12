@@ -15,7 +15,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.hibernate.annotations.Immutable;
 import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.entity.TdarUser;
 

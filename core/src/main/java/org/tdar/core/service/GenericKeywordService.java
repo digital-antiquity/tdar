@@ -36,7 +36,7 @@ import org.tdar.utils.Pair;
  * A generic service to support the majority of keyword functions.
  */
 @Service("genericKeywordSerice")
-public class GenericKeywordService extends GenericService {
+public class GenericKeywordService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -281,7 +281,7 @@ public class GenericKeywordService extends GenericService {
         genericKeywordDao.markUpdatable(keyword);
         keyword.setLabel(label);
         keyword.setDefinition(description);
-        saveOrUpdate(keyword);
+        genericKeywordDao.saveOrUpdate(keyword);
     }
 
     @Transactional(readOnly = true)

@@ -1,13 +1,10 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.assertEquals;
-
 import org.apache.struts2.StrutsSpringJUnit4TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockPageContext;
@@ -16,12 +13,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.web.TdarWebAppConfiguration;
+import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
 import com.opensymphony.xwork2.ActionProxy;
-import com.opensymphony.xwork2.ActionSupport;
 
-@ContextConfiguration(classes = TdarWebAppConfiguration.class)
+@ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @Transactional

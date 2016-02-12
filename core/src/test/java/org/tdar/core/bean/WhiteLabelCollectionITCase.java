@@ -3,20 +3,12 @@ package org.tdar.core.bean;
 import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.allOf;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.startsWith;
-import static org.tdar.TestConstants.TEST_IMAGE_DIR;
-import static org.tdar.TestConstants.TEST_IMAGE_NAME;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +19,6 @@ import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 
 /**
  * Created by jimdevos on 3/23/15.

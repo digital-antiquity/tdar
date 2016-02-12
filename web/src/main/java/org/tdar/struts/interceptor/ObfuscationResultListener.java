@@ -6,9 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import net.sf.cglib.proxy.Enhancer;
-import net.sf.cglib.proxy.InvocationHandler;
-
 import org.apache.commons.collections.iterators.AbstractIteratorDecorator;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
@@ -26,6 +23,9 @@ import org.tdar.utils.Pair;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.PreResultListener;
+
+import net.sf.cglib.proxy.Enhancer;
+import net.sf.cglib.proxy.InvocationHandler;
 
 /**
  * 

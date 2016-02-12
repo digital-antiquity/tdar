@@ -10,14 +10,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
-import org.apache.lucene.search.Explanation;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
@@ -29,11 +22,6 @@ import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.UrlUtils;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -73,10 +61,10 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         private static final long serialVersionUID = -7516574981065004043L;
 
         @Column(nullable = false, unique = true)
-        @Fields({ @Field(name = "label", analyzer = @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-                @Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class)),
-                @Field(name = "labelKeyword", analyzer = @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-                @Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
+        //@Fields({ //@Field(name = "label", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
+                //@Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
+                //@Field(name = "labelKeyword", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
+                //@Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         @Length(max = FieldLength.FIELD_LENGTH_255)
         @JsonView(JsonLookupFilter.class)
         private String label;
@@ -87,12 +75,12 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
         @Enumerated(EnumType.STRING)
         @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
-        @Field(norms = Norms.NO, store = Store.YES)
-        @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+        //@Field(norms = Norms.NO, store = Store.YES)
+        //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
         private Status status = Status.ACTIVE;
 
-        @Field
-        @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
+        //@Field
+        //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
         @Transient
         @Override
         public String getKeywordType() {
@@ -107,24 +95,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         }
 
         private transient Float score = -1f;
-        private transient Explanation explanation;
-        private transient boolean readyToIndex = true;
-
-        // @Column(name = "date_created")
-        // @NotNull
-        // private Date dateCreated;
-
-        @Transient
-        @XmlTransient
-        @Override
-        public boolean isReadyToIndex() {
-            return readyToIndex;
-        }
-
-        @Override
-        public void setReadyToIndex(boolean readyToIndex) {
-            this.readyToIndex = readyToIndex;
-        }
 
         @Override
         public int compareTo(T o) {
@@ -167,18 +137,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         @Override
         public void setScore(Float score) {
             this.score = score;
-        }
-
-        @Transient
-        @XmlTransient
-        @Override
-        public Explanation getExplanation() {
-            return explanation;
-        }
-
-        @Override
-        public void setExplanation(Explanation explanation) {
-            this.explanation = explanation;
         }
 
         @Override

@@ -1,10 +1,12 @@
 package org.tdar.struts.action.project;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -14,13 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.resource.ProjectService;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.resource.AbstractResourceController;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
@@ -44,13 +44,7 @@ public class ProjectController extends AbstractResourceController<Project> {
     private transient ProjectService projectService;
 
     @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-
-    @Autowired
     private transient SearchIndexService searchIndexService;
-
-    @Autowired
-    private transient SearchService searchService;
 
     private String callback;
     private SortOption secondarySortField;
@@ -72,7 +66,7 @@ public class ProjectController extends AbstractResourceController<Project> {
     }
 
     @Override
-    public void indexPersistable() {
+    public void indexPersistable() throws SolrServerException, IOException {
         if (isAsync()) {
             searchIndexService.indexProjectAsync(getPersistable());
         } else {

@@ -1,5 +1,6 @@
 package org.tdar.core.bean.resource;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -79,7 +80,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     // obliterate hibernate caches(1st level, 2nd level, and query cache), then return the current session
     Session cleanSession() {
         evictCache();
-        searchIndexService.flushToIndexes();
+//        searchIndexService.flushToIndexes();
         Cache cache = sessionFactory.getCache();
         cache.evictEntityRegions();
         cache.evictCollectionRegions();
@@ -244,7 +245,7 @@ public class HibernatePerformanceITCase extends AbstractIntegrationTestCase {
     }
 
     private void newWay(Long... id) {
-        List<Resource> docs = resourceService.findSkeletonsForSearch(false, id);
+        List<Resource> docs = resourceService.findSkeletonsForSearch(false, Arrays.asList(id));
         for (Resource rec : docs) {
             logForTiming(rec);
         }

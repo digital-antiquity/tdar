@@ -15,7 +15,7 @@
 	<parent>
 		<groupId>org.tdar</groupId>
 		<artifactId>web-base</artifactId>
-		<version>14.0.0-NEOLITHIC</version>
+		<version>14.1.0-NEOLITHIC-SNAPSHOT</version>
 		<relativePath>../web-base/pom.xml</relativePath>
 	</parent>
 
@@ -91,6 +91,10 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-aop</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bean-validator</artifactId>
+                    <groupId>org.glassfish.hk2.external</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

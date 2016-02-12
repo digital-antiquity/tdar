@@ -19,6 +19,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.auth.UserLogin;
@@ -31,8 +32,6 @@ import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;
 import com.vividsolutions.jts.util.Assert;
-
-import freemarker.template.Configuration;
 
 /**
  * $Id$
@@ -49,9 +48,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
     static final String REASON = "because";
     private static final String TESTING_EMAIL = "test2asd@test2.com";
     static final String TESTING_AUTH_INSTIUTION = "testing auth instiution";
-
-    @Autowired
-    private Configuration freemarkerConfiguration;
 
     @Autowired
     AuthenticationService authService;
@@ -101,7 +97,6 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         Assert.equals(ResourceController.CONTRIBUTOR, controller2.add());
         person.setContributor(true);
         Assert.equals(ResourceController.SUCCESS, controller2.add());
-
     }
 
     @Test
@@ -504,6 +499,40 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
 
         String loginResponse = loginAction.authenticate();
         assertEquals("login should have been successful", TdarActionSupport.SUCCESS, loginResponse);
+    }
+    
+    @Test
+    @Rollback
+    // register new account with mixed-case username, and ensure that user can successfully login
+    public void testAffiliationAndComment() {
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+        String username = "BobLoblaw";
+        String password = "super.secret";
+
+        TdarUser p = newPerson();
+
+        p.setEmail("foo.bar@tdar.net");
+        p.setUsername(username);
+        p.setFirstName("Testing auth");
+        p.setLastName("User");
+        p.setPhone("212 000 0000");
+
+        controller.getRegistration().setRequestingContributorAccess(true);
+        controller.getRegistration().setContributorReason(REASON);
+        controller.getRegistration().setAffiliation(UserAffiliation.CRM_ARCHAEOLOGIST);
+        p.setRpaNumber("234");
+
+        // create account, making sure the controller knows we're legit.
+        controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
+        String accountResponse = setupValidUserInController(controller, p, "super.secret");
+        logger.info(accountResponse);
+        logger.info("errors: {}", controller.getActionErrors());
+        assertEquals("user should have been successfully created", Action.SUCCESS, accountResponse);
+
+        TdarUser user = entityService.findByUsername(username);
+        assertNotNull(user);
+        assertEquals(UserAffiliation.CRM_ARCHAEOLOGIST, user.getAffiliation());
+        assertEquals(REASON, user.getContributorReason());
     }
 
     // return a new person reference. an @after method will try to delete this person from crowd

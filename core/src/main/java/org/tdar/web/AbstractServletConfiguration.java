@@ -8,7 +8,7 @@ import javax.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.orm.hibernate4.support.OpenSessionInViewFilter;
+import org.springframework.orm.hibernate5.support.OpenSessionInViewFilter;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;

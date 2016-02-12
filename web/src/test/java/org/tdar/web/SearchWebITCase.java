@@ -10,21 +10,20 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.search.SearchFieldType;
-import org.tdar.core.service.search.SearchIndexService;
-import org.tdar.search.query.SortOption;
+import org.tdar.search.bean.SearchFieldType;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
+import com.gargoylesoftware.htmlunit.html.HtmlAnchor;
 import com.gargoylesoftware.htmlunit.html.HtmlCheckBoxInput;
 
 /**
@@ -39,9 +38,6 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     private static final String BASIC_SEARCH_BASE_URL = "/search/basic";
     private static final String SEARCH_RESULTS_BASE_URL = "/search/results";
     private static int indexCount = 0;
-
-    @Autowired
-    SearchIndexService indexService;
 
     private void selectAllResourceTypes() {
         List<DomElement> iter = getHtmlPage().getElementsByName("resourceTypes");
@@ -188,14 +184,20 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Rollback
     public void testFacets() throws InstantiationException,
             IllegalAccessException {
-        for (ResourceType rt : ResourceType.values()) {
+    	 List<ResourceType> types = Arrays.asList(ResourceType.DATASET, ResourceType.DOCUMENT, ResourceType.IMAGE, ResourceType.GEOSPATIAL);
+        for (ResourceType rt : types) {
             createResourceFromType(rt, "test");
         }
 
         reindex();
-        for (ResourceType type : ResourceType.values()) {
+        for (ResourceType type :types) {
             gotoPage(SEARCH_RESULTS_BASE_URL + "?");
-            clickLinkOnPage(type.getPlural());
+            logger.debug("{} -- TYPE", type);
+            if (getPageLink(type.getPlural()) != null) {
+                clickLinkOnPage(type.getPlural());
+            } else {
+                clickLinkOnPage(type.getLabel());
+            }
             boolean sawSomething = false;
             for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("h3 a")) {
                 Element element = (Element) element_;
@@ -211,6 +213,15 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
             logger.info("{} - {}", type, sawSomething);
             assertTrue(String.format("should have at least one result for: %s", type.name()), sawSomething);
         }
+    }
+
+    private HtmlAnchor getPageLink(String plural) {
+        try {
+            return getHtmlPage().getAnchorByText(plural);
+        } catch (Exception e) {
+            
+        }
+        return null;
     }
 
     @Test

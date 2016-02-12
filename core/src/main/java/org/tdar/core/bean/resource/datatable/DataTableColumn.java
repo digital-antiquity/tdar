@@ -23,8 +23,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.Field;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +35,6 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -111,8 +108,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private String name;
 
     @Column(nullable = false, name = "display_name")
-    @Field
-    @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
+    //@Field
+    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 

@@ -31,6 +31,7 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.InformationResourceFileVersionDao;
 import org.tdar.core.service.ErrorTransferObject;
+import org.tdar.core.service.GenericService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
@@ -52,18 +53,21 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     @Autowired
     ResourceService resourceService;
 
+    @Autowired
+    GenericService genericService;
+
     @Test
     public void testXMLSave() throws ClassNotFoundException {
         XMLFilestoreLogger xmlFilestoreLogger = new XMLFilestoreLogger();
-        for (Document resource : resourceService.findAll(Document.class)) {
+        for (Document resource : genericService.findAll(Document.class)) {
             xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
 
-        for (ResourceCollection resource : resourceService.findAll(ResourceCollection.class)) {
+        for (ResourceCollection resource : genericService.findAll(ResourceCollection.class)) {
             xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
 
-        for (Creator resource : resourceService.findAll(Creator.class)) {
+        for (Creator resource : genericService.findAll(Creator.class)) {
             xmlFilestoreLogger.logRecordXmlToFilestore(resource);
         }
     }
@@ -224,11 +228,11 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         for (InformationResourceFile file : ir.getInformationResourceFiles()) {
             file.setStatus(FileStatus.QUEUED);
             assertFalse(file.isProcessed());
-            genericService.save(file);
+            genericService.saveOrUpdate(file);
             flush();
             file.setStatus(FileStatus.PROCESSED);
             assertTrue(file.isProcessed());
-            genericService.save(file);
+            genericService.saveOrUpdate(file);
             flush();
             genericService.synchronize();
 

@@ -1,7 +1,6 @@
 package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -19,13 +19,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.FacetValue;
+import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.facet.Facet;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.collection.ResourceFacetedAction;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
@@ -35,7 +34,7 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/project")
-public class ProjectViewAction extends AbstractResourceViewAction<Project> implements SearchResultHandler<Resource>, ResourceFacetedAction {
+public class ProjectViewAction extends AbstractResourceViewAction<Project> implements FacetedResultHandler<Resource>, ResourceFacetedAction {
 
     private static final long serialVersionUID = 974044619477885680L;
     private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
@@ -47,14 +46,15 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     private SortOption sortField;
     private String mode = "ProjectBrowse";
     private PaginationHelper paginationHelper;
-    private ArrayList<FacetValue> resourceTypeFacets = new ArrayList<>();
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
 
     @Autowired
-    private transient SearchService searchService;
+    private transient ResourceSearchService resourceSearchService;
+
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;
+    private FacetWrapper facetWrapper = new FacetWrapper();
 
     @Override
     public void prepare() throws TdarActionException {
@@ -72,19 +72,19 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
 
     private void handleSearch() throws TdarActionException {
         Project project = (Project) getResource();
-        ResourceQueryBuilder qb = searchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this);
+
         setSortField(project.getSortBy());
         setSecondarySortField(SortOption.TITLE);
         if (project.getSecondarySortBy() != null) {
             setSecondarySortField(project.getSecondarySortBy());
         }
-        searchService.addResourceTypeFacetToViewPage(qb, selectedResourceTypes, this);
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class, selectedResourceTypes);
         Date dateUpdated = project.getDateUpdated();
         if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
             projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
         }
         try {
-            searchService.handleSearch(qb, this, this);
+            resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
             reSortFacets(this, project);
 
@@ -128,11 +128,6 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
 
     @Override
     public boolean isDebug() {
-        return false;
-    }
-
-    @Override
-    public boolean isShowAll() {
         return false;
     }
 
@@ -220,20 +215,6 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         return options;
     }
 
-    public List<DisplayOrientation> getResultsOrientations() {
-        List<DisplayOrientation> options = Arrays.asList(DisplayOrientation.values());
-        return options;
-    }
-
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        List<FacetGroup<? extends Enum>> group = new ArrayList<>();
-        // List<FacetGroup<?>> group = new ArrayList<FacetGroup<?>>();
-        group.add(new FacetGroup<ResourceType>(ResourceType.class, QueryFieldNames.RESOURCE_TYPE, resourceTypeFacets, ResourceType.DOCUMENT));
-        return group;
-    }
-
     public PaginationHelper getPaginationHelper() {
         if (paginationHelper == null) {
             paginationHelper = PaginationHelper.withSearchResults(this);
@@ -241,12 +222,8 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         return paginationHelper;
     }
 
-    public ArrayList<FacetValue> getResourceTypeFacets() {
-        return resourceTypeFacets;
-    }
-
-    public void setResourceTypeFacets(ArrayList<FacetValue> resourceTypeFacets) {
-        this.resourceTypeFacets = resourceTypeFacets;
+    public List<Facet> getResourceTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
     public ArrayList<ResourceType> getSelectedResourceTypes() {
@@ -270,4 +247,24 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
     public int getDefaultRecordsPerPage() {
         return 100;
     }
+
+    @Override
+    public void setSearchTitle(String description) {
+        // TODO Auto-generated method stub
+        
+    }
+
+
+    public FacetWrapper getFacetWrapper() {
+        return facetWrapper;
+    }
+
+    public void setFacetWrapper(FacetWrapper facetWrapper) {
+        this.facetWrapper = facetWrapper;
+    }
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return getPersistable().getOrientation();
+	}
 }

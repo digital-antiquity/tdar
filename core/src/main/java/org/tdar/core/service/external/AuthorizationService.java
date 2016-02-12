@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -46,7 +45,6 @@ import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.search.ReservedSearchParameters;
 import org.tdar.utils.PersistableUtils;
 
 /*
@@ -143,30 +141,6 @@ public class AuthorizationService implements Accessible {
             allowed.add(Status.DUPLICATE);
         }
         return allowed;
-    }
-
-    /*
-     * The @link AdvancedSearchController's ReservedSearchParameters is a proxy object for handling advanced boolean searches. We initialize it with the search
-     * parameters
-     * that are AND-ed with the user's search to ensure appropriate search results are returned (such as a Resource's @link Status).
-     */
-    public void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, TdarUser user) {
-        reservedSearchParameters.setAuthenticatedUser(user);
-        reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
-        Set<Status> allowedSearchStatuses = getAllowedSearchStatuses(user);
-        List<Status> statuses = reservedSearchParameters.getStatuses();
-        statuses.removeAll(Collections.singletonList(null));
-
-        if (CollectionUtils.isEmpty(statuses)) {
-            statuses = new ArrayList<>(Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        }
-
-        statuses.retainAll(allowedSearchStatuses);
-        reservedSearchParameters.setStatuses(statuses);
-        if (statuses.isEmpty()) {
-            throw (new TdarRecoverableRuntimeException("auth.search.status.denied"));
-        }
-
     }
 
     /**
@@ -416,16 +390,9 @@ public class AuthorizationService implements Accessible {
             return false;
         }
 
-        if (Objects.equals(resource.getSubmitter(), person)) {
-            logger.trace("person was submitter");
-            return true;
+        if (isAdminOrOwner(person, resource, equivalentAdminRight)) {
+        	return true;
         }
-
-        if (can(equivalentAdminRight, person)) {
-            logger.trace("person is admin");
-            return true;
-        }
-
         if (authorizedUserDao.isAllowedTo(person, resource, permission)) {
             logger.trace("person is an authorized user");
             return true;
@@ -441,7 +408,20 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
-    /*
+    private boolean isAdminOrOwner(TdarUser person, HasSubmitter resource, InternalTdarRights equivalentAdminRight) {
+        if (Objects.equals(resource.getSubmitter(), person)) {
+            logger.trace("person was submitter");
+            return true;
+        }
+
+        if (can(equivalentAdminRight, person)) {
+            logger.trace("person is admin");
+            return true;
+        }
+		return false;
+	}
+
+	/*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
     public boolean canDownload(InformationResourceFileVersion irFileVersion, TdarUser person) {
@@ -507,21 +487,8 @@ public class AuthorizationService implements Accessible {
         logger.trace("applying transient viewable flag to : {}", p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': {}", p);
-            boolean viewable = false; // by default -- not allowed to view
             Viewable item = (Viewable) p;
-            if (item instanceof HasStatus) { // if we have status, then work off that
-                logger.trace("item 'has status': {}", p);
-                HasStatus status = ((HasStatus) item);
-                if (!status.isActive()) { // if not active, check other permissions
-                    logger.trace("item 'is not active': {}", p);
-                    if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
-                        logger.trace("\tuser is special': {}", p);
-                        viewable = true;
-                    }
-                } else {
-                    viewable = true;
-                }
-            }
+            boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
                 if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isHidden()) {
@@ -541,6 +508,24 @@ public class AuthorizationService implements Accessible {
             item.setViewable(viewable);
         }
     }
+
+	private boolean setupViewable(TdarUser authenticatedUser, Viewable item) {
+		boolean viewable = false;
+		if (item instanceof HasStatus) { // if we have status, then work off that
+		    logger.trace("item 'has status': {}", item);
+		    HasStatus status = ((HasStatus) item);
+		    if (!status.isActive()) { // if not active, check other permissions
+		        logger.trace("item 'is not active': {}", item);
+		        if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+		            logger.trace("\tuser is special': {}", item);
+		            viewable = true;
+		        }
+		    } else {
+		        viewable = true;
+		    }
+		}
+		return viewable;
+	}
 
     /*
      * sets the @link Viewable status on @link InformationResourceFile and @link InformationResourceFileVersion to simplify lookups on the view layer
@@ -657,4 +642,38 @@ public class AuthorizationService implements Accessible {
         return false;
 
     }
+
+	public void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds) {
+        Viewable item = (Viewable) r_;
+        boolean viewable = setupViewable(authenticatedUser, item);
+        boolean allowedToViewAll = authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds);
+		if (viewable) {
+        	item.setViewable(true);
+        } else if (allowedToViewAll) {
+			r_.setViewable(true);
+		}
+
+        if (r_ instanceof InformationResource) {
+			InformationResource ir = (InformationResource)r_;
+			for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
+		        if (irFile == null) {
+		            continue;
+		        }
+		        if (irFile.isDeleted() && PersistableUtils.isNullOrTransient(authenticatedUser)) {
+		            continue;
+		        }
+		        if (!isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO) && 
+		        		!irFile.isPublic() && !allowedToViewAll) {
+		            continue;
+		        }
+		        irFile.setViewable(true);
+		        for (InformationResourceFileVersion vers : irFile.getLatestVersions()) {
+		            vers.setViewable(true);
+		        }
+
+			}
+		}
+
+	}
+
 }

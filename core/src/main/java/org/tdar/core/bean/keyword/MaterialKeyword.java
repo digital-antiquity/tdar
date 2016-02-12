@@ -14,7 +14,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
-import org.hibernate.search.annotations.Indexed;
 
 /**
  * Material Type keyword (controlled).
@@ -24,7 +23,7 @@ import org.hibernate.search.annotations.Indexed;
  */
 @Entity
 @Table(name = "material_keyword")
-@Indexed(index = "Keyword")
+//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.MaterialKeyword")
 @Cacheable

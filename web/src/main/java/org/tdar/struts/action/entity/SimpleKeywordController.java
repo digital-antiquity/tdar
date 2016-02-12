@@ -1,6 +1,5 @@
 package org.tdar.struts.action.entity;
 
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -10,18 +9,14 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.search.SearchService;
-import org.tdar.search.query.FacetGroup;
-import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.query.SearchResultHandler;
-import org.tdar.search.query.SortOption;
-import org.tdar.search.query.builder.ResourceQueryBuilder;
-import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.HydrateableKeywordQueryPart;
+import org.tdar.search.query.LuceneSearchResultHandler;
+import org.tdar.search.query.ProjectionModel;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
@@ -30,12 +25,12 @@ import org.tdar.utils.PaginationHelper;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/keyword")
-public class SimpleKeywordController extends AbstractKeywordController implements SearchResultHandler<Resource> {
+public class SimpleKeywordController extends AbstractKeywordController implements LuceneSearchResultHandler<Resource> {
 
     private static final long serialVersionUID = 8576078075798508582L;
 
     @Autowired
-    private transient SearchService searchService;
+    private transient ResourceSearchService resourceSearchService;
 
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -45,6 +40,8 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     private SortOption sortField;
     private String mode = "KeywordBrowse";
     private PaginationHelper paginationHelper;
+
+	private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Action("edit")
     @HttpsOnly
@@ -58,12 +55,9 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         if (getKeyword().getStatus() != Status.ACTIVE && !isEditor()) {
             return NOT_FOUND;
         }
-        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(new HydrateableKeywordQueryPart<Keyword>(getKeywordType(), Arrays.asList(getKeyword())));
-        rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
         try {
             setSortField(SortOption.TITLE);
-            searchService.handleSearch(rqb, this, this);
+            resourceSearchService.buildKeywordQuery(getKeyword(), getKeywordType(), this, this);
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
@@ -151,11 +145,6 @@ public class SimpleKeywordController extends AbstractKeywordController implement
     }
 
     @Override
-    public boolean isShowAll() {
-        return false;
-    }
-
-    @Override
     public String getSearchTitle() {
         return null;
     }
@@ -175,15 +164,20 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         return startRecord - recordsPerPage;
     }
 
-    @SuppressWarnings("rawtypes")
-    @Override
-    public List<FacetGroup<? extends Enum>> getFacetFields() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public int getDefaultRecordsPerPage() {
         return 100;
     }
+
+    @Override
+    public void setSearchTitle(String description) {
+        // TODO Auto-generated method stub
+    }
+
+
+
+	@Override
+	public DisplayOrientation getOrientation() {
+		return orientation ;
+	}
 }

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+
+import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -13,7 +16,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.utils.MessageHelper;
@@ -34,45 +36,46 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
 
     @Test
     @Rollback
-    public void testSearchForPublicReosurceCollection() throws InstantiationException, IllegalAccessException {
+    public void testSearchForPublicReosurceCollection() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         ResourceCollection collection = setupCollection(false, null);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
-    public void testSearchForPrivateCollectionAnonymous() throws InstantiationException, IllegalAccessException {
+    public void testSearchForPrivateCollectionAnonymous() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         ResourceCollection collection = setupCollection(true, null);
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
-    public void testSearchForPrivateCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException {
+    public void testSearchForPrivateCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         ResourceCollection collection = setupCollection(true, getBasicUser(), true);
+        searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
-    public void testSearchForPrivateCollectionAsBasicUserWithoutRights() throws InstantiationException, IllegalAccessException {
+    public void testSearchForPrivateCollectionAsBasicUserWithoutRights() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
         ResourceCollection collection = setupCollection(true, getBasicUser());
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
-    public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException {
+    public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
 //        searchIndexService.purgeAll();
         ResourceCollection collection = setupCollection(true, getAdminUser());
         assertTrue(controller.getResults().contains(collection));
     }
 
-    private ResourceCollection setupCollection(boolean visible, TdarUser user) {
+    private ResourceCollection setupCollection(boolean visible, TdarUser user) throws SolrServerException, IOException {
         return setupCollection(visible, user, false);
     }
 
-    private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser) {
+    private ResourceCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser) throws SolrServerException, IOException {
         assertEquals(getUser(), getAdminUser());
         ResourceCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
         Document doc = createAndSaveNewResource(Document.class);
@@ -103,7 +106,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Override
     protected void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), ResourceCollection.class);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.COLLECTION);
     }
 
     @Override

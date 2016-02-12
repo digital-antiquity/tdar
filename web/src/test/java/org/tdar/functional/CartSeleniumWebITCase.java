@@ -22,9 +22,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
 import org.tdar.core.service.external.auth.UserRegistration;
-import org.tdar.utils.Pair;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.interceptor.annotations.After;
 

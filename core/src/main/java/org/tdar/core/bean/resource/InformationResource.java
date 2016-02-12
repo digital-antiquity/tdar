@@ -32,19 +32,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.lucene.analysis.KeywordAnalyzer;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
-import org.hibernate.search.annotations.Analyze;
-import org.hibernate.search.annotations.Analyzer;
-import org.hibernate.search.annotations.DynamicBoost;
-import org.hibernate.search.annotations.Field;
-import org.hibernate.search.annotations.FieldBridge;
-import org.hibernate.search.annotations.Fields;
-import org.hibernate.search.annotations.IndexedEmbedded;
-import org.hibernate.search.annotations.Norms;
-import org.hibernate.search.annotations.Store;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
@@ -73,14 +63,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.TdarValidationException;
-import org.tdar.search.index.analyzer.AutocompleteAnalyzer;
-import org.tdar.search.index.analyzer.LowercaseWhiteSpaceStandardAnalyzer;
-import org.tdar.search.index.analyzer.NonTokenizingLowercaseKeywordAnalyzer;
-import org.tdar.search.index.analyzer.TdarCaseSensitiveStandardAnalyzer;
-import org.tdar.search.index.boost.InformationResourceBoostStrategy;
-import org.tdar.search.index.bridge.PersistentReaderBridge;
-import org.tdar.search.index.bridge.TdarPaddedNumberBridge;
-import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -111,7 +93,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         // @Index(name = "infores_provid", columnList={"provider_institution_id"}),
         @Index(name = "ires_publisher", columnList = "publisher_id")
 })
-@DynamicBoost(impl = InformationResourceBoostStrategy.class)
+//@DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class InformationResource extends Resource {
 
@@ -159,24 +141,24 @@ public abstract class InformationResource extends Resource {
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(key = "METADATA_LANGUAGE")
     @Enumerated(EnumType.STRING)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "metadata_language", length = FieldLength.FIELD_LENGTH_100)
     private Language metadataLanguage;
 
     @BulkImportField(key = "RESOURCE_LANGUAGE")
     @Enumerated(EnumType.STRING)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "resource_language", length = FieldLength.FIELD_LENGTH_100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
-    @Field(norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "license_type", length = FieldLength.FIELD_LENGTH_128)
     @BulkImportField(key = LICENSE_TYPE, required = true)
     private LicenseType licenseType;
@@ -188,8 +170,8 @@ public abstract class InformationResource extends Resource {
     private String licenseText;
 
     @BulkImportField(key = "DOI")
-    @Field
-    @Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
+    //@Field
+    //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "external_doi")
     private String doi;
@@ -210,28 +192,28 @@ public abstract class InformationResource extends Resource {
     // currently just a 4 digit year.
     @Column(name = "date_created")
     @BulkImportField(key = "YEAR", required = true, order = -10)
-    @FieldBridge(impl = TdarPaddedNumberBridge.class)
-    @Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
+    //@Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @JsonView(JsonLookupFilter.class)
     private Integer date = -1;
 
     @Column(name = "date_created_normalized")
-    @FieldBridge(impl = TdarPaddedNumberBridge.class)
-    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.DATE_CREATED_DECADE, analyze = Analyze.NO)
+    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
+    //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.DATE_CREATED_DECADE, analyze = Analyze.NO)
     @XmlTransient
     private Integer dateNormalized = -1;
 
     // The institution providing this InformationResource
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(key = "PUBLISHER")
     @JoinColumn(name = "publisher_id")
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
@@ -386,8 +368,8 @@ public abstract class InformationResource extends Resource {
         return project;
     }
 
-    @Field(name = QueryFieldNames.PROJECT_ID)
-    @Analyzer(impl = KeywordAnalyzer.class)
+    //@Field(name = QueryFieldNames.PROJECT_ID)
+    //@Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
         if (projectId == null) {
             projectId = getProject().getId();
@@ -404,16 +386,16 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     // @Boost(1.5f)
-    @Fields({
-            @Field(name = QueryFieldNames.PROJECT_TITLE),
-            @Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = @Analyzer(impl = AutocompleteAnalyzer.class))
-    })
+    //@Fields({
+            //@Field(name = QueryFieldNames.PROJECT_TITLE),
+            //@Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class))
+//    })
     public String getProjectTitle() {
         return getProject().getTitleSort();
     }
 
     @Transient
-    @Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
+    //@Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitleSort() {
         return getProject().getTitleSort() + " - " + getTitle();
     }
@@ -541,9 +523,9 @@ public abstract class InformationResource extends Resource {
         return getLatestVersions(VersionType.UPLOADED);
     }
 
-    @Field(store = Store.NO)
-    @FieldBridge(impl = PersistentReaderBridge.class)
-    @Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
+    //@Field(store = Store.NO)
+    //@FieldBridge(impl = PersistentReaderBridge.class)
+    //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
     // @Boost(0.5f)
     @JsonIgnore
@@ -570,8 +552,8 @@ public abstract class InformationResource extends Resource {
         return fileURIs;
     }
 
-    @Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE, analyzer = @Analyzer(
-            impl = TdarCaseSensitiveStandardAnalyzer.class))
+    //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE, analyzer = //@Analyzer(
+//            impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
     public ResourceAccessType getResourceAccessType() {
         int totalFiles = getNonDeletedFiles().size();
@@ -668,20 +650,20 @@ public abstract class InformationResource extends Resource {
         this.copyLocation = copyLocation;
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<InvestigationType> getActiveInvestigationTypes() {
         return isProjectVisible() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project.getIndividualAndInstitutionalCredit()
                 : getIndividualAndInstitutionalCredit();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<ResourceCreator> getActiveResourceCreators() {
         Set<ResourceCreator> local = new HashSet<ResourceCreator>(super.getResourceCreators());
@@ -698,25 +680,25 @@ public abstract class InformationResource extends Resource {
         return getProject().isActive() || getProject().isDraft();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
         return isProjectVisible() && isInheritingSiteInformation() ? project.getSiteNameKeywords() : getSiteNameKeywords();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<SourceCollection> getActiveSourceCollections() {
         return isProjectVisible() && isInheritingCollectionInformation() ? project.getSourceCollections() : getSourceCollections();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
         return isProjectVisible() && isInheritingCollectionInformation() ? project.getRelatedComparativeCollections() : getRelatedComparativeCollections();
     }
 
-    @IndexedEmbedded
+    //@IndexedEmbedded
     @Override
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
         return isProjectVisible() && isInheritingSiteInformation() ? project.getSiteTypeKeywords() : getSiteTypeKeywords();
@@ -731,19 +713,19 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
         return isProjectVisible() && isInheritingMaterialInformation() ? project.getMaterialKeywords() : getMaterialKeywords();
     }
 
     @Override
-    @IndexedEmbedded(targetElement = OtherKeyword.class)
+    //@IndexedEmbedded(targetElement = OtherKeyword.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
         return isProjectVisible() && isInheritingOtherInformation() ? project.getOtherKeywords() : getOtherKeywords();
     }
 
     @Override
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return isProjectVisible() && isInheritingCulturalInformation() ? project.getCultureKeywords() : getCultureKeywords();
     }
@@ -767,25 +749,25 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return isProjectVisible() && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
     }
 
     @Override
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return isProjectVisible() && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();
     }
 
     @Override
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
         return isProjectVisible() && isInheritingTemporalInformation() ? project.getTemporalKeywords() : getTemporalKeywords();
     }
 
     @Override
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public Set<CoverageDate> getActiveCoverageDates() {
         return isProjectVisible() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
     }
@@ -861,8 +843,8 @@ public abstract class InformationResource extends Resource {
         this.mappedDataKeyValue = mappedDataKeyValue;
     }
 
-//    @Field(norms = Norms.YES, store = Store.NO)
-//    @FieldBridge(impl = StringMapBridge.class)
+//    //@Field(norms = Norms.YES, store = Store.NO)
+//    //@FieldBridge(impl = StringMapBridge.class)
 //    public Map<DataTableColumn, String> getRelatedDatasetData() {
 //        return relatedDatasetData;
 //    }
@@ -907,15 +889,6 @@ public abstract class InformationResource extends Resource {
 
     @Override
     @XmlTransient
-    public List<String> getCreatorRoleIdentifiers() {
-        List<String> list = super.getCreatorRoleIdentifiers();
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getResourceProviderInstitution(), ResourceCreatorRole.RESOURCE_PROVIDER));
-        list.add(ResourceCreator.getCreatorRoleIdentifier(getPublisher(), ResourceCreatorRole.PUBLISHER));
-        return list;
-    }
-
-    @Override
-    @XmlTransient
     public List<Creator<?>> getRelatedCreators() {
         List<Creator<?>> creators = super.getRelatedCreators();
         creators.add(getResourceProviderInstitution());
@@ -950,7 +923,7 @@ public abstract class InformationResource extends Resource {
     // shortcut for non-deleted, visible files
     @Transient
     @XmlTransient
-    @IndexedEmbedded
+    //@IndexedEmbedded
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getVisibleFiles()) {

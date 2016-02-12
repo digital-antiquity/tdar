@@ -94,7 +94,7 @@ public class SetupBillingAccountsProcess extends AbstractScheduledBatchProcess<T
         ArrayList<Long> batch = new ArrayList<>(sublist);
         sublist.clear();
         logger.trace("batch {}", batch);
-        return resourceService.findAll(Resource.class, batch);
+        return genericService.findAll(Resource.class, batch);
     }
 
     @Override

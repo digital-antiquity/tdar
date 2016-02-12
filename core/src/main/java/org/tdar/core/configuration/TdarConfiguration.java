@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
@@ -50,7 +48,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     private Filestore filestore;
 
-    private Set<String> stopWords = new HashSet<>();
+    private List<String> stopWords = new ArrayList<>();
     private List<String> couponCodes = new ArrayList<>();
 
     private String configurationFile;
@@ -58,6 +56,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private final static TdarConfiguration INSTANCE = new TdarConfiguration();
     public static final String PRODUCTION = "production";
     private static final int USE_DEFAULT_EXCEL_ROWS = -1;
+	private static final String[] defaultColors = new String[] {"#2C4D56", "#EBD790","#4B514D","#C3AA72","#DC7612","#BD3200","#A09D5B","#F6D86B", "#660000", "#909D5B"};
 
     private TdarConfiguration() {
         this("/tdar.properties");
@@ -464,7 +463,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return dir;
     }
 
-    public Set<String> getStopWords() {
+    public List<String> getStopWords() {
         if (CollectionUtils.isEmpty(stopWords)) {
             initializeStopWords();
         }
@@ -908,6 +907,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("pdf.use_low_mem", false);
     }
 
+    public boolean shouldLogToFilestore() {
+        return assistant.getBooleanProperty("log.to.filestore",true);
+    }
+
     public Long getAdminUserId() {
         return assistant.getLongProperty("admin.userid", 135028);
     }
@@ -915,4 +918,24 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public Long getAdminBillingAccountId() {
         return assistant.getLongProperty("admin.billingAccount", 216);
     }
+
+    public boolean isFilestoreReadOnly() {
+        return assistant.getBooleanProperty("filestore.readonly", false);
+    }
+
+	public boolean tagEnabled() {
+		return assistant.getBooleanProperty("tag.enabled", false);
+	}
+
+	public boolean tagEmbedded() {
+		if (tagEnabled()) {
+			return assistant.getBooleanProperty("tag.embedded", false);
+		}
+		return true;
+	}
+	
+	public List<String> getBarColors() {
+		return Arrays.asList(assistant.getStringArray("tdar.colors", defaultColors));
+	}
+	
 }
