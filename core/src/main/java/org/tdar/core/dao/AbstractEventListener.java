@@ -2,7 +2,7 @@ package org.tdar.core.dao;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.WeakHashMap;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Session;
@@ -14,12 +14,14 @@ import org.tdar.core.dao.hibernateEvents.EventListener;
 import org.tdar.core.dao.hibernateEvents.SessionProxy;
 
 import com.google.common.base.Objects;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public abstract class AbstractEventListener<C> implements EventListener {
 
     private static final SessionProxy EVENT_PROXY = SessionProxy.getInstance();
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    private WeakHashMap<Session, Set<C>> idChangeMap = new WeakHashMap<>();
+    Cache<Integer, Set<C>> idChangeMap = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(5, TimeUnit.MINUTES).removalListener(new EventRemovalListener()).build();
     private String name = "";
 
     public AbstractEventListener(String name) {
@@ -42,9 +44,9 @@ public abstract class AbstractEventListener<C> implements EventListener {
     }
 
     public void flush(Integer sessionId) {
-        Session session = null;
-        for (Session sess : idChangeMap.keySet()) {
-            if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
+        Integer session = null;
+        for (Integer sess : idChangeMap.asMap().keySet()) {
+            if (Objects.equal(sessionId.intValue(), sess)) {
                 session = sess;
                 break;
             }
@@ -57,7 +59,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
     }
 
     private void flush(Session session) {
-        Set<C> set = idChangeMap.get(session);
+        Set<C> set = idChangeMap.getIfPresent(session);
         if (!CollectionUtils.isEmpty(set)) {
             int counter = 0;
             for (Object obj : set) {
@@ -81,13 +83,13 @@ public abstract class AbstractEventListener<C> implements EventListener {
     }
 
     protected void addToSession(EventSource session, C entity) {
-        if (idChangeMap.get(session) == null) {
-            idChangeMap.put(session, new HashSet<>());
+        if (idChangeMap.getIfPresent(session.hashCode()) == null) {
+            idChangeMap.put(session.hashCode(), new HashSet<>());
         }
         if (logger.isTraceEnabled()) {
             logger.trace("adding to session: {}", entity);
         }
-        idChangeMap.get(session).add((C) entity);
+        idChangeMap.getIfPresent(session).add((C) entity);
     }
 
     protected void cleanup() {
