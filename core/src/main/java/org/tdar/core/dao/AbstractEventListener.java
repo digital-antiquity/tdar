@@ -59,17 +59,21 @@ public abstract class AbstractEventListener<C> implements EventListener {
     private void flush(Session session) {
         Set<C> set = idChangeMap.get(session);
         if (!CollectionUtils.isEmpty(set)) {
-            logger.debug("flush to {} ({})", name, set.size());
+            int counter = 0;
             for (Object obj : set) {
                 try {
                     // logger.debug("fl:{}",obj);
                     if (!session.contains(obj) || session.isReadOnly(obj)) {
                         continue;
                     }
+                    counter++;
                     process(obj);
                 } catch (Exception e) {
                     logger.error("error batch processing {}", name, e);
                 }
+            }
+            if (counter > 0) {
+            logger.debug("flushed to {} ({})", name, counter);
             }
             set.clear();
             cleanup();
