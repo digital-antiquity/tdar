@@ -40,7 +40,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
             return;
         }
 
-        flush(session);
+        flush(session.hashCode());
     }
 
     public void flush(Integer sessionId) {
@@ -55,19 +55,19 @@ public abstract class AbstractEventListener<C> implements EventListener {
             logger.error("session is null for id: {}", sessionId);
             return;
         }
-        flush(session);
+        flushInternal(session);
     }
 
-    private void flush(Session session) {
+    private void flushInternal(Integer session) {
         Set<C> set = idChangeMap.getIfPresent(session);
         if (!CollectionUtils.isEmpty(set)) {
             int counter = 0;
             for (Object obj : set) {
                 try {
                     // logger.debug("fl:{}",obj);
-                    if (!session.contains(obj) || session.isReadOnly(obj)) {
-                        continue;
-                    }
+//                    if (!session.contains(obj) || session.isReadOnly(obj)) {
+//                        continue;
+//                    }
                     counter++;
                     process(obj);
                 } catch (Exception e) {
@@ -83,13 +83,14 @@ public abstract class AbstractEventListener<C> implements EventListener {
     }
 
     protected void addToSession(EventSource session, C entity) {
-        if (idChangeMap.getIfPresent(session.hashCode()) == null) {
-            idChangeMap.put(session.hashCode(), new HashSet<>());
+        int hashCode = session.hashCode();
+		if (idChangeMap.getIfPresent(hashCode) == null) {
+            idChangeMap.put(hashCode, new HashSet<>());
         }
         if (logger.isTraceEnabled()) {
             logger.trace("adding to session: {}", entity);
         }
-        idChangeMap.getIfPresent(session).add((C) entity);
+        idChangeMap.getIfPresent(hashCode).add((C) entity);
     }
 
     protected void cleanup() {

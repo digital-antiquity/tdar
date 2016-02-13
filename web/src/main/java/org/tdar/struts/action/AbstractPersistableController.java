@@ -21,7 +21,6 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -39,7 +38,6 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -61,8 +59,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
 
-    @Autowired
-    private transient SearchIndexService searchIndexService;
     @Autowired
     private transient RecaptchaService recaptchaService;
 
@@ -161,7 +157,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public String save() throws TdarActionException {
         // checkSession();
         // genericService.setCacheModeForCurrentSession(CacheMode.REFRESH);
-        SessionProxy.getInstance().registerSession(getGenericService().getCurrentSessionHashCode());
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
@@ -191,7 +186,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
                     getGenericService().saveOrUpdate(persistable);
                 }
 
-                SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
+//                SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
