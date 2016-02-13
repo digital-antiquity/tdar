@@ -1,6 +1,7 @@
 package org.tdar.search;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,8 +20,6 @@ import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.utils.MessageHelper;
-
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 public class FacetSearchITCase extends AbstractResourceSearchITCase {
 

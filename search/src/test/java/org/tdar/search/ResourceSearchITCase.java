@@ -81,7 +81,6 @@ import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.search.service.query.ResourceSearchService;

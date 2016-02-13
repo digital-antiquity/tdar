@@ -185,6 +185,7 @@ public class SolrSearchObject<I extends Indexable> {
 		if (facetText.length() > 0) {
 			solrQuery.setParam("json.facet",facetText.toString());
 			solrQuery.setParam("facet", "on");
+//			solrQuery.setParam("facet.method", "enum");
 		}
 		if (CollectionUtils.isNotEmpty(filters)) {
 			solrQuery.setParam("fq",filters.toArray(new String[0]));
