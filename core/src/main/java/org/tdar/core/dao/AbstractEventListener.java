@@ -52,7 +52,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
             }
         }
         if (session == null) {
-            logger.error("session is null for id: {}", sessionId);
+            logger.trace("session is null for id: {}", sessionId);
             return;
         }
         flushInternal(session);
