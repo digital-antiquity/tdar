@@ -172,7 +172,9 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 
 	@Override
 	public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
-		flush(event);
+		if (event.getEntity() instanceof Indexable && !event.getSession().isReadOnly(event.getEntity())) {
+			flush(event);
+		}
 	}
 
 	@Override
