@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.event.spi.AbstractEvent;
 import org.hibernate.event.spi.EventSource;
@@ -90,6 +91,19 @@ public abstract class AbstractEventListener<C> implements EventListener {
         if (logger.isTraceEnabled()) {
             logger.trace("adding to session: {}", entity);
         }
+        
+        if (!session.contains(entity)) {
+        	return;
+        }
+        try {
+	        if (session.isReadOnly(entity)) {
+	        	return;
+	        }
+        } catch (HibernateException he) {
+        	return;
+        }
+//		logger.debug("{} [{}]",event.getSession().contains(event.getEntity()),event.getEntity());
+
         idChangeMap.getIfPresent(hashCode).add((C) entity);
     }
 

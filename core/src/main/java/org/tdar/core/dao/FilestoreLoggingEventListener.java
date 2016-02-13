@@ -18,9 +18,11 @@ import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.hibernateEvents.EventListener;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
@@ -45,9 +47,21 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 			return;
 		}
 		if (event.getEntity() instanceof XmlLoggable) {
-			addToSession(event.getSession(), (XmlLoggable) event.getEntity());
+			//addToSession(event.getSession(), (XmlLoggable) event.getEntity());
+			XmlLoggable old = (XmlLoggable)event.getEntity();
+			XmlLoggable newInstance;
+			try {
+				newInstance = (XmlLoggable)event.getEntity().getClass().newInstance();
+			newInstance.setId(old.getId());
+			if (old instanceof HasStatus) {
+				((HasStatus)newInstance).setStatus(Status.DELETED);
+			}
+			xmlLogger.convertToXML(newInstance);
+			} catch (Exception e) {
+				logger.warn("error in XML convert", old);
+			}
 		}
-		flush(event);
+//		flush(event);
 	}
 
 	@Override
@@ -58,7 +72,7 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 		}
 
 		try {
-			if (obj instanceof Persistable) {
+			if (obj instanceof XmlLoggable) {
 				xmlLogger.logRecordXmlToFilestore((Persistable) obj);
 			}
 		} catch (Exception e) {
