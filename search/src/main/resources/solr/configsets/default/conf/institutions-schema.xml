@@ -3,10 +3,10 @@
     
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <copyField source="name" dest="name_autocomplete" />
-    <copyField source="name" dest="name_phrase" />
     <copyField source="name" dest="name_sort" />
     <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
+    <copyField source="name" dest="name_phrase" />
     <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="acronym" type="string" indexed="true" stored="false" required="false" multiValued="false" />
 

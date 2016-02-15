@@ -19,6 +19,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.EntityService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.CreatorSearchService;
@@ -55,6 +56,12 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         return insts;
     }
 
+    @Test
+    public void testNamePhrase() throws ParseException, SolrServerException, IOException {
+    	LuceneSearchResultHandler<Institution> result = new SearchResult<>();
+		creatorSearchService.searchInstitution("Arizona State Unive", result, MessageHelper.getInstance());
+    }
+    
     @Test
     @Rollback
     public void testInstitutionMultiWordSearch() throws ParseException, SolrServerException, IOException {
