@@ -20,4 +20,7 @@ public class SearchUtils {
         return pers.getClass().getSimpleName() + "-" + pers.getId();
     }
 
+    public static String prepareAutoCompleteField(String term) {
+        return StringUtils.replace(StringUtils.trim(term)," ", "_");
+    }
 }

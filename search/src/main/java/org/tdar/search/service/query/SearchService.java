@@ -123,7 +123,7 @@ import com.opensymphony.xwork2.TextProvider;
                  ftq.getLuceneTime(), ftq.getHydrationTime(),
                  ftq.getTotalResults(),
                  resultHandler.getStartRecord() };
-         logger.trace("query: {} ", queryText);
+         logger.debug("query: {} ", queryText);
          logger.debug("{}: {} (SORT:{},{})\t LUCENE: {} | HYDRATION: {} | # RESULTS: {} | START #: {}", searchMetadata);
          resultHandler.setSearchTitle(q.getDescription(textProvider));
          if (resultHandler.getStartRecord() > ftq.getTotalResults()) {

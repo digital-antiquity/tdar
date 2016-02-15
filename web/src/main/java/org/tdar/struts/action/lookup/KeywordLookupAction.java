@@ -38,7 +38,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
     private String term;
     
     @Autowired
-    KeywordSearchService keywordSearchService;
+    KeywordSearchService<Keyword> keywordSearchService;
 
     @Action(value = "keyword", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })

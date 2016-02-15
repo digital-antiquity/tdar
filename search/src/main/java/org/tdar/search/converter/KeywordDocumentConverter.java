@@ -11,6 +11,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.service.SearchUtils;
 
 
 public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
@@ -20,8 +21,10 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         
         SolrInputDocument doc = convertPersistable(kwd);
         List<String> names = new ArrayList<>();
+        List<String> autonames = new ArrayList<>();
         String label = kwd.getLabel();
 		names.add(label);
+		autonames.add(SearchUtils.prepareAutoCompleteField(label));
         doc.setField(QueryFieldNames.TYPE, kwd.getKeywordType());
         if (kwd instanceof HierarchicalKeyword<?>) {
             HierarchicalKeyword<?> hk = (HierarchicalKeyword<?>)kwd;
@@ -33,6 +36,7 @@ public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
         }
         
         doc.setField(QueryFieldNames.NAME, names);
+        doc.setField(QueryFieldNames.NAME_AUTOCOMPLETE, autonames);
         doc.setField(QueryFieldNames.NAME_SORT, label);
         return doc;
     }

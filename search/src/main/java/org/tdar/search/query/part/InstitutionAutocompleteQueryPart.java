@@ -32,13 +32,7 @@ public class InstitutionAutocompleteQueryPart extends FieldQueryPart<Institution
             fqp.setBoost(3f);
             group.append(fqp);
         }
-        FieldQueryPart<Institution> name_auto = new FieldQueryPart<Institution>(QueryFieldNames.NAME_AUTOCOMPLETE, getFieldValues());
-        if (containsSpaces) {
-            name_auto.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
-        } else {
-            name_auto.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
-        }
-        group.append(name_auto);
+        group.append(new StringAutocompletePart(QueryFieldNames.NAME_AUTOCOMPLETE, names));
 
         // match ASU, but not "arizona state"
         FieldQueryPart<String> acronym = new FieldQueryPart<String>(QueryFieldNames.ACRONYM, names);
