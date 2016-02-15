@@ -4,9 +4,8 @@
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="name_sort" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="false" multiValued="true" />
-<!--     <copyField source="name_sort" dest="name_autocomplete" />
- -->
-     <field name="activeSiteCodes" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <copyField source="name_sort" dest="name_autocomplete" />
+    <field name="activeSiteCodes" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="type" type="string" indexed="true" stored="false" required="false" multiValued="false" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 

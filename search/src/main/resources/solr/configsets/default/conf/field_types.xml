@@ -4,8 +4,7 @@
     <fieldType name="autocomplete" class="solr.TextField" positionIncrementGap="100" stored="true" multiValued="true">
         <analyzer >
              <tokenizer class="solr.KeywordTokenizerFactory" />
-        <filter class="solr.WordDelimiterFilterFactory" generateWordParts="0" generateNumberParts="0" 
-            catenateWords="1" catenateNumbers="1" catenateAll="0" preserveOriginal="1"/>
+        <filter class="solr.PatternReplaceFilterFactory" pattern="(\w)([,-\.;])" replacement="$1" replace="all" />
         <filter class="solr.LowerCaseFilterFactory"/>
         <filter class="solr.ASCIIFoldingFilterFactory" preserveOriginal="false"/>
         <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>

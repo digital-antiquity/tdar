@@ -21,10 +21,10 @@ public class StringAutocompletePart extends FieldQueryPart<String> {
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             fqp.setBoost(3f);
             primary.append(fqp);
-            String term_ = SearchUtils.prepareAutoCompleteField(term);
-            FieldQueryPart<String> fqp2 = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, term_);
+            String term_ = term;//SearchUtils.prepareAutoCompleteField(term);
+            FieldQueryPart<String> fqp2 = new FieldQueryPart<String>(getFieldName(), term_);
             fqp2.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            FieldQueryPart<String> fqp3 = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, term_);
+            FieldQueryPart<String> fqp3 = new FieldQueryPart<String>(getFieldName(), term_);
             fqp3.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
             primary.append(fqp2);
             primary.append(fqp3);
