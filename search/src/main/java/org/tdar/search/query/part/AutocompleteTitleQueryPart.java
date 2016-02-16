@@ -1,5 +1,6 @@
 package org.tdar.search.query.part;
 
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -36,7 +37,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     protected QueryPart<?> getQueryPart() {
         QueryPartGroup titleGroup = new QueryPartGroup(Operator.OR);
         // look up quoted leading match in autocomplete index
-        FieldQueryPart<String> autoPart = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, title).setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+        StringAutocompletePart autoPart = new StringAutocompletePart(QueryFieldNames.NAME_AUTOCOMPLETE, Arrays.asList(title));
         // FIXME: while allowed, I'm not sure it's helpful to include non-analyzed fields in a search, especially considering the fact that it will use a
         // default analyzer at search-time. arguments otherwise?
         FieldQueryPart<String> titleSortPart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, title).setPhraseFormatters(PhraseFormatter.ESCAPED,
