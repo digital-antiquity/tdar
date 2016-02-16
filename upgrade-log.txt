@@ -63,3 +63,15 @@
 	- define  -Dsolr.data.dir=/home/tdar/solr-indexes/ in /etc/defaults/tomcat7
 	- if standalone version of SOLR include jts-topo-suite (jts-1.13.jar or later, should already be in tDAR dependency tree)
 	- add a search.properties to tell tDAR where to find the solr dir (solr.xml)
+
+standalone solr:
+	http://daniel.hepper.net/blog/2012/04/restricting-ip-addresses-for-solr-with-jetty/
+    limit access to localhost (/etc/defaults/solr...)
+    add solr data dir to /etc/defaults/solr (-Dsolr.data.dir=/home/tdar/solr-indexes/)
+    
+    add solr to tdaradmin group
+    
+    copy JTS to solr dir:
+    sudo cp /home/tdar/app/ROOT/WEB-INF/lib/jts-1.13.jar  /opt/solr/server/lib/
+
+	

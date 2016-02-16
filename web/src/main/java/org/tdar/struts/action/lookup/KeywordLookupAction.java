@@ -57,7 +57,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         if (!SearchUtils.checkMinString(getTerm(), getMinLookupLength())) {
             setResults(new ArrayList<Keyword>());
             jsonifyResult(JsonLookupFilter.class);
-            getLogger().debug("returning ... too short?" + getTerm());
+            getLogger().trace("returning ... too short?" + getTerm());
             return SUCCESS;
         }
 
