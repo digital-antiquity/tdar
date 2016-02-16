@@ -60,7 +60,7 @@ public class ObfuscationResultListener implements PreResultListener {
         if (action instanceof TdarActionSupport) {
             ((TdarActionSupport) action).setFreemarkerProcessingTime(new Date());
         }
-        logger.trace("begin obfuscation");
+        logger.debug("begin obfuscation");
         Class<? extends Object> controllerClass = action.getClass();
         // get a list of the getters that are either a Collection<?> or <? extends Obfuscatable>
         List<Pair<Method, Class<? extends Obfuscatable>>> testReflection = reflectionService.findAllObfuscatableGetters(controllerClass);

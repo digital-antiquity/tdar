@@ -79,15 +79,11 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
             setSecondarySortField(project.getSecondarySortBy());
         }
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class, selectedResourceTypes);
-        Date dateUpdated = project.getDateUpdated();
-        if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
-            projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
-        }
+
         try {
             resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
             reSortFacets(this, project);
-
         } catch (SearchPaginationException e) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, e);
         } catch (Exception e) {

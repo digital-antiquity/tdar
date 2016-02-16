@@ -413,6 +413,7 @@ public class SerializationService {
 
     }
 
+    @Transactional(readOnly=true)
     public <C> void convertToXMLFragment(Class<C> cls, C object, Writer writer) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(cls);
         Marshaller marshaller = jc.createMarshaller();
