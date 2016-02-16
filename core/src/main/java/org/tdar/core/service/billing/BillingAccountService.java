@@ -248,7 +248,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * 
      * @param resources
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public void updateTransientAccountInfo(Collection<Resource> resources) {
         getDao().updateTransientAccountOnResources(resources);
     }

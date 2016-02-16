@@ -146,7 +146,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
 
-        result = findPerson(null, "M Scott Th", null, min, SortOption.RELEVANCE);
+        result = findPerson(null, "Scott Th", null, min, SortOption.RELEVANCE);
         people = result.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));

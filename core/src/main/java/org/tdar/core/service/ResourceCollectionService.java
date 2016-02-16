@@ -128,6 +128,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param authenticatedUser
      * @return
      */
+    @Transactional(readOnly=true)
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, TdarUser authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         if (resource.getInternalResourceCollection() != null) {
@@ -714,7 +715,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         saveOrUpdate(internal);
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
         Set<ResourceCollection> tempSet = new HashSet<>();
         for (ResourceCollection collection : resource.getSharedResourceCollections()) {

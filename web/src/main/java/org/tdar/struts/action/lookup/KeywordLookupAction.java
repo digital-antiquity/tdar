@@ -38,7 +38,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
     private String term;
     
     @Autowired
-    KeywordSearchService keywordSearchService;
+    KeywordSearchService<Keyword> keywordSearchService;
 
     @Action(value = "keyword", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
@@ -57,7 +57,7 @@ public class KeywordLookupAction extends AbstractLookupController<Keyword> {
         if (!SearchUtils.checkMinString(getTerm(), getMinLookupLength())) {
             setResults(new ArrayList<Keyword>());
             jsonifyResult(JsonLookupFilter.class);
-            getLogger().debug("returning ... too short?" + getTerm());
+            getLogger().trace("returning ... too short?" + getTerm());
             return SUCCESS;
         }
 

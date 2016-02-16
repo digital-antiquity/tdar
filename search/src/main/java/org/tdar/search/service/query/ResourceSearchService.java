@@ -216,7 +216,7 @@ public class ResourceSearchService extends AbstractSearchService {
      */
     public LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
-        result.setRecordsPerPage(MAX_FTQ_RESULTS);
+//        result.setRecordsPerPage(MAX_FTQ_RESULTS);
         queryBuilder.setOperator(Operator.AND);
         SearchParameters params = new SearchParameters(Operator.AND);
         params.setCreatorOwner(new ResourceCreatorProxy(creator, null));

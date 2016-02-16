@@ -829,16 +829,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("email.to.tester", dflt);
     }
 
-    /**
-     * Hibernate seems to have issues with our Asynchronous indexing and ehCache; probably thread issues + race condition? Regardless, for project
-     * saves/indexes, this seems to be an issue, hence we wait X minutes before fully trusting the cache
-     * 
-     * @return
-     */
-    public int getAsyncWaitToTrustCache() {
-        return 1;
-    }
-
     public String getURLRewriteRefresh() {
         return Integer.toString(assistant.getIntProperty("urlRewrite.refresh", -1));
     }

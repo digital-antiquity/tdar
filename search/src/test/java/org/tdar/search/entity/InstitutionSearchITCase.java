@@ -19,6 +19,7 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.EntityService;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.CreatorSearchService;
@@ -56,6 +57,12 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     }
 
     @Test
+    public void testNamePhrase() throws ParseException, SolrServerException, IOException {
+    	LuceneSearchResultHandler<Institution> result = new SearchResult<>();
+		creatorSearchService.searchInstitution("Arizona State Unive", result, MessageHelper.getInstance());
+    }
+    
+    @Test
     @Rollback
     public void testInstitutionMultiWordSearch() throws ParseException, SolrServerException, IOException {
         String term = "Arizona State";
@@ -80,6 +87,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     private SearchResult<Institution> searchInstitution(String term, int min, boolean testResults) throws ParseException, SolrServerException, IOException {
         SearchResult<Institution> result = new SearchResult<>();
         creatorSearchService.findInstitution(term, result, MessageHelper.getInstance(), min);
+        logger.debug("{}", result.getResults());
         if (testResults) {
             assertResultsOkay(term, result);
         }
@@ -242,7 +250,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     private void assertResultsOkay(String term, SearchResult<Institution> controller_) {
         assertNotEmpty(controller_.getResults());
         for (Institution inst : controller_.getResults()) {
-            assertTrue(String.format("Creator %s should match %s", inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
+            assertTrue(String.format("Creator: %s should match %s", inst, term), inst.getProperName().toLowerCase().contains(term.toLowerCase()));
         }
         logger.info("{}", controller_.getResults());
     }

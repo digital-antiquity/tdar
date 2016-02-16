@@ -11,6 +11,7 @@ import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.service.SearchUtils;
 
 
 public class KeywordDocumentConverter extends AbstractSolrDocumentConverter {
