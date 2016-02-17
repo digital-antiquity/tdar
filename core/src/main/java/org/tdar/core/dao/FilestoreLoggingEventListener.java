@@ -1,7 +1,6 @@
 package org.tdar.core.dao;
 
 import org.hibernate.HibernateException;
-import org.hibernate.Session;
 import org.hibernate.event.spi.EventSource;
 import org.hibernate.event.spi.FlushEntityEvent;
 import org.hibernate.event.spi.FlushEntityEventListener;
@@ -19,7 +18,6 @@ import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Status;
