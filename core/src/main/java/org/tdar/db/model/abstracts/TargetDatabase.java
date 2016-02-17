@@ -24,17 +24,12 @@ import com.opensymphony.xwork2.TextProvider;
  */
 public interface TargetDatabase extends Database {
 
-    int COLUMN_NAME_BUFFER = 20;
     /**
      * Returns a table name consistent with this target database's allowable
      * table names.
      */
 
-    String normalizeTableNames(String input);
-
-    String normalizeColumnNames(String displayName);
-
-    String normalizeColumnNames(String displayName, boolean legacy);
+    String normalizeTableOrColumnNames(String input);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     void closePreparedStatements(Collection<DataTable> dataTables) throws Exception;
@@ -101,6 +96,5 @@ public interface TargetDatabase extends Database {
     @Transactional(value = "tdarDataTx", readOnly = false)
     Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor);
-
 
 }
