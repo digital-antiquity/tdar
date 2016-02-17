@@ -56,6 +56,7 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 		List<InformationResourceFile> toExpire = informationResourceFileService.findAllEmbargoFilesExpiringTomorrow();
 
 		if (CollectionUtils.isEmpty(expired) && CollectionUtils.isEmpty(toExpire)) {
+		    completed = true;
 			return;
 		}
 		logger.debug("expired: {} toExpire: {}", CollectionUtils.size(expired), CollectionUtils.size(toExpire));
@@ -81,6 +82,7 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 		if (CollectionUtils.isNotEmpty(expired) || CollectionUtils.isNotEmpty(toExpire)) {
 			emailService.queueWithFreemarkerTemplate("embargo/expiration-admin.ftl", map, email);
 		}
+		completed = true;
 	}
 
 	private Map<TdarUser, Set<InformationResourceFile>> createMap(List<InformationResourceFile> expired) {
@@ -127,7 +129,6 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 			email.setSubject(SUBJECT_WARNING);
 			emailService.queueWithFreemarkerTemplate("embargo/expiration-warning.ftl", map, email);
 		}
-		completed = true;
 	}
 
 	private void sendExpirationNotices(Map<TdarUser, Set<InformationResourceFile>> toExpiredMap) {
