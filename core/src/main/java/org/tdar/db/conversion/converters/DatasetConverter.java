@@ -170,7 +170,7 @@ public interface DatasetConverter {
                 name = name.substring(0, 250);
             }
             dataTableColumn.setDisplayName(name);
-            String internalName = targetDatabase.normalizeTableOrColumnNames(name);
+            String internalName = targetDatabase.normalizeColumnNames(name);
             String tableName = dataTable.getInternalName();
             List<String> columnNames = dataTableColumnNames.get(tableName);
             if (columnNames == null) {
@@ -178,7 +178,7 @@ public interface DatasetConverter {
                 dataTableColumnNames.put(tableName, columnNames);
             }
             if (columnNames.contains(internalName)) {
-                internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - 20);
+                internalName = extractAndIncrementIfDuplicate(internalName, columnNames, targetDatabase.getMaxColumnNameLength() - TargetDatabase.COLUMN_NAME_BUFFER);
             }
             dataTableColumn.setName(internalName);
             columnNames.add(internalName);
@@ -302,8 +302,8 @@ public interface DatasetConverter {
             if (!StringUtils.isBlank(getFilename())) {
                 sb.append(getFilename()).append('_');
             }
-            sb.append(targetDatabase.normalizeTableOrColumnNames(tableName));
-            return targetDatabase.normalizeTableOrColumnNames(sb.toString());
+            sb.append(targetDatabase.normalizeTableNames(tableName));
+            return targetDatabase.normalizeTableNames(sb.toString());
         }
 
         @Override

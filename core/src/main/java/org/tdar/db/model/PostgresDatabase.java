@@ -327,7 +327,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     }
 
     @Override
-    public String normalizeTableOrColumnNames(String name) {
+    public String normalizeTableNames(String name) {
         String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
         if (result.length() > MAX_NAME_SIZE) {
             result = result.substring(0, MAX_NAME_SIZE);
@@ -343,6 +343,46 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
             // FIXME: document this
             result = "c" + result;
         }
+        
+        if (StringUtils.length(result) > getMaxTableLength()) {
+            result = result.substring(0,getMaxTableLength());
+        }
+        
+        return result;
+    }
+
+
+    @Override
+    public String normalizeColumnNames(String name) {
+        return normalizeColumnNames(name, false);
+    }
+    
+    @Override
+    public String normalizeColumnNames(String name, boolean legacy) {
+        String result = name.trim().replaceAll("[^\\w]", "_").toLowerCase();
+        if (result.length() > MAX_NAME_SIZE) {
+            result = result.substring(0, MAX_NAME_SIZE);
+        }
+        if (RESERVED_COLUMN_NAMES.contains(result)) {
+            result = "col_" + result;
+        }
+        if (result.equals("")) {
+            result = "col_blank";
+        }
+
+        if (StringUtils.isNumeric(result.substring(0, 1))) {
+            // FIXME: document this
+            result = "c" + result;
+        }
+        
+        int buff = COLUMN_NAME_BUFFER;
+        if (legacy) {
+            buff = 0;
+        }
+        if (StringUtils.length(result) > getMaxColumnNameLength() - buff) {
+            result = result.substring(0,getMaxColumnNameLength() - buff);
+        }
+        
         return result;
     }
 
@@ -944,7 +984,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 }
                 seen.add(name_);
                 name = name_;
-                dtc.setName(normalizeTableOrColumnNames(name));
+                dtc.setName(normalizeColumnNames(name));
                 name = dtc.getName();
                 tempTable.getDataTableColumns().add(dtc);
                 column.setTempTableDataTableColumn(dtc);

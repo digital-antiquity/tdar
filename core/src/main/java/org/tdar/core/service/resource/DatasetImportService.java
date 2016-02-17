@@ -94,7 +94,7 @@ public class DatasetImportService {
             existingTablesMap.put(internalName, existingDataTable);
             logger.debug("existingTableName: {}", internalName);
             // note there may be failures to match here as table names are too long and thus get arbitrary numbers that cannot be matched
-            String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingDataTable.getDisplayName());
+            String name = tdarDataImportDatabase.normalizeTableNames(existingDataTable.getDisplayName());
             if (!StringUtils.equals(name, internalName)) {
                 secondaryLookupMap.put(name, internalName);
             }
@@ -167,9 +167,13 @@ public class DatasetImportService {
             for (DataTableColumn existingColumn : existingTable.getDataTableColumns()) {
                 String key = existingColumn.getName().toLowerCase().trim();
                 existingColumnsMap.put(key, existingColumn);
-                String name = tdarDataImportDatabase.normalizeTableOrColumnNames(existingColumn.getDisplayName());
+                String name = tdarDataImportDatabase.normalizeColumnNames(existingColumn.getDisplayName());
                 if (!StringUtils.equals(name, key)) {
                     secondaryLookupMap.put(name, key);
+                }
+                String legacyName = tdarDataImportDatabase.normalizeColumnNames(existingColumn.getDisplayName(),true);
+                if (!StringUtils.equals(legacyName, key)) {
+                    secondaryLookupMap.put(legacyName, key);
                 }
             }
             logger.debug("existing columns: {}", existingColumnsMap);
