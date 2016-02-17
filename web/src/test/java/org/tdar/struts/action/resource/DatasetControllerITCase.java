@@ -374,7 +374,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
             // munge column names and rename in tdar data database
             originalColumnData.add(tdarDataImportDatabase.selectAllFrom(column));
             tdarDataImportDatabase.renameColumn(column, column.getDisplayName());
-            assertFalse("Column name should be denormalized", tdarDataImportDatabase.normalizeTableOrColumnNames(column.getName()).equals(column.getName()));
+            assertFalse("Column name should be denormalized", tdarDataImportDatabase.normalizeColumnNames(column.getName()).equals(column.getName()));
             genericService.save(column);
         }
         verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
@@ -393,7 +393,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                 DataTable dataTable = dataset.getDataTables().iterator().next();
                 verifyDataTable(dataTable, originalNumberOfRows, originalColumnData);
                 for (DataTableColumn column : dataTable.getSortedDataTableColumns()) {
-                    assertEquals("Column name should be normalized", tdarDataImportDatabase.normalizeTableOrColumnNames(column.getName()), column.getName());
+                    assertEquals("Column name should be normalized", tdarDataImportDatabase.normalizeColumnNames(column.getName()), column.getName());
                 }
                 return null;
             }

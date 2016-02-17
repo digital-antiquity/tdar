@@ -13,7 +13,9 @@ public class EventRemovalListener implements RemovalListener<Session, Set<?>> {
 	
 	@Override
 	public void onRemoval(RemovalNotification<Session, Set<?>> notification) {
-		EVENT_PROXY.registerSessionClose(notification.getKey());
+	    if (notification.getKey() != null) {
+	        EVENT_PROXY.registerSessionClose(notification.getKey().hashCode());
+	    }
 	}
 
 }
