@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.LoggingConstants;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.GenericService;
@@ -19,6 +20,7 @@ import org.tdar.utils.activity.IgnoreActivity;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
+import com.sun.media.Log;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -89,9 +91,9 @@ public class ActivityLoggingInterceptor implements SessionDataAware, Interceptor
     }
 
     private void setupMDC(HttpServletRequest request) {
-        MDC.put("tag_path", tagHelper.tagify(request.getServletPath() + request.getQueryString()));
-        MDC.put("tag_ua", tagHelper.tagify(request.getHeader(Activity.USER_AGENT)));
-        MDC.put("tag_rid", tagHelper.tagify(System.nanoTime()));
+        MDC.put(LoggingConstants.TAG_PATH, tagHelper.tagify(request.getServletPath() + request.getQueryString()));
+        MDC.put(LoggingConstants.TAG_AGENT, tagHelper.tagify(request.getHeader(Activity.USER_AGENT)));
+        MDC.put(LoggingConstants.TAG_REQUEST_ID, tagHelper.tagify(System.nanoTime()));
     }
 
     private void teardownMDC() {
