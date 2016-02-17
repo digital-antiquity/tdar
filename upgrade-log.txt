@@ -68,6 +68,7 @@ standalone solr:
 	http://daniel.hepper.net/blog/2012/04/restricting-ip-addresses-for-solr-with-jetty/
     limit access to localhost (/etc/defaults/solr...)
     add solr data dir to /etc/defaults/solr (-Dsolr.data.dir=/home/tdar/solr-indexes/)
+    add -Dsolr.jetty.request.header.size=65535 to increase the max URL
     
     add solr to tdaradmin group
     

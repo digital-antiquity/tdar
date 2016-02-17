@@ -11,7 +11,7 @@ import org.springframework.core.env.Environment;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
-import org.tdar.search.config.TdarSimpleSearchAppConfiguration;
+import org.tdar.search.config.TdarSearchIntegrationAppConfiguration;
 import org.tdar.search.service.index.SearchIndexService;
 
 
@@ -20,7 +20,7 @@ import org.tdar.search.service.index.SearchIndexService;
         "classpath:META-INF/cxf/cxf-servlet.xml"})
 
 @Configuration
-public class TagAppConfiguration extends TdarSimpleSearchAppConfiguration {
+public class TagAppConfiguration extends TdarSearchIntegrationAppConfiguration {
 
 	private static final long serialVersionUID = -6963493881813578774L;
 
