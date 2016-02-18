@@ -83,6 +83,7 @@ public class ResourceSearchService extends AbstractSearchService {
      * @throws SolrServerException 
      * @throws ParseException 
      */
+    @Transactional(readOnly=true)
     public <P extends Persistable> LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(String fieldName, P indexable, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();

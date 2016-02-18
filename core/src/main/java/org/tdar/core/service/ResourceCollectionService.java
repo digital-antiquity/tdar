@@ -859,6 +859,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 
+    @Transactional(readOnly=true)
     public List<Long> findCollectionIdsWithTimeLimitedAccess() {
         return getDao().findCollectionIdsWithTimeLimitedAccess();
     }
