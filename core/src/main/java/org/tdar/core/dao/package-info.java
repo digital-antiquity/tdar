@@ -26,8 +26,7 @@
                         + " rescol.id in (:resourceCollectionIds)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (:isAdmin = TRUE or authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission or resCol.owner=:userId) and"
-                        + " resCol.type='SHARED' and lower(trim(resCol.name)) like lower(trim(:name)) "),
+                query = "SELECT distinct resCol from ResourceCollection resCol where resCol.type='SHARED' and lower(trim(resCol.name)) like lower(trim(:name)) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
                 query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
