@@ -1,5 +1,7 @@
 package org.tdar.struts.interceptor;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +22,6 @@ import org.tdar.utils.activity.IgnoreActivity;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
-import com.sun.media.Log;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * $Id$

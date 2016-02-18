@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -28,8 +27,8 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
