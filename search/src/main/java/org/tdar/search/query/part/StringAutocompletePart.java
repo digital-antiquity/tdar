@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.service.SearchUtils;
 
 public class StringAutocompletePart extends FieldQueryPart<String> {
 

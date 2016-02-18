@@ -381,7 +381,7 @@ public class ModernDataIntegrationWorkbook implements Serializable {
      * @throws IOException
      */
     public File writeToTempFile() throws IOException {
-        File resultFile = File.createTempFile(getFileName(), ".xls", TdarConfiguration.getInstance().getTempDirectory());
+        File resultFile = File.createTempFile(getFileName(), ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
         logger.trace("writing temp file:{}", resultFile);
         resultFile.deleteOnExit();
         getWorkbook().write(new FileOutputStream(resultFile));

@@ -1,14 +1,17 @@
 package org.tdar.utils;
 
+import static java.lang.Math.log1p;
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+
+import java.nio.charset.Charset;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+
 import com.google.common.hash.HashCode;
 import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hashing;
-import org.apache.commons.codec.binary.Base64;
-import static java.lang.Math.log1p;
-import static java.lang.Math.sqrt;
-import static java.lang.Math.pow;
-
-import java.nio.charset.Charset;
 
 /**
  * Helper class for for hashing messages for the purpose of using them for "tagging" the message in a logging
@@ -49,10 +52,7 @@ public class TagHelper {
      * @return
      */
     public String tagify(String message) {
-        if(message == null) {
-        	return "nullhash";
-        }
-        if("".equals(message)) {
+        if(StringUtils.isBlank(message)) {
         	return "emptyhash";
         }
         HashCode hashCode = murmur128.hashString(message, Charset.defaultCharset());

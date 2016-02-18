@@ -21,6 +21,7 @@ import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
@@ -38,6 +39,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
+import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -49,6 +51,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Autowired
+    AuthorizedUserDao authorizedUserDao;
+    
     public ResourceCollectionDao() {
         super(ResourceCollection.class);
     }
@@ -94,19 +99,18 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
     }
 
-    public ResourceCollection findCollectionWithName(Person user, boolean isAdmin, ResourceCollection collection) {
+    public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
-        query.setLong("userId", user.getId());
+//        query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
-        query.setBoolean("isAdmin", isAdmin);
-        query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
-        @SuppressWarnings("unchecked")
+//        query.setBoolean("isAdmin", isAdmin);
+//        query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
+//        @SuppressWarnings("unchecked")
         List<ResourceCollection> list = query.list();
-        if (list.size() > 1) {
-            logger.error("query found more than one resource collection: user:{}, coll:{}", user, collection);
-        }
-        if (CollectionUtils.isNotEmpty(list)) {
-            return list.get(0);
+        for  (ResourceCollection coll : list) {
+        	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
+        		return coll;
+        	}
         }
         return null;
     }

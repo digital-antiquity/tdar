@@ -22,7 +22,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
 
     private static final SessionProxy EVENT_PROXY = SessionProxy.getInstance();
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    Cache<Integer, Set<C>> idChangeMap = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(5, TimeUnit.MINUTES).removalListener(new EventRemovalListener()).build();
+    Cache<Session, Set<C>> idChangeMap = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(5, TimeUnit.MINUTES).weakKeys().removalListener(new EventRemovalListener()).build();
     private String name = "";
 
     public AbstractEventListener(String name) {
@@ -45,9 +45,9 @@ public abstract class AbstractEventListener<C> implements EventListener {
     }
 
     public void flush(Integer sessionId) {
-        Integer session = null;
-        for (Integer sess : idChangeMap.asMap().keySet()) {
-            if (Objects.equal(sessionId.intValue(), sess)) {
+        Session session = null;
+        for (Session sess : idChangeMap.asMap().keySet()) {
+            if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
                 session = sess;
                 break;
             }
@@ -59,7 +59,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
         flushInternal(session);
     }
 
-    private void flushInternal(Integer session) {
+    private void flushInternal(Session session) {
         Set<C> set = idChangeMap.getIfPresent(session);
         if (!CollectionUtils.isEmpty(set)) {
             int counter = 0;
@@ -85,8 +85,8 @@ public abstract class AbstractEventListener<C> implements EventListener {
 
     protected void addToSession(EventSource session, C entity) {
         int hashCode = session.hashCode();
-		if (idChangeMap.getIfPresent(hashCode) == null) {
-            idChangeMap.put(hashCode, new HashSet<>());
+		if (idChangeMap.getIfPresent(session) == null) {
+            idChangeMap.put(session, new HashSet<>());
         }
         if (logger.isTraceEnabled()) {
             logger.trace("adding to session: {}", entity);
@@ -104,7 +104,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
         }
 //		logger.debug("{} [{}]",event.getSession().contains(event.getEntity()),event.getEntity());
 
-        idChangeMap.getIfPresent(hashCode).add((C) entity);
+        idChangeMap.getIfPresent(session).add((C) entity);
     }
 
     protected void cleanup() {

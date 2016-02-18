@@ -1,7 +1,6 @@
 package org.tdar.db.conversion.converters;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.BufferUnderflowException;
 import java.util.ArrayList;
@@ -34,10 +33,8 @@ import com.healthmarketscience.jackcess.Index;
 import com.healthmarketscience.jackcess.PropertyMap;
 import com.healthmarketscience.jackcess.Relationship;
 import com.healthmarketscience.jackcess.Table;
-import com.healthmarketscience.jackcess.query.Query;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.util.CollectionUtil;
 
 /**
  * The class reads an access db file, and converts it into other types of db

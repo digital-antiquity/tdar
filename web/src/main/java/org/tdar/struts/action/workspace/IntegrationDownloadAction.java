@@ -63,7 +63,7 @@ public class IntegrationDownloadAction extends AuthenticationAware.Base implemen
         try {
             List<PersonalFilestoreFile> files = filestoreService.retrieveAllPersonalFilestoreFiles(getTicketId());
             for (PersonalFilestoreFile target : files) {
-                if (target.getFile().getName().endsWith(".xls")) {
+                if (target.getFile().getName().endsWith(".xlsx")) {
                     integrationDataResultsInputStream = new FileInputStream(target.getFile());
                     integrationDataResultsContentLength = target.getFile().length();
                     integrationDataResultsFilename = target.getFile().getName();

@@ -16,6 +16,8 @@ import org.apache.solr.common.SolrDocumentList;
 import org.apache.solr.common.params.SolrParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.tdar.core.LoggingConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.search.query.LuceneSearchResultHandler;
@@ -181,7 +183,8 @@ public class SolrSearchObject<I extends Indexable> {
 		solrQuery.setParam("q", getQueryString());
 		solrQuery.setParam("start", Integer.toString(startRecord));
 		solrQuery.setParam("rows", Integer.toString(resultSize));
-
+		String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
+		solrQuery.setParam("_logtag", tag);
 		if (facetText.length() > 0) {
 			solrQuery.setParam("json.facet",facetText.toString());
 			solrQuery.setParam("facet", "on");

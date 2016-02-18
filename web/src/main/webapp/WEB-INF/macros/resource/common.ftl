@@ -558,7 +558,7 @@ Common macros used in multiple contexts
                             <td>${codeRule.code}</td>
                             <td>${codeRule.term}</td>
                             <td>${codeRule.description!""}</td>
-                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName}</#if></td>
+                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
                         </tr>
                         </#list>
                     </tbody>

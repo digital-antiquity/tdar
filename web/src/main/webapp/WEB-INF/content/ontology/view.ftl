@@ -59,6 +59,10 @@
     </div>
     <script>
     $(function() {
+    $("#btnOntologyShowMore").click(function() {
+        $(".hidden-nodes").removeClass("hidden-nodes");
+        $("#divOntologyShowMore").hide();
+    });
     TDAR.d3tree.init();    
 });
     
