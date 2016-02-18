@@ -33,7 +33,7 @@
                 <td>${user.institutionName!""}</td>
                 <td>${user.dateCreated}</td>
                 <td>TRUE</td>
-                <td>${user.contributor?c}</td>
+                <td>${(user.contributor!false)?c}</td>
                 <td>${contributorIds?seq_contains(user.id)?c}</td>
                 <td><#if user.affiliation?has_content>
                         <@s.text name="${user.affiliation.localeKey}"/>
