@@ -33,7 +33,7 @@
                 <td>${user.institutionName!""}</td>
                 <td>${user.dateCreated}</td>
                 <td>TRUE</td>
-                <td>${(user.contributor!false)?c}</td>
+                <td><#if (user.contributor)?has_content>${(user.contributor)?c}<#else>FALSE</#if></td>
                 <td>${contributorIds?seq_contains(user.id)?c}</td>
                 <td><#if user.affiliation?has_content>
                         <@s.text name="${user.affiliation.localeKey}"/>
@@ -66,7 +66,7 @@
     </tr>
     </thead>
     <#list recentUsers as user>
-        <#if user.contributor>
+        <#if user.contributor!false>
             <tr>
                 <td>${user.username}</td>
                 <td>${user.email}</td>

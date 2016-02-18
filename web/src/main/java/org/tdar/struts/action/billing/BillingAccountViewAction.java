@@ -15,6 +15,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
+import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -44,7 +45,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     private List<BillingAccount> accounts = new ArrayList<>();
     private List<Invoice> invoices = new ArrayList<>();
     private List<Resource> resources = new ArrayList<>();
-
+    private List<Coupon> coupons = new ArrayList<>();
     private BillingAccountGroup accountGroup;
     private List<TdarUser> authorizedMembers = new ArrayList<>();
     private Long accountGroupId;
@@ -101,6 +102,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
         setInvoices(new ArrayList<>(getAccount().getInvoices()));
         PersistableUtils.sortByCreatedDate(getInvoices());
         Iterator<Invoice> iter = getInvoices().iterator();
+        setCoupons(new ArrayList<>(getAccount().getCoupons()));
         while (iter.hasNext()) {
             Invoice inv = iter.next();
             if (inv.isModifiable()) {
@@ -250,6 +252,14 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
 
     public void setExpires(Date expires) {
         this.expires = expires;
+    }
+
+    public List<Coupon> getCoupons() {
+        return coupons;
+    }
+
+    public void setCoupons(List<Coupon> coupons) {
+        this.coupons = coupons;
     }
 
 }
