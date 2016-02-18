@@ -63,6 +63,7 @@ public class ResourceSearchService extends AbstractSearchService {
     }
 
 
+    @Transactional(readOnly=true)
     public LuceneSearchResultHandler<Resource> buildCollectionResourceSearch(LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder qb = new ResourceCollectionQueryBuilder();
         qb.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED));
@@ -96,6 +97,7 @@ public class ResourceSearchService extends AbstractSearchService {
         return result;
     }
 
+    @Transactional(readOnly=true)
     public LuceneSearchResultHandler<Resource> lookupResource(TdarUser user, ResourceLookupObject look, LuceneSearchResultHandler<Resource> result, TextProvider support) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder q = new ResourceQueryBuilder();
         if (StringUtils.isNotBlank(look.getTerm()) || look.getCategoryId() != null) {
@@ -125,6 +127,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     }
 
+    @Transactional(readOnly=true)
     public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
         rqb.append(new HydrateableKeywordQueryPart<Keyword>(keywordType, Arrays.asList(keyword)));
@@ -133,6 +136,7 @@ public class ResourceSearchService extends AbstractSearchService {
         return result;
     }
 
+    @Transactional(readOnly=true)
     public LuceneSearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
@@ -172,6 +176,7 @@ public class ResourceSearchService extends AbstractSearchService {
 
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets
+    @Transactional(readOnly=true)
     protected QueryPartGroup processReservedTerms(ReservedSearchParameters reserved, TdarUser tdarUser, TextProvider provider) {
         initializeReservedSearchParameters(reserved, tdarUser);
         return reserved.toQueryPartGroup(provider);
@@ -183,6 +188,7 @@ public class ResourceSearchService extends AbstractSearchService {
      *
      * @param searchParameters
      */
+    @Transactional(readOnly=true)
     public void inflateSearchParameters(SearchParameters searchParameters) {
         // FIXME: refactor to ue genericService.populateSparseObjectsById() which optimizes the qeries to the DB
         // Also, consider moving into genericService
@@ -215,6 +221,7 @@ public class ResourceSearchService extends AbstractSearchService {
      * @throws SolrServerException 
      * @throws ParseException 
      */
+    @Transactional(readOnly=true)
     public LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
 //        result.setRecordsPerPage(MAX_FTQ_RESULTS);
@@ -234,6 +241,7 @@ public class ResourceSearchService extends AbstractSearchService {
      * parameters
      * that are AND-ed with the user's search to ensure appropriate search results are returned (such as a Resource's @link Status).
      */
+    @Transactional(readOnly=true)
     protected void initializeReservedSearchParameters(ReservedSearchParameters reservedSearchParameters, TdarUser user) {
         if (reservedSearchParameters == null) {
             return;

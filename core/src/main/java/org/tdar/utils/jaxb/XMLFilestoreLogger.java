@@ -14,25 +14,28 @@ import org.apache.tools.ant.filters.StringInputStream;
 import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.UrlService;
+import org.tdar.filestore.Filestore;
 import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.FilestoreObjectType;
 import org.w3c.dom.Document;
 
+@Component
 public class XMLFilestoreLogger implements Serializable {
 
+    private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
     private static final long serialVersionUID = -5576504979196350682L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private static final transient Logger staticLogger = LoggerFactory.getLogger(XMLFilestoreLogger.class);
 
     private static Class<?>[] jaxbClasses;
     private TdarConfiguration CONFIG = TdarConfiguration.getInstance();
@@ -51,27 +54,37 @@ public class XMLFilestoreLogger implements Serializable {
         if (!CONFIG.shouldLogToFilestore()) {
             return;
         }
+        if (!(resource instanceof XmlLoggable)) {
+            return;
+        }
+        logger.trace("serializing record to XML: [{}] {}", resource.getClass().getSimpleName().toUpperCase(), resource.getId());
+
+        String xml;
+        try {
+            xml = convertToXML(resource);
+        } catch (Exception e) {
+            logger.error("something happend when converting record to XML:" + resource, e);
+            throw new FilestoreLoggingException("serializationService.could_not_save");
+        }
+        
+        writeToFilestore(FilestoreObjectType.fromClass(resource.getClass()), resource.getId(), xml);
+        logger.trace("done saving");
+    }
+
+    public static <T extends Persistable> void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, String xml) {
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename("record.xml");
         version.setExtension("xml");
         version.setFileVersionType(VersionType.RECORD);
-        version.setInformationResourceId(resource.getId());
-        if (!(resource instanceof Resource) && !(resource instanceof ResourceCollection) && !(resource instanceof Creator)) {
-            return;
-        }
-
-        logger.trace("serializing record to XML: [{}] {}", resource.getClass().getSimpleName().toUpperCase(), resource.getId());
+        version.setInformationResourceId(id);
         try {
             StorageMethod rotate = StorageMethod.DATE;
-            // rotate.setRotations(5);
-            TdarConfiguration.getInstance().getFilestore()
-                    .storeAndRotate(FilestoreObjectType.fromClass(resource.getClass()), new StringInputStream(convertToXML(resource), "UTF-8"), version, rotate);
+            FILESTORE.storeAndRotate(filestoreObjectType, new StringInputStream(xml, "UTF-8"), version, rotate);
         } catch (Exception e) {
-            logger.error("something happend when converting record to XML:" + resource, e);
+            staticLogger.error("something happend when converting record to XML:" + filestoreObjectType, e);
             throw new FilestoreLoggingException("serializationService.could_not_save");
         }
-        logger.trace("done saving");
     }
 
     /**

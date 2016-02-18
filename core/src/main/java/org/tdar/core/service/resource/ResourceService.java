@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,8 +68,12 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.transform.MetaTag;
+import org.tdar.transform.SchemaOrgMetadataTransformer;
+import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
@@ -100,6 +105,8 @@ public class ResourceService {
     private DataTableDao dataTableDao;
     @Autowired
     private BillingAccountDao accountDao;
+    @Autowired
+    private SerializationService serializationService;
 
     @Autowired
     private GeoSearchService geoSearchService;
@@ -212,10 +219,8 @@ public class ResourceService {
      * @param r
      */
     @Transactional(readOnly = false)
-    public void incrementAccessCounter(Resource r) {
-        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
-        datasetDao.markWritable(rac);
-        genericDao.save(rac);
+    public void incrementAccessCounter(Long resourceId) {
+        datasetDao.incrementAccessCounter(resourceId);
     }
 
     /**
@@ -899,6 +904,33 @@ public class ResourceService {
     @Transactional(readOnly=true)
     public ScrollableResults findMappedResources(Project p) {
         return datasetDao.findMappedResources(p);
+    }
+
+    @Transactional(readOnly=true)
+    public String getGoogleScholarTags(Resource resource) {
+        StringWriter sw = new StringWriter();
+        try {
+            ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
+            for (MetaTag tag : trans.convertResourceToMetaTag(resource)) {
+                serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
+                sw.append("\n");
+            }
+        } catch (Exception e) {
+            logger.error("error converting scholar tag for resource:", resource, e);
+        }
+        return sw.toString();
+    }
+    
+    @Transactional(readOnly=true)
+    public String getSchemaOrgJsonLD(Resource resource) {
+        try {
+            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            return transformer.convert(serializationService, resource);
+        } catch (Exception e) {
+            logger.error("error converting to json-ld", e);
+        }
+
+        return null;
     }
 
 }

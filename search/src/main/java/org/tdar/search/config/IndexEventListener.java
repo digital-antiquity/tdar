@@ -184,6 +184,9 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	@Override
 	public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
 		if (event.getEntity() instanceof Indexable) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("flush entity called: {}" , event.getEntity());
+            }
 			flush(event);
 		}
 	}

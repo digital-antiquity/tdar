@@ -206,7 +206,7 @@ public class SearchIndexService {
     @Async
     @Transactional
     public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
-        indexAllResourcesInCollectionSubTree(collectionToReindex);
+        indexAllResourcesInCollectionSubTree(genericDao.merge(collectionToReindex));
     }
 
     /**
@@ -217,7 +217,7 @@ public class SearchIndexService {
      */
     @Async
     public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) throws SolrServerException, IOException {
-        indexCollection(collectionToReindex);
+        indexCollection(genericDao.merge(collectionToReindex));
     }
 
     /**
@@ -413,7 +413,7 @@ public class SearchIndexService {
     @Async
     @Transactional(readOnly = true)
     public void indexProjectAsync(final Project project) throws SolrServerException, IOException {
-        indexProject(project);
+        indexProject(genericDao.merge(project));
     }
 
     @Transactional(readOnly = true)
