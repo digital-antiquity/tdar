@@ -129,12 +129,12 @@ public class SearchIndexService {
      * @param fullTextSession
      * @param item
      */
-    SolrInputDocument index(LookupSource src, final Indexable item_, boolean deleteFirst) {
-        if (item_ == null) {
+    SolrInputDocument index(LookupSource src, final Indexable item, boolean deleteFirst) {
+        if (item == null) {
             return null;
         }
         try {
-        	Indexable item = genericDao.merge(item_); 
+//        	Indexable item = genericDao.merge(item_); 
             String core = LookupSource.getCoreForClass(item.getClass());
 
             if (src != null && src == LookupSource.DATA) {
@@ -255,7 +255,11 @@ public class SearchIndexService {
                 try {
                     // if we were called via async, the objects will belong to managed by the current hib session.
                     // purge them from the session and merge w/ transient object to get it back on the session before indexing.
-					index(null, toIndex, true);
+                	if (genericDao.sessionContains(toIndex)) {
+                		index(null, toIndex, true);
+                	} else {
+                		index(null, genericDao.merge(toIndex), true);
+                	}
                     if (count % FLUSH_EVERY == 0) {
                         logger.debug("indexing: {}", toIndex);
                         logger.debug("flush to index ... every {}", FLUSH_EVERY);

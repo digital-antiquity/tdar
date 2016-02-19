@@ -54,7 +54,12 @@ public class SessionProxy {
     }
 
 	public void flushAll() {
-		// TODO Auto-generated method stub
+		for (Integer id : sessionQueue) {
+	        for (EventListener listener : listeners) {
+	            listener.flush(id);
+	        }
+	        sessionQueue.clear();
+		}
 		
 	}
 }
