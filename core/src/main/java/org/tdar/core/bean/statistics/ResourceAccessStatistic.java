@@ -2,6 +2,7 @@ package org.tdar.core.bean.statistics;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.JoinColumn;
@@ -24,7 +25,7 @@ import org.tdar.core.bean.resource.Resource;
 public class ResourceAccessStatistic extends AbstractResourceStatistic<Resource> {
 
     private static final long serialVersionUID = -980531380055105219L;
-    @ManyToOne()
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @JoinColumn(name = "resource_id")
     private Resource reference;
 

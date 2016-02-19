@@ -16,6 +16,7 @@ import org.hibernate.type.StandardBasicTypes;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.VersionType;
 
@@ -26,8 +27,8 @@ import org.tdar.core.bean.resource.file.VersionType;
  */
 public final class NamedNativeQueries {
 
-    public static String incrementAccessCount(Long resourceId) {
-        return String.format("insert into resource_access_statistics (date_accessed, resource_id) values(now(), %s )", resourceId);
+    public static String incrementAccessCount(Resource r) {
+        return "update resource set access_counter=access_counter+1 where id=" + r.getId();
     }
 
     public static String updateDatasetMappings(Project project, DataTableColumn column, String value, List<String> filenames,

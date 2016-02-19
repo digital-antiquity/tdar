@@ -197,7 +197,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         resourceService.updateTransientAccessCount(getResource());
         // don't count if we're an admin
         if (!PersistableUtils.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
-            resourceService.incrementAccessCounter(getId());
+            resourceService.incrementAccessCounter(getPersistable());
         }
         accountService.updateTransientAccountInfo((List<Resource>) Arrays.asList(getResource()));
         bookmarkedResourceService.applyTransientBookmarked(Arrays.asList(getResource()), getAuthenticatedUser());

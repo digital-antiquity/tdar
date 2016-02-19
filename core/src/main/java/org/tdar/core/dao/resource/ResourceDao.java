@@ -151,8 +151,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return (ResourceType) query.uniqueResult();
 	}
 
-	public void incrementAccessCounter(Long resourceId) {
-		Query query = getCurrentSession().createSQLQuery(NamedNativeQueries.incrementAccessCount(resourceId));
+	public void incrementAccessCounter(Resource r) {
+		Query query = getCurrentSession().createSQLQuery(NamedNativeQueries.incrementAccessCount(r));
 		query.executeUpdate();
 	}
 

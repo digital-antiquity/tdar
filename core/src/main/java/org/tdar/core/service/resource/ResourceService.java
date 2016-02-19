@@ -219,8 +219,10 @@ public class ResourceService {
      * @param r
      */
     @Transactional(readOnly = false)
-    public void incrementAccessCounter(Long resourceId) {
-        datasetDao.incrementAccessCounter(resourceId);
+    public void incrementAccessCounter(Resource r) {
+        ResourceAccessStatistic rac = new ResourceAccessStatistic(new Date(), r);
+        datasetDao.markWritable(rac);
+        genericDao.save(rac);
     }
 
     /**

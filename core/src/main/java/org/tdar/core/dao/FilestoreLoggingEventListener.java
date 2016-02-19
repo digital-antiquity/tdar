@@ -115,7 +115,7 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 	}
 
 	private boolean testSession(EventSource session) {
-		return isEnabled() && session.isClosed();
+		return !isEnabled() && session.isClosed();
 	}
 
 	@Override
