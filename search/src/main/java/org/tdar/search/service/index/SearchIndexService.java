@@ -129,11 +129,12 @@ public class SearchIndexService {
      * @param fullTextSession
      * @param item
      */
-    SolrInputDocument index(LookupSource src, Indexable item, boolean deleteFirst) {
-        if (item == null) {
+    SolrInputDocument index(LookupSource src, final Indexable item_, boolean deleteFirst) {
+        if (item_ == null) {
             return null;
         }
         try {
+        	Indexable item = genericDao.merge(item_); 
             String core = LookupSource.getCoreForClass(item.getClass());
 
             if (src != null && src == LookupSource.DATA) {
@@ -206,7 +207,7 @@ public class SearchIndexService {
     @Async
     @Transactional
     public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
-        indexAllResourcesInCollectionSubTree(genericDao.merge(collectionToReindex));
+        indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
 
     /**
@@ -217,7 +218,7 @@ public class SearchIndexService {
      */
     @Async
     public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex) throws SolrServerException, IOException {
-        indexCollection(genericDao.merge(collectionToReindex));
+        indexCollection(collectionToReindex);
     }
 
     /**
@@ -413,7 +414,7 @@ public class SearchIndexService {
     @Async
     @Transactional(readOnly = true)
     public void indexProjectAsync(final Project project) throws SolrServerException, IOException {
-        indexProject(genericDao.merge(project));
+        indexProject(project);
     }
 
     @Transactional(readOnly = true)
