@@ -1,5 +1,7 @@
 package org.tdar.core;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -13,14 +15,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -42,6 +41,7 @@ import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
@@ -305,6 +305,29 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
             logger.warn("exception", e);
             assertFalse("I should not exist. fix me, please?", true);
         }
+    }
+
+
+    @Test
+    public void testJsonDateSerialization() throws IOException {
+        Date dt = new DateTime(2015, 3, 9, 0, 0).toDate();
+        String json = serializationService.convertToJson(dt);
+        assertThat(json, containsString("March 9, 2015"));
+        logger.debug("json:{}", json);
+
+
+        FileProxy fileProxy = new FileProxy();
+        fileProxy.setFileCreatedDate(dt);
+        json = serializationService.convertToJson(fileProxy);
+        assertThat(json, containsString("March 9, 2015"));
+        logger.debug("json:{}", json);
+
+        InformationResourceFile informationResourceFile = new InformationResourceFile();
+        informationResourceFile.setFileCreatedDate(new DateTime(2015, 3, 9, 0, 0).toDate());
+        fileProxy = new FileProxy(informationResourceFile);
+        json = serializationService.convertToJson(fileProxy);
+        assertThat(json, containsString("March 9, 2015"));
+        logger.debug("json:{}", json);
     }
 
 }

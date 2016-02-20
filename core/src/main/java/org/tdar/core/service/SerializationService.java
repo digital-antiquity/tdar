@@ -154,7 +154,7 @@ public class SerializationService {
         return xmlFilestoreLogger.convertToXML(object, writer);
     }
 
-    /**
+        /**
      * Convert an object to JSON using JAXB using writer
      * 
      * @param object
@@ -164,6 +164,7 @@ public class SerializationService {
      */
     @Transactional(readOnly=true)
     public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
+        logger.debug("Okay, we should be initializing an object mapper now");
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
         object = wrapObjectIfNeeded(object, callback);
@@ -185,6 +186,7 @@ public class SerializationService {
      */
     @Transactional
     public String convertToJson(Object object) throws IOException {
+        logger.trace("converting object to json:{}", object);
         StringWriter writer = new StringWriter();
         convertToJson(object, writer, null, null);
         return writer.toString();
@@ -393,9 +395,6 @@ public class SerializationService {
     /**
      * Stores the CreatorXML Log in the filestore
      * 
-     * @param model
-     * @param baseUrl
-     * @param person
      * @return
      * @throws Exception
      */
