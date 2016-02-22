@@ -44,6 +44,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
         flush(session.hashCode());
     }
 
+    @Override
     public void flush(Integer sessionId) {
         Session session = null;
         for (Session sess : idChangeMap.asMap().keySet()) {
@@ -58,6 +59,21 @@ public abstract class AbstractEventListener<C> implements EventListener {
             return;
         }
     }
+
+//    @Override
+//    public void clear(Integer sessionId) {
+//        Session session = null;
+//        for (Session sess : idChangeMap.asMap().keySet()) {
+//            if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
+//                session = sess;
+//                idChangeMap.getIfPresent(sess).clear();
+//            }
+//        }
+//        if (session == null) {
+//            logger.trace("session is null for id: {}", sessionId);
+//            return;
+//        }
+//    }
 
     private void flushInternal(Session session) {
         Set<C> set = idChangeMap.getIfPresent(session);
@@ -91,12 +107,12 @@ public abstract class AbstractEventListener<C> implements EventListener {
         }
         
         if (!session.contains(entity)) {
-        	logger.debug("not on session({}): {}",session.hashCode(),entity);
+        	logger.trace("not on session({}): {}",session.hashCode(),entity);
         	return;
         }
         try {
 	        if (session.isReadOnly(entity)) {
-	        	logger.debug("session is read only ({}): {}",session.hashCode(), entity);
+	        	logger.trace("session is read only ({}): {}",session.hashCode(), entity);
 	        	return;
 	        }
         } catch (HibernateException he) {
