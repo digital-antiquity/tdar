@@ -117,6 +117,7 @@
             <groupId>jtidy</groupId>
             <artifactId>jtidy</artifactId>
             <version>4aug2000r7-dev</version>
+            <scope>test</scope>
             <!-- LICENSE: MIT VARIENT -->
         </dependency>
         <dependency>

@@ -545,18 +545,18 @@
             <version>2.3.23</version>
             <!-- LICENSE: BSD -->
         </dependency>
-        <dependency>
+<!--         <dependency>
             <groupId>org.owasp.antisamy</groupId>
             <artifactId>antisamy</artifactId>
             <version>1.5.3</version>
-            <!-- LICENSE: BSD -->
+            LICENSE: BSD
             <exclusions>
                 <exclusion>
                     <artifactId>commons-httpclient</artifactId>
                     <groupId>commons-httpclient</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
