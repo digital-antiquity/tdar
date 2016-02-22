@@ -16,24 +16,38 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>Institution</th>
+        <th>Date Registered</th>
         <th>User</th>
-        <th>Contributor</th>
+        <th>Declared Contributor</th>
+        <th>Actually Contributed &gt; 0 Resources</th>
+        <th>Affiliation</th>
         <th>tDAR ID</th>
     </tr>
     </thead>
     <#list recentUsers as user>
-        <#if !user.contributor>
             <tr>
                 <td>${user.username}</td>
-                <td>${user.email}</td>
+                <td>${user.email!''}</td>
                 <td>${user.firstName}</td>
                 <td>${user.lastName}</td>
                 <td>${user.institutionName!""}</td>
+                <td>${user.dateCreated}</td>
                 <td>TRUE</td>
-                <td>FALSE</td>
+                <td><#if (user.contributor)?has_content>${(user.contributor)?c}<#else>FALSE</#if></td>
+                <td>${contributorIds?seq_contains(user.id)?c}</td>
+                <td><#if user.affiliation?has_content>
+                        <@s.text name="${user.affiliation.localeKey}"/>
+                    <#else>
+                        <#if user.email?has_content && user.email?lower_case?contains(".edu") || user.institutionName?has_content && user.institutionName?lower_case?contains("university")>
+                            University
+                        </#if>
+                        <#if user.email?has_content && (user.email?lower_case?contains(".gov") || user.email?lower_case?contains(".mil"))>
+                            Government
+                        </#if>
+                    </#if>
+</td>
                 <td>${user.id?c}</td>
             </tr>
-        </#if>
     </#list>
 </table>
 
@@ -52,7 +66,7 @@
     </tr>
     </thead>
     <#list recentUsers as user>
-        <#if user.contributor>
+        <#if user.contributor!false>
             <tr>
                 <td>${user.username}</td>
                 <td>${user.email}</td>

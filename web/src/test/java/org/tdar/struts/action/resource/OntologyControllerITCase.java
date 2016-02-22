@@ -267,7 +267,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
                 assertFalse(latestVersions.equals(ont.getLatestUploadedVersions()));
                 assertEquals("Uploading new ontology didn't preserve coding rule -> ontology node references properly", ont.getNodeByName("Tool"),
                         generatedSheet.getCodingRuleByCode("Tool").getOntologyNode());
-
+                logger.debug("CLEANUP!!!");
                 for (InformationResourceFile file : ont.getInformationResourceFiles()) {
                     for (InformationResourceFileVersion version : file.getInformationResourceFileVersions()) {
                         genericService.forceDelete(version);

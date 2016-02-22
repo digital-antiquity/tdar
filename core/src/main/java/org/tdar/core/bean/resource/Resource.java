@@ -462,17 +462,6 @@ public class Resource implements Persistable,
     private String externalId;
 
     private transient Float score = -1f;
-    private transient boolean readyToStore = true;
-
-    @Transient
-    @XmlTransient
-    public boolean isReadyToStore() {
-        return readyToStore;
-    }
-
-    public void setReadyToStore(boolean readyToStore) {
-        this.readyToStore = readyToStore;
-    }
 
     @XmlElementWrapper(name = "cultureKeywords")
     @XmlElement(name = "cultureKeyword")

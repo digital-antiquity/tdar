@@ -15,7 +15,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
@@ -34,9 +33,6 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     public static final String RETRANSLATE = "retranslate";
     public static final String REPROCESS = "reprocess";
     public static final String REIMPORT = "reimport";
-
-    @Autowired
-    private ResourceService resourceService;
 
     @Autowired
     private DatasetService datasetService;

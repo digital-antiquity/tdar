@@ -29,6 +29,9 @@ public class CollectionStatisticsAction extends AbstractStatisticsAction impleme
     @Override
     public void prepare() throws Exception {
         collection = collectionService.find(getId());
+        if (collection == null) {
+            addActionError("collectionStatisticsAction.no_collection");
+        }
         setStatsForAccount(statisticsService.getStatsForCollection(collection, this, getGranularity()));
         setupJson();
     }

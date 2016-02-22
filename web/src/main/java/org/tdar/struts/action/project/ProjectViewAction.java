@@ -1,12 +1,10 @@
 package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
-import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -15,7 +13,6 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -79,15 +76,11 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
             setSecondarySortField(project.getSecondarySortBy());
         }
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class, selectedResourceTypes);
-        Date dateUpdated = project.getDateUpdated();
-        if (dateUpdated == null || DateTime.now().minusMinutes(TdarConfiguration.getInstance().getAsyncWaitToTrustCache()).isBefore(dateUpdated.getTime())) {
-            projectionModel = ProjectionModel.RESOURCE_PROXY_INVALIDATE_CACHE;
-        }
+
         try {
             resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
             reSortFacets(this, project);
-
         } catch (SearchPaginationException e) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, e);
         } catch (Exception e) {

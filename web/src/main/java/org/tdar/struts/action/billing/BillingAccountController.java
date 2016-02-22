@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -26,7 +25,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController;
@@ -68,27 +66,14 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @SkipValidation
-    @Action(value = CHOOSE, results = {
-            @Result(name = SUCCESS, location = "select-account.ftl"),
-            @Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = REDIRECT)
-    })
-    public String selectAccount() throws TdarActionException {
-        Invoice invoice = getInvoice();
-        if (invoice == null) {
-            throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
-        }
-        if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
-            throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
-        }
-        setAccounts(accountService
-                .listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
-        if (CollectionUtils.isNotEmpty(getAccounts())) {
-            return SUCCESS;
-        }
-        return NEW_ACCOUNT;
+    @Override
+    public boolean authorize() {
+    	if (PersistableUtils.isNullOrTransient(getPersistable())) {
+    		return true;
+    	}
+    	return authorizationService.canEditAccount(getPersistable(), getAuthenticatedUser());
     }
-
+    
     public Invoice getInvoice() {
         return getGenericService().find(Invoice.class, invoiceId);
     }
@@ -155,22 +140,6 @@ public class BillingAccountController extends AbstractPersistableController<Bill
         return SUCCESS;
     }
 
-    public String loadViewMetadata() {
-        setAccountGroup(accountService.getAccountGroup(getAccount()));
-        getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
-        getResources().addAll(getAccount().getResources());
-        PersistableUtils.sortByUpdatedDate(getResources());
-
-        for (TdarUser au : getAuthorizedMembers()) {
-            String name = null;
-            if (au != null) {
-                name = au.getProperName();
-            }
-            getAuthorizedUsersFullNames().add(name);
-        }
-
-        return SUCCESS;
-    }
 
     // This is temporary until we break out CreateCouponCodeAction
     public List<Invoice> getInvoices() {

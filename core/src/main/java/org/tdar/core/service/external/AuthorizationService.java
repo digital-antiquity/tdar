@@ -83,6 +83,7 @@ public class AuthorizationService implements Accessible {
      * Group Permissions tend to be hierarchical, hence, you may want to know if a user is a member of any of the nested hierarchy. Eg. EDITOR is a subset of
      * ADMIN
      */
+    @Transactional(readOnly=true)
     public boolean isMemberOfAny(TdarUser person, TdarGroup... groups) {
         if ((person == null) || (groups == null)) {
             return false;
@@ -98,18 +99,22 @@ public class AuthorizationService implements Accessible {
     /**
      * TdarGroups are represented in the external auth systems, but enable global permissions in tDAR; Admins, Billing Administrators, etc.
      */
+    @Transactional(readOnly=true)
     public boolean isMember(TdarUser person, TdarGroup group) {
         return authenticationService.isMember(person, group);
     }
 
+    @Transactional(readOnly=true)
     public boolean isAdministrator(TdarUser person) {
         return isMember(person, TdarGroup.TDAR_ADMIN);
     }
 
+    @Transactional(readOnly=true)
     public boolean isBillingManager(TdarUser person) {
         return isMember(person, TdarGroup.TDAR_BILLING_MANAGER);
     }
 
+    @Transactional(readOnly=true)
     public boolean isEditor(TdarUser person) {
         return isMember(person, TdarGroup.TDAR_EDITOR);
     }
@@ -119,6 +124,7 @@ public class AuthorizationService implements Accessible {
      * A user
      * should be able to see their own DRAFTs, but never DELETED statuss unless they're an admin, for example
      */
+    @Transactional(readOnly=true)
     public Set<Status> getAllowedSearchStatuses(TdarUser person) {
         // assumption: ACTIVE always allowed.
         Set<Status> allowed = new HashSet<>(Arrays.asList(Status.ACTIVE));
@@ -156,6 +162,7 @@ public class AuthorizationService implements Accessible {
      * @param resource
      * @return true if person has read permissions on resource according to the above policies, false otherwise.
      */
+    @Transactional(readOnly=true)
     public boolean canViewResource(TdarUser person, Resource resource) {
         // is the request valid
         if (person == null) {
@@ -188,6 +195,7 @@ public class AuthorizationService implements Accessible {
      * @param resource
      * @return true if person has write permissions on resource according to the above policies, false otherwise.
      */
+    @Transactional(readOnly=true)
     public boolean canEditResource(TdarUser person, Resource resource, GeneralPermissions basePermission) {
         // is the request valid
         if (person == null) {
@@ -217,6 +225,7 @@ public class AuthorizationService implements Accessible {
      * @param ids
      * @return
      */
+    @Transactional(readOnly=true)
     public boolean isAllowedToEditInherited(TdarUser person, Resource resource) {
         GeneralPermissions permission = GeneralPermissions.MODIFY_METADATA;
         List<Long> ids = new ArrayList<>();
@@ -236,7 +245,7 @@ public class AuthorizationService implements Accessible {
      * @param persistable
      * @return
      */
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = true)
     public boolean canEditCollection(TdarUser authenticatedUser, ResourceCollection persistable) {
         if (authenticatedUser == null) {
             logger.trace("person is null");
@@ -256,6 +265,7 @@ public class AuthorizationService implements Accessible {
      * The @link InternalTdarRights enum associates global permissions with a @link TdarGroup or set of Groups. These global permissions allow
      * us to simplify permissions management by associating explicit rights with actions in the code, and managing permissions mappings in the enum(s).
      */
+    @Transactional(readOnly=true)
     public boolean can(InternalTdarRights rights, TdarUser person) {
         if ((person == null) || (rights == null)) {
             return false;
@@ -269,6 +279,7 @@ public class AuthorizationService implements Accessible {
     /**
      * This method checks whether a person's group membership denies them to perform an associated right @see #can
      */
+    @Transactional(readOnly=true)
     public boolean cannot(InternalTdarRights rights, TdarUser person) {
         return !can(rights, person);
     }
@@ -298,6 +309,7 @@ public class AuthorizationService implements Accessible {
      * @see org.tdar.core.service.external.Accessible#canEdit(org.tdar.core.bean.entity.Person, org.tdar.core.bean.Persistable)
      */
     @Override
+    @Transactional(readOnly=true)
     public boolean canEdit(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canEditResource(authenticatedUser, (Resource) item, GeneralPermissions.MODIFY_METADATA);
@@ -338,6 +350,7 @@ public class AuthorizationService implements Accessible {
      * @see org.tdar.core.service.external.Accessible#canView(org.tdar.core.bean.entity.Person, org.tdar.core.bean.Persistable)
      */
     @Override
+    @Transactional(readOnly=true)
     public boolean canView(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
@@ -354,6 +367,7 @@ public class AuthorizationService implements Accessible {
      * @param person
      * @return
      */
+    @Transactional(readOnly=true)
     public boolean canViewConfidentialInformation(TdarUser person, Resource resource) {
         if (resource instanceof InformationResource) {
             return ((InformationResource) resource).isPublicallyAccessible()
@@ -367,6 +381,7 @@ public class AuthorizationService implements Accessible {
      * 
      * @link GeneralPermissions.MODIFY_METADATA ))
      */
+    @Transactional(readOnly=true)
     public boolean canUploadFiles(TdarUser person, Resource resource) {
         return canDo(person, resource, InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.MODIFY_RECORD);
     }
@@ -379,6 +394,7 @@ public class AuthorizationService implements Accessible {
      * (c) checks if user is allowed to perform action based on @link AuthorizedUser / @link ResourceCollection permissions
      * (d) check's iuf user was submitter
      */
+    @Transactional(readOnly=true)
     public boolean canDo(TdarUser person, HasSubmitter resource, InternalTdarRights equivalentAdminRight, GeneralPermissions permission) {
         // This function used to pre-test on the resource, but it doesn't have to and is now more granular
         if (resource == null) {
@@ -424,6 +440,7 @@ public class AuthorizationService implements Accessible {
 	/*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFileVersion
      */
+    @Transactional(readOnly=true)
     public boolean canDownload(InformationResourceFileVersion irFileVersion, TdarUser person) {
         if (irFileVersion == null) {
             return false;
@@ -434,6 +451,7 @@ public class AuthorizationService implements Accessible {
     /*
      * Checks whether a @link Person has rights to download a given @link InformationResourceFile
      */
+    @Transactional(readOnly=true)
     public boolean canDownload(InformationResourceFile irFile, TdarUser person) {
         if (irFile == null) {
             return false;
@@ -451,6 +469,7 @@ public class AuthorizationService implements Accessible {
      * Checks whether a person has the rights to view a collection based on their @link GeneralPermission on the @link ResourceCollection; filters by Shared
      * Visible collections
      */
+    @Transactional(readOnly=true)
     public boolean canViewCollection(ResourceCollection collection, TdarUser person) {
         if (collection == null) {
             return false;
@@ -477,6 +496,7 @@ public class AuthorizationService implements Accessible {
      * (c) if it's a collection, make sure it's public and shared
      * (d) otherwise, it's probably not
      */
+    @Transactional(readOnly=true)
     public void applyTransientViewableFlag(Indexable p, TdarUser authenticatedUser) {
         /*
          * If the Persistable supports the "Viewable" interface, then inject the
@@ -554,6 +574,7 @@ public class AuthorizationService implements Accessible {
      * with the
      * Invoive itself
      */
+    @Transactional(readOnly=true)
     public boolean canAssignInvoice(Invoice invoice, TdarUser authenticatedUser) {
         if (authenticatedUser.equals(invoice.getTransactedBy()) || authenticatedUser.equals(invoice.getOwner())) {
             return true;
@@ -564,6 +585,7 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
+    @Transactional(readOnly=true)
     public <R extends Resource> boolean isResourceViewable(TdarUser authenticatedUser, R resource) {
         if (resource == null) {
             return false;
@@ -577,10 +599,12 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
+    @Transactional(readOnly=true)
     public boolean isResourceEditable(TdarUser authenticatedUser, Resource resource) {
         return canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_METADATA);
     }
 
+    @Transactional(readOnly=true)
     public void applyTransientViewableFlag(InformationResourceFileVersion informationResourceFileVersion, TdarUser authenticatedUser) {
         boolean visible = false;
         if (informationResourceFileVersion == null) {
@@ -647,6 +671,7 @@ public class AuthorizationService implements Accessible {
 
     }
 
+    @Transactional(readOnly=true)
 	public void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds) {
         Viewable item = (Viewable) r_;
         boolean viewable = setupViewable(authenticatedUser, item);

@@ -20,7 +20,7 @@ public enum PhraseFormatter {
         }
         switch (this) {
             case ESCAPED:
-                return QueryParser.escape(value.trim());
+                return StringUtils.replace(QueryParser.escape(value.trim())," ", "\\ ");
             case WILDCARD:
             	if (StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
             		return value;

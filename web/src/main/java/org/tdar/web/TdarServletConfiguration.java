@@ -75,9 +75,9 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 
 		setupOpenSessionInViewFilter(container);
 
-		if (configuration.tagEnabled()) {
-			configureCxfForTag(container);
-		}
+//		if (configuration.tagEnabled()) {
+//			configureCxfForTag(container);
+//		}
         configureFreemarker(container);
 
 		configureStrutsAndSiteMeshFilters(container);

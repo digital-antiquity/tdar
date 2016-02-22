@@ -115,7 +115,7 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
 
     @Override
     public String toString() {
-        return String.format("%s (%s)", creator, role);
+        return String.format("%s[%s] (%s)", creator.getProperName(), creator.getId(), role);
     }
 
     /*

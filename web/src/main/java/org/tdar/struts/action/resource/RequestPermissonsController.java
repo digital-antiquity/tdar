@@ -22,6 +22,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -66,9 +67,9 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     @Action(value = "request-access",
             results = {
                     @Result(name = SUCCESS, location = "../resource/request-access.ftl"),
-                    @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                    @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
                             params = { "status", "500" }),
-                    @Result(name = INPUT, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                    @Result(name = INPUT, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
                             params = { "status", "500" })
             })
     @HttpsOnly
@@ -82,9 +83,9 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resource.id}/${resource.slug}"),
-                    @Result(name = ERROR, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                    @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
                             params = { "status", "500" }),
-                    @Result(name = INPUT, type = "freemarkerhttp", location = "/WEB-INF/content/errors/error.ftl",
+                    @Result(name = INPUT, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
                             params = { "status", "500" })
             })
     @PostOnly

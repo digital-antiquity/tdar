@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.utils.db;
+package org.tdar.utils;
 
 /**
  * @author Adam Brin
@@ -75,12 +75,15 @@ public class SchemaGenerator {
      */
     private void generate(String filename) {
         log.info("exporting schema to: " + filename);
-        SchemaExport export = new SchemaExport(cfg);
-        export.setDelimiter(";");
+        
+//        SchemaExport export = new SchemaExport();
+//        export.
+//        export.setDelimiter(";");
         File f = new File(filename);
         new File(f.getParent()).mkdirs();
-        export.setOutputFile(filename);
-        export.execute(Target.SCRIPT, Type.CREATE);
+  //      export.setOutputFile(filename);
+//        export.execute(Target.SCRIPT, Type.CREATE);
+        log.error("DISABLED w/breakage in Hiberate 5.1");
     }
 
     /**

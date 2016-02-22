@@ -77,7 +77,7 @@ if [ $? -ne 0 ]
       sudo rm -Rrf ~tdar/app/oai-pmh
       # sudo cp dataone/target/tdar-dataone.war ~tdar/app/dataone.war
       # sudo rm -Rrf ~tdar/app/dataone
-      # sudo cp tag/target/tdar-tag.war ~tdar/app/services.war
-      # sudo rm -Rrf ~tdar/app/services
+      sudo cp tag/target/tdar-tag.war ~tdar/app/services.war
+      sudo rm -Rrf ~tdar/app/services
       sudo service tomcat7 restart
 fi

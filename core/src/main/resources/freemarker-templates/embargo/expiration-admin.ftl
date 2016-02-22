@@ -1,9 +1,14 @@
+Dear tDAR Admin:
+<#list toExpire![]>
 The following files will be un-embargoed tomorrow:
-<#if toExpire?has_content><#list toExpire as file>
- - ${file}
-</#list></#if>
+<#items as file>
+ - ${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})
+   ${baseUrl}${file.informationResource.detailUrl} (${file.informationResource.submitter.properName})
+</#items></#list>
 
+<#list expired![]>
 The following files have been unembargoed:
-<#if expired?has_content><#list expired as file>
- - ${file}
-</#list></#if>
+<#items as file>
+ - ${file.filename} (${file.id?c}):  ${file.informationResource.title} (${file.informationResource.id?c})
+   ${baseUrl}${file.informationResource.detailUrl} (${file.informationResource.submitter.properName})
+</#items></#list>

@@ -18,11 +18,9 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -34,12 +32,10 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -61,8 +57,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
 
-    @Autowired
-    private transient SearchIndexService searchIndexService;
     @Autowired
     private transient RecaptchaService recaptchaService;
 
@@ -177,10 +171,6 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
                     ((Updatable) persistable).markUpdated(getAuthenticatedUser());
                 }
 
-                if (persistable instanceof XmlLoggable) {
-                    ((XmlLoggable) persistable).setReadyToStore(false);
-                }
-
                 actionReturnStatus = save(persistable);
 
                 try {
@@ -191,16 +181,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
                 // should there not be "one" save at all? I think this should be here
                 if (shouldSaveResource()) {
-                    if (persistable instanceof XmlLoggable) {
-                        ((XmlLoggable) persistable).setReadyToStore(true);
-                    }
                     getGenericService().saveOrUpdate(persistable);
-                    // NOTE: the below should not be necessary with the hibernate listener, but it seems like the saveOrUpdate above
-                    // does not catch the change of the transient readyToStore boolean
-                    XMLFilestoreLogger xmlLogger = new XMLFilestoreLogger();
-                    xmlLogger.logRecordXmlToFilestore(persistable);
                 }
 
+//                SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
                 indexPersistable();
                 // who cares what the save implementation says. if there's errors return INPUT
                 if (!getActionErrors().isEmpty()) {
@@ -234,6 +218,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         if (CollectionUtils.isNotEmpty(getActionErrors()) && SUCCESS.equals(actionReturnStatus)) {
             return INPUT;
         }
+        
         return actionReturnStatus;
     }
 
@@ -248,9 +233,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     protected void indexPersistable() throws SolrServerException, IOException {
-        if (persistable instanceof Indexable) {
-            searchIndexService.index((Indexable) persistable);
-        }
+//        if (persistable instanceof Indexable) {
+//            searchIndexService.index((Indexable) persistable);
+//        }
     }
 
     private void logAction(String action_) {

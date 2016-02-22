@@ -59,6 +59,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param statuses
      * @return
      */
+    @Transactional(readOnly=true)
     public List<BillingAccount> listAvailableAccountsForUser(TdarUser user, Status... statuses) {
         if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -248,7 +249,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * 
      * @param resources
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public void updateTransientAccountInfo(Collection<Resource> resources) {
         getDao().updateTransientAccountOnResources(resources);
     }
@@ -258,7 +259,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * 
      * @param resource
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public void updateTransientAccountInfo(Resource resource) {
         // TODO: add hql/sql for account lookup by resource
         if (resource == null) {

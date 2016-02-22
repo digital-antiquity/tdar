@@ -95,11 +95,17 @@
             <h4>
                 There <#if paginationHelper.totalNumberOfItems == 1>is<#else>are</#if> ${paginationHelper.totalNumberOfItems?c}
 
-                <#if selectedResourceTypes?has_content>
-                    <@s.text name="${resourceTypeFacets[0].label}" />
+
+            <#if selectedResourceTypes?has_content>
+                <#if paginationHelper.totalNumberOfItems == 1>
+                    <@s.text name="${selectedResourceTypes[0].localeKey}" />
                 <#else>
+                    <@s.text name="${selectedResourceTypes[0].pluralLocaleKey}" />
+                </#if> 
+            <#else>
                     <#if paginationHelper.totalNumberOfItems == 1>Resource<#else>Resources</#if>
-                </#if> within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
+            </#if>
+                 within this Collection <#if selectedResourceTypes?has_content>                <sup><a style="text-decoration: "
                                                                                                              href="<@s.url includeParams="all">
                         <@s.param name="selectedResourceTypes"value="" />
                         <@s.param name="startRecord" value=""/>
@@ -133,10 +139,15 @@
 
             <@common.resourceUsageInfo />
 		<#if editor>
-			<div class="row">
-			<p><b>Admin Tools</b><br>
-			&#8226; <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></p>
-			</div>
+		<div class="row">
+		  <div class="span6">
+			<p><b>Admin Tools</b>
+			<ul>
+			 <li> <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></li>
+			 <li> <a href="<@s.url value="/search/download?collectionId=${resourceCollection.id?c}"/>">Export to Excel</a></li>
+         </ul>
+            </div>
+            </div>
 		</#if>
         <div class="row">
             <div class="span4">

@@ -54,7 +54,6 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
         Collection<? extends Resource> resources = new ArrayList<>();
         ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
         try {
-            logger.error("disabeld");
             MessageHelper messageHelper = MessageHelper.getInstance();
             resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
             collection.markUpdated(genericService.find(TdarUser.class, config.getAdminUserId()));
@@ -71,7 +70,6 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             collection.getResources().addAll(resources);
             genericService.saveOrUpdate(collection);
             searchIndexService.indexCollection(resources);
-            searchIndexService.index(collection);
         } catch (Exception e) {
             logger.error("issue in recent resources report", e);
         }

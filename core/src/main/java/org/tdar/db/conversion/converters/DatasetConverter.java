@@ -37,6 +37,8 @@ public interface DatasetConverter {
      */
     List<String> getTableNames();
 
+    List<String> getMessages();
+
     void setIndexedContentsFile(File indexedContentsFile);
 
     File getIndexedContentsFile();
@@ -95,6 +97,14 @@ public interface DatasetConverter {
         protected abstract void openInputDatabase() throws IOException;
 
         protected abstract void dumpData() throws IOException, Exception;
+
+        private List<String> messages = new ArrayList<>();
+        
+        
+        @Override
+        public List<String> getMessages() {
+            return messages;
+        }
 
         @Override
         public void setRelationships(Set<DataTableRelationship> relationships) {
@@ -204,7 +214,7 @@ public interface DatasetConverter {
                 // FIXME: THIS FEELS DUMB. We are catching and throwing tdar exception so that the catch-all will not wipe out a friendly-and-specific error
                 // message with a friendly-yet-generic error message.
                 throw tex;
-            } catch (Exception e) {
+            } catch (Throwable e) {
                 logger.error("unable to process file:  " + getInformationResourceFileVersion().getFilename(), e);
                 throw new TdarRecoverableRuntimeException("datasetConverter.error_unable_to_process", e, Arrays.asList(getInformationResourceFileVersion()
                         .getFilename()));

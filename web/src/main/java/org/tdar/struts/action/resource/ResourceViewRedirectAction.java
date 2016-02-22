@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
 
 /**
  * $Id$
@@ -36,7 +37,10 @@ public class ResourceViewRedirectAction extends AuthenticationAware.Base {
      */
     @Action(value = "{resourceId}",
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${resource.detailUrl}")
+                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${resource.detailUrl}"),
+                    @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.FREEMARKERHTTP,
+                    location = "/WEB-INF/content/errors/error.ftl",
+                    params = { "status", "400" })
             })
     public String view() {
         setResource(getGenericService().find(Resource.class, getResourceId()));

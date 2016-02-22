@@ -1,8 +1,10 @@
 package org.tdar.struts.action.admin;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -52,6 +54,7 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
     private Map<UserAffiliation, Long> affiliationCounts;
     private Map<UserAffiliation, Long> contributorAffiliationCounts;
     private Map<AgreementTypes, Long> agreementCounts;
+    private Set<Long> contributorIds = new HashSet<>();
 
     @Action("user")
     public String userInfo() {
@@ -61,6 +64,7 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
             setUserLoginStats(statisticService.getUserLoginStats());
             setAffiliationCounts(entityService.getAffiliationCounts());
             setContributorAffiliationCounts(entityService.getAffiliationCounts(true));
+            setContributorIds(entityService.findAllContributorIds());
             setAgreementCounts(entityService.getAgreementCounts());
         } catch (Exception e) {
             getLogger().error("error in userInfo", e);
@@ -70,6 +74,7 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
 
     @Action("user-mailchimp")
     public String userMailchipInfo() {
+        setContributorIds(entityService.findAllContributorIds());
         setRecentUsers(entityService.findAllRegisteredUsers());
         return SUCCESS;
     }
@@ -128,6 +133,14 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
 
     public void setContributorAffiliationCounts(Map<UserAffiliation, Long> contributorAffiliationCounts) {
         this.contributorAffiliationCounts = contributorAffiliationCounts;
+    }
+
+    public Set<Long> getContributorIds() {
+        return contributorIds;
+    }
+
+    public void setContributorIds(Set<Long> contributorIds) {
+        this.contributorIds = contributorIds;
     }
 
 }

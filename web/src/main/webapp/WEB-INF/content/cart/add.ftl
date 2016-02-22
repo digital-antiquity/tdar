@@ -424,6 +424,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
             </#list>
             </tbody>
         </table>
+        <button class="button btn btn-primary tdar-button">Continue</button>
 
     </div>
     </#if>

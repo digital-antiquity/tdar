@@ -47,6 +47,7 @@ import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyStatisticsUpdate;
 import org.tdar.core.service.processes.daily.DoiProcess;
+import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
@@ -128,6 +129,16 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
         logger.info("updating Daily stats");
         queue(OccurranceStatisticsUpdateProcess.class);
         queue(DailyStatisticsUpdate.class);
+    }
+
+    
+    /**
+     * Send emails at midnight
+     */
+    @Scheduled(cron = "0 45 0 * * *")
+    public void cronEmbargoNotices() {
+        logger.info("updating Embargo notices");
+        queue(EmbargoedFilesUpdateProcess.class);
     }
 
     /**

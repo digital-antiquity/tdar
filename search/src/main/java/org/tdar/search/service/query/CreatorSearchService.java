@@ -114,6 +114,7 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
             valid = true;
         }
 
+        
         // ignore email field for unauthenticated users.
         if (SearchUtils.checkMinString(person.getEmail(), min)) {
             valid = true;
@@ -124,6 +125,9 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
                 pqp.add(person);
                 q.append(pqp);
                 logger.trace("{}", pqp.toString());
+            }
+            if (registered == Boolean.TRUE) {
+                q.append(new FieldQueryPart<Boolean>(QueryFieldNames.REGISTERED,Boolean.TRUE));
             }
             q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
             searchService.handleSearch(q, result, provider);

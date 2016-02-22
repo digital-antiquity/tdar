@@ -54,7 +54,7 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 
 	@Override
 	public int getBatchSize() {
-		return 100;
+		return 10;
 	}
 
 	@Override
@@ -62,6 +62,11 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 		return Creator.class;
 	}
 
+	@Override
+	public boolean clearBeforeBatch() {
+		return true;
+	}
+	
 	@Override
 	public List<Long> findAllIds() {
 		/*

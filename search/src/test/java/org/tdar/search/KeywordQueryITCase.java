@@ -5,19 +5,25 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.lucene.analysis.fa.PersianAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.KeywordSearchService;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
+
+import net.fortuna.ical4j.model.property.Geo;
 
 public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
 
@@ -36,6 +42,31 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
         searchIndexService.indexAll(getAdminUser(), LookupSource.KEYWORD);
     };
     
+    
+    @Test
+    public void testMultiWordKeyword() throws ParseException, SolrServerException, IOException {
+        GeographicKeyword kwd = new GeographicKeyword();
+        kwd.setLabel("Pima County");
+        kwd.setStatus(Status.ACTIVE);
+        genericService.save(kwd);
+        searchIndexService.index(kwd);
+        logger.debug("ID:{}", kwd.getId());
+        SearchResult<Keyword> result = processSearch("Pima County","GeographicKeyword",2);
+        List<Keyword> resources = result.getResults();
+        logger.debug("{}", PersistableUtils.extractIds(resources));
+        assertTrue("at least one keyword", resources.size() > 0);
+        
+        result = processSearch("Pima","GeographicKeyword",2);
+        resources = result.getResults();
+        logger.debug("{}", PersistableUtils.extractIds(resources));
+        assertTrue("at least one keyword", resources.size() > 0);
+
+        result = processSearch("Pima Co","GeographicKeyword",2);
+        resources = result.getResults();
+        logger.debug("{}", PersistableUtils.extractIds(resources));
+        assertTrue("at least one keyword", resources.size() > 0);
+
+    }
 
     @Test
     public void testKeywordLookup() throws SolrServerException, IOException, ParseException {

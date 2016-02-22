@@ -13,14 +13,14 @@
 }
 
 .d3tree .found {
-	fill: #ff4136;
-	stroke: #ff4136;
+	fill: #7a1501;
+	stroke: #7a1501;
 	stroke-width: 1.5px;
 }
 
 .d3tree circle.found {
-	fill: #ff4136;
-	stroke: #ff4136;
+	fill: #7a1501;;
+	stroke: #7a1501;
 	stroke-width: 1.5px;
 }
 
@@ -41,7 +41,7 @@
 }
 .d3tree .foundLink {
 	fill: none;
-	stroke: #ff4136;
+	stroke: #7a1501;
 	stroke-width: 1.5px;
 }
 

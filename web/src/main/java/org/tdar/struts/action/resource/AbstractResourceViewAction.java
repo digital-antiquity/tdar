@@ -168,25 +168,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public String getGoogleScholarTags() throws Exception {
-        StringWriter sw = new StringWriter();
-        try {
-            ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
-            for (MetaTag tag : trans.convertResourceToMetaTag(getResource())) {
-                serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
-                sw.append("\n");
-            }
-        } catch (Exception e) {
-            getLogger().error("error converting scholar tag for resource:", getId(), e);
-        }
-
-        try {
-            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
-            setSchemaOrgJsonLD(transformer.convert(serializationService, getResource()));
-        } catch (Exception e) {
-            getLogger().error("error converting to json-ld", e);
-        }
-
-        return sw.toString();
+        return resourceService.getGoogleScholarTags(getResource());
     }
 
     // Return list of acceptable billing accounts. If the resource has an account, this method will include it in the returned list even
@@ -209,6 +191,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             return ERROR;
         }
         setResourceCitation(new ResourceCitationFormatter(getResource()));
+        setSchemaOrgJsonLD(resourceService.getSchemaOrgJsonLD(getResource()));
         loadBasicViewMetadata();
         loadCustomViewMetadata();
         resourceService.updateTransientAccessCount(getResource());

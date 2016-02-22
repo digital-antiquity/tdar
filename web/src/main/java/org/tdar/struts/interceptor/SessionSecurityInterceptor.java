@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
@@ -67,6 +68,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
 
         HttpServletResponse response = ServletActionContext.getResponse();
         SessionType mark = SessionType.READ_ONLY;
+        SessionProxy.getInstance().registerSession(genericService.getCurrentSessionHashCode());
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = SessionType.WRITEABLE;
@@ -83,6 +85,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 }
             }
             String invoke = invocation.invoke();
+            SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
             return invoke;
         } catch (TdarActionException exception) {
             if (StatusCode.shouldShowException(exception.getStatusCode())) {
@@ -95,8 +98,10 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 genericService.clearCurrentSession();
                 setSessionClosed(true);
             }
+            SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(),mark == SessionType.READ_ONLY );
             return resultName;
         } catch (Exception e) {
+            SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
             if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
                 logger.warn("ClientAbortException:{}", e, e);
             }

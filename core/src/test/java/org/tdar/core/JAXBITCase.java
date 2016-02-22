@@ -1,5 +1,7 @@
 package org.tdar.core;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -13,13 +15,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
+import org.joda.time.DateTime;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -32,12 +32,16 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
@@ -47,6 +51,8 @@ import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
@@ -127,6 +133,41 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         logger.info(sw.toString());
         assertFalse(sw.toString().contains("\"activeMaterialKeywords\":null"));
         assertTrue(sw.toString().contains(BEDOUIN));
+    }
+
+    
+    @Test
+    @Rollback
+    public void testJsonExportRCorder() throws Exception {
+        Project p = new Project();
+        p.setTitle("test");
+        p.setDescription("test");
+        p.markUpdated(getAdminUser());
+        for (int i=1 ; i < 10; i++) {
+            ResourceCreator rc = new ResourceCreator(new Institution(i + " I"), ResourceCreatorRole.CONTACT);
+            genericService.saveOrUpdate(rc.getCreator());
+            rc.setSequenceNumber(10-i);
+            p.getResourceCreators().add(rc);
+        }
+        
+        genericService.saveOrUpdate(p);
+        StringWriter sw = new StringWriter();
+        Long pid = p.getId();
+        p = null;
+        evictCache();
+        p = genericService.find(Project.class, pid);
+        List<ResourceCreator> lst = new ArrayList<>(p.getResourceCreators());
+        p.getResourceCreators().clear();
+        Collections.sort(lst);
+        p.getResourceCreators().addAll(lst);
+        logger.debug("{}", p.getResourceCreators());
+        serializationService.convertToJson(p, sw, null, null);
+        for (String l : sw.toString().split("\n")) {
+            if (l.contains("properName") || l.contains("sequenceNumber")) {
+                logger.debug(l);
+            }
+        }
+//        logger.info(sw.toString());
     }
 
     
@@ -264,6 +305,29 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
             logger.warn("exception", e);
             assertFalse("I should not exist. fix me, please?", true);
         }
+    }
+
+
+    @Test
+    public void testJsonDateSerialization() throws IOException {
+        Date dt = new DateTime(2015, 3, 9, 0, 0).toDate();
+        String json = serializationService.convertToJson(dt);
+        assertThat(json, containsString("March 9, 2015"));
+        logger.debug("json:{}", json);
+
+
+        FileProxy fileProxy = new FileProxy();
+        fileProxy.setFileCreatedDate(dt);
+        json = serializationService.convertToJson(fileProxy);
+        assertThat(json, containsString("March 9, 2015"));
+        logger.debug("json:{}", json);
+
+        InformationResourceFile informationResourceFile = new InformationResourceFile();
+        informationResourceFile.setFileCreatedDate(new DateTime(2015, 3, 9, 0, 0).toDate());
+        fileProxy = new FileProxy(informationResourceFile);
+        json = serializationService.convertToJson(fileProxy);
+        assertThat(json, containsString("March 9, 2015"));
+        logger.debug("json:{}", json);
     }
 
 }

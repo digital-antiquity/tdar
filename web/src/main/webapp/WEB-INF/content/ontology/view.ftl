@@ -42,7 +42,7 @@
             </#list>
         </ul>
         </#if>
-    <h3>Ontology</h3>
+    <h3>${resource.title}</h3>
 
 <#if orgchart!false>
     <div id="ontologyViewer" class="" style="overflow:scroll;height:400px;">
@@ -59,6 +59,10 @@
     </div>
     <script>
     $(function() {
+    $("#btnOntologyShowMore").click(function() {
+        $(".hidden-nodes").removeClass("hidden-nodes");
+        $("#divOntologyShowMore").hide();
+    });
     TDAR.d3tree.init();    
 });
     

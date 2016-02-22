@@ -28,6 +28,10 @@ public class BillingAccountStatisticsAction extends AbstractStatisticsAction imp
     @Override
     public void prepare() throws Exception {
         account = accountService.find(getId());
+        if (account == null) {
+            addActionError("billingAccountStatisticsACtion.no_account");
+        }
+
         setStatsForAccount(statisticsService.getStatsForAccount(account, this, getGranularity()));
         setupJson();
     }

@@ -91,18 +91,22 @@ public class InformationResourceFileService extends ServiceInterface.TypedDaoBas
         irFile.setTransientDownloadCount(getDao().getDownloadCount(irFile).longValue());
     }
 
+    @Transactional(readOnly=true)
     public List<InformationResource> findInformationResourcesWithFileStatus(Person authenticatedUser, List<Status> resourceStatus, List<FileStatus> fileStatus) {
         return getDao().findInformationResourcesWithFileStatus(authenticatedUser, resourceStatus, fileStatus);
     }
 
+    @Transactional(readOnly=true)
     public ScrollableResults findScrollableVersionsForVerification() {
         return getDao().findScrollableVersionsForVerification();
     }
 
+    @Transactional(readOnly=true)
     public List<InformationResourceFile> findAllExpiredEmbargoFiles() {
         return getDao().findAllExpiredEmbargoes();
     }
 
+    @Transactional(readOnly=true)
     public List<InformationResourceFile> findAllEmbargoFilesExpiringTomorrow() {
         return getDao().findAllEmbargoFilesExpiringTomorrow();
     }

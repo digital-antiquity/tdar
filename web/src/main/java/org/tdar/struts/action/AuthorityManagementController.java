@@ -22,7 +22,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.AuthorityManagementService;
-import org.tdar.core.service.AuthorityManagementService.DupeMode;
+import org.tdar.core.service.authority.DupeMode;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;

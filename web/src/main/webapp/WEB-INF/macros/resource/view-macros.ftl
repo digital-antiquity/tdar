@@ -370,8 +370,11 @@ View freemarker macros
         <#if creator.role?has_content && creator.role.partOfSchemaOrg >
             <#local schemaRole = creator.role.schemaOrgLabel />
         </#if>
-
+    <#local alt="${c.properName}"/>
+    <#if c.institutionName?has_content><#local alt="${c.properName?xhtml} (${c.institutionName?xhtml})"/></#if>
+    <span class="creator" title="${alt}" alt="${alt}">
         <#if c?? && ( authenticatedUser?? || c.browsePageVisible ) > <a href="<@s.url value="${c.detailUrl}"/>">${c.properName}</a><#else>${c.properName}</#if>
+    </span>
     </#compress>
     </#macro>
 
@@ -479,7 +482,7 @@ View freemarker macros
                 <#assign contents = "" />
                 <#list proxyList as proxy>
                     <#if proxy.valid && proxy.role == role && !proxy.resourceCreator.creator.deleted >
-                        <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>,</#if>
+                        <#assign contents><#noescape>${contents}<#t/></#noescape><#if contents?has_content>;</#if>
                         <@browse creator=proxy.resourceCreator /><#t/></#assign>
                     </#if>
                 </#list>
@@ -499,14 +502,15 @@ View freemarker macros
                 <#local status="info"/>
             </#if>
 
-            <#if persistable.status.flaggedForBilling && namespace=='/billing'>
-            <#else>
                 <@_statusCallout onStatus='${persistable.status?lower_case}' cssClass='${status}'>
+            <#if persistable.status.flaggedForBilling && namespace=='/billing'>
+                This account has been marked as <strong>${persistable.status.label}</strong>, please add funds to it.
+            <#else>
                 This record has been marked as <strong>${persistable.status.label}</strong> <#if authorityForDup?has_content> of
                 <a href="<@s.url value="/${authorityForDup.urlNamespace}/${authorityForDup.id?c}"/>">${authorityForDup.name}</a></#if>.
                     <#if !persistable.draft> While ${siteAcronym} will retain this record, it will not appear in search results.</#if>
-                </@_statusCallout>
             </#if>
+                </@_statusCallout>
 
         </#if>
     </#macro>

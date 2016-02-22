@@ -1,5 +1,6 @@
 package org.tdar.core.service.resource;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -67,8 +68,12 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
+import org.tdar.transform.MetaTag;
+import org.tdar.transform.SchemaOrgMetadataTransformer;
+import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
@@ -100,6 +105,8 @@ public class ResourceService {
     private DataTableDao dataTableDao;
     @Autowired
     private BillingAccountDao accountDao;
+    @Autowired
+    private SerializationService serializationService;
 
     @Autowired
     private GeoSearchService geoSearchService;
@@ -158,6 +165,7 @@ public class ResourceService {
     /**
      * Finds @link Resource entries that have been modified recently.
      */
+    @Transactional(readOnly=true)
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
         return datasetDao.findRecentlyUpdatedItemsInLastXDays(days);
     }
@@ -199,6 +207,7 @@ public class ResourceService {
      * 
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Status> findAllStatuses() {
         return Arrays.asList(Status.values());
     }
@@ -409,6 +418,7 @@ public class ResourceService {
      * @param resourceTypes
      * @return
      */
+    @Transactional(readOnly=true)
     public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> resourceTypes) {
         return datasetDao.getResourceCountAndStatusForUser(p, resourceTypes);
     }
@@ -420,6 +430,7 @@ public class ResourceService {
      * @param status
      * @return
      */
+    @Transactional(readOnly=true)
     public Long getResourceCount(ResourceType resourceType, Status status) {
         return datasetDao.getResourceCount(resourceType, status);
     }
@@ -571,22 +582,22 @@ public class ResourceService {
         return targetCollection;
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatistics(resourceId, status);
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long id, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatisticsForProject(id, status);
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
         return datasetDao.getSpaceUsageForCollections(collectionId, statuses);
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> accountId, List<Status> status) {
         return datasetDao.getResourceSpaceUsageStatisticsForUser(accountId, status);
     }
@@ -600,7 +611,7 @@ public class ResourceService {
      * @param minCount
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         return datasetDao.getAggregateUsageStats(granularity, start, end, minCount);
     }
@@ -614,12 +625,12 @@ public class ResourceService {
      * @param minCount
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
         return datasetDao.getOverallUsageStats(start, end, max);
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end, Long minCount) {
         return datasetDao.getAggregateDownloadStats(granularity, start, end, minCount);
     }
@@ -634,7 +645,7 @@ public class ResourceService {
      * @param iRFileId
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public List<AggregateDownloadStatistic> getAggregateDownloadStatsForFile(DateGranularity granularity, Date start, Date end, Long minCount, Long iRFileId) {
         return datasetDao.getDownloadStatsForFile(granularity, start, end, minCount, iRFileId);
     }
@@ -649,7 +660,7 @@ public class ResourceService {
      * @param resourceIds
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public List<AggregateViewStatistic> getUsageStatsForResources(DateGranularity granularity, Date start, Date end, Long minCount, List<Long> resourceIds) {
         return datasetDao.getUsageStatsForResource(granularity, start, end, minCount, resourceIds);
     }
@@ -660,7 +671,7 @@ public class ResourceService {
      * @param resource
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public List<ResourceRevisionLog> getLogsForResource(Resource resource) {
         if (PersistableUtils.isNullOrTransient(resource)) {
             return Collections.emptyList();
@@ -673,7 +684,7 @@ public class ResourceService {
      * 
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public List<Long> findAllResourceIdsWithFiles() {
         return datasetDao.findAllResourceIdsWithFiles();
     }
@@ -683,6 +694,7 @@ public class ResourceService {
      * 
      * @return
      */
+    @Transactional(readOnly=true)
     public List<ResourceType> getAllResourceTypes() {
         ArrayList<ResourceType> arrayList = new ArrayList<>(Arrays.asList(ResourceType.values()));
         if (!TdarConfiguration.getInstance().isVideoEnabled()) {
@@ -713,6 +725,7 @@ public class ResourceService {
         return getWeeklyPopularResources(10);
     }
     
+    @Transactional(readOnly=true)
     public List<Resource> getWeeklyPopularResources(int count) {    
         int max = count;
         DateTime end = new DateTime();
@@ -893,6 +906,33 @@ public class ResourceService {
     @Transactional(readOnly=true)
     public ScrollableResults findMappedResources(Project p) {
         return datasetDao.findMappedResources(p);
+    }
+
+    @Transactional(readOnly=true)
+    public String getGoogleScholarTags(Resource resource) {
+        StringWriter sw = new StringWriter();
+        try {
+            ScholarMetadataTransformer trans = new ScholarMetadataTransformer();
+            for (MetaTag tag : trans.convertResourceToMetaTag(resource)) {
+                serializationService.convertToXMLFragment(MetaTag.class, tag, sw);
+                sw.append("\n");
+            }
+        } catch (Exception e) {
+            logger.error("error converting scholar tag for resource:", resource, e);
+        }
+        return sw.toString();
+    }
+    
+    @Transactional(readOnly=true)
+    public String getSchemaOrgJsonLD(Resource resource) {
+        try {
+            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            return transformer.convert(serializationService, resource);
+        } catch (Exception e) {
+            logger.error("error converting to json-ld", e);
+        }
+
+        return null;
     }
 
 }

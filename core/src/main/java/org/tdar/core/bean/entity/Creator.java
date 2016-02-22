@@ -87,19 +87,8 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     protected final static transient Logger logger = LoggerFactory.getLogger(Creator.class);
     private transient boolean obfuscated;
     private transient Boolean obfuscatedObjectDifferent;
-    private transient boolean readyToStore = true;
     public static final String OCCURRENCE = "occurrence";
     public static final String BROWSE_OCCURRENCE = "browse_occurrence";
-
-    @Transient
-    @XmlTransient
-    public boolean isReadyToStore() {
-        return readyToStore;
-    }
-
-    public void setReadyToStore(boolean readyToStore) {
-        this.readyToStore = readyToStore;
-    }
 
     @Override
     public Boolean getObfuscatedObjectDifferent() {

@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.ResourceType;
@@ -18,6 +19,7 @@ import org.tdar.db.conversion.DatasetConversionFactory;
 import org.tdar.db.conversion.converters.DatasetConverter;
 import org.tdar.db.conversion.converters.ShapeFileDatabaseConverter;
 import org.tdar.filestore.tasks.Task.AbstractTask;
+import org.tdar.utils.ExceptionWrapper;
 
 public class ConvertDatasetTask extends AbstractTask {
 
@@ -79,6 +81,14 @@ public class ConvertDatasetTask extends AbstractTask {
                 // returns the set of transient POJOs from the incoming dataset.
 
                 Set<DataTable> tablesToPersist = databaseConverter.execute();
+                if (CollectionUtils.isNotEmpty(databaseConverter.getMessages())) {
+                    for (String message :databaseConverter.getMessages()) {
+                        ExceptionWrapper wrapper = new ExceptionWrapper(message, "");
+                        wrapper.setFatal(false);
+                        getWorkflowContext().getExceptions().add(wrapper);
+                    }
+                }
+
                 File indexedContents = databaseConverter.getIndexedContentsFile();
                 getLogger().trace("FILE:**** : " + indexedContents);
 

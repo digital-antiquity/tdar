@@ -642,18 +642,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         this.orientation = orientation;
     }
 
-    private transient boolean readyToStore = true;
-
-    @Transient
-    @XmlTransient
-    public boolean isReadyToStore() {
-        return readyToStore;
-    }
-
-    public void setReadyToStore(boolean readyToStore) {
-        this.readyToStore = readyToStore;
-    }
-
     @Override
     public Date getDateUpdated() {
         return dateUpdated;

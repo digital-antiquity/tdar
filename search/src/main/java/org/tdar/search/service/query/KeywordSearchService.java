@@ -1,6 +1,7 @@
 package org.tdar.search.service.query;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -21,6 +22,7 @@ import org.tdar.search.query.builder.KeywordQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.PhraseFormatter;
 import org.tdar.search.query.part.QueryPartGroup;
+import org.tdar.search.query.part.StringAutocompletePart;
 import org.tdar.search.service.SearchUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -37,6 +39,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
     public LuceneSearchResultHandler<I> findKeyword(String term, String keywordType, LuceneSearchResultHandler<I> result, TextProvider provider, int min)
             throws ParseException, SolrServerException, IOException {
         QueryPartGroup subgroup = new QueryPartGroup(Operator.OR);
+        
         if (StringUtils.equalsIgnoreCase(SiteNameKeyword.class.getSimpleName(), keywordType)) {
             if (StringUtils.isNotBlank(term) && SiteCodeExtractor.matches(term)) {
                 FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, term);
@@ -52,10 +55,8 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
 
         group.setOperator(Operator.AND);
         if (SearchUtils.checkMinString(term, min)) {
-            FieldQueryPart<String> fqp = new FieldQueryPart<String>(QueryFieldNames.NAME_AUTOCOMPLETE, StringUtils.trim(term));
-            fqp.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-            q.append(fqp);
-        }
+            q.append(new StringAutocompletePart(QueryFieldNames.NAME_AUTOCOMPLETE, Arrays.asList(term)));
+       }
 
         // refine search to the correct keyword type
         group.append(new FieldQueryPart<String>(QueryFieldNames.TYPE, keywordType));

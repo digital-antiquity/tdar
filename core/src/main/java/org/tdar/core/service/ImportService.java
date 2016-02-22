@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -275,12 +276,18 @@ public class ImportService {
                 Iterator<Persistable> iterator = contents.iterator();
                 originalList.clear();
                 boolean isResourceCollection = false;
+                int count = 0;
                 while (iterator.hasNext()) {
                     Persistable p = iterator.next();
                     if (p instanceof ResourceCollection) {
                         isResourceCollection = true;
                     }
-                    toAdd.add(processIncoming(p, incomingResource, authorizedUser));
+                    Persistable result = processIncoming(p, incomingResource, authorizedUser);
+                    if (result instanceof Sequenceable) {
+                        ((Sequenceable) result).setSequenceNumber(count);
+                    }
+                    count++;
+                    toAdd.add(result);
                 }
                 if (isResourceCollection) {
                     continue;
@@ -387,6 +394,16 @@ public class ImportService {
 
         // obfuscate LatLong and clear collections if no permissions to resource
         ResourceCollection irc = rec.getInternalResourceCollection();
+
+        if (irc != null) {
+            for (AuthorizedUser au : irc.getAuthorizedUsers()) {
+                au.setId(null);
+            }
+            irc.setId(null);
+            irc.getResources().clear();
+            irc.getResources().add(rec);
+        }
+
         if (!canEditResource) {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
@@ -398,11 +415,6 @@ public class ImportService {
             irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            if (irc != null) {
-                for (AuthorizedUser au : irc.getAuthorizedUsers()) {
-                    au.setId(null);
-                }
-            }
             for (ResourceCollection rc : rec.getResourceCollections()) {
                 rc.getResources().add(rec);
             }

@@ -5,7 +5,8 @@
   "main": "index.js",
   "dependencies": {
     "bower": "~1.5.3",
-    "grunt-cli": "~0.1.13"
+    "grunt-cli": "~0.1.13",
+    "jasmine-core": "^2.4.1"
   },
   "devDependencies": {
     "deasync": "^0.1.0",
@@ -24,6 +25,7 @@
     "xmldoc": "^0.3.2"
   },
   "scripts": {
+    "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
     "pretest": "echo node src/test/frontend/pretest.js",
     "test": "karma start --no-single-run"
   },

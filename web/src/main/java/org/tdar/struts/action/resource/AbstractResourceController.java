@@ -238,7 +238,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     // if the user does not have explicit rights to the account (e.g. so that a user w/ edit rights on the resource can modify the resource
     // and maintain original billing account).
     protected List<BillingAccount> determineActiveAccounts() {
-        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
+        List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
         if (getResource() != null) {
             BillingAccount resourceAccount = getResource().getAccount();
             if ((resourceAccount != null) && !accounts.contains(resourceAccount) && (

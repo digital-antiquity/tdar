@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -42,7 +43,17 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
     private DailyStatisticsUpdate dailyTask;
     @Autowired
     private ResourceService resourceService;
+    @Autowired
+    private EntityService entityService;
 
+    
+    @Test
+    public void testContributorStats() {
+        Set<Long> findAllContributorIds = entityService.findAllContributorIds();
+        logger.debug("{}", findAllContributorIds);
+        assertNotEmpty(findAllContributorIds);
+    }
+    
     @Test
     @Rollback(true)
     public void testBasicStats() {
