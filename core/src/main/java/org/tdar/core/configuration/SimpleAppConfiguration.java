@@ -179,7 +179,7 @@ public abstract class SimpleAppConfiguration implements Serializable {
         String user_ = ".persistence.jdbc.user";
         String password_ = ".persistence.jdbc.password";
         ds.setDriverClass(getProperty(prefix, driver_));
-        ds.setJdbcUrl(getProperty(prefix, url_));
+        setupAndLogJdbcConnectionString(prefix, ds, url_);
         ds.setUser(getProperty(prefix, user_));
         ds.setPassword(getProperty(prefix, password_));
 
@@ -193,6 +193,22 @@ public abstract class SimpleAppConfiguration implements Serializable {
         ds.setMinPoolSize(getChainedOptionalProperty(prefix ,".minConnections", 1));
         return ds;
     }
+
+	private void setupAndLogJdbcConnectionString(String prefix, ComboPooledDataSource ds, String url_) {
+		String property = getProperty(prefix, url_);
+        String prefix_ = "tdar";
+        String appPrefix = System.getProperty("appPrefix");
+		if (StringUtils.isNotBlank(appPrefix)) {
+        	prefix_ = appPrefix;
+        }
+        if (property.contains("?")) {
+        	property += "&ApplicationName="+ prefix_;
+        } else {
+        	property += "?ApplicationName="+ prefix_;
+        }
+		ds.setJdbcUrl(property);
+        logger.debug(prefix_+ " JDBC Connection ("+prefix+"):"  + property);
+	}
 
     private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
         String appPrefix = System.getProperty("appPrefix");
