@@ -100,7 +100,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String ADD_NUMERIC_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" bigint";
     private static final String RENAME_COLUMN = "ALTER TABLE %s RENAME COLUMN \"%s\" TO \"%s\"";
     private static final String UPDATE_COLUMN_TO_NULL = "UPDATE %s SET \"%s\"=NULL";
-    private static final String ORIGINAL_KEY = "_original_";
+    private static final String ORIGINAL_KEY = "__o";
     private static final String INSERT_STATEMENT = "INSERT INTO %1$s (%2$s) VALUES(%3$s)";
     private static final String CREATE_TABLE = "CREATE TABLE %1$s (" + DataTableColumn.TDAR_ID_COLUMN + " bigserial, %2$s)";
     private static final String SQL_ALTER_TABLE = "ALTER TABLE \"%1$s\" ALTER \"%2$s\" TYPE %3$s USING \"%2$s\"::%3$s";
@@ -653,7 +653,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         String originalColumnName = generateOriginalColumnName(column);
         // this isn't a good enough test to tell if we are translating for the first time. For instance, if we translate a column, and then set the coding sheet
         // to null again, and then translate again, the column will have a <column-name>_original copy but the default coding sheet will be null. Instead we
-        // have to search for the <column-name>_original_<id> column and make a somewhat dangerous assumption that if this column exists, then we are the ones
+        // have to search for the <column-name>__o<id> column and make a somewhat dangerous assumption that if this column exists, then we are the ones
         // to have created it.
         if (hasColumn(tableName, originalColumnName)) {
             // this column has already been translated once. Wipe the current

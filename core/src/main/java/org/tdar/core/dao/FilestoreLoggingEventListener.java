@@ -17,27 +17,47 @@ import org.hibernate.event.spi.SaveOrUpdateEventListener;
 import org.hibernate.persister.entity.EntityPersister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.tdar.core.bean.HasStatus;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.hibernateEvents.EventListener;
+import org.tdar.core.service.AutowireHelper;
+import org.tdar.core.service.SerializationService;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
+@Component
 public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLoggable>
-		implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener, FlushEntityEventListener,
+		implements PostInsertEventListener, PostUpdateEventListener, PostDeleteEventListener, FlushEntityEventListener, 
 		FlushEventListener, SaveOrUpdateEventListener, EventListener {
 
 	private static final long serialVersionUID = -2773973927518207238L;
 
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
-	XMLFilestoreLogger xmlLogger;
+	private SerializationService serializationService;
 
 	public FilestoreLoggingEventListener() throws ClassNotFoundException {
 		super("Filestore");
-		xmlLogger = new XMLFilestoreLogger();
+	      SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
 
+	private boolean isEnabled() {
+	    try {
+	        if (serializationService == null) {
+	            AutowireHelper.autowire(this, serializationService);
+	        }
+	        if (serializationService != null) {
+	            return true;
+	        }
+	    } catch (Exception e) {
+	        logger.error("error intializing FilestoreLogEventListener",e);
+	    }
+	    return false;
+	}
+	
 	@Override
 	public void onPostDelete(PostDeleteEvent event) {
 		if (testSession(event.getSession())) {
@@ -54,7 +74,7 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 			if (old instanceof HasStatus) {
 				((HasStatus)newInstance).setStatus(Status.DELETED);
 			}
-			xmlLogger.convertToXML(newInstance);
+			serializationService.convertToXML(newInstance);
 			} catch (Exception e) {
 				logger.warn("error in XML convert", old);
 			}
@@ -65,16 +85,18 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 	@Override
 	protected void process(Object obj) {
 
-		if (obj == null) {
+		if (obj == null || !isEnabled()) {
 			return;
 		}
 
-		try {
-			if (obj instanceof XmlLoggable) {
-				xmlLogger.logRecordXmlToFilestore((Persistable) obj);
-			}
-		} catch (Exception e) {
-			logger.error("error ocurred when serializing to XML: {}", e.getMessage(), e);
+		if (obj instanceof XmlLoggable) {
+    		try {
+    				String xml = serializationService.convertToXML((XmlLoggable) obj);
+    				XMLFilestoreLogger.writeToFilestore(FilestoreObjectType.fromClass(obj.getClass()), ((XmlLoggable)obj).getId(), xml);
+    		        logger.trace("done saving");
+    		} catch (Exception e) {
+    			logger.error("error ocurred when serializing to XML: {}", e.getMessage(), e);
+    		}
 		}
 	}
 
@@ -93,7 +115,7 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 	}
 
 	private boolean testSession(EventSource session) {
-		return session.isClosed();
+		return !isEnabled() && session.isClosed();
 	}
 
 	@Override
@@ -132,5 +154,11 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 			flush(event);
 		}
 	}
+
+
+    @Autowired
+    public void setSerializationService(SerializationService serializationService) {
+        this.serializationService = serializationService;
+    }
 
 }

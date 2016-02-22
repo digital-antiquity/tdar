@@ -22,7 +22,7 @@ public abstract class AbstractEventListener<C> implements EventListener {
 
     private static final SessionProxy EVENT_PROXY = SessionProxy.getInstance();
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    Cache<Session, Set<C>> idChangeMap = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(5, TimeUnit.MINUTES).weakKeys().removalListener(new EventRemovalListener()).build();
+    private Cache<Session, Set<C>> idChangeMap = CacheBuilder.newBuilder().maximumSize(1000).expireAfterAccess(5, TimeUnit.MINUTES).weakKeys().removalListener(new EventRemovalListener()).build();
     private String name = "";
 
     public AbstractEventListener(String name) {
@@ -44,19 +44,35 @@ public abstract class AbstractEventListener<C> implements EventListener {
         flush(session.hashCode());
     }
 
+    @Override
     public void flush(Integer sessionId) {
         Session session = null;
         for (Session sess : idChangeMap.asMap().keySet()) {
             if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
                 session = sess;
-                break;
+                flushInternal(session);
+//                break;
             }
         }
         if (session == null) {
             logger.trace("session is null for id: {}", sessionId);
             return;
         }
-        flushInternal(session);
+    }
+
+    @Override
+    public void clear(Integer sessionId) {
+        Session session = null;
+        for (Session sess : idChangeMap.asMap().keySet()) {
+            if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
+                session = sess;
+                idChangeMap.getIfPresent(sess).clear();
+            }
+        }
+        if (session == null) {
+            logger.trace("session is null for id: {}", sessionId);
+            return;
+        }
     }
 
     private void flushInternal(Session session) {
@@ -65,10 +81,9 @@ public abstract class AbstractEventListener<C> implements EventListener {
             int counter = 0;
             for (Object obj : set) {
                 try {
-                    // logger.debug("fl:{}",obj);
-//                    if (!session.contains(obj) || session.isReadOnly(obj)) {
-//                        continue;
-//                    }
+                	if (logger.isTraceEnabled()) {
+                		logger.trace("  flush ({} - {}):{}", session.hashCode(),idChangeMap.hashCode(), obj);
+                	}
                     counter++;
                     process(obj);
                 } catch (Exception e) {
@@ -83,28 +98,31 @@ public abstract class AbstractEventListener<C> implements EventListener {
         }
     }
 
-    protected void addToSession(EventSource session, C entity) {
-        int hashCode = session.hashCode();
+    protected synchronized void addToSession(EventSource session, C entity) {
 		if (idChangeMap.getIfPresent(session) == null) {
             idChangeMap.put(session, new HashSet<>());
         }
         if (logger.isTraceEnabled()) {
-            logger.trace("adding to session: {}", entity);
+            logger.trace("adding to session ({} - {}): {}",session.hashCode(), idChangeMap.hashCode(), entity);
         }
         
         if (!session.contains(entity)) {
+        	logger.trace("not on session({}): {}",session.hashCode(),entity);
         	return;
         }
         try {
 	        if (session.isReadOnly(entity)) {
+	        	logger.trace("session is read only ({}): {}",session.hashCode(), entity);
 	        	return;
 	        }
         } catch (HibernateException he) {
-        	return;
+        	if (logger.isTraceEnabled()) {
+        		logger.trace(" {}, {}", session.hashCode(), entity, he);
+        	}
         }
-//		logger.debug("{} [{}]",event.getSession().contains(event.getEntity()),event.getEntity());
 
-        idChangeMap.getIfPresent(session).add((C) entity);
+        Set<C> ifPresent = idChangeMap.getIfPresent(session);
+		ifPresent.add((C) entity);
     }
 
     protected void cleanup() {

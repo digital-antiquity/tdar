@@ -154,7 +154,7 @@ public class SerializationService {
         return xmlFilestoreLogger.convertToXML(object, writer);
     }
 
-    /**
+        /**
      * Convert an object to JSON using JAXB using writer
      * 
      * @param object
@@ -162,7 +162,7 @@ public class SerializationService {
      * @throws JsonProcessingException
      * @throws IOException
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
@@ -185,6 +185,7 @@ public class SerializationService {
      */
     @Transactional
     public String convertToJson(Object object) throws IOException {
+        logger.trace("converting object to json:{}", object);
         StringWriter writer = new StringWriter();
         convertToJson(object, writer, null, null);
         return writer.toString();
@@ -194,7 +195,7 @@ public class SerializationService {
      * Takes an object, a @JsonView class (optional); and callback-name (optional); and constructs a JSON or JSONP object passing it back to the controller.
      * Most commonly used to produce a stream.
      */
-    @Transactional
+    @Transactional(readOnly=true)
     public String convertFilteredJsonForStream(Object object, Class<?> view, String callback) {
         Object wrapper = wrapObjectIfNeeded(object, callback);
         String result = null;
@@ -226,7 +227,7 @@ public class SerializationService {
         return wrapper;
     }
 
-    @Transactional
+    @Transactional(readOnly=true)
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
         convertToJson(object, writer, view, null);
@@ -302,6 +303,7 @@ public class SerializationService {
      * @param log
      * @throws IOException
      */
+    @Transactional(readOnly=true)
     public void generateFOAF(Creator<?> creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
@@ -392,12 +394,10 @@ public class SerializationService {
     /**
      * Stores the CreatorXML Log in the filestore
      * 
-     * @param model
-     * @param baseUrl
-     * @param person
      * @return
      * @throws Exception
      */
+    @Transactional(readOnly=true)
     public void generateRelatedLog(Persistable creator, RelatedInfoLog log) throws Exception {
         File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
@@ -424,6 +424,7 @@ public class SerializationService {
 
     }
 
+    @Transactional(readOnly=true)
     public String createGeoJsonFromResourceList(Map<String, Object> result, String resultKey, String rssUrl, Class<?> filter, String callback) throws IOException {
         List<Object> rslts = (List<Object>) result.get(resultKey);
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();

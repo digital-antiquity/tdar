@@ -123,7 +123,7 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	public void onPostUpdate(PostUpdateEvent event) {
 		if (event.getEntity() instanceof Indexable) {
 			if (logger.isTraceEnabled()) {
-				logger.trace("update called: {}" , event.getEntity());
+				logger.trace("update called ({}): {}" ,event.getSession().hashCode(), event.getEntity());
 			}
 			addToSession(event.getSession(), (Indexable) event.getEntity());
 		}
@@ -153,9 +153,10 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	@Override
 	@Transactional(readOnly = true)
 	public void onPostInsert(PostInsertEvent event) {
+		logger.debug("insert called: {} ({})" , event.getEntity(), event.getEntity() instanceof Indexable);
 		if (event.getEntity() instanceof Indexable) {
 			if (logger.isTraceEnabled()) {
-				logger.trace("insert called: {}" , event.getEntity());
+				logger.trace("insert called ({}): {}" ,event.getSession().hashCode(), event.getEntity());
 			}
 			addToSession(event.getSession(), (Indexable) event.getEntity());
 		}
@@ -184,6 +185,9 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	@Override
 	public void onFlushEntity(FlushEntityEvent event) throws HibernateException {
 		if (event.getEntity() instanceof Indexable) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("flush entity called ({}): {}" ,event.getSession().hashCode(), event.getEntity());
+            }
 			flush(event);
 		}
 	}
@@ -192,7 +196,7 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
 		if (event.getEntity() instanceof Indexable) {
 			if (logger.isTraceEnabled()) {
-				logger.trace("save/update called: {}" , event.getEntity());
+				logger.trace("save/update called ({}): {}",event.getSession().hashCode() , event.getEntity());
 			}
 			addToSession(event.getSession(), (Indexable) event.getEntity());
 		}

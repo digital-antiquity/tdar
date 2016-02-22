@@ -110,7 +110,7 @@
         <th>redeemed</th>
         <th>email code</th>
     </tr>
-    <#list account.coupons as coupon>
+    <#list coupons?sort_by("dateCreated")?reverse as coupon>
         <#assign extraClass=""/>
         <#assign sentence>The following voucher code is good for up
             to <#if (coupon.numberOfFiles?has_content && coupon.numberOfFiles > 0)>${coupon.numberOfFiles} file<#if (coupon.numberOfFiles > 1)>

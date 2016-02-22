@@ -36,6 +36,7 @@ import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
@@ -206,6 +207,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
             // assertFalse(irFile.isConfidential());
             // }
         }
+//        SessionProxy.getInstance().flushAll();
         controller = generateNewInitializedController(DocumentController.class);
         controller.setId(document.getId());
         controller.prepare();
