@@ -164,7 +164,6 @@ public class SerializationService {
      */
     @Transactional(readOnly=true)
     public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
-        logger.debug("Okay, we should be initializing an object mapper now");
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
         object = wrapObjectIfNeeded(object, callback);
