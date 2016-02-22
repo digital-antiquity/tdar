@@ -60,20 +60,20 @@ public abstract class AbstractEventListener<C> implements EventListener {
         }
     }
 
-//    @Override
-//    public void clear(Integer sessionId) {
-//        Session session = null;
-//        for (Session sess : idChangeMap.asMap().keySet()) {
-//            if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
-//                session = sess;
-//                idChangeMap.getIfPresent(sess).clear();
-//            }
-//        }
-//        if (session == null) {
-//            logger.trace("session is null for id: {}", sessionId);
-//            return;
-//        }
-//    }
+    @Override
+    public void clear(Integer sessionId) {
+        Session session = null;
+        for (Session sess : idChangeMap.asMap().keySet()) {
+            if (Objects.equal(sessionId.intValue(), sess.hashCode())) {
+                session = sess;
+                idChangeMap.getIfPresent(sess).clear();
+            }
+        }
+        if (session == null) {
+            logger.trace("session is null for id: {}", sessionId);
+            return;
+        }
+    }
 
     private void flushInternal(Session session) {
         Set<C> set = idChangeMap.getIfPresent(session);
