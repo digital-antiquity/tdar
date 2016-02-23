@@ -153,7 +153,6 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	@Override
 	@Transactional(readOnly = true)
 	public void onPostInsert(PostInsertEvent event) {
-		logger.debug("insert called: {} ({})" , event.getEntity(), event.getEntity() instanceof Indexable);
 		if (event.getEntity() instanceof Indexable) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("insert called ({}): {}" ,event.getSession().hashCode(), event.getEntity());
