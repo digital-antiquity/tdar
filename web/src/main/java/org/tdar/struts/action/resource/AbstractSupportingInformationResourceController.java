@@ -14,15 +14,12 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.resource.CategoryVariableService;
-import org.tdar.core.service.resource.DataTableService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
@@ -35,9 +32,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
 
     @Autowired
     private transient CategoryVariableService categoryVariableService;
-
-    @Autowired
-    private transient DataTableService dataTableService;
 
     private Long categoryId;
     private String fileInputMethod;
@@ -63,15 +57,11 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         this.subcategories = subcategories;
     }
 
-    public void setRelatedResources(ArrayList<Resource> relatedResources) {
-        this.relatedResources = relatedResources;
-    }
 
     private Long subcategoryId;
 
     private List<CategoryVariable> subcategories;
 
-    private ArrayList<Resource> relatedResources;
 
     @Override
     protected FileProxy processTextInput() {
@@ -163,17 +153,6 @@ public abstract class AbstractSupportingInformationResourceController<R extends 
         subcategories = new ArrayList<CategoryVariable>(categoryVariableService.find(categoryId).getSortedChildren());
     }
 
-    public List<Resource> getRelatedResources() {
-        if (relatedResources == null) {
-            relatedResources = new ArrayList<Resource>();
-            for (DataTable table : dataTableService.findDataTablesUsingResource(getPersistable())) {
-                if (!table.getDataset().isDeleted()) {
-                    relatedResources.add(table.getDataset());
-                }
-            }
-        }
-        return relatedResources;
-    }
 
     protected InformationResourceFileVersion getLatestUploadedTextVersion() {
         InformationResourceFileVersion version = null;

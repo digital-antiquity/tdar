@@ -7,14 +7,14 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
-import org.tdar.struts.action.resource.AbstractResourceViewAction;
+import org.tdar.struts.action.resource.AbstractSupportingResourceViewAction;
 import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/coding-sheet")
-public class CodingSheetViewAction extends AbstractResourceViewAction<CodingSheet> {
+public class CodingSheetViewAction extends AbstractSupportingResourceViewAction<CodingSheet> {
 
     private static final long serialVersionUID = 3034924577588283512L;
 

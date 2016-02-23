@@ -6,9 +6,9 @@ import java.util.Objects;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
-import org.tdar.struts.action.resource.AbstractResourceViewAction;
+import org.tdar.struts.action.resource.AbstractSupportingResourceViewAction;
 
-public abstract class AbstractOntologyViewAction extends AbstractResourceViewAction<Ontology> {
+public abstract class AbstractOntologyViewAction extends AbstractSupportingResourceViewAction<Ontology> {
 
     private static final long serialVersionUID = -7901012726097964225L;
     private OntologyNode node;
