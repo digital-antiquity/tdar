@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 
@@ -56,6 +57,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
+
         FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
 
         if (cleanedQueryString.contains(" ") && isUseProximity()) {
@@ -76,6 +78,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         }
         queryPart.append(content);
+//        queryPart.append(new ContentQueryPart(cleanedQueryString));
         queryPart.append(linkedContent);
         return queryPart;
     }

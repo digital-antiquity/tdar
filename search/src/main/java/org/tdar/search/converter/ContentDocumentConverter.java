@@ -32,7 +32,10 @@ public class ContentDocumentConverter extends AbstractSolrDocumentConverter {
                 }
             }
             doc.setField(QueryFieldNames.FILENAME, irf.getFilename());
+            doc.setField(QueryFieldNames.DATE, irf.getFileCreatedDate());
+            doc.setField(QueryFieldNames.RESOURCE_ID, irf.getInformationResource().getId());
             doc.setField(QueryFieldNames.RESOURCE_ACCESS_TYPE, irf.getRestriction());
+//            logger.debug("{} {} {} {}", irf.getInformationResource().getId(), irf.getFilename(), irf.getRestriction());
         }
 
         return doc;

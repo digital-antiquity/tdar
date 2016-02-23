@@ -6,6 +6,12 @@ import org.slf4j.LoggerFactory;
 
 import com.opensymphony.xwork2.TextProvider;
 
+/**
+ * Allows the join of a lucene query across multiple indexes (cores)
+ * @author abrin
+ *
+ * @param <T>
+ */
 public class CrossCoreFieldJoinQueryPart<T extends QueryPart> implements QueryPart<T> {
 
     //http://comments.gmane.org/gmane.comp.jakarta.lucene.solr.user/95646
@@ -29,7 +35,8 @@ public class CrossCoreFieldJoinQueryPart<T extends QueryPart> implements QueryPa
         if (part.isEmpty()) {
             return null;
         }
-        String str = String.format("{!join fromIndex=%s from=%s to=%s v='%s'}", coreName, innerFieldName , outerFieldName , part.generateQueryString());
+        
+        String str = String.format("{!join fromIndex=%s from=%s to=%s v='%s'}", coreName, outerFieldName , innerFieldName , part.generateQueryString());
         return str;
     }
 
