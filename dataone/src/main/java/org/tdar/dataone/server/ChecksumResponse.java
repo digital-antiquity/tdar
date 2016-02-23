@@ -1,6 +1,7 @@
 package org.tdar.dataone.server;
 
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,12 +35,15 @@ public class ChecksumResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
+    @Context
+    private HttpServletRequest request;
+
     @GET
     @Path("{pid:.*}")
     @Produces(APPLICATION_XML)
     public Response checksum(@PathParam("pid") String pid,
             @QueryParam("checksumAlgorithm") String checksum) {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
 
         if (StringUtils.isNotEmpty(checksum) && !"MD5".equalsIgnoreCase(checksum)) {
             // FIXME: how do we get a list of algorithms

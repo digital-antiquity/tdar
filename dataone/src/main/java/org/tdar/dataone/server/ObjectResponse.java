@@ -78,7 +78,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @GET
     @Path("{id:.*}")
     public Response object(@PathParam("id") String id) {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         return constructObjectResponse(id, request,Event.READ);
     }
 
@@ -87,7 +87,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
     @Produces(APPLICATION_XML)
     public Response describe(@PathParam("id") String id) {
         logger.debug("object head request: {}", request);
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         try {
             ObjectResponseContainer container = service.getObject(id, request, null);
             if (container != null) {
@@ -126,7 +126,7 @@ public class ObjectResponse extends AbstractDataOneResponse {
             @QueryParam(COUNT) @DefaultValue("10") int count
 
             ) {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         try {
             Date fromDate = null;
             Date toDate = null;

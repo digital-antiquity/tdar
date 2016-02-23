@@ -1,5 +1,6 @@
 package org.tdar.dataone.server;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -32,12 +33,15 @@ public class PingResponse extends AbstractDataOneResponse {
 
     @Context
     private HttpServletResponse response;
-    
+
+    @Context
+    private HttpServletRequest request;
+
     @GET
     @Path("ping")
     @Produces("text/plain")
     public Response ping() {
-        setupResponseContext(response);
+        setupResponseContext(response,request);
         return Response.ok().build();
     }
 
