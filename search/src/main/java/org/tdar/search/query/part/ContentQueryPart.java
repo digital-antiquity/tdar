@@ -9,6 +9,7 @@ import org.tdar.search.query.QueryFieldNames;
 
 public class ContentQueryPart extends FieldQueryPart<String> {
 
+    
     public ContentQueryPart() {
     }
 
