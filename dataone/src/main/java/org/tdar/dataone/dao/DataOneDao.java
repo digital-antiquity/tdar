@@ -27,7 +27,10 @@ import org.tdar.dataone.bean.LogEntryImpl;
 public class DataOneDao {
 
     private static final String LIST_OBJECT_QUERY = "select external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type) union " +
-                                                    "select external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
+            "select external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
+
+    private static final String LIST_OBJECT_QUERY_COUNT = "select 1 from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type) union " +
+            "select 1 from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type!='PROJECT' and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -36,14 +39,14 @@ public class DataOneDao {
     private GenericDao genericDao;
 
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list) {
-        SQLQuery query = setupListObjectQuery(start, end, formatId, identifier);
+        SQLQuery query = setupListObjectQuery(LIST_OBJECT_QUERY_COUNT, start, end, formatId, identifier);
 
         list.setTotal(query.list().size());
         if (list.getCount() == 0) {
             return new ArrayList<>();
         }
 
-        query = setupListObjectQuery(start, end, formatId, identifier);
+        query = setupListObjectQuery(LIST_OBJECT_QUERY, start, end, formatId, identifier);
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
         List<ListObjectEntry> toReturn = new ArrayList<>();
@@ -54,8 +57,8 @@ public class DataOneDao {
         return toReturn;
     }
 
-    private SQLQuery setupListObjectQuery(Date fromDate, Date toDate, String formatId, String identifier) {
-        SQLQuery query = genericDao.getNativeQuery(LIST_OBJECT_QUERY);
+    private SQLQuery setupListObjectQuery(String sqlQuery, Date fromDate, Date toDate, String formatId, String identifier) {
+        SQLQuery query = genericDao.getNativeQuery(sqlQuery);
         
         // if Tier3, use "query.dataone_list_objects_t3"
         initStartEnd(fromDate, toDate, query);
