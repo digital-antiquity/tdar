@@ -429,16 +429,16 @@ public class SearchIndexService {
     @Async
     @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex, final Person person) {
+        Date startDate = new Date();
         logger.info("reindexing indexall");
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
         batch.indexAll(reciever, toReindex, person);
-        sendEmail(toReindex);
+        sendEmail(startDate,  toReindex);
 
     }
 
     @Transactional(readOnly = false)
-    public void sendEmail(final List<LookupSource> toReindex) {
-        Date date = new Date();
+    public void sendEmail(Date date , final List<LookupSource> toReindex) {
         TdarConfiguration CONFIG = TdarConfiguration.getInstance();
         if (CONFIG.isProductionEnvironment()) {
             Email email = new Email();
