@@ -45,11 +45,15 @@ public class SessionProxy {
         return sessionQueue.contains(session.hashCode());
     }
 
-    public synchronized void registerSessionClose(Integer sessionId) {
+    public void registerSessionClose(Integer sessionId, boolean isReadOnly) {
         logger.trace("register sessionClosed: {}", sessionId);
         sessionQueue.remove(sessionId);
         for (EventListener listener : listeners) {
-            listener.flush(sessionId);
+        	if (isReadOnly) {
+        		listener.clear(sessionId);
+        	} else {
+        		listener.flush(sessionId);
+        	}
         }
     }
 
@@ -58,8 +62,8 @@ public class SessionProxy {
 	        for (EventListener listener : listeners) {
 	            listener.flush(id);
 	        }
-	        sessionQueue.clear();
 		}
+		sessionQueue.clear();
 		
 	}
 }
