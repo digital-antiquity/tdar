@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.utils.json;
 
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
@@ -12,6 +12,7 @@ import java.util.TimeZone;
  */
 public class ISO8601LocalDateFormat extends ISO8601DateFormat {
 
+    private static final long serialVersionUID = -3371189542207270105L;
     TimeZone timeZone = null;
 
     /**
