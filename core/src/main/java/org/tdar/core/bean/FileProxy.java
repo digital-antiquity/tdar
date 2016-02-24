@@ -99,17 +99,6 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
         this.restriction = restriction;
     }
 
-    /**
-     * Constructs a FileProxy representing a new version of the given InformationResourceFileVersion, useful
-     * for reprocessing an existing file.
-     * 
-     * @param version
-     */
-    // public FileProxy(InformationResourceFileVersion version) throws IOException {
-    // this(version.getFilename(), version.getTransientFile(), VersionType.UPLOADED, FileAction.ADD);
-    // setFileId(version.getInformationResourceFileId());
-    // }
-
     public FileAction getAction() {
         return action;
     }
@@ -274,6 +263,11 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public Date getFileCreatedDate() {
+        if(fileCreatedDate == null) {
+            return null;
+        }
+        //implicitly convert java.sql.Date to java.util.Date
+        this.fileCreatedDate = new Date(fileCreatedDate.getTime());
         return fileCreatedDate;
     }
 

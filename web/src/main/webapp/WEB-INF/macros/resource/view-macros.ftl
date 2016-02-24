@@ -11,7 +11,11 @@ View freemarker macros
 
 <#--Emit rel=canonical element.  The "canonical" url points to the preferred version of a set of pages with similar content -->
     <#macro canonical object>
-    <link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}"/>
+    <#if object.detailUrl?has_content>
+	    <link rel="canonical" href="http://${hostName}${object.detailUrl}"/>
+    <#else>
+	    <link rel="canonical" href="http://${hostName}/${object.urlNamespace}/${object.id?c}"/>
+    </#if>
     </#macro>
 
 <#-- emit ontology as hierarchical list -->

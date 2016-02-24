@@ -10,7 +10,7 @@ public enum PhraseFormatter {
     WILDCARD,
     ESCAPED,
     QUOTED,
-    ESCAPE_QUOTED;
+    ESCAPE_QUOTED, ESCAPED_EMBEDDED;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -33,6 +33,9 @@ public enum PhraseFormatter {
                 return String.format("\"%s\"", value);
             case ESCAPE_QUOTED:
                 return QUOTED.format(ESCAPED.format(value));
+            case ESCAPED_EMBEDDED:
+                return StringUtils.replace(ESCAPED.format(value), "'", "\\'");
+
             default:
                 return value;
         }

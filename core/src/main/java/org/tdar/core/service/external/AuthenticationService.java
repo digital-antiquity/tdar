@@ -581,5 +581,17 @@ public class AuthenticationService {
         return normalizedUsername;
     }
 
-
+    @Transactional(readOnly=true)
+    public void requestPasswordReset(String usernameOrEmail) {
+        TdarUser user = personDao.findByUsername(usernameOrEmail);
+        if (user == null) {
+            user = personDao.findUserByEmail(usernameOrEmail);
+        }
+        
+        if (user != null) {
+            getAuthenticationProvider().requestPasswordReset(user);
+        }
+        
+    }
+    
 }

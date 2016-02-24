@@ -24,10 +24,12 @@ import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.part.ContentQueryPart;
 import org.tdar.search.query.part.CreatorOwnerQueryPart;
 import org.tdar.search.query.part.CreatorQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
@@ -94,6 +96,7 @@ public class SearchParameters {
     private List<String> contents = new ArrayList<String>();
     private List<String> filenames = new ArrayList<String>();
 
+    private boolean join = false;
     private ResourceCreatorProxy creatorOwner;
     private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
@@ -312,7 +315,12 @@ public class SearchParameters {
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
+
+        if (TdarConfiguration.getInstance().useSeparateContentsIndexForSearching()) {
+            queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
+        } else {
+            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
+        }
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"),
                 getOperator(), filenames));
 
@@ -598,6 +606,14 @@ public class SearchParameters {
 
     public void setFilters(List<String> filters) {
         this.filters = filters;
+    }
+
+    public boolean isJoin() {
+        return join;
+    }
+
+    public void setJoin(boolean join) {
+        this.join = join;
     }
 
 }

@@ -73,11 +73,14 @@ if [ $? -ne 0 ]
       sudo service tomcat7 stop
       sudo cp web/target/tdar-web.war ~tdar/app/ROOT.war
       sudo rm -Rrf ~tdar/app/ROOT
-      sudo cp oai-pmh/target/tdar-oai-pmh.war ~tdar/app/oai-pmh.war
-      sudo rm -Rrf ~tdar/app/oai-pmh
-      # sudo cp dataone/target/tdar-dataone.war ~tdar/app/dataone.war
-      # sudo rm -Rrf ~tdar/app/dataone
-      sudo cp tag/target/tdar-tag.war ~tdar/app/services.war
-      sudo rm -Rrf ~tdar/app/services
       sudo service tomcat7 restart
+
+      sudo service tdar-tomcat7 stop
+      sudo cp oai-pmh/target/tdar-oai-pmh.war ~tdar/app-support/oai-pmh.war
+      sudo rm -Rrf ~tdar/app-support/oai-pmh
+      sudo cp dataone/target/tdar-dataone.war ~tdar/app-support/dataone.war
+      sudo rm -Rrf ~tdar/app-support/dataone
+      sudo cp tag/target/tdar-tag.war ~tdar/app-support/services.war
+      sudo rm -Rrf ~tdar/app-support/services
+      sudo service tdar-tomcat7 start
 fi
