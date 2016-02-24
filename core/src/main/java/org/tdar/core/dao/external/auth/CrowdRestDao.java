@@ -25,11 +25,13 @@ import com.atlassian.crowd.exception.ExpiredCredentialException;
 import com.atlassian.crowd.exception.InactiveAccountException;
 import com.atlassian.crowd.exception.InvalidAuthenticationException;
 import com.atlassian.crowd.exception.InvalidCredentialException;
+import com.atlassian.crowd.exception.InvalidEmailAddressException;
 import com.atlassian.crowd.exception.InvalidTokenException;
 import com.atlassian.crowd.exception.InvalidUserException;
 import com.atlassian.crowd.exception.MembershipAlreadyExistsException;
 import com.atlassian.crowd.exception.ObjectNotFoundException;
 import com.atlassian.crowd.exception.OperationFailedException;
+import com.atlassian.crowd.exception.UserNotFoundException;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticator;
 import com.atlassian.crowd.integration.http.CrowdHttpAuthenticatorImpl;
 import com.atlassian.crowd.integration.http.util.CrowdHttpTokenHelperImpl;
@@ -191,6 +193,16 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
             throw new RuntimeException(e);
         }
     }
+    
+    @Override
+    public void requestPasswordReset(TdarUser person) {
+        try {
+            securityServerClient.requestPasswordReset(person.getUsername());
+        } catch (UserNotFoundException | OperationFailedException | InvalidAuthenticationException | ApplicationPermissionException
+                | InvalidEmailAddressException e) {
+            logger.error("exception requesting password reset",e);
+        }
+    }
 
     /*
      * (non-Javadoc)
@@ -204,6 +216,7 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
         try {
 
             user = securityServerClient.getUser(login);
+            
             // if this succeeds, then this principal already exists.
             // FIXME: if they already exist in the system, we should let them know
             // that they already have an account in the system and that they can

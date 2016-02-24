@@ -1,5 +1,6 @@
 package org.tdar.dataone.server;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -49,11 +50,14 @@ public class SystemMetadataResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
+    @Context
+    private HttpServletRequest request;
+
     @GET
     @Path("{id:.*}")
     @Produces(APPLICATION_XML)
     public Response meta(@PathParam("id") String id) {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         try {
             SystemMetadata metadataRequest = service.metadataRequest(id);
             if (metadataRequest == null) {

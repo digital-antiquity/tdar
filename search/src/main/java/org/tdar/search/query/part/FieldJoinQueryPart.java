@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class FieldJoinQueryPart<T extends FieldQueryPart<?>> implements QueryPart<T> {
+public class FieldJoinQueryPart<T extends QueryPart> implements QueryPart<T> {
 
     //http://comments.gmane.org/gmane.comp.jakarta.lucene.solr.user/95646
     
@@ -16,10 +16,10 @@ public class FieldJoinQueryPart<T extends FieldQueryPart<?>> implements QueryPar
     private String outerFieldName;
     private String innerFieldName;
     
-    public FieldJoinQueryPart(String innerFieldName, String outerFieldName, T part) {
+    public FieldJoinQueryPart(String innerFieldName, String outerFieldName, T subq) {
         this.innerFieldName = innerFieldName;
         this.outerFieldName = outerFieldName;
-        this.part = part;
+        this.part = subq;
     }
     
     @Override

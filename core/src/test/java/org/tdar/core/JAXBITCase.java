@@ -309,24 +309,43 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
 
 
     @Test
-    public void testJsonDateSerialization() throws IOException {
+    /**
+     * Because our our rdbms does not include timezone w/ it's timestamp values, the safest approach
+     * is to serialize dates in the local timezone using a format which specifies the timezone offset information.
+     */
+    public void testFileProxyDateSerialization() throws IOException {
+
+        //march 9th, local time zone
         Date dt = new DateTime(2015, 3, 9, 0, 0).toDate();
         String json = serializationService.convertToJson(dt);
-        assertThat(json, containsString("March 9, 2015"));
+        assertThat(json, containsString("2015-03-09T00:00:00"));
         logger.debug("json:{}", json);
 
 
         FileProxy fileProxy = new FileProxy();
         fileProxy.setFileCreatedDate(dt);
         json = serializationService.convertToJson(fileProxy);
-        assertThat(json, containsString("March 9, 2015"));
+        assertThat(json, containsString("2015-03-09T00:00:00"));
         logger.debug("json:{}", json);
 
         InformationResourceFile informationResourceFile = new InformationResourceFile();
         informationResourceFile.setFileCreatedDate(new DateTime(2015, 3, 9, 0, 0).toDate());
         fileProxy = new FileProxy(informationResourceFile);
         json = serializationService.convertToJson(fileProxy);
-        assertThat(json, containsString("March 9, 2015"));
+        assertThat(json, containsString("2015-03-09T00:00:00"));
+        logger.debug("json:{}", json);
+    }
+
+    @Test
+    public void testFileProxySqlDateSerialization() throws IOException {
+        //slight tweak:  make the underlying date a java.sql.Date object.
+        Date dt = new java.sql.Date(new DateTime(2015, 3, 9, 0, 0).toDate().getTime());
+        InformationResourceFile informationResourceFile = new InformationResourceFile();
+        informationResourceFile.setFileCreatedDate(dt);
+        FileProxy fileProxy = new FileProxy(informationResourceFile);
+
+        String json = serializationService.convertToJson(fileProxy);
+        assertThat(json, containsString("2015-03-09T00:00:00"));
         logger.debug("json:{}", json);
     }
 

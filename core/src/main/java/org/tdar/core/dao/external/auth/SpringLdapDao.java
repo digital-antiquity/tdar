@@ -96,6 +96,11 @@ public class SpringLdapDao extends BaseAuthenticationProvider {
         // do nothing
     }
 
+    @Override
+    public void requestPasswordReset(TdarUser person) {
+        return;
+    }
+
     /*
      * (non-Javadoc)
      * 

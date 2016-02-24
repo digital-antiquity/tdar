@@ -510,7 +510,7 @@
 	    <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
 	    <ol style='list-style-position:inside'>
 			<#items as related >
-            <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${rtelated.title} </a></li>
+            <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${related.title} </a></li>
 			</#items>
     </ol>
         </#list>

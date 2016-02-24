@@ -11,6 +11,7 @@ import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
@@ -53,20 +54,18 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
         dc.addTitle(source.getTitle());
 
-
         String abst = source.getDescription();
         if (abst != null) {
             dc.addAbstract(abst);
         }
 
         dc.addCreated(source.getDateCreated());
-        
+
         ResourceCitationFormatter rcf = new ResourceCitationFormatter(source);
         String cit = rcf.getFullCitation();
         if (StringUtils.isNotBlank(cit)) {
             dc.addBibliographicCitation(cit);
         }
-
 
         // add creators and contributors
         List<ResourceCreator> sortedResourceCreators = new ArrayList<>(source.getResourceCreators());
@@ -76,7 +75,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (resourceCreator.getCreatorType() == CreatorType.PERSON) {
                 // display person names in special format
                 name = dcConstructPersonalName(resourceCreator);
-            } 
+            }
 
             // FIXME: check this logic
             if (resourceCreator.getRole() == ResourceCreatorRole.AUTHOR) {
@@ -106,6 +105,12 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             dc.addCoverage(siteNameTerm.getLabel());
         }
 
+        for (CoverageDate cov : toSortedList(source.getActiveCoverageDates())) {
+            if (cov.getDateType() == CoverageType.CALENDAR_DATE) {
+                dc.addDate(String.format("start:%s end:%s", cov.getStartDate(), cov.getEndDate()));
+            }
+        }
+
         // add other subjects
         for (OtherKeyword otherTerm : toSortedList(source.getActiveOtherKeywords())) {
             dc.addSubject(otherTerm.getLabel());
@@ -114,12 +119,12 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         dc.addType(source.getResourceType().getLabel());
 
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
-            String maxy =longLat.getMaxObfuscatedLatitude().toString();
-            String miny =longLat.getMinObfuscatedLatitude().toString();
-            String maxx =longLat.getMaxObfuscatedLongitude().toString();
-            String minx =longLat.getMinObfuscatedLongitude().toString();
+            String maxy = longLat.getMaxObfuscatedLatitude().toString();
+            String miny = longLat.getMinObfuscatedLatitude().toString();
+            String maxx = longLat.getMaxObfuscatedLongitude().toString();
+            String minx = longLat.getMinObfuscatedLongitude().toString();
             dc.addSpatial(minx, miny, maxx, maxy);
-//            dc.addCoverage(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
+            // dc.addCoverage(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
         }
 
         dc.addIdentifier(UrlService.absoluteUrl(source));
@@ -163,9 +168,9 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
         Person person = (Person) resourceCreator.getCreator();
         String name = String.format("%s, %s", person.getLastName(), person.getFirstName());
-//        if (!StringUtils.isEmpty("" + resourceCreator.getRole())) {
-//            name += String.format(", %s", resourceCreator.getRole());
-//        }
+        // if (!StringUtils.isEmpty("" + resourceCreator.getRole())) {
+        // name += String.format(", %s", resourceCreator.getRole());
+        // }
         if (!StringUtils.isEmpty(person.getInstitutionName())) {
             name += String.format(" (%s)", person.getInstitution());
         }

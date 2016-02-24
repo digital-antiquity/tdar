@@ -3,6 +3,8 @@
     <field name="content" type="text_en_splitting" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="resourceAccessType" type="string" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="filename" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="resource.id" type="long" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="date" type="date" required="false" indexed="true" />
 
     <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
     <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>

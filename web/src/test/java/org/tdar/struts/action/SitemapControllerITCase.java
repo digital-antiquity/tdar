@@ -1,14 +1,13 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
 
+import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 
-import com.ibm.wsdl.util.IOUtils;
 
 public class SitemapControllerITCase extends AbstractControllerITCase {
 
@@ -29,7 +28,7 @@ public class SitemapControllerITCase extends AbstractControllerITCase {
         SitemapController controller = generateNewInitializedController(SitemapController.class);
         String execute = controller.execute();
         Assert.assertEquals(TdarActionSupport.SUCCESS, execute);
-        String contents = IOUtils.getStringFromReader(new InputStreamReader(controller.getInputStream()));
+        String contents = IOUtils.toString(controller.getInputStream());
         logger.debug(contents);
 
     }

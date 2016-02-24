@@ -2092,7 +2092,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         addFileToResource(document, new File(TestConstants.TEST_DOCUMENT_DIR + "test-file.rtf"));
         searchIndexService.index(document);
         SearchParameters params = new SearchParameters();
-        params.getContents().add("fun");
+        params.getContents().add("fun'");
         SearchResult<Resource> result = doSearch("",null, params,null);
         Long id = document.getId();
         List<Long> ids = PersistableUtils.extractIds(result.getResults());

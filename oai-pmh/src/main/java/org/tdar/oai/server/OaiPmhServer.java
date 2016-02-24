@@ -153,7 +153,7 @@ public class OaiPmhServer {
         }
         request.setValue(servletRequest.getRequestURI());
         request.setVerb(VerbType.fromValue(verb_));
-        logger.debug(">>> {}", servletRequest.getRequestURI());
+        logger.debug(">>> {}?{}", servletRequest.getRequestURI(),servletRequest.getQueryString());
         return request;
     }
 

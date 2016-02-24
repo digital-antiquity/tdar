@@ -1,6 +1,7 @@
 package org.tdar.dataone.server;
 
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -34,10 +35,13 @@ public class CapabilitiesResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
+    @Context
+    private HttpServletRequest request;
+
     @GET
     @Produces(APPLICATION_XML)
     public Response nodeinfo() {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         try {
             logger.debug("d1s: {}, ss: {}", serialize, service);
             return Response.ok().entity(service.getNodeResponse()).build();

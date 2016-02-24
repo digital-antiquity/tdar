@@ -1,6 +1,7 @@
 package org.tdar.dataone.server;
 
 import javax.persistence.Transient;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -25,10 +26,13 @@ public class SynchronizationFailedResponse extends AbstractDataOneResponse {
     @Context
     private HttpServletResponse response;
 
+    @Context
+    private HttpServletRequest request;
+
     @POST
     @Produces("text/plain")
     public Response synchronizationFailed(@QueryParam("session") String session, @QueryParam("message") String message) {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         logger.debug(session + ": " + message);
         return Response.ok().build();
     }

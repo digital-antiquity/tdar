@@ -49,7 +49,8 @@ public class AbstractDataOneResponse {
     @Autowired
     private DataOneService service;
 
-    public void setupResponseContext(HttpServletResponse response) {
+    public void setupResponseContext(HttpServletResponse response, HttpServletRequest request) {
+        logger.debug(">>> {}?{}", request.getRequestURI(), request.getQueryString());
         response.setHeader(HEADER_DATE, toIso822(new Date()));
     }
 
@@ -64,7 +65,6 @@ public class AbstractDataOneResponse {
     public DataOneError getNotImplementedError() {
         return new DataOneError(501, "NotImplemented", "Not Implemented", 2180);
     }
-
 
     public Response constructObjectResponse(String id, HttpServletRequest request, Event read) {
         logger.debug("object full request: {}", request);
@@ -82,7 +82,7 @@ public class AbstractDataOneResponse {
             if (container != null) {
                 return Response.ok(stream).header(HttpHeaders.CONTENT_TYPE, container.getContentType()).build();
             } else {
-                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();                
+                return Response.serverError().entity(getNotFoundError()).status(Status.NOT_FOUND).build();
             }
         } catch (Exception e) {
             logger.error("error in DataOne getObject:", e);

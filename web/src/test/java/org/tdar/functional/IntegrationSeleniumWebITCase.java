@@ -75,7 +75,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // note that IDs are dataTable ids
         findAndClickDataset("Alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
-        find(className("btn-primary")).click();
+        find(className("btn-primary-add")).click();
         waitFor(bootstrapModalGone());
 
         // wait for modal to disappear and dataset list to populate
@@ -267,7 +267,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // note that IDs are dataTable ids
         findAndClickDataset("Alexandria", ALEXANDRIA_CHECKBOX);
         // add selected items
-        find(className("btn-primary")).click();
+        find(className("btn-primary-add")).click();
 
         waitFor(locatedElementCountGreaterThan(className("sharedOntologies"), 2));
     }

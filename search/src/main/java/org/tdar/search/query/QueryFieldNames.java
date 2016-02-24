@@ -130,4 +130,5 @@ public interface QueryFieldNames {
 	String RESOURCE_CREATOR_ROLE_IDS = "rcroleIds";
 	String TOTAL_FILES = "totalFiles";
 	String SCORE = "score";
+    String RESOURCE_ID = "resource.id";
 }

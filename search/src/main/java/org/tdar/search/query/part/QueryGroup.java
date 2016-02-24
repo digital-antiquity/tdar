@@ -21,4 +21,5 @@ public interface QueryGroup {
 
     List<QueryPart<?>> getParts();
 
+    String generateQueryString();
 }

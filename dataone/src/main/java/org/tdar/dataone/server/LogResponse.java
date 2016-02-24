@@ -70,7 +70,7 @@ public class LogResponse extends AbstractDataOneResponse {
             @QueryParam(PID_FILTER) String idFilter,
             @QueryParam(START) @DefaultValue("0") int start,
             @QueryParam(COUNT) @DefaultValue("1000") int count) {
-        setupResponseContext(response);
+        setupResponseContext(response, request);
         try {
             Date fromDate = null;
             Date toDate = null;
