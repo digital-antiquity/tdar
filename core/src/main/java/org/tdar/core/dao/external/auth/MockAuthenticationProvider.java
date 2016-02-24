@@ -82,6 +82,11 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     };
 
     @Override
+    public void requestPasswordReset(TdarUser person) {
+        return;
+    }
+       
+    @Override
     public AuthenticationResult authenticate(HttpServletRequest request, HttpServletResponse response, String name, String password) {
 
         if (TdarConfiguration.getInstance().isProductionEnvironment()) {
