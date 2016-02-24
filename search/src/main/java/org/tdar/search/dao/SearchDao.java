@@ -28,6 +28,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -298,6 +299,7 @@ public class SearchDao<I extends Indexable> {
 //					logger.debug("cids:{} {}", collectionIds, doc.getFieldValue(QueryFieldNames.RESOURCE_COLLECTION_IDS));
 					Long submitterId = (Long) doc.getFieldValue(QueryFieldNames.SUBMITTER_ID);
 					r_.setSubmitter(datasetDao.find(TdarUser.class, submitterId));
+					r_.getResourceCollections().addAll(datasetDao.findAll(ResourceCollection.class,collectionIds));
 					
 					Collection<Long> llIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
 					List<LatitudeLongitudeBox> findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);
@@ -312,7 +314,7 @@ public class SearchDao<I extends Indexable> {
 					if (r_ instanceof InformationResource) {
 						Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
 						InformationResource ir = (InformationResource) r_;
-						if (resultHandler.getOrientation() == DisplayOrientation.GRID) {
+						if (resultHandler.getOrientation() == DisplayOrientation.GRID || resultHandler.getOrientation() == DisplayOrientation.MAP) {
 							ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));
 						}
 						String ptitle = (String) doc.getFieldValue(QueryFieldNames.PROJECT_TITLE);

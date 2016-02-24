@@ -106,7 +106,11 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
         if (file != null) {
             setInput("ticketId", ticketId);
-            addFileProxyFields(0, FileAccessRestriction.CONFIDENTIAL, file.getName());
+            FileAccessRestriction access_ = FileAccessRestriction.PUBLIC;
+            if (access != null) {
+                access_ = access;
+            }
+            addFileProxyFields(0, access_, file.getName());
         }
         submitForm();
         return extractTdarIdFromCurrentURL();

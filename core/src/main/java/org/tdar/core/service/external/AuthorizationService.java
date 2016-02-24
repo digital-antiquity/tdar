@@ -698,6 +698,8 @@ public class AuthorizationService implements Accessible {
         if (r_ instanceof InformationResource) {
 			InformationResource ir = (InformationResource)r_;
 			boolean adminOrOwner = isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO);
+			
+			
 			for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
 		        if (irFile == null) {
 		            continue;

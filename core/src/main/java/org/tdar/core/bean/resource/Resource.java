@@ -844,12 +844,16 @@ public class Resource implements Persistable,
     @JsonIgnore
     public boolean isLatLongVisible() {
         LatitudeLongitudeBox latLongBox = getFirstActiveLatitudeLongitudeBox();
-        logger.trace("hasConfidentialFiles:{}\t latLongBox:{}", hasConfidentialFiles(), latLongBox);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} : hasConfidentialFiles:{}\t latLongBox:{}", getId(), hasConfidentialFiles(), latLongBox);
+            if (latLongBox != null) {
+                 logger.trace("valid: {}", latLongBox.isInitializedAndValid());
+            }
+        }
         if (hasConfidentialFiles() || (latLongBox == null)) {
             logger.trace("latLong for {} is confidential or null", getId());
             return Boolean.FALSE;
         }
-
         if (latLongBox.isInitializedAndValid()) {
             logger.trace("latLong for {} is initialized", getId());
             if ((latLongBox.getCenterLatitudeIfNotObfuscated() != null) && (latLongBox.getCenterLongitudeIfNotObfuscated() != null)) {
