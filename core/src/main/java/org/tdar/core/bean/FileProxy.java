@@ -263,7 +263,9 @@ public class FileProxy implements Serializable, Sequenceable<FileProxy>, HasExte
     }
 
     public Date getFileCreatedDate() {
-        if(fileCreatedDate == null) {return null;}
+        if(fileCreatedDate == null) {
+            return null;
+        }
         //implicitly convert java.sql.Date to java.util.Date
         this.fileCreatedDate = new Date(fileCreatedDate.getTime());
         return fileCreatedDate;
