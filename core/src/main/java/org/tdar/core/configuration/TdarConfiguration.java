@@ -927,5 +927,13 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 	public List<String> getBarColors() {
 		return Arrays.asList(assistant.getStringArray("tdar.colors", defaultColors));
 	}
+
 	
+	public boolean useSeparateContentsIndexForSearching() {
+	    return assistant.getBooleanProperty("indexing.separate_contents", true);
+	}
+
+    public boolean useSeparateLinkedDataIndexForSearching() {
+        return assistant.getBooleanProperty("indexing.separate_linked", true);
+    }
 }

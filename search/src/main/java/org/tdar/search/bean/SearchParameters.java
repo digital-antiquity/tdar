@@ -24,6 +24,7 @@ import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
@@ -314,10 +315,11 @@ public class SearchParameters {
 
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
-        if (!join) {
-            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
-        } else {
+
+        if (TdarConfiguration.getInstance().useSeparateContentsIndexForSearching()) {
             queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
+        } else {
+            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
         }
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"),
                 getOperator(), filenames));
