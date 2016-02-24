@@ -13,6 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
@@ -101,11 +102,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
-//        query.setLong("userId", user.getId());
         query.setString("name", collection.getName());
-//        query.setBoolean("isAdmin", isAdmin);
-//        query.setLong("effectivePermission", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
-//        @SuppressWarnings("unchecked")
         List<ResourceCollection> list = query.list();
         for  (ResourceCollection coll : list) {
         	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
@@ -113,6 +110,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         	}
         }
         return null;
+    }
+
+    public List<ResourceCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
+        query.setString("name", name);
+        List<ResourceCollection> list = new ArrayList<>(query.list());
+        list.removeIf( rc -> !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP));
+        return list;
+
     }
 
     @SuppressWarnings("unchecked")

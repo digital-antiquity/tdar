@@ -60,10 +60,9 @@
                 <div class="controls">
                     <@s.hidden name="parentId"  id="hdnParentId" cssClass=""
                     autocompleteParentElement="#parentIdContainer"  />
-            <@s.textfield theme="simple" name="parentCollectionName" cssClass="input-xxlarge notValidIfIdEmpty collectionAutoComplete"  autocomplete="off"
+            <@s.textfield theme="simple" name="parentCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
                 autocompleteIdElement="#hdnParentId" maxlength=255 autocompleteParentElement="#parentIdContainer" autocompleteName="name"
                 placeholder="parent collection name" id="txtParentCollectionName"
-                dynamicAttributes={"data-msg-notValidIfIdEmpty":"Invalid collection name.  Type a collection name (or partial name) in this field and choose an option from the menu that appears below."}
                 />
                 </div>
             </div>

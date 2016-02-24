@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.convention.StringTools;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -68,12 +69,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<ResourceCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
-    private Long parentId;
     private List<Resource> fullUserProjects;
     private List<ResourceCollection> collections = new LinkedList<>();
 
     private Long viewCount = 0L;
-    private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
     private List<Long> toRemove = new ArrayList<>();
@@ -86,6 +85,10 @@ public class CollectionController extends AbstractPersistableController<Resource
     private String fileFileName;
     private String ownerProperName;
     private TdarUser owner;
+
+    private String parentCollectionName;
+    private Long parentId;
+    private ResourceCollection parentCollection;
 
 
     @Override
@@ -107,6 +110,31 @@ public class CollectionController extends AbstractPersistableController<Resource
         return publicResourceCollections;
     }
 
+
+    @Override
+    public void prepare() throws TdarActionException {
+        super.prepare();
+
+        // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
+        if(PersistableUtils.isNotNullOrTransient(parentId)) {
+            parentCollection = resourceCollectionService.find(parentId);
+            getLogger().debug("lookup parent collection by id:{}  result:{}", parentId, parentCollection);
+
+        } else if(StringUtils.isNotBlank(parentCollectionName)) {
+            List<ResourceCollection> results = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
+                    parentCollectionName);
+            getLogger().debug("lookup parent collection by name:{}  results:{}", parentCollectionName, results.size());
+
+            if(results.size() != 1) {
+                addActionError(getText("collectionController.ambiguous_parent_name"));
+                // Clear the name field or the INPUT form will be primed to fail in the same way upon submit.
+                parentCollectionName = "";
+            } else {
+                parentCollection = results.get(0);
+            }
+        }
+    }
+
     @Override
     protected String save(ResourceCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
@@ -118,9 +146,13 @@ public class CollectionController extends AbstractPersistableController<Resource
             getPersistable().setOwner(uploader);
         }
 
-        ResourceCollection parent = resourceCollectionService.find(parentId);
-        if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parent)
-                && (parent.getParentIds().contains(persistable.getId()) || parent.getId().equals(persistable.getId()))) {
+        if(parentCollection != null) {
+            parentId = parentCollection.getId();
+        }
+
+        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
+        if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parentCollection)
+                && (parentCollection.getParentIds().contains(persistable.getId()) || parentCollection.getId().equals(persistable.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
             return INPUT;
         }
@@ -134,14 +166,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         List<Resource> publicResourcesToAdd = genericService.findAll(Resource.class, publicToAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
-        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parent, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
+        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
                 resourcesToRemove, publicResourcesToAdd, publicResourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
-//        try {
-//			searchIndexService.indexCollection(resourcesToRemove);
-//			searchIndexService.indexCollection(resourcesToAdd);
-//		} catch (SolrServerException | IOException e) {
-//			getLogger().error("errorINdexing:{}", e);
-//		}
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -305,7 +331,10 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     public String getParentCollectionName() {
         return parentCollectionName;
+    }
 
+    public void setParentCollectionName(String parentCollectionName) {
+        this.parentCollectionName = parentCollectionName;
     }
 
     public ArrayList<ResourceType> getSelectedResourceTypes() {
