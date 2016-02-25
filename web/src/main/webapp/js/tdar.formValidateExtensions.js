@@ -102,16 +102,13 @@
      * element before the autocomplete lookup completes.
      */
     $.validator.addMethod("notValidIfIdEmpty", function (value, element) {
-        var $id = $($(element).attr("autocompleteIdElement"));
-        if (value == undefined || $.trim(value) == "") {
+        //no need to continue if the text field is blank
+        if ($.trim(value) === "") {
             return true;
         }
-        var idval = parseInt($id.val());
-        if (idval == undefined || isNaN(idval) || idval < 1) {
-            return false;
-        }
 
-        return true;
+        var $id = $($(element).attr("autocompleteIdElement"));
+        return parseInt($id.val()) > -1;
     }, "Please select a value from the autocomplete menu");
 
     /**

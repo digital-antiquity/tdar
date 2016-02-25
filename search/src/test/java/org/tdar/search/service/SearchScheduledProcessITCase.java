@@ -18,8 +18,8 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
+import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
 import org.tdar.search.service.processes.CreatorAnalysisProcess;
-import org.tdar.search.service.processes.daily.DailyTimedAccessRevokingProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
 public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTestCase {
