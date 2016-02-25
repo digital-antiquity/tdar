@@ -1,8 +1,10 @@
 #!/usr/bin/sh
 echoerr() { echo "$@" 1>&2; }
 
-TDIR=/home/tdar/app/
+TDIR=/home/tdar/app-support/
+ADIR=/home/tdar/deploy-archive/
 
+mkdir -p ${ADIR}
 
 handleError () 
 {
@@ -18,7 +20,7 @@ fi
 
 
 echoerr() { echo "$@" 1>&2; }
-sudo echo "deploying production"
+sudo echo "deploying production: " + ${date}
 #java -XshowSettings 2>&1 | grep tmp | awk -F= '{print "wro4jDir:" $2 "/.wro4j/"}'
 
 if [  $(id -u) -eq 0  ]
@@ -70,28 +72,48 @@ EXTRA=-Ddeploy.version=${PARAM}
 perl ../release/release.pl
 if [ -e /usr/local/lib/nagios3/amazon-sns-notify.rb ]
 then
-        /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
+       /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
 fi
 
-
-mvn clean compile -Pversion ${EXTRA}
-mvn clean package -Pprepare -q
+echo "setup..."
+mvn clean compile -Pversion ${EXTRA} -q
 handleError
+
+echo "build web..."
+mvn clean compile war:war -P web -q
+handleError
+
+mv target/tdar-web.war ${ADIR}
 sudo service tomcat7 stop
 
-mvn package -PupdateDB -q
+mvn package -Pprepare,updateDB -q
 handleError
 
-if [ ! -e "old" ]
-then
-  mkdir old/
-fi
-
-cp $TDIR/*.war old/
 sudo rm -Rrf /home/tdar/app/*
-cp target/web.war $TDIR/ROOT.war
-cp target/dataone.war $TDIR/dataone.war
-cp target/oai-pmh.war $TDIR/oai-pmh.war
-sudo service tomcat7 start
+cp ${ADIR}/tdar-web.war $TDIR/ROOT.war
+sudo service tdar-tomcat7 start
 
+echo "build tag..."
+mvn clean compile war:war -P tag -q
+handleError
+mv target/tag.war ${ADIR}
+
+echo "build oai-pmh..."
+mvn clean compile war:war -P oai-pmh -q
+handleError
+mv target/oai-pmh.war ${ADIR}
+
+echo "build dataone..."
+mvn clean compile war:war -P dataone -q
+handleError
+mv target/dataone.war ${ADIR}
+
+sudo service tdar-tomcat7 stop
+
+sudo rm -Rrf /home/tdar/app-support/*
+cp ${ADIR}/dataone.war $TDIR/dataone.war
+cp ${ADIR}/tag.war $TDIR/services.war
+cp ${ADIR}/oai-pmh.war $TDIR/oai-pmh.war
+sudo service tdar-tomcat7 start
+echo "done: ${date}"
 
