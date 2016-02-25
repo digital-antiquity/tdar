@@ -1,4 +1,4 @@
-package org.tdar.search.service.processes.daily;
+package org.tdar.core.service.processes.daily;
 
 import java.util.List;
 
@@ -10,11 +10,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.configuration.ConfigurationAssistant;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
-import org.tdar.search.service.index.SearchIndexService;
 
 /**
  * $Id$
@@ -34,13 +32,9 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     public TdarConfiguration config = TdarConfiguration.getInstance();
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private ConfigurationAssistant assistant = new ConfigurationAssistant();
-
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
 
-    @Autowired
-    private transient SearchIndexService searchIndexService;
 
     @Override
     public String getDisplayName() {
@@ -82,7 +76,6 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
         }
         if (changed) {
             resourceCollectionService.saveOrUpdate(persistable);
-            searchIndexService.index(persistable);
         }
     }
     

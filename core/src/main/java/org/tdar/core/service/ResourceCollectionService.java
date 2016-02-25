@@ -147,7 +147,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * is "safe" if it doesnt remove the permissions that enabled the user to modify the resource collection in the first place.
      * 
      * @param authenticatedUser
-     * @param authorizedUsers
+     * @param resourceCollection
      * @param canModify
      */
     private void applyTransientEnabledPermission(Person authenticatedUser, ResourceCollection resourceCollection, boolean canModify) {
@@ -183,9 +183,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     /**
      * Find all direct child @link ResourceCollection entries of a @link ResourceCollection
      * 
-     * @param id
-     * @param public
-     * @return
      */
     @Transactional(readOnly = true)
     public List<ResourceCollection> findDirectChildCollections(Long id, Boolean hidden, CollectionType... type) {
@@ -862,5 +859,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly=true)
     public List<Long> findCollectionIdsWithTimeLimitedAccess() {
         return getDao().findCollectionIdsWithTimeLimitedAccess();
+    }
+
+    /**
+     * Return list of shared resources that match a specified name and are editable for a specified user.  This
+     * method does not evaluate inherited permissions.
+     *
+     * @param user user that the method will use when filtering results by access rights
+     * @param name name that the method will use when filtering by exact name
+     * @return
+     */
+    public List<ResourceCollection> findCollectionsWithName(TdarUser user, String name) {
+        boolean isAdmin = authenticationAndAuthorizationService.isEditor(user);
+        return getDao().findCollectionsWithName(user, isAdmin, name);
     }
 }

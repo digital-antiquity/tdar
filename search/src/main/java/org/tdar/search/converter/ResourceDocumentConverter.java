@@ -55,7 +55,8 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
-    private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+	private static final Filestore FILESTORE = CONFIG.getFilestore();
 
     public static SolrInputDocument convert(Resource resource, ResourceService resourceService, ResourceCollectionService resourceCollectionService) {
 
@@ -88,11 +89,13 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
-            try {
-                data = resourceService.getMappedDataForInformationResource(ir);
-                indexTdarDataDatabaseValues(doc, data);
-            } catch (Throwable t) {
-                logger.warn("exception in metadata indexing", t);
+            if (!CONFIG.useSeparateLinkedDataIndexForSearching()) {
+	            try {
+	                data = resourceService.getMappedDataForInformationResource(ir);
+	                indexTdarDataDatabaseValues(doc, data);
+	            } catch (Throwable t) {
+	                logger.warn("exception in metadata indexing", t);
+	            }
             }
             if (ir.getMetadataLanguage() != null) {
                 doc.setField(QueryFieldNames.METADATA_LANGUAGE, ir.getMetadataLanguage().name());
@@ -112,15 +115,16 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 if (!irf.isDeleted() && !irf.isPartOfComposite()) {
                     total++;
                 }
-
-                if (irf.getIndexableVersion() != null && irf.isPublic()) {
-                    try {
-                        sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
-                    } catch (FileNotFoundException fnf) {
-
-                    } catch (IOException e) {
-                        logger.error("{}", e);
-                    }
+                if (!CONFIG.useSeparateContentsIndexForSearching()) {
+	                if (irf.getIndexableVersion() != null && irf.isPublic()) {
+	                    try {
+	                        sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
+	                    } catch (FileNotFoundException fnf) {
+	
+	                    } catch (IOException e) {
+	                        logger.error("{}", e);
+	                    }
+	                }
                 }
             }
             doc.setField(QueryFieldNames.CONTENT, sb.toString());
