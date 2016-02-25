@@ -38,20 +38,14 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.junit.IgnoreActionErrors;
-import org.tdar.search.config.IndexEventListener;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -63,12 +57,11 @@ import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.utils.PersistableUtils;
+
 import com.opensymphony.xwork2.Action;
 
 
-public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
-
-    private static final String TEST_TITLE = "Brookville Reservoir Survey 1991-1992";
+public class ResourceCollectionControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     private GenericService genericService;
@@ -82,90 +75,9 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    @Autowired
-    private ResourceCollectionDao resourceCollectionDao;
-
     CollectionController controller;
 
     static int indexCount = 0;
-
-    @Autowired
-    IndexEventListener listener;
-
-    /**
-     * Make sure that case in-sensitive queries return the same thing
-     */
-    @Test
-    @Rollback
-    public void testUniqueFind() {
-        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
-        test.setName("test");
-        test.markUpdated(getAdminUser());
-        test.setSortBy(SortOption.COLLECTION_TITLE);
-        genericService.saveOrUpdate(test);
-
-        ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
-        c1.setName(" TEST ");
-        boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, getAdminUser());
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1);
-        assertEquals(withName, test);
-    }
-
-    @Test
-    @Rollback
-    public void testFindInSaveForResource() {
-        Image image = new Image();
-        image.setStatus(Status.ACTIVE);
-        image.setTitle("test");
-        image.setDescription("test");
-        image.setDate(2014);
-        image.markUpdated(getBasicUser());
-        genericService.saveOrUpdate(image);
-
-        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
-        test.setName(TEST_TITLE);
-        test.markUpdated(getAdminUser());
-        test.setSortBy(SortOption.COLLECTION_TITLE);
-        genericService.saveOrUpdate(test);
-        genericService.synchronize();
-        List<ResourceCollection> list = new ArrayList<>();
-        ResourceCollection trns = new ResourceCollection();
-        trns.setName(TEST_TITLE);
-        trns.setId(-1L);
-        list.add(trns);
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS);
-        logger.debug("collections: {}", image.getResourceCollections());
-
-        List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
-        assertFalse(extractIds.contains(test.getId()));
-        image.getResourceCollections().clear();
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS);
-        logger.debug("collections: {}", image.getResourceCollections());
-        extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
-        assertTrue(extractIds.contains(test.getId()));
-    }
-
-    @Test
-    @Rollback
-    public void testFindWithRights() {
-        ResourceCollection test = new ResourceCollection(CollectionType.SHARED);
-        test.setName("test");
-        test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_GROUP));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
-        test.setSortBy(SortOption.COLLECTION_TITLE);
-        genericService.saveOrUpdate(test);
-
-        ResourceCollection c1 = new ResourceCollection(CollectionType.SHARED);
-        c1.setName(" TEST ");
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1);
-        assertEquals(withName, test);
-
-        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1);
-        assertNotEquals(withName, test);
-    }
 
     @Before
     public void setup() {
@@ -174,29 +86,6 @@ public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
             reindex();
         }
         indexCount++;
-    }
-
-    @Test
-    @Rollback
-    public void testSetupCorrect() {
-        ResourceCollection collection = resourceCollectionService.find(1575l);
-        assertFalse(collection.isHidden());
-    }
-
-    @Test
-    @Rollback
-    public void testSparseResource() throws Exception {
-        ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
-        collection.markUpdated(getAdminUser());
-        collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
-        genericService.saveOrUpdate(collection);
-        Long collectionId = collection.getId();
-        collection = null;
-        collection = genericService.findAll(ResourceCollection.class, Arrays.asList(collectionId)).get(0);
-        for (Resource resource : collection.getResources()) {
-            logger.info("{} {} ", resource, resource.getSubmitter());
-        }
-
     }
 
     @Test
