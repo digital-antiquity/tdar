@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.io.IOException;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +38,7 @@ public class FreemarkerService {
      * @return
      * @throws IOException
      */
-    public String render(String templateName, Object dataModel) throws IOException {
+    public String render(String templateName, Map dataModel) throws IOException {
         try {
             return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel);
         } catch (Exception e) {
