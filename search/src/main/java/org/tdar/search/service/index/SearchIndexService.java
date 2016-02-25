@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -134,10 +135,9 @@ public class SearchIndexService {
             return null;
         }
         try {
-//        	Indexable item = genericDao.merge(item_); 
             String core = LookupSource.getCoreForClass(item.getClass());
 
-            if (src != null && src == LookupSource.DATA) {
+            if (Objects.equals(src , LookupSource.DATA)) {
             	List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource)item, resourceService);
                 template.add(CoreNames.DATA_MAPPINGS, convert);
                 if (deleteFirst) {
