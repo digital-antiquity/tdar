@@ -93,7 +93,7 @@ public class EmailService {
         	helper.setFrom(email.getFrom());
             helper.setSubject(email.getSubject());
             helper.setTo(email.getToAsArray());
-            message.setText(email.getMessage());
+            message.setText(email.getMessage(),"utf8","html");
             
             if (CollectionUtils.isNotEmpty(attachments)) {
                 for (File file_ : attachments) {
