@@ -27,6 +27,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.ResourceEvaluator;
+import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.ServiceInterface;
@@ -48,6 +49,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param invoice
      * @return
      */
+    @Transactional(readOnly=true)
     public BillingAccount getAccountForInvoice(Invoice invoice) {
         return getDao().getAccountForInvoice(invoice);
     }
@@ -73,6 +75,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param user
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Invoice> listUnassignedInvoicesForUser(Person user) {
         if (PersistableUtils.isNullOrTransient(user)) {
             return Collections.emptyList();
@@ -108,6 +111,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param resources
      * @return
      */
+    @Transactional(readOnly=true)
     public ResourceEvaluator getResourceEvaluator(Collection<Resource> resources) {
         return getDao().getResourceEvaluator(resources);
     }
@@ -118,6 +122,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param account
      * @return
      */
+    @Transactional(readOnly=true)
     public BillingAccountGroup getAccountGroup(BillingAccount account) {
         return getDao().getAccountGroup(account);
     }
@@ -129,6 +134,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param account
      * @return
      */
+    @Transactional(readOnly=true)
     public boolean checkThatInvoiceBeAssigned(Invoice find, BillingAccount account) {
 
         if (authorizationService.isMember(find.getTransactedBy(), TdarGroup.TDAR_BILLING_MANAGER)) {
@@ -212,7 +218,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param resources
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=false)
     public AccountAdditionStatus updateQuota(BillingAccount account, Resource... resources) {
         return updateQuota(account, Arrays.asList(resources));
     }
@@ -222,7 +228,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * 
      * @param account
      */
-    @Transactional
+    @Transactional(readOnly=false)
     public void updateAccountInfo(BillingAccount account) {
         getDao().updateAccountInfo(account, getResourceEvaluator());
     }
@@ -267,6 +273,31 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         }
         updateTransientAccountInfo(Arrays.asList(resource));
     }
+    
+    
+    @Transactional(readOnly=false)
+    public void transferBalanace(TdarUser user, BillingAccount from, BillingAccount to) {
+        Coupon coupon = new Coupon();
+        coupon.setCode(null);
+        coupon.setDateCreated(new Date());
+        coupon.setDateExpires(new Date());
+        coupon.setDateRedeemed(new Date());
+        coupon.setNumberOfFiles(from.getAvailableNumberOfFiles());
+        getDao().saveOrUpdate(coupon);
+        from.getCoupons().add(coupon);
+        getDao().saveOrUpdate(from);
+
+        Invoice invoice = new Invoice();
+        invoice.setPaymentMethod(PaymentMethod.MANUAL);
+        invoice.setOtherReason(String.format("%s transfered credit from account (%s: %s) to account (%s : %s)", user.getProperName(), from.getId(),from.getName(),to.getId(), to.getName()));
+        invoice.setNumberOfFiles(coupon.getNumberOfFiles());
+        invoice.markUpdated(user);
+        invoice.setCoupon(coupon);
+        invoice.markFinal();
+        getDao().saveOrUpdate(invoice);
+        to.getInvoices().add(invoice);
+        getDao().saveOrUpdate(to);
+    }
 
     /**
      * Based on an @link Account and criteria, generate a @link Coupon
@@ -277,7 +308,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @param dateExpires
      * @return
      */
-    @Transactional
+    @Transactional(readOnly=false)
     public Coupon generateCouponCode(BillingAccount account, Long numberOfFiles, Long numberOfMb, Date dateExpires) {
         Coupon coupon = new Coupon();
         coupon.setDateCreated(new Date());
@@ -321,6 +352,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         return coupon;
     }
 
+    @Transactional(readOnly=false)
     public void resetAccountTotalsToHaveOneFileLeft(BillingAccount account) {
         getDao().markWritableOnExistingSession(account);
         getLogger().debug(">>>>> F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
@@ -349,7 +381,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
 
     }
 
-    @Transactional
+    @Transactional(readOnly=false)
     public void processBillingAccountChoice(BillingAccount acct, Invoice invoice, TdarUser authenticatedUser) {
         if (invoice.getOwner() == null) {
             invoice.setOwner(authenticatedUser);
@@ -365,11 +397,11 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
 
     }
 
-    @Transactional
     /**
      * If an invoice is not assigned to a billing account,  reate a billing account with a default name and
      * assign it to the specified invoice.
      */
+    @Transactional(readOnly=false)
     private BillingAccount processBillingAccountChoice(Invoice invoice, TdarUser authenticatedUser) {
         BillingAccount account = getAccountForInvoice(invoice);
         if(account == null) {
@@ -381,7 +413,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         return account;
     }
 
-    @Transactional
+    @Transactional(readOnly=false)
     public BillingAccount reconcileSelectedAccount(long id, Invoice invoice, BillingAccount account, List<BillingAccount> accounts) {
         BillingAccount selectedAccount = null;
         if (id == -1L) {
@@ -397,12 +429,13 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         return selectedAccount;
     }
 
-    @Transactional
+    @Transactional(readOnly=false)
     @Deprecated
     public void updateQuotas(BillingAccount account, ResourceEvaluator re, List<Resource> resources) {
         getDao().updateQuotas(account, re, resources);
     }
 
+    @Transactional(readOnly=true)
     public AccountAdditionStatus canAddResource(BillingAccount account, ResourceEvaluator re) {
         return getDao().canAddResource(account, re);
     }
