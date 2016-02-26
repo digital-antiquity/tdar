@@ -1,5 +1,7 @@
 package org.tdar.struts.action;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -180,6 +182,16 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         }
         resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
         controller.setServletRequest(getServletPostRequest());
+
+        //A better replication of the struts lifecycle would include calls to prepare() and validate(), however, this
+        // method currently generates resources that would ultimately generate ActionErrors, as well as Constraint
+        // Violation errors. To fix this, we should make the following changes:
+
+        //FIXME: remove actionError checks from controller.execute() methods (they are implicitly performed by struts and/or our test runner),
+        //FIXME: improve generateResourceCollection() so that it constructs valid resources (vis a vis  validator.validate() and dao.enforceValidation())
+        //controller.prepare();
+        //controller.validate();
+
         String save = controller.save();
         assertTrue(save.equals(Action.SUCCESS));
         genericService.synchronize();
@@ -189,10 +201,10 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         logger.debug("parentId: {}", parentId);
         logger.debug("Resources: {}", resources);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
-            assertEquals(parentId, resourceCollection.getParent().getId());
+            assertThat(resourceCollection.getParent(), hasProperty("id", equalTo(parentId)));
         }
-        if (resources != null) {
-            assertTrue(resourceCollection.getResources().containsAll(resources));
+        if (CollectionUtils.isNotEmpty(resources)) {
+            assertThat(resourceCollection.getResources(), containsInAnyOrder(resources.toArray()));
         }
         return resourceCollection;
     }

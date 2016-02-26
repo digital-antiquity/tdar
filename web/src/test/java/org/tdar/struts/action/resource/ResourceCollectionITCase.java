@@ -50,6 +50,7 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.junit.IgnoreActionErrors;
 import org.tdar.search.config.IndexEventListener;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.TdarActionException;
@@ -62,8 +63,8 @@ import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.utils.PersistableUtils;
-
 import com.opensymphony.xwork2.Action;
+
 
 public class ResourceCollectionITCase extends AbstractResourceControllerITCase {
 
