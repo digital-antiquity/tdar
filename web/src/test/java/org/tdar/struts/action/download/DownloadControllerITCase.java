@@ -54,6 +54,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
     @After
     public void cleanup() throws IOException {
         try {
+            System.gc();
             FileUtils.cleanDirectory(ROOT_DEST);
         } catch (Exception e) {
             logger.error("{} ", e);
