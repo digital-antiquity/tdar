@@ -61,6 +61,7 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.junit.ControllerTestWatcher;
 import org.tdar.search.config.TdarSearchAppConfiguration;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.SearchService;
@@ -151,6 +152,9 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
     };
 
+    @Rule
+    public ControllerTestWatcher testWatcher = new ControllerTestWatcher();
+
     @Before
     public void announceTestStarting() {
         setIgnoreActionErrors(false);
@@ -164,15 +168,11 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
     @After
     public void announceTestOver() {
-        int errorCount = 0;
         if (!isIgnoreActionErrors() && CollectionUtils.isNotEmpty(getActionErrors())) {
             logger.error("action errors {}", getActionErrors());
-            errorCount = getActionErrors().size();
+            Assert.fail(String.format("There were %d action errors: \n {} ", getActionErrors().size(), StringUtils.join(getActionErrors().toArray(new String[0]))));
         }
 
-        if (errorCount > 0) {
-            Assert.fail(String.format("There were %d action errors: \n {} ", errorCount, StringUtils.join(getActionErrors().toArray(new String[0]))));
-        }
     }
 
     protected <T> T generateNewController(Class<T> controllerClass) {
@@ -347,7 +347,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
      * @return the ignoreActionErrors
      */
     public boolean isIgnoreActionErrors() {
-        return ignoreActionErrors;
+        return ignoreActionErrors || testWatcher.isIgnoringActionErrors();
     }
 
     private TdarUser sessionUser;
@@ -373,11 +373,18 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     }
 
     @Override
-    public void addError(String error) {
-        getActionErrors().add(error);
+    public void addError(String message) {
+        getActionErrors().add(message);
         if (!ignoreActionErrors) {
-            fail(error);
+            onActionError(message);
         }
+    }
+
+    /**
+     * Override if you want granular control over how to handle action errors.
+     * @param message
+     */
+    public void onActionError(String message) {
     }
 
     public List<String> getActionErrors() {

@@ -111,16 +111,18 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
 
-    @Override
-    public void prepare() throws TdarActionException {
-        super.prepare();
+//    @Override
+//    public void prepare() throws TdarActionException {
+    public void lookupParent()  {
+        //super.prepare();
 
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
         if(PersistableUtils.isNotNullOrTransient(parentId)) {
             parentCollection = resourceCollectionService.find(parentId);
             getLogger().debug("lookup parent collection by id:{}  result:{}", parentId, parentCollection);
 
-        } else if(StringUtils.isNotBlank(parentCollectionName)) {
+        }
+        else if(StringUtils.isNotBlank(parentCollectionName)) {
             List<ResourceCollection> results = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
                     parentCollectionName);
             getLogger().debug("lookup parent collection by name:{}  results:{}", parentCollectionName, results.size());
@@ -128,7 +130,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             if(results.size() != 1) {
                 addActionError(getText("collectionController.ambiguous_parent_name"));
                 // Clear the name field or the INPUT form will be primed to fail in the same way upon submit.
-                parentCollectionName = "";
+                //parentCollectionName = "";
             } else {
                 parentCollection = results.get(0);
             }
@@ -146,6 +148,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             getPersistable().setOwner(uploader);
         }
 
+        lookupParent();
         if(parentCollection != null) {
             parentId = parentCollection.getId();
         }
@@ -154,6 +157,10 @@ public class CollectionController extends AbstractPersistableController<Resource
         if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parentCollection)
                 && (parentCollection.getParentIds().contains(persistable.getId()) || parentCollection.getId().equals(persistable.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
+        }
+
+        //FIXME: this section is necessary because our prepare code is here, but we can't put it in prepare() because dozens of our tests will break because they do not correctly mock their controllers and assume that prepare() is never called.
+        if(hasActionErrors()) {
             return INPUT;
         }
 

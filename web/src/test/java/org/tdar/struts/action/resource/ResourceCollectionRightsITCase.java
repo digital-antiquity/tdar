@@ -597,6 +597,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.prepare();
         controller.edit();
         controller.setParentId(null);
+        controller.setParentCollectionName("");
         controller.setServletRequest(getServletPostRequest());
         controller.setAsync(false);
         result = controller.save();

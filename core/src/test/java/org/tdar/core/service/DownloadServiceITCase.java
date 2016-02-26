@@ -48,6 +48,7 @@ public class DownloadServiceITCase extends AbstractIntegrationTestCase {
     @After
     public void cleanup() throws IOException {
         try {
+            System.gc();
             FileUtils.cleanDirectory(ROOT_DEST);
         } catch (Exception e) {
             logger.error("{} ", e);

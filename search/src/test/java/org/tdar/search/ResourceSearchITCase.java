@@ -1401,21 +1401,20 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
             allSheets.add(cs);
             if (cat != null) {
                 cs.setCategoryVariable(genericService.find(CategoryVariable.class, (long) cat));
-                genericService.saveOrUpdate(cs);
             }
             if (title.contains("Taxonomic Level")) {
                 logger.info("{} {}", cs, cs.getCategoryVariable().getId());
                 sheets.add(cs);
             }
             cs = null;
-            genericService.synchronize();
 
         }
+        genericService.saveOrUpdate(allSheets);
+        genericService.synchronize();
         List<Long> sheetIds = PersistableUtils.extractIds(sheets);
         sheets = null;
         genericService.synchronize();
-        genericService.findAll(CodingSheet.class);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+//        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         SearchResult<Resource> result = performSearch("Taxonomic Level", null, null, null, null, null, params, 10);

@@ -1,5 +1,6 @@
 package org.tdar.core.service.external;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -7,15 +8,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.HasEmail;
@@ -46,7 +54,7 @@ public class EmailService {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private MailSender mailSender;
+    private JavaMailSender mailSender;
 
     @Autowired
     private GenericDao genericDao;
@@ -54,10 +62,13 @@ public class EmailService {
     @Autowired
     private FreemarkerService freemarkerService;
 
+    public static String ATTACHMENTS = "ATTACHMENTS";
+    public static String INLINE = "INLINE";
+    
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
      */
-    public void queueWithFreemarkerTemplate(String templateName, Object dataModel, Email email) {
+    public void queueWithFreemarkerTemplate(String templateName, Map<String,?> dataModel, Email email) {
         try {
             email.setMessage(freemarkerService.render(templateName, dataModel));
             queue(email);
@@ -66,6 +77,47 @@ public class EmailService {
         }
     }
 
+    public void sendMimeMessage(String templateName, Map<String,?> dataModel, Email email, List<File> attachments, List<File> inline) {
+
+        try {
+        	email.setMessage(freemarkerService.render(templateName, dataModel));
+        } catch (IOException fnf) {
+            logger.error("Email template file not found (" + templateName + ")", fnf);
+        }
+        enforceFromAndTo(email);
+        try {
+        	MimeMessage message = mailSender.createMimeMessage();
+
+            // Message message = new MimeMessage(session);
+        	MimeMessageHelper helper = new MimeMessageHelper(message);
+        	helper.setFrom(email.getFrom());
+            helper.setSubject(email.getSubject());
+            helper.setTo(email.getToAsArray());
+            message.setText(email.getMessage(),"utf8","html");
+            
+            if (CollectionUtils.isNotEmpty(attachments)) {
+                for (File file_ : attachments) {
+                	FileSystemResource file = new FileSystemResource(file_);
+                	helper.addAttachment(file_.getName(), file);
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(inline)) {
+				for (File file_ : inline) {
+					FileSystemResource file = new FileSystemResource(file_);
+					helper.addInline(file_.getName(), file);
+				}
+            }
+            
+            mailSender.send(message);
+        } catch (MailException | MessagingException me) {
+            email.setNumberOfTries(email.getNumberOfTries() - 1);
+            email.setErrorMessage(me.getMessage());
+            logger.error("email error: {} {}", email, me);
+        }
+    }
+
+    
     /**
      * Sends an email message to the given recipients. If no recipients are passed in, defaults to TdarConfiguration.getSystemAdminEmail().
      * 
@@ -146,7 +198,7 @@ public class EmailService {
      */
     @Autowired
     @Qualifier("mailSender")
-    public void setMailSender(MailSender mailSender) {
+    public void setMailSender(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 

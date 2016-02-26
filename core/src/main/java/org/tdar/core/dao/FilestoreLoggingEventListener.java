@@ -23,6 +23,7 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.hibernateEvents.EventListener;
 import org.tdar.core.service.AutowireHelper;
 import org.tdar.core.service.SerializationService;
@@ -39,12 +40,17 @@ public class FilestoreLoggingEventListener extends AbstractEventListener<XmlLogg
 	private final transient Logger logger = LoggerFactory.getLogger(getClass());
 	private SerializationService serializationService;
 
+	private final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+	
 	public FilestoreLoggingEventListener() throws ClassNotFoundException {
 		super("Filestore");
 	      SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
 
 	private boolean isEnabled() {
+        if (!CONFIG.shouldLogToFilestore()) {
+            return false;
+        }
 	    try {
 	        if (serializationService == null) {
 	            AutowireHelper.autowire(this, serializationService);
