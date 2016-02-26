@@ -1307,6 +1307,7 @@ public class Resource implements Persistable,
         kwds.addAll(getActiveCultureKeywords());
         kwds.addAll(getIndexedGeographicKeywords());
         kwds.addAll(getActiveSiteNameKeywords());
+        kwds.addAll(getActiveInvestigationTypes());
         kwds.addAll(getActiveSiteTypeKeywords());
         kwds.addAll(getActiveMaterialKeywords());
         kwds.addAll(getActiveOtherKeywords());
