@@ -578,11 +578,12 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid = controller.getPersistable().getId();
 
         controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.setParentId(rcid);
+
         controller.prepare();
         ResourceCollection rcChild = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
-        controller.setParentId(rcid);
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -635,11 +636,11 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid = controller.getPersistable().getId();
 
         controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.setParentId(rcid);
         controller.prepare();
-        ResourceCollection rcChild = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
-        controller.setParentId(rcid);
+        ResourceCollection rcChild = controller.getPersistable();
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());

@@ -392,7 +392,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         RequestType type = RequestType.EDIT;
         if (getId() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
             getLogger().debug("setting persistable");
-            setPersistable(createPersistable());
+            if (getPersistable() == null) {
+            	setPersistable(createPersistable());
+            }
             type = RequestType.CREATE;
         }
         prepareAndLoad(this, type);

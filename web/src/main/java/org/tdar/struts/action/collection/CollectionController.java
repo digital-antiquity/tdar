@@ -20,6 +20,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
@@ -111,10 +112,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
 
-//    @Override
-//    public void prepare() throws TdarActionException {
-    public void lookupParent()  {
-        //super.prepare();
+    @Override
+    public void prepare() throws TdarActionException {
+        super.prepare();
 
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
         if(PersistableUtils.isNotNullOrTransient(parentId)) {
@@ -148,7 +148,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             getPersistable().setOwner(uploader);
         }
 
-        lookupParent();
+//        lookupParent();
         if(parentCollection != null) {
             parentId = parentCollection.getId();
         }
