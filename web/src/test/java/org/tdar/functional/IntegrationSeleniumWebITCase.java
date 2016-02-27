@@ -51,6 +51,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     public void setupIntegration() {
         login();
         find(By.partialLinkText("Integrate")).click();
+        waitForPageload();
         Assert.assertTrue(getText().contains("Data Integration"));
         Assert.assertTrue(getCurrentUrl().contains("/workspace/list"));
         find(linkText("Start Now")).click();
