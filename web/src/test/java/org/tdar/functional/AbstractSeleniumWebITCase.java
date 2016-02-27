@@ -282,7 +282,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     protected void applyEditPageHacks() {
         try {
-            executeJavascript("var n=document.getElementById('subnavbar');n.parentNode.removeChild(n)");
+            executeJavascript("var n=document.getElementById('subnavbar');if (n != undefined) {n.parentNode.removeChild(n);}");
         } catch (Exception ignored) {
         }
     }
@@ -302,7 +302,7 @@ public abstract class AbstractSeleniumWebITCase {
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
