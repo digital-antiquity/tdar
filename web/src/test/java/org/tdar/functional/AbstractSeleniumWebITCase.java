@@ -1150,7 +1150,11 @@ public abstract class AbstractSeleniumWebITCase {
         waitFor(By.name(prefix + ".person.firstName")).val(p.getFirstName());
         find(By.name(prefix + ".person.lastName")).val(p.getLastName());
         find(By.name(prefix + ".person.email")).val(p.getEmail());
-        find(By.name(prefix + ".person.institution.name")).val(p.getInstitutionName());
+        String iname = p.getInstitutionName();
+        if (iname == null) {
+        	iname = "";
+        }
+        find(By.name(prefix + ".person.institution.name")).val(iname);
         find(By.name(prefix + ".role")).visibleElements().val(role.name());
 
         // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
@@ -1465,6 +1469,7 @@ public abstract class AbstractSeleniumWebITCase {
      * Assert that user is logged out.
      */
     public void assertLoggedOut() {
+        waitForPageload();
         List<WebElement> selection = find(By.linkText("LOG IN")).toList();
         logger.debug(getCurrentUrl());
         assertThat("login button is missing", selection, is(not(empty())));

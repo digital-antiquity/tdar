@@ -49,7 +49,7 @@ public class DownloadSeleniumWebITCase extends AbstractSeleniumWebITCase {
         logout();
         gotoPage(documentViewUrl);
         find(".download-file").get(0).click();
-
+        waitForPageload();
         // now we are on the review form (w/ registration/login forms)
         // fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), containsString("download"));

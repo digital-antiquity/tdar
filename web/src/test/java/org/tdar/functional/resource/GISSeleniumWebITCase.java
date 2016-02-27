@@ -106,7 +106,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             uploadFileAsync(restriction, file);
         }
         submitForm();
-
+        waitForPageload();
         String path = getDriver().getCurrentUrl();
 
         path = getDriver().getCurrentUrl();
@@ -141,7 +141,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
         submitForm();
-
+        waitForPageload();
         String path = getDriver().getCurrentUrl();
 
         path = getDriver().getCurrentUrl();
