@@ -227,4 +227,15 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
 
+
+    @Override
+    public void waitForPageload() {
+    	super.waitForPageload();
+    	try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }
