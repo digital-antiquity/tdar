@@ -85,14 +85,15 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         submitForm();
 
         // close the popup window
-        find("#btnCloseWindow").click();
-        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
         // even though the popup window is gone, we still need to switch back to the main window
         getDriver().switchTo().window(startWindow);
 
         // if successful, we are sent to the dashboard
         waitFor("body.dashboard");
+        switchToNextWindow();
+        find("#btnCloseWindow").click();
+        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
     }
 
     @Test
