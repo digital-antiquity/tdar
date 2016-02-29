@@ -54,6 +54,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testVisitorPurchase() throws InterruptedException {
         // start at the cart page, and click one of the suggested packages
         gotoPage(CART_ADD);
+        waitForPageload();
+        logger.debug(getText());
         assertLoggedOut();
         selectPackage();
         
@@ -104,6 +106,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         // Starting page
         // go to the cart page and make sure we are logged out
         gotoPage(CART_ADD);
+        waitForPageload();
+        logger.debug(getText());
         assertLoggedOut();
         selectPackage();
 
