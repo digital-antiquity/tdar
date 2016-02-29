@@ -8,48 +8,27 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
-import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
-
-import com.opensymphony.xwork2.Preparable;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/billing")
-public class CouponCreationAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<BillingAccount> {
+public class CouponCreationAction extends AbstractBillingAccountAction {
 
     private static final long serialVersionUID = -4931747979827504369L;
-    public static final String VIEW_ID = "${id}";
-    @Autowired
-    private BillingAccountService accountService;
-    @Autowired
-    private AuthorizationService authorizationService;
     
-    private Long id;
     private Integer quantity = 1;
 
     private Long numberOfFiles = 0L;
     private Long numberOfMb = 0L;
     private Date expires = new DateTime().plusYears(1).toDate();
-    private BillingAccount account;
 
-    @Override
-    public void prepare() throws TdarActionException {
-        prepareAndLoad(this, RequestType.EDIT);
-    }
+
 
     @Action(value = "create-code",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
@@ -116,22 +95,6 @@ public class CouponCreationAction extends AuthenticationAware.Base implements Pr
         }
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public InternalTdarRights getAdminRights() {
-        return InternalTdarRights.EDIT_BILLING_INFO;
-    }
-
-    @Override
-    public void setPersistable(BillingAccount persistable) {
-        this.account = persistable;
-    }
 
     public Integer getQuantity() {
         return quantity;
@@ -163,29 +126,6 @@ public class CouponCreationAction extends AuthenticationAware.Base implements Pr
 
     public void setExpires(Date expires) {
         this.expires = expires;
-    }
-
-    public BillingAccount getAccount() {
-        return account;
-    }
-
-    public void setAccount(BillingAccount account) {
-        this.account = account;
-    }
-
-    @Override
-    public boolean authorize() throws TdarActionException {
-        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
-    }
-
-    @Override
-    public Persistable getPersistable() {
-        return account;
-    }
-
-    @Override
-    public Class<BillingAccount> getPersistableClass() {
-        return BillingAccount.class;
     }
 
 }
