@@ -322,8 +322,7 @@ public class DataOneService implements DataOneConstants {
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
 
-        // optional -- defined as date uploaded to DataONE
-        //        metadata.setDateUploaded(resource.getDateCreated());
+        metadata.setDateUploaded(resource.getDateCreated());
 
         // if it's deleted, we mark it as archived
         if (resource.getStatus() != Status.ACTIVE) {
