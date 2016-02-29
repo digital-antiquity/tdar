@@ -53,6 +53,7 @@ import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 
 import com.google.common.collect.Sets;
 
@@ -216,6 +217,15 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
     @Scheduled(cron = "50 0 0 * * SUN")
     public void cronVerifyTdarFiles() throws IOException {
         queue(WeeklyFilestoreLoggingProcess.class);
+    }
+
+    /**
+     * Once a week, on Sundays, generate some static, cached stats for use by
+     * the admin area and general system
+     */
+    @Scheduled(cron = "12 0 0 * * SUN")
+    public void cronGenerateWeeklyStats() {
+        queue(WeeklyStatisticsLoggingProcess.class);
     }
 
     /**
