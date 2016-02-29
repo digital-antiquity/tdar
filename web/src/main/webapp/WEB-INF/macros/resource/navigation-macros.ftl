@@ -88,10 +88,12 @@ navigation freemarker macros
     	    	<#if administrator>
     		        <@makeLink "billing" "updateQuotas?id=${persistable.id?c}" "Reset Totals" "add" "" false false />
 		        </#if>
-    		    <#if editable || administrator>
+                <#local edit = !(editable || administrator) />
+    		    <#if !edit>
                     <#local _large = (persistable.resources?size &gt; 50000) />
 	                <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
 		        </#if>
+                <@makeLink namespace "transfer/${persistable.id?c}" "transfer" "transfer" current true edit />
 			</ul>
 		</div>
 

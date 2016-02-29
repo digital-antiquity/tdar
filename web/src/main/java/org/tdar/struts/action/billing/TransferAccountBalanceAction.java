@@ -1,16 +1,27 @@
 package org.tdar.struts.action.billing;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
 
 
+@Component
+@Scope("prototype")
+@ParentPackage("secured")
+@Namespace("/billing/transfer")
 public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
 
     private static final long serialVersionUID = 4993654895975490884L;
@@ -18,6 +29,7 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
     private Long numberOfFiles;
     private Long toAccountId;
     private BillingAccount toAccount;
+    private List<BillingAccount> accounts = new ArrayList<>();
 
     @Override
     public void validate() {
@@ -38,20 +50,37 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
+        setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
+
         toAccount = accountService.find(toAccountId);
     }
 
-    @Action(value = "transfer-balance",
+    
+    @Action(value = "{id}",
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, location="../transfer.ftl"),
+                    @Result(name = INPUT, location = "error.ftl")
+            })
+    @SkipValidation
+    @Override
+    public String execute() throws TdarActionException {
+        return SUCCESS;
+    }
+
+
+    
+    
+    @Action(value = "{id}/transfer",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
                     @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
                     @Result(name = INPUT, location = "error.ftl")
             })
     @PostOnly
-    @Override
-    public String execute() throws TdarActionException {
+    public String transfer() throws TdarActionException {
         accountService.transferBalanace(getAuthenticatedUser(), getAccount(), toAccount, numberOfFiles);
-        accountService.updateQuota(getAccount());
+        addActionMessage(getText("transferAccountBalanceAction.success",Arrays.asList(getAccount(), toAccount)));
         return SUCCESS;
     }
 
@@ -69,5 +98,13 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
 
     public void setNumberOfFiles(Long numberOfFiles) {
         this.numberOfFiles = numberOfFiles;
+    }
+
+    public List<BillingAccount> getAccounts() {
+        return accounts;
+    }
+
+    public void setAccounts(List<BillingAccount> accounts) {
+        this.accounts = accounts;
     }
 }

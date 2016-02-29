@@ -24,6 +24,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
@@ -92,15 +93,21 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     public Class<BillingAccount> getPersistableClass() {
         return BillingAccount.class;
     }
-
+    
     @Override
-    public String loadViewMetadata() {
+    public void prepare() throws TdarActionException {
+        super.prepare();
+        setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
         setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());
         getResources().addAll(getAccount().getResources());
         PersistableUtils.sortByUpdatedDate(getResources());
         setInvoices(new ArrayList<>(getAccount().getInvoices()));
         PersistableUtils.sortByCreatedDate(getInvoices());
+    }
+
+    @Override
+    public String loadViewMetadata() {
         Iterator<Invoice> iter = getInvoices().iterator();
         setCoupons(new ArrayList<>(getAccount().getCoupons()));
         while (iter.hasNext()) {

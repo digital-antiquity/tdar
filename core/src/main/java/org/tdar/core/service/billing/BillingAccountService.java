@@ -282,6 +282,9 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
     
     @Transactional(readOnly=false)
     public void transferBalanace(TdarUser user, BillingAccount from, BillingAccount to, Long numberOfFiles) {
+        if (PersistableUtils.isEqual(from,  to)) {
+            return;
+        }
         Coupon coupon = new Coupon();
         coupon.setCode(null);
         coupon.setDateCreated(new Date());
@@ -292,6 +295,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         } else {
             coupon.setNumberOfFiles(from.getAvailableNumberOfFiles());
         }
+        coupon.setCode("INTERNAL" + new Date());
         getDao().saveOrUpdate(coupon);
         from.getCoupons().add(coupon);
         getDao().saveOrUpdate(from);

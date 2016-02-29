@@ -16,7 +16,7 @@ import com.opensymphony.xwork2.Preparable;
 public abstract class AbstractBillingAccountAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<BillingAccount> {
 
 
-    public static final String VIEW_ID = "${id}";
+    public static final String VIEW_ID = "/billing/${id}";
 
     @Autowired
     protected BillingAccountService accountService;
@@ -28,7 +28,10 @@ public abstract class AbstractBillingAccountAction extends AuthenticationAware.B
     private Long id;
     private BillingAccount account;
     
-    
+    public boolean isEditable() {
+        return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
+    }
+
     
     
     @Override
