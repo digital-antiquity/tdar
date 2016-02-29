@@ -105,6 +105,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testLoginPurchase() {
         // Starting page
         // go to the cart page and make sure we are logged out
+        logout();
         gotoPage(CART_ADD);
         waitForPageload();
         logger.debug(getText());

@@ -19,7 +19,7 @@
         <geotools.version>14.2</geotools.version>
         <tika.version>1.12</tika.version>
         <batik.version>1.7</batik.version>
-        <jackson.version>2.7.1</jackson.version>
+        <jackson.version>2.7.2</jackson.version>
         <http-components.version>4.4.4</http-components.version>
         <http-client.version>4.5.1</http-client.version>
     </properties>
@@ -981,7 +981,7 @@
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
-            <artifactId>jackson-datatype-hibernate4</artifactId>
+            <artifactId>jackson-datatype-hibernate5</artifactId>
             <version>${jackson.version}</version>
         </dependency>
         <dependency>

@@ -95,6 +95,7 @@ import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 import com.gargoylesoftware.htmlunit.util.KeyDataPair;
 import com.gargoylesoftware.htmlunit.util.NameValuePair;
 
+import arq.utf8;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
@@ -1183,7 +1184,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     }
 
     private NameValuePair nameValuePair(String name, File file, String contentType) {
-        KeyDataPair keyDataPair = new KeyDataPair(name, file, contentType, "utf8");
+        //(name, file, contentType, "utf8");
+        KeyDataPair keyDataPair = new KeyDataPair(name, file, file.getName(), contentType, "utf8");
         return keyDataPair;
     }
 
