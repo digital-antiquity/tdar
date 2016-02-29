@@ -159,6 +159,20 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         assertTrue(accountService.listAvailableAccountsForUser(person).contains(accountForPerson2));
     }
 
+    
+    @Test
+    @Rollback
+    public void testAccountTransfer() {
+        BillingAccount to = setupAccountForPerson(getBasicUser());
+        BillingAccount from = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), getBasicUser());
+        accountService.transferBalanace(getAdminUser(), from, to, null);
+        logger.debug("to: {}", to.availableString());
+        logger.debug("from: {}", from.availableString());
+        assertEquals(5, to.getAvailableNumberOfFiles().intValue());
+        assertEquals(0, from.getAvailableNumberOfFiles().intValue());
+        
+    }
+    
     @Test
     @Rollback
     public void testAvaliableActivities() {

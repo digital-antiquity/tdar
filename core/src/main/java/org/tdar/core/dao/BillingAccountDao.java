@@ -156,7 +156,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         account.setFilesUsed(totalFiles);
         account.setSpaceUsedInBytes(totalSpaceInBytes);
-        logger.trace(account.avaliableString() + " " + totalFiles);
+        logger.trace(account.usedString() + " " + totalFiles);
     }
 
     @SuppressWarnings("unchecked")
@@ -329,7 +329,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         saveOrUpdate(account);
         helper = null;
-        logger.trace(account.avaliableString());
+        logger.trace(account.usedString());
         return status;
     }
 
