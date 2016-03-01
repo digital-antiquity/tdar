@@ -115,12 +115,15 @@
         <#assign sentence>The following voucher code is good for up
             to <#if (coupon.numberOfFiles?has_content && coupon.numberOfFiles > 0)>${coupon.numberOfFiles} file<#if (coupon.numberOfFiles > 1)>
             s</#if><#else>${coupon.numberOfMb} MB</#if>.</#assign>
-        <#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Voucher&body=${sentence?url}%0A%0A${coupon.code?upper_case}" />
-        <tr class="">
+        <#assign suffix = "?cc=${authenticatedUser.email}&subject=tDAR%20Voucher&body=${sentence?url}%0A%0A${coupon.code!''?upper_case}" />
+        <#if coupon.dateRedeemed?has_content>
+            <#assign extraClass="strikethrough" />
+        </#if>
+        <tr class="${extraClass}">
             <td>${coupon.numberOfFiles}</td>
             <td>${coupon.numberOfMb}</td>
             <td>${coupon.dateExpires}</td>
-            <td class="voucherCode">${coupon.code?upper_case}</td>
+            <td class="voucherCode">${coupon.code!''?upper_case}</td>
             <td><#if coupon.dateRedeemed?has_content>${coupon.dateRedeemed} <#if coupon.user?has_content>(${coupon.user.properName})</#if></#if></td>
             <td><#if !coupon.dateRedeemed?has_content><a href="mailto:${authenticatedUser.email}?${suffix}">send via email</a></#if></td>
         </tr>

@@ -4,7 +4,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tdar.core.service.ScheduledProcessService;
-import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.search.service.processes.CreatorAnalysisProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
@@ -25,7 +24,6 @@ public class SearchScheduledProcessService {
      */
     @Scheduled(cron = "12 0 0 * * SUN")
     public void cronGenerateWeeklyStats() {
-        scheduledProcessService.queue(WeeklyStatisticsLoggingProcess.class);
         scheduledProcessService.queue(CreatorAnalysisProcess.class);
     }
 

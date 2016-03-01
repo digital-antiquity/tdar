@@ -117,6 +117,8 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         dc.addType(source.getResourceType().getLabel());
+        
+        dc.addIdentifier(UrlService.absoluteUrl(source));
 
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
             String maxy = longLat.getMaxObfuscatedLatitude().toString();

@@ -88,6 +88,9 @@ TDAR.loadDocumentData = function _loadDocumentData() {
 
 //define TDAR.uri(). Note, if deploying app in other than root context,  you must set <base href="${request.contextPath}">
 TDAR.uri = function(path) {
+    if (!window.location.origin) {
+        window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    }
     var base = window.location.origin;
     var baseElems = document.getElementsByTagName('base');
     if(baseElems.length) {
@@ -110,6 +113,9 @@ TDAR.uri = function(path) {
 };
 
 TDAR.assetsUri = function(path) {
+    if (!window.location.origin) {
+        window.location.origin = window.location.protocol + "//" + window.location.hostname + (window.location.port ? ':' + window.location.port: '');
+    }
     var base = window.location.origin;
     var baseElems = document.getElementsByTagName('base');
     if(baseElems.length) {

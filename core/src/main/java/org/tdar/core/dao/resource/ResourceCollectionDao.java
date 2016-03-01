@@ -116,7 +116,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setString("name", name);
         List<ResourceCollection> list = new ArrayList<>(query.list());
-        list.removeIf( rc -> !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP));
+        list.removeIf( rc -> (
+            !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP)   
+        ));
         return list;
 
     }

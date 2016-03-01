@@ -670,6 +670,12 @@ public class AuthorizationService implements Accessible {
         return false;
 
     }
+    
+    @Transactional(readOnly=true)
+    public boolean canAdministerAccount(BillingAccount account, TdarUser authenticatedUser) {
+        return canEditAccount(account, authenticatedUser);
+    }
+
 
     @Transactional(readOnly=true)
 	public void applyTransientViewableFlag(Resource r_, TdarUser authenticatedUser, Collection<Long> collectionIds) {
@@ -720,5 +726,6 @@ public class AuthorizationService implements Accessible {
 		}
 
 	}
+
 
 }

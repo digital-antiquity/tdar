@@ -17,6 +17,7 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;
@@ -61,10 +62,6 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         private static final long serialVersionUID = -7516574981065004043L;
 
         @Column(nullable = false, unique = true)
-        //@Fields({ //@Field(name = "label", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-                //@Field(name = "label_auto", norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
-                //@Field(name = "labelKeyword", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-                //@Field(name = QueryFieldNames.LABEL_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO) })
         @Length(max = FieldLength.FIELD_LENGTH_255)
         @JsonView(JsonLookupFilter.class)
         private String label;
@@ -75,12 +72,16 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
         @Enumerated(EnumType.STRING)
         @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
-        //@Field(norms = Norms.NO, store = Store.YES)
-        //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
         private Status status = Status.ACTIVE;
 
-        //@Field
-        //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
+        @Column(name="relation")
+        @Length(max= FieldLength.FIELD_LENGTH_2048)
+        private String relation;
+
+        @Enumerated(EnumType.STRING)
+        @Column(name="relation_type")
+        private RelationType relationType;
+
         @Transient
         @Override
         public String getKeywordType() {
@@ -191,6 +192,22 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         @JsonView(JsonLookupFilter.class)
         public String getDetailUrl() {
             return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
+        }
+
+        public RelationType getRelationType() {
+            return relationType;
+        }
+
+        public void setRelationType(RelationType relationType) {
+            this.relationType = relationType;
+        }
+
+        public String getRelation() {
+            return relation;
+        }
+
+        public void setRelation(String relation) {
+            this.relation = relation;
         }
     }
 }
