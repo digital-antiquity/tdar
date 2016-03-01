@@ -52,7 +52,6 @@
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
-
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
     <#if useCDN>

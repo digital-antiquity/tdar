@@ -63,6 +63,7 @@ import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
 import org.w3c.css.sac.ErrorHandler;
 
+import com.gargoylesoftware.htmlunit.AlertHandler;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -879,11 +880,19 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
         
+        webClient.setAlertHandler(new AlertHandler() {
+            
+            @Override
+            public void handleAlert(Page page, String message) {
+                logger.error("ALERT ON " + page.getUrl() + " : " + message);                
+            }
+        });
+
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
 
             @Override
             public void scriptException(InteractivePage page, ScriptException scriptException) {
-                logger.error("JS load exception: {} {}", page.getUrl(), scriptException);
+                logger.error("JS load exception: {}({}:{}):: {}\n {}", page.getUrl(), scriptException.getFailingLineNumber(), scriptException.getFailingColumnNumber(), scriptException.getFailingLine(), scriptException, scriptException.getScriptSourceCode());
             }
 
             @Override
