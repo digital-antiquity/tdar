@@ -129,8 +129,6 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             // dc.addCoverage(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
         }
 
-        dc.addIdentifier(UrlService.absoluteUrl(source));
-
         for (CoverageDate date : toSortedList(source.getCoverageDates())) {
             dc.addTemporal(date.toString());
         }
