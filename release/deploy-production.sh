@@ -81,9 +81,9 @@ mvn clean install -N
 handleError;hr
 mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base,search
 handleError;hr
-mvn clean compile war:war -Pminify-web-resources -pl tag,web,oai-pmh,dataone
+mvn clean compile war:war -Pminify-web-resources -pl tag,web,oai-pmh,dataone -DskipTests
 handleError;hr
-mvn process-resources -Pliquibase -pl web
+mvn process-resources -Pliquibase -pl web -DskipTests
 
 if [ $? -ne 0 ] 
   then
