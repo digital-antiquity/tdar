@@ -889,6 +889,10 @@
                     <groupId>org.opengis</groupId>
                     <artifactId>geoapi</artifactId>
                 </exclusion>
+                <exclusion>
+                    <artifactId>ehcache-core</artifactId>
+                    <groupId>net.sf.ehcache</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
