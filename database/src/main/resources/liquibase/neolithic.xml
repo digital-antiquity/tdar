@@ -1154,5 +1154,41 @@
                 <constraints nullable="false" />
             </column>
         </createTable>
-	</changeSet>    
+	</changeSet>
+
+    <changeSet id="neolithic-search-13" author="abrin">
+        <addColumn tableName="geographic_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="investigation_type">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="culture_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="material_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="other_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="site_name_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="site_type_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+        <addColumn tableName="temporal_keyword">
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>
