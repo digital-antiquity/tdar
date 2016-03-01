@@ -3,6 +3,25 @@ echoerr() { echo "$@" 1>&2; }
 sudo echo "deploying production"
 #java -XshowSettings 2>&1 | grep tmp | awk -F= '{print "wro4jDir:" $2 "/.wro4j/"}'
 
+handleError ()
+{
+if [ $? -ne 0 ]
+  then
+   echoerr "==============================================="
+   echoerr "|               BUILD FAILED                  |"
+   echoerr "|             SKIPPING  DEPLOY                |"
+   echoerr "==============================================="
+   exit 1
+fi
+}
+
+hr()
+{
+echo '--------------------------------------------------'
+echo ''
+}
+
+
 if [  $(id -u) -eq 0  ]
  then
    echoerr "This script should NOT be run as root"
@@ -58,8 +77,12 @@ fi
 cd /home/tdar/tdar.src/
 hg pull
 hg update -C
+mvn clean install -N
+handleError;hr
 mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base,search
+handleError;hr
 mvn clean compile war:war -Pminify-web-resources -pl tag,web,oai-pmh,dataone
+handleError;hr
 mvn process-resources -Pliquibase -pl web
 
 if [ $? -ne 0 ] 
