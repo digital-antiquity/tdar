@@ -1,6 +1,7 @@
 package org.tdar.core;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -13,6 +14,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
+import org.tdar.utils.APIClient;
+import org.tdar.utils.Pair;
+import org.tdar.utils.jaxb.JaxbResultContainer;
 
 public class FAIMSITCase extends AbstractIntegrationTestCase {
 
@@ -26,12 +30,23 @@ public class FAIMSITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testFAIMS() {
         genericService.markReadOnly();
+        APIClient client = new APIClient("https://alpha.tdar.org", serializationService);
+//        try {
+//            Pair<Integer, JaxbResultContainer> apiLogin = client.apiLogin("adam.brin@asu.edu", "");
+//        } catch (Exception e) {
+//            logger.error("error logging in", e);
+//        }
         for (Long id : genericService.findAllIds(Project.class)) {
             Resource resource = genericService.find(Project.class, id);
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
-            export(resource);
+            String output = export(resource);
+//            try {
+//                client.uploadRecord(output, null, null);
+//            } catch (IOException e) {
+//                logger.error("error uploading",e);
+//            }
             genericService.clearCurrentSession();
         }
         logger.debug("done projects");
@@ -40,12 +55,13 @@ public class FAIMSITCase extends AbstractIntegrationTestCase {
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
-            export(resource);
+            String output =  export(resource);
+            
             genericService.clearCurrentSession();
         }
     }
 
-    private void export(Resource resource) {
+    private String export(Resource resource) {
         Long id = resource.getId();
         // we mess with IDs, so just in case
         Resource r = resourceExportService.setupResourceForExport(resource);
@@ -55,7 +71,7 @@ public class FAIMSITCase extends AbstractIntegrationTestCase {
             genericService.detachFromSession(resource);
             r= null;
             resource.setId(id);
-            File type = new File(resource.getResourceType().name());
+            File type = new File("target/export/" + resource.getResourceType().name());
             FileUtils.forceMkdir(type);
             File dir = new File(type, id.toString());
             FileUtils.forceMkdir(dir);
@@ -63,9 +79,11 @@ public class FAIMSITCase extends AbstractIntegrationTestCase {
             File file = new File(dir, "record.xml");
 
             FileUtils.writeStringToFile(file, convertToXML);
+            return convertToXML;
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
         
     }
 
