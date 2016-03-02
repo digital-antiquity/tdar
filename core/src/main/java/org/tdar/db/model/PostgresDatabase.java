@@ -1019,13 +1019,28 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                     cond.getInValues().addAll(column.getMappedDataValues(node));
                 }
-                if (cond.getInValues().isEmpty()) {
-                    continue;
+
+                boolean nullIncluded = integrationColumn.isNullIncluded();
+                // if we don't include the null, then we're not limiting when a column has no integration values.  This is important if you have 
+                // 3 integration columns and two have mapped values, and the third doesn't.
+
+                // toggle for TDAR-5161
+                boolean oldWay = false;
+                
+                if (oldWay) {
+                    if (cond.getInValues().isEmpty()) {
+                        continue;
+                    }                    
+                } else {
+                    if (cond.getInValues().isEmpty() && !nullIncluded) {
+                        continue;
+                    }
                 }
 
                 if (integrationColumn.isNullIncluded()) {
                     cond.setIncludeNulls(true);
                 }
+
                 builder.getWhere().add(cond);
             }
         }
