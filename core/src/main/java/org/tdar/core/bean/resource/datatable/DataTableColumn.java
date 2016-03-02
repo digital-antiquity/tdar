@@ -2,9 +2,11 @@ package org.tdar.core.bean.resource.datatable;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -409,8 +411,8 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         return getName().replaceAll("[\\s\\,\"\']", "_");
     }
 
-    public List<String> getMappedDataValues(OntologyNode node) {
-        ArrayList<String> values = new ArrayList<>();
+    public Set<String> getMappedDataValues(OntologyNode node) {
+        Set<String> values = new HashSet<>();
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
             if (Objects.equals(node, rule.getOntologyNode())) {
                 values.add(rule.getTerm());

@@ -41,6 +41,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbResultContainer;
@@ -57,6 +58,7 @@ public class APIController extends AuthenticationAware.Base {
 
     @Autowired
     private transient AuthorizationService authorizationService;
+
 
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
@@ -101,7 +103,7 @@ public class APIController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
-    // @WriteableSession
+    @WriteableSession
     public String upload() {
 
         if (StringUtils.isEmpty(getRecord())) {
@@ -223,7 +225,7 @@ public class APIController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
-//    @WriteableSession
+    @WriteableSession
     public String updateFiles() {
 
         if (StringUtils.isEmpty(getRecord())) {

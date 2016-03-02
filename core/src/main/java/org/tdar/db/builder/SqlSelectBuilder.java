@@ -151,4 +151,17 @@ public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
         this.distinct = distinct;
     }
 
+    public void evaluateWhereForEmpty() {
+        boolean onlyEmptyWhere = true;
+        for (WhereCondition cond : getWhere()) {
+            if (CollectionUtils.isNotEmpty(cond.getInValues())) {
+                onlyEmptyWhere = false;
+            }
+        }
+
+        if (onlyEmptyWhere) {
+            getWhere().clear();
+        }
+    }
+
 }

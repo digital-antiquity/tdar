@@ -57,6 +57,8 @@
                             <goal>process</goal>
                         </goals>
                         <configuration>
+                            <!--FIXME: instead of this conditional skip, would it be better to place this entire execution node inside the test profile node (TDAR-5160) -->
+                            <skip>${skipTests}</skip>
                             <attachToTest>false</attachToTest>
                             <attachToMain>false</attachToMain>
                             <includeScope>test</includeScope>

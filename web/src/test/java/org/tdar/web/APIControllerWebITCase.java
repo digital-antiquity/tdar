@@ -7,9 +7,6 @@ import static org.junit.Assert.assertNull;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,20 +14,11 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
-import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -45,6 +33,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.APIControllerITCase;
+import org.tdar.utils.APIClient;
 import org.tdar.utils.Pair;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
@@ -65,17 +54,22 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
-    CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
-
+    private APIClient apiClient;
+    
+    @Before
+    public void setupAPIClient() {
+        apiClient = new APIClient(CONFIG.getBaseSecureUrl(), serializationService);
+    }
+    
     @Test
     public void testValidLogin() throws IllegalStateException, Exception {
         setupValidLogin();
-        apiLogout();
+        apiClient.apiLogout();
     }
 
     private JaxbResultContainer setupValidLogin() {
         try {
-            Pair<Integer, JaxbResultContainer> apiLogin = apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+            Pair<Integer, JaxbResultContainer> apiLogin = apiClient.apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
             assertEquals(StatusCode.OK, apiLogin.getFirst().intValue());
             JaxbResultContainer result = apiLogin.getSecond();
             assertNotNull(result.getApiToken());
@@ -104,7 +98,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         statusCode = execute.getStatusLine().getStatusCode();
         assertEquals(HttpStatus.SC_OK, statusCode);
         logger.debug(IOUtils.toString(execute.getEntity().getContent()));
-        apiLogout();
+        apiClient.apiLogout();
     }
 
     @Test
@@ -119,13 +113,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         APIControllerITCase.removeInvalidFields(doc);
         String docXml = serializationService.convertToXML(doc);
         logger.info(docXml);
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
-
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.addTextBody("record", docXml);
-
-        post.setEntity(builder.build());
-        CloseableHttpResponse response = httpClient.execute(post);
+        CloseableHttpResponse response = apiClient.uploadRecord(docXml, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
@@ -138,16 +126,9 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String filesUed = getFilesUsed(true);
         logger.debug("used: {}", filesUed);
 
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-        builder.addTextBody("record", text);
-        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE)));
-        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE2)));
-        builder.addTextBody("accountId", "1");
+        CloseableHttpResponse response = apiClient.uploadRecord(text, null, 1L, new File(TestConstants.TEST_IMAGE),new File(TestConstants.TEST_IMAGE2));
 
-        post.setEntity(builder.build());
-        CloseableHttpResponse response = httpClient.execute(post);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
@@ -160,13 +141,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     public void testReplaceFile() throws Exception {
         JaxbResultContainer login = setupValidLogin();
 
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-        builder.addTextBody("record", text);
-        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE)));
-        post.setEntity(builder.build());
-        CloseableHttpResponse response = httpClient.execute(post);
+        CloseableHttpResponse response = apiClient.uploadRecord(text, null, null, new File(TestConstants.TEST_IMAGE));
         logger.debug("status:{} ", response.getStatusLine());
         String resp = IOUtils.toString(response.getEntity().getContent());
         logger.debug("response: {}", resp);
@@ -184,17 +160,12 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         document = getXmlDocument(new InputSource(new StringReader(xmlRecord)));
         String fileId = document.getElementsByTagName("tdar:informationResourceFile").item(0).getAttributes().getNamedItem("id").getNodeValue();
         logger.debug("fileId::{}", fileId);
-        post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/updateFiles");
-        builder = MultipartEntityBuilder.create();
         text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
         text = text.replace("{{FILE_ID}}", fileId);
         text = text.replace("{{FILENAME}}", TestConstants.TEST_IMAGE_NAME2);
         logger.debug(text);
-        builder.addTextBody("record", text);
-        builder.addTextBody("id", id.toString());
-        builder.addPart("uploadFile", new FileBody(new File(TestConstants.TEST_IMAGE2)));
-        post.setEntity(builder.build());
-        response = httpClient.execute(post);
+        response = apiClient.updateFiles(text, id, null, new File(TestConstants.TEST_IMAGE2));
+
         logger.debug("status:{} ", response.getStatusLine());
         assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
         logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
@@ -225,14 +196,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
     @Rollback
     public void testProjectWithCollection() throws Exception {
         JaxbResultContainer login = setupValidLogin();
-
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/ingest/upload");
-        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
-        builder.addTextBody("record", text);
-
-        post.setEntity(builder.build());
-        CloseableHttpResponse response = httpClient.execute(post);
+        CloseableHttpResponse response = apiClient.uploadRecord(text, null, null);
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", IOUtils.toString(response.getEntity().getContent()));
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
@@ -240,7 +205,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Test
     public void testInvalidLogin() throws IllegalStateException, Exception {
-        Pair<Integer, JaxbResultContainer> apiLogin = apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
+        Pair<Integer, JaxbResultContainer> apiLogin = apiClient.apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
         assertEquals(StatusCode.BAD_REQUEST, apiLogin.getFirst().intValue());
         JaxbResultContainer result = apiLogin.getSecond();
         assertNull(result.getApiToken());
@@ -248,25 +213,4 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         assertEquals(getText("apiAuthenticationController.invalid_user"), result.getErrors().get(0));
     }
 
-    public Pair<Integer, JaxbResultContainer> apiLogin(String username, String password) throws IllegalStateException, Exception {
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/login");
-        List<NameValuePair> postNameValuePairs = new ArrayList<>();
-        postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", username));
-        postNameValuePairs.add(new BasicNameValuePair("userLogin.loginPassword", password));
-        post.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
-        CloseableHttpResponse response = httpClient.execute(post);
-        logger.debug("status {}", response.getStatusLine());
-        HttpEntity entity = response.getEntity();
-        String result = IOUtils.toString(entity.getContent());
-        logger.debug(result);
-        return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) serializationService.parseXml(new StringReader(result)));
-    }
-
-    public void apiLogout() throws ClientProtocolException, IOException {
-        HttpPost post = new HttpPost(CONFIG.getBaseSecureUrl() + "/api/logout");
-        CloseableHttpResponse response = httpClient.execute(post);
-        logger.debug("status {}", response.getStatusLine());
-        Assert.assertTrue(Arrays.asList(HttpStatus.SC_OK, HttpStatus.SC_MOVED_TEMPORARILY).contains(response.getStatusLine().getStatusCode()));
-
-    }
 }

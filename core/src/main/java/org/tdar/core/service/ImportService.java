@@ -545,12 +545,14 @@ public class ImportService {
 
         if (property instanceof Keyword) {
             Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
+//            logger.debug(":::> {} ({} [{}])", property, kwdCls, property instanceof ControlledKeyword);
             if (property instanceof ControlledKeyword) {
                 Keyword findByLabel = genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
                 if (findByLabel == null) {
                     throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
                             StatusCode.FORBIDDEN);
                 }
+                toReturn = (P)findByLabel;
             } else {
                 toReturn = (P) genericKeywordService.findOrCreateByLabel(kwdCls, ((Keyword) property).getLabel());
             }

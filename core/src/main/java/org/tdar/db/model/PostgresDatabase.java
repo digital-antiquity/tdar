@@ -93,7 +93,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT %s FROM %s WHERE lower(\"%s\")=lower(?)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE %s DROP COLUMN \"%s\"";
-    private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='"+NO_CODING_SHEET_VALUE+" ' || \"%s\" WHERE \"%s\" IS NULL";
+    private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE %s SET \"%s\"='" + NO_CODING_SHEET_VALUE + " ' || \"%s\" WHERE \"%s\" IS NULL";
     private static final String UPDATE_COLUMN_SET_VALUE_TRIM = "UPDATE %s SET \"%s\"=? WHERE trim(\"%s\")=?";
     private static final String UPDATE_COLUMN_SET_VALUE = "UPDATE %s SET \"%s\"=? WHERE \"%s\"=?";
     private static final String ADD_COLUMN = "ALTER TABLE %s ADD COLUMN \"%s\" character varying";
@@ -109,8 +109,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     // FIXME: replace with LoadingCache for simpler usage (and better concurrent performance)
-    private ConcurrentMap<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap =
-            new ConcurrentHashMap<DataTable, Pair<PreparedStatement, Integer>>();
+    private ConcurrentMap<DataTable, Pair<PreparedStatement, Integer>> preparedStatementMap = new ConcurrentHashMap<DataTable, Pair<PreparedStatement, Integer>>();
 
     private JdbcTemplate jdbcTemplate;
 
@@ -1001,35 +1000,48 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
             logger.info("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
-            if (column != null) {
+            if (column == null) {
+                builder.getColumns().add(null);
+            } else {
                 builder.getColumns().add(column.getName());
                 // pull the column name thrice if an integration column so we have mapped and unmapped values, and sort
                 if (integrationColumn.isIntegrationColumn()) {
                     builder.getColumns().add(column.getName());
                     builder.getColumns().add(null);
-                }
-            } else {
-                builder.getColumns().add(null);
-            }
 
-            // if we're an integration column, quote and grab all of the ontology nodes for the select
-            // these are the "hierarchical" values
-            if (integrationColumn.isIntegrationColumn() && (column != null)) {
-                WhereCondition cond = new WhereCondition(column.getName());
-                for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
-                    cond.getInValues().addAll(column.getMappedDataValues(node));
-                }
-                if (cond.getInValues().isEmpty()) {
-                    continue;
-                }
+                    WhereCondition cond = new WhereCondition(column.getName());
+                    for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
+                        cond.getInValues().addAll(column.getMappedDataValues(node));
+                    }
 
-                if (integrationColumn.isNullIncluded()) {
-                    cond.setIncludeNulls(true);
+                    boolean nullIncluded = integrationColumn.isNullIncluded();
+                    // if we don't include the null, then we're not limiting when a column has no integration values. This is important if you have
+                    // 3 integration columns and two have mapped values, and the third doesn't.
+
+                    // toggle for TDAR-5161
+                    boolean oldWay = false;
+
+                    if (oldWay) {
+                        if (cond.getInValues().isEmpty()) {
+                            continue;
+                        }
+                    } else {
+                        if (cond.getInValues().isEmpty() && !nullIncluded) {
+                            continue;
+                        }
+                    }
+
+                    if (integrationColumn.isNullIncluded()) {
+                        cond.setIncludeNulls(true);
+                    }
+
+                    builder.getWhere().add(cond);
                 }
-                builder.getWhere().add(cond);
             }
         }
         builder.getTableNames().add(table.getName());
+        
+        builder.evaluateWhereForEmpty();
         return builder.toSql();
     }
 
@@ -1095,10 +1107,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         String columnAssignments = "";
         final List<Object> values = new ArrayList<Object>();
         String separator = "";
-        for (Object columnName : data.keySet())
-        {
-            if (!"id".equals(columnName))
-            {
+        for (Object columnName : data.keySet()) {
+            if (!"id".equals(columnName)) {
                 columnAssignments += separator + columnName + "=" + "?";
                 values.add(data.get(columnName));
                 separator = " ";
@@ -1109,8 +1119,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
         // TODO RR: should this fail with an exception?
         // Probably should log it.
-        if (values.size() > 1)
-        {
+        if (values.size() > 1) {
             String sqlTemplate = "UPDATE \"%s\" SET %s WHERE id = ?";
             String sql = String.format(sqlTemplate, dataTable.getName(), columnAssignments);
 

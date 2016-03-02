@@ -74,13 +74,13 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
         @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
         private Status status = Status.ACTIVE;
 
-        @Column(name="relation")
-        @Length(max= FieldLength.FIELD_LENGTH_2048)
-        private String relation;
-
-        @Enumerated(EnumType.STRING)
-        @Column(name="relation_type")
-        private RelationType relationType;
+//        @Column(name="relation")
+//        @Length(max= FieldLength.FIELD_LENGTH_2048)
+//        private String relation;
+//
+//        @Enumerated(EnumType.STRING)
+//        @Column(name="relation_type")
+//        private RelationType relationType;
 
         @Transient
         @Override
@@ -194,20 +194,20 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
             return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
         }
 
-        public RelationType getRelationType() {
-            return relationType;
-        }
-
-        public void setRelationType(RelationType relationType) {
-            this.relationType = relationType;
-        }
-
-        public String getRelation() {
-            return relation;
-        }
-
-        public void setRelation(String relation) {
-            this.relation = relation;
-        }
+//        public RelationType getRelationType() {
+//            return relationType;
+//        }
+//
+//        public void setRelationType(RelationType relationType) {
+//            this.relationType = relationType;
+//        }
+//
+//        public String getRelation() {
+//            return relation;
+//        }
+//
+//        public void setRelation(String relation) {
+//            this.relation = relation;
+//        }
     }
 }
