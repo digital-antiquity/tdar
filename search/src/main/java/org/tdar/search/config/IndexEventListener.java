@@ -89,6 +89,9 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	}
 
 	protected void cleanup() {
+        if (!isEnabled()) {
+            return;
+        }
 		try {
 			for (LookupSource src : LookupSource.values()) {
 				solrClient.commit(src.getCoreName());
@@ -121,6 +124,9 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	@Override
 	@Transactional(readOnly = true)
 	public void onPostUpdate(PostUpdateEvent event) {
+        if (!isEnabled()) {
+            return;
+        }
 		if (event.getEntity() instanceof Indexable) {
 			if (logger.isTraceEnabled()) {
 				logger.trace("update called ({}): {}" ,event.getSession().hashCode(), event.getEntity());
