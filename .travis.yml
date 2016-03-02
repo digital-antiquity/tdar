@@ -25,6 +25,6 @@ cache:
 install:
     - travis_wait 120 mvn -q install -N -DskipTests
 script: 
-    - mvn -q compile verify -Pjetty,test,start-x-server,minify-web-resources
+    - travis_wait 200 mvn -q compile verify -Pjetty,test,start-x-server,minify-web-resources
 
 env: DB=postgres
