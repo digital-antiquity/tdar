@@ -1,4 +1,4 @@
-package org.tdar.core;
+package org.tdar.web;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,37 +16,41 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.Pair;
+import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
-public class FAIMSITCase extends AbstractIntegrationTestCase {
+public class FAIMSWebITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     SerializationService serializationService;
 
     @Autowired
     ResourceExportService resourceExportService;
+    
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+
  
     @Test
     @Rollback(true)
     public void testFAIMS() {
         genericService.markReadOnly();
-        APIClient client = new APIClient("https://alpha.tdar.org", serializationService);
-//        try {
-//            Pair<Integer, JaxbResultContainer> apiLogin = client.apiLogin("adam.brin@asu.edu", "");
-//        } catch (Exception e) {
-//            logger.error("error logging in", e);
-//        }
+        APIClient client = new APIClient(CONFIG.getBaseSecureUrl(), serializationService);
+        try {
+            Pair<Integer, JaxbResultContainer> apiLogin = client.apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+        } catch (Exception e) {
+            logger.error("error logging in", e);
+        }
         for (Long id : genericService.findAllIds(Project.class)) {
             Resource resource = genericService.find(Project.class, id);
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
             String output = export(resource);
-//            try {
-//                client.uploadRecord(output, null, null);
-//            } catch (IOException e) {
-//                logger.error("error uploading",e);
-//            }
+            try {
+                client.uploadRecord(output, null, 8L    );
+            } catch (IOException e) {
+                logger.error("error uploading",e);
+            }
             genericService.clearCurrentSession();
         }
         logger.debug("done projects");
