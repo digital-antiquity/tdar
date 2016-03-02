@@ -60,6 +60,7 @@ public class APIClient {
         HttpEntity entity = response.getEntity();
         String result = IOUtils.toString(entity.getContent());
         logger.debug(result);
+        response.close();
         return Pair.create(response.getStatusLine().getStatusCode(), (JaxbResultContainer) serializationService.parseXml(new StringReader(result)));
     }
 
@@ -67,6 +68,7 @@ public class APIClient {
         HttpPost post = new HttpPost(baseUrl + API_LOGOUT);
         CloseableHttpResponse response = getHttpClient().execute(post);
         logger.debug("status {}", response.getStatusLine());
+        response.close();
         Assert.assertTrue(Arrays.asList(HttpStatus.SC_OK, HttpStatus.SC_MOVED_TEMPORARILY).contains(response.getStatusLine().getStatusCode()));
 
     }
@@ -90,6 +92,7 @@ public class APIClient {
 
         post.setEntity(builder.build());
         CloseableHttpResponse response = getHttpClient().execute(post);
+        response.close();
         return response;
 
     }
@@ -122,6 +125,7 @@ public class APIClient {
         addFiles(builder, files);
         post.setEntity(builder.build());
         CloseableHttpResponse response = getHttpClient().execute(post);
+        response.close();
         return response;
     }
 
