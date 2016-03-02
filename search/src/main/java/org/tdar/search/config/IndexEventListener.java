@@ -89,6 +89,9 @@ public class IndexEventListener extends AbstractEventListener<Indexable>
 	}
 
 	protected void cleanup() {
+	    if (!isEnabled()) {
+	        return;
+	    }
 		try {
 			for (LookupSource src : LookupSource.values()) {
 				solrClient.commit(src.getCoreName());
