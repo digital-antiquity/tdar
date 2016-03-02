@@ -158,7 +158,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
             result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
             collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields(), false,  result, this);
             setMode("SEARCH");
-            setCollectionResults((List<ResourceCollection>) (List<?>) result.getResults());
+            getCollectionResults().addAll(result.getResults());
             getCollectionResults().removeAll(Collections.singleton(null));
             for (ResourceCollection col : getCollectionResults()) {
                 authorizationService.applyTransientViewableFlag(col, getAuthenticatedUser());
