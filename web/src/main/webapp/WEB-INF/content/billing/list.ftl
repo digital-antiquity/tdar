@@ -22,7 +22,7 @@
         <#list accounts as account>
         <tr>
             <td><a href="<@s.url value="/billing/${account.id?c}"/>">${account.name}</a></td>
-            <td>${account.owner.properName} </td>
+            <td><a href="<@s.url value="${account.owner.detailUrl}"/>">${account.owner.properName} </a></td>
             <td>${account.status}</td>
             <td>$${account.totalCost}</td>
             <td>${account.totalNumberOfFiles} (${account.filesUsed})</td>
