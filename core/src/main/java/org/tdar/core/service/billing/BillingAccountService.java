@@ -129,6 +129,9 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      */
     @Transactional(readOnly=true)
     public BillingAccountGroup getAccountGroup(BillingAccount account) {
+        if (PersistableUtils.isNullOrTransient(account)) {
+            return null;
+        }
         return getDao().getAccountGroup(account);
     }
 
