@@ -34,9 +34,9 @@ public class FAIMSWebITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testFAIMS() {
         genericService.markReadOnly();
-        APIClient client = new APIClient(CONFIG.getBaseSecureUrl(), serializationService);
+        APIClient client = new APIClient(CONFIG.getBaseSecureUrl());
         try {
-            Pair<Integer, JaxbResultContainer> apiLogin = client.apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+            client.apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
         } catch (Exception e) {
             logger.error("error logging in", e);
         }
