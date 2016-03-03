@@ -1,8 +1,6 @@
 package org.tdar.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.StringReader;
@@ -23,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SerializationService;
@@ -115,6 +114,28 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("status:{} ", response.getStatusLine());
         logger.debug("response: {}", response.getBody());
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+    }
+
+    @Test
+    @Rollback
+    public void testInvalid() throws Exception {
+        JaxbResultContainer login = setupValidLogin();
+        Document doc = genericService.findAll(Document.class, 1).get(0);
+        genericService.markReadOnly(doc);
+        doc.setId(null);
+        doc.getInformationResourceFiles().clear();
+        InvestigationType type = new InvestigationType();
+        type.setLabel("BROKEN");
+		doc.getInvestigationTypes().add(type);
+        doc.setMappedDataKeyColumn(null);
+        APIControllerITCase.removeInvalidFields(doc);
+        String docXml = serializationService.convertToXML(doc);
+        logger.info(docXml);
+        ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", response.getBody());
+        assertNotEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+        assertTrue(response.getBody().contains("using unsupported controlled keyword"));
     }
 
     @Test

@@ -182,14 +182,17 @@ public class APIController extends AuthenticationAware.Base {
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
-            Throwable exp = e;
             List<String> stackTraces = new ArrayList<>();
             List<String> errors = new ArrayList<>();
-            do {
-                errors.add(((exp.getMessage() == null) ? " ? " : exp.getMessage()));
-                exp = exp.getCause();
-                stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
-            } while (exp != null);
+            Throwable cause = ExceptionUtils.getRootCause(e);
+            if (cause == null) {
+            	cause = e;
+            }
+            stackTraces.add(ExceptionUtils.getFullStackTrace(cause));
+            if (cause.getLocalizedMessage() != null) {
+            	errors.add(cause.getLocalizedMessage());
+            }
+
             if (e instanceof APIException) {
                 errorResponse(((APIException) e).getCode(), errors, e.getMessage(), stackTraces);
                 return ERROR;
