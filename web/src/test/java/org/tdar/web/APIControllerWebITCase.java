@@ -5,13 +5,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.util.Arrays;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -40,8 +35,6 @@ import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.SimpleHttpUtils;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.utils.jaxb.JaxbResultContainer;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 import com.sun.media.rtsp.protocol.StatusCode;
 
@@ -151,10 +144,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("status:{} ", response.getStatusLine());
         String resp = response.getBody();
         logger.debug("response: {}", resp);
-        org.w3c.dom.Document document = getXmlDocument(new InputSource(new StringReader(resp)));
-        String id_ = document.getElementsByTagName("tdar:id").item(0).getTextContent();
-        logger.debug("ID:: {}", id_);
-        Long id = Long.parseLong(id_);
+        Long id = response.getTdarId();
         assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
 
         CloseableHttpClient client2 = SimpleHttpUtils.createClient();
@@ -162,7 +152,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         CloseableHttpResponse execute = client2.execute(get);
         String xmlRecord = IOUtils.toString(execute.getEntity().getContent());
         logger.debug(xmlRecord);
-        document = getXmlDocument(new InputSource(new StringReader(xmlRecord)));
+        org.w3c.dom.Document document = response.getXmlDocument();
         String fileId = document.getElementsByTagName("tdar:informationResourceFile").item(0).getAttributes().getNamedItem("id").getNodeValue();
         logger.debug("fileId::{}", fileId);
         text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
@@ -174,15 +164,6 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         logger.debug("status:{} ", response.getStatusLine());
         assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
         logger.debug("response: {}", response.getBody());
-    }
-
-    private org.w3c.dom.Document getXmlDocument(InputSource is) throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory
-                .newInstance();
-        DocumentBuilder documentBuilder = documentBuilderFactory
-                .newDocumentBuilder();
-        org.w3c.dom.Document document = documentBuilder.parse(is);
-        return document;
     }
 
     private String getFilesUsed(boolean login) {
