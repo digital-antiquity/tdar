@@ -78,6 +78,7 @@ import org.tdar.junit.TdarAssert;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
+import org.tdar.search.exception.SearchException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
@@ -418,6 +419,23 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         for (Indexable resource : result.getResults()) {
             assertEquals("Expecting same submitterId", person.getId(), ((Resource)resource).getSubmitter().getId());
         }
+    }
+
+    
+
+    @Test
+    @Rollback
+    public void testInvalidPersonSearch() throws ParseException, SolrServerException, IOException {
+        // FIXME: magic numbers
+        SearchParameters sp = new SearchParameters();
+        sp.getResourceCreatorProxies().add(new ResourceCreatorProxy(new Person("Colin", "Renfrew", null),null));
+        SearchResult<Resource> result = null;
+        try {
+            result = doSearch(null,null,sp, null);
+        } catch (SearchException se) {
+            assertTrue(se.getMessage().contains("Renfrew"));
+        }
+        assertNull("should be null (expecting exception)",result);
     }
 
     @Test
