@@ -121,7 +121,7 @@ public class APIClient {
     }
 
     public ApiClientResponse viewRecord(Long id) throws ClientProtocolException, IOException {
-        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s&%s=%s", baseUrl, id));
+        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s", baseUrl, id));
         CloseableHttpResponse execute = httpClient.execute(get);
         CloseableHttpResponse response = getHttpClient().execute(get);
         ApiClientResponse resp = new ApiClientResponse(response);
