@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.tdar.struts.action.admin.AdminController;
 import org.tdar.struts.action.admin.AdminUserStatsController;
+import org.tdar.struts.action.admin.AdminUserStatsExportAction;
 
 public class AdminStatsControllerITCase extends AbstractAdminControllerITCase {
 
@@ -28,7 +29,11 @@ public class AdminStatsControllerITCase extends AbstractAdminControllerITCase {
     public void testUserStats() {
         AdminUserStatsController ausc = generateNewInitializedController(AdminUserStatsController.class, getAdminUser());
         ausc.userInfo();
-        ausc.userMailchipInfo();
+    }
+    @Test
+    public void testUserStatsExport() {
+        AdminUserStatsExportAction ausc = generateNewInitializedController(AdminUserStatsExportAction.class, getAdminUser());
+        ausc.execute();
     }
 
 }
