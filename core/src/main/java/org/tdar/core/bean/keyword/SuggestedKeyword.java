@@ -9,4 +9,5 @@ public interface SuggestedKeyword extends Keyword {
 
     public boolean isApproved();
 
+    public void setApproved(boolean approved);
 }
