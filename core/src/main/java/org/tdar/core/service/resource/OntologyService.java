@@ -8,7 +8,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.semanticweb.owlapi.apibinding.OWLManager;
@@ -32,6 +35,7 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.parser.OwlApiHierarchyParser;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.filestore.FilestoreObjectType;
 
@@ -60,6 +64,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
      * 
      * @return
      */
+    @Transactional(readOnly=true)
     public List<Ontology> findSparseOntologyList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.ONTOLOGY);
     }
@@ -183,6 +188,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
      * @return
      * @throws FileNotFoundException
      */
+    @Transactional(readOnly=true)
     public OntModel toOntModel(Ontology ontology) throws FileNotFoundException {
         Collection<InformationResourceFileVersion> files = ontology.getLatestVersions();
         int size = files.size();
@@ -216,6 +222,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
      * @param parent
      * @return
      */
+    @Transactional(readOnly=true)
     public List<OntologyNode> getChildren(List<OntologyNode> allNodes, OntologyNode parent) {
         List<OntologyNode> toReturn = new ArrayList<>();
         if (parent == null) {
@@ -236,6 +243,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
      * @param allNodes
      * @return
      */
+    @Transactional(readOnly=true)
     public List<OntologyNode> getRootElements(List<OntologyNode> allNodes) {
         List<OntologyNode> toReturn = new ArrayList<>();
         for (OntologyNode currentNode : allNodes) {
@@ -276,6 +284,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
      * @param fileTextInput
      * @return
      */
+    @Transactional(readOnly=true)
     public String toOwlXml(Long id, String fileTextInput) {
         OwlOntologyConverter converter = new OwlOntologyConverter();
         return converter.toOwlXml(id, fileTextInput, freemarkerService);
@@ -284,5 +293,61 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
     @Transactional(readOnly = true)
     public IntegrationOntologySearchResult findOntologies(OntologySearchFilter searchFilter) {
         return getDao().findOntologies(searchFilter);
+    }
+
+    @Transactional(readOnly=true)
+    public OntologyNodeWrapper prepareOntologyJson(Ontology ontology) {
+        List<OntologyNode> nodes = ontology.getSortedOntologyNodes();
+        Collections.reverse(nodes);
+        Map<Long, OntologyNodeWrapper> tree = new HashMap<>();
+        OntologyNodeWrapper root = null;
+        Set<OntologyNodeWrapper> roots = new HashSet<>();
+        for (OntologyNode node : nodes) {
+            OntologyNodeWrapper value = new OntologyNodeWrapper(node);
+            if (!node.getIndex().contains(".")) {
+                root = value;
+                roots.add(value);
+            }
+            tree.put(node.getId(), value);
+        }
+        for (OntologyNode node : nodes) {
+            for (OntologyNode c : nodes) {
+                if (c == node) {
+                    continue;
+                }
+
+                if (c.isChildOf(node)) {
+                    OntologyNodeWrapper e = tree.get(c.getId());
+                    if (c.getParentNode() != null) {
+                        int cIndex = StringUtils.countMatches(c.getParentNode().getIndex(), ".");
+                        int index_ = StringUtils.countMatches(node.getIndex(), ".");
+                        if (cIndex > index_) {
+                            continue;
+                        } else {
+                            OntologyNodeWrapper wrap = tree.get(c.getParentNode().getId());
+                            wrap.getChildren().remove(e);
+                            if (wrap.getChildren().isEmpty()) {
+                                wrap.setChildren(null);
+                            }
+                        }
+                    }
+                    c.setParentNode(node);
+                    OntologyNodeWrapper wrapper = tree.get(node.getId());
+                    if (wrapper.getChildren() == null) {
+                        wrapper.setChildren(new ArrayList<>());
+                    }
+                    wrapper.getChildren().add(e);
+                }
+            }
+        }
+
+        if (roots.size() > 1) {
+            OntologyNodeWrapper wrapper = new OntologyNodeWrapper();
+            wrapper.setId(-1L);
+            wrapper.setDisplayName(ontology.getName());
+            wrapper.getChildren().addAll(roots);
+            root = wrapper;
+        }
+        return root;
     }
 }

@@ -24,9 +24,10 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.resource.OntologyService;
+import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.data.OntologyNodeWrapper;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -47,6 +48,8 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     @Autowired
     private SerializationService serializationService;
 
+    @Autowired
+    private OntologyService ontologyService;
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
@@ -84,58 +87,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     private String json = "";
 
     private void buildJson() {
-        List<OntologyNode> nodes = getOntology().getSortedOntologyNodes();
-        Collections.reverse(nodes);
-        Map<Long, OntologyNodeWrapper> tree = new HashMap<>();
-        OntologyNodeWrapper root = null;
-        Set<OntologyNodeWrapper> roots = new HashSet<>();
-        for (OntologyNode node : nodes) {
-            OntologyNodeWrapper value = new OntologyNodeWrapper(node);
-            if (!node.getIndex().contains(".")) {
-                root = value;
-                roots.add(value);
-            }
-            tree.put(node.getId(), value);
-        }
-        for (OntologyNode node : nodes) {
-            for (OntologyNode c : nodes) {
-                if (c == node) {
-                    continue;
-                }
-
-                if (c.isChildOf(node)) {
-                    OntologyNodeWrapper e = tree.get(c.getId());
-                    if (c.getParentNode() != null) {
-                        int cIndex = StringUtils.countMatches(c.getParentNode().getIndex(), ".");
-                        int index_ = StringUtils.countMatches(node.getIndex(), ".");
-                        if (cIndex > index_) {
-                            continue;
-                        } else {
-                            OntologyNodeWrapper wrap = tree.get(c.getParentNode().getId());
-                            wrap.getChildren().remove(e);
-                            if (wrap.getChildren().isEmpty()) {
-                                wrap.setChildren(null);
-                            }
-                        }
-                    }
-                    c.setParentNode(node);
-                    OntologyNodeWrapper wrapper = tree.get(node.getId());
-                    if (wrapper.getChildren() == null) {
-                        wrapper.setChildren(new ArrayList<>());
-                    }
-                    wrapper.getChildren().add(e);
-                }
-            }
-        }
-
-        if (roots.size() > 1) {
-            OntologyNodeWrapper wrapper = new OntologyNodeWrapper();
-            wrapper.setId(-1L);
-            wrapper.setDisplayName(getOntology().getName());
-            wrapper.getChildren().addAll(roots);
-            root = wrapper;
-        }
-
+        OntologyNodeWrapper root = ontologyService.prepareOntologyJson(getOntology()); 
         try {
             setJson(serializationService.convertToJson(root));
         } catch (IOException e) {

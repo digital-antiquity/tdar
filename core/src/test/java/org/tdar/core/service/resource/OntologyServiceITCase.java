@@ -14,6 +14,7 @@ import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
@@ -26,6 +27,8 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 
 /**
  * @author Adam Brin
@@ -35,6 +38,8 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private OntologyService ontologyService;
+    @Autowired
+    private SerializationService serializationService;
 
     @Test
     public void testDuplicateNodeToSynonym() throws IOException {
@@ -60,10 +65,34 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback(true)
+    public void testBadHierarchyParsing() throws IOException {
+        Ontology ont = createOntology();
+        File file = createOwlFile(ont,"not_flat.txt");
+        ont = addFileToResource(ont, file);
+        List<OntologyNode> rootElements = ontologyService.getRootElements(ont.getOntologyNodes());
+        logger.debug("root elements: {}", rootElements);
+        assertEquals(1, rootElements.size());
+        String name = rootElements.iterator().next().getDisplayName();
+        assertTrue(name.equals("Paint"));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testJsonSerialization() throws IOException {
+        Ontology ont = createOntology();
+        File file = createOwlFile(ont,"not_flat.txt");
+        ont = addFileToResource(ont, file);
+        OntologyNodeWrapper wrapper = ontologyService.prepareOntologyJson(ont);
+        logger.debug(wrapper.getDisplayName());
+        assertEquals("Paint", wrapper.getDisplayName());
+        assertEquals(9, wrapper.getChildren().size());
+
+    }
+
+    @Test
+    @Rollback(true)
     public void testSplitOntologyNodeSynonymIntoNode() throws IOException {
         Ontology ont = createOntology();
-        String ontologyTextInput;
-        String owlXml;
         File file = createOwlFile(ont,"synonym_initial.txt");
         ont = addFileToResource(ont, file);
         

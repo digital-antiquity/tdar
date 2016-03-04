@@ -20,6 +20,7 @@
             </#list>
             <rdfs:comment>TDAROrder-${node.importOrder?c}</rdfs:comment>
             <rdfs:comment><![CDATA[TDARDescription-${node.description!""}]]></rdfs:comment>
+            <rdfs:comment><![CDATA[TDARNode]]></rdfs:comment>
             <dc:description><![CDATA[${node.description!""}]]></dc:description>
         </owl:Class>
         <#list node.synonymNodes as synonym>
