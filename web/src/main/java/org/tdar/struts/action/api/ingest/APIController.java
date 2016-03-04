@@ -4,8 +4,10 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -20,9 +22,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Coupon;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -36,6 +40,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -59,14 +64,13 @@ public class APIController extends AuthenticationAware.Base {
     @Autowired
     private transient AuthorizationService authorizationService;
 
-
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
     private String record;
     private String msg;
     private StatusCode status;
     private Long projectId; // note this will override projectId value specified in record
-    
+
     // on the receiving end
     private List<String> processedFileNames;
 
@@ -78,6 +82,9 @@ public class APIController extends AuthenticationAware.Base {
     private transient ImportService importService;
     @Autowired
     private transient BillingAccountService accountService;
+
+    @Autowired
+    private SearchIndexService searchIndexService;
 
     private Resource importedRecord;
     private String message;
@@ -103,12 +110,12 @@ public class APIController extends AuthenticationAware.Base {
                     @Result(name = ERROR, type = "xmldocument", params = { "statusCode", "${status.httpStatusCode}" })
             })
     @PostOnly
-    @WriteableSession
+    // @WriteableSession
     public String upload() {
 
         if (StringUtils.isEmpty(getRecord())) {
             getLogger().info("no record defined");
-            errorResponse(StatusCode.BAD_REQUEST);
+            errorResponse(StatusCode.BAD_REQUEST, null, null, null);
             return ERROR;
         }
 
@@ -160,39 +167,53 @@ public class APIController extends AuthenticationAware.Base {
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
+
+            reindex(loadedRecord);
+
             return SUCCESS;
         } catch (Exception e) {
             message = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
-                List<String> errors = new ArrayList<>();
-                errors.addAll(events);
+                List<String> errors = new ArrayList<>(events);
 
-                errorResponse(StatusCode.BAD_REQUEST);
-                getXmlResultObject().setMessage(message);
-                getXmlResultObject().setErrors(errors);
+                errorResponse(StatusCode.BAD_REQUEST, errors, message, null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
-            Throwable exp = e;
             List<String> stackTraces = new ArrayList<>();
             List<String> errors = new ArrayList<>();
-            do {
-                errors.add(((exp.getMessage() == null) ? " ? " : exp.getMessage()));
-                exp = exp.getCause();
-                stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
-            } while (exp != null);
+            Throwable cause = ExceptionUtils.getRootCause(e);
+            if (cause == null) {
+            	cause = e;
+            }
+            stackTraces.add(ExceptionUtils.getFullStackTrace(cause));
+            if (cause.getLocalizedMessage() != null) {
+            	errors.add(cause.getLocalizedMessage());
+            }
+
             if (e instanceof APIException) {
-                getXmlResultObject().setMessage(e.getMessage());
-                getXmlResultObject().setStackTraces(stackTraces);
-                getXmlResultObject().setErrors(errors);
-                errorResponse(((APIException) e).getCode());
+                errorResponse(((APIException) e).getCode(), errors, e.getMessage(), stackTraces);
                 return ERROR;
             }
         }
-        errorResponse(StatusCode.UNKNOWN_ERROR);
+        errorResponse(StatusCode.UNKNOWN_ERROR, null, null, null);
         return ERROR;
+
+    }
+
+    private void reindex(Resource loadedRecord) {
+        try {
+            List<Indexable> toReindex = new ArrayList<>();
+            toReindex.add(loadedRecord);
+            toReindex.addAll(loadedRecord.getResourceCollections());
+            toReindex.addAll(loadedRecord.getAllActiveKeywords());
+            loadedRecord.getResourceCreators().forEach(rc -> toReindex.add(rc.getCreator()));
+            searchIndexService.indexCollection(toReindex);
+        } catch (Exception e) {
+            getLogger().error("error reindexing", e);
+        }
 
     }
 
@@ -230,14 +251,14 @@ public class APIController extends AuthenticationAware.Base {
 
         if (StringUtils.isEmpty(getRecord())) {
             getLogger().info("no record defined");
-            errorResponse(StatusCode.BAD_REQUEST);
+            errorResponse(StatusCode.BAD_REQUEST, null, null, null);
             return ERROR;
         }
 
         try {
             InformationResource incoming = getGenericService().find(InformationResource.class, id);
             if (!authorizationService.canUploadFiles(getAuthenticatedUser(), incoming)) {
-                errorResponse(StatusCode.FORBIDDEN);
+                errorResponse(StatusCode.FORBIDDEN, null, null, null);
                 return ERROR;
             }
             // I don't know that this is "right"
@@ -252,7 +273,7 @@ public class APIController extends AuthenticationAware.Base {
 
             Resource loadedRecord = importService.processFileProxies(incoming, incomingList, getAuthenticatedUser());
             reconcileAccountId(loadedRecord);
-            
+
             updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), loadedRecord);
 
             setImportedRecord(loadedRecord);
@@ -271,18 +292,14 @@ public class APIController extends AuthenticationAware.Base {
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
+            reindex(loadedRecord);
             return SUCCESS;
         } catch (Exception e) {
             message = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
-                List<String> errors = new ArrayList<>();
-                errors.addAll(events);
-
-                errorResponse(StatusCode.BAD_REQUEST);
-                getXmlResultObject().setMessage(message);
-                getXmlResultObject().setErrors(errors);
+                errorResponse(StatusCode.BAD_REQUEST, events, message, null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -295,14 +312,11 @@ public class APIController extends AuthenticationAware.Base {
                 stackTraces.add(ExceptionUtils.getFullStackTrace(exp));
             } while (exp != null);
             if (e instanceof APIException) {
-                getXmlResultObject().setMessage(e.getMessage());
-                getXmlResultObject().setStackTraces(stackTraces);
-                getXmlResultObject().setErrors(errors);
-                errorResponse(((APIException) e).getCode());
+                errorResponse(((APIException) e).getCode(), errors, e.getMessage(), stackTraces);
                 return ERROR;
             }
         }
-        errorResponse(StatusCode.UNKNOWN_ERROR);
+        errorResponse(StatusCode.UNKNOWN_ERROR, null, null, null);
         return ERROR;
 
     }
@@ -322,10 +336,13 @@ public class APIController extends AuthenticationAware.Base {
         }
     }
 
-    private String errorResponse(StatusCode statusCode) {
+    private String errorResponse(StatusCode statusCode, List<String> errors, String message2, List<String> stackTraces) {
         status = statusCode;
         xmlResultObject.setStatus(statusCode.toString());
         xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
+        xmlResultObject.setMessage(message);
+        xmlResultObject.setStackTraces(stackTraces);
+        xmlResultObject.setErrors(errors);
         return ERROR;
     }
 

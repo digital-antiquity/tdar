@@ -458,6 +458,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         this.servletResponse = servletResponse;
     }
 
+    @Deprecated
+    /**
+     * Avoid direct references to the request object and http methods.  It's a sign that you are doing something
+     * best handled by an Interceptor or a ResultType.
+     */
     protected final boolean isPostRequest() {
         return "POST".equals(servletRequest.getMethod());
     }

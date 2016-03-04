@@ -24,6 +24,7 @@ public class HttpMethodInterceptor implements Interceptor {
         HttpServletRequest request = ServletActionContext.getRequest();
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, PostOnly.class)) {
             return doPostIntercept(invocation);
+            //FIXME: it shouldn't be necessary to check for get request, and in fact might break requests such as HEAD, OPTIONS, PUT, and DELETE
         } else if (request.getMethod().equalsIgnoreCase("get") || Objects.equal(invocation.getProxy().getMethod(), "delete")) {
             // not annotated... business as usual.
             return invocation.invoke();

@@ -55,13 +55,13 @@ public class ResourceExportService {
 
         // remove internal
         resource.getResourceCollections().removeIf(rc -> rc.isInternal());
+        resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
         resource.getResourceCollections().forEach(rc -> {
             clearId(rc);
             rc.setResourceIds(null);
             rc.getResources().clear();
         });
 
-        resource.getResourceNotes().forEach(rn -> clearId(rn));
 
         resource.getActiveRelatedComparativeCollections().forEach(cc -> clearId(cc));
         resource.getActiveSourceCollections().forEach(cc -> clearId(cc));
