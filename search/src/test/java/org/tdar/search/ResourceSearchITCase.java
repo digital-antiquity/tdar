@@ -111,6 +111,14 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Autowired
     EntityService entityService;
 
+    
+    @Test
+    public void testInvalidPhrase() throws ParseException, SolrServerException, IOException {
+        ResourceLookupObject look = new ResourceLookupObject();
+        look.setTerm("he operation and evolution of an irrigation system\"");
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
+    }
 
     @Test
     @Rollback
