@@ -2,16 +2,14 @@ package org.tdar.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -20,8 +18,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.service.SerializationService;
-import org.tdar.utils.jaxb.JaxbResultContainer;
 
 public class APIClient {
 
@@ -122,6 +118,16 @@ public class APIClient {
         ApiClientResponse resp = new ApiClientResponse(response);
         response.close();
         return resp;
+    }
+
+    public ApiClientResponse viewRecord(Long id) throws ClientProtocolException, IOException {
+        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s&%s=%s", baseUrl, id));
+        CloseableHttpResponse execute = httpClient.execute(get);
+        CloseableHttpResponse response = getHttpClient().execute(get);
+        ApiClientResponse resp = new ApiClientResponse(response);
+        response.close();
+        return resp;
+        
     }
 
 }

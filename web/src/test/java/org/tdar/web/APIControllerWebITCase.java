@@ -168,13 +168,8 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         Long id = response.getTdarId();
         assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
 
-        CloseableHttpClient client2 = SimpleHttpUtils.createClient();
-        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s&%s=%s", CONFIG.getBaseSecureUrl(), id, login.getSessionKeyName(), login.getApiToken()));
-        CloseableHttpResponse execute = client2.execute(get);
-        String xmlRecord = IOUtils.toString(execute.getEntity().getContent());
-        logger.debug(xmlRecord);
-        org.w3c.dom.Document document = response.getXmlDocument();
-        String fileId = document.getElementsByTagName("tdar:informationResourceFile").item(0).getAttributes().getNamedItem("id").getNodeValue();
+        ApiClientResponse viewRecord = apiClient.viewRecord(id);
+        String fileId = viewRecord.getXmlDocument().getElementsByTagName("tdar:informationResourceFile").item(0).getAttributes().getNamedItem("id").getNodeValue();
         logger.debug("fileId::{}", fileId);
         text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
         text = text.replace("{{FILE_ID}}", fileId);
