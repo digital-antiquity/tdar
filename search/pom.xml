@@ -162,6 +162,7 @@
                         <configuration>
                             <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
                             <skip>${skipTestLiquibase}</skip>
+                            <logging>warning</logging>
                         </configuration>
                         <phase>pre-integration-test</phase>
                         <goals>

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
@@ -110,7 +111,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
         removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
+        takeScreenshot();
         submitForm();
+        try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         Assert.assertFalse(getText().contains(TAG_FAUNAL_WORKSHOP));
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
@@ -299,17 +307,23 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         boolean found = false;
         WebElementSelection rows = find("#resource_datatable tr");
         logger.debug("rows: {}", rows);
+        String id = "";
         for (WebElement tr : rows) {
             logger.debug(tr.getText());
             if (tr.getText().contains(title)) {
                 WebElement findElement = tr.findElement(By.className("datatable-checkbox"));
                 Assert.assertTrue("checkbox should already be checked", findElement.isSelected());
                 findElement.click();
+                id  = findElement.getAttribute("id");
                 found = true;
                 break;
             }
         }
+        logger.debug(id);
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
+        if (StringUtils.isNotBlank(id)) {
+        	Assert.assertFalse(rows.find(By.id(id)).isSelected());
+        }
     }
 
     @Override

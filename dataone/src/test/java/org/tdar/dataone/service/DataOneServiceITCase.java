@@ -1,8 +1,15 @@
 package org.tdar.dataone.service;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
+import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.xml.bind.JAXBException;
+
+import org.dataone.service.types.v1.ObjectList;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
@@ -27,5 +34,13 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
         Document doc = genericService.find(Document.class, 4230L);
         String mapDocument = service.createResourceMap(doc);
         logger.debug(mapDocument.toString());
+    }
+    
+    @Test
+    @Rollback
+    public void testObjectTotals() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
+    	ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
+    	assertEquals(2, listObjectsResponse.getTotal());
+    	assertEquals(2, listObjectsResponse.getObjectInfoList().size());
     }
 }

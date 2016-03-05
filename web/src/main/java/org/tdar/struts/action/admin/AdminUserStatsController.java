@@ -72,13 +72,6 @@ public class AdminUserStatsController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action("user-mailchimp")
-    public String userMailchipInfo() {
-        setContributorIds(entityService.findAllContributorIds());
-        setRecentUsers(entityService.findAllRegisteredUsers());
-        return SUCCESS;
-    }
-
     public List<TdarUser> getRecentUsers() {
         return recentUsers;
     }

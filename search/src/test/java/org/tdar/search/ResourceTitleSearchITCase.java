@@ -15,6 +15,7 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -317,6 +318,55 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         sp.getTitles().add(projectTitle);
         SearchResult<Resource> result = doSearch(null,null,sp, null);
         result.getResults().contains(project);
+    }
+
+    @Test
+    @Rollback
+    public void testTitleRelevancy() throws SolrServerException, IOException, ParseException {
+    	//(11R5)-1
+    	//1/4
+    	//4\"
+		String exact = "Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen";
+		//Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen
+		List<String> titles = Arrays.asList(
+				"Coding sheet for Element ("+exact+")",
+				"Coding sheet for Recovery ("+exact+")",
+				"Coding sheet for CulturalAffiliation ("+exact+")",
+				"Coding sheet for Resource Type ("+exact+")",
+				"Coding sheet for Taxon ("+exact+")",
+				"Coding sheet for Portion3 ("+exact+")",
+				"Coding sheet for Resource Type ("+exact+")",
+				"Coding sheet for ContextType ("+exact+")",
+				"Coding sheet for LevelType ("+exact+")",
+				"Coding sheet for Site ("+exact+")",
+				"Coding sheet for LevelType ("+exact+")",
+				exact,
+				"Coding sheet for Taxon (Modoc Rock Shelter (11R5), Randolph County, IL-1984, Main Trench 1/4\" screen fauna)");
+
+
+		List<Resource> docs = new ArrayList<>();
+        for (String title : titles) {
+            Resource doc = new CodingSheet();
+            if (title.equals(exact)) {
+            	doc = new Dataset();
+            	doc.setDescription("a");
+            } else {
+            	doc.setDescription(exact);
+            }
+            doc.setTitle(title);
+            doc.markUpdated(getBasicUser());
+            genericService.saveOrUpdate(doc);
+            docs.add(doc);
+        }
+        genericService.synchronize();
+        searchIndexService.indexCollection(docs);
+        searchIndexService.flushToIndexes();
+        SearchResult<Resource> result = doSearch(exact);
+        List<Resource> results = result.getResults();
+        for (Resource r : result.getResults()) {
+            logger.debug("results: {}", r);
+        }
+        assertEquals(exact,result.getResults().get(0).getTitle());
     }
 
 }

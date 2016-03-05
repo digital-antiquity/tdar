@@ -52,7 +52,7 @@ public class InstitutionQueryPart extends FieldQueryPart<Institution> {
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
         if (cleanedQueryString.contains(" ")) {
-            titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, cleanedQueryString);
+//            titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, cleanedQueryString);
             // FIXME: magic words
             if (useProximity) {
                 titlePart.setProximity(3);

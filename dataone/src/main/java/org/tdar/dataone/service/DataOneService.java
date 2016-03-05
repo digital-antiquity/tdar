@@ -266,7 +266,7 @@ public class DataOneService implements DataOneConstants {
         list.setStart(start);
 
         List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list);
-
+        logger.debug("{}", resources);
         // for each entry we find in the database, create a packaged response
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();

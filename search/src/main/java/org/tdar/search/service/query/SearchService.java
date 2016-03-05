@@ -34,7 +34,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.AuthenticationService;
@@ -43,6 +42,8 @@ import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.dao.SearchDao;
+import org.tdar.search.exception.SearchException;
+import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
@@ -252,6 +253,7 @@ import com.opensymphony.xwork2.TextProvider;
          }
          Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<>();
          List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
+         List<String> names = new ArrayList<>();
          for (ResourceCreatorProxy proxy : proxies) {
              if (proxy == null) {
                  continue;
@@ -262,6 +264,9 @@ import com.opensymphony.xwork2.TextProvider;
                  Creator creator = rc.getCreator();
                  if (PersistableUtils.isTransient(creator)) {
                      resolveCreator(maxToResolve, replacements, proxy, rc, values, creator);
+                     if (replacements.get(proxy).isEmpty()) {
+                         names.add(creator.toString());
+                     }
                  } else {
                      Creator find = genericService.find(Creator.class, creator.getId());
                      rc.setCreator(find);
@@ -277,6 +282,9 @@ import com.opensymphony.xwork2.TextProvider;
              if (CollectionUtils.isNotEmpty(values)) {
                  proxies.addAll(values);
              }
+         }
+         if (!CollectionUtils.isEmpty(names)) {
+             throw new SearchException(MessageHelper.getMessage("searchService.cannot_resolve_creator",Arrays.asList(names)));
          }
          logger.trace("result: {} ", proxies);
      }

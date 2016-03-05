@@ -1,4 +1,6 @@
-package org.tdar.core.exception;
+package org.tdar.search.exception;
+
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 public class SearchPaginationException extends TdarRecoverableRuntimeException {
 

@@ -17,12 +17,11 @@ import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.exception.SearchPaginationException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
-import org.tdar.search.query.ProjectionModel;
+import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -219,9 +218,4 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
     }
-
-    @Override
-    public ProjectionModel getProjectionModel() {
-        return ProjectionModel.LUCENE_EXPERIMENTAL;
-    };
 }

@@ -83,6 +83,9 @@ public class ResourceExportService {
 
             List<FileProxy> proxies = new ArrayList<>();
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+                if (irf.isDeleted()) {
+                    continue;
+                }
                 proxies.add(new FileProxy(irf));
             }
             ir.getInformationResourceFiles().clear();

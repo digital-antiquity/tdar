@@ -53,6 +53,7 @@ public class OwlOntologyConverter {
 
     public static final String TDAR_ORDER_PREFIX = "TDAROrder-";
     public static final String TDAR_DESCRIPTION_PREFIX = "TDARDescription-";
+    public static final String TDAR_NODE_ENTRY = "TDARNode";
 
     /**
      * Load an OWLOntology from an IRI
