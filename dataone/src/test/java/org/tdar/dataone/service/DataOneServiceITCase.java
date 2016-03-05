@@ -1,12 +1,11 @@
 package org.tdar.dataone.service;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 
 import javax.xml.bind.JAXBException;
 
@@ -40,7 +39,7 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testObjectTotals() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
-    	ObjectList listObjectsResponse = service.getListObjectsResponse(new Date(), new Date(), null, null, 0, 10);
+    	ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
     	assertEquals(2, listObjectsResponse.getTotal());
     	assertEquals(2, listObjectsResponse.getObjectInfoList().size());
     }
