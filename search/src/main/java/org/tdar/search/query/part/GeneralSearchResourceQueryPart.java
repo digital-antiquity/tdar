@@ -79,13 +79,13 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         }
         if (TdarConfiguration.getInstance().useSeparateContentsIndexForSearching()) {
-            queryPart.append(new ContentQueryPart(cleanedQueryString));
+            queryPart.append(new ContentQueryPart(value));
         } else {
             queryPart.append(content);
         }
 
         if (TdarConfiguration.getInstance().useSeparateLinkedDataIndexForSearching()) {
-            queryPart.append(new DataValueQueryPart(cleanedQueryString));
+            queryPart.append(new DataValueQueryPart(value));
         } else {
             queryPart.append(linkedContent);
         }
