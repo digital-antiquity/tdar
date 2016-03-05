@@ -45,6 +45,7 @@ public interface QueryFieldNames {
 	// ACTIVE_SITE_TYPE_KEYWORDS + DOT_LABEL;
 	String ACTIVE_COVERAGE_TYPE = "activeCoverageDates.dateType";
 	String NAME = "name";
+	String TITLE = NAME;
 	String FIRST_NAME = "firstName";
 	String LAST_NAME = "lastName";
 	String EMAIL = "email";
@@ -86,8 +87,8 @@ public interface QueryFieldNames {
 	String TITLE_PHRASE = "name_phrase";
 	String DESCRIPTION_PHRASE = "description_phrase";
 	String COLLECTION_NAME_PHRASE = TITLE_PHRASE;
-	String NAME_PHRASE = "name_phrase";
-	String NAME_TOKEN = "name";
+	String NAME_PHRASE = TITLE_PHRASE;
+	String NAME_TOKEN = NAME;
 	String USERNAME = "username";
 	String PROPER_AUTO = "name_autocomplete";
 	String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";

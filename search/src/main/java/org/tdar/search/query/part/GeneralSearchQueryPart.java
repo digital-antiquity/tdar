@@ -18,7 +18,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class GeneralSearchQueryPart extends FieldQueryPart<String> {
     protected static final float TITLE_BOOST = 8f;
     protected static final float CREATOR_BOOST = 5f;
-    protected static final float DESCRIPTION_BOOST = 4f;
+    protected static final float DESCRIPTION_BOOST = 3f;
     protected static final float PHRASE_BOOST = 3.2f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
@@ -44,12 +44,12 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
 
         logger.trace(cleanedQueryString);
 
-        FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME, cleanedQueryString);
+        FieldQueryPart<String> titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE, cleanedQueryString);
         FieldQueryPart<String> descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION, cleanedQueryString);
         FieldQueryPart<String> allFields = new FieldQueryPart<String>(QueryFieldNames.ALL, cleanedQueryString).setBoost(ANY_FIELD_BOOST);
 
         List<String> fields = new ArrayList<String>();
-        for (String txt : StringUtils.split(cleanedQueryString)) {
+        for (String txt : StringUtils.split(value)) {
             if (!ArrayUtils.contains(QueryPart.LUCENE_RESERVED_WORDS, txt)) {
                 fields.add(txt);
             }
@@ -59,10 +59,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         allFieldsAsPart.setOperator(Operator.AND);
         allFieldsAsPart.setPhraseFormatters(PhraseFormatter.ESCAPED);
 
-        if (cleanedQueryString.contains(" ")) {
-            // APPLIES WEIGHTING BASED ON THE "PHRASE" NOT THE TERM
-            titlePart = new FieldQueryPart<String>(QueryFieldNames.TITLE_PHRASE, cleanedQueryString);
-            descriptionPart = new FieldQueryPart<String>(QueryFieldNames.DESCRIPTION_PHRASE, cleanedQueryString);
+        if (value.contains(" ")) {
             FieldQueryPart<String> phrase = new FieldQueryPart<String>(QueryFieldNames.ALL_PHRASE, cleanedQueryString);
             // FIXME: magic words
             if (useProximity) {
@@ -75,8 +72,12 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
                 descriptionPart.setProximity(4);
             }
         }
-
+        // NAME_SORT is the exact value, if it matches, boost WAY up
+        FieldQueryPart<String> exact = new FieldQueryPart<String>(QueryFieldNames.NAME_SORT, value.toLowerCase());
+        exact.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+        exact.setBoost(TITLE_BOOST * 5);
         primary.append(titlePart.setBoost(TITLE_BOOST));
+        primary.append(exact);
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
         primary.append(allFields);
         primary.append(allFieldsAsPart);
