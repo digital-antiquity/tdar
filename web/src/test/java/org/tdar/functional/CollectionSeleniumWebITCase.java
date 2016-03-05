@@ -110,7 +110,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
         removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
+        takeScreenshot();
         submitForm();
+        try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
         Assert.assertFalse(getText().contains(TAG_FAUNAL_WORKSHOP));
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
