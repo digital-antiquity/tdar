@@ -69,8 +69,12 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         toBeUpdated.markUpdated(getAdminUser());
         toBeDeleted.setDescription(toBeDeleted.getTitle());
         toBeUpdated.setDescription(toBeUpdated.getTitle());
-        ((InformationResource) toBeUpdated).setDate(1243);
-        ((InformationResource) toBeDeleted).setDate(1243);
+        if (toBeUpdated instanceof InformationResource) {
+        	((InformationResource) toBeUpdated).setDate(1243);
+        }
+        if (toBeDeleted instanceof InformationResource) {
+        	((InformationResource) toBeDeleted).setDate(1243);
+        }
         genericService.saveOrUpdate(toBeUpdated);
         genericService.saveOrUpdate(toBeDeleted);
 

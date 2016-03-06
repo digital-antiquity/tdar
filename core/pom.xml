@@ -24,6 +24,7 @@
         <http-components.version>4.4.4</http-components.version>
         <http-client.version>4.5.1</http-client.version>
         <skipTestLiquibase>false</skipTestLiquibase>
+        <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
