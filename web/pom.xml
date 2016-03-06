@@ -18,6 +18,7 @@
         <skipJetty>false</skipJetty>
         <skipKarma>false</skipKarma>
         <skipNode>false</skipNode>
+        <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>

@@ -18,6 +18,7 @@
         <geotools.version>14.0</geotools.version>
         <http-components.version>4.4.1</http-components.version>
         <http-client.version>4.5</http-client.version>
+        <testChangeLog>changelog.xml</testChangeLog>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -790,7 +791,7 @@
                                         and reload it -->
                                     <id>test-liquibase</id>
                                     <configuration>
-                                        <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
+                                        <changeLogFile>target/liquibase-test/${testChangeLog}</changeLogFile>
                                         <skip>${skipTestLiquibase}</skip>
                                         <logging>warning</logging>
                                     </configuration>
