@@ -12,10 +12,12 @@ import java.util.NoSuchElementException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.ContextConfiguration;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.BillingActivity;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.Pair;
@@ -26,6 +28,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+@ContextConfiguration(classes = TdarAppConfiguration.class)
 public class CreditCartWebITCase extends AbstractWebTestCase {
 
     private static final String NEXT_STEP_PAYMENT = "Next Step: Payment";

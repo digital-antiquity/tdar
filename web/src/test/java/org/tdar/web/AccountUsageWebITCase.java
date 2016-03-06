@@ -57,7 +57,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     @Test
     public void testCartWithCoupon() throws MalformedURLException {
         Map<String, String> personmap = new HashMap<>();
-        setupBasicUser(personmap, "user1124");
+        setupBasicUser(personmap, "user1124" + System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH);
         assertTextPresent("Start a new Project");
@@ -92,7 +92,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
     @Test
     public void testAccountListWhenEditingAsAdmin() throws Exception {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "bobloblaw123");
+        setupBasicUser(personmap, "bobloblaw123" + System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH);
 
@@ -129,7 +129,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         File file = new File(TestConstants.TEST_DOCUMENT);
         int spaceNeeded = (int) Math.ceil((file.length() / BYTES_PER_MEGABYTE) * 4);
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "bobloblaw234");
+        setupBasicUser(personmap, "bobloblaw234" + System.currentTimeMillis());
         // personmap.remove("reg.contributorReason");
         testRegister(personmap, TERMS.BOTH);
         // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described

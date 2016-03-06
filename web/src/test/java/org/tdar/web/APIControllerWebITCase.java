@@ -1,6 +1,9 @@
 package org.tdar.web;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.StringReader;
@@ -20,12 +23,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.APIControllerITCase;
@@ -38,13 +42,11 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 import com.sun.media.rtsp.protocol.StatusCode;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
+@ContextConfiguration(classes = TdarAppConfiguration.class)
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Autowired
     SerializationService serializationService;
-
-    @Autowired
-    BillingAccountService billingAccountService;
 
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
     private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
