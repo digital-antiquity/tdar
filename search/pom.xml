@@ -10,6 +10,7 @@
 
     <properties>
         <lucene.version>5.4.1</lucene.version>
+        <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -17,9 +18,6 @@
         <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
-    <properties>
-        <skipTestLiquibase>false</skipTestLiquibase>
-    </properties>
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
         <dependency>
@@ -184,7 +182,7 @@
                     <skip>${maven.test.skip}</skip>
                     <runOrder>alphabetical</runOrder>
                     <systemProperties>
-                        property>
+                        <property>
                             <name>maven.version</name>
                             <value>${maven.version}</value>
                         </property>
