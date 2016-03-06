@@ -724,7 +724,6 @@
                 <use.test.classpath>true</use.test.classpath>
                 <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
                 <setupDb>true</setupDb>
-                <skipTestLiquibase>false</skipTestLiquibase>
             </properties>
             <build>
                 <plugins>

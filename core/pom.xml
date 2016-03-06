@@ -23,6 +23,7 @@
         <jackson.version>2.7.0</jackson.version>
         <http-components.version>4.4.4</http-components.version>
         <http-client.version>4.5.1</http-client.version>
+        <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>

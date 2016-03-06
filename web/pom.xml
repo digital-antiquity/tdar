@@ -19,6 +19,7 @@
         <skipKarma>false</skipKarma>
         <skipNode>false</skipNode>
         <testChangeLog>changelog-integration.xml</testChangeLog>
+        <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
