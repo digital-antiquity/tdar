@@ -156,21 +156,6 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <!-- in the "test" context, drop the database contents, 
-                            and reload it -->
-                        <id>test-liquibase</id>
-                        <configuration>
-                            <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
-                            <skip>${skipTestLiquibase}</skip>
-                            <logging>warning</logging>
-                        </configuration>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>dropAll</goal>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
-                    <execution>
                         <id>upgrade-liquibase</id>
                         <!-- if the liquibase profile is active (default 
                             context) run the upgrade -->

@@ -52,23 +52,6 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>process-test-resources</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <configuration>
-                            <!--FIXME: instead of this conditional skip, would it be better to place this entire execution node inside the test profile node (TDAR-5160) -->
-                            <skip>${skipTests}</skip>
-                            <attachToTest>false</attachToTest>
-                            <attachToMain>false</attachToMain>
-                            <includeScope>test</includeScope>
-                            <outputDirectory>target/test-resources</outputDirectory>
-                            <resourceBundles>
-                                <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
-                            </resourceBundles>
-                        </configuration>
-                    </execution>
-                    <execution>
                         <id>process-database-resources</id>
                         <goals>
                             <goal>process</goal>
@@ -84,28 +67,6 @@
                     </execution>
                 </executions>
             </plugin>
-			<plugin>
-				<groupId>com.atlassian.maven.plugins</groupId>
-				<artifactId>maven-clover2-plugin</artifactId>
-				<version>${clover.version}</version>
-				<configuration>
-                    <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
-					<includes>
-						<include>**/*.java</include>
-					</includes>
-					<excludes>
-						<exclude>**/PDFMergerUtility.java</exclude>
-					</excludes>
-                    <scope>test</scope>
-				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>com.atlassian.clover</groupId>
-						<artifactId>clover</artifactId>
-						<version>${clover.version}</version>
-					</dependency>
-				</dependencies>
-			</plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -756,5 +717,109 @@
                 <!-- <skipUpgradeLiquibase>false</skipUpgradeLiquibase> -->
             </properties>
         </profile>
+        <profile>
+            <id>test</id>
+            <properties>
+                <use.test.classpath>true</use.test.classpath>
+                <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
+                <setupDb>true</setupDb>
+                <skipTestLiquibase>false</skipTestLiquibase>
+            </properties>
+            <build>
+                <plugins>
+                        <plugin>
+                            <artifactId>maven-remote-resources-plugin</artifactId>
+                            <version>1.5</version>
+                            <executions>
+                                <execution>
+                                    <id>process-test-resources</id>
+                                    <goals>
+                                        <goal>process</goal>
+                                    </goals>
+                                    <configuration>
+                                        <!--FIXME: instead of this conditional skip, would it be better to place this entire execution node inside the test profile node (TDAR-5160) -->
+                                        <skip>${skipTests}</skip>
+                                        <attachToTest>false</attachToTest>
+                                        <attachToMain>false</attachToMain>
+                                        <includeScope>test</includeScope>
+                                        <outputDirectory>target/test-resources</outputDirectory>
+                                        <resourceBundles>
+                                            <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
+                                        </resourceBundles>
+                                    </configuration>
+                                </execution>
+                            </executions>
+                        </plugin>
+            			<plugin>
+            				<groupId>com.atlassian.maven.plugins</groupId>
+            				<artifactId>maven-clover2-plugin</artifactId>
+            				<version>${clover.version}</version>
+            				<configuration>
+                                <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
+            					<includes>
+            						<include>**/*.java</include>
+            					</includes>
+            					<excludes>
+            						<exclude>**/PDFMergerUtility.java</exclude>
+            					</excludes>
+                                <scope>test</scope>
+            				</configuration>
+            				<dependencies>
+            					<dependency>
+            						<groupId>com.atlassian.clover</groupId>
+            						<artifactId>clover</artifactId>
+            						<version>${clover.version}</version>
+            					</dependency>
+            				</dependencies>
+            			</plugin>
+
+                        <plugin>
+                            <groupId>org.liquibase</groupId>
+                            <artifactId>liquibase-maven-plugin</artifactId>
+                            <configuration>
+                                <username>${javax.persistence.jdbc.user}</username>
+                                <password>${javax.persistence.jdbc.password}</password>
+                                <url>${javax.persistence.jdbc.url}</url>
+                                <driver>${javax.persistence.jdbc.driver}</driver>
+                                <verbose>false</verbose>
+                                <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                            </configuration>
+                            <executions>
+                                <execution>
+                                    <!-- in the "test" context, drop the database contents, 
+                                        and reload it -->
+                                    <id>test-liquibase</id>
+                                    <configuration>
+                                        <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
+                                        <skip>${skipTestLiquibase}</skip>
+                                        <logging>warning</logging>
+                                    </configuration>
+                                    <phase>pre-integration-test</phase>
+                                    <goals>
+                                        <goal>dropAll</goal>
+                                        <goal>update</goal>
+                                    </goals>
+                                </execution>
+                                <execution>
+                                    <id>upgrade-liquibase</id>
+                                    <!-- if the liquibase profile is active (default 
+                                        context) run the upgrade -->
+                                    <configuration>
+                                        <changeLogFile>target/liquibase/changelog.xml</changeLogFile>
+                                        <skip>${skipUpgradeLiquibase}</skip>
+                                    </configuration>
+                                    <phase>process-resources</phase>
+                                    <goals>
+                                        <goal>update</goal>
+                                    </goals>
+                                </execution>
+                            </executions>
+                        </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+
+
 	</profiles>
 </project>
