@@ -196,20 +196,6 @@
 	          <version>1.5</version>
 	          <executions>
 	              <execution>
-	                <id>process-test-resources</id>
-	                <goals>
-	                  <goal>process</goal>
-	                </goals>
-	                <configuration>
-	  				<attachToTest>false</attachToTest>
-					<attachToMain>false</attachToMain>
-	  			    <outputDirectory>target/test-resources</outputDirectory>
-	                  <resourceBundles>
-	                    <resourceBundle>org.tdar:test-resources:${project.version}</resourceBundle>
-	                  </resourceBundles>
-	                </configuration>
-	              </execution>
-	              <execution>
 	                <id>process-database-resources</id>
 	                <goals>
 	                  <goal>process</goal>
