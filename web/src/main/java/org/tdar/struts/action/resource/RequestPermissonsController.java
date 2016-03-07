@@ -1,7 +1,9 @@
 package org.tdar.struts.action.resource;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -13,7 +15,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
