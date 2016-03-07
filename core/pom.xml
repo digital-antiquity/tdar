@@ -10,7 +10,7 @@
 
     <properties>
         <spring.ldap.version>2.0.4.RELEASE</spring.ldap.version>
-        <poi.version>3.13</poi.version>
+        <poi.version>3.14</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
         <jena.version>2.13.0</jena.version>
@@ -21,7 +21,7 @@
         <batik.version>1.7</batik.version>
         <jackson.version>2.7.2</jackson.version>
         <http-components.version>4.4.4</http-components.version>
-        <http-client.version>4.5.1</http-client.version>
+        <http-client.version>4.5.2</http-client.version>
         <skipTestLiquibase>false</skipTestLiquibase>
         <testChangeLog>changelog-integration.xml</testChangeLog>
     </properties>
@@ -733,7 +733,7 @@
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-apibinding</artifactId>
-            <version>4.0.2</version>
+            <version>5.0.0</version>
             <!-- LICENSE: APACHE 2.0 / LGPL -->
             <exclusions>
                 <exclusion>
