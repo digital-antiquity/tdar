@@ -19,7 +19,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
     public void testRegisterNormalUser() {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "user");
+        setupBasicUser(personmap, "user" + System.currentTimeMillis());
         testRegister(personmap, TERMS.TOS);
         assertCurrentUrlContains("dashboard");
         assertTextNotPresentIgnoreCase("new project");
@@ -29,7 +29,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     @Test
     public void testRegisterContributor() {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "contributor");
+        setupBasicUser(personmap, "contributor" + System.currentTimeMillis());
         testRegister(personmap, TERMS.BOTH);
         assertCurrentUrlContains("dashboard");
         assertTextPresentIgnoreCase("Start a new Project");
@@ -42,7 +42,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
     public void testRegisterContributorWithTOS() {
         Map<String, String> personmap = new HashMap<String, String>();
-        setupBasicUser(personmap, "contributorrr");
+        setupBasicUser(personmap, "contributorrr" + System.currentTimeMillis());
         testRegister(personmap, TERMS.BOTH);
 
     }

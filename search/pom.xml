@@ -10,6 +10,7 @@
 
     <properties>
         <lucene.version>5.5.0</lucene.version>
+        <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
@@ -17,7 +18,6 @@
         <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
-
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
         <dependency>
@@ -155,21 +155,6 @@
                     <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
                 </configuration>
                 <executions>
-                    <execution>
-                        <!-- in the "test" context, drop the database contents, 
-                            and reload it -->
-                        <id>test-liquibase</id>
-                        <configuration>
-                            <changeLogFile>target/liquibase-test/changelog.xml</changeLogFile>
-                            <skip>${skipTestLiquibase}</skip>
-                            <logging>warning</logging>
-                        </configuration>
-                        <phase>pre-integration-test</phase>
-                        <goals>
-                            <goal>dropAll</goal>
-                            <goal>update</goal>
-                        </goals>
-                    </execution>
                     <execution>
                         <id>upgrade-liquibase</id>
                         <!-- if the liquibase profile is active (default 

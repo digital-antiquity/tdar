@@ -322,6 +322,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logger.debug(id);
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
         if (StringUtils.isNotBlank(id)) {
+        	if (rows.find(By.id(id)).isSelected()) {
+        		rows.find(By.id(id)).click();
+        	}
         	Assert.assertFalse(rows.find(By.id(id)).isSelected());
         }
     }

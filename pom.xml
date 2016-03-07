@@ -376,16 +376,6 @@
     </dependencies>
     <profiles>
         <profile>
-            <id>test</id>
-            <properties>
-                <use.test.classpath>true</use.test.classpath>
-                <webapp.deploy.dir>target/generated/webapp-test</webapp.deploy.dir>
-                <setupDb>true</setupDb>
-                <skipTestLiquibase>false</skipTestLiquibase>
-            </properties>
-        </profile>
-
-        <profile>
             <id>clover</id>
             <properties>
                 <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>

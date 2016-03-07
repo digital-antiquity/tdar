@@ -106,7 +106,7 @@ import net.sf.json.JSONSerializer;
  * @author Adam Brin
  * 
  */
-@ContextConfiguration(classes = TdarAppConfiguration.class)
+//@ContextConfiguration(classes = TdarAppConfiguration.class)
 public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
@@ -1369,8 +1369,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         webClient.getCookieManager().clearCookies();
     }
 
-    @Autowired
-    private AuthenticationService authService;
+//    @Autowired
+//    private AuthenticationService authService;
 
     public enum TERMS {
         TOS,
@@ -1381,9 +1381,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     public void testRegister(Map<String, String> values, TERMS terms) {
 
         String username = values.get("registration.person.username");
-        if (true) {
-            deleteUser(username);
-        }
+//        if (true) {
+//            deleteUser(username);
+//        }
         gotoPage("/");
         logger.trace(getPageText());
 
@@ -1416,11 +1416,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         setSessionUser(entityService.findByUsername(username));
     }
 
-    public void deleteUser(String username) {
-        TdarUser p = new TdarUser();
-        p.setUsername(username);
-        authService.getAuthenticationProvider().deleteUser(p);
-    }
+//    public void deleteUser(String username) {
+//        TdarUser p = new TdarUser();
+//        p.setUsername(username);
+//        authService.getAuthenticationProvider().deleteUser(p);
+//    }
 
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
         setupBasicUser(personmap, prefix, "registration");

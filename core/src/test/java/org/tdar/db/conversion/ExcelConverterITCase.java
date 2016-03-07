@@ -55,7 +55,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
                 int total = 0;
                 while (rs.next()) {
                     String str = rs.getString(2);
-                    logger.debug(str);
+                    logger.trace(str);
                     total += Integer.parseInt(rs.getString(2));
                 }
                 return total;
@@ -77,7 +77,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         assertEquals(5, dataTableColumns.size());
         int i = 1; // 0 is the tDAR ID Column which may not be returned
         for (DataTableColumn col : table.getSortedDataTableColumns()) {
-            logger.debug("{} : {}", col.getSequenceNumber(), col);
+            logger.trace("{} : {}", col.getSequenceNumber(), col);
             assertEquals(Integer.valueOf(i), col.getSequenceNumber());
             i++;
         }

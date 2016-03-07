@@ -9,6 +9,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
@@ -24,7 +26,7 @@ import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.TestConfiguration;
 
-public class FAIMSWebITCase extends AbstractIntegrationTestCase {
+	public class FAIMSWebITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     SerializationService serializationService;
