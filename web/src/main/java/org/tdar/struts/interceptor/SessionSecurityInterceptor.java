@@ -98,7 +98,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 genericService.clearCurrentSession();
                 setSessionClosed(true);
             }
-            SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(),mark == SessionType.READ_ONLY );
+//            SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(),mark == SessionType.READ_ONLY );
             return resultName;
         } catch (Exception e) {
             SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
