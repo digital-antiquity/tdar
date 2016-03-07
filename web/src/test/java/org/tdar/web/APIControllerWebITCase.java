@@ -42,7 +42,7 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 import com.sun.media.rtsp.protocol.StatusCode;
 
 @RunWith(MultipleTdarConfigurationRunner.class)
-@ContextConfiguration(classes = TdarAppConfiguration.class)
+//@ContextConfiguration(classes = TdarAppConfiguration.class)
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Autowired

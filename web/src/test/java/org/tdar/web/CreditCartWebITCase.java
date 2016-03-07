@@ -28,7 +28,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-@ContextConfiguration(classes = TdarAppConfiguration.class)
+//@ContextConfiguration(classes = TdarAppConfiguration.class)
 public class CreditCartWebITCase extends AbstractWebTestCase {
 
     private static final String NEXT_STEP_PAYMENT = "Next Step: Payment";

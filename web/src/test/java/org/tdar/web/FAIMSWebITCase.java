@@ -9,8 +9,6 @@ import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.springframework.test.context.ContextConfiguration;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -18,7 +16,6 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
@@ -26,7 +23,7 @@ import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.TestConfiguration;
 
-	public class FAIMSWebITCase extends AbstractIntegrationTestCase {
+public class FAIMSWebITCase extends AbstractWebTestCase {
 
     @Autowired
     SerializationService serializationService;
@@ -63,7 +60,7 @@ import org.tdar.utils.TestConfiguration;
                 ApiClientResponse uploadRecord = client.uploadRecord(output, null, 8L);
                 projectIdMap.put(id, uploadRecord.getTdarId());
                 logger.debug("status: {}", uploadRecord.getStatusLine());
-                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode() && 
+                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode() &&
                         uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
                     logger.warn(uploadRecord.getBody());
                 }
@@ -78,7 +75,7 @@ import org.tdar.utils.TestConfiguration;
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
-            
+
             String output = export(resource, projectIdMap.get(resource.getProjectId()));
             if (resource instanceof CodingSheet) {
                 logger.debug(output);
@@ -91,7 +88,7 @@ import org.tdar.utils.TestConfiguration;
                 ApiClientResponse uploadRecord = client.uploadRecord(output, null, 8L);
                 projectIdMap.put(id, uploadRecord.getTdarId());
                 logger.debug("status: {}", uploadRecord.getStatusLine());
-                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode() && 
+                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode() &&
                         uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
                     logger.warn(uploadRecord.getBody());
                 }
@@ -113,20 +110,20 @@ import org.tdar.utils.TestConfiguration;
             informationResource.setProject(new Project(projectId, null));
             informationResource.setMappedDataKeyColumn(null);
         }
-        
+
         if (resource instanceof Dataset) {
             Dataset dataset = (Dataset) resource;
             dataset.setDataTables(null);
             dataset.setRelationships(null);
         }
-        
+
         if (resource instanceof CodingSheet) {
             CodingSheet codingSheet = (CodingSheet) resource;
             codingSheet.setCodingRules(null);
             codingSheet.setAssociatedDataTableColumns(null);
             codingSheet.setDefaultOntology(null);
         }
-        
+
         if (resource instanceof Ontology) {
             ((Ontology) resource).setOntologyNodes(null);
         }

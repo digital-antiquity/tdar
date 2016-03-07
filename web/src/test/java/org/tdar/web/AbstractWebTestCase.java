@@ -1530,4 +1530,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         }
     }
 
+    public Logger getLogger() {
+        return logger;
+    }
 }

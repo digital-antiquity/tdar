@@ -1,6 +1,9 @@
 package org.tdar.struts.action;
 
-import com.opensymphony.xwork2.*;
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.ServletException;
+
 import org.apache.struts2.StrutsSpringJUnit4TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,18 +14,18 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockPageContext;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
-import javax.servlet.ServletException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
+import com.opensymphony.xwork2.ActionProxy;
 
 
 @ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
+@DirtiesContext
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @Transactional
