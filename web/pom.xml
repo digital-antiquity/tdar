@@ -418,13 +418,33 @@
                                 <exclude>**/org/tdar/experimental/**/*.java</exclude>
                                 <exclude>**/org/tdar/functional/**/*</exclude>
                                 <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/*</exclude>
                             </excludes>
                             <includes>
                                 <include>**/org/tdar/core/**/*</include>
-                                <include>**/org/tdar/struts/**/*</include>
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-struts</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/struts</reportsDirectory>
                         </configuration>
                     </execution>
                     <execution>

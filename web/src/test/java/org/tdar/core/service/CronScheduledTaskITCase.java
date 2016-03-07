@@ -10,16 +10,9 @@ import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.annotation.DirtiesContext.ClassMode;
-import org.springframework.test.annotation.DirtiesContext.MethodMode;
-import org.springframework.test.context.ContextConfiguration;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
+import org.tdar.core.AbstractIntegrationWebTestCase;
 
-@ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
-@DirtiesContext(methodMode = MethodMode.BEFORE_METHOD, classMode = ClassMode.AFTER_CLASS)
-public class CronScheduledTaskITCase extends AbstractIntegrationTestCase {
+public class CronScheduledTaskITCase extends AbstractIntegrationWebTestCase {
 
     @Autowired
     ScheduledProcessService scheduledProcessService;
