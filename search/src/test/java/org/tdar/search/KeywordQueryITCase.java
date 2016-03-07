@@ -3,6 +3,7 @@ package org.tdar.search;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.analysis.fa.PersianAnalyzer;
@@ -39,7 +40,7 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
 
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.KEYWORD);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.KEYWORD);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.KEYWORD), getAdminUser());
     };
     
     
@@ -88,7 +89,7 @@ public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
         SiteNameKeyword keyword = new SiteNameKeyword();
         keyword.setLabel("18-ST-389");
         genericService.saveOrUpdate(keyword);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.KEYWORD);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.KEYWORD), getAdminUser());
 
         SearchResult<Keyword> result = processSearch("18-ST-389","SiteNameKeyword",2);
         List<Keyword> resources = result.getResults();

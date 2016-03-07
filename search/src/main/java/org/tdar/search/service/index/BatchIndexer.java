@@ -34,7 +34,7 @@ public class BatchIndexer implements Serializable {
 	private GenericDao genericDao;
 	private DatasetDao datasetDao;
 	private SearchIndexService searchIndexService;
-    private final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
 
@@ -149,7 +149,9 @@ public class BatchIndexer implements Serializable {
                 //[6:05:41 PM PST] indexed 600 of 805539 SiteTypeKeyword(s) 48.528873 % (818 - 868)
                 message = String.format("indexed %s %s %s %% %s", numProcessed, MIDDLE, totalProgress, range);
                 updateAllStatuses(updateReceiver, activity, message, totalProgress);
-                logger.debug("last indexed: {}", item);
+                if (logger.isTraceEnabled()) {
+                    logger.trace("last indexed: {}", item);
+                }
                 prevId = ((Indexable) item).getId();
             }
             if ((numProcessed % FLUSH_EVERY) == 0) {

@@ -693,7 +693,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         doc.setSiteTypeKeywords(siteTypes);
         genericService.saveOrUpdate(doc);
         genericService.synchronize();
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         searchIndexService.flushToIndexes();
         SearchParameters sp = new SearchParameters();
         sp.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
@@ -936,7 +936,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(collection);
         ont.getResourceCollections().add(collection);
         genericService.saveOrUpdate(ont);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setResourceTypes(Arrays.asList(ResourceType.ONTOLOGY));
         SearchResult<Resource> result = performSearch("", null, collection.getId(), null, null, null, params, 100);
@@ -947,7 +947,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Override
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.RESOURCE);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
     }
 
     @Test
@@ -967,7 +967,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
     @Test
     public void testResourceLookupByType() throws SolrServerException, IOException, ParseException {
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         // get back all documents
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT));
@@ -1108,7 +1108,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         flaggedDoc.setStatus(Status.FLAGGED);
         List<Document> docs = Arrays.asList(activeDoc, draftDoc, flaggedDoc);
         genericService.saveOrUpdate(docs);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
 
         // login as an admin
         for (Document doc : docs) {
@@ -1290,7 +1290,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Long codingSheetId = setupCodingSheet();
 
         logger.info("imgId:" + imgId + " datasetId:" + datasetId + " codingSheetId:" + codingSheetId);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(allResourceTypes);
         SearchResult<Resource> result = doSearch("precambrian",null, null, rparams);
@@ -1307,7 +1307,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         CodingSheet sheet = genericService.find(CodingSheet.class, codingSheetId);
         sheet.setGenerated(true);
         genericService.save(sheet);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.getResourceTypes().add(ResourceType.CODING_SHEET);
         SearchResult<Resource> result = doSearch("", null, null, rparams);
@@ -1350,7 +1350,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testDatedSearch() throws ParseException, SolrServerException, IOException {
         Long docId = setupDatedDocument();
         logger.info("Created new document: " + docId);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(allResourceTypes);
 

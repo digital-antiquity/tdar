@@ -17,7 +17,7 @@ public class QueryPartITCase extends AbstractWithIndexIntegrationTestCase {
     @Override
     public void reindex() {
         searchIndexService.purgeAll();
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
     }
 
     @Test

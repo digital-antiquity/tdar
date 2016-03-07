@@ -1091,28 +1091,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.basepom.maven</groupId>
-                <artifactId>duplicate-finder-maven-plugin</artifactId>
-                <version>1.1.0</version>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <checkCompileClasspath>false</checkCompileClasspath>
-                    <checkRuntimeClasspath>true</checkRuntimeClasspath>
-                    <checkTestClasspath>false</checkTestClasspath>
-                    <ignoredResourcePatterns>
-                        <ignoredResourcePattern>.*</ignoredResourcePattern>
-                    </ignoredResourcePatterns>
-                </configuration>
-            </plugin>
         </plugins>
     </build>
 

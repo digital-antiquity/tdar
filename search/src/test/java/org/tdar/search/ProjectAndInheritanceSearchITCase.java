@@ -29,7 +29,7 @@ public class ProjectAndInheritanceSearchITCase extends AbstractResourceSearchITC
     @Test
     @Rollback(true)
     public void testForInheritedCulturalInformationFromProject() throws ParseException, SolrServerException, IOException {
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters rparams = new ReservedSearchParameters();
         rparams.setResourceTypes(Arrays.asList(ResourceType.DOCUMENT, ResourceType.IMAGE));
         SearchResult result = doSearch("Archaic",null,null,rparams);
