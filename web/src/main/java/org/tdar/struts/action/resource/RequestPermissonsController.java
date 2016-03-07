@@ -18,6 +18,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
@@ -48,7 +49,9 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     private transient GenericService genericService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-
+    @Autowired
+    private transient  EmailService emailService;
+    
     @Override
     public void prepare() throws Exception {
         requestor = genericService.find(TdarUser.class, requestorId);
@@ -99,6 +102,19 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
         }
         resourceCollectionService.addUserToInternalCollection(getResource(), requestor, getPermission());
         addActionMessage(getText("requestPermissionsController.success", Arrays.asList(requestor.getProperName(), permission.getLabel())));
+        Email email = new Email();
+        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + "- " + resource.getTitle());
+        email.setTo(requestor.getEmail());
+        Map<String,Object> map = new HashMap<>();
+        map.put("requestor", requestor);
+        map.put("resource", resource);
+        map.put("authorizedUser", getAuthenticatedUser());
+        emailService.queueWithFreemarkerTemplate("email-form/access-request-granted.ftl", map, email);
+        email.setUserGenerated(false);
+        emailService.send(email);
+
+//        emailService.constructEmail(TdarConfiguration.getInstance().getSystemAdminEmail(), getRequestor(), resource, "request granted", "",);
+
         return SUCCESS;
     }
 
