@@ -75,7 +75,7 @@ public class GeneralSearchQueryPart extends FieldQueryPart<String> {
         // NAME_SORT is the exact value, if it matches, boost WAY up
         FieldQueryPart<String> exact = new FieldQueryPart<String>(QueryFieldNames.NAME_SORT, value.toLowerCase());
         exact.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
-        exact.setBoost(TITLE_BOOST * 5);
+        exact.setBoost(TITLE_BOOST * 10);
         primary.append(titlePart.setBoost(TITLE_BOOST));
         primary.append(exact);
         primary.append(descriptionPart.setBoost(DESCRIPTION_BOOST));
