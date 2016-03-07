@@ -733,7 +733,7 @@
         <dependency>
             <groupId>net.sourceforge.owlapi</groupId>
             <artifactId>owlapi-apibinding</artifactId>
-            <version>5.0.0</version>
+            <version>4.0.2</version>
             <!-- LICENSE: APACHE 2.0 / LGPL -->
             <exclusions>
                 <exclusion>
