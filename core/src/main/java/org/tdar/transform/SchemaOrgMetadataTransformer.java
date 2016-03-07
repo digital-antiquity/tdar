@@ -91,7 +91,7 @@ public class SchemaOrgMetadataTransformer implements Serializable {
         jsonLd.put("description", r.getDescription());
         switch (r.getResourceType()) {
             case AUDIO:
-                jsonLd.put(TYPE, "Audio");
+                jsonLd.put(TYPE, "AudioObject");
                 break;
             case DATASET:
             case GEOSPATIAL:
@@ -102,13 +102,13 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                 jsonLd.put(TYPE, "Book");
                 break;
             case IMAGE:
-                jsonLd.put(TYPE, "Image");
+                jsonLd.put(TYPE, "ImageObject");
                 break;
             case PROJECT:
                 jsonLd.put(TYPE, "CollectionPage");
                 break;
             case VIDEO:
-                jsonLd.put(TYPE, "Video");
+                jsonLd.put(TYPE, "VideoObject");
                 break;
             default:
                 jsonLd.put(TYPE, "CreativeWork");
@@ -174,6 +174,9 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                     Map<String, Object> article = new HashMap<>();
                     graph.add(issue);
                     graph.add(article);
+                    article.put("headline", doc.getTitle());
+
+                    article.put("datePublished", doc.getDate());
                     issue.put(ID, "#issue");
                     issue.put(TYPE, "PublicationIssue");
                     add(issue, "issueNumber", doc.getSeriesNumber());
