@@ -2,7 +2,6 @@ package org.tdar.web;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.ByteArrayOutputStream;
@@ -19,11 +18,9 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.SimpleHttpUtils;
 
@@ -70,14 +67,10 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
     }
 
     @Test
-    @Ignore
     /**
      * Perform a hosted download request with valid key, referrer, and file ID.
      */
     public void testHostedDownloadSuccess() throws URISyntaxException, IOException {
-        // sanity check: make sure the file exists
-        InformationResourceFileVersion irfv = genericService.find(InformationResourceFileVersion.class, IRFV_ID);
-        assertNotNull(irfv);
 
         HttpGet httpget = httpGet(uriBuilder()
                 .setScheme("http")

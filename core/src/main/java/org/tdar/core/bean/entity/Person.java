@@ -107,18 +107,20 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
         this.email = email;
     }
 
-    /**
+    public Person(String firstName, String lastName, String email, Long id) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        setId(id);
+	}
+
+	/**
      * Returns the person's name in [last name, first name] format.
      * 
      * @return formatted String name
      */
     @Override
     @Transient
-    //@Fields({
-            //@Field(name = QueryFieldNames.NAME_TOKEN),
-            //@Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-//    })
     @JsonView(JsonLookupFilter.class)
     public String getName() {
         return lastName + ", " + firstName;

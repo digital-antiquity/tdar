@@ -27,7 +27,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testCreateThenEditCollection() {
-        assertNotNull(genericService);
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
         List<Document> someResources = new ArrayList<>();
@@ -113,7 +112,6 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     // crate a collection with some resources, then edit it by adding some authorized users and removing a few resources
     public void testDeleteCollection() {
-        assertNotNull(genericService);
         String name = "my fancy collection: " + System.currentTimeMillis();
         String desc = "description goes here: " + System.currentTimeMillis();
         List<? extends Resource> someResources = getSomeResources();
@@ -149,7 +147,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         testCreateThenEditCollection();
         // previous test logged us out
         loginAdmin();
-        Long parentId = resourceCollectionService.findAllResourceCollections().iterator().next().getId();
+        Long parentId = 1575L;
 
         gotoPage("/collection/add");
         String name = "testCreateChildCollection";
@@ -201,13 +199,12 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         // assertTrue("we should  be on the INPUT page. current page: " + getCurrentUrlPath(), getCurrentUrlPath().contains("/collection/save.action"));
 
-        Person person = entityService.findByEmail(user.getEmail());
-        assertNull("person from form should not be persisted", person);
+//        Person person = entityService.findByEmail(user.getEmail());
+//        assertNull("person from form should not be persisted", person);
     }
 
     @Test
     public void testAssignNonUserToCollection2() {
-        assertNotNull(genericService);
         gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
@@ -261,15 +258,13 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights
-        assertNotNull(genericService);
         gotoPage("/collection/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
 
-        TdarUser person = getBasicUser();
-        setInput(String.format(FMT_AUTHUSERS_ID, 0), person.getId());
+        setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
         setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
 
         submitForm();
@@ -278,7 +273,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logout();
         
         // logout and login as that user, remove self
-        login(getBasicUser().getUsername(), TestConfiguration.getInstance().getPassword());
+        login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
         assertTextPresent("my fancy collection");
         clickLinkWithText("edit");
@@ -293,7 +288,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(),status);
         logout();
         // logout / login, try again (assert not allowd)
-        login(getBasicUser().getUsername(), TestConfiguration.getInstance().getPassword());
+        login(CONFIG.getUsername(), CONFIG.getPassword());
         status = gotoPageWithoutErrorCheck(path);
         assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(),status);
         

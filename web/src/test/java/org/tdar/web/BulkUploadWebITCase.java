@@ -122,11 +122,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         }
 
         Map<String, String> extra = new HashMap<String, String>();
-        extra.put("creditProxies[0].person.id", getUserId().toString());
-        extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
-        extra.put("creditProxies[0].person.lastName", getUser().getLastName());
-        extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
-        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
+        setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
         Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
@@ -134,17 +130,21 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertFalse(getPageCode().contains("resource creator is not"));
     }
 
+	private void setupTestUserProxy(Map<String, String> extra) {
+        extra.put("creditProxies[0].person.id", CONFIG.getUserId().toString());
+        extra.put("creditProxies[0].person.firstName", "test");
+        extra.put("creditProxies[0].person.lastName", "user");
+        extra.put("creditProxies[0].person.institution.name", "");
+        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
+	}
+
     @Test
     // @Ignore("dup")
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithDataset() throws MalformedURLException {
         Map<String, String> extra = new HashMap<String, String>();
         String accountId = setupAccount(extra, 200, 20);
-        extra.put("creditProxies[0].person.id", getUserId().toString());
-        extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
-        extra.put("creditProxies[0].person.lastName", getUser().getLastName());
-        extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
-        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
+        setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         File file = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, "Pundo faunal remains.xls");
         assertTrue(file.exists());
@@ -163,11 +163,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
         extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
         extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
-        extra.put("creditProxies[0].person.id", getUserId().toString());
-        extra.put("creditProxies[0].person.firstName", getUser().getFirstName());
-        extra.put("creditProxies[0].person.lastName", getUser().getLastName());
-        extra.put("creditProxies[0].person.institution.name", getUser().getInstitutionName());
-        extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
+        setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
@@ -316,10 +312,4 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         }
     }
 
-    @Override
-    public TdarUser getUser() {
-        TdarUser user = super.getUser();
-        genericService.detachFromSession(user);
-        return user;
-    }
 }

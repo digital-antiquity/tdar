@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -23,6 +24,7 @@ import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.TestConfiguration;
 
+@Ignore
 public class FAIMSWebITCase extends AbstractWebTestCase {
 
     @Autowired

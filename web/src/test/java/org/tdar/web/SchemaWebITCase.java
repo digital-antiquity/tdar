@@ -14,5 +14,4 @@ public class SchemaWebITCase extends AbstractWebTestCase {
         assertTextPresentInCode("CHEROKEE");
         testValidXMLSchemaResponse(getPageCode());
     }
-
 }
