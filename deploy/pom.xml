@@ -162,7 +162,7 @@
                     <resource>
                         <directory>../oai-pmh/src/main/resources</directory>
                         <!-- override the destination directory for this resource -->
-                        <targetPath>WEB-INF/classes</targetPath>
+                        <!-- <targetPath>WEB-INF/classes</targetPath> -->
                         <!-- enable filtering -->
                         <filtering>true</filtering>
                         <includes>
@@ -200,10 +200,14 @@
                     <resource>
                         <directory>../web/src/main/resources</directory>
                         <!-- override the destination directory for this resource -->
-                        <targetPath>WEB-INF/classes</targetPath>
+                        <!-- <targetPath>WEB-INF/classes</targetPath> -->
                         <!-- enable filtering -->
                         <filtering>true</filtering>
                         <includes>
+                            <include>spring-local-settings.xml</include>
+                            <include>hibernate-ehcache.xml</include>
+                            <include>hibernate.properties</include>
+                            <include>struts-local-settings.xml</include>
                             <include>log4j2.xml</include>
                         </includes>
                     </resource>
@@ -238,7 +242,7 @@
                     <resource>
                         <directory>../tag/src/main/resources</directory>
                         <!-- override the destination directory for this resource -->
-                        <targetPath>WEB-INF/classes</targetPath>
+                        <!-- <targetPath>WEB-INF/classes</targetPath> -->
                         <!-- enable filtering -->
                         <filtering>true</filtering>
                         <includes>
@@ -277,7 +281,7 @@
                     <resource>
                         <directory>../dataone/src/main/resources</directory>
                         <!-- override the destination directory for this resource -->
-                        <targetPath>WEB-INF/classes</targetPath>
+                        <!-- <targetPath>WEB-INF/classes</targetPath> -->
                         <!-- enable filtering -->
                         <filtering>true</filtering>
                         <includes>
