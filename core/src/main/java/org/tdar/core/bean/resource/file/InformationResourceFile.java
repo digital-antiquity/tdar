@@ -526,7 +526,6 @@ public class InformationResourceFile extends Persistable.Sequence<InformationRes
         return false;
     }
 
-    //@Field(name = QueryFieldNames.FILENAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     public String getFilename() {
         return filename;
     }

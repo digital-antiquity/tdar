@@ -25,7 +25,6 @@ import org.tdar.core.bean.Sortable;
 
 @Entity
 @Table(name = "project")
-//@Indexed
 @XmlRootElement(name = "project")
 public class Project extends Resource implements Sortable {
 
@@ -92,7 +91,6 @@ public class Project extends Resource implements Sortable {
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Transient
-    //@Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitle() {
         return getTitleSort();
     }
@@ -103,9 +101,7 @@ public class Project extends Resource implements Sortable {
         return getTitle().trim().replaceAll("^[T|t]he\\s", "").replaceAll("\\s[P|p]roject$", "");
     }
 
-    //@IndexedEmbedded(prefix = "informationResources.")
     @XmlTransient
-    // @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public Collection<InformationResource> getCachedInformationResources() {
         return cachedInformationResources;
     }

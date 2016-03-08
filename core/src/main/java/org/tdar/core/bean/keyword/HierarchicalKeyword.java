@@ -63,11 +63,8 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
     @XmlTransient
     public abstract T getParent();
 
-    //@Fields({ //@Field(name = "label"),
-            //@Field(name = "labelKeyword", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     @Transient
     @ElementCollection
-    //@IndexedEmbedded
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
         if (getParent() == null) {

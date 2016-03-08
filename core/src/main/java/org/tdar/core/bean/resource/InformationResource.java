@@ -93,7 +93,6 @@ import com.fasterxml.jackson.annotation.JsonView;
         // @Index(name = "infores_provid", columnList={"provider_institution_id"}),
         @Index(name = "ires_publisher", columnList = "publisher_id")
 })
-//@DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class InformationResource extends Resource {
 
@@ -121,44 +120,28 @@ public abstract class InformationResource extends Resource {
     }
 
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.DETACH })
-    // @ContainedIn /* DISABLED TO MANAGE PERFORMANCE ISSUES*/
     private Project project;
 
     @Transient
     private Long projectId;
 
-    // @ManyToMany
-    // @JoinTable(name = "information_resource_related_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
-    // name = "document_id"))
-    // private Set<Document> relatedCitations = new HashSet<Document>();
-    //
-    // @ManyToMany(cascade = CascadeType.ALL)
-    // @XStreamOmitField
-    // @JoinTable(name = "information_resource_source_citation", joinColumns = @JoinColumn(name = "information_resource_id"), inverseJoinColumns = @JoinColumn(
-    // name = "document_id"))
-    // private Set<Document> sourceCitations = new HashSet<Document>();
-
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
     @OrderBy("sequenceNumber asc")
-    //@IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.InformationResource.informationResourceFiles")
     private Set<InformationResourceFile> informationResourceFiles = new LinkedHashSet<>();
 
     @BulkImportField(key = "METADATA_LANGUAGE")
     @Enumerated(EnumType.STRING)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "metadata_language", length = FieldLength.FIELD_LENGTH_100)
     private Language metadataLanguage;
 
     @BulkImportField(key = "RESOURCE_LANGUAGE")
     @Enumerated(EnumType.STRING)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "resource_language", length = FieldLength.FIELD_LENGTH_100)
     private Language resourceLanguage;
 
     @Enumerated(EnumType.STRING)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Column(name = "license_type", length = FieldLength.FIELD_LENGTH_128)
     @BulkImportField(key = LICENSE_TYPE, required = true)
     private LicenseType licenseType;
@@ -170,8 +153,6 @@ public abstract class InformationResource extends Resource {
     private String licenseText;
 
     @BulkImportField(key = "DOI")
-    //@Field
-    //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "external_doi")
     private String doi;
@@ -192,28 +173,22 @@ public abstract class InformationResource extends Resource {
     // currently just a 4 digit year.
     @Column(name = "date_created")
     @BulkImportField(key = "YEAR", required = true, order = -10)
-    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
-    //@Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @JsonView(JsonLookupFilter.class)
     private Integer date = -1;
 
     @Column(name = "date_created_normalized")
-    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
-    //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.DATE_CREATED_DECADE, analyze = Analyze.NO)
     @XmlTransient
     private Integer dateNormalized = -1;
 
     // The institution providing this InformationResource
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @JoinColumn(name = "provider_institution_id")
-    //@IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution resourceProviderInstitution;
 
     @ManyToOne(optional = true, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
     @BulkImportField(key = "PUBLISHER")
     @JoinColumn(name = "publisher_id")
-    //@IndexedEmbedded
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Institution publisher;
 
@@ -273,10 +248,6 @@ public abstract class InformationResource extends Resource {
     @Column
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String mappedDataKeyValue;
-
-//    @Transient
-//    @XmlTransient
-//    private Map<DataTableColumn, String> relatedDatasetData = new HashMap<>();
 
     public Language getMetadataLanguage() {
         return metadataLanguage;
@@ -368,8 +339,6 @@ public abstract class InformationResource extends Resource {
         return project;
     }
 
-    //@Field(name = QueryFieldNames.PROJECT_ID)
-    //@Analyzer(impl = KeywordAnalyzer.class)
     public Long getProjectId() {
         if (projectId == null) {
             projectId = getProject().getId();
@@ -385,17 +354,11 @@ public abstract class InformationResource extends Resource {
     }
 
     @Transient
-    // @Boost(1.5f)
-    //@Fields({
-            //@Field(name = QueryFieldNames.PROJECT_TITLE),
-            //@Field(name = QueryFieldNames.PROJECT_TITLE_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class))
-//    })
     public String getProjectTitle() {
         return getProject().getTitleSort();
     }
 
     @Transient
-    //@Field(name = QueryFieldNames.PROJECT_TITLE_SORT, norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     public String getProjectTitleSort() {
         return getProject().getTitleSort() + " - " + getTitle();
     }
@@ -523,11 +486,7 @@ public abstract class InformationResource extends Resource {
         return getLatestVersions(VersionType.UPLOADED);
     }
 
-    //@Field(store = Store.NO)
-    //@FieldBridge(impl = PersistentReaderBridge.class)
-    //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)
     @Transient
-    // @Boost(0.5f)
     @JsonIgnore
     @XmlTransient
     public List<InformationResourceFileVersion> getContent() {
@@ -552,8 +511,6 @@ public abstract class InformationResource extends Resource {
         return fileURIs;
     }
 
-    //@Field(norms = Norms.NO, store = Store.YES, name = QueryFieldNames.RESOURCE_ACCESS_TYPE, analyzer = //@Analyzer(
-//            impl = TdarCaseSensitiveStandardAnalyzer.class))
     @Transient
     public ResourceAccessType getResourceAccessType() {
         int totalFiles = getNonDeletedFiles().size();
@@ -650,20 +607,17 @@ public abstract class InformationResource extends Resource {
         this.copyLocation = copyLocation;
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<InvestigationType> getActiveInvestigationTypes() {
         return isProjectVisible() && isInheritingInvestigationInformation() ? project.getInvestigationTypes() : getInvestigationTypes();
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<ResourceCreator> getActiveIndividualAndInstitutionalCredit() {
         return isProjectVisible() && isInheritingIndividualAndInstitutionalCredit() ? project.getIndividualAndInstitutionalCredit()
                 : getIndividualAndInstitutionalCredit();
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<ResourceCreator> getActiveResourceCreators() {
         Set<ResourceCreator> local = new HashSet<ResourceCreator>(super.getResourceCreators());
@@ -680,25 +634,21 @@ public abstract class InformationResource extends Resource {
         return getProject().isActive() || getProject().isDraft();
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<SiteNameKeyword> getActiveSiteNameKeywords() {
         return isProjectVisible() && isInheritingSiteInformation() ? project.getSiteNameKeywords() : getSiteNameKeywords();
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<SourceCollection> getActiveSourceCollections() {
         return isProjectVisible() && isInheritingCollectionInformation() ? project.getSourceCollections() : getSourceCollections();
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<RelatedComparativeCollection> getActiveRelatedComparativeCollections() {
         return isProjectVisible() && isInheritingCollectionInformation() ? project.getRelatedComparativeCollections() : getRelatedComparativeCollections();
     }
 
-    //@IndexedEmbedded
     @Override
     public Set<SiteTypeKeyword> getActiveSiteTypeKeywords() {
         return isProjectVisible() && isInheritingSiteInformation() ? project.getSiteTypeKeywords() : getSiteTypeKeywords();
@@ -713,19 +663,16 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    //@IndexedEmbedded
     public Set<MaterialKeyword> getActiveMaterialKeywords() {
         return isProjectVisible() && isInheritingMaterialInformation() ? project.getMaterialKeywords() : getMaterialKeywords();
     }
 
     @Override
-    //@IndexedEmbedded(targetElement = OtherKeyword.class)
     public Set<OtherKeyword> getActiveOtherKeywords() {
         return isProjectVisible() && isInheritingOtherInformation() ? project.getOtherKeywords() : getOtherKeywords();
     }
 
     @Override
-    //@IndexedEmbedded
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return isProjectVisible() && isInheritingCulturalInformation() ? project.getCultureKeywords() : getCultureKeywords();
     }
@@ -749,25 +696,21 @@ public abstract class InformationResource extends Resource {
     }
 
     @Override
-    //@IndexedEmbedded
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return isProjectVisible() && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
     }
 
     @Override
-    //@IndexedEmbedded
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return isProjectVisible() && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();
     }
 
     @Override
-    //@IndexedEmbedded
     public Set<TemporalKeyword> getActiveTemporalKeywords() {
         return isProjectVisible() && isInheritingTemporalInformation() ? project.getTemporalKeywords() : getTemporalKeywords();
     }
 
     @Override
-    //@IndexedEmbedded
     public Set<CoverageDate> getActiveCoverageDates() {
         return isProjectVisible() && isInheritingTemporalInformation() ? project.getCoverageDates() : getCoverageDates();
     }
@@ -843,16 +786,6 @@ public abstract class InformationResource extends Resource {
         this.mappedDataKeyValue = mappedDataKeyValue;
     }
 
-//    //@Field(norms = Norms.YES, store = Store.NO)
-//    //@FieldBridge(impl = StringMapBridge.class)
-//    public Map<DataTableColumn, String> getRelatedDatasetData() {
-//        return relatedDatasetData;
-//    }
-//
-//    public void setRelatedDatasetData(Map<DataTableColumn, String> relatedDatasetData) {
-//        this.relatedDatasetData = relatedDatasetData;
-//    }
-
     @Transient
     @XmlTransient
     public boolean isInheritingSomeMetadata() {
@@ -923,7 +856,6 @@ public abstract class InformationResource extends Resource {
     // shortcut for non-deleted, visible files
     @Transient
     @XmlTransient
-    //@IndexedEmbedded
     public List<InformationResourceFile> getVisibleFilesWithThumbnails() {
         ArrayList<InformationResourceFile> visibleFiles = new ArrayList<InformationResourceFile>();
         for (InformationResourceFile irfile : getVisibleFiles()) {

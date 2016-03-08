@@ -52,17 +52,11 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
     @BulkImportField(key = "CREATOR_LNAME", order = 2)
-    //@Fields({ //@Field(name = QueryFieldNames.LAST_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            //@Field(name = QueryFieldNames.LAST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
-            //@Field(name = QueryFieldNames.LAST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
     @BulkImportField(key = "CREATOR_FNAME", order = 1)
-    //@Fields({ //@Field(name = QueryFieldNames.FIRST_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            //@Field(name = QueryFieldNames.FIRST_NAME_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
-            //@Field(name = QueryFieldNames.FIRST_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String firstName;
@@ -72,7 +66,6 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     private String orcidId;
 
     @Column(unique = true, nullable = true)
-    //@Field(name = "email", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @BulkImportField(key = "EMAIL", order = 3)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
@@ -81,7 +74,6 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     @Column(nullable = false, name = "email_public", columnDefinition = "boolean default FALSE")
     private Boolean emailPublic = Boolean.FALSE;
 
-    //@IndexedEmbedded(depth = 1)
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
     @BulkImportField(key = "CREATOR_PERSON_INSTITUTION", order = 50)
     @JsonView(JsonLookupFilter.class)
@@ -346,8 +338,6 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     }
 
     @Override
-    //@Field(norms = Norms.NO, store = Store.YES)
-//    @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }

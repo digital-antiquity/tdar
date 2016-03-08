@@ -29,7 +29,6 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
  * @version $Rev$
  */
 @Entity
-//@Indexed
 @Table(name = "document", indexes = {
         @Index(name = "document_type_index", columnList = "document_type")
 })
@@ -40,24 +39,20 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(key = "DOCUMENT_TYPE")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_subtype", length = FieldLength.FIELD_LENGTH_50)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     private DocumentSubType documentSubType;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @BulkImportField(key = "DEGREE")
     private DegreeType degree;
 
     @BulkImportField(key = "SERIES_NAME")
     @Column(name = "series_name")
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesName;
 
@@ -74,22 +69,16 @@ public class Document extends InformationResource {
     private String edition;
 
     @BulkImportField(key = "ISBN")
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
-    //@Analyzer(impl = KeywordAnalyzer.class)
     private String isbn;
 
     @BulkImportField(key = "BOOK_TITLE")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "book_title")
-    //@Field
-    // @Boost(1.5f)
     private String bookTitle;
 
     @BulkImportField(key = "ISSN")
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
-    //@Analyzer(impl = KeywordAnalyzer.class)
     private String issn;
 
     @BulkImportField(key = "START_PAGE", order = 10)
@@ -104,7 +93,6 @@ public class Document extends InformationResource {
 
     @BulkImportField(key = "JOURNAL_NAME")
     @Column(name = "journal_name")
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalName;
 
