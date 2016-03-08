@@ -160,17 +160,17 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertDeniedAccess(irFileIds, irFileVersionIds);
 
-        // compile irfileversion ids in a different way and try again.
-        irFileVersionIds.clear();
-        Image image = genericService.find(Image.class, imageId);
-        for (InformationResourceFile irfile : image.getInformationResourceFiles()) {
-            for (InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
-                if (irv != null) {
-                    irFileVersionIds.add(irv.getId());
-                }
-            }
-        }
-        assertDeniedAccess(irFileIds, irFileVersionIds);
+//        // compile irfileversion ids in a different way and try again.
+//        irFileVersionIds.clear();
+//        Image image = genericService.find(Image.class, imageId);
+//        for (InformationResourceFile irfile : image.getInformationResourceFiles()) {
+//            for (InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
+//                if (irv != null) {
+//                    irFileVersionIds.add(irv.getId());
+//                }
+//            }
+//        }
+//        assertDeniedAccess(irFileIds, irFileVersionIds);
 
     }
 

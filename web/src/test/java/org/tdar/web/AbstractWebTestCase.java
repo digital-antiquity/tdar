@@ -101,7 +101,7 @@ import net.sf.json.JSONSerializer;
  * 
  */
 //@ContextConfiguration(classes = TdarAppConfiguration.class)
-public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase implements WebTestCase {
+public abstract class AbstractWebTestCase  implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
 
@@ -1522,9 +1522,9 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         return logger;
     }
 
-//    public void assertNotEquals(Object o1, Object o2) {
-//    	assertFalse(Objects.equals(o1, o2));
-//	}
+    public void assertNotEquals(Object o1, Object o2) {
+    	assertFalse(Objects.equals(o1, o2));
+	}
 
 
 }

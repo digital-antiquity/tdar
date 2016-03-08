@@ -33,9 +33,9 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
@@ -48,7 +48,7 @@ import org.tdar.utils.jaxb.JaxbValidationEvent;
 
 import com.sun.media.rtsp.protocol.StatusCode;
 
-@RunWith(MultipleTdarConfigurationRunner.class)
+@RunWith(MultipleWebTdarConfigurationRunner.class)
 // @ContextConfiguration(classes = TdarAppConfiguration.class)
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
