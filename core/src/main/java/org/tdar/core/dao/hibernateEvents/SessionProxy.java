@@ -66,4 +66,13 @@ public class SessionProxy {
 		sessionQueue.clear();
 		
 	}
+
+	public void registerSessionCancel(Integer sessionId) {
+        logger.trace("register sessionCancel: {}", sessionId);
+        sessionQueue.remove(sessionId);
+        for (EventListener listener : listeners) {
+        		listener.clear(sessionId);
+        }
+		
+	}
 }
