@@ -564,9 +564,6 @@ TDAR.common = function (TDAR, fileupload) {
         //ahad: toggle license
         $(".licenseRadio", $("#license_section")).change(_toggleLicense);
 
-        //monitor document height and fire event when it changes
-        TDAR.documentHeightEvents();
-
         //Refresh any scrollspies whenever document height changes.
         $('[data-spy="scroll"]').each(function () {
             var $scrollspy = $(this);
