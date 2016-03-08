@@ -224,9 +224,10 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 	private String getDataTableId() {
         Long datasetId = extractTdarIdFromCurrentURL();
         gotoPage("/dataset/" + datasetId);
-		int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID + DATA_DEFAULT_DATA_TABLE_ID.length());
+//        logger.debug(getPageCode());
+		int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
 		logger.debug("index:{}", indexOf);
-		String substring = StringUtils.substring(getPageCode(), indexOf,100);
+		String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
 		logger.debug("index:{}", substring);
         substring = StringUtils.substring(substring,0, substring.indexOf("\""));
         return substring;
