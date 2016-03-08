@@ -1485,7 +1485,11 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
         createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
         createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
-        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), user.getInstitutionName());
+        String inst = user.getInstitutionName();
+        if (inst == null) {
+            inst = "";
+        }
+        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), inst);
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), viewAll.toString());
     }
 

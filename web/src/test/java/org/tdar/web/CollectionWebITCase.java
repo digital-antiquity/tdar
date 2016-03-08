@@ -122,9 +122,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String currentUrlPath = getCurrentUrlPath();
         logger.debug(currentUrlPath);
         for (Resource resource : someResources) {
-            if ((resource.getStatus() == Status.ACTIVE) || (resource.getStatus() == Status.DRAFT)) {
-                assertTextPresent(resource.getTitle());
-            }
+            assertTextPresent(resource.getTitle());
         }
         logout();
         gotoPage(currentUrlPath);

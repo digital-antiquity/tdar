@@ -57,6 +57,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
     	doc.setDate(dateCreated);
     	doc.setDocumentType(documentType);
     	doc.setStatus(status);
+    	doc.setId(id);
     	return doc;
     }
     
