@@ -43,7 +43,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/resource/usage")
-public class ResourceStatisticsController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {
+public class ResourceUsageAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 97924349900255693L;
     private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();
@@ -63,7 +63,7 @@ public class ResourceStatisticsController extends AuthenticationAware.Base imple
 
     @Override
     @Action(value = "{id}", results = {
-            @Result(name = SUCCESS, location = "../stats.ftl")
+            @Result(name = SUCCESS, location = "../usage.ftl")
     })
     public String execute() throws TdarActionException {
         setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
