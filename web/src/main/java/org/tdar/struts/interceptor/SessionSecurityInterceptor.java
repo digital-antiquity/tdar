@@ -1,5 +1,7 @@
 package org.tdar.struts.interceptor;
 
+import java.util.Objects;
+
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -85,7 +87,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 }
             }
             String invoke = invocation.invoke();
-            if (!Objects.equal(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equal(TdarActionSupport.ERROR, invocation.getResultCode())) {
+            if (!Objects.equals(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equals(TdarActionSupport.ERROR, invocation.getResultCode())) {
                 SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
             } else {
                 SessionProxy.getInstance().registerSessionCancel(genericService.getCurrentSessionHashCode());
