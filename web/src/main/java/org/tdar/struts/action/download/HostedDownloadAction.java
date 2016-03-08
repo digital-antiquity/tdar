@@ -2,6 +2,7 @@ package org.tdar.struts.action.download;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,17 +89,18 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
         }
 
         // Don't allow hosted download for files that belong to deleted resources
-        if(informationResourceFile.getInformationResource().isDeleted()) {
+        if (informationResourceFile.getInformationResource().isDeleted()) {
             getLogger().warn("attempt to download file associated with deleted resource: {}", informationResourceFile);
             addActionError("hostedDownloadController.invalid_request");
         }
 
         // Don't allow hosted download of deleted files
-        if(informationResourceFile.isDeleted()) {
+        if (informationResourceFile.isDeleted()) {
             getLogger().warn("attempt to download deleted file: {}", informationResourceFile);
             addActionError("hostedDownloadController.invalid_request");
         }
     }
+
     public Long getInformationResourceFileId() {
         return informationResourceFileId;
     }

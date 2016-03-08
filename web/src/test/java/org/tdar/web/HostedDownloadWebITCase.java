@@ -23,22 +23,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.SimpleHttpUtils;
+import org.tdar.utils.TestConfiguration;
 
 /**
  * Created by jimdevos on 10/20/14.
  */
 public class HostedDownloadWebITCase extends AbstractWebTestCase {
 
+    private static final String FILESTORE_DOWNLOAD = "data-file-id=\"";
     String REFERER_URL = "http://www.samplewebsite.info/gallery";
     String API_KEY_KEY = "apikey";
     String API_KEY_VALUE = "abc123";
 
-    long IRFV_ID = 68L;
+    long IRFV_ID = 354L;
     String IRF_FILENAME = "tag-fauna-ontology---taxon.owl";
 
     Logger logger = LoggerFactory.getLogger(getClass());
     TdarConfiguration tdarConfig = TdarConfiguration.getInstance();
-
+    TestConfiguration TEST = TestConfiguration.getInstance();
     CloseableHttpClient httpclient;
 
     public HostedDownloadWebITCase() {
@@ -70,14 +72,42 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
     /**
      * Perform a hosted download request with valid key, referrer, and file ID.
      */
-    public void testHostedDownloadSuccess() throws URISyntaxException, IOException {
+    public void testHostedDownloadDeleted() throws URISyntaxException, IOException {
 
         HttpGet httpget = httpGet(uriBuilder()
                 .setScheme("http")
                 .setHost(tdarConfig.getHostName())
                 .setPort(tdarConfig.getPort())
-                .setPath("/download/hosted/" + IRFV_ID)
-                .addParameter(API_KEY_KEY, API_KEY_VALUE)
+                .setPath("/download/hosted/" + IRFV_ID + "/" + API_KEY_VALUE)
+                .build());
+        httpget.addHeader(HttpHeaders.REFERER, REFERER_URL);
+
+        try (CloseableHttpResponse response = httpclient.execute(httpget)) {
+            //make sure that the server gave us a successful response
+            assertThat(response.getStatusLine().getStatusCode(), is(HttpStatus.SC_NOT_FOUND));
+        }
+    }
+
+    
+    @Test
+    /**
+     * Perform a hosted download request with valid key, referrer, and file ID.
+     */
+    public void testHostedDownloadSuccess() throws URISyntaxException, IOException {
+        login(TEST.getAdminUsername(), TEST.getAdminPassword());
+        createDocumentAndUploadFile("test");
+        String txt = getPageCode();
+        txt = txt.substring(txt.indexOf(FILESTORE_DOWNLOAD) + FILESTORE_DOWNLOAD.length() );
+//        logger.debug(txt.substring(0,100));
+        txt = txt.substring(0, txt.indexOf("\""));
+        
+        logout();
+        
+        HttpGet httpget = httpGet(uriBuilder()
+                .setScheme("http")
+                .setHost(tdarConfig.getHostName())
+                .setPort(tdarConfig.getPort())
+                .setPath("/download/hosted/" + txt + "/" + API_KEY_VALUE)
                 .build());
         httpget.addHeader(HttpHeaders.REFERER, REFERER_URL);
 
@@ -94,4 +124,5 @@ public class HostedDownloadWebITCase extends AbstractWebTestCase {
             assertThat("filesize matches response.entity.contentLength", (long) baos.size(), is(entity.getContentLength()));
         }
     }
+    
 }

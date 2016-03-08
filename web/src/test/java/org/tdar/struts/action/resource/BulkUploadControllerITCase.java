@@ -26,7 +26,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -56,6 +55,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionException;
@@ -72,7 +72,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * @version $Rev$
  */
-@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
     private static final String OTHER_LICENCE_TYPE_BOILERPLATE = "A long and boring piece of waffle";
