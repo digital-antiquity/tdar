@@ -51,5 +51,17 @@
 			<column name="collection_id" valueNumeric="1575" />
 			<column name="resource_id" valueNumeric="3088" />
 		</insert>
+        <insert tableName="download_authorization">
+            <column name="id" valueNumeric="1" />
+            <column name="resource_collection_id" valueNumeric="1000" />
+            <column name="api_key">aabc123</column>
+        </insert>
+        <insert tableName="referrer_hostnames">
+            <column name="download_authorization_id" valueNumeric="1" />
+            <column name="hostname">www.samplewebsite.info</column>
+        </insert>
+        <sql>
+            SELECT setval('download_authorization_id_seq', (SELECT MAX(id) FROM download_authorization)+1);
+        </sql>
 	</changeSet>
 </databaseChangeLog>
