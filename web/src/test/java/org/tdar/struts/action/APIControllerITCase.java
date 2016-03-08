@@ -22,7 +22,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -53,6 +52,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.api.ingest.APIController;
 import org.tdar.utils.TestConfiguration;
@@ -63,7 +63,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * 
  */
-@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Autowired
