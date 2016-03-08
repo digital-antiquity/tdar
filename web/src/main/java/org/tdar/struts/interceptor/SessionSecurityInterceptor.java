@@ -21,6 +21,7 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
+import com.google.common.base.Objects;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -85,7 +86,11 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 }
             }
             String invoke = invocation.invoke();
-            SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
+            if (!Objects.equal(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equal(TdarActionSupport.ERROR, invocation.getResultCode())) {
+                SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
+            } else {
+                SessionProxy.getInstance().registerSessionCancel(genericService.getCurrentSessionHashCode());
+            }
             return invoke;
         } catch (TdarActionException exception) {
             if (StatusCode.shouldShowException(exception.getStatusCode())) {
