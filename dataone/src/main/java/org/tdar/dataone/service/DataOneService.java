@@ -458,7 +458,7 @@ public class DataOneService implements DataOneConstants {
      * @throws UnsupportedEncodingException
      * @throws NoSuchAlgorithmException
      */
-    private ObjectResponseContainer constructMetadataFormatObject(InformationResource ir)
+    protected ObjectResponseContainer constructMetadataFormatObject(InformationResource ir)
             throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
         ObjectResponseContainer resp = setupResponse(ir);
         resp.setContentType(XML_CONTENT_TYPE);
