@@ -1,17 +1,33 @@
 package org.tdar.struts;
 
-import org.apache.struts2.StrutsSpringJUnit4TestCase;
-import org.springframework.mock.web.*;
+import java.io.UnsupportedEncodingException;
 
 import javax.servlet.ServletException;
-import java.io.UnsupportedEncodingException;
+
+import org.apache.struts2.StrutsSpringJUnit4TestCase;
+import org.junit.runner.RunWith;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.mock.web.MockPageContext;
+import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
 
 /**
  * This class mostly serves as a workaround for issues that arise when trying to use the StrutsSpringJUnit4TestCase
  * in Struts applications that use the Convention Plugin.
  */
-public class TdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T> {
+@ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
+@RunWith(SpringJUnit4ClassRunner.class)
+@WebAppConfiguration
+@Transactional
+@Rollback(value=true)
+public abstract class TdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T> {
     @Override
     protected void initServletMockObjects() {
         servletContext = new MockServletContext(applicationContext);

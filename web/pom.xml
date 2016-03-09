@@ -414,12 +414,12 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <excludes>
+                            <!-- <excludes>
                                 <exclude>**/org/tdar/experimental/**/*.java</exclude>
                                 <exclude>**/org/tdar/functional/**/*</exclude>
                                 <exclude>**/org/tdar/web/**/*</exclude>
                                 <exclude>**/org/tdar/struts/**/*</exclude>
-                            </excludes>
+                            </excludes> -->
                             <includes>
                                 <include>**/org/tdar/core/**/*</include>
                             </includes>
@@ -428,23 +428,37 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>integration-test-struts</id>
+                        <id>integration-test-spring</id>
                         <goals>
                             <goal>integration-test</goal>
                             <goal>verify</goal>
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <!-- <exclude>**/org/tdar/experimental/**/*.java</exclude>
                                 <exclude>**/org/tdar/functional/**/*</exclude>
                                 <exclude>**/org/tdar/web/**/*</exclude>
-                                <exclude>**/org/tdar/core/**/*</exclude>
-                            </excludes>
+                                <exclude>**/org/tdar/core/**/*</exclude> -->
+                            </excludes> 
                             <includes>
-                                <include>**/org/tdar/struts/**/*</include>
+                                <include>**/org/tdar/struts/action/**/*</include>
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
-                            <reportsDirectory>target/failsafe-reports/struts</reportsDirectory>
+                            <reportsDirectory>target/failsafe-reports/spring</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-struts-spring</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <includes>
+                                <include>**/org/tdar/struts/test/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/struts-spring</reportsDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -454,10 +468,10 @@
                             <goal>verify</goal>
                         </goals>
                         <configuration>
-                            <excludes>
+                            <!-- <excludes>
                                 <exclude>**/org/tdar/experimental/**/*.java</exclude>
                                 <exclude>**/org/tdar/functional/**/*</exclude>
-                            </excludes>
+                            </excludes> -->
                             <includes>
                                 <include>**/org/tdar/web/**/*</include>
                             </includes>
@@ -476,10 +490,10 @@
                             <skip>${skipSeleniumTests}</skip>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/selenium</reportsDirectory>
-                            <excludes>
+                            <!-- <excludes>
                                 <exclude>**/experimental/**/*.java</exclude>
                                 <exclude>**/web/**/*</exclude>
-                            </excludes>
+                            </excludes> -->
                             <includes>
                                 <include>**/org/tdar/functional/**/*</include>
                             </includes>

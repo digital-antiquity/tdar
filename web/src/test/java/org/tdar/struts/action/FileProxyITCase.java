@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts;
+package org.tdar.struts.action;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
 import static org.hamcrest.Matchers.empty;
