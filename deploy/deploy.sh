@@ -67,7 +67,8 @@ done
 hg pull
 hg update ${PARAM} -C
 # -Ddeploy.version=f9ad4d9b7942
-EXTRA=-Ddeploy.version=${PARAM}
+VERSION=`hg id -i`
+EXTRA=-Ddeploy.version=${VERSION}
 
 perl ../release/release.pl
 if [ -e /usr/local/lib/nagios3/amazon-sns-notify.rb ]
@@ -75,45 +76,67 @@ then
        /usr/local/lib/nagios3/amazon-sns-notify.rb "tdar.org > DEPLOY - $(hg id -n -b)"
 fi
 
-echo "setup..."
-mvn clean compile -Pversion ${EXTRA} -q
+
+echo "setting version to ${EXTRA}"
+mvn clean compile -Pversion ${EXTRA}
 handleError
 
-echo "build web..."
-mvn clean compile war:war -P web -q
+echo "downloading versions..."
+mvn clean package -Pprepare -q
 handleError
 
-mv target/tdar-web.war ${ADIR}
+cd target/
+
+echo "setup:web"
+rm -Rrf WEB-INF/classes/
+mkdir -p WEB-INF/classes/
+cp ../../web/src/main/resources/log4j2.xml WEB-INF/classes/
+cp ../../web/src/main/resources/*-local-settings.xml WEB-INF/classes/
+jar uvf web.war WEB-INF/classes/
+handleError
+
+echo "setup:tag"
+rm -Rrf WEB-INF/classes/
+mkdir -p WEB-INF/classes/
+cp ../../tag/src/main/resources/log4j2.xml WEB-INF/classes/
+cp ../../tag/src/main/resources/*-local-settings.xml WEB-INF/classes/
+jar uvf tag.war WEB-INF/classes/
+handleError
+
+echo "setup:oai-pmh"
+rm -Rrf WEB-INF/classes/
+mkdir -p WEB-INF/classes/
+cp ../../oai-pmh/src/main/resources/log4j2.xml WEB-INF/classes/
+# cp ../../oai-pmh/src/main/resources/*-local-settings.xml WEB-INF/classes/
+jar uvf oai-pmh.war WEB-INF/classes/
+handleError
+
+
+echo "setup:dataone"
+rm -Rrf WEB-INF/classes/
+mkdir -p WEB-INF/classes/
+cp ../../dataone/src/main/resources/log4j2.xml WEB-INF/classes/
+cp ../../dataone/src/main/resources/*-local-settings.xml WEB-INF/classes/
+jar uvf dataone.war WEB-INF/classes/
+handleError
+
+cp *.war ${ADIR}
 sudo service tomcat7 stop
 
+echo "update:database"
 mvn package -Pprepare,updateDB -q
 handleError
 
 sudo rm -Rrf /home/tdar/app/*
-cp ${ADIR}/tdar-web.war $TDIR/ROOT.war
+cp web.war $TDIR/ROOT.war
 sudo service tdar-tomcat7 start
-
-echo "build tag..."
-mvn clean compile war:war -P tag -q
-handleError
-mv target/tag.war ${ADIR}
-
-echo "build oai-pmh..."
-mvn clean compile war:war -P oai-pmh -q
-handleError
-mv target/oai-pmh.war ${ADIR}
-
-echo "build dataone..."
-mvn clean compile war:war -P dataone -q
-handleError
-mv target/dataone.war ${ADIR}
 
 sudo service tdar-tomcat7 stop
 
 sudo rm -Rrf /home/tdar/app-support/*
-cp ${ADIR}/dataone.war $TDIR/dataone.war
-cp ${ADIR}/tag.war $TDIR/services.war
-cp ${ADIR}/oai-pmh.war $TDIR/oai-pmh.war
+cp tag.war $TDIR/services.war
+cp dataone.war $TDIR/dataone.war
+cp oai-pmh.war $TDIR/oai-pmh.war
 sudo service tdar-tomcat7 start
 echo "done: ${date}"
 
