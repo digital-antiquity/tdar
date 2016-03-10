@@ -557,7 +557,7 @@
                         <artifactId>versions-maven-plugin</artifactId>
                         <version>2.2</version>
                         <configuration>
-                            <newVersion>14.0.${hg.absoluteversion}-NEOLITHIC</newVersion>
+                            <newVersion>14.1.${env.bamboo.buildNumber}</newVersion>
                             <generateBackupPoms>false</generateBackupPoms>
                             <processParent>true</processParent>
                         </configuration>
