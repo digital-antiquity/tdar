@@ -757,7 +757,7 @@
         <dependency>
             <groupId>edu.asu.lib</groupId>
             <artifactId>jaxb-document-api</artifactId>
-            <version>1.0.6-SNAPSHOT</version>
+            <version>1.0.5-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>

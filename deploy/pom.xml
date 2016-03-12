@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>deploy</artifactId>
-    <version>14.0.dcf096f4bff8-NEOLITHIC</version>
+    <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent</artifactId>
@@ -64,6 +64,57 @@
                                     <resourceBundles>
                                         <resourceBundle>org.tdar:database:${project.version}</resourceBundle>
                                     </resourceBundles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                        <version>2.10</version>
+                        <executions>
+                            <execution>
+                                <id>copy-dependencies1</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>get</goal>
+                                </goals>
+                                <configuration>
+                                    <artifact>org.tdar:web:${project.version}:war</artifact>
+                                    <destination>target/web.war</destination>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-dependencies2</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>get</goal>
+                                </goals>
+                                <configuration>
+                                    <artifact>org.tdar:dataone:${project.version}:war</artifact>
+                                    <destination>target/dataone.war</destination>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-dependencies3</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>get</goal>
+                                </goals>
+                                <configuration>
+                                    <artifact>org.tdar:oai-pmh:${project.version}:war</artifact>
+                                    <destination>target/oai-pmh.war</destination>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>copy-dependencies3</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>get</goal>
+                                </goals>
+                                <configuration>
+                                    <artifact>org.tdar:tag:${project.version}:war</artifact>
+                                    <destination>target/tag.war</destination>
                                 </configuration>
                             </execution>
                         </executions>

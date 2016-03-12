@@ -196,8 +196,12 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     	if (institution != null) {
     		istring = String.format("%s (%s)", institution.getName(), institution.getId());
     	}
-    	
-        return String.format("[RCP %s  role:%s rc:%s  p:%s  i:%s]", this.hashCode(), role, resourceCreator, pstring, istring);
+    	String rc = "null";
+    	if (resourceCreator != null) {
+    		rc = resourceCreator.toString();
+    	}
+        return String.format("[RCP %s  role:%s rc:%s  p:%s  i:%s]", 
+        		this.hashCode(), role, rc, pstring, istring);
     }
 
     @Override
