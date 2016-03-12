@@ -18,6 +18,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
@@ -134,6 +136,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         // close the popup window
         waitFor("#btnCloseWindow").click();
+        waitFor(ExpectedConditions.numberOfWindowsToBe(1), 1000);
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
         // switch back to polling page

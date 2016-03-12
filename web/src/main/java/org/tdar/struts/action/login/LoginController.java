@@ -81,6 +81,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
                     @Result(name = SUCCESS, type = "redirect", location = "/")
             })
     @SkipValidation
+//    @PostOnly
     public String logout() {
         if (getSessionData().isAuthenticated()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
