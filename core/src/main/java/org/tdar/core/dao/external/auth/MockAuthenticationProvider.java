@@ -62,11 +62,13 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user) {
         MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
-        info.setToken(null);
+        info.setToken("abc123");
+//        info.setToken(null);
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals(TdarConfiguration.getInstance().getRequestTokenName())) {
                 cookie.setMaxAge(0);
-            } 
+                cookie.setValue("abc123");
+            }
             response.addCookie(cookie);
         }
     }
