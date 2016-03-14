@@ -63,6 +63,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     public void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user) {
         MockAuthenticationInfo info = users.get(user.getUsername().toLowerCase());
         info.setToken("abc123");
+        logger.debug("logout: {}", user.getUsername().toLowerCase());
 //        info.setToken(null);
         for (Cookie cookie : request.getCookies()) {
             if (cookie.getName().equals(TdarConfiguration.getInstance().getRequestTokenName())) {
@@ -238,10 +239,13 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     @Override
     public AuthenticationResult checkToken(String token, HttpServletRequest request) {
         AuthenticationResult result = new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
+        logger.debug("checkToken:{}", token);
+
         if (StringUtils.isBlank(token)) {
             return result;
         }
         for (MockAuthenticationInfo info : users.values()) {
+            logger.debug("checkToken:{} --> {} ", token, info.getUsername());
             if (Objects.equals(token, info.getToken())) {
                 result.setTokenUsername(info.getUsername());
                 result.setType(AuthenticationResultType.VALID);
