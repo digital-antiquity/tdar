@@ -44,6 +44,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.bulk.BulkFileProxy;
@@ -131,6 +132,7 @@ public class BulkUploadService {
     private BulkManifestProxy loadExcelManifest(BulkFileProxy wrapper, InformationResource resourceTemplate, TdarUser submitter,
             Collection<FileProxy> fileProxies,
             Long ticketId) {
+
         BulkManifestProxy manifestProxy = null;
         File excelManifest = wrapper.getFile();
         if ((excelManifest != null) && excelManifest.exists()) {
@@ -174,6 +176,8 @@ public class BulkUploadService {
             final Collection<FileProxy> fileProxies,
             final Long accountId) {
         genericDao.clearCurrentSession();
+        SessionProxy.getInstance().registerSessionCancel(genericDao.getCurrentSessionHashCode());
+
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
 
         InformationResource resourceTemplate = resourceTemplate_;
@@ -194,6 +198,7 @@ public class BulkUploadService {
 
         if (CollectionUtils.isEmpty(fileProxies)) {
             TdarRecoverableRuntimeException throwable = new TdarRecoverableRuntimeException("bulkUploadService.the_system_has_not_received_any_files");
+            SessionProxy.getInstance().registerSessionCancel(genericDao.getCurrentSessionHashCode());
             throw throwable;
         }
         logger.debug("mapping metadata with excelManifest:" + excelManifest);
@@ -215,6 +220,7 @@ public class BulkUploadService {
         if (CollectionUtils.isNotEmpty(asyncErrors)) {
             logger.debug("not moving further because of async validation errors: {}", asyncErrors);
             completeBulkUpload(accountId, updateReciever, excelManifest, ticketId);
+            SessionProxy.getInstance().registerSessionCancel(genericDao.getCurrentSessionHashCode());
             return;
         }
 
@@ -227,7 +233,9 @@ public class BulkUploadService {
 
         logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
         completeBulkUpload(accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
-        reindexProject(projectId, updateReciever);
+        SessionProxy.getInstance().registerSessionClose(genericDao.getCurrentSessionHashCode(),false);
+
+//        reindexProject(projectId, updateReciever);
 
         logger.info("bulk: done");
     }
