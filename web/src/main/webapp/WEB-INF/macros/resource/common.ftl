@@ -294,12 +294,7 @@ Common macros used in multiple contexts
             <li><a href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a></li>
             <li><@loginButton class="button" /></li>
         <#else>
-            <#--<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>-->
-            <li>
-            <form class="form-unstyled" id="frmLogout" name="logoutForm" method="post" action="/logout">
-                    <input type="submit" class="tdar-button" name="submit" value="Logout">
-            </form>
-            </li>
+            <li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
         </#if>
         <#if showMenu>
         </ul>
