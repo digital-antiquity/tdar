@@ -79,7 +79,7 @@
         <@view.kvp key="Year" val=resource.date?c />
     </#if>
 
-    <#if copyrightMandatory && resource.copyrightHolder?? >
+    <#if copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
@@ -346,7 +346,7 @@
         <@view.categoryVariables />
     </#if>
     <#if !resource.resourceType.project >
-        <#if licensesEnabled?? &&  licensesEnabled>
+        <#if licensesEnabled?? &&  licensesEnabled || resource.licenseType?has_content >
             <@view.license />
         </#if>
     </#if>

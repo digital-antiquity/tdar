@@ -17,12 +17,12 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
-import org.tdar.search.config.TdarSearchAppConfiguration;
 
 public class FAIMSTransferTool {
 
@@ -45,7 +45,7 @@ public class FAIMSTransferTool {
 
 	public static void main(String[] args) throws IOException {
 		final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(TdarSearchAppConfiguration.class);
+		applicationContext.register(TdarAppConfiguration.class);
 		applicationContext.refresh();
 		applicationContext.start();
 		username = args[0];
