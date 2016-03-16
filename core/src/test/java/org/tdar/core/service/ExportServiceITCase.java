@@ -1,6 +1,7 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.util.Arrays;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class ExportServiceITCase extends AbstractIntegrationTestCase {
 	@Rollback
 	public void testSingleExport() throws Exception {
 		Document doc = generateDocumentWithFileAndUser();
-		File export = exportService.export(doc);
+		File export = exportService.export(Arrays.asList(doc));
 		logger.debug("exported:{}", export);
 	}
 }

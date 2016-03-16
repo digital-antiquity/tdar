@@ -105,9 +105,9 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         for (File file : dir.listFiles()) {
             uploadFileAsync(restriction, file);
         }
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("#submitButton")));
+//        waitFor(ExpectedConditions.elementToBeClickable(By.id("#submitButton")));
         submitForm();
-        waitForPageload();
+        //waitForPageload();
         String path = getDriver().getCurrentUrl();
 
         path = getDriver().getCurrentUrl();
@@ -141,9 +141,9 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("#submitButton")));
+//        waitFor(ExpectedConditions.elementToBeClickable(By.id("#submitButton")));
         submitForm();
-        waitForPageload();
+        //waitForPageload();
         String path = getDriver().getCurrentUrl();
 
         path = getDriver().getCurrentUrl();

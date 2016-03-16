@@ -5,9 +5,10 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -16,6 +17,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
@@ -23,8 +25,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -38,190 +42,223 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
 
+import opennlp.tools.util.eval.Mean;
+
 @Service
 public class ResourceExportService {
 
-	private static final String ZIP = ".zip";
-	private static final String EXPORT = "export";
-	private static final String RESOURCE_XML = "resource.xml";
-	private static final String UPLOADED = "files/";
-	private static final String ARCHIVAL = "archival/";
-	private static final String PROJECT_XML = "project.xml";
-	protected final Logger logger = LoggerFactory.getLogger(getClass());
-	Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
-	@Autowired
-	private GenericDao genericDao;
+    private static final String ZIP = ".zip";
+    private static final String EXPORT = "export";
+    private static final String RESOURCE_XML = "resource.xml";
+    private static final String UPLOADED = "files/";
+    private static final String ARCHIVAL = "archival/";
+    private static final String PROJECT_XML = "project.xml";
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
+    Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
-	@Autowired
-	private SerializationService serializationService;
+    @Autowired
+    private GenericDao genericDao;
 
-	@Transactional(readOnly = true)
-	public File export(final Resource... resources) throws Exception {
-		String edir = EXPORT + System.currentTimeMillis();
-		File dir = new File(FileUtils.getTempDirectory(), edir);
-		dir.mkdir();
-		File zipFile = File.createTempFile(EXPORT, ZIP);
-		ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipFile));
-		File schema = serializationService.generateSchema();
-		writeToZip(zout, schema, "tdar.xsd");
-		for (Resource r : resources) {
-			String base = String.format("%s/%s/", r.getResourceType(), r.getId());
-			if (r instanceof InformationResource) {
-				InformationResource ir = ((InformationResource) r);
-				if (((InformationResource) r).getProject() != Project.NULL) {
-					Project p = setupResourceForExport(ir.getProject());
-					File file = writeToFile(dir, p, PROJECT_XML);
-					writeToZip(zout, file, base + PROJECT_XML);
-				}
-				for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
-					InformationResourceFileVersion uploaded = irf.getLatestUploadedVersion();
-					InformationResourceFileVersion archival = irf.getLatestUploadedVersion();
-					File retrieveFile = FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, uploaded);
-					writeToZip(zout, retrieveFile, base + UPLOADED + retrieveFile.getName());
-					if (archival != null && Objects.equal(archival, uploaded)) {
-						File archicalFile = FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, archival);
-						writeToZip(zout, archicalFile, base + ARCHIVAL + retrieveFile.getName());
-					}
-				}
-			}
-			Resource r_ = setupResourceForExport(r);
-			File file = writeToFile(dir, r_, RESOURCE_XML);
-			writeToZip(zout, file, base + RESOURCE_XML);
-		}
-		IOUtils.closeQuietly(zout);
-		return zipFile;
-	}
+    @Autowired
+    private EmailService emailService;
 
-	private void writeToZip(ZipOutputStream zout, File file, String name) throws IOException, FileNotFoundException {
-		ZipEntry zentry = new ZipEntry(name);
-		zout.putNextEntry(zentry);
-		logger.debug("adding to archive: {}", name);
-		FileInputStream fin = new FileInputStream(file);
-		IOUtils.copy(fin, zout);
-		IOUtils.closeQuietly(fin);
-		zout.closeEntry();
-	}
+    @Autowired
+    private SerializationService serializationService;
 
-	@Transactional(readOnly = true)
-	private File writeToFile(File dir, Resource resource, String filename) throws Exception {
-		String convertToXML = serializationService.convertToXML(resource);
-		File type = new File("target/export/" + resource.getResourceType().name());
-		File file = new File(dir, filename);
+    @Transactional(readOnly = true)
+    public File export(final List<Resource> resources) throws Exception {
+        String edir = EXPORT + System.currentTimeMillis();
+        File dir = new File(FileUtils.getTempDirectory(), edir);
+        dir.mkdir();
+        File zipFile = File.createTempFile(EXPORT, ZIP);
+        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipFile));
+        File schema = serializationService.generateSchema();
+        writeToZip(zout, schema, "tdar.xsd");
+        for (Resource r : resources) {
+            String base = String.format("%s/%s/", r.getResourceType(), r.getId());
+            if (r instanceof InformationResource) {
+                InformationResource ir = ((InformationResource) r);
+                if (((InformationResource) r).getProject() != Project.NULL) {
+                    Project p = setupResourceForExport(ir.getProject());
+                    File file = writeToFile(dir, p, PROJECT_XML);
+                    writeToZip(zout, file, base + PROJECT_XML);
+                }
+                for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+                    InformationResourceFileVersion uploaded = irf.getLatestUploadedVersion();
+                    InformationResourceFileVersion archival = irf.getLatestUploadedVersion();
+                    File retrieveFile = FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, uploaded);
+                    writeToZip(zout, retrieveFile, base + UPLOADED + retrieveFile.getName());
+                    if (archival != null && Objects.equal(archival, uploaded)) {
+                        File archicalFile = FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, archival);
+                        writeToZip(zout, archicalFile, base + ARCHIVAL + retrieveFile.getName());
+                    }
+                }
+            }
+            Resource r_ = setupResourceForExport(r);
+            File file = writeToFile(dir, r_, RESOURCE_XML);
+            writeToZip(zout, file, base + RESOURCE_XML);
+        }
+        IOUtils.closeQuietly(zout);
+        return zipFile;
+    }
 
-		FileUtils.writeStringToFile(file, convertToXML);
-		return file;
-	}
+    private void writeToZip(ZipOutputStream zout, File file, String name) throws IOException, FileNotFoundException {
+        ZipEntry zentry = new ZipEntry(name);
+        zout.putNextEntry(zentry);
+        logger.debug("adding to archive: {}", name);
+        FileInputStream fin = new FileInputStream(file);
+        IOUtils.copy(fin, zout);
+        IOUtils.closeQuietly(fin);
+        zout.closeEntry();
+    }
 
-	@Transactional(readOnly = true)
-	protected <R extends Resource> R setupResourceForExport(final R resource) {
-		genericDao.markReadOnly(resource);
+    @Transactional(readOnly = true)
+    private File writeToFile(File dir, Resource resource, String filename) throws Exception {
+        String convertToXML = serializationService.convertToXML(resource);
+        File type = new File("target/export/" + resource.getResourceType().name());
+        File file = new File(dir, filename);
 
-		Long id = resource.getId();
-		if (id == null) {
-			logger.debug("ID NULL: {}", resource);
-		}
+        FileUtils.writeStringToFile(file, convertToXML);
+        return file;
+    }
 
-		for (Keyword kwd : resource.getAllActiveKeywords()) {
-			clearId(kwd);
-			if (kwd instanceof HierarchicalKeyword) {
-				((HierarchicalKeyword) kwd).setParent(null);
-			}
-		}
+    @Deprecated()
+    //"not needed beyond FAIMS export tool"
+    @Transactional(readOnly = true)
+    public <R extends Resource> R setupResourceForExport(final R resource) {
+        genericDao.markReadOnly(resource);
 
-		for (ResourceCreator rc : resource.getResourceCreators()) {
-			clearId(rc);
-			nullifyCreator(rc.getCreator());
-		}
+        Long id = resource.getId();
+        if (id == null) {
+            logger.debug("ID NULL: {}", resource);
+        }
 
-		// remove internal
-		resource.getResourceCollections().removeIf(rc -> rc.isInternal());
-		resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
-		resource.getResourceCollections().forEach(rc -> {
-			clearId(rc);
-			rc.setResourceIds(null);
-			rc.getResources().clear();
-		});
+        for (Keyword kwd : resource.getAllActiveKeywords()) {
+            clearId(kwd);
+            if (kwd instanceof HierarchicalKeyword) {
+                ((HierarchicalKeyword) kwd).setParent(null);
+            }
+        }
 
-		resource.getActiveRelatedComparativeCollections().forEach(cc -> clearId(cc));
-		resource.getActiveSourceCollections().forEach(cc -> clearId(cc));
-		resource.getActiveCoverageDates().forEach(cd -> clearId(cd));
-		resource.getResourceNotes().forEach(rn -> clearId(rn));
+        for (ResourceCreator rc : resource.getResourceCreators()) {
+            clearId(rc);
+            nullifyCreator(rc.getCreator());
+        }
 
-		resource.getResourceAnnotations().forEach(ra -> {
-			clearId(ra);
-			clearId(ra.getResourceAnnotationKey());
-		});
+        // remove internal
+        resource.getResourceCollections().removeIf(rc -> rc.isInternal());
+        resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
+        resource.getResourceCollections().forEach(rc -> {
+            clearId(rc);
+            rc.setResourceIds(null);
+            rc.getResources().clear();
+        });
 
-		resource.getResourceAnnotations()
-				.add(new ResourceAnnotation(new ResourceAnnotationKey("TDAR ID"), id.toString()));
+        resource.getActiveRelatedComparativeCollections().forEach(cc -> clearId(cc));
+        resource.getActiveSourceCollections().forEach(cc -> clearId(cc));
+        resource.getActiveCoverageDates().forEach(cd -> clearId(cd));
+        resource.getResourceNotes().forEach(rn -> clearId(rn));
 
-		if (resource instanceof InformationResource) {
-			InformationResource ir = (InformationResource) resource;
-			nullifyCreator(ir.getPublisher());
-			nullifyCreator(ir.getResourceProviderInstitution());
-			nullifyCreator(ir.getCopyrightHolder());
+        resource.getResourceAnnotations().forEach(ra -> {
+            clearId(ra);
+            clearId(ra.getResourceAnnotationKey());
+        });
 
-			List<FileProxy> proxies = new ArrayList<>();
-			for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
-				if (irf.isDeleted()) {
-					continue;
-				}
-				proxies.add(new FileProxy(irf));
-			}
-			ir.getInformationResourceFiles().clear();
-			ir.setFileProxies(proxies);
+        resource.getResourceAnnotations()
+                .add(new ResourceAnnotation(new ResourceAnnotationKey("TDAR ID"), id.toString()));
 
-			if (PersistableUtils.isNotNullOrTransient(ir.getProjectId())) {
-				ir.setProject(new Project(ir.getProjectId(), null));
-				ir.setMappedDataKeyColumn(null);
-			}
+        if (resource instanceof InformationResource) {
+            InformationResource ir = (InformationResource) resource;
+            nullifyCreator(ir.getPublisher());
+            nullifyCreator(ir.getResourceProviderInstitution());
+            nullifyCreator(ir.getCopyrightHolder());
 
-			if (resource instanceof Dataset) {
-				Dataset dataset = (Dataset) resource;
-				dataset.setDataTables(null);
-				dataset.setRelationships(null);
-			}
+            List<FileProxy> proxies = new ArrayList<>();
+            for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
+                if (irf.isDeleted()) {
+                    continue;
+                }
+                proxies.add(new FileProxy(irf));
+            }
+            ir.getInformationResourceFiles().clear();
+            ir.setFileProxies(proxies);
 
-			if (resource instanceof CodingSheet) {
-				CodingSheet codingSheet = (CodingSheet) resource;
-				codingSheet.setCodingRules(null);
-				codingSheet.setAssociatedDataTableColumns(null);
-				codingSheet.setDefaultOntology(null);
-			}
+            if (PersistableUtils.isNotNullOrTransient(ir.getProjectId())) {
+                ir.setProject(new Project(ir.getProjectId(), null));
+                ir.setMappedDataKeyColumn(null);
+            }
 
-			if (resource instanceof Ontology) {
-				((Ontology) resource).setOntologyNodes(null);
-			}
+            if (resource instanceof Dataset) {
+                Dataset dataset = (Dataset) resource;
+                dataset.setDataTables(null);
+                dataset.setRelationships(null);
+            }
 
-		}
+            if (resource instanceof CodingSheet) {
+                CodingSheet codingSheet = (CodingSheet) resource;
+                codingSheet.setCodingRules(null);
+                codingSheet.setAssociatedDataTableColumns(null);
+                codingSheet.setDefaultOntology(null);
+            }
 
-		resource.setId(null);
-		return resource;
-	}
+            if (resource instanceof Ontology) {
+                ((Ontology) resource).setOntologyNodes(null);
+            }
 
-	public void clearId(Persistable p) {
-		genericDao.markReadOnly(p);
-		p.setId(null);
+        }
 
-	}
+        resource.setId(null);
+        return resource;
+    }
 
-	private void nullifyCreator(Creator creator) {
-		if (creator == null) {
-			return;
-		}
-		clearId(creator);
-		if (creator instanceof Person) {
-			Person person = (Person) creator;
-			if (person.getInstitution() != null) {
-				clearId(person.getInstitution());
-			}
-		}
-	}
+    public void clearId(Persistable p) {
+        genericDao.markReadOnly(p);
+        p.setId(null);
+
+    }
+
+    private void nullifyCreator(Creator creator) {
+        if (creator == null) {
+            return;
+        }
+        clearId(creator);
+        if (creator instanceof Person) {
+            Person person = (Person) creator;
+            if (person.getInstitution() != null) {
+                clearId(person.getInstitution());
+            }
+        }
+    }
+
+    @Async
+    @Transactional(readOnly = true)
+    public void exportAsync(List<Long> ids, TdarUser authenticatedUser) {
+        try {
+            List<Resource> resources = genericDao.findAll(Resource.class, ids);
+            File file = export(resources);
+            Email email = new Email();
+            email.setTo(authenticatedUser.getEmail());
+            email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
+            email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
+            Map<String, Object> dataModel = new HashMap<>();
+            dataModel.put("resources", resources);
+            dataModel.put("file", file);
+            String url = "";
+            dataModel.put("url", url);
+            dataModel.put("authenticatedUser", authenticatedUser);
+            emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
+        } catch (Exception e) {
+            logger.error("error in export", e);
+        }
+    }
+
 
 }
