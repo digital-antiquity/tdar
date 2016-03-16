@@ -83,7 +83,7 @@
 		</thead>
 		<tbody>
 			<#list xmlFiles as file>
-				<tr><td>${file.name}</td><td>${file.totalSpace}</td></tr>
+				<tr><td>${file.name}</td><td></td><td>${file.totalSpace}</td></tr>
 			</#list>
 		</tbody>
 	</table>
