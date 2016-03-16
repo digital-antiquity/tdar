@@ -77,6 +77,16 @@
     </table>
     </#if>
 
+	<table class="table">
+		<thead>
+			<th><td>filename</td><td>date</td><td>size</td></th>
+		</thead>
+		<tbody>
+			<#list xmlFiles as file>
+				<tr><td>${file.name}</td><td>${file.totalSpace}</td></tr>
+			</#list>
+		</tbody>
+	</table>
     <@view.accessRights />
 
     <@view.adminFileActions />
