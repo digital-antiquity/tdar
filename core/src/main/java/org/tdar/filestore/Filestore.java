@@ -33,6 +33,8 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+
 public interface Filestore {
 
     static final String FILENAME_SANITIZE_REGEX = "([\\W&&[^\\s\\-\\+\\.]])";
@@ -267,7 +269,10 @@ public interface Filestore {
         @Override
         public Collection<File> listXmlRecordFiles(FilestoreObjectType type, Long persistableId) {
         	File dir = getDirectory(type, persistableId);
-        	return FileUtils.listFiles(dir, new String[]{"xml"}, false);
+        	if (dir.exists()) {
+        		return FileUtils.listFiles(dir, new String[]{"xml"}, false);
+        	}
+        	return Collections.emptyList();
         }
 
         
