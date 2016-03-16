@@ -50,8 +50,6 @@ import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
 
-import opennlp.tools.util.eval.Mean;
-
 @Service
 public class ResourceExportService {
 
