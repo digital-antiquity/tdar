@@ -1020,7 +1020,12 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         assertTrue(msg, internalPage.getUrl().toString().contains(url));
     }
 
-    // get the "main" form. it's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna specify it outright
+
+    //fixme: replace this madness with css selector-based methods
+    /**
+     * Get the "main" form. It's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna
+     * specify it outright.
+     */
     public HtmlForm getForm() {
         logger.trace("FORM{} OTHERS: {}", _internalForm, getHtmlPage().getForms());
         if (_internalForm == null) {
@@ -1031,7 +1036,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
                     if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
-                            !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
+                            !form.getNameAttribute().equalsIgnoreCase("searchheader") && !"logoutForm".equals(form.getNameAttribute())) {
                         htmlForm = form;
                         logger.trace("using form: {}", htmlForm.getNameAttribute());
                         break;
