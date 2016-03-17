@@ -282,6 +282,8 @@ public class GenericKeywordService {
         genericKeywordDao.markUpdatable(keyword);
         keyword.setLabel(label);
         keyword.setDefinition(description);
+        keyword.getExternalMappings().clear();
+        keyword.getExternalMappings().addAll(list);
         genericKeywordDao.saveOrUpdate(keyword);
     }
 
