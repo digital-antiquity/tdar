@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -70,6 +73,21 @@ public class ResourceExportService {
 
     @Autowired
     private SerializationService serializationService;
+
+    @Transactional(readOnly = true)
+    public File export(ResourceExportProxy rep) throws Exception {
+        List<Resource> resources = new ArrayList<>();
+        if (PersistableUtils.isNotNullOrTransient(rep.getAccount())) {
+            resources.addAll(rep.getAccount().getResources());
+        }
+        if (PersistableUtils.isNotNullOrTransient(rep.getCollection())) {
+            resources.addAll(rep.getCollection().getResources());
+        }
+        if (CollectionUtils.isNotEmpty(rep.getResources())) {
+            resources.addAll(rep.getResources());
+        }
+        return export(resources);
+    }
 
     @Transactional(readOnly = true)
     public File export(final List<Resource> resources) throws Exception {
@@ -129,7 +147,7 @@ public class ResourceExportService {
     }
 
     @Deprecated()
-    //"not needed beyond FAIMS export tool"
+    // "not needed beyond FAIMS export tool"
     @Transactional(readOnly = true)
     public <R extends Resource> R setupResourceForExport(final R resource) {
         genericDao.markReadOnly(resource);
@@ -238,16 +256,15 @@ public class ResourceExportService {
 
     @Async
     @Transactional(readOnly = true)
-    public void exportAsync(List<Long> ids, TdarUser authenticatedUser) {
+    public void exportAsync(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
         try {
-            List<Resource> resources = genericDao.findAll(Resource.class, ids);
-            File file = export(resources);
+            File file = export(resourceExportProxy);
             Email email = new Email();
             email.setTo(authenticatedUser.getEmail());
             email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
             email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
             Map<String, Object> dataModel = new HashMap<>();
-            dataModel.put("resources", resources);
+            dataModel.put("resources", resourceExportProxy);
             dataModel.put("file", file);
             String url = "";
             dataModel.put("url", url);
@@ -257,6 +274,5 @@ public class ResourceExportService {
             logger.error("error in export", e);
         }
     }
-
 
 }
