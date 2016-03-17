@@ -402,7 +402,7 @@
                                 <goals>
                                     <goal>setup</goal>
                                     <goal>optimize</goal>
-<!--                                    <goal>aggregate</goal>-->
+                                    <goal>aggregate</goal>
                                     <goal>optimizeIntegration</goal>
                                     <goal>snapshot</goal>
                                 </goals>
