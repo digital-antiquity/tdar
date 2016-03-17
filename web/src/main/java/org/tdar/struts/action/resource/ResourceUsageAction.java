@@ -66,14 +66,6 @@ public class ResourceUsageAction extends AuthenticationAware.Base implements Pre
             @Result(name = SUCCESS, location = "../usage.ftl")
     })
     public String execute() throws TdarActionException {
-        setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
-                Arrays.asList(getResource().getId())));
-        if (getResource() instanceof InformationResource) {
-            for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
-                getDownloadStats().put(file.getFilename(), resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
-            }
-        }
-        setupAggregateStats();
         return SUCCESS;
     }
 
@@ -186,6 +178,14 @@ public class ResourceUsageAction extends AuthenticationAware.Base implements Pre
     @Override
     public void prepare() throws Exception {
         prepareAndLoad(this, RequestType.EDIT);
+        setUsageStatsForResources(resourceService.getUsageStatsForResources(DateGranularity.WEEK, new Date(0L), new Date(), 1L,
+                Arrays.asList(getResource().getId())));
+        if (getResource() instanceof InformationResource) {
+            for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
+                getDownloadStats().put(file.getFilename(), resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
+            }
+        }
+        setupAggregateStats();
     }
 
     public String getCategoryKeys() {

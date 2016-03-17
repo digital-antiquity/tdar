@@ -1,13 +1,23 @@
 package org.tdar.core.service.resource;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
@@ -15,8 +25,10 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -26,53 +38,98 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.external.EmailService;
+import org.tdar.filestore.Filestore;
+import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+
+import com.google.common.base.Objects;
 
 @Service
 public class ResourceExportService {
 
+    private static final String ZIP = ".zip";
+    private static final String EXPORT = "export";
+    private static final String RESOURCE_XML = "resource.xml";
+    private static final String UPLOADED = "files/";
+    private static final String ARCHIVAL = "archival/";
+    private static final String PROJECT_XML = "project.xml";
     protected final Logger logger = LoggerFactory.getLogger(getClass());
+    Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
     @Autowired
     private GenericDao genericDao;
 
     @Autowired
+    private EmailService emailService;
+
+    @Autowired
     private SerializationService serializationService;
 
-    @Transactional
-    public void export(final Resource... resources) {
-//        for (Resource r : resources) {
-//            File dir = new File();
-//            FileUtils.forceMkdir(type);
-//            File dir = new File(type, id.toString());
-//            FileUtils.forceMkdir(dir);
-//            
-//            List<File> files = new ArrayList<>();
-//            if (r instanceof InformationResource && ((InformationResource) r).getProject() != Project.NULL) {
-//                Project p = setupResourceForExport(((InformationResource) r).getProject());
-//                File file = writeToFile(dir, p, "project.xml");
-//            }
-//            Resource r_ = setupResourceForExport(r);
-//
-//        }
+    @Transactional(readOnly = true)
+    public File export(final List<Resource> resources) throws Exception {
+        String edir = EXPORT + System.currentTimeMillis();
+        File dir = new File(FileUtils.getTempDirectory(), edir);
+        dir.mkdir();
+        File zipFile = File.createTempFile(EXPORT, ZIP);
+        ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipFile));
+        File schema = serializationService.generateSchema();
+        writeToZip(zout, schema, "tdar.xsd");
+        for (Resource r : resources) {
+            String base = String.format("%s/%s/", r.getResourceType(), r.getId());
+            if (r instanceof InformationResource) {
+                InformationResource ir = ((InformationResource) r);
+                if (((InformationResource) r).getProject() != Project.NULL) {
+                    Project p = setupResourceForExport(ir.getProject());
+                    File file = writeToFile(dir, p, PROJECT_XML);
+                    writeToZip(zout, file, base + PROJECT_XML);
+                }
+                for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+                    InformationResourceFileVersion uploaded = irf.getLatestUploadedVersion();
+                    InformationResourceFileVersion archival = irf.getLatestUploadedVersion();
+                    File retrieveFile = FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, uploaded);
+                    writeToZip(zout, retrieveFile, base + UPLOADED + retrieveFile.getName());
+                    if (archival != null && Objects.equal(archival, uploaded)) {
+                        File archicalFile = FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, archival);
+                        writeToZip(zout, archicalFile, base + ARCHIVAL + retrieveFile.getName());
+                    }
+                }
+            }
+            Resource r_ = setupResourceForExport(r);
+            File file = writeToFile(dir, r_, RESOURCE_XML);
+            writeToZip(zout, file, base + RESOURCE_XML);
+        }
+        IOUtils.closeQuietly(zout);
+        return zipFile;
     }
-    
-    
 
-    @Transactional(readOnly=true)
-    private File writeToFile(File dir, Resource resource,String filename) throws Exception {
-      String convertToXML = serializationService.convertToXML(resource);
-      File type = new File("target/export/" + resource.getResourceType().name());
-      File file = new File(dir, filename);
-
-      FileUtils.writeStringToFile(file, convertToXML);
-        return null;
+    private void writeToZip(ZipOutputStream zout, File file, String name) throws IOException, FileNotFoundException {
+        ZipEntry zentry = new ZipEntry(name);
+        zout.putNextEntry(zentry);
+        logger.debug("adding to archive: {}", name);
+        FileInputStream fin = new FileInputStream(file);
+        IOUtils.copy(fin, zout);
+        IOUtils.closeQuietly(fin);
+        zout.closeEntry();
     }
 
+    @Transactional(readOnly = true)
+    private File writeToFile(File dir, Resource resource, String filename) throws Exception {
+        String convertToXML = serializationService.convertToXML(resource);
+        File type = new File("target/export/" + resource.getResourceType().name());
+        File file = new File(dir, filename);
 
+        FileUtils.writeStringToFile(file, convertToXML);
+        return file;
+    }
 
+    @Deprecated()
+    //"not needed beyond FAIMS export tool"
     @Transactional(readOnly = true)
     public <R extends Resource> R setupResourceForExport(final R resource) {
         genericDao.markReadOnly(resource);
@@ -80,7 +137,6 @@ public class ResourceExportService {
         Long id = resource.getId();
         if (id == null) {
             logger.debug("ID NULL: {}", resource);
-
         }
 
         for (Keyword kwd : resource.getAllActiveKeywords()) {
@@ -113,8 +169,9 @@ public class ResourceExportService {
             clearId(ra);
             clearId(ra.getResourceAnnotationKey());
         });
-        logger.debug(id.toString());
-        resource.getResourceAnnotations().add(new ResourceAnnotation(new ResourceAnnotationKey("FAIMS ID"), id.toString()));
+
+        resource.getResourceAnnotations()
+                .add(new ResourceAnnotation(new ResourceAnnotationKey("TDAR ID"), id.toString()));
 
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;
@@ -154,7 +211,6 @@ public class ResourceExportService {
                 ((Ontology) resource).setOntologyNodes(null);
             }
 
-        
         }
 
         resource.setId(null);
@@ -179,5 +235,28 @@ public class ResourceExportService {
             }
         }
     }
+
+    @Async
+    @Transactional(readOnly = true)
+    public void exportAsync(List<Long> ids, TdarUser authenticatedUser) {
+        try {
+            List<Resource> resources = genericDao.findAll(Resource.class, ids);
+            File file = export(resources);
+            Email email = new Email();
+            email.setTo(authenticatedUser.getEmail());
+            email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
+            email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
+            Map<String, Object> dataModel = new HashMap<>();
+            dataModel.put("resources", resources);
+            dataModel.put("file", file);
+            String url = "";
+            dataModel.put("url", url);
+            dataModel.put("authenticatedUser", authenticatedUser);
+            emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
+        } catch (Exception e) {
+            logger.error("error in export", e);
+        }
+    }
+
 
 }

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.DigestInputStream;
@@ -11,6 +12,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +32,8 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 public interface Filestore {
 
@@ -74,7 +78,11 @@ public interface Filestore {
      */
     String store(FilestoreObjectType type, InputStream content, FileStoreFileProxy object) throws IOException;
 
-    long getSizeInBytes();
+    File getXmlRecordFile(FilestoreObjectType type, Long persistableId, String filename);
+
+	Collection<File> listXmlRecordFiles(FilestoreObjectType type, Long persistableId);
+
+	long getSizeInBytes();
 
     String getSizeAsReadableString();
 
@@ -257,6 +265,24 @@ public interface Filestore {
             return Arrays.asList(logDir.listFiles());
         }
 
+        
+        @Override
+        public Collection<File> listXmlRecordFiles(FilestoreObjectType type, Long persistableId) {
+        	File dir = getDirectory(type, persistableId);
+        	if (dir.exists()) {
+        		return FileUtils.listFiles(dir, new String[]{"xml"}, false);
+        	}
+        	return Collections.emptyList();
+        }
+
+        
+        @Override
+        public File getXmlRecordFile(FilestoreObjectType type, Long persistableId,String filename) {
+        	File dir = getDirectory(type, persistableId);
+        	return new File(dir, filename);
+        }
+
+        
         @Override
         public File getLogFile(LogType type, Integer year, String filename) {
             String subdir = String.format("%s/%s/%s/%s", FilestoreObjectType.LOG.getRootDir(), type.getDir(), year, filename);
@@ -361,4 +387,6 @@ public interface Filestore {
     }
 
     void markReadOnly(FilestoreObjectType type, List<FileStoreFileProxy> filesToProcess);
+
+	File getDirectory(FilestoreObjectType type, Long persistableId);
 }

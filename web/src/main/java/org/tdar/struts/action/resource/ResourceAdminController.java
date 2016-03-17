@@ -1,5 +1,6 @@
 package org.tdar.struts.action.resource;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -17,8 +18,11 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.filestore.Filestore;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -33,12 +37,14 @@ import com.opensymphony.xwork2.Preparable;
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 public class ResourceAdminController extends AuthenticationAware.Base implements Preparable {
 
-    private static final long serialVersionUID = -2071449250711089300L;
+    private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
+	private static final long serialVersionUID = -2071449250711089300L;
     public static final String ADMIN = "admin";
     private List<ResourceRevisionLog> resourceLogEntries;
 
     private List<ResourceRevisionLog> logEntries;
     private Set<ResourceCollection> effectiveResourceCollections = new HashSet<>();
+    private List<File> xmlFiles = new ArrayList<>();
 
     private Resource resource;
     private Long id;
@@ -53,8 +59,6 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
             @Result(name = SUCCESS, location = "../resource/admin.ftl")
     })
     public String viewAdmin() throws TdarActionException {
-        setResourceLogEntries(resourceService.getLogsForResource(getResource()));
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
         return SUCCESS;
     }
 
@@ -65,6 +69,9 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
         } else {
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
+        setResourceLogEntries(resourceService.getLogsForResource(getResource()));
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+        getXmlFiles().addAll(FILESTORE.listXmlRecordFiles(FilestoreObjectType.RESOURCE, id));
     }
 
     public List<ResourceRevisionLog> getLogEntries() {
@@ -116,5 +123,13 @@ public class ResourceAdminController extends AuthenticationAware.Base implements
         }
         return permissions;
     }
+
+	public List<File> getXmlFiles() {
+		return xmlFiles;
+	}
+
+	public void setXmlFiles(List<File> xmlFiles) {
+		this.xmlFiles = xmlFiles;
+	}
 
 }

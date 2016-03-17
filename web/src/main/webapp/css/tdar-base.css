@@ -103,6 +103,10 @@ a.button, .tdar-button, input.tdar-button[type=submit] {
     padding-top:0;
     padding-bottom:0;
 }
+.subnav ul.subnav-rht form.form-unstyled input.tdar-button {
+    margin-right: 4px;
+    width: 121px; /* 115px + 16px */
+}
 
 /* Muted background color - when you want to de-emphasize a button in favor of another */
 a.button.muted, .tdar-button.muted, input.tdar-button.muted[type=submit] {
@@ -491,7 +495,7 @@ header .welcome-drop ul {
     padding: 12px 12px 12px 0;
 }
 
-.subnav ul.subnav-rht a {
+.subnav ul.subnav-rht a, .subnav ul.subnav-rht form.form-unstyled input {
     float: left;
     margin-left: 12px;
     width: 105px;
