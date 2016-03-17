@@ -19,6 +19,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractDeleteAction;
 import org.tdar.utils.jaxb.XMLFilestoreLogger;
+import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
 
 import com.opensymphony.xwork2.Preparable;
 
