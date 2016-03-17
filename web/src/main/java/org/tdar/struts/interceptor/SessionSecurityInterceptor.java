@@ -21,6 +21,8 @@ import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
+import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -70,7 +72,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
 
         HttpServletResponse response = ServletActionContext.getResponse();
         SessionType mark = SessionType.READ_ONLY;
-        SessionProxy.getInstance().registerSession(genericService.getCurrentSessionHashCode());
+        registerHibernateEventListener(invocation);
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = SessionType.WRITEABLE;
@@ -80,12 +82,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
         try {
             // ASSUMPTION: this interceptor and the invoked action run in the _same_ thread. We tag the NDC so we can follow this action in the logfile
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
-            if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
-                if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
-                    TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
-                    invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, user));
-                }
-            }
+            registerObfuscationListener(invocation, mark);
             String invoke = invocation.invoke();
             if (!Objects.equals(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equals(TdarActionSupport.ERROR, invocation.getResultCode())) {
                 SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
@@ -112,6 +109,31 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 logger.warn("ClientAbortException:{}", e, e);
             }
             throw e;
+        }
+    }
+
+    private void registerHibernateEventListener(ActionInvocation invocation) {
+        boolean managed = true;
+        try {
+            if (ReflectionService.methodOrActionContainsAnnotation(invocation, ManuallyProcessEvents.class)) {
+                managed = false;
+            }
+        } catch (SecurityException | NoSuchMethodException e) {
+            logger.error("issue registering manually processed events", e);
+        }
+        if (managed) {
+            SessionProxy.getInstance().registerSession(genericService.getCurrentSessionHashCode());
+        } else {
+            SessionProxy.getInstance().registerIgnoreSession(genericService.getCurrentSessionHashCode());
+        }
+    }
+
+    private void registerObfuscationListener(ActionInvocation invocation, SessionType mark) throws NoSuchMethodException {
+        if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+            if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
+                TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
+                invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, user));
+            }
         }
     }
 

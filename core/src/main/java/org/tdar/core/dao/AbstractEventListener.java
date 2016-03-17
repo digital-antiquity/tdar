@@ -99,6 +99,11 @@ public abstract class AbstractEventListener<C> implements EventListener {
     }
 
     protected synchronized void addToSession(EventSource session, C entity) {
+        if (EVENT_PROXY.ignoreSession(session)) {
+            logger.trace("skipping session... manually managed");
+            return;
+        }
+        
 		if (idChangeMap.getIfPresent(session) == null) {
             idChangeMap.put(session, new HashSet<>());
         }
