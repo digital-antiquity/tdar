@@ -56,7 +56,7 @@
         <!-- Be warned: Eclipse may have a different active profile in play 
             to the command line -->
         <build.profile.id>default</build.profile.id>
-        <clover.version>4.0.6</clover.version>
+        <clover.version>4.1.1</clover.version>
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
@@ -386,10 +386,9 @@
                 <plugins>
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
-                        <artifactId>maven-clover2-plugin</artifactId>
+                        <artifactId>clover-maven-plugin</artifactId>
                         <version>${clover.version}</version>
                         <configuration>
-                            <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
                             <licenseLocation>/home/bamboo/clover.license</licenseLocation>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
