@@ -49,6 +49,7 @@
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
+        <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
             resources -->
         <!-- override by redefining in a profile. don't forget to 'clean' 
@@ -389,7 +390,7 @@
                         <artifactId>clover-maven-plugin</artifactId>
                         <version>${clover.version}</version>
                         <configuration>
-                            <licenseLocation>/home/bamboo/clover.license</licenseLocation>
+                            <licenseLocation>${clover.licenseDir}/clover.license</licenseLocation>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
@@ -401,8 +402,8 @@
                                 <goals>
                                     <goal>setup</goal>
                                     <goal>optimize</goal>
-                                    <!-- <goal>aggregate</goal> -->
                                     <goal>optimizeIntegration</goal>
+                                    <!-- <goal>aggregate</goal>  -->
                                     <goal>snapshot</goal>
                                 </goals>
                             </execution>
@@ -461,6 +462,7 @@
                         <version>${antrun.version}</version>
                         <executions>
                             <execution>
+                                <id>default-cli</id>
                                 <phase>validate</phase>
                                 <goals>
                                     <goal>run</goal>
