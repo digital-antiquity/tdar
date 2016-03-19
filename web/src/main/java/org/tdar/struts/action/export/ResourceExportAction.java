@@ -17,12 +17,12 @@ public class ResourceExportAction extends AbstractResourceExportAction {
     private static final long serialVersionUID = -3023487888719749700L;
 
     @Override
-    @Action(value = "export", results = {
+    @Action(value = "perform", results = {
             @Result(name = SUCCESS, location = "perform.ftl")
     })
     @PostOnly
     public String execute() {
-        resourceExportService.exportAsync(getIds(), getAuthenticatedUser());
+        resourceExportService.exportAsync(getExportProxy(), getAuthenticatedUser());
         return SUCCESS;
     }
     

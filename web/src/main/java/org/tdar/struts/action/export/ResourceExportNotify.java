@@ -16,7 +16,7 @@ public class ResourceExportNotify extends AbstractResourceExportAction {
     private static final long serialVersionUID = -2267784497236541448L;
 
     @Override
-    @Action(value = "export", results = {
+    @Action(value = "download", results = {
             @Result(name = SUCCESS, location = "wait.ftl")
     })
     public String execute() {

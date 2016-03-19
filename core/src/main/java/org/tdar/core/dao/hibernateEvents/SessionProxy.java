@@ -16,6 +16,7 @@ public class SessionProxy {
     private final static SessionProxy INSTANCE = new SessionProxy();
 
     private final BlockingQueue<Integer> sessionQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
+    private final BlockingQueue<Integer> sessionIgnoreQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private Set<EventListener> listeners = new HashSet<>();
     
@@ -44,10 +45,15 @@ public class SessionProxy {
     public boolean isSessionManaged(Session session) {
         return sessionQueue.contains(session.hashCode());
     }
+    
+    public boolean ignoreSession(Session session) {
+        return sessionIgnoreQueue.contains(session.hashCode());
+    }
 
     public void registerSessionClose(Integer sessionId, boolean isReadOnly) {
         logger.trace("register sessionClosed: {}", sessionId);
         sessionQueue.remove(sessionId);
+        sessionIgnoreQueue.remove(sessionId);
         for (EventListener listener : listeners) {
         	if (isReadOnly) {
         		listener.clear(sessionId);
@@ -70,9 +76,16 @@ public class SessionProxy {
 	public void registerSessionCancel(Integer sessionId) {
         logger.trace("register sessionCancel: {}", sessionId);
         sessionQueue.remove(sessionId);
+        sessionIgnoreQueue.remove(sessionId);
         for (EventListener listener : listeners) {
         		listener.clear(sessionId);
         }
 		
 	}
+
+    public void registerIgnoreSession(Integer sessionId) {
+        sessionIgnoreQueue.add(sessionId);
+        registerSession(sessionId);
+        
+    }
 }
