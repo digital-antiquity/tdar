@@ -141,9 +141,9 @@ color: #7d7a77;
                                <@s.hidden name="invoice.numberOfMb" label="Number of Mb"  theme="simple" cssClass="integer span2" maxlength=9 />
                     
 
-                    <@invoiceCommon.pricingOption label="Small" files="1 File" storage="10 MB" cost=50 />
-                    <@invoiceCommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=400 />
-                    <@invoiceCommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=2500 />
+                    <@invoiceCommon.pricingOption label="Small" files="1 File" storage="10 MB" cost=10 />
+                    <@invoiceCommon.pricingOption label="Medium" files="10 Files" storage="100 MB" cost=100 />
+                    <@invoiceCommon.pricingOption label="Large" files="100 Files" storage="1 GB" cost=500 />
     </@s.form>
                 </div>
             </div>

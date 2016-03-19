@@ -17,7 +17,7 @@
         <h2>Create</h2>
     </div>
     <div class="span4">
-        <h2>Organize</h2>
+        <h2>Add</h2>
     </div>
     </div>
         <div class="row">
@@ -32,39 +32,35 @@
                 drawings or figures, and some maps.
             </div>
 
-        <#if (projectId!-1) == -1>
+
+        <div class="span4">
+            <h3><a href="<@s.url value="/cart/add"/>">Add Space</a></h3>
+            Create a new account or add files or space to your account.  
+        </div>
+    </div>
+    <div class="row">
+        <div class="span4">
+            <h3 class="dataset-mid-red"><@link "dataset" "Dataset" /></h3>
+            A collection of data, usually in tabular form with columns representing variables and rows representing cases. A database usually refers to a
+            set of linked or related datasets. Examples from archaeology include small spreadsheets documenting measurements and/or analysis of artifacts,
+            as well as large databases cataloging all artifacts from a site.
+        </div>
+        <div class="span4">
+            <h3><a href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">
+            <img src="<@s.url value="/images/r4/bulk.png"/>" alt='Bulk Upload' title="Bulk Upload" style="vertical-align:text-bottom">
+            Bulk Upload</a></h3>
+            Useful for uploading groups of resources with similar metadata at once.  Complete an excel file template that includes the filename, title, date, 
+            and other basic information and then upload your files.                
+
+        </div>
             <div class="span4">
+            <h2>Organize</h2>
                 <h3 class="project-mid-red"><@link "project" "Project" /></h3>
 
                 In ${siteAcronym}, a project is an organizational tool for working with groups of related resources. Projects in ${siteAcronym}  may contain related reports, photographs, maps,
                  and databases, and those resources may inherit metadata from the parent project.
             </div>
-        </#if>
-        </div>
-
-        <div class="row">
-            <div class="span4">
-                <h3 class="dataset-mid-red"><@link "dataset" "Dataset" /></h3>
-                A collection of data, usually in tabular form with columns representing variables and rows representing cases. A database usually refers to a
-                set of linked or related datasets. Examples from archaeology include small spreadsheets documenting measurements and/or analysis of artifacts,
-                as well as large databases cataloging all artifacts from a site.
-            </div>
-            <div class="span4">
-                <h3><a href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">
-                <img src="<@s.url value="/images/r4/bulk.png"/>" alt='Bulk Upload' title="Bulk Upload" style="vertical-align:text-bottom">
-                Bulk Upload</a></h3>
-                Useful for uploading groups of resources with similar metadata at once.  Complete an excel file template that includes the filename, title, date, 
-                and other basic information and then upload your files.                
-
-            </div>
-            <div class="span4">
-                <h3 class="collection-mid-red"><@link "collection" "Collection"/></h3>
-                In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and
-                hierarchies of resources in any way they find useful. A secondary use of collections allows users to easily administer view and edit
-                permissions for large numbers of persons and resources.
-            </div>
-        </div>
-
+    </div>
         <div class="row">
             <div class="span4">
                 <h3 class="geospatial-mid-red"><@link "geospatial" "Geospatial" /></h3>
@@ -74,12 +70,13 @@
                 <h3 class="sensory_data-mid-red"><@link "sensory-data" "Sensory Data / 3D Scan" /></h3>
                 Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example.
             </div>
-            <!--
             <div class="span4">
-                <h3 class="collection-mid-red"><@link "Acollection" "Shared Collection"/></h3>
-                A tool to share and organize any resources in tDAR into a group.
+                <h3 class="collection-mid-red"><@link "collection" "Collection"/></h3>
+                In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and
+                hierarchies of resources in any way they find useful. A secondary use of collections allows users to easily administer view and edit
+                permissions for large numbers of persons and resources.
             </div>
-            -->
+
         </div>
 
         <#if videoEnabled>
