@@ -49,6 +49,7 @@
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
+        <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
             resources -->
         <!-- override by redefining in a profile. don't forget to 'clean' 
@@ -56,7 +57,7 @@
         <!-- Be warned: Eclipse may have a different active profile in play 
             to the command line -->
         <build.profile.id>default</build.profile.id>
-        <clover.version>4.0.6</clover.version>
+        <clover.version>4.1.1</clover.version>
         <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
     </properties>
 
@@ -389,11 +390,10 @@
                 <plugins>
                     <plugin>
                         <groupId>com.atlassian.maven.plugins</groupId>
-                        <artifactId>maven-clover2-plugin</artifactId>
+                        <artifactId>clover-maven-plugin</artifactId>
                         <version>${clover.version}</version>
                         <configuration>
-                            <maven.clover.licenseLocation>/home/bamboo/clover.license</maven.clover.licenseLocation>
-                            <licenseLocation>/home/bamboo/clover.license</licenseLocation>
+                            <licenseLocation>${clover.licenseDir}/clover.license</licenseLocation>
                             <cloverDatabase>${clover.dir}/database/</cloverDatabase>
                             <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
@@ -405,8 +405,8 @@
                                 <goals>
                                     <goal>setup</goal>
                                     <goal>optimize</goal>
-<!--                                    <goal>aggregate</goal>-->
                                     <goal>optimizeIntegration</goal>
+                                    <!-- <goal>aggregate</goal>  -->
                                     <goal>snapshot</goal>
                                 </goals>
                             </execution>
@@ -465,6 +465,7 @@
                         <version>${antrun.version}</version>
                         <executions>
                             <execution>
+                                <id>default-cli</id>
                                 <phase>validate</phase>
                                 <goals>
                                     <goal>run</goal>
