@@ -130,6 +130,12 @@
     <profiles>
         <profile>
             <id>jetty</id>
+            <activation>
+                <!-- always run (except when told not to) -->
+                <file>
+                   <exists>src/main/webapp</exists>
+                </file>
+            </activation>
             <build>
                 <defaultGoal>jetty:run</defaultGoal>
                 <plugins>
@@ -162,7 +168,7 @@
                         <artifactId>jetty-maven-plugin</artifactId>
                         <version>${jetty.version}</version>
                         <configuration>
-                            <skip>${skipJetty}</skip>
+                            <skip>${skipTests}</skip>
                             <testClassesDirectory>${basedir}/src/test/resources/</testClassesDirectory>
                             <useTestClasspath>${use.test.classpath}</useTestClasspath>
                             <scanIntervalSeconds>10</scanIntervalSeconds>
