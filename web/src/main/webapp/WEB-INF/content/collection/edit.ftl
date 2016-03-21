@@ -142,7 +142,7 @@
                 The form will check for matches in the ${siteAcronym} database and populate the related fields.</p>
             <em>Types of Permissions</em>
             <dl>
-                <dt>View All</dt>
+                <dt>View and Download</dt>
                 <dd>User can view/download all file attachments associated with the resources in the collection.</dd>
                 <dt>Modify Record
                 <dt>
