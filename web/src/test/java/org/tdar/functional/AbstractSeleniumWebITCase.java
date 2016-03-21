@@ -240,6 +240,18 @@ public abstract class AbstractSeleniumWebITCase {
         public void beforeNavigateTo(String url, WebDriver driver) {
             beforePageChange();
         }
+
+        @Override
+        public void afterNavigateRefresh(WebDriver arg0) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void beforeNavigateRefresh(WebDriver arg0) {
+            // TODO Auto-generated method stub
+            
+        }
     };
 
     /**
