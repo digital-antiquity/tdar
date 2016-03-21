@@ -391,8 +391,8 @@
                         <version>${clover.version}</version>
                         <configuration>
                             <licenseLocation>${clover.licenseDir}/clover.license</licenseLocation>
-                            <cloverDatabase>${clover.dir}/database/</cloverDatabase>
-                            <cloverMergeDatabase>${clover.dir}/merge-database/</cloverMergeDatabase>
+                            <!-- <cloverDatabase>${clover.dir}/database.db</cloverDatabase>
+                            <cloverMergeDatabase>${clover.dir}/merge-database.db</cloverMergeDatabase> -->
                             <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
                         </configuration>
                         <executions>
@@ -403,7 +403,7 @@
                                     <goal>setup</goal>
                                     <goal>optimize</goal>
                                     <goal>optimizeIntegration</goal>
-                                    <!-- <goal>aggregate</goal>  -->
+                                    <goal>aggregate</goal>
                                     <goal>snapshot</goal>
                                 </goals>
                             </execution>
@@ -572,12 +572,6 @@
                         </executions>
                     </plugin>
                 </plugins>
-            </build>
-        </profile>
-        <profile>
-            <id>packageForBamboo</id>
-            <build>
-                <directory>target/package</directory>
             </build>
         </profile>
     </profiles>
