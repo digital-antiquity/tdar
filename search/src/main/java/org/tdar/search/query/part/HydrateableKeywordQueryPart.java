@@ -94,10 +94,10 @@ public class HydrateableKeywordQueryPart<K extends Keyword> extends AbstractHydr
             topLevel.setOperator(Operator.OR);
             FieldQueryPart<Long> irIdPart = new FieldQueryPart<Long>(getFieldName(), getOperator(), ids);
             FieldQueryPart<String> irLabelPart = new FieldQueryPart<String>(getFieldName() + LABEL, getOperator(), labels);
-            irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            irLabelPart.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED, PhraseFormatter.QUOTED);
             FieldQueryPart<String> irLabelKeyPart = new FieldQueryPart<String>(getFieldName() + LABEL_KEYWORD, getOperator(),
                     labels);
-            irLabelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            irLabelKeyPart.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED, PhraseFormatter.QUOTED);
             QueryPartGroup group = new QueryPartGroup(getOperator(), new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, irLabelPart), 
                     new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, irIdPart), 
                     new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, irLabelKeyPart));
