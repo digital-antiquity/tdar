@@ -66,7 +66,6 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     public void prepare() {
         super.prepare();
         informationResourceFile = getGenericService().find(InformationResourceFile.class, informationResourceFileId);
-        String referrer = getServletRequest().getHeader("referrer");
         if (StringUtils.isBlank(apiKey)) {
             addActionError("hostedDownloadController.api_key_required");
         }
@@ -74,13 +73,10 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
         if (PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
             InformationResourceFileVersion fileVersion = informationResourceFile.getLatestUploadedVersion();
 
-            //Validate the download request. Add any errors it incounters to the actionErrors list.
-            addActionErrors(authorzationService.checkValidUnauthenticatedDownload(fileVersion, getApiKey(), referrer));
-
-            if(!hasActionErrors()) {
-                getLogger().error("Bad hosted download request. file:{}  referrer:{} ", informationResourceFile, referrer);
-                getAuthorizationService().applyTransientViewableFlag(fileVersion, getAuthenticatedUser());
+            if (!authorzationService.checkValidUnauthenticatedDownload(fileVersion, getApiKey(), getServletRequest())) {
+                addActionError("hostedDownloadController.invalid_request");
             }
+            getAuthorizationService().applyTransientViewableFlag(fileVersion, getAuthenticatedUser());
         }
     }
 
