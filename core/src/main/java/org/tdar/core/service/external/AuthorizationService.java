@@ -624,13 +624,15 @@ public class AuthorizationService implements Accessible {
      * 
      * @param informationResourceFileVersion
      * @param apiKey
-     * @param request
-     * @return true, if download authorized.
+     * @param referrer
+     * @return List of errors in the form of localization messages to be expanded e.g. from a TextProvider.  An empty
+     * list indicates success.
      */
     @Transactional(readOnly = true)
-    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
-        String referrer = request.getHeader("referer");
+    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+        //String referrer = request.getHeader("referer");
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
+        List<String> errors = new ArrayList<>();
         try {
             URL url = new URL(referrer);
             referrer = url.getHost();
@@ -639,10 +641,15 @@ public class AuthorizationService implements Accessible {
             referrer = "";
         }
         if (StringUtils.isBlank(referrer)) {
-            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
+            errors.add("authorizationService.referrer_invalid");
+        } else {
+            List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
+            if(CollectionUtils.isEmpty(authorizations)) {
+                errors.add("authorizationService.invalid_request");
+            }
+
         }
-        List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
-        return CollectionUtils.isNotEmpty(authorizations);
+        return errors;
     }
 
     @Transactional(readOnly = true)
