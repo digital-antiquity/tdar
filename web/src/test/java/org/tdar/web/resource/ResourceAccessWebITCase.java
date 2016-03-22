@@ -8,7 +8,7 @@ import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-
+    
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     @Test
