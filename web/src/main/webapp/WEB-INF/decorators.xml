@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+vim:sts=2:sw=2:
+-->
+<decorators defaultdir="/WEB-INF/decorators">
+    <excludes>
+        <pattern>**/ajax/**</pattern>
+        <pattern>/css/*</pattern>
+        <pattern>/images/*</pattern>
+        <pattern>/includes/*</pattern>
+        <pattern>/js/*</pattern>
+        <pattern>/*.html</pattern>
+        <pattern>/map</pattern>
+        <pattern>/resourceGraph</pattern>
+        <pattern>/featured</pattern>
+        <pattern>/featuredCollection</pattern>
+        <pattern>/config-browser/*</pattern>
+        <pattern>/services/*</pattern>
+    </excludes>
+    <decorator name="main" page="layout-bootstrap.dec">
+        <pattern>/*</pattern>
+    </decorator>
+    <!--whitelabel has no lookup pattern; to use, explicitly declare in request attributes or in META tag on to-be-decorated page -->
+<!--     <decorator name="whitelabel" page="/WEB-INF/decorator/layout-whitelabel.dec" /> -->
+</decorators>
+
