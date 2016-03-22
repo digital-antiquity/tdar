@@ -12,6 +12,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.opensymphony.xwork2.ValidationAware;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -620,13 +621,14 @@ public class AuthorizationService implements Accessible {
      * 
      * @param informationResourceFileVersion
      * @param apiKey
-     * @param request
-     * @return true, if download authorized.
+     * @param referrer
+     * @return An empty list if the operation was successful, otherwise a List of erors in the form of message keys.
+     *      Look up the key in a locale string provider to get the actual error message.
      */
     @Transactional(readOnly = true)
-    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
-        String referrer = request.getHeader("referer");
+    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
+        List<String> errorKeys = new ArrayList<>();
         try {
             URL url = new URL(referrer);
             referrer = url.getHost();
@@ -635,11 +637,14 @@ public class AuthorizationService implements Accessible {
             referrer = "";
         }
         if (StringUtils.isBlank(referrer)) {
-            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
-            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
+            logger.error("Invalid referrer.  fileVersion:{}  referrer:{}", informationResourceFileVersion, referrer);
+            errorKeys.add("authorizationService.referrer_invalid");
         }
         List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
-        return CollectionUtils.isNotEmpty(authorizations);
+        if(CollectionUtils.isEmpty(authorizations)) {
+            errorKeys.add("hostedDownloadController.invalid_request");
+        }
+        return errorKeys;
     }
 
     @Transactional(readOnly = true)
