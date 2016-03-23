@@ -19,7 +19,7 @@ public class ExportServiceITCase extends AbstractIntegrationTestCase {
 	@Rollback
 	public void testSingleExport() throws Exception {
 		Document doc = generateDocumentWithFileAndUser();
-		File export = exportService.export(Arrays.asList(doc));
+		File export = exportService.export("test123.zip", Arrays.asList(doc));
 		logger.debug("exported:{}", export);
 	}
 }

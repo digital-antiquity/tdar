@@ -22,7 +22,7 @@
         <label class="control-label" for="collectionName">Collection</label>
     </div>
     <div id="collection" class="controls-row span10">
-                        <@s.hidden name="collectionId"  id="collectionId" />
+                <@s.hidden name="collectionId"  id="collectionId" />
                 <@s.textfield theme="simple" id="collectionName" name="collectionName" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
                     autocompleteIdElement="#collectionId" maxlength=255
                     autocompleteParentElement="#collection" />
