@@ -108,6 +108,8 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         for (CoverageDate cov : toSortedList(source.getActiveCoverageDates())) {
             if (cov.getDateType() == CoverageType.CALENDAR_DATE) {
                 dc.addDate(String.format("start:%s end:%s", cov.getStartDate(), cov.getEndDate()));
+            } else {
+                dc.addDate(cov.toString());
             }
         }
 
