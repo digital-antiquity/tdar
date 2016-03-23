@@ -125,7 +125,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "verifyFilestore", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
     })
     public String verifyFilestore() throws IOException {
         scheduledProcessService.cronVerifyTdarFiles();
@@ -134,7 +134,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "updateDois", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
     })
     public String updateDois() throws IOException {
         scheduledProcessService.cronUpdateDois();
@@ -143,7 +143,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "runWeekly", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
     })
     public String runWeekly() throws IOException {
         scheduledProcessService.queue(WeeklyStatisticsLoggingProcess.class);
@@ -152,7 +152,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "rebuildCaches", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
     })
     public String rebuildCaches() {
         scheduledProcessService.queue(SitemapGeneratorProcess.class);
@@ -162,7 +162,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "logAccounts", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
     })
     public String logAccounts() {
         scheduledProcessService.queue(AccountUsageHistoryLoggingTask.class);
@@ -171,7 +171,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "buildCreators", results = {
-            @Result(name = SUCCESS, type = "redirect", location = "/admin")
+            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
     })
     public String buildCreators() {
         getLogger().debug("manually running 'build creator'");
@@ -192,7 +192,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "fix-pluralization", results = {
-            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
     @WriteableSession
     @PostOnly
     public String cleanupPluralization() {
@@ -201,7 +201,7 @@ public class AdminController extends AuthenticationAware.Base {
     }
 
     @Action(value = "fix-institutions", results = {
-            @Result(name = SUCCESS, type = REDIRECT, location = "/admin/internal") })
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
     @WriteableSession
     public String cleanupInstitutionNames() {
         authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());

@@ -89,7 +89,7 @@ public class RequestPermissonsController extends AuthenticationAware.Base implem
     @Action(value = "process-access-request",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/${resource.id}/${resource.slug}"),
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = "/${resource.urlNamespace}/${resource.id}/${resource.slug}"),
                     @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
                             params = { "status", "500" }),
                     @Result(name = INPUT, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",

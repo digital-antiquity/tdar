@@ -24,7 +24,7 @@ import org.tdar.utils.PersistableUtils;
 @Namespace("/cart")
 @ParentPackage("secured")
 @Results({
-        @Result(name = "redirect-payment", type = "redirect", location = "/cart/process-payment-request"),
+        @Result(name = "redirect-payment", type = "tdar-redirect", location = "/cart/process-payment-request"),
 })
 public class CartBillingAccountController extends AbstractCartController {
 
@@ -95,8 +95,8 @@ public class CartBillingAccountController extends AbstractCartController {
      * @return
      */
     @Action(value = "process-billing-account-choice", results = {
-            @Result(name = INPUT, location = "review", type = "redirect"),
-            @Result(name = SUCCESS, location = "process-payment-request", type = "redirect") })
+            @Result(name = INPUT, location = "review", type = "tdar-redirect"),
+            @Result(name = SUCCESS, location = "process-payment-request", type = "tdar-redirect") })
     @PostOnly
     @WriteableSession
     public String processBillingAccountChoice() {

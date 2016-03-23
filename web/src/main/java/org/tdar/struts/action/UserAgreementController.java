@@ -68,9 +68,9 @@ public class UserAgreementController extends AuthenticationAware.Base implements
 
     @WriteableSession
     @Action(value = "agreement-response", results = {
-            @Result(name = TdarActionSupport.SUCCESS, type = "redirect", location = "/dashboard"),
-            @Result(name = TdarActionSupport.NONE, type = "redirect", location = "/logout"),
-            @Result(name = TdarActionSupport.INPUT, type = "redirect", location = "/show-notices")
+            @Result(name = TdarActionSupport.SUCCESS, type = "tdar-redirect", location = "/dashboard"),
+            @Result(name = TdarActionSupport.NONE, type = "tdar-redirect", location = "/logout"),
+            @Result(name = TdarActionSupport.INPUT, type = "tdar-redirect", location = "/show-notices")
     })
     @PostOnly
     public String agreementResponse() {

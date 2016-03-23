@@ -65,8 +65,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.*;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -252,7 +251,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Action(value = SAVE,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
             })
@@ -275,8 +274,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @SkipValidation
     @Action(value = ADD, results = {
             @Result(name = SUCCESS, location = RESOURCE_EDIT_TEMPLATE),
-            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
-            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD)
+            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.MY_PROFILE),
+            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     @Override

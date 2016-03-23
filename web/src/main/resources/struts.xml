@@ -43,7 +43,7 @@
         <!-- based tDAR stack - this is not complete, but effectively used 
             as a "prefix" for other stacks -->
         <result-types>
-            <result-type name="redirect"
+            <result-type name="tdar-redirect"
                 class="org.tdar.struts.result.RedirectResult" />
             <result-type name="jaxbdocument"
                 class="org.tdar.struts.result.JaxbDocumentResult" />

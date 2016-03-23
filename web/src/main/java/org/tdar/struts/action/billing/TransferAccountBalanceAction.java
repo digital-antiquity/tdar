@@ -74,7 +74,7 @@ public class TransferAccountBalanceAction extends AbstractBillingAccountAction {
     @Action(value = "{id}/transfer",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, location = VIEW_ID, type = "redirect"),
+                    @Result(name = SUCCESS, location = VIEW_ID, type = "tdar-redirect"),
                     @Result(name = INPUT, location = "error.ftl")
             })
     @PostOnly
