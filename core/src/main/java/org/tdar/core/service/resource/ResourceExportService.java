@@ -23,8 +23,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -258,6 +256,20 @@ public class ResourceExportService {
     @Transactional(readOnly = true)
     public void exportAsync(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
         try {
+            if (PersistableUtils.isNotNullOrTransient(resourceExportProxy.getAccount())) {
+                resourceExportProxy.setAccount(genericDao.merge(resourceExportProxy.getAccount()));
+            }
+            if (PersistableUtils.isNotNullOrTransient(resourceExportProxy.getCollection())) {
+                resourceExportProxy.setCollection(genericDao.merge(resourceExportProxy.getCollection()));
+            }
+            if (CollectionUtils.isNotEmpty(resourceExportProxy.getResources())) {
+                List<Resource> resources = new ArrayList<>();
+                for (Resource r : resourceExportProxy.getResources()) {
+                    resources.add(genericDao.merge(r));
+                }
+                resourceExportProxy.setResources(resources);
+            }
+
             File file = export(resourceExportProxy);
             Email email = new Email();
             email.setTo(authenticatedUser.getEmail());

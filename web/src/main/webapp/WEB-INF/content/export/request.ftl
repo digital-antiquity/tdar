@@ -13,8 +13,8 @@
         <label class="control-label" for="collectionName">Account</label>
     </div>
     <div class="span10">
-        <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" theme="xhtml" />
-<br/>
+        <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" emptyOption='true'   theme="xhtml" />
+<br/><br/>
     </div>
 </div>
 <div class="row">
