@@ -1,13 +1,13 @@
 package org.tdar.web.resource;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
-
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
 
 public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     

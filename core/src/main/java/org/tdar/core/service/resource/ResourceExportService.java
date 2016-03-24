@@ -51,7 +51,6 @@ import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;
-import com.ibm.icu.impl.StringUCharacterIterator;
 
 @Service
 public class ResourceExportService {

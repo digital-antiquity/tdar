@@ -14,7 +14,6 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.AbstractIntegrationWebTestCase;
-import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
 import org.tdar.web.WebFileSystemResourceService;
 
 /**

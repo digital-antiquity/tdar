@@ -17,7 +17,6 @@ import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.entity.Dedupable;
 import org.tdar.core.bean.resource.Addressable;

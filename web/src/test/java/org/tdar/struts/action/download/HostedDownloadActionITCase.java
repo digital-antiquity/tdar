@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.http.HttpHeaders.REFERER;
 
 import java.io.File;
@@ -13,7 +12,6 @@ import java.io.FileOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +23,6 @@ import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.junit.IgnoreActionErrors;

@@ -28,7 +28,6 @@ import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.SpatialQueryPart;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.search.service.query.SearchService;
 import org.tdar.utils.MessageHelper;
 
 public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {

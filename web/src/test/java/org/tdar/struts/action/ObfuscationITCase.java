@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 

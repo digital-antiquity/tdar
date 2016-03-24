@@ -27,7 +27,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
@@ -58,7 +57,6 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.ImmutableScrollableCollection;
-import org.tdar.utils.Pair;
 
 @Service
 @Transactional(readOnly = true)
