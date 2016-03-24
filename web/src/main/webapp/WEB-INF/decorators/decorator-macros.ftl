@@ -24,7 +24,11 @@
     <ul>
         <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
         <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
-        <li><a href="<@s.url value="/logout"/>"><@s.text name="menu.logout"/></a></li>
+        <li>
+             <form class="form-complete-inline" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout" >
+                    <button type="submit" class="btn btn-link tdar-btn-link" name="submit" value="Logout">Logout</button>
+             </form>
+         </li>
     </ul>
 
     <#if administrator>

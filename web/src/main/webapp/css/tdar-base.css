@@ -1307,3 +1307,17 @@ tr.DELETED {
     visibility:hidden;
 }
 
+
+.form-complete-inline {
+    margin: 0px !important;
+    padding: 0px !important;
+    display: inline;
+    float: none;
+    height: auto !important;
+}
+
+.tdar-btn-link {
+    padding: 0px;
+    color:  #7a1501;
+    font-family: "ff-tisa-web-pro", serif !important;
+}

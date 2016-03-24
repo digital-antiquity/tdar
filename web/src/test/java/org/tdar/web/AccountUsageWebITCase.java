@@ -51,7 +51,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         gotoPage("/resource/add");
         assertTextPresent("Pricing");
         logger.info(getPageText());
-        gotoPage("/logout");
+        logout();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         assertThat(getCurrentUrlPath(), containsString("/review"));
 
         accountId = testAccountPollingResponse("0", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
-        gotoPage("/logout");
+        logout();
     }
 
     @Test
@@ -109,7 +109,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
 
         Long docid = extractTdarIdFromCurrentURL();
         String viewUrl = internalPage.getUrl().getPath();
-        gotoPage("/logout");
+        logout();
 
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
 

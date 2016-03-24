@@ -719,7 +719,16 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void logout() {
-        gotoPage("/logout");
+        WebElementSelection find = find("#logout-button");
+        if (find.size() > 0) {
+            find.click();
+        } else {
+            gotoPage("/login");
+            find = find("#logout-button");
+            if (find.size() > 0) {
+                find.click();
+            }   
+        }
 //        driver.manage().deleteAllCookies();
     }
 

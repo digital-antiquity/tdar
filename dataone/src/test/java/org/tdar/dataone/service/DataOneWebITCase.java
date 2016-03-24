@@ -34,7 +34,7 @@ import org.xml.sax.SAXException;
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 import com.hp.hpl.jena.sparql.function.library.e;
 
-public class DataOneWebITCase extends AbsractWebTest {
+public class DataOneWebITCase extends AbstractWebTest {
 
     private static final String TEST_DOI = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
     private static final String TEST_DOI_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;

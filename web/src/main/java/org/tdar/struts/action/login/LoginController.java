@@ -80,6 +80,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
             results = {
                     @Result(name = SUCCESS, type = "redirect", location = "/")
             })
+    @PostOnly
     @SkipValidation
     public String logout() {
         if (getSessionData().isAuthenticated()) {

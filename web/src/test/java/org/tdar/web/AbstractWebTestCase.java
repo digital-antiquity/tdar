@@ -1035,8 +1035,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
                 logger.trace("only one form: {}", htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
-                    if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
-                            !form.getNameAttribute().equalsIgnoreCase("searchheader") && !"logoutForm".equals(form.getNameAttribute())) {
+                    if (StringUtils.isNotBlank(form.getActionAttribute()) && 
+                            !StringUtils.containsAny(form.getNameAttribute().toLowerCase(), "autosave","logoutform","searchheader","logoutformmenu")) {
                         htmlForm = form;
                         logger.trace("using form: {}", htmlForm.getNameAttribute());
                         break;
@@ -1359,7 +1359,16 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
     public void logout() {
         webClient.getOptions().setJavaScriptEnabled(false);
-        gotoPage("/logout");
+        if (getHtmlPage().getElementById("logout-button") != null) {
+            clickElementWithId("logout-button");
+        } else {
+            // go to homepage
+            gotoPage("/login");
+            // if logout-button is not present, then we're logged-out
+            if (getHtmlPage().getElementById("logout-button") != null) {
+                clickElementWithId("logout-button");
+            }
+        }
         webClient.getCookieManager().clearCookies();
     }
 
