@@ -1,5 +1,7 @@
 package org.tdar.struts.action.entity;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
@@ -12,6 +14,7 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.service.GenericKeywordService;
@@ -44,7 +47,7 @@ public class SimpleKeywordController extends AbstractKeywordController {
     
     @Action(value = "save", interceptorRefs = { @InterceptorRef("editAuthenticatedStack") }, results = {
             @Result(name = INPUT, location = "edit.ftl"),
-            @Result(name = SUCCESS, type = REDIRECT, location = "${keyword.detailUrl}")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${keyword.detailUrl}")
     })
     @PostOnly
     @HttpsOnly
@@ -82,4 +85,8 @@ public class SimpleKeywordController extends AbstractKeywordController {
         this.description = description;
     }
 
+    
+    public List<RelationType> getRelationTypes() {
+        return Arrays.asList(RelationType.values());
+    }
 }
