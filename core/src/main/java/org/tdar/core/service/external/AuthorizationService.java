@@ -648,7 +648,7 @@ public class AuthorizationService implements Accessible {
                 errors.add("authorizationService.invalid_request");
             }
 
-            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
+//            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
         }
         return errors;
     }
