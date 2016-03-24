@@ -395,7 +395,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_FILE_STATUS,
-                query = "from InformationResourceFile file where status in (:statuses)"),
+                query = "from InformationResourceFile where status in (:statuses) and deleted=false"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_STATUS,
                 query = "from ResourceProxy res fetch all properties left join fetch res.informationResourceFileProxies file  where res.status in (:statuses) and res.submitter.id=:submitterId and file.status in (:fileStatuses) and file.deleted is false"

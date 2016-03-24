@@ -82,11 +82,11 @@ public class UserAccountController extends AuthenticationAware.Base implements V
             @Action(value = "new",
                     results = {
                             @Result(name = SUCCESS, location = "edit.ftl"),
-                            @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) }),
+                            @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) }),
             @Action(value = "add",
                     results = {
                             @Result(name = SUCCESS, location = "edit.ftl"),
-                            @Result(name = AUTHENTICATED, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD) })
+                            @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
     })
     @SkipValidation
     @Override
@@ -104,7 +104,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     }
 
     @Action(value = "recover",
-            results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${passwordResetURL}") })
+            results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${passwordResetURL}") })
     @SkipValidation
     @HttpsOnly
     public String recover() {
@@ -112,7 +112,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         return SUCCESS;
     }
 
-    @Action(value = "edit", results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/entity/person/${person.id}/edit") })
+    @Action(value = "edit", results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "/entity/person/${person.id}/edit") })
     @SkipValidation
     @HttpsOnly
     public String edit() {
@@ -139,8 +139,8 @@ public class UserAccountController extends AuthenticationAware.Base implements V
 
     @Actions({
             @Action(value = "register",
-                    results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
-                            @Result(name = ADD, type = TYPE_REDIRECT, location = "/account/add"),
+                    results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD),
+                            @Result(name = ADD, type = TdarActionSupport.TDAR_REDIRECT, location = "/account/add"),
                             @Result(name = INPUT, location = "edit.ftl") })
     })
     @HttpsOnly

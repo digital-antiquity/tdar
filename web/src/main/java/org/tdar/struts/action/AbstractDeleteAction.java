@@ -31,7 +31,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/")
-@Results(@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.REDIRECT, location = TdarActionSupport.UNKNOWN_ERROR))
+@Results(@Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.TDAR_REDIRECT, location = TdarActionSupport.UNKNOWN_ERROR))
 public abstract class AbstractDeleteAction<P extends Persistable & Addressable> extends AuthenticationAware.Base implements Preparable {
 
     public final static String msg = "%s is %s %s (%s): %s";
@@ -57,7 +57,7 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
             // FIXME: this won't work yet as delete is split into a GET and then a followup POST, we only want to protect the followup POST
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = URLConstants.DASHBOARD),
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD),
                     @Result(name = CONFIRM, location = "/WEB-INF/content/confirm-delete.ftl")
             })
     @WriteableSession

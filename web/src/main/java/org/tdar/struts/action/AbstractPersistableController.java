@@ -145,7 +145,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     @Action(value = SAVE,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = SAVE_SUCCESS_PATH),
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = "edit.ftl")
             })

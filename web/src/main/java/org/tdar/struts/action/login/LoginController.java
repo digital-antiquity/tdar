@@ -43,7 +43,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD) })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
 @CacheControl
 public class LoginController extends AuthenticationAware.Base implements Validateable {
 
@@ -78,7 +78,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Action(value = "logout",
             results = {
-                    @Result(name = SUCCESS, type = "redirect", location = "/")
+                    @Result(name = SUCCESS, type = "tdar-redirect", location = "/")
             })
     @PostOnly
     @SkipValidation
@@ -93,10 +93,10 @@ public class LoginController extends AuthenticationAware.Base implements Validat
     {
             @Action(value = "login/process",
                     results = {
-                            @Result(name = TdarActionSupport.NEW, type = REDIRECT, location = "/account/new"),
-                            @Result(name = REDIRECT, type = REDIRECT, location = "${internalReturnUrl}"),
+                            @Result(name = TdarActionSupport.NEW, type = TDAR_REDIRECT, location = "/account/new"),
+                            @Result(name = TDAR_REDIRECT, type = TDAR_REDIRECT, location = "${internalReturnUrl}"),
                             @Result(name = TdarActionSupport.INPUT, location = "/WEB-INF/content/login.ftl"),
-                            @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.DASHBOARD),
+                            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.DASHBOARD),
                     })
     })
     @HttpsOnly
@@ -126,7 +126,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
         setInternalReturnUrl(parseReturnUrl());
         if (StringUtils.isNotBlank(getInternalReturnUrl())) {
             getSessionData().clearPassthroughParameters();
-            return REDIRECT;
+            return TDAR_REDIRECT;
         }
         return SUCCESS;
     }

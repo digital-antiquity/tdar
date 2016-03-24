@@ -1,14 +1,8 @@
 package org.tdar.struts.action.ontology;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -30,14 +24,13 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 
 @Component
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/ontology")
 @Results(value = {
-        @Result(name = OntologyViewController.REDIRECT_IRI, type = TdarActionSupport.REDIRECT, location = "${redirectIri}", params = { "ignoreParams",
+        @Result(name = OntologyViewController.REDIRECT_IRI, type = TdarActionSupport.TDAR_REDIRECT, location = "${redirectIri}", params = { "ignoreParams",
                 "id,slug" })
 })
 public class OntologyViewController extends AbstractOntologyViewAction {

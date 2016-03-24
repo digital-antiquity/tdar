@@ -127,12 +127,17 @@ public class ResourceSearchService extends AbstractSearchService {
 
     }
 
-    @Transactional(readOnly=true)
-    public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
-        ResourceQueryBuilder rqb = new ResourceQueryBuilder();
-        rqb.append(new HydrateableKeywordQueryPart<Keyword>(keywordType, Arrays.asList(keyword)));
-        rqb.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));
-        searchService.handleSearch(rqb, result, provider);
+    @Transactional(readOnly = true)
+    public LuceneSearchResultHandler<Resource> buildKeywordQuery(Keyword keyword, KeywordType keywordType, LuceneSearchResultHandler<Resource> result,
+            TextProvider provider, TdarUser user) throws ParseException, SolrServerException, IOException {
+
+        QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        queryBuilder.setOperator(Operator.AND);
+        queryBuilder.append(new HydrateableKeywordQueryPart<Keyword>(keywordType, Arrays.asList(keyword)));
+        ReservedSearchParameters reservedSearchParameters = new ReservedSearchParameters();
+        initializeReservedSearchParameters(reservedSearchParameters, user);
+        queryBuilder.append(reservedSearchParameters, provider);
+        searchService.handleSearch(queryBuilder, result, provider);
         return result;
     }
 

@@ -57,7 +57,7 @@ public class SimpleKeywordController extends AbstractKeywordController implement
         }
         try {
             setSortField(SortOption.TITLE);
-            resourceSearchService.buildKeywordQuery(getKeyword(), getKeywordType(), this, this);
+            resourceSearchService.buildKeywordQuery(getKeyword(), getKeywordType(), this, this, getAuthenticatedUser());
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }

@@ -88,6 +88,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String JAXBRESULT = "jaxbdocument";
     public static final String JSONRESULT = "jsonresult";
     public static final String HTTPHEADER = "httpheader";
+    public static final String TDAR_REDIRECT = "tdar-redirect";
     public static final String REDIRECT = "redirect";
 
     public static final String WAIT = "wait";
@@ -103,7 +104,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public static final String UNKNOWN_ERROR = "exception"; // 500
     public static final String BAD_REQUEST = "badrequest"; // 400
 
-//    public static final String TYPE_REDIRECT = "redirect";
+//    public static final String TYPE_TDAR_REDIRECT = "redirect";
 
     public static final String FORBIDDEN = "forbidden"; // 403
     public static final String NOT_FOUND = "not_found"; // 404
