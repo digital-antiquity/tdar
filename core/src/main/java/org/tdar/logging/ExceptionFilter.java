@@ -33,9 +33,10 @@ public class ExceptionFilter extends AbstractFilter{
     @PluginFactory
     public static ExceptionFilter createFilter(
             @PluginAttribute(value = "pattern") String pattern,
-            @PluginAttribute(value = "onMatch", defaultString = "DENY") Result onMatch,
-            @PluginAttribute(value = "onMismatch", defaultString = "NEUTRAL") Result onMismatch) {
-
+            @PluginAttribute(value = "onMatch", defaultString = "DENY") Result match,
+            @PluginAttribute(value = "onMismatch", defaultString = "NEUTRAL") Result mismatch) {
+        final Result onMatch = match == null ? Result.DENY : match;
+        final Result onMismatch = mismatch == null ? Result.NEUTRAL : mismatch;
         return new ExceptionFilter(pattern, onMatch, onMismatch);
     }
 
@@ -66,10 +67,5 @@ public class ExceptionFilter extends AbstractFilter{
         String fqcn = "" +  t.getClass().getCanonicalName();
         return fqcn.startsWith(pattern) ? onMatch : onMismatch;
     }
-
-    public static void cout(String format, Object ... vals) {
-        System.out.println(String.format(format, vals));
-    }
-
 
 }
