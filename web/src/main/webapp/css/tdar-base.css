@@ -1307,3 +1307,8 @@ tr.DELETED {
     visibility:hidden;
 }
 
+p.tableDescription {
+    font-style: italic;
+    font-size:90%;
+    margin-top: -10px;
+}

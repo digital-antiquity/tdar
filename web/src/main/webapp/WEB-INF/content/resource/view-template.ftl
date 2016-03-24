@@ -234,11 +234,11 @@
             <div class="span3"><span class="columnSquare mapped"></span>Mapping Column</div>
             <div class="span6"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
-
+    <br/>
             <#list resource.dataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <#if dataTable.description?has_content>
-			<p>${dataTable.description}</p>
+			<p class="tableDescription">${dataTable.description}</p>
 			</#if>
             <table class="tableFormat table table-bordered">
                 <thead class='highlight'>
