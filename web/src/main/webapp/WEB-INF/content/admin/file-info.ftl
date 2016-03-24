@@ -22,6 +22,7 @@
     </thead>
     <tbody>
         <#list files as file>
+        <#if file?? && file.informationResource?? && (file.informationResource.active || file.informationResource.draft)>
         <tr>
             <td>${file.id?c}</td>
             <td>
@@ -42,6 +43,7 @@ ${file.errorMessage!""}
             <td>${file.latestVersion!0}</td>
             <td>${file.restriction} <#if file.embargoed>(${file.dateMadePublic!""})</#if></td>
         </tr>
+        </#if>
         </#list>
     </tbody>
 </table>

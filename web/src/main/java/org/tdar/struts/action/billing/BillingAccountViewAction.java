@@ -97,6 +97,10 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     @Override
     public void prepare() throws TdarActionException {
         super.prepare();
+        if (PersistableUtils.isNullOrTransient(getAccount())) {
+            addActionError(getText("error.object_does_not_exist"));
+            return;
+        }
         setAccounts(accountService.listAvailableAccountsForUser(getAuthenticatedUser()));
         setAccountGroup(accountService.getAccountGroup(getAccount()));
         getAuthorizedMembers().addAll(getAccount().getAuthorizedMembers());

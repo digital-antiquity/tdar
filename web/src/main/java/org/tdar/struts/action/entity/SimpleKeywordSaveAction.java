@@ -8,7 +8,6 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity/keyword")
-public class SimpleKeywordController extends AbstractKeywordController {
+public class SimpleKeywordSaveAction extends AbstractKeywordController {
 
     private static final long serialVersionUID = -6454678744854024278L;
     private String label;
@@ -33,24 +32,15 @@ public class SimpleKeywordController extends AbstractKeywordController {
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
-
-    @Action("edit")
-    @HttpsOnly
-    @SkipValidation
-    @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-    public String edit() {
-        return SUCCESS;
-    }
-    
     @Action(value = "save", interceptorRefs = { @InterceptorRef("editAuthenticatedStack") }, results = {
             @Result(name = INPUT, location = "edit.ftl"),
-            @Result(name = SUCCESS, type = REDIRECT, location = "${keyword.detailUrl}")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "view?id=${id}&keywordType=${keywordType}")
     })
     @PostOnly
     @HttpsOnly
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String save() {
-        genericKeywordService.saveKeyword(label, description, getKeyword(), getMappings());
+        genericKeywordService.saveKeyword(label, description, getKeyword());
         return SUCCESS;
     }
 

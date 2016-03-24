@@ -99,8 +99,8 @@ public class InvoiceController extends AbstractCartController {
     @Action(value = "process-choice",
             results = {
                     @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
-                    @Result(name = SUCCESS_UNAUTHENTICATED, type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
+                    @Result(name = SUCCESS_UNAUTHENTICATED, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED)
             })
     @DoNotObfuscate(reason = "unnecessary")
     @PostOnly

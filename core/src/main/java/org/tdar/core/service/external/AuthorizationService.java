@@ -635,6 +635,7 @@ public class AuthorizationService implements Accessible {
             referrer = "";
         }
         if (StringUtils.isBlank(referrer)) {
+            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
             throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
         }
         List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);

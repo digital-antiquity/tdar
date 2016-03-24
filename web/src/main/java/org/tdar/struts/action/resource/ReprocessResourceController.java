@@ -43,7 +43,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     private InformationResource resource;
     private Long id;
 
-    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
+    @Action(value = REPROCESS, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reprocess() throws TdarActionException {
         getLogger().info("reprocessing");
 
@@ -65,7 +65,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
     }
 
     @WriteableSession
-    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
+    @Action(value = REIMPORT, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String reimport() throws TdarActionException {
         if (getResource() instanceof Dataset) {
             try {
@@ -97,7 +97,7 @@ public class ReprocessResourceController extends AuthenticationAware.Base implem
      * Retranslates the given dataset.
      * XXX: does this need a WritableSession?
      */
-    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
+    @Action(value = RETRANSLATE, results = { @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID_AS_ID) })
     public String retranslate() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         if (getResource() instanceof Dataset) {

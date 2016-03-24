@@ -41,7 +41,7 @@ public class ContributeAction extends AuthenticationAware.Base {
 
     @Override
     @Action(value = "contribute", results = { @Result(name = SUCCESS, location = "contribute.ftl"),
-            @Result(name = AUTHENTICATED, type = REDIRECT, location = "/resource/add") })
+            @Result(name = AUTHENTICATED, type = TDAR_REDIRECT, location = "/resource/add") })
     public String execute() {
         if (isAuthenticated()) {
             return AUTHENTICATED;

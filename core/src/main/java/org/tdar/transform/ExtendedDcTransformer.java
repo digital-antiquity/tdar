@@ -108,6 +108,8 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         for (CoverageDate cov : toSortedList(source.getActiveCoverageDates())) {
             if (cov.getDateType() == CoverageType.CALENDAR_DATE) {
                 dc.addDate(String.format("start:%s end:%s", cov.getStartDate(), cov.getEndDate()));
+            } else {
+                dc.addDate(cov.toString());
             }
         }
 
@@ -118,7 +120,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
         dc.addType(source.getResourceType().getLabel());
         
-        dc.addIdentifier(UrlService.absoluteUrl(source));
+        dc.addIdentifier(source.getId().toString());
         dc.addReferences(UrlService.absoluteUrl(source));
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
             String maxy = longLat.getMaxObfuscatedLatitude().toString();
