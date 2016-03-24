@@ -156,7 +156,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         try {
             setSortField(SortOption.TITLE);
-            resourceSearchService.buildKeywordQuery(keyword, keywordType, this, this);
+            resourceSearchService.buildKeywordQuery(keyword, keywordType, this, this, getAuthenticatedUser());
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
