@@ -254,7 +254,7 @@ public class ResourceExportService {
     }
 
     @Async
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public void exportAsync(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
         try {
             if (PersistableUtils.isNotNullOrTransient(resourceExportProxy.getAccount())) {
@@ -272,20 +272,25 @@ public class ResourceExportService {
             }
 
             File file = export(resourceExportProxy);
-            Email email = new Email();
-            email.setTo(authenticatedUser.getEmail());
-            email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
-            email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
-            Map<String, Object> dataModel = new HashMap<>();
-            dataModel.put("resources", resourceExportProxy);
-            dataModel.put("file", resourceExportProxy.getFilename());
-            String url = String.format("%sexport/download?file=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
-            dataModel.put("url", url);
-            dataModel.put("authenticatedUser", authenticatedUser);
-            emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
+            sendEmail(resourceExportProxy, authenticatedUser);
         } catch (Exception e) {
             logger.error("error in export", e);
         }
+    }
+
+    @Transactional(readOnly=false)
+    protected void sendEmail(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
+        Email email = new Email();
+        email.setTo(authenticatedUser.getEmail());
+        email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
+        email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
+        Map<String, Object> dataModel = new HashMap<>();
+        dataModel.put("resources", resourceExportProxy);
+        dataModel.put("file", resourceExportProxy.getFilename());
+        String url = String.format("%sexport/download?file=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
+        dataModel.put("url", url);
+        dataModel.put("authenticatedUser", authenticatedUser);
+        emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
     }
 
     @Transactional(readOnly=true)
