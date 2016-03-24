@@ -38,7 +38,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.REDIRECT, location = URLConstants.DASHBOARD) })
+        @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
 @CacheControl
 public class CartLoginController extends AbstractCartController implements Validateable, Preparable {
 
@@ -56,7 +56,7 @@ public class CartLoginController extends AbstractCartController implements Valid
     @Action(value = "process-cart-login",
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
-                    @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
                     @Result(name = INPUT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",
                             "returnUrl not expected for login from cart" }),
                     @Result(name = INPUT, type = FREEMARKER, location = "review-unauthenticated.ftl")

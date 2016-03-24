@@ -1,14 +1,16 @@
 package org.tdar.web.resource;
 
-import static org.junit.Assert.assertTrue;
-
 import org.junit.Test;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
-public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCase {
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertTrue;
 
+public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCase {
+    
     private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     @Test
@@ -18,7 +20,8 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         submitForm("submit");
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());
-        assertTrue(getPageText().contains(" has been granted "));
+        assertThat(getPageText(), containsString(" has been granted "));
+        logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
     }
 
     @Test

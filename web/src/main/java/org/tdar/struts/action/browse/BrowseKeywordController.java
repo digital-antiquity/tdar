@@ -41,7 +41,7 @@ import com.opensymphony.xwork2.Preparable;
                 location = "/WEB-INF/content/errors/error.ftl",
                 params = { "status", "400" }),
 
-        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
                 location = "/${keywordType.urlNamespace}/${keyword.id}/${keyword.slug}${slugSuffix}", params = { "ignoreParams", "id,keywordPath,slug" })
 })
 public class BrowseKeywordController extends AbstractLookupController<Resource> implements Preparable, SlugViewAction {

@@ -94,7 +94,7 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
     @Action(value = "save-column-mapping",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
                     @Result(name = INPUT, location = "../dataset/column-resource-mapping.ftl")
             })
     /**

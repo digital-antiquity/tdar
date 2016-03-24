@@ -344,7 +344,7 @@ public class OntologyService extends ServiceInterface.TypedDaoBase<Ontology, Ont
         if (roots.size() > 1) {
             OntologyNodeWrapper wrapper = new OntologyNodeWrapper();
             wrapper.setId(-1L);
-            wrapper.setDisplayName(ontology.getName());
+            wrapper.setDisplayName("");
             wrapper.getChildren().addAll(roots);
             root = wrapper;
         }

@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.convention.StringTools;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -261,7 +260,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     @SkipValidation
     @Action(value = EDIT, results = {
             @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = ADD, type = REDIRECT)
+            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT)
     })
     public String edit() throws TdarActionException {
         String result = super.edit();

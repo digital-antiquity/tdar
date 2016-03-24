@@ -186,8 +186,8 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     @Action(value = "save-column-metadata",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SAVE_VIEW, type = REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
-                    @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
+                    @Result(name = SAVE_VIEW, type = TDAR_REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
+                    @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
                     @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
             })
     /**

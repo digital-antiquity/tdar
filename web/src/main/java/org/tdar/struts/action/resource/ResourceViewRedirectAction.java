@@ -37,7 +37,7 @@ public class ResourceViewRedirectAction extends AuthenticationAware.Base {
      */
     @Action(value = "{resourceId}",
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${resource.detailUrl}"),
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${resource.detailUrl}"),
                     @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.FREEMARKERHTTP,
                     location = "/WEB-INF/content/errors/error.ftl",
                     params = { "status", "400" })

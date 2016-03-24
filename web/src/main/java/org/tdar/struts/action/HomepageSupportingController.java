@@ -41,7 +41,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = "authenticated", type = "redirect", location = "/")
+        @Result(name = "authenticated", type = "tdar-redirect", location = "/")
 })
 // FIXME: better name
 public class HomepageSupportingController extends AuthenticationAware.Base {
@@ -104,7 +104,7 @@ public class HomepageSupportingController extends AuthenticationAware.Base {
 
     @HttpOnlyIfUnauthenticated
     @Actions(value = {
-            @Action(value = "terms", results = { @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "${tosUrl}") }),
+            @Action(value = "terms", results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${tosUrl}") }),
             @Action(value = "opensearch", results = {
                     @Result(name = SUCCESS, location = "opensearch.ftl", type = FREEMARKER, params = { "contentType", "application/xml" })
             }),
