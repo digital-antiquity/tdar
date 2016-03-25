@@ -18,7 +18,6 @@
                 <!--<RegexFilter regex=".*u:Y\+7yllkx.*Invalid referrer.*" onMatch="DENY" onMismatch="NEUTRAL" />-->
                 <ExceptionFilter pattern="org.apache.catalina.connector.ClientAbortException" target="CLASSNAME" onMatch="DENY" onMismatch="NEUTRAL" />
                 <ExceptionFilter pattern="Broken pipe" target="MESSAGE" onMatch="DENY" onMismatch="NEUTRAL" />
-                <RegexFilter regex="https:\/\/ssl.google-analytics.com/ga.js" onMatch="DENY" onMismatch="NEUTRAL" />
                 <RegexFilter regex=".*javascript errors.*ga.js.*" onMatch="DENY" onMismatch="NEUTRAL" />
             </Filters>
             <PatternLayout>
