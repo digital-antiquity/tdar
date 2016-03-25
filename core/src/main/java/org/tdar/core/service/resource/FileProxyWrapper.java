@@ -96,7 +96,6 @@ public class FileProxyWrapper {
             getIrFiles().add(irFile);
             InformationResourceFileVersion version = proxy.getInformationResourceFileVersion();
             logger.trace("version: {} proxy: {} ", version, proxy);
-            datasetDao.saveOrUpdate(irFile);
             switch (version.getFileVersionType()) {
                 case UPLOADED:
                 case UPLOADED_ARCHIVAL:
@@ -106,6 +105,7 @@ public class FileProxyWrapper {
                 default:
                     logger.debug("Not setting file type on irFile {} for VersionType {}", irFile, proxy.getVersionType());
             }
+            datasetDao.saveOrUpdate(irFile);
         }
 
         // make sure we're only doing this if we have files to process

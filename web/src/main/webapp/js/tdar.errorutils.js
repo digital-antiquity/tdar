@@ -8,7 +8,7 @@
     //assume that no libraries or globals are available to us yet
     var _head = document.getElementsByTagName('head')[0];
     if (typeof(TDAR_jsErrorDelim) === 'undefined') {
-        TDAR_jsErrorDelim = "\r\n";
+        var TDAR_jsErrorDelim = "ɹǝʇıɯıןǝp";
     }
     var _delim = TDAR_jsErrorDelim;
     var _errors = window.__errorMessages = [];
@@ -96,7 +96,7 @@
         if (ta) {
             txt = ta.value;
             for (var k in obj) {
-                txt += "\n" + k + ":" + obj[k];
+                txt += "; " + k + ":" + obj[k];
             }
             ta.value = txt;
         }

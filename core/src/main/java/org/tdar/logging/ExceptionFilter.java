@@ -16,28 +16,48 @@ import org.apache.logging.log4j.message.Message;
 @Plugin(name = "ExceptionFilter", category = "Core", elementType = "filter", printObject = true)
 public class ExceptionFilter extends AbstractFilter{
 
-    private final String pattern;
-
-    public ExceptionFilter(String pattern, Result onMatch, Result onMismatch) {
-        super(onMatch, onMismatch);
-        this.pattern = pattern;
+    public static enum Target {
+        CLASSNAME, MESSAGE
     }
+
+    //todo: future use
+    enum PatternType {
+        PREFIX, SUBSTRING, EXACT, REGEX
+
+
+    }
+
+    private final String pattern;
+    private final Target target;
+    private final PatternType patternType = PatternType.PREFIX;
 
     /**
      * Create a ThresholdFilter.
      * @param pattern The prefix of the FQCN of the exception the filter should match.
-     * @param onMatch The action to take on a match.
-     * @param onMismatch The action to take on a mismatch.
+     * @param target  Designates which the target value for the filter to match against. If "CLASSNAME", filter
+     *                will look for the supplied pattern in the thrown exception's canonical name
+     *                (e.g. org.apache.catalina.connector.ClientAbortException), if "MESSAGE", filter
+     *                looks for supplied pattern in the thrown exception's message.
+     * @param match The action to take on a match. Default: DENY.
+     * @param mismatch The action to take on a mismatch. Default: NEUTRAL.
      * @return The created ThresholdFilter.
      */
     @PluginFactory
     public static ExceptionFilter createFilter(
             @PluginAttribute(value = "pattern") String pattern,
+            @PluginAttribute(value = "target", defaultString = "CLASSNAME") Target target,
             @PluginAttribute(value = "onMatch", defaultString = "DENY") Result match,
             @PluginAttribute(value = "onMismatch", defaultString = "NEUTRAL") Result mismatch) {
+        final Target _target = target == null ? Target.CLASSNAME : target;
         final Result onMatch = match == null ? Result.DENY : match;
         final Result onMismatch = mismatch == null ? Result.NEUTRAL : mismatch;
-        return new ExceptionFilter(pattern, onMatch, onMismatch);
+        return new ExceptionFilter(pattern, _target, onMatch, onMismatch);
+    }
+
+    public ExceptionFilter(String pattern, Target target, Result onMatch, Result onMismatch) {
+        super(onMatch, onMismatch);
+        this.pattern = pattern;
+        this.target = target;
     }
 
     @Override
@@ -61,11 +81,32 @@ public class ExceptionFilter extends AbstractFilter{
     }
 
     public Result filter(Throwable t) {
-        if(t == null) {
-            return onMismatch;
-        }
+        cout("filter called");
+        if(t == null) {return onMismatch;}
+
         String fqcn = "" +  t.getClass().getCanonicalName();
-        return fqcn.startsWith(pattern) ? onMatch : onMismatch;
+        String msg = "" + t.getMessage();
+        String str = fqcn;
+        if(target == Target.MESSAGE) {
+            str = msg;
+        }
+
+        Result result = str.startsWith(pattern) ? onMatch : onMismatch;
+        //cout("\n[      exception:%s  target:%S   pattern:%s  result:%s      ]", t.getClass(), target, pattern, result);
+
+        return result;
+    }
+
+    public final String getPattern() {
+        return pattern;
+    }
+
+    public final Target getTarget() {
+        return target;
+    }
+
+    private static void cout(String fmt, Object ... vals) {
+        System.out.println(String.format(fmt, vals));
     }
 
 }

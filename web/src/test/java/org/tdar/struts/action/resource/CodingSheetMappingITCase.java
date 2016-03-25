@@ -522,6 +522,34 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         return codingRule;
     }
 
+
+    @Test
+    @Rollback
+    public void testgeneratedCodingSheet() throws Exception {
+        Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
+        ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
+        Long datasetId = dataset.getId();
+        DataTable table = dataset.getDataTables().iterator().next();
+        datasetController.setId(datasetId);
+        DataTableColumn period_ = table.getColumnByDisplayName("Period");
+        assertFalse(period_.getColumnEncodingType().isSupportsCodingSheet());
+        datasetController.prepare();
+        datasetController.editColumnMetadata();
+        Ontology ontology = setupAndLoadResource("fauna-element-ontology.txt", Ontology.class);
+        //        period_.setColumnEncodingType(DataTableColumnEncodingType.CODED_VALUE);
+        period_.setTransientOntology(ontology);
+        datasetController.setDataTableColumns(Arrays.asList(period_));
+        datasetController.saveColumnMetadata();
+        DataTableColumn periodColumn = null;
+        DataTableColumn period = genericService.find(DataTableColumn.class, period_.getId());
+        logger.info("{}", period.getDefaultCodingSheet());
+        assertNotNull("coding sheet should exist", period.getDefaultCodingSheet());
+        assertEquals(1, period.getDefaultCodingSheet().getInformationResourceFiles().size());
+        InformationResourceFile file = period.getDefaultCodingSheet().getInformationResourceFiles().iterator().next();
+        logger.debug("type:{}", file.getInformationResourceFileType());
+        assertNotNull(file.getInformationResourceFileType());
+    }
+
     @Test
     @Rollback
     public void testDatasetMappingPreservation() throws Exception {
