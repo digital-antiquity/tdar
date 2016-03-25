@@ -14,7 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.AbstractIntegrationWebTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -26,7 +26,7 @@ import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.utils.MessageHelper;
 
 
-public class PdfServiceITCase extends AbstractIntegrationTestCase {
+public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
 
     @Autowired
     PdfService pdfService;

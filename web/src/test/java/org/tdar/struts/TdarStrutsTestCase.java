@@ -1,64 +1,44 @@
-package org.tdar.struts.action;
+package org.tdar.struts;
 
-import com.opensymphony.xwork2.*;
+import java.io.UnsupportedEncodingException;
+
+import javax.servlet.ServletException;
+
 import org.apache.struts2.StrutsSpringJUnit4TestCase;
-import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockPageContext;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
-import javax.servlet.ServletException;
-import java.io.UnsupportedEncodingException;
-import java.util.HashMap;
 
-
+/**
+ * This class mostly serves as a workaround for issues that arise when trying to use the StrutsSpringJUnit4TestCase
+ * in Struts applications that use the Convention Plugin.
+ */
 @ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
 @Transactional
-public class IndexControllerITCase extends StrutsSpringJUnit4TestCase<TdarActionSupport> {
-    protected final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Test
-    public void test() throws Exception {
-        ActionProxy proxy = getActionProxy("/robots");
-        logger.debug(executeAction("/robots"));
-        logger.debug(response.getContentType());
-        logger.debug(response.getContentAsString());
-    }
-
-    @Test
-    public void testHome() throws Exception {
-        executeAction("/");
-        logger.debug(response.getContentAsString());
-        logger.debug("{}", getAction().getActionErrors());
-    }
-
+@Rollback(value=true)
+public abstract class TdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T> {
     @Override
     protected void initServletMockObjects() {
-        logger.debug("initServletMockObjects");
         servletContext = new MockServletContext(applicationContext);
         response = new MockHttpServletResponse();
         request = new MockHttpServletRequest();
         pageContext = new MockPageContext(servletContext, request, response);
     }
 
-    @Override
-    public  void setApplicationContext(ApplicationContext ac) {
-        logger.debug("setting application context:{}", ac);
-        super.setApplicationContext(ac);
-    }
-
+    /**
+     * //FIXME: this is a workaround for TDAR-5167, which causes an action to fail when request method is not set
+     */
     protected String executeAction(String url) throws ServletException, UnsupportedEncodingException {
         return executeAction(url, "GET");
     }
@@ -75,5 +55,6 @@ public class IndexControllerITCase extends StrutsSpringJUnit4TestCase<TdarAction
         request.setMethod(method);
         return super.executeAction(url);
     }
+
 
 }

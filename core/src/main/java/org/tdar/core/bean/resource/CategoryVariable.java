@@ -49,8 +49,6 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    //@Field
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String label;
@@ -65,7 +63,6 @@ public class CategoryVariable extends Persistable.Base implements Comparable<Cat
     private CategoryType type;
 
     @ManyToOne
-    // //@IndexedEmbedded(depth=1)
     private CategoryVariable parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)

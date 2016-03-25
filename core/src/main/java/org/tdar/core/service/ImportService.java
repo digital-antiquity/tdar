@@ -42,6 +42,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.keyword.SuggestedKeyword;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -537,7 +538,12 @@ public class ImportService {
                     ((Person) toReturn).setInstitution(findById(Institution.class, inst.getId()));
                 }
             }
-            
+            if (toReturn instanceof TdarUser) {
+                Institution inst = ((TdarUser) toReturn).getProxyInstitution();
+                if (PersistableUtils.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
+                    ((TdarUser) toReturn).setProxyInstitution(findById(Institution.class, inst.getId()));
+                }
+            }
             return toReturn;
         }
 
@@ -546,7 +552,7 @@ public class ImportService {
         if (property instanceof Keyword) {
             Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
 //            logger.debug(":::> {} ({} [{}])", property, kwdCls, property instanceof ControlledKeyword);
-            if (property instanceof ControlledKeyword) {
+            if (property instanceof ControlledKeyword && !(property instanceof SuggestedKeyword)) {
                 Keyword findByLabel = genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
                 if (findByLabel == null) {
                     throw new APIException("importService.unsupported_keyword", Arrays.asList(property.getClass().getSimpleName()),
@@ -617,6 +623,7 @@ public class ImportService {
         logger.trace("{} {}", second, id);
         H h = genericService.find(second, id);
         if (h == null) {
+            logger.error("object does not exist: {} ({})", second, id);
             throw new TdarRecoverableRuntimeException("error.object_does_not_exist");
         }
         return h;

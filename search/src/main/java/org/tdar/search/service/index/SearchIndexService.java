@@ -90,10 +90,12 @@ public class SearchIndexService {
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
+    @Transactional(readOnly = true)
     public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
         indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
 
+    @Transactional(readOnly = true)
     public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex,
             Person person) {
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao , this);
@@ -459,4 +461,5 @@ public class SearchIndexService {
     public void clearIndexingActivities() {
         ActivityManager.getInstance().clearIndexingActivities();
     }
+
 }

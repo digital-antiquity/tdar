@@ -364,6 +364,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     public void testPersonSearchWithoutAutocomplete() throws SolrServerException, IOException {
         String lastName = "Watts";
         Person person = new Person(null, lastName, null);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         lookForCreatorNameInResult(lastName, person);
     }
 
@@ -371,6 +372,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testInstitutionSearchWithoutAutocomplete() throws SolrServerException, IOException {
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         String name = "Digital Antiquity";
         Institution institution = new Institution(name);
         lookForCreatorNameInResult(name, institution);

@@ -89,7 +89,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
-            if (true || !CONFIG.useSeparateLinkedDataIndexForSearching()) {
+            if (!CONFIG.useSeparateLinkedDataIndexForSearching()) {
 	            try {
 	                data = resourceService.getMappedDataForInformationResource(ir);
 	                indexTdarDataDatabaseValues(doc, data);
@@ -115,7 +115,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 if (!irf.isDeleted() && !irf.isPartOfComposite()) {
                     total++;
                 }
-                if (true || !CONFIG.useSeparateContentsIndexForSearching()) {
+                if (!CONFIG.useSeparateContentsIndexForSearching()) {
 	                if (irf.getIndexableVersion() != null && irf.isPublic()) {
 	                    try {
 	                        sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));

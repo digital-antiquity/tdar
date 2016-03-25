@@ -42,7 +42,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
-//    @ContainedIn
     private CodingSheet codingSheet;
 
     @Column(nullable = false)
@@ -50,7 +49,6 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
     private String code;
 
     @Column(nullable = false)
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String term;
 

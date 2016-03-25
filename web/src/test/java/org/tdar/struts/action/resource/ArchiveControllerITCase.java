@@ -13,9 +13,9 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Archive;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
@@ -26,7 +26,7 @@ import org.tdar.struts.action.archive.ArchiveController;
  *
  * @author Martin Paulo
  */
-@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
 
     // Was "zip", "tar", "bz2", "tgz", but because of user interface confusion we are limiting

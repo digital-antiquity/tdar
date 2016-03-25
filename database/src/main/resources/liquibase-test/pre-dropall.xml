@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+	<changeSet id="pre-dropall" author="abrin">
+	<comment>ideally, not necessary, but liquibase is not playing nice and deleting sequences in the right order (before tabels)</comment>
+	<sql>
+drop sequence if exists category_variable_id_seq cascade;
+drop sequence if exists creator_id_seq cascade;
+drop sequence if exists creator_address_id_seq cascade;
+drop sequence if exists creator_view_statistics_id_seq cascade;
+drop sequence if exists culture_keyword_id_seq cascade;
+drop sequence if exists geographic_keyword_id_seq cascade;
+drop sequence if exists information_resource_file_id_seq cascade;
+drop sequence if exists information_resource_file_version_id_seq cascade;
+drop sequence if exists investigation_type_id_seq cascade;
+drop sequence if exists material_keyword_id_seq cascade;
+drop sequence if exists ontology_node_id_seq cascade;
+drop sequence if exists resource_revision_log_id_seq cascade;
+drop sequence if exists resource_sequence cascade;
+drop sequence if exists site_name_keyword_id_seq cascade;
+drop sequence if exists site_type_keyword_id_seq cascade;
+drop sequence if exists source_collection_id_seq cascade;
+drop sequence if exists temporal_keyword_id_seq cascade;
+drop sequence if exists bookmarked_resource_id_seq cascade;
+drop sequence if exists coverage_date_id_seq cascade;
+drop sequence if exists coding_rule_id_seq cascade;
+drop sequence if exists data_table_id_seq cascade;
+drop sequence if exists data_table_column_id_seq cascade;
+drop sequence if exists data_table_relationship_id_seq cascade;
+drop sequence if exists latitude_longitude_id_seq cascade;
+drop sequence if exists other_keyword_id_seq cascade;
+drop sequence if exists personal_filestore_ticket_id_seq cascade;
+drop sequence if exists related_comparative_collection_id_seq cascade;
+drop sequence if exists resource_annotation_id_seq cascade;
+drop sequence if exists resource_annotation_key_id_seq cascade;
+drop sequence if exists resource_creator_id_seq cascade;
+drop sequence if exists resource_note_id_seq cascade;
+drop sequence if exists stats_id_seq cascade;
+drop sequence if exists upgrade_task_id_seq cascade;
+drop sequence if exists collection_id_seq cascade;
+drop sequence if exists authorized_user_id_seq cascade;
+drop sequence if exists pos_billing_model_id_seq cascade;
+drop sequence if exists user_notification_id_seq cascade;
+drop sequence if exists pos_account_id_seq cascade;
+drop sequence if exists pos_invoice_id_seq cascade;
+drop sequence if exists pos_billing_activity_id_seq cascade;
+drop sequence if exists pos_item_id_seq cascade;
+drop sequence if exists data_table_column_relationship_id_seq cascade;
+drop sequence if exists data_table_relationship_id_seq cascade;
+drop sequence if exists resource_access_statistics_id_seq cascade;
+</sql>
+	</changeSet>
+</databaseChangeLog>

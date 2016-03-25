@@ -4,7 +4,6 @@ import org.tdar.core.bean.entity.Person;
 
 /**
  * This interface is designed to ensure that fields are available for basic searhing
- * NOTE: HibernateSearch does not have the ability to inherit the //@Field annotations
  * 
  * NOTE: THIS IS NOT USED
  */

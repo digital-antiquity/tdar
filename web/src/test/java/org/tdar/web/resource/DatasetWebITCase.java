@@ -15,13 +15,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
@@ -36,7 +35,8 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
-    // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
+    private static final String DATA_DEFAULT_DATA_TABLE_ID = "data-default-data-table-id=\"";
+	// FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
 
     private static final String AZ_PALEOINDIAN_POINT_SURVEY_MDB = "az-paleoindian-point-survey.mdb";
     private static final String WEST_COAST_CITIES = "West Coast Cities";
@@ -141,9 +141,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         uploadDataset();
         Long datasetId = extractTdarIdFromCurrentURL();
         String datasetUrl = "/dataset/" + datasetId;
-        Dataset dataset = datasetService.find(datasetId);
-        DataTable datatable = dataset.getDataTables().iterator().next();
-        String browseDataUrl = String.format("/dataset/row/%s/%s/1", datasetId, datatable.getId());
+        String browseDataUrl = String.format("/dataset/row/%s/%s/1", datasetId, getDataTableId());
         gotoPage(browseDataUrl);
         assertTextNotPresent("Expression dataset is undefined");
         if (TdarConfiguration.getInstance().isViewRowSupported()) {
@@ -208,10 +206,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         testCreateDatasetRecord();
         String viewPageUrl = internalPage.getUrl().toString();
         Long datasetId = extractTdarIdFromCurrentURL();
-        // make sure we can get the get the datatable browse content.
-        Dataset dataset = datasetService.find(datasetId);
-        DataTable datatable = dataset.getDataTables().iterator().next();
-        String browseDataUrl = "/datatable/browse?id=" + datatable.getId();
+        String browseDataUrl = "/datatable/browse?id=" + getDataTableId();
         gotoPage(browseDataUrl);
         // does this look like json?
         assertTextPresentInCode("columnEncodingType");
@@ -226,15 +221,25 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue(getPageBodyCode().matches("(?s)(.*)\"results\"(\\s*):(\\s*)[(\\s*)](.*)"));
     }
 
+	private String getDataTableId() {
+        Long datasetId = extractTdarIdFromCurrentURL();
+        gotoPage("/dataset/" + datasetId);
+//        logger.debug(getPageCode());
+		int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
+		logger.debug("index:{}", indexOf);
+		String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
+		logger.debug("index:{}", substring);
+        substring = StringUtils.substring(substring,0, substring.indexOf("\""));
+        return substring;
+	}
+
     @Test
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testXmlDatatableView() {
         testCreateDatasetRecord();
         Long datasetId = extractTdarIdFromCurrentURL();
-        Dataset dataset = datasetService.find(datasetId);
-        DataTable datatable = dataset.getDataTables().iterator().next();
-        String browseDataUrl = "/dataset/xml?dataTableId=" + datatable.getId();
+        String browseDataUrl = "/dataset/xml?dataTableId=" + getDataTableId();
         gotoPage(browseDataUrl);
         // does this look like xml?
         final String pageCode = getPageCode();

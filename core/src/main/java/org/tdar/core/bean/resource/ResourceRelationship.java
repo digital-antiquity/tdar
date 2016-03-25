@@ -36,7 +36,6 @@ public class ResourceRelationship extends Persistable.Base {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "relationship_type", length = FieldLength.FIELD_LENGTH_255)
-    //@Field(norms = Norms.NO, store = Store.YES)
     private ResourceRelationshipType type;
 
     private enum ResourceRelationshipType implements HasLabel, Localizable {

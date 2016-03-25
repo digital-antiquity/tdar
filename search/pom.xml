@@ -9,7 +9,7 @@
     <name>tDAR (search)</name>
 
     <properties>
-        <lucene.version>5.4.1</lucene.version>
+        <lucene.version>5.5.0</lucene.version>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
@@ -86,7 +86,7 @@
 
 
     <build>
-        <finalName>search</finalName>
+        <finalName>tdar-search</finalName>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>

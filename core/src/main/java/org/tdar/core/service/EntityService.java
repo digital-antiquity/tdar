@@ -238,10 +238,16 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         Person blessedPerson = findPerson(transientPerson);
         // still didn't find anything? Fair enough, let's save it
         if (blessedPerson == null) {
-            getDao().save(transientPerson);
             if (transientPerson.getInstitution() != null) {
-                getDao().saveOrUpdate(transientPerson.getInstitution());
+                Institution findOrSaveInstitution = findOrSaveInstitution(transientPerson.getInstitution());
+                transientPerson.setInstitution(findOrSaveInstitution);;
             }
+            if (transientPerson instanceof TdarUser && ((TdarUser) transientPerson).getProxyInstitution() != null) {
+                TdarUser transientUser = ((TdarUser) transientPerson);
+                Institution findOrSaveInstitution = findOrSaveInstitution(transientUser.getProxyInstitution());
+                transientUser.setProxyInstitution(findOrSaveInstitution);
+            }
+            getDao().save(transientPerson);
             blessedPerson = transientPerson;
         }
         return blessedPerson;
@@ -269,6 +275,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
 
         Person blessedPerson = null;
+        String email = transientPerson.getEmail();
         if (StringUtils.isNotBlank(transientPerson.getEmail())) {
             blessedPerson = findByEmail(transientPerson.getEmail());
         } else {
@@ -293,6 +300,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
                 blessedPerson = people.iterator().next();
             }
         }
+        transientPerson.setEmail(email);
         return blessedPerson;
     }
 

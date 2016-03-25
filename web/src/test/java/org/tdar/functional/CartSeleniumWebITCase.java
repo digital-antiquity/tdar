@@ -18,6 +18,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.URLConstants;
@@ -54,6 +55,8 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testVisitorPurchase() throws InterruptedException {
         // start at the cart page, and click one of the suggested packages
         gotoPage(CART_ADD);
+        waitForPageload();
+        logger.debug(getText());
         assertLoggedOut();
         selectPackage();
         
@@ -85,14 +88,15 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         submitForm();
 
         // close the popup window
-        find("#btnCloseWindow").click();
-        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
         // even though the popup window is gone, we still need to switch back to the main window
         getDriver().switchTo().window(startWindow);
 
         // if successful, we are sent to the dashboard
         waitFor("body.dashboard");
+        switchToNextWindow();
+        find("#btnCloseWindow").click();
+        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
     }
 
     @Test
@@ -102,7 +106,10 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testLoginPurchase() {
         // Starting page
         // go to the cart page and make sure we are logged out
+        logout();
         gotoPage(CART_ADD);
+        waitForPageload();
+        logger.debug(getText());
         assertLoggedOut();
         selectPackage();
 
@@ -128,6 +135,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         // close the popup window
         waitFor("#btnCloseWindow").click();
+        waitFor(ExpectedConditions.numberOfWindowsToBe(1), 1000);
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
 
         // switch back to polling page
@@ -226,4 +234,15 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith("/cart/process-registration"));
     }
 
+
+    @Override
+    public void waitForPageload() {
+    	super.waitForPageload();
+    	try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    }
 }

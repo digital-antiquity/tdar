@@ -58,8 +58,6 @@ public class DataTable extends Persistable.Base {
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    //@Field
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "display_name")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
@@ -69,7 +67,6 @@ public class DataTable extends Persistable.Base {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")
-    //@IndexedEmbedded
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
     private transient Map<String, DataTableColumn> nameToColumnMap;

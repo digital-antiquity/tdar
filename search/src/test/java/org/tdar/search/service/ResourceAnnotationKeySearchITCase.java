@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -14,6 +15,7 @@ import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceAnnotationType;
 import org.tdar.core.service.GenericService;
+import org.tdar.search.QuietIndexReciever;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.index.SearchIndexService;
@@ -31,7 +33,7 @@ public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrat
 
     @Override
     public void reindex() {
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE_ANNOTATION_KEY);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE_ANNOTATION_KEY), getAdminUser());
     }
     @Test
     public void testAllSearch() throws ParseException, SolrServerException, IOException {
@@ -51,7 +53,7 @@ public class ResourceAnnotationKeySearchITCase extends AbstractWithIndexIntegrat
         key2.setResourceAnnotationType(ResourceAnnotationType.IDENTIFIER);
         genericService.save(key2);
 
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE_ANNOTATION_KEY);
+        searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE_ANNOTATION_KEY), getAdminUser());
         SearchResult<ResourceAnnotationKey> result = new SearchResult<>();
         resourceAnnotationKeySearchService.buildAnnotationSearch("IS", result, 2, MessageHelper.getInstance());
         List<ResourceAnnotationKey> resources = result.getResults();

@@ -18,6 +18,7 @@ import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.service.EntityService;
+import org.tdar.search.QuietIndexReciever;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
@@ -42,7 +43,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
     @Override
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.INSTITUTION);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.INSTITUTION);
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.INSTITUTION),getAdminUser());
     };
 
     public List<Institution> setupInstitutionSearch() throws SolrServerException, IOException {
@@ -128,7 +129,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         Institution inst = new Institution("Arizona State University (ASU)");
         genericService.saveOrUpdate(inst);
         genericService.saveOrUpdate(inst);
-        searchIndexService.indexAll(getAdminUser(), LookupSource.INSTITUTION);
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.INSTITUTION),getAdminUser());
         SearchResult<Institution> result = searchInstitution("ASU");
         List<Institution> institutions = result.getResults();
         logger.debug("institutions: {} ", institutions);

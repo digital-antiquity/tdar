@@ -1,4 +1,6 @@
-package org.tdar.core.service.workflow.imagej;
+/*
+ package org.tdar.core.service.workflow.imagej;
+
 
 import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
@@ -9,9 +11,9 @@ import org.apache.batik.bridge.BridgeContext;
 import org.apache.batik.bridge.DocumentLoader;
 import org.apache.batik.bridge.GVTBuilder;
 import org.apache.batik.bridge.UserAgentAdapter;
+import org.apache.batik.dom.svg.SVGGraphicsElement;
+import org.apache.batik.dom.svg12.SVG12OMDocument;
 import org.apache.batik.gvt.renderer.StaticRenderer;
-import org.w3c.dom.svg.SVGDocument;
-import org.w3c.dom.svg.SVGSVGElement;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -25,11 +27,10 @@ import ij.plugin.PlugIn;
  * resides [fiji.git]/src-plugins/IO_/src/main/java/io/SVG_Reader.java. 
  * January 3, 2013.
  * http://fiji.sc/
- */
+ *
 
 public class SVG_Reader extends ImagePlus implements PlugIn {
 
-    /** Expects path as argument, or will ask for it and then open the image. */
     @Override
     public void run(final String arg) {
         File file = null;
@@ -50,9 +51,9 @@ public class SVG_Reader extends ImagePlus implements PlugIn {
         BridgeContext context =
                 new BridgeContext(userAgent, loader);
         userAgent.setBridgeContext(context);
-        SVGDocument document;
+        SVG12OMDocument document;
         try {
-            document = (SVGDocument)
+            document = (SVG12OMDocument)
                     loader.loadDocument(file.toURI().toString());
         } catch (IOException e) {
             IJ.error("Could not open " + file.toURI());
@@ -60,7 +61,7 @@ public class SVG_Reader extends ImagePlus implements PlugIn {
         }
         GVTBuilder builder = new GVTBuilder();
         renderer.setTree(builder.build(context, document));
-        SVGSVGElement root = document.getRootElement();
+        SVGGraphicsElement root = document.getRootElement();
         float svgX = root.getX().getBaseVal().getValue();
         float svgY = root.getY().getBaseVal().getValue();
         float svgWidth = root.getWidth().getBaseVal().getValue();
@@ -92,4 +93,4 @@ public class SVG_Reader extends ImagePlus implements PlugIn {
             show();
         }
     }
-}
+}*/

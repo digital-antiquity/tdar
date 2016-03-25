@@ -324,7 +324,7 @@
             <@s.textfield label='Institution' name='resourceProviderInstitutionName' id='txtResourceProviderInstitution' cssClass="institution input-xxlarge"  maxlength='255'/>
             <br/>
         </div>
-            <#if licensesEnabled?? && licensesEnabled >
+            <#if licensesEnabled?? && licensesEnabled || resource.licenseType?has_content>
                 <@edit.license />
             </#if>
         </#if>

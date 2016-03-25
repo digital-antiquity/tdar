@@ -16,20 +16,20 @@ import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
-@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWith(MultipleTdarConfigurationRunner.class)
 @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TOS_CHANGE })
 public class AuthenticationAndAuthorizationITCase extends AbstractIntegrationControllerTestCase {
 

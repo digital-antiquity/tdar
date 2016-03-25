@@ -110,10 +110,9 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
 
-//    @Override
-//    public void prepare() throws TdarActionException {
-    public void lookupParent()  {
-        //super.prepare();
+    @Override
+    public void prepare() throws TdarActionException {
+        super.prepare();
 
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
         if(PersistableUtils.isNotNullOrTransient(parentId)) {
@@ -147,7 +146,7 @@ public class CollectionController extends AbstractPersistableController<Resource
             getPersistable().setOwner(uploader);
         }
 
-        lookupParent();
+//        lookupParent();
         if(parentCollection != null) {
             parentId = parentCollection.getId();
         }

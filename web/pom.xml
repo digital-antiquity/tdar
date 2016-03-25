@@ -183,7 +183,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
-            <version>2.48.2</version>
+            <version>2.53.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -354,6 +354,7 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--cache-min 9999999</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -417,13 +418,55 @@
                                 <exclude>**/org/tdar/experimental/**/*.java</exclude>
                                 <exclude>**/org/tdar/functional/**/*</exclude>
                                 <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/*</exclude>
                             </excludes>
                             <includes>
                                 <include>**/org/tdar/core/**/*</include>
-                                <include>**/org/tdar/struts/**/*</include>
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-spring</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/Struts*ITCase.java</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/spring</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-spring-struts</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                                <!-- <exclude>**/org/tdar/struts/**/*ITCase.java</exclude> -->
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/Struts*ITCase.java</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/spring-struts</reportsDirectory>
                         </configuration>
                     </execution>
                     <execution>

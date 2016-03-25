@@ -110,8 +110,6 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
     private String name;
 
     @Column(nullable = false, name = "display_name")
-    //@Field
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 

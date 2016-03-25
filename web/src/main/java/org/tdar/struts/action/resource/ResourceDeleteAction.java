@@ -13,13 +13,12 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.DeleteIssue;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractDeleteAction;
-import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
+import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 import com.opensymphony.xwork2.Preparable;
 

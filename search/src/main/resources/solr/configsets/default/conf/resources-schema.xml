@@ -22,7 +22,7 @@
     <field name="all_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <copyField source="all" dest="all_phrase" />
 
-    <field name="submitter.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="submitter.id" type="long" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="project.id" type="long" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="project.name" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="project.name_autocomplete" type="string" indexed="true" stored="false" required="false" multiValued="false" />

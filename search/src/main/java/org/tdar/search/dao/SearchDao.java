@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -21,23 +20,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.IntegratableOptions;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -277,10 +268,10 @@ public class SearchDao<I extends Indexable> {
 		resultHandler.setResults(toReturn);
 	}
 
+	@Autowired
+	ProjectionTransformer<I> projectionTransformer;
+	
 	private void hydrateExperimental(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results, List<I> toReturn) {
-		List<Long> submitterIds = new ArrayList<>();
-		List<Long> creatorIds = new ArrayList<>();
-		List<List<Long>> rcIds = new ArrayList<>();
 		for (SolrDocument doc : results.getDocumentList()) {
 			Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
 			String cls_ = (String) doc.getFieldValue(QueryFieldNames.CLASS);
@@ -289,51 +280,9 @@ public class SearchDao<I extends Indexable> {
 				I r = cls.newInstance();
 				r.setId(id);
 				if (r instanceof Resource) {
-					Resource r_ = (Resource) r;
-					r_.setStatus(Status.valueOf((String) doc.getFieldValue(QueryFieldNames.STATUS)));
-					r_.setTitle((String) doc.getFieldValue(QueryFieldNames.NAME));
-					r_.setDescription((String) doc.getFieldValue(QueryFieldNames.DESCRIPTION));
-					Collection<Long> collectionIds = (Collection<Long>) (Collection) doc
-							.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
-					Long submitterId = (Long) doc.getFieldValue(QueryFieldNames.SUBMITTER_ID);
-					submitterIds.add(submitterId);
-					TdarUser user = datasetDao.find(TdarUser.class, submitterId);
-					r_.setSubmitter(user);
-					
-					Collection<Long> llIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
-					List<LatitudeLongitudeBox> findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);
-					if (resultHandler.getOrientation() == DisplayOrientation.MAP) {
-						r_.getLatitudeLongitudeBoxes().addAll(findAll);
-					}
-					Collection<Long> cIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
-					if (resultHandler.getOrientation() == DisplayOrientation.LIST_FULL) {
-						r_.getResourceCreators().addAll(datasetDao.findAll(ResourceCreator.class, cIds));
-					}
+					logger.trace("{}",doc);
+					r = projectionTransformer.transformResource(resultHandler, doc, r, obfuscationService);
 
-					if (r_ instanceof InformationResource) {
-						Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
-						InformationResource ir = (InformationResource) r_;
-						if (resultHandler.getOrientation() == DisplayOrientation.GRID) {
-							ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));
-						}
-						String ptitle = (String) doc.getFieldValue(QueryFieldNames.PROJECT_TITLE);
-						ir.setDate((Integer)doc.getFieldValue(QueryFieldNames.DATE));
-						if (StringUtils.isNotBlank(ptitle)) {
-							Project project = new Project();
-							project.setTitle(ptitle);
-							project.setId((Long) doc.getFieldValue(QueryFieldNames.PROJECT_ID));
-							ir.setProject(project);
-						}
-						if (ir.isInheritingSpatialInformation()) {
-							ir.getProject().getLatitudeLongitudeBoxes().addAll(findAll);
-						}
-					}
-					obfuscationService.getAuthenticationAndAuthorizationService().applyTransientViewableFlag(r_,
-							resultHandler.getAuthenticatedUser(), collectionIds);
-					if (CONFIG.obfuscationInterceptorDisabled()
-							&& PersistableUtils.isNullOrTransient(resultHandler.getAuthenticatedUser())) {
-						obfuscationService.obfuscate((Obfuscatable) r_, resultHandler.getAuthenticatedUser());
-					}
 				}
 				toReturn.add(r);
 			} catch (ClassNotFoundException e) {

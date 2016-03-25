@@ -4,14 +4,13 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.core.service;
+package org.tdar.struts.action;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 

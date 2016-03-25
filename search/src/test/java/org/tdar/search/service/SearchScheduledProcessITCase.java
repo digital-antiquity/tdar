@@ -83,6 +83,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     @Test
     @Rollback(true)
     public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
+//    	reindex();
         pqp.setDaysToRun(3000);
         pqp.execute();
         pqp.cleanup();

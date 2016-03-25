@@ -42,7 +42,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "institution", indexes = {
         @Index(name = "institution_name_key", columnList = "name")
 })
-//@Indexed(index = "Institution")
 @DiscriminatorValue("INSTITUTION")
 @XmlRootElement(name = "institution")
 @Check(constraints = "email <> ''")
@@ -71,7 +70,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     private Institution parentInstitution;
 
     @Column(unique = true, nullable = true)
-    //@Field(name = "inst_email", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String email;
 
@@ -84,14 +82,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
 
     @Override
     @XmlElement
-    // FIXME: this seemingly conflicts w/ //@Field annotations on Creator.getName(). Figure out which declaration is working
-    //@Fields({
-            //@Field(name = "name_auto", norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
-            //@Field(analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            //@Field(name = QueryFieldNames.NAME_TOKEN),
-            //@Field(name = QueryFieldNames.NAME_PHRASE, norms = Norms.NO, store = Store.NO,
-//                    analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
-//    })
     public String getName() {
         return name;
     }
@@ -109,7 +99,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     }
 
     @Transient
-    //@Field(name = "acronym", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     public String getAcronym() {
         Pattern p = Pattern.compile(ACRONYM_REGEX);
         Matcher m = p.matcher(getName());
@@ -167,8 +156,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     }
 
     @Override
-    //@Field(norms = Norms.NO, store = Store.YES)
-//    @DateBridge(resolution = Resolution.MILLISECOND)
     public Date getDateUpdated() {
         return super.getDateUpdated();
     }

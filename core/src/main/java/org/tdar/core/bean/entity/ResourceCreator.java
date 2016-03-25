@@ -61,7 +61,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @ManyToOne(optional = false, cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH })
-    //@IndexedEmbedded
     @JoinColumn(nullable = false, name = "creator_id")
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, key = "RESOURCE_CREATOR", order = 1)
@@ -69,7 +68,6 @@ public class ResourceCreator extends Persistable.Sequence<ResourceCreator> imple
     private Creator creator;
 
     @Enumerated(EnumType.STRING)
-    //@Field
     @BulkImportField(key = "CREATOR_ROLE", order = 200)
     @Column(length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)

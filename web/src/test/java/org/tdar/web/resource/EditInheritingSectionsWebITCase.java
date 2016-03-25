@@ -11,12 +11,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
@@ -85,8 +83,6 @@ public class EditInheritingSectionsWebITCase extends AbstractAdminAuthenticatedW
     @Test
     @Rollback(true)
     public void testProjectJson() {
-        Set<CultureKeyword> cultureKeywords = projectService.find(PARENT_PROJECT_ID).getCultureKeywords();
-        logger.debug("cultureKeywords: {}", cultureKeywords);
         gotoPageWithoutErrorCheck("/project/json/" + PARENT_PROJECT_ID);
         String json = getPageCode();
         logger.debug("page json:" + json);

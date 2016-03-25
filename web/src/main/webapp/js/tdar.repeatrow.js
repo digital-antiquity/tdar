@@ -154,6 +154,8 @@ TDAR.repeatrow = function (TDAR, $) {
         // maybe clear before appending?
         _clearInputs($clone);
 
+        $clone.trigger("heightchange");
+
         return $clone;
     };
 

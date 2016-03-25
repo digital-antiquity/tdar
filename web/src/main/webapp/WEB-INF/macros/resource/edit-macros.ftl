@@ -1156,7 +1156,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
 <#-- emit the copyright holders section -->
     <#macro copyrightHolders sectionTitle copyrightHolderProxies >
-        <#if copyrightMandatory>
+        <#if copyrightMandatory || resource.copyrightHolder?has_content>
             <@helptext.copyrightHoldersTip />
         <div class="" id="copyrightHoldersSection" data-tiplabel="Primary Copyright Holder" data-tooltipcontent="#divCopyrightHoldersTip">
             <h2>${sectionTitle}</h2>

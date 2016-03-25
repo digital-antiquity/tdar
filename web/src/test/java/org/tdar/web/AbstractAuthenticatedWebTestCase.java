@@ -10,7 +10,7 @@ import org.tdar.utils.TestConfiguration;
  */
 public abstract class AbstractAuthenticatedWebTestCase extends AbstractWebTestCase {
 
-    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+    protected static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
     @Before
     public void setUp() {

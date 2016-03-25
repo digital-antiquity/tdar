@@ -35,14 +35,12 @@ public class ResourceNote extends Persistable.Sequence<ResourceNote> implements 
     private static final long serialVersionUID = -3161092447810925887L;
 
     @Column(length = FieldLength.FIELD_LENGTH_5000)
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_5000)
     @JsonView(JsonProjectLookupFilter.class)
     private String note;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "note_type", length = FieldLength.FIELD_LENGTH_255)
-    //@Field(norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class))
     @JsonView(JsonProjectLookupFilter.class)
     private ResourceNoteType type;
 

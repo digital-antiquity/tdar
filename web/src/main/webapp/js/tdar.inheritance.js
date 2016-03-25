@@ -24,6 +24,7 @@ TDAR.inheritance = (function () {
             strutsNaming: true,
             noIndicesFor: indexExclusions
         });
+        $(elemSelector).trigger("heightchange");
     }
 
     /**

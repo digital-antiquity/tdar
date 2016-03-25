@@ -105,7 +105,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private boolean showNavSearchBox = true;
     private FacetWrapper facetWrapper = new FacetWrapper();
 
-	private ProjectionModel projectionModel = ProjectionModel.RESOURCE_PROXY;
+	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -520,4 +520,5 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 	public DisplayOrientation getOrientation() {
 		return getPersistable().getOrientation();
 	}
+
 }

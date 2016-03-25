@@ -58,7 +58,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 
     @Autowired
     private ResourceSearchService resourceSearchService;
-    
+
     @Action(value = "resource", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
     })
@@ -67,8 +67,8 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         setMode("resourceLookup");
         // if we're doing a coding sheet lookup, make sure that we have access to all of the information here
         if (!isIncludeCompleteRecord() || (getAuthenticatedUser() == null)) {
+            setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
             getLogger().info("using projection {}, {}", isIncludeCompleteRecord(), getAuthenticatedUser());
-            setProjectionModel(ProjectionModel.RESOURCE_PROXY);
         }
 
         ResourceLookupObject look = new ResourceLookupObject();
@@ -78,14 +78,14 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         look.setCategoryId(sortCategoryId);
         look.setReservedSearchParameters(getReservedSearchParameters());
         look.setPermission(permission);
-        
+
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
 
         try {
             // includeComplete?
-            resourceSearchService.lookupResource(getAuthenticatedUser(),look,this,this);
+            resourceSearchService.lookupResource(getAuthenticatedUser(), look, this, this);
             getLogger().trace("jsonResults: {}", getResults());
         } catch (ParseException e) {
             addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
@@ -186,9 +186,9 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         this.parentCollectionsIncluded = parentCollectionsIncluded;
     }
 
+    @Override
+    public DisplayOrientation getOrientation() {
+        return DisplayOrientation.LIST;
+    }
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		return DisplayOrientation.LIST;
-	}
 }

@@ -16,6 +16,7 @@
       content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
 </#if>
 <meta name="keywords" content="tdar, database, archaeology, digital repository, Digital Antiquity, preservation, access"/>
+<#if !(test!false)>
 <script type="text/javascript">
     (function(d) {
         var config = {
@@ -29,7 +30,7 @@
                         f=true;clearTimeout(t);try{Typekit.load(config)}catch(e){}};s.parentNode.insertBefore(tk,s)
     })(document);
 </script>
-
+</#if>
 <style>
     @media screen {
         /* typekit fonts don't seem to work well in print -- we can revisit, but turning off for now */

@@ -74,7 +74,6 @@ public interface Persistable extends Serializable {
 
         // @XmlTransient
         @Override
-        //@Field(store = Store.YES, analyzer = //@Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
         @XmlAttribute(name = "id")
         public Long getId() {
             return id;

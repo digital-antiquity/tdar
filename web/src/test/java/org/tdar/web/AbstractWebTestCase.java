@@ -24,6 +24,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,31 +39,25 @@ import org.junit.Before;
 import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.test.context.ContextConfiguration;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
-import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.junit.WebTestCase;
-import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.TestConfiguration;
 import org.w3c.css.sac.CSSException;
 import org.w3c.css.sac.CSSParseException;
 import org.w3c.css.sac.ErrorHandler;
 
+import com.gargoylesoftware.htmlunit.AlertHandler;
 import com.gargoylesoftware.htmlunit.BrowserVersion;
 import com.gargoylesoftware.htmlunit.CookieManager;
 import com.gargoylesoftware.htmlunit.ElementNotFoundException;
@@ -105,7 +100,7 @@ import net.sf.json.JSONSerializer;
  * 
  */
 //@ContextConfiguration(classes = TdarAppConfiguration.class)
-public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase implements WebTestCase {
+public abstract class AbstractWebTestCase  implements WebTestCase {
 
     private static final String CART_REVIEW = "/cart/review";
 
@@ -878,11 +873,19 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         // webClient.getOptions().setSSLClientCertificate(certificateUrl, certificatePassword, certificateType)
         webClient.setJavaScriptTimeout(0);
         
+        webClient.setAlertHandler(new AlertHandler() {
+            
+            @Override
+            public void handleAlert(Page page, String message) {
+                logger.error("ALERT ON " + page.getUrl() + " : " + message);                
+            }
+        });
+
         webClient.setJavaScriptErrorListener(new JavaScriptErrorListener() {
 
             @Override
             public void scriptException(InteractivePage page, ScriptException scriptException) {
-                logger.error("JS load exception: {} {}", page.getUrl(), scriptException);
+                logger.error("JS load exception: {}({}:{}):: {}\n {}", page.getUrl(), scriptException.getFailingLineNumber(), scriptException.getFailingColumnNumber(), scriptException.getFailingLine(), scriptException, scriptException.getScriptSourceCode());
             }
 
             @Override
@@ -1188,7 +1191,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     }
 
     private NameValuePair nameValuePair(String name, File file, String contentType) {
-        KeyDataPair keyDataPair = new KeyDataPair(name, file, contentType, "utf8");
+        //(name, file, contentType, "utf8");
+        KeyDataPair keyDataPair = new KeyDataPair(name, file, file.getName(), contentType, "utf8");
         return keyDataPair;
     }
 
@@ -1261,7 +1265,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             String response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
             checkInput(NelnetTransactionItem.getInvoiceIdKey(), toReturn.get(INVOICE_ID));
-            checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(getUserId()));
+            checkInput(NelnetTransactionItem.getUserIdKey(), Long.toString(CONFIG.getUserId()));
             // logger.info(getPageBodyCode());
             checkInput(NelnetTransactionItem.AMOUNT_DUE.name(), total);
             clickElementWithId("process-payment_0");
@@ -1307,8 +1311,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             setInput("account.name", accountName);
             setInput("account.description", THIS_IS_A_TEST_DESCIPTION);
         }
-        List<TdarUser> users = entityService.findAllRegisteredUsers(3);
-        List<Long> userIds = PersistableUtils.extractIds(users);
+        List<String> users = Arrays.asList("editor user", "K. Selcuk Candan", "Keith Kintigh");
+        List<Long> userIds = Arrays.asList(8067L, 8094L, 8389L);
         for (int i = 0; i < userIds.size(); i++) {
             setInput("authorizedMembers[" + i + "].id", Long.toString(userIds.get(i)));
         }
@@ -1321,13 +1325,13 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         return id;
     }
 
-    protected void assertAccountPageCorrect(List<TdarUser> users, List<Long> userIds, String title) {
+    protected void assertAccountPageCorrect(List<String> users, List<Long> userIds, String title) {
         assertTextPresent(title);
         assertTextPresent(THIS_IS_A_TEST_DESCIPTION);
         for (int i = 0; i < userIds.size(); i++) {
-            assertTextPresent(users.get(i).getProperName());
+            assertTextPresent(users.get(i));
         }
-        assertTextPresent(getSessionUser().getProperName());
+        assertTextPresent("test user");
     }
 
     public void login(String user, String pass) {
@@ -1373,8 +1377,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         webClient.getCookieManager().clearCookies();
     }
 
-//    @Autowired
-//    private AuthenticationService authService;
 
     public enum TERMS {
         TOS,
@@ -1385,9 +1387,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
     public void testRegister(Map<String, String> values, TERMS terms) {
 
         String username = values.get("registration.person.username");
-//        if (true) {
-//            deleteUser(username);
-//        }
         gotoPage("/");
         logger.trace(getPageText());
 
@@ -1416,8 +1415,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
         setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
         submitForm("Register");
-        evictCache();
-        setSessionUser(entityService.findByUsername(username));
+//        evictCache();
+//        setSessionUser(entityService.findByUsername(username));
     }
 
 //    public void deleteUser(String username) {
@@ -1448,7 +1447,6 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         // personmap.put("registration.requestingContributorAccess", "true");
     }
 
-    @Override
     public void onFail(Throwable e, Description description) {
         // FIXME: need to get this to fire *before* the @After method logs out. otherwise the pageCode will always be the tdar login screen.
         // logger.error("{} failed. server response below:\n\n {}", description.getDisplayName(), getPageCode());
@@ -1467,7 +1465,7 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         gotoPage("/admin/searchindex/build");
         gotoPage("/admin/searchindex/buildIndex");
         try {
-            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + getAdminUserId());
+            URL url = new URL(getBaseUrl() + "/admin/searchindex/checkstatus?userId=" + TestConfiguration.getInstance().getAdminUserId());
             internalPage = webClient.getPage(new WebRequest(url, HttpMethod.POST));
 
             logger.debug(getPageCode());
@@ -1501,7 +1499,11 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
         createInput("text", String.format(FMT_AUTHUSERS_LASTNAME, i), user.getLastName());
         createInput("text", String.format(FMT_AUTHUSERS_FIRSTNAME, i), user.getFirstName());
         createInput("text", String.format(FMT_AUTHUSERS_EMAIL, i), user.getEmail());
-        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), user.getInstitutionName());
+        String inst = user.getInstitutionName();
+        if (inst == null) {
+            inst = "";
+        }
+        createInput("text", String.format(FMT_AUTHUSERS_INSTITUTION, i), inst);
         createInput("text", String.format(FMT_AUTHUSERS_PERMISSION, i), viewAll.toString());
     }
 
@@ -1533,5 +1535,14 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
             logger.error("{}", e);
         }
     }
+
+    public Logger getLogger() {
+        return logger;
+    }
+
+    public void assertNotEquals(Object o1, Object o2) {
+    	assertFalse(Objects.equals(o1, o2));
+	}
+
 
 }

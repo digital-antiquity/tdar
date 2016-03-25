@@ -1,7 +1,5 @@
 package org.tdar.struts.interceptor;
 
-import java.util.Objects;
-
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,9 +20,9 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
-import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
+import com.google.common.base.Objects;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -84,7 +82,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             registerObfuscationListener(invocation, mark);
             String invoke = invocation.invoke();
-            if (!Objects.equals(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equals(TdarActionSupport.ERROR, invocation.getResultCode())) {
+            if (!Objects.equal(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equal(TdarActionSupport.ERROR, invocation.getResultCode())) {
                 SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
             } else {
                 SessionProxy.getInstance().registerSessionCancel(genericService.getCurrentSessionHashCode());

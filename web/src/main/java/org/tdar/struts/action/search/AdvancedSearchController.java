@@ -114,6 +114,11 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         // FIME: for whatever reason this is not being processed by the SessionSecurityInterceptor and thus
         // needs manual care, but, when the TdarActionException is processed, it returns a blank page instead of
         // not_found
+        
+        if (getProjectionModel() == null) {
+        	setProjectionModel(ProjectionModel.LUCENE_EXPERIMENTAL);
+        }
+        
         try {
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
@@ -436,4 +441,5 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public void setFacetWrapper(FacetWrapper facetWrapper) {
         this.facetWrapper = facetWrapper;
     }
+
 }

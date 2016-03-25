@@ -54,7 +54,6 @@ public abstract class Citation extends Persistable.Base implements HasResource<R
         return Arrays.asList(text);
     };
 
-    //@Field
     public String getText() {
         return text;
     }

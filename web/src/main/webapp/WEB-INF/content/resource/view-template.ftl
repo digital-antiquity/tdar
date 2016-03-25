@@ -79,7 +79,7 @@
         <@view.kvp key="Year" val=resource.date?c />
     </#if>
 
-    <#if copyrightMandatory && resource.copyrightHolder?? >
+    <#if copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
@@ -234,11 +234,11 @@
             <div class="span3"><span class="columnSquare mapped"></span>Mapping Column</div>
             <div class="span6"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
-
+    <br/>
             <#list resource.dataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <#if dataTable.description?has_content>
-			<p>${dataTable.description}</p>
+			<p class="tableDescription">${dataTable.description}</p>
 			</#if>
             <table class="tableFormat table table-bordered">
                 <thead class='highlight'>
@@ -346,7 +346,7 @@
         <@view.categoryVariables />
     </#if>
     <#if !resource.resourceType.project >
-        <#if licensesEnabled?? &&  licensesEnabled>
+        <#if licensesEnabled?? &&  licensesEnabled || resource.licenseType?has_content >
             <@view.license />
         </#if>
     </#if>

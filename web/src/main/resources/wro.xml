@@ -82,7 +82,6 @@
         <js>/js/tdar.internalemail.js</js>
         <js>/js/tdar.download.js</js>
         <js>/js/tdar.pricing.js</js>
-        <js>/js/tdar.heightevents.js</js>
         <js>/js/tdar.contexthelp.js</js>
         <js>/js/tdar.menu.js</js>
         <js>/js/tdar.formValidateExtensions.js</js>
