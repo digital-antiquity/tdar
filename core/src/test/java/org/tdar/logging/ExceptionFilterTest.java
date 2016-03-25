@@ -3,25 +3,24 @@
  */
 package org.tdar.logging;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Filter.Result;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.impl.Log4jLogEvent;
-import org.apache.logging.log4j.status.StatusLogger;
-import org.hibernate.tool.schema.internal.TargetFileImpl;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.tdar.logging.ExceptionFilter.Target;
-
-import java.io.IOException;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertTrue;
 import static org.tdar.logging.ExceptionFilter.createFilter;
+
+import java.io.IOException;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Filter.Result;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
+import org.apache.logging.log4j.status.StatusLogger;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.tdar.logging.ExceptionFilter.Target;
 
 public class ExceptionFilterTest {
     @BeforeClass
