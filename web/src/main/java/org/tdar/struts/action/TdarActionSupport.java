@@ -589,8 +589,8 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         } else {
             String[] errors = javascriptErrorLog.split("\\Q" + getJavascriptErrorLogDelimiter() + "\\E");
             if (getLogger().isErrorEnabled()) {
-                getLogger().error("Client {} reported {} javascript errors. \n <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"),
-                        errors.length, StringUtils.join(errors, "\n\t - "));
+                getLogger().error("Client {} reported {} javascript errors.  <<{}>>", ServletActionContext.getRequest().getHeader("User-Agent"),
+                        errors.length, StringUtils.join(errors, " :: "));
             }
         }
 
@@ -600,7 +600,7 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
             lines.add(line);
         }
         if (!lines.isEmpty()) {
-            getLogger().info("the client reported validation errors: \n {}", StringUtils.join(lines, "\n\t"));
+            getLogger().info("the client reported validation errors: \n {}", StringUtils.join(lines, " :: "));
         }
     }
 
