@@ -390,6 +390,7 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+        force1024x768();
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {

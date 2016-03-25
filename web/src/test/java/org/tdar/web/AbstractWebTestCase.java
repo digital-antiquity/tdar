@@ -1359,7 +1359,8 @@ public abstract class AbstractWebTestCase extends AbstractIntegrationTestCase im
 
     public void logout() {
         webClient.getOptions().setJavaScriptEnabled(false);
-        if (getHtmlPage().getElementById("logout-button") != null) {
+        if (internalPage instanceof HtmlPage && 
+        		getHtmlPage().getElementById("logout-button") != null) {
             clickElementWithId("logout-button");
         } else {
             // go to homepage
