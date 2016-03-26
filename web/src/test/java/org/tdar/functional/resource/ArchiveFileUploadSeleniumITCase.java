@@ -1,4 +1,4 @@
-package org.tdar.functional;
+package org.tdar.functional.resource;
 
 import static org.hamcrest.Matchers.endsWith;
 import static org.junit.Assert.assertThat;
@@ -10,6 +10,7 @@ import java.util.List;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.tdar.functional.AbstractBasicSeleniumWebITCase;
 
 public class ArchiveFileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
 

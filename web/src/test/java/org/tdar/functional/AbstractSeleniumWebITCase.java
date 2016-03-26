@@ -98,6 +98,7 @@ import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.thoughtworks.selenium.SeleniumException;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -734,14 +735,20 @@ public abstract class AbstractSeleniumWebITCase {
     public void logout() {
         WebElementSelection find = find("#logout-button");
         if (find.size() > 0) {
+            // handle modal dialogs
+        	try {
+        		find.click();
+        		return;
+        	} catch (WebDriverException se) {
+        		logger.error("error trying to logout {}", se);
+        	}
+        } 
+
+        gotoPage("/login");
+        find = find("#logout-button");
+        if (find.size() > 0) {
             find.click();
-        } else {
-            gotoPage("/login");
-            find = find("#logout-button");
-            if (find.size() > 0) {
-                find.click();
-            }   
-        }
+        }   
     }
 
     public String getSource() {
