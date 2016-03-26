@@ -5,11 +5,9 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.core.Is.is;
 
 import org.junit.Test;
-import org.junit.Ignore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.struts.TdarStrutsTestCase;
-import org.tdar.struts.action.TdarActionSupport;
 
 //@Ignore
 public class StrutsIndexControllerITCase extends TdarStrutsTestCase<TdarActionSupport> {

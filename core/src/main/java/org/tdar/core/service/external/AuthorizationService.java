@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -44,7 +42,6 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /*
@@ -624,13 +621,15 @@ public class AuthorizationService implements Accessible {
      * 
      * @param informationResourceFileVersion
      * @param apiKey
-     * @param request
-     * @return true, if download authorized.
+     * @param referrer
+     * @return List of errors in the form of localization messages to be expanded e.g. from a TextProvider.  An empty
+     * list indicates success.
      */
     @Transactional(readOnly = true)
-    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
-        String referrer = request.getHeader("referer");
+    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+        //String referrer = request.getHeader("referer");
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
+        List<String> errors = new ArrayList<>();
         try {
             URL url = new URL(referrer);
             referrer = url.getHost();
@@ -639,10 +638,16 @@ public class AuthorizationService implements Accessible {
             referrer = "";
         }
         if (StringUtils.isBlank(referrer)) {
-            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
+            errors.add("authorizationService.referrer_invalid");
+        } else {
+            List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
+            if(CollectionUtils.isEmpty(authorizations)) {
+                errors.add("authorizationService.invalid_request");
+            }
+
+//            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
         }
-        List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
-        return CollectionUtils.isNotEmpty(authorizations);
+        return errors;
     }
 
     @Transactional(readOnly = true)

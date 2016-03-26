@@ -68,9 +68,9 @@ public class UserAgreementController extends AuthenticationAware.Base implements
 
     @WriteableSession
     @Action(value = "agreement-response", results = {
-            @Result(name = TdarActionSupport.SUCCESS, type = "redirect", location = "/dashboard"),
-            @Result(name = TdarActionSupport.NONE, type = "redirect", location = "/logout"),
-            @Result(name = TdarActionSupport.INPUT, type = "redirect", location = "/show-notices")
+            @Result(name = TdarActionSupport.SUCCESS, type = TDAR_REDIRECT, location = "/dashboard"),
+            @Result(name = TdarActionSupport.NONE, type = TDAR_REDIRECT, location = "/"),
+            @Result(name = TdarActionSupport.INPUT, type = TDAR_REDIRECT, location = "/show-notices")
     })
     @PostOnly
     public String agreementResponse() {
@@ -86,6 +86,7 @@ public class UserAgreementController extends AuthenticationAware.Base implements
             String fmt = getText("userAgreementController.decline_message");
             addActionMessage(String.format(fmt, getSiteAcronym()));
             getLogger().debug("agreements declined,  redirecting to logout page");
+            authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
             return NONE;
         }
     }

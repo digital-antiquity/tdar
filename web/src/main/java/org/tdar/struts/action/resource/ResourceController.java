@@ -14,6 +14,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
+
 
 /**
  * $Id$
@@ -50,14 +52,14 @@ public class ResourceController extends AuthenticationAware.Base {
     @Actions(value = {
             @Action(value = "add",
                     results = {
-                            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
-                            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.MY_PROFILE),
                             @Result(name = SUCCESS, location = "add.ftl")
                     }),
             @Action(value = "add/{projectId}",
                     results = {
-                            @Result(name = BILLING, type = TYPE_REDIRECT, location = URLConstants.CART_ADD),
-                            @Result(name = CONTRIBUTOR, type = TYPE_REDIRECT, location = URLConstants.MY_PROFILE),
+                            @Result(name = BILLING, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.CART_ADD),
+                            @Result(name = CONTRIBUTOR, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.MY_PROFILE),
                             @Result(name = SUCCESS, location = "add.ftl")
                     })
 
@@ -84,7 +86,7 @@ public class ResourceController extends AuthenticationAware.Base {
     @Action(value = "{resourceId}/edit",
             results = {
                     @Result(name = INPUT, location = "add.ftl"),
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${resource.urlNamespace}/edit?id=${resource.id}")
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "/${resource.urlNamespace}/edit?id=${resource.id}")
             })
     public String edit() {
         resource = getGenericService().find(InformationResource.class, resourceId);

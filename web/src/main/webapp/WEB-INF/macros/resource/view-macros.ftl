@@ -117,7 +117,7 @@ View freemarker macros
     <#macro createArchiveFileLink resource newline=false >
     <#--<a href="<@s.url value='/filestore/downloadAllAsZip?informationResourceId=${resource.id?c}'/>" onClick="TDAR.common.registerDownload('/filestore/informationResourceId=${resource.id?c}', '${id?c}')"-->
     <#-- fixme:should we change the google analytics event name, or will this be a pain? -->
-        <#if resource.hasConfidentialFiles() >
+        <#if resource.hasConfidentialFiles() && !ableToViewConfidentialFiles >
             Download All<span class="ui-icon ui-icon-locked" style="display: inline-block"></span>
         <#else>
         <a class="download-link download-zip" href="<@s.url value='/filestore/download/${resource.id?c}'/>" 

@@ -28,7 +28,7 @@ import com.gargoylesoftware.htmlunit.WebClient;
 import com.gargoylesoftware.htmlunit.html.HtmlPage;
 import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 
-public abstract class AbsractWebTest {
+public abstract class AbstractWebTest {
 
 	protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
 	protected Page internalPage;

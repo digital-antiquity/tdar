@@ -29,6 +29,7 @@ import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -73,7 +74,7 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     @SkipValidation
     @Action(value = MAPPING, results = {
             @Result(name = SUCCESS, location = "mapping.ftl"),
-            @Result(name = INPUT, type = "redirect", location = URLConstants.VIEW_RESOURCE_ID)
+            @Result(name = INPUT, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID)
     })
     public String loadOntologyMappedColumns() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
@@ -97,7 +98,7 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     @Action(value = SAVE_MAPPING,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.VIEW_RESOURCE_ID),
                     @Result(name = INPUT, location = "mapping.ftl") })
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);

@@ -168,9 +168,9 @@ public class BulkUploadController extends AbstractInformationResourceController<
     @Action(value = "validate-template",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = INPUT, type = "redirect", location = "template-prepare"),
-                    @Result(name = VALIDATE_ERROR, type = "redirect", location = "template-prepare"),
-                    @Result(name = SUCCESS, type = "redirect",
+                    @Result(name = INPUT, type = TDAR_REDIRECT, location = "template-prepare"),
+                    @Result(name = VALIDATE_ERROR, type = TDAR_REDIRECT, location = "template-prepare"),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT,
                             location = "add?ticketId=${ticketId}&templateFilename=${templateFilename}&projectId=${projectId}") })
     @SkipValidation
     @PostOnly

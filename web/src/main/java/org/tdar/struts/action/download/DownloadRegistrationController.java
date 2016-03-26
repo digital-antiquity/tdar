@@ -37,8 +37,8 @@ public class DownloadRegistrationController extends AbstractDownloadController i
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
-                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
-                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.REDIRECT, location = DOWNLOAD_ALL_LANDING) })
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),
+                    @Result(name = SUCCESS_DOWNLOAD_ALL, type = TdarActionSupport.TDAR_REDIRECT, location = DOWNLOAD_ALL_LANDING) })
     @HttpsOnly
     @PostOnly
     @WriteableSession

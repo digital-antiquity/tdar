@@ -9,23 +9,20 @@
 <h3>Select a Billing Account or Collection to export from</h3>
 <br/>
 <div class="row">
-    <div class="span2" >
+    <div class="control-group" >
         <label class="control-label" for="collectionName">Account</label>
+    <div class="controls">
+        <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" emptyOption='true'   theme="xhtml" />
     </div>
-    <div class="span10">
-        <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" theme="xhtml" />
-<br/>
     </div>
 </div>
 <div class="row">
-    <div class="span2" >
+    <div id="parentIdContainer" class="control-group">
         <label class="control-label" for="collectionName">Collection</label>
-    </div>
-    <div id="collection" class="controls-row span10">
-                        <@s.hidden name="collectionId"  id="collectionId" />
-                <@s.textfield theme="simple" id="collectionName" name="collectionName" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-                    autocompleteIdElement="#collectionId" maxlength=255
-                    autocompleteParentElement="#collection" />
+        <div class="controls">
+            <input type="hidden" name="parentId" value="" id="hdnParentId" autocompleteparentelement="#parentIdContainer">
+            <input type="text" name="parentCollectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
+        </div>
     </div>
 </div>
 
@@ -35,7 +32,7 @@
 
 <script>
 $(document).ready(function() {
-TDAR.autocomplete.applyCollectionAutocomplete($("#collection"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+    TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
 });
 </script>
 </body>

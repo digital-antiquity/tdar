@@ -75,7 +75,7 @@ public class SchemaGenerator {
      */
     private void generate(String filename) {
         log.info("exporting schema to: " + filename);
-        
+        //http://stackoverflow.com/questions/35993598/how-do-i-export-schema-after-upgrading-hibernate-to-5-1-0    
 //        SchemaExport export = new SchemaExport();
 //        export.
 //        export.setDelimiter(";");

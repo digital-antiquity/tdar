@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.lucene.analysis.fa.PersianAnalyzer;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
@@ -23,8 +22,6 @@ import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.KeywordSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-
-import net.fortuna.ical4j.model.property.Geo;
 
 public class KeywordQueryITCase extends AbstractWithIndexIntegrationTestCase{
 

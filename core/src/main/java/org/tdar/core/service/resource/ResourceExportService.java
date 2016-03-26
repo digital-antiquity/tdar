@@ -15,6 +15,7 @@ import java.util.zip.ZipOutputStream;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +24,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -86,15 +85,14 @@ public class ResourceExportService {
         if (CollectionUtils.isNotEmpty(rep.getResources())) {
             resources.addAll(rep.getResources());
         }
-        return export(resources);
+        return export(rep.getFilename(), resources);
     }
 
     @Transactional(readOnly = true)
-    public File export(final List<Resource> resources) throws Exception {
-        String edir = EXPORT + System.currentTimeMillis();
-        File dir = new File(FileUtils.getTempDirectory(), edir);
+    public File export(String filename, final List<Resource> resources) throws Exception {
+        File dir = new File(FileUtils.getTempDirectory(), EXPORT);
         dir.mkdir();
-        File zipFile = File.createTempFile(EXPORT, ZIP);
+        File zipFile = new File(dir, filename);
         ZipOutputStream zout = new ZipOutputStream(new FileOutputStream(zipFile));
         File schema = serializationService.generateSchema();
         writeToZip(zout, schema, "tdar.xsd");
@@ -255,24 +253,58 @@ public class ResourceExportService {
     }
 
     @Async
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public void exportAsync(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
         try {
+            if (PersistableUtils.isNotNullOrTransient(resourceExportProxy.getAccount())) {
+                resourceExportProxy.setAccount(genericDao.merge(resourceExportProxy.getAccount()));
+            }
+            if (PersistableUtils.isNotNullOrTransient(resourceExportProxy.getCollection())) {
+                resourceExportProxy.setCollection(genericDao.merge(resourceExportProxy.getCollection()));
+            }
+            if (CollectionUtils.isNotEmpty(resourceExportProxy.getResources())) {
+                List<Resource> resources = new ArrayList<>();
+                for (Resource r : resourceExportProxy.getResources()) {
+                    resources.add(genericDao.merge(r));
+                }
+                resourceExportProxy.setResources(resources);
+            }
+
             File file = export(resourceExportProxy);
-            Email email = new Email();
-            email.setTo(authenticatedUser.getEmail());
-            email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
-            email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
-            Map<String, Object> dataModel = new HashMap<>();
-            dataModel.put("resources", resourceExportProxy);
-            dataModel.put("file", file);
-            String url = "";
-            dataModel.put("url", url);
-            dataModel.put("authenticatedUser", authenticatedUser);
-            emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
+            sendEmail(resourceExportProxy, authenticatedUser);
         } catch (Exception e) {
             logger.error("error in export", e);
         }
+    }
+
+    @Transactional(readOnly=false)
+    protected void sendEmail(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
+        Email email = new Email();
+        email.setTo(authenticatedUser.getEmail());
+        email.setFrom(TdarConfiguration.getInstance().getSystemAdminEmail());
+        email.setSubject(MessageHelper.getMessage("resourceExportService.email_subject"));
+        Map<String, Object> dataModel = new HashMap<>();
+        dataModel.put("resources", resourceExportProxy);
+        dataModel.put("file", resourceExportProxy.getFilename());
+        String url = String.format("%sexport/download?file=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
+        dataModel.put("url", url);
+        dataModel.put("authenticatedUser", authenticatedUser);
+        emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
+    }
+
+    @Transactional(readOnly=true)
+    public File retrieveFile(String filename) throws FileNotFoundException {
+        if (StringUtils.isBlank(filename)) {
+            throw new FileNotFoundException();
+        }
+        File dir = new File(FileUtils.getTempDirectory(), EXPORT);
+        File zipFile = new File(dir, filename);
+        if (!zipFile.exists()) {
+            throw new FileNotFoundException(filename + "does not exist");
+        }
+        return zipFile;
+        // TODO Auto-generated method stub
+        
     }
 
 }

@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>tDAR (web-base)</name>
     <properties>
-        <jetty.version>9.3.7.v20160115</jetty.version>
+        <jetty.version>9.3.8.v20160314</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
@@ -86,7 +86,7 @@
         <dependency>
             <groupId>nu.validator</groupId>
             <artifactId>validator</artifactId>
-            <version>16.1.1</version>
+            <version>16.3.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>httpcore</artifactId>

@@ -37,9 +37,9 @@ public class ContinueInvoiceAction extends AuthenticationAware.Base {
 
     @Action(value = "continue",
             results = {
-                    @Result(name = SUCCESS, type = REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
-                    @Result(name = SUCCESS_UNAUTH, type = REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED),
-                    @Result(name = INPUT, type = REDIRECT, location = URLConstants.CART_ADD)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
+                    @Result(name = SUCCESS_UNAUTH, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_UNAUTHENTICATED),
+                    @Result(name = INPUT, type = TDAR_REDIRECT, location = URLConstants.CART_ADD)
             })
     public String execute() {
         getLogger().debug("setting invoice id {} on the session", invoiceId);

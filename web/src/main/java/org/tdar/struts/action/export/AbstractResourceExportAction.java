@@ -37,7 +37,7 @@ public abstract class AbstractResourceExportAction extends AuthenticationAware.B
     private Long collectionId;
     private Long accountId;
 
-    private ResourceExportProxy exportProxy = new ResourceExportProxy();
+    private ResourceExportProxy exportProxy;
 
     @Autowired
     ResourceExportService resourceExportService;
@@ -50,6 +50,7 @@ public abstract class AbstractResourceExportAction extends AuthenticationAware.B
 
     @Override
     public void prepare() throws Exception {
+        exportProxy = new ResourceExportProxy(getAuthenticatedUser());
         resources = getGenericService().findAll(Resource.class, ids);
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
         getExportProxy().setCollection(getGenericService().find(ResourceCollection.class, collectionId));

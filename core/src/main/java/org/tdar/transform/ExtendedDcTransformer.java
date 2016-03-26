@@ -10,6 +10,7 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -20,8 +21,10 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Archive;
 import org.tdar.core.bean.resource.Audio;
@@ -68,9 +71,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         }
 
         // add creators and contributors
-        List<ResourceCreator> sortedResourceCreators = new ArrayList<>(source.getResourceCreators());
-        Collections.sort(sortedResourceCreators);
-        for (ResourceCreator resourceCreator : source.getResourceCreators()) {
+        for (ResourceCreator resourceCreator : toSortedList(source.getActiveResourceCreators())) {
             String name = resourceCreator.getCreator().getProperName();
             if (resourceCreator.getCreatorType() == CreatorType.PERSON) {
                 // display person names in special format
@@ -105,10 +106,26 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             dc.addCoverage(siteNameTerm.getLabel());
         }
 
+        // add site name subjects
+        for (SiteTypeKeyword siteNameTerm : toSortedList(source.getActiveSiteTypeKeywords())) {
+            dc.addSubject(siteNameTerm.getLabel());
+        }
+
+        // add site name subjects
+        for (MaterialKeyword term : toSortedList(source.getActiveMaterialKeywords())) {
+            dc.addSubject(term.getLabel());
+        }
+
         for (CoverageDate cov : toSortedList(source.getActiveCoverageDates())) {
             if (cov.getDateType() == CoverageType.CALENDAR_DATE) {
                 dc.addDate(String.format("start:%s end:%s", cov.getStartDate(), cov.getEndDate()));
+            } else {
+                dc.addDate(cov.toString());
             }
+        }
+        
+        for (ResourceCollection coll : toSortedList(source.getSharedVisibleResourceCollections())) {
+            dc.addIsPartOf(coll.getName());
         }
 
         // add other subjects
@@ -118,7 +135,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
         dc.addType(source.getResourceType().getLabel());
         
-        dc.addIdentifier(UrlService.absoluteUrl(source));
+        dc.addIdentifier(source.getId().toString());
         dc.addReferences(UrlService.absoluteUrl(source));
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
             String maxy = longLat.getMaxObfuscatedLatitude().toString();
@@ -132,8 +149,6 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         for (CoverageDate date : toSortedList(source.getCoverageDates())) {
             dc.addTemporal(date.toString());
         }
-
-        // TODO: deal with Url here.
 
         return dc;
     }
@@ -187,13 +202,17 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (doi != null) {
                 dc.addIdentifier(doi);
             }
+            
+            if (source.getProject() != Project.NULL) {
+                dc.addIsPartOf(source.getProjectTitle());
+            }
 
             String copyLocation = source.getCopyLocation();
             if (copyLocation != null) {
                 dc.addRelation(copyLocation);
             }
 
-            for (ResourceCreator resourceCreator : source.getResourceCreators()) {
+            for (ResourceCreator resourceCreator : source.getActiveResourceCreators()) {
                 if (resourceCreator.getRole() == ResourceCreatorRole.CONTACT) {
                     dc.addPublisher(resourceCreator.getCreator().getProperName());
                 }
@@ -210,6 +229,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (source.getResourceType().toDcmiTypeString() != null) {
                 dc.addType(source.getResourceType().toDcmiTypeString());
             }
+            
 
             for (InformationResourceFileVersion version : source.getLatestUploadedVersions()) {
                 dc.addType(version.getMimeType());
@@ -253,6 +273,9 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             if (issn != null) {
                 dc.addIdentifier(issn);
             }
+
+                dc.addType(source.getDocumentType().getLabel());
+            
 
             String seriesName = source.getSeriesName();
             String seriesNumber = source.getSeriesNumber();

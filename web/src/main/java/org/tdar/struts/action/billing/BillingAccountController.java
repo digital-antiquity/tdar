@@ -118,7 +118,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
     @SkipValidation
     @WriteableSession
     @Action(value = UPDATE_QUOTAS, results = {
-            @Result(name = SUCCESS, location = "${id}", type = REDIRECT)
+            @Result(name = SUCCESS, location = "${id}", type = TDAR_REDIRECT)
     })
     public String updateQuotas() {
         accountService.updateQuota(getAccount(), getAccount().getResources());
@@ -133,7 +133,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
      */
     @SkipValidation
     @Action(value = FIX_FOR_DELETE_ISSUE, results = {
-            @Result(name = SUCCESS, location = "${id}", type = REDIRECT)
+            @Result(name = SUCCESS, location = "${id}", type = TDAR_REDIRECT)
     })
     public String fix() {
         accountService.resetAccountTotalsToHaveOneFileLeft(getAccount());

@@ -41,7 +41,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.UserAffiliation;
@@ -1024,7 +1023,12 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         assertTrue(msg, internalPage.getUrl().toString().contains(url));
     }
 
-    // get the "main" form. it's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna specify it outright
+
+    //fixme: replace this madness with css selector-based methods
+    /**
+     * Get the "main" form. It's pretty much a guess, so if you encounter a page w/ multiple forms you might wanna
+     * specify it outright.
+     */
     public HtmlForm getForm() {
         logger.trace("FORM{} OTHERS: {}", _internalForm, getHtmlPage().getForms());
         if (_internalForm == null) {
@@ -1034,8 +1038,8 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
                 logger.trace("only one form: {}", htmlForm.getNameAttribute());
             } else {
                 for (HtmlForm form : getHtmlPage().getForms()) {
-                    if (StringUtils.isNotBlank(form.getActionAttribute()) && !form.getNameAttribute().equalsIgnoreCase("autosave") &&
-                            !form.getNameAttribute().equalsIgnoreCase("searchheader")) {
+                    if (StringUtils.isNotBlank(form.getActionAttribute()) && 
+                            !StringUtils.containsAny(form.getNameAttribute().toLowerCase(), "autosave","logoutform","searchheader","logoutformmenu")) {
                         htmlForm = form;
                         logger.trace("using form: {}", htmlForm.getNameAttribute());
                         break;
@@ -1359,7 +1363,17 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
 
     public void logout() {
         webClient.getOptions().setJavaScriptEnabled(false);
-        gotoPage("/logout");
+        if (internalPage instanceof HtmlPage && 
+        		getHtmlPage().getElementById("logout-button") != null) {
+            clickElementWithId("logout-button");
+        } else {
+            // go to homepage
+            gotoPage("/login");
+            // if logout-button is not present, then we're logged-out
+            if (getHtmlPage().getElementById("logout-button") != null) {
+                clickElementWithId("logout-button");
+            }
+        }
         webClient.getCookieManager().clearCookies();
     }
 

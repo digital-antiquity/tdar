@@ -44,7 +44,7 @@
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <slf4j.version>1.7.18</slf4j.version>
+        <slf4j.version>1.7.19</slf4j.version>
         <skipTestLiquibase>true</skipTestLiquibase>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
@@ -108,39 +108,54 @@
             <name>JBoss Maven Repository</name>
             <url>https://repository.jboss.org/nexus/content/groups/public/</url>
             <snapshots><enabled>false</enabled></snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
         </repository>
         <repository>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
             <id>central</id>
             <name>libs-release</name>
             <url>http://repo.springsource.org/libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
         </repository>
         <repository>
             <id>com.springsource.repository.libraries.external</id>
             <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
             <url>http://repository.springsource.com/maven/libraries/external</url>
-            <snapshots><enabled>false</enabled></snapshots>
+            <snapshots><enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
         </repository>
         <repository>
             <id>spring-release</id>
             <url>http://maven.springframework.org/release</url>
             <releases>
+                <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
             </releases>
         </repository>
-        <repository>
+<!--         <repository>
             <id>org.jboss.repository.nexus.public</id>
             <name>Hibernate Public repository</name>
             <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
             <snapshots><enabled>false</enabled></snapshots>
             <releases>
+                <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
             </releases>
             
         </repository>
-        <repository>
+ -->        <repository>
             <id>atlassian-m2-repository</id>
             <url>https://m2proxy.atlassian.com/repository/public/</url>
             <snapshots>

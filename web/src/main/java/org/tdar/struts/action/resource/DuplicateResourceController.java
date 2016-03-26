@@ -11,6 +11,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
 
@@ -50,7 +51,7 @@ public class DuplicateResourceController extends AuthenticationAware.Base implem
     @Action(value = "duplicate-final",
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
-                    @Result(name = SUCCESS, type = TYPE_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
+                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "/${copy.resourceType.urlNamespace}/edit?id=${copy.id}"),
                     @Result(name = INPUT, type = FREEMARKER, location = DUPLICATE_ERROR_FTL)
             })
     @PostOnly

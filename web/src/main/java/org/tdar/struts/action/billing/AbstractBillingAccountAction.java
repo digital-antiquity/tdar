@@ -6,10 +6,10 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.AbstractPersistableController.RequestType;
 
 import com.opensymphony.xwork2.Preparable;
 

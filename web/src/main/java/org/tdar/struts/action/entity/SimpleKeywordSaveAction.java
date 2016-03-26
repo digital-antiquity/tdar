@@ -34,7 +34,7 @@ public class SimpleKeywordSaveAction extends AbstractKeywordController {
 
     @Action(value = "save", interceptorRefs = { @InterceptorRef("editAuthenticatedStack") }, results = {
             @Result(name = INPUT, location = "edit.ftl"),
-            @Result(name = SUCCESS, type = REDIRECT, location = "view?id=${id}&keywordType=${keywordType}")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "view?id=${id}&keywordType=${keywordType}")
     })
     @PostOnly
     @HttpsOnly

@@ -77,7 +77,7 @@ public class BillingAccountSelectionAction extends AuthenticationAware.Base impl
 
 	@SkipValidation
 	@Action(value = CHOOSE, results = { @Result(name = SUCCESS, location = "select-account.ftl"),
-			@Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = REDIRECT) })
+			@Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = TDAR_REDIRECT) })
 	public String selectAccount() throws TdarActionException {
 		if (invoice == null) {
 			throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));

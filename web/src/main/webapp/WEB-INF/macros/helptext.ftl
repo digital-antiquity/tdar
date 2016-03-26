@@ -210,7 +210,7 @@
             The form will check for matches in the ${siteAcronym} database and populate the related fields.</p>
         <strong>Types of Permissions</strong>
         <dl>
-            <dt>View All</dt>
+            <dt>View and Download</dt>
             <dd>User can view/download all file attachments.</dd>
             <dt>Modify Metadata</dt>
             <dd>User can edit this resource metadata but <em>cannot</em> add, remove, or modify file attachments.</dd>

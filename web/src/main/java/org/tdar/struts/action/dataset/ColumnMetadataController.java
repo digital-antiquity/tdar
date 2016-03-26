@@ -83,6 +83,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     }
 
     private Long id;
+    private String tableDescription;
     private DataTable dataTable;
     private List<DataTableColumn> dataTableColumns;
     private PaginationHelper paginationHelper;
@@ -157,7 +158,8 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
             return INPUT;
         }
         List<DataTableColumn> columns = initializePaginationHelper();
-
+        setTableDescription(getDataTable().getDescription());
+        
         if (CollectionUtils.size(columns) > getRecordsPerPage()) {
             columns = columns.subList(getPaginationHelper().getFirstItem(), getPaginationHelper().getLastItem() + 1);
         }
@@ -186,8 +188,8 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     @Action(value = "save-column-metadata",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SAVE_VIEW, type = REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
-                    @Result(name = SAVE_MAP_THIS, type = REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
+                    @Result(name = SAVE_VIEW, type = TDAR_REDIRECT, location = "/${resource.resourceType.urlNamespace}/${resource.id}"),
+                    @Result(name = SAVE_MAP_THIS, type = TDAR_REDIRECT, location = URLConstants.COLUMNS_RESOURCE_ID),
                     @Result(name = INPUT_COLUMNS, location = "../dataset/edit-column-metadata.ftl")
             })
     /**
@@ -201,7 +203,7 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     public String saveColumnMetadata() throws TdarActionException {
         boolean hasOntologies = false;
         initializePaginationHelper();
-
+        getDataTable().setDescription(getTableDescription());
         try {
             hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
@@ -376,6 +378,14 @@ public class ColumnMetadataController extends AuthenticationAware.Base implement
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    public String getTableDescription() {
+        return tableDescription;
+    }
+
+    public void setTableDescription(String tableDescription) {
+        this.tableDescription = tableDescription;
     }
 
 }

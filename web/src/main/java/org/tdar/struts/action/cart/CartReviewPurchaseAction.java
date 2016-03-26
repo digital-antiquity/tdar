@@ -102,7 +102,7 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
         }
     }
 
-    @Action(value = REVIEW, results = { @Result(name = INPUT, type = REDIRECT, location = URLConstants.CART_ADD) })
+    @Action(value = REVIEW, results = { @Result(name = INPUT, type = TDAR_REDIRECT, location = URLConstants.CART_ADD) })
     public String execute() {
         if (!getInvoice().isModifiable()) {
             addActionMessage(getText("cartController.cannot_modify_completed_invoice"));

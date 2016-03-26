@@ -240,6 +240,18 @@ public abstract class AbstractSeleniumWebITCase {
         public void beforeNavigateTo(String url, WebDriver driver) {
             beforePageChange();
         }
+
+        @Override
+        public void afterNavigateRefresh(WebDriver arg0) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void beforeNavigateRefresh(WebDriver arg0) {
+            // TODO Auto-generated method stub
+            
+        }
     };
 
     /**
@@ -390,6 +402,7 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+        force1024x768();
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
@@ -719,8 +732,16 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void logout() {
-        gotoPage("/logout");
-        driver.manage().deleteAllCookies();
+        WebElementSelection find = find("#logout-button");
+        if (find.size() > 0) {
+            find.click();
+        } else {
+            gotoPage("/login");
+            find = find("#logout-button");
+            if (find.size() > 0) {
+                find.click();
+            }   
+        }
     }
 
     public String getSource() {
@@ -898,7 +919,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm() {
         reportJavascriptErrors();
-        submitForm("#submitButton,.submitButton,form input[type=submit]");
+        submitForm("#submitButton,.submitButton,form:not(#frmLogout) input[type=submit]");
     }
 
     /**

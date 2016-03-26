@@ -89,7 +89,7 @@ import freemarker.ext.dom.NodeModel;
 @Scope("prototype")
 @HttpOnlyIfUnauthenticated
 @Results(value = { @Result(location = "../view-creator.ftl"),
-        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.REDIRECT,
+        @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })
 })
 public class BrowseCreatorController extends AbstractLookupController<Resource> implements Preparable, SlugViewAction {

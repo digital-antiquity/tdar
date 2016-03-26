@@ -1,8 +1,9 @@
 package org.tdar.struts.action.download;
 
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
+
 
 /**
  * Created by jimdevos on 9/23/14. This action is designed to facilitate un-authenticated downloads if resources are part of a given collection and the host
@@ -43,9 +45,12 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
 
     private Long informationResourceFileId;
     private InformationResourceFile informationResourceFile;
+    private InformationResourceFileVersion fileVersion;
 
     @Action(value = "{informationResourceFileId}/{apiKey}")
     public String execute() {
+        getAuthorizationService().applyTransientViewableFlag(fileVersion, getAuthenticatedUser());
+
         setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(),
                 informationResourceFile, isCoverPageIncluded(), this, null, true));
 
@@ -71,13 +76,13 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
             addActionError("hostedDownloadController.api_key_required");
         }
 
-        if (PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
-            InformationResourceFileVersion fileVersion = informationResourceFile.getLatestUploadedVersion();
+        String referrer = getServletRequest().getHeader("referer");
 
-            if (!authorzationService.checkValidUnauthenticatedDownload(fileVersion, getApiKey(), getServletRequest())) {
-                addActionError("hostedDownloadController.invalid_request");
-            }
-            getAuthorizationService().applyTransientViewableFlag(fileVersion, getAuthenticatedUser());
+        if (PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
+            fileVersion = informationResourceFile.getLatestUploadedVersion();
+
+            List<String> errors = authorzationService.checkValidUnauthenticatedDownload(fileVersion, getApiKey(), referrer);
+            addActionErrors(errors);
         }
     }
 
