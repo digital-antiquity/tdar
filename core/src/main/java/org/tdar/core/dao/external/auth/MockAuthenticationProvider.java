@@ -245,7 +245,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             return result;
         }
         for (MockAuthenticationInfo info : users.values()) {
-            logger.debug("checkToken:{} --> {} ", token, info.getUsername());
+            logger.trace("checkToken:{} --> {} ", token, info.getUsername());
             if (Objects.equals(token, info.getToken())) {
                 result.setTokenUsername(info.getUsername());
                 result.setType(AuthenticationResultType.VALID);
