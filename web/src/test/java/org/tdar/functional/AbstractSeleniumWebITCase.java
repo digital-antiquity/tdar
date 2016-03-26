@@ -938,7 +938,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm() {
         reportJavascriptErrors();
-        submitForm("#submitButton,.submitButton,form:not(#frmLogout) input[type=submit]");
+        WebElementSelection find = find("#submitButton");
+        if (find.isEmpty()) {
+        	submitForm(".submitButton,form:not(.seleniumIgnoreForm) input[type=submit]");
+        } else {
+        	submitForm("#submitButton");
+        }
     }
 
     /**
