@@ -77,7 +77,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
     @Test
-    public void testCreateDocumentEditSavehasResource() {
+    public void testCreateDatasetEditSavehasResource() {
         gotoPage("/dataset/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
@@ -118,7 +118,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
-        submitForm();
+        submitForm("#fakeSubmitButton");
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         logger.debug(getText());
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));

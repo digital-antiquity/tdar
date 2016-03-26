@@ -43,6 +43,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void cartTestBefore() {
         startWindow = getDriver().getWindowHandle();
         force1024x768();
+        logout();
     }
 
     @After

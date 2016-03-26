@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -1516,6 +1517,12 @@ public abstract class AbstractSeleniumWebITCase {
     public void assertLoggedOut() {
         waitForPageload();
         List<WebElement> selection = find(By.linkText("LOG IN")).toList();
+        if (CollectionUtils.isEmpty(selection)) {
+        	selection = find(By.linkText("Log In")).toList();
+        }
+        if (CollectionUtils.isEmpty(selection)) {
+        	selection = find("#loginButton").toList();
+        }
         logger.debug(getCurrentUrl());
         assertThat("login button is missing", selection, is(not(empty())));
     }

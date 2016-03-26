@@ -115,9 +115,9 @@ Common macros used in multiple contexts
         <#local _current = (currentUrl!'/') >
         <#if returnUrl != ''><#local _current = returnUrl /></#if>
         <#if _current == '/' || currentUrl?starts_with('/login')>
-        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow">Log In</a>
+        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow" id="loginButton">Log In</a>
         <#else>
-        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
+        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>" id="loginButton">Log In</a>
         </#if>
         </#noescape>
     </#macro>
