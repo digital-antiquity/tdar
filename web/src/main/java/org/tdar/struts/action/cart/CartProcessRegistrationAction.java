@@ -28,7 +28,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 @Results({
         @Result(name = TdarActionSupport.INPUT, location = "review-unauthenticated.ftl"),
         // route to the billing account selection page for now, even though user has one choice
-        @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CART_REVIEW_PURCHASE, type = "tdar-redirect")
+        @Result(name = TdarActionSupport.SUCCESS, location = URLConstants.CART_REVIEW_PURCHASE, type = TdarActionSupport.TDAR_REDIRECT)
 })
 @Namespace("/cart")
 @ParentPackage("default")

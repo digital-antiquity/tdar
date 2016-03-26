@@ -78,7 +78,7 @@ public class LoginController extends AuthenticationAware.Base implements Validat
 
     @Action(value = "logout",
             results = {
-                    @Result(name = SUCCESS, type = "tdar-redirect", location = "/")
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/")
             })
     @PostOnly
     @SkipValidation

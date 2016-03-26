@@ -51,7 +51,7 @@ public class IntegrationDownloadAction extends AuthenticationAware.Base implemen
                             "contentDisposition", "attachment;filename=\"${integrationDataResultsFilename}\"",
                             "contentLength", "${integrationDataResultsContentLength}"
                     }),
-            @Result(name = INPUT, type = "tdar-redirect", location = "select-tables")
+            @Result(name = INPUT, type = TDAR_REDIRECT, location = "select-tables")
     })
     public String downloadIntegrationDataResults() {
 

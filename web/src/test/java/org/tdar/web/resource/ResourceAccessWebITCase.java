@@ -17,6 +17,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     public void testShareAccessSuccess() {
         gotoPage("/resource/request-access?resourceId=3088&requestorId=" + CONFIG.getUserId());
         setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        logger.info(getCurrentUrlPath());
         submitForm("submit");
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());

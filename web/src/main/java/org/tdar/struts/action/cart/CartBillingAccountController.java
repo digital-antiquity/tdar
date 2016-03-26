@@ -12,6 +12,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
@@ -24,7 +25,7 @@ import org.tdar.utils.PersistableUtils;
 @Namespace("/cart")
 @ParentPackage("secured")
 @Results({
-        @Result(name = "redirect-payment", type = "tdar-redirect", location = "/cart/process-payment-request"),
+        @Result(name = "redirect-payment", type = TdarActionSupport.TDAR_REDIRECT, location = "/cart/process-payment-request"),
 })
 public class CartBillingAccountController extends AbstractCartController {
 
@@ -95,8 +96,8 @@ public class CartBillingAccountController extends AbstractCartController {
      * @return
      */
     @Action(value = "process-billing-account-choice", results = {
-            @Result(name = INPUT, location = "review", type = "tdar-redirect"),
-            @Result(name = SUCCESS, location = "process-payment-request", type = "tdar-redirect") })
+            @Result(name = INPUT, location = "review", type = TDAR_REDIRECT),
+            @Result(name = SUCCESS, location = "process-payment-request", type = TDAR_REDIRECT) })
     @PostOnly
     @WriteableSession
     public String processBillingAccountChoice() {
