@@ -738,6 +738,12 @@ public abstract class AbstractSeleniumWebITCase {
             // handle modal dialogs
         	try {
         		find.click();
+        		try {
+					Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
         		return;
         	} catch (WebDriverException se) {
         		logger.error("error trying to logout {}", se);
@@ -748,7 +754,13 @@ public abstract class AbstractSeleniumWebITCase {
         find = find("#logout-button");
         if (find.size() > 0) {
             find.click();
-        }   
+        }
+        try {
+			Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public String getSource() {
