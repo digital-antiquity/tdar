@@ -17,7 +17,6 @@ public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {
         setScreenshotsAllowed(true);
     }
 
-    @After
     @Override
     public void logout() {
         // if we're shutting things down after aborted/failed test, don't bug me with formnavigate popups
