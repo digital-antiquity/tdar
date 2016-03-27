@@ -43,7 +43,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void cartTestBefore() {
         startWindow = getDriver().getWindowHandle();
         force1024x768();
-        logout();
     }
 
     @After
@@ -107,7 +106,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     public void testLoginPurchase() {
         // Starting page
         // go to the cart page and make sure we are logged out
-        logout();
         gotoPage(CART_ADD);
         waitForPageload();
         logger.debug(getText());
@@ -157,7 +155,6 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
     @Test
     public void testInvoiceView() {
         // ensure that we have at least one valid invoice in the system
-        logout();
         testLoginPurchase();
         logout();
         loginAdmin();

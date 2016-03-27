@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.core.service.external.session.SessionDataAware;
@@ -44,9 +45,9 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
         }
 
         logger.trace("checking valid token: {}", token);
-        boolean result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest()).getType().isValid();
+        AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());
         logger.debug("token authentication result: {}", result);
-        return result;
+        return result.getType().isValid();
     }
 
 

@@ -311,6 +311,7 @@ public abstract class AbstractSeleniumWebITCase {
          * We define a specific binary so when running "headless" we can specify a PORT
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
+
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         // typekit & google-analytics errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
@@ -377,15 +378,17 @@ public abstract class AbstractSeleniumWebITCase {
                 // File dir = new File("src/test/resources/c1");
                 String profilePath = dir.getAbsolutePath();
                 logger.debug("chrome profile path set to: {}", profilePath);
-
+                
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
                 copts.addArguments(
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
                         "user-data-dir=" + profilePath, // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
+                        "browser.passwords=false",
                         "noerrdialogs");
                 driver = new ChromeDriver(service, copts);
+                
                 service.start();
                 break;
             case IE:
@@ -423,6 +426,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @After
     public final void shutdownSelenium() {
+    	logout();
         try {
             driver.quit();
         } catch (UnhandledAlertException uae) {
@@ -735,6 +739,9 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void logout() {
         WebElementSelection find = find("#logout-button");
+		driver.manage().deleteAllCookies();
+		logger.debug("LOGOUT: {} ", find);
+
         if (find.size() > 0) {
             // handle modal dialogs
         	try {

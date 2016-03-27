@@ -22,6 +22,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.service.EntityService;
+import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 
 //import org.tdar.utils.TestConfiguration;
 
@@ -245,7 +246,7 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
             return result;
         }
         for (MockAuthenticationInfo info : users.values()) {
-            logger.trace("checkToken:{} --> {} ", token, info.getUsername());
+            logger.trace("checkToken:{} --> {} ({})", token, info.getUsername(), info.getToken());
             if (Objects.equals(token, info.getToken())) {
                 result.setTokenUsername(info.getUsername());
                 result.setType(AuthenticationResultType.VALID);

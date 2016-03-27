@@ -46,7 +46,7 @@
                                 <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false />
                             </div>
                             <div class="form-actions">
-                                <input type="submit" class='submitButton tdar-button' name="submitAction" value="Register and Continue">
+                                <input type="submit" class='submitButton tdar-button' name="submitAction" id="cartRegister" value="Register and Continue">
                             </div>
                         </div>
 
@@ -65,7 +65,7 @@
 
                     </div>
                     <div class="form-actions">
-                        <input type="submit" name="submitLogin" class="submitButton tdar-button" value="Login and Continue">
+                        <input type="submit" name="submitLogin" id="cartLogin" class="submitButton tdar-button" value="Login and Continue">
                     </div>
                 </div>
                 </@auth.login>
