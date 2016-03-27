@@ -25,11 +25,6 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
         login();
     }
 
-    @After
-    public void teardown() {
-        logout();
-    }
-
     @Test
     public void testAbstractLogin() {
         assertTrue(getText().contains("Welcome"));
@@ -45,7 +40,7 @@ public class LoginSeleniumITCase extends AbstractSeleniumWebITCase {
     public void testInvalidLogin() {
         logout();
         login("BADUSERNAME", "BADPASSWORD");
-        logger.trace(getDom());
+        logger.debug(getDom());
         assertTrue(getDom().contains(AuthenticationResultType.INVALID_PASSWORD.getMessage()));
         assertFalse(getText().contains("Your submitted projects"));
     }

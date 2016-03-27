@@ -739,7 +739,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void logout() {
         WebElementSelection find = find("#logout-button");
-		driver.manage().deleteAllCookies();
+//		driver.manage().deleteAllCookies();
 		logger.debug("LOGOUT: {} ", find);
 
         if (find.size() > 0) {

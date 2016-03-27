@@ -2,6 +2,7 @@ package org.tdar.struts.action.login;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
+import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -82,8 +83,13 @@ public class LoginController extends AuthenticationAware.Base implements Validat
             })
     @PostOnly
     @SkipValidation
-//    @PostOnly
     public String logout() {
+    	// manually handle SSO TOken
+        String token = authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
+        getLogger().debug("token:{}", token);
+        AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());
+
+    	getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
         if (getSessionData().isAuthenticated()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }
