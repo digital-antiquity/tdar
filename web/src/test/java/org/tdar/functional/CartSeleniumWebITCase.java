@@ -13,6 +13,7 @@ import static org.tdar.URLConstants.CART_ADD;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -36,19 +37,18 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    // handle of window created at beginning of test
     String startWindow = null;
 
-    @Before
-    public void cartTestBefore() {
-        startWindow = getDriver().getWindowHandle();
-        force1024x768();
-    }
-
-    @After
-    public void cleanup() {
-        resetSize();
-    }
+//    @Before
+//    public void cartTestBefore() {
+//        startWindow = getDriver().getWindowHandle();
+//        force1024x768();
+//    }
+//
+//    @After
+//    public void cleanup() {
+//        resetSize();
+//    }
 
     @Test
     // ideal walk-through of purchase process for a visitor with no mistakes along the way.
@@ -57,9 +57,10 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         gotoPage(CART_ADD);
         waitForPageload();
         logger.debug(getText());
-        assertLoggedOut();
         selectPackage();
-        
+        assertLoggedOut();
+        logger.debug(getText());
+        logger.debug(getCurrentUrl());
         // now we are on the review form (w/ registration/login forms)
         // fill out required user registration fields and submit form
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_UNAUTHENTICATED));
@@ -69,34 +70,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         Thread.sleep(5000);
         submitForm("#registrationForm .submitButton");
 
-        // now we are on the "choose billing account" page. just click through to next page
-        waitForPageload();
-        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
-
-        submitForm();
-
-        // now we are on the process payment page. click on the button to fire up a new window
-        assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
-        find("#btnOpenPaymentWindow").click();
-
-        // sanity check: assert that selenium didn't implicitly switch to popup window (this might be a osx-only thing)
-        assertThat(startWindow, equalTo(getDriver().getWindowHandle()));
-
-        switchToNextWindow();
-        // popup window is active now. assuming it is the fake payment processor, all we need to do is submit the form to "pay" for the invoice
-        waitFor("[type=submit]");
-        submitForm();
-
-        // close the popup window
-
-        // even though the popup window is gone, we still need to switch back to the main window
-        getDriver().switchTo().window(startWindow);
-
-        // if successful, we are sent to the dashboard
-        waitFor("body.dashboard");
-        switchToNextWindow();
-        find("#btnCloseWindow").click();
-        assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
+        completePurchase();
     }
 
     @Test
@@ -119,7 +93,14 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         find("#loginPassword").val(CONFIG.getPassword());
         submitForm("#loginForm [type=submit]");
 
-        // choose
+        completePurchase();
+    }
+
+	private void completePurchase() {
+        // now we are on the "choose billing account" page. just click through to next page
+        waitForPageload();
+
+		// choose
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
         // we aren't testing billing account customization, so we just advance to the next step
         submitForm();
@@ -136,11 +117,11 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         waitFor("#btnCloseWindow").click();
         waitFor(ExpectedConditions.numberOfWindowsToBe(1), 1000);
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
+        Set<String> windowHandles = getDriver().getWindowHandles();
+        getDriver().switchTo().window(windowHandles.iterator().next());
 
-        // switch back to polling page
-        getDriver().switchTo().window(startWindow);
         waitFor("body.dashboard");
-    }
+	}
 
     private void selectPackage() {
         // choose the large package
