@@ -37,7 +37,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    String startWindow = null;
+//    String startWindow = null;
 
 //    @Before
 //    public void cartTestBefore() {
