@@ -105,12 +105,12 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         for (File file : dir.listFiles()) {
             uploadFileAsync(restriction, file);
         }
-//        waitFor(ExpectedConditions.elementToBeClickable(By.id("#submitButton")));
-        submitForm();
-        //waitForPageload();
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
+        takeScreenshot();
+        submitForm("#submitButton");
+        waitForPageload();
         String path = getDriver().getCurrentUrl();
 
-        path = getDriver().getCurrentUrl();
         logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
@@ -141,12 +141,11 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
-//        waitFor(ExpectedConditions.elementToBeClickable(By.id("#submitButton")));
-        submitForm();
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
+        submitForm("#submitButton");
         //waitForPageload();
         String path = getDriver().getCurrentUrl();
 
-        path = getDriver().getCurrentUrl();
         logger.trace(find("body").getText());
         assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
