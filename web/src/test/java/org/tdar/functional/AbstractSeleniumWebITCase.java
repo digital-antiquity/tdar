@@ -1201,8 +1201,8 @@ public abstract class AbstractSeleniumWebITCase {
         // the creator fields may not yet exist (i.e. user just clicked  "add-another" button).
         // So we confirm it's presence before calling val();
         waitFor(By.name(prefix + ".person.firstName")).val(p.getFirstName());
-        find(By.name(prefix + ".person.lastName")).val(p.getLastName());
-        find(By.name(prefix + ".person.email")).val(p.getEmail());
+        waitFor(By.name(prefix + ".person.lastName")).val(p.getLastName());
+        waitFor(By.name(prefix + ".person.email")).val(p.getEmail());
         String iname = p.getInstitutionName();
         if (iname == null) {
         	iname = "";
@@ -1216,7 +1216,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     protected void addInstitutionWithRole(Institution p, String prefix, ResourceCreatorRole role) {
         waitFor(By.name(prefix + ".institution.name")).val(p.getName());
-        find(By.name(prefix + ".role")).visibleElements().val(role.name());
+        waitFor(By.name(prefix + ".role")).visibleElements().val(role.name());
 
     }
 
