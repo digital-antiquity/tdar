@@ -1036,6 +1036,13 @@
             <version>1.9.2</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>tdar-logging</artifactId>
+            <version>1.0</version>
+            <scope>runtime</scope>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
     </dependencies>
 
 
