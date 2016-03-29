@@ -31,13 +31,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private static final String HARP_FAUNA_SPECIES_CODING_SHEET = "HARP Fauna Species Coding Sheet";
     private static final String _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT = "2008 New Philadelphia Archaeology Report";
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
+    private static final List<String> TITLES = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
     public void testCollectionPermissionsAndVisible() {
         TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
+        List<String> titles = TITLES;
         String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true);
         logger.debug("URL: {}", url);
         logout();
@@ -88,9 +89,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionRemoveElement() {
         TestConfiguration config = TestConfiguration.getInstance();
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
-                TAG_FAUNAL_WORKSHOP,
-                _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
+        List<String> titles = TITLES;
         String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true);
         gotoEdit(url);
         applyEditPageHacks();
@@ -128,9 +127,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionRetain() {
         TestConfiguration config = TestConfiguration.getInstance();
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
-                TAG_FAUNAL_WORKSHOP,
-                _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
+        List<String> titles = TITLES;
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false);
         gotoEdit(url);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
@@ -143,8 +140,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         login();
         gotoEdit(url);
-        gotoEdit(url);
-        // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
+//        gotoEdit(url);
+        removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         submitForm();
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
