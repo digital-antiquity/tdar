@@ -106,9 +106,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
             _fitTo(map, glayer);
         }
-
-        //L.mapbox.accessToken = "pk.eyJ1IjoiYWJyaW4iLCJhIjoiNzNlMWRhMDQ1MTBlYzAwMmRiOTRhNzYxMTY2NDY1MTMifQ.ZDirx5xDnYHsAo7kxAI13g";
-        L.Control.geocoder().addTo(map);        
+        if (settings.search) {
+            L.Control.geocoder({}).addTo(map);
+        }
         return map;
     }
 

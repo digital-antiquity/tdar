@@ -25,7 +25,7 @@
 
     <h4>Limit by geographic region:</h4>
     <div id="latlongoptions">
-        <div id='large-map' class='leaflet-map-editable'>
+        <div id='large-map' class='leaflet-map-editable' data-search="true">
             <span class="latlong-fields">
                 <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput maxx" />
                 <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput miny" />

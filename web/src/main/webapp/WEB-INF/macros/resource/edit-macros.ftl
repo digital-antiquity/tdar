@@ -95,7 +95,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                  data-tooltipcontent="#geoHelpDiv"
                     ></div>
 -->
-        <div id='large-map' style="height:300px" class="leaflet-map-editable span9">
+        <div id='large-map' style="height:300px" class="leaflet-map-editable span9" data-search="true">
             <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
                 <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
                 <div id='explicitCoordinatesDiv' style='text-align:center;'>
