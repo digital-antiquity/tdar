@@ -23,6 +23,14 @@ public class DocumentCitationFormatTestCase {
     }
 
     @Test
+    public void testBookWithPublisherPeriod() {
+        Document doc = new Document();
+        ResourceCitationFormatter formatter = setupDocumentWithAllFields(doc, DocumentType.BOOK);
+        doc.getPublisher().setName("publisher.");
+        assertEquals("seriesName ,seriesNumber. publisherLocation: publisher. 1234", formatter.getFormattedSourceInformation());
+    }
+
+    @Test
     public void testBook() {
         Document doc = new Document();
         ResourceCitationFormatter formatter = setupDocumentWithAllFields(doc, DocumentType.BOOK);

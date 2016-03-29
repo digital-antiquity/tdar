@@ -3,6 +3,8 @@ package org.tdar.utils;
 import java.io.Serializable;
 
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
@@ -21,7 +23,9 @@ public class ResourceCitationFormatter implements Serializable {
     private TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     private static final long serialVersionUID = -4055674012404120541L;
     private Resource resource;
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 
+    
     public ResourceCitationFormatter(Resource resource) {
         this.resource = resource;
     }
@@ -118,20 +122,25 @@ public class ResourceCitationFormatter implements Serializable {
                     appendIfNotBlank(sb, doc.getPublisherLocation(), ",", "");
                     break;
             }
-            if ((doc.getDate() != null) && (doc.getDate() != -1)) {
-                appendIfNotBlank(sb, doc.getDate().toString(), ".", "");
-            }
+            sb = appendDate(sb, doc);
         } else if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;
             appendIfNotBlank(sb, ir.getPublisherLocation(), ".", "");
             appendIfNotBlank(sb, ir.getPublisherName(), ":", "");
-
-            if ((ir.getDate() != null) && (ir.getDate().intValue() != -1)) {
-                appendIfNotBlank(sb, ir.getDate().toString(), ".", "");
-            }
+            appendDate(sb,ir);
             appendIfNotBlank(sb, ir.getCopyLocation(), ".", "");
         }
         return sb.toString();
+    }
+
+    private StringBuilder appendDate(StringBuilder sb, InformationResource doc) {
+        if ((doc.getDate() != null) && (doc.getDate() != -1)) {
+            if (sb.length() > 0 && sb.substring(sb.length() - 1).equals(".")) {
+                sb = new StringBuilder(sb.substring(0, sb.length() -1));
+            }
+            appendIfNotBlank(sb, doc.getDate().toString(), ".", "");
+        }
+        return sb;
     }
 
     public String getPageRange(Document doc) {
