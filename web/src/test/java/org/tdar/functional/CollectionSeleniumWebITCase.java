@@ -25,6 +25,7 @@ import org.tdar.utils.TestConfiguration;
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
     private static final String _139 = "139";
+    private static final String PATH = "/project/" + _139 + "/edit";
     private static final String TITLE = "Selenium Collection Test";
     private static final String DESCRIPTION = "This is a simple description of a page....";
     private static final String RUDD_CREEK_ARCHAEOLOGICAL_PROJECT = "Rudd Creek Archaeological Project";
@@ -33,10 +34,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
     private static final List<String> TITLES = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
     private Logger logger = LoggerFactory.getLogger(getClass());
+    TestConfiguration config = TestConfiguration.getInstance();
 
     @Test
     public void testCollectionPermissionsAndVisible() {
-        TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
         List<String> titles = TITLES;
         String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true);
@@ -53,7 +54,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         loginAdmin();
         gotoEdit(url);
         applyEditPageHacks();
-        addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
+        addUserWithRights(url, GeneralPermissions.VIEW_ALL);
         submitForm();
         logout();
         // make sure unauthenticated user cannot see resources on the page
@@ -77,7 +78,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(titles);
     }
 
-    private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
+    private void addUserWithRights(String url, GeneralPermissions permissions) {
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
@@ -88,7 +89,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     @Test
     public void testCollectionRemoveElement() {
-        TestConfiguration config = TestConfiguration.getInstance();
         List<String> titles = TITLES;
         String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true);
         gotoEdit(url);
@@ -126,14 +126,13 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     @Test
     public void testCollectionRetain() {
-        TestConfiguration config = TestConfiguration.getInstance();
         List<String> titles = TITLES;
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false);
         gotoEdit(url);
-        addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
+        addUserWithRights(url, GeneralPermissions.ADMINISTER_GROUP);
         submitForm();
 
-        gotoPage("/project/" + _139 + "/edit");
+        gotoPage(PATH);
         applyEditPageHacks();
         setFieldByName("status", Status.DELETED.name());
         submitForm();
@@ -147,7 +146,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         logout();
         loginAdmin();
-        gotoPage("/project/" + _139 + "/edit");
+        gotoPage(PATH);
         setFieldByName("status", Status.ACTIVE.name());
         submitForm();
         logout();
@@ -223,7 +222,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find(By.linkText("Collection")).click();
         waitForPageload();
         applyEditPageHacks();
-        TestConfiguration config = TestConfiguration.getInstance();
 
         Assert.assertTrue(find(By.tagName("h1")).getText().contains("New Collection"));
         setFieldByName("resourceCollection.name", title_);

@@ -138,6 +138,8 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         assertNotEquals("submitter and p should not be the same", image.getSubmitter().getId(), p.getId());
         image.markUpdated(getAdminUser());
         genericService.saveOrUpdate(image);
+        image.getResourceCollections().clear();
+        genericService.saveOrUpdate(image);
         image = null;
         evictCache();
 
