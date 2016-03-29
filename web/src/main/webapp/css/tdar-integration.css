@@ -121,3 +121,7 @@ table.table-modal-results.disabled {
 .nav-tabs {
     margin-bottom: 0;
 }
+
+table#tblPivotData tr, table#tblPreviewData tr {
+    border-bottom: 1px solid #AAA;
+}
