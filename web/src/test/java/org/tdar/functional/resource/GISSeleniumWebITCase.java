@@ -120,6 +120,8 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         } catch (Exception e) {
             submitForm("#fakeSubmitButton");
         }
+        takeScreenshot();
+        waitForPageload();
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
         // assertFalse("no errors present", getText().toLowerCase().contains("error"));

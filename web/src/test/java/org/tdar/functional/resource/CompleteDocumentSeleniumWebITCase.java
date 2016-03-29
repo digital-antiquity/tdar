@@ -199,12 +199,10 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         find(By.name("document.date")).val("1923");
         find(By.name("projectId")).val("-1");
         // add a person to satisfy the confidential file requirement
-        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[0]",
-                ResourceCreatorRole.AUTHOR);
+        addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
+        
         find("#authorshipRow_0_ .institutionButton").click();
         waitFor("#authorshipSection .addanother").click();
-        find("#authorshipRow_1_ .personButton").click();
-        find("#creditRow_0_ .institutionButton").click();
         find("#creditSection .addanother").click();
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[0]", ResourceCreatorRole.AUTHOR);
 
@@ -213,17 +211,20 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         } catch (Exception e) {
             waitFor("#authorshipSection .addanother").click();
         }
+        takeScreenshot();
         addInstitutionWithRole(new Institution(UNIVERSITY_OF_TEST), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
+        find("#authorshipRow_1_ .personButton").click();
         addPersonWithRole(new Person(LOBLAW, ROBERT, BOBLOBLAW_BLANK_COM), "authorshipProxies[1]", ResourceCreatorRole.AUTHOR);
 
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[0]", ResourceCreatorRole.CONTACT);
+        find("#creditRow_0_ .institutionButton").click();
         addInstitutionWithRole(new Institution("UC"), "creditProxies[0]", ResourceCreatorRole.CONTACT);
         try {
             waitFor(By.name("creditProxies[1].institution.name"));
         } catch (Exception e) {
             find("#creditSection .addanother").click();
         }
-
+        find("#creditRow_1_ .institutionButton").click();
         addInstitutionWithRole(new Institution("UC"), "creditProxies[1]", ResourceCreatorRole.CONTACT);
         find("#creditRow_1_ .personButton").click();
         addPersonWithRole(new Person(JONES, INDIANA, IJ_BLANK_COM), "creditProxies[1]", ResourceCreatorRole.CONTACT);
