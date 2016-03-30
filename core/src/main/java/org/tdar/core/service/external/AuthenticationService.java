@@ -408,7 +408,7 @@ public class AuthenticationService {
 
     public AuthenticationResult checkToken(String token, SessionData sessionData, HttpServletRequest request) {
         AuthenticationResult result = provider.checkToken(token, request);
-        logger.debug("token check result: {}", result.getType());
+        logger.debug("token check result: {}", result.getStatus());
         if (result.getType().isValid()) {
             TdarUser tdarUser = personDao.findByUsername(result.getTokenUsername());
             setupAuthenticatedUser(tdarUser, sessionData, request);
