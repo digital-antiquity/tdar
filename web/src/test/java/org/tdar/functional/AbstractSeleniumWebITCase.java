@@ -193,6 +193,15 @@ public abstract class AbstractSeleniumWebITCase {
             afterPageChange();
         }
 
+        @Override public void beforeNavigateRefresh(WebDriver webDriver) {
+            //TODO: what is proper cleanup prior/after a page refresh?
+        }
+
+        @Override public void afterNavigateRefresh(WebDriver webDriver) {
+            //TODO: what is proper cleanup prior/after a page refresh?
+
+        }
+
         @Override
         public void onError(Throwable throwable, WebDriver driver) {
             getBrowserConsoleLogEntries(driver);
@@ -240,6 +249,7 @@ public abstract class AbstractSeleniumWebITCase {
         public void beforeNavigateTo(String url, WebDriver driver) {
             beforePageChange();
         }
+
     };
 
     /**
