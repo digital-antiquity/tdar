@@ -106,7 +106,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
             _fitTo(map, glayer);
         }
-        
+        if (settings.search) {
+            L.Control.geocoder({}).addTo(map);
+        }
         return map;
     }
 

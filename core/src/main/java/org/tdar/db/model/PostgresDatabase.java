@@ -89,8 +89,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     private static final String INTEGRATION_SUFFIX = "_int";
     private static final String SORT_SUFFIX = "_sort";
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
-    private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT \"%s\" FROM \"%s\" WHERE \"%s\"=?";
-    private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT \"%s\" FROM \"%s\" WHERE lower(\"%s\")=lower(?)";
+    private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT * FROM \"%s\" WHERE \"%s\"=?";
+    private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT * FROM \"%s\" WHERE lower(\"%s\")=lower(?)";
     private static final String DROP_TABLE = "DROP TABLE IF EXISTS %s";
     private static final String ALTER_DROP_COLUMN = "ALTER TABLE \"%s\" DROP COLUMN \"%s\"";
     private static final String UPDATE_UNMAPPED_CODING_SHEET = "UPDATE \"%s\" SET \"%s\"='" + NO_CODING_SHEET_VALUE + " ' || \"%s\" WHERE \"%s\" IS NULL";
@@ -1048,8 +1048,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
     public <T> T selectAllFromTable(DataTableColumn column, String key, ResultSetExtractor<T> resultSetExtractor) {
-        String selectColumns = "*";
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, selectColumns, column.getDataTable().getName(), column.getName()),
+        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE, column.getDataTable().getName(), column.getName()),
                 new String[] { key },
                 resultSetExtractor);
     }
@@ -1058,10 +1057,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     @Transactional(value = "tdarDataTx", readOnly = true)
     public Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor) {
-        String selectColumns = "*";
-        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, selectColumns, column.getDataTable().getName(), column.getName()),
-                new String[] { key },
-                resultSetExtractor);
+        return jdbcTemplate.query(String.format(SELECT_ALL_FROM_TABLE_WHERE_LOWER, column.getDataTable().getName(), column.getName()),
+                new String[] { key }, resultSetExtractor);
     }
 
     @Transactional(value = "tdarDataTx", readOnly = false)

@@ -50,6 +50,8 @@
         <js>/components/d3/d3.min.js</js>
         <js>/components/c3/c3.min.js</js>
         <css>/components/c3/c3.min.css</css>
+        <js>/components/leaflet-control-geocoder/dist/Control.Geocoder.js</js>
+        <css>/components/leaflet-control-geocoder/dist/Control.Geocoder.css</css>
         <js>/js/tdar.core.js</js>
         <js>/js/tdar.upload.js</js>
         <js>/js/tdar.jquery-upload-validation.js</js>
