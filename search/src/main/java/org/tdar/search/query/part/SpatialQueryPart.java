@@ -72,19 +72,28 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
             
             
             //*** NOTE *** ENVELOPE uses following pattern minX, maxX, maxy, minY *** // 
-            if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
+            Double minLong = box.getMinObfuscatedLongitude();
+			Double maxLat = box.getMaxObfuscatedLatitude();
+			Double minLat = box.getMinObfuscatedLatitude();
+			Double maxLong = box.getMaxObfuscatedLongitude();
+			if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
                 q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" OR"
                         + "  %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                box.getMinObfuscatedLongitude(), -180d, 
-                 box.getMaxObfuscatedLatitude(),box.getMinObfuscatedLatitude(),
+                minLong, -180d, maxLat,minLat,
                  QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                180d, box.getMinObfuscatedLongitude(), 
-                box.getMaxObfuscatedLatitude(),box.getMinObfuscatedLatitude()));
+                180d, minLong, maxLat,minLat));
 
+            } else  if (box.crossesPrimeMeridian()) {
+				q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+                minLong, maxLong,  maxLat,minLat));
             } else {
-                q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
-                box.getMinObfuscatedLongitude(), box.getMaxObfuscatedLongitude(), 
-                box.getMaxObfuscatedLatitude(),box.getMinObfuscatedLatitude()));
+            	if (minLat > maxLat) {
+            		Double t = maxLat;
+            		maxLat = minLat;
+            		minLat = t;
+            	}
+				q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
+		                minLong, maxLong,  maxLat,minLat));            	
             }
             q.append(String.format(" AND %s:[%s TO %s] ", QueryFieldNames.SCALE, 0,
                     box.getScale() + SCALE_RANGE));
