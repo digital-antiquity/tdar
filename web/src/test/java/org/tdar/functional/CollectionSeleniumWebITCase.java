@@ -139,7 +139,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         login();
         gotoEdit(url);
-//        gotoEdit(url);
+        gotoEdit(url);
         removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         submitForm();
@@ -235,7 +235,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         		"person-"+ config.getEditorUserId(), GeneralPermissions.MODIFY_RECORD);
         addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
         		"michelle elliott",  "Michelle Elliott", "person-121", GeneralPermissions.MODIFY_RECORD);
-        addResourceToCollection(_139);
+        try {
+        	addResourceToCollection(_139);
+        } catch (Exception e) {
+        	logger.error("{}",e);
+        	addResourceToCollection(_139);
+        }
         for (String title : titles) {
             addResourceToCollection(title);
         }

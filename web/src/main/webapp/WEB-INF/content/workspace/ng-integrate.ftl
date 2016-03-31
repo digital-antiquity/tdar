@@ -31,7 +31,7 @@
                </div>
             </div>
             <div class="span3">
-                <button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.submitIntegration()">Integrate</button>
+                <button type="button" class="btn btn-primary btn-primary-integrate" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.submitIntegration()">Integrate</button>
                 <#--<button type="button" class="btn btn-primary" ng-disabled="!isValid()" id="btnIntegrate" ng-click="ctrl.integrateClicked()">Integrate</button>-->
 
                 <!-- re enable ignore-ng-disabled when TDAR-4367 is fixed -->
@@ -389,7 +389,7 @@
             <div class="row-fluid">
                 <div class="span12">
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
-                    <button class="btn btn-primary" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
+                    <button class="btn btn-primary btn-primary-add" id="btnModalAdd" data-dismiss="modal" ng-click="confirm(selectedItems)">Add selected items</button>
                 </div>
             </div>
 
