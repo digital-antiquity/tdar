@@ -23,6 +23,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </#if>
         <@helptext.resourceCollection />
     <div data-tiplabel="${siteAcronym} Collections" data-tooltipcontent="#divResourceCollectionListTips">
+    <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project >
         <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
             <label class="control-label">Collection Name(s)</label>
 
@@ -43,6 +44,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </#if>
             </div>
         </div>
+    <#else>
+        <p>Collection selection is disabled because you don't have full rights on this resource.</p>    
+    </#if>
     </div>
     </#macro>
 
