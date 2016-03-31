@@ -190,6 +190,9 @@ public class GenericKeywordDao extends GenericDao {
             String sql2 = String.format(TdarNamedQueries.CREATOR_ANALYSIS_KWD_INHERIT_INSERT, type.getJoinTableKey(), type.getJoinTable(), type.getTableName(),
                     type.getJoinTableKey());
             String sql3 = TdarNamedQueries.CREATOR_ANALYSIS_KWD_SELECT_COUNTS;
+            logger.debug("resources:{}", resourceIds);
+            logger.debug(sql1);
+            logger.debug(sql2);
             getCurrentSession().createSQLQuery(sql1).setParameterList("resourceIds", resourceIds).executeUpdate();
             getCurrentSession().createSQLQuery(sql2).setParameterList("resourceIds", resourceIds).executeUpdate();
             for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {

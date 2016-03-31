@@ -91,6 +91,24 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertFalse(result.getResults().contains(doc));
     }
 
+    /**
+     * Setup matches how data is being passed in from searchbox, so we must flip it
+     * @throws SolrServerException
+     * @throws IOException
+     * @throws ParseException
+     */
+    @Test
+    @Rollback
+    public void testSearchPetra() throws SolrServerException, IOException, ParseException {
+                                                        //double minLatY, double minLongX, double maxLatY, double maxLongX
+        SearchResult<Resource> result = performGeoSearch(
+                30.329055131879333,
+                35.450043082237244,
+                30.325934299334392,
+                35.44148147106171
+                );
+    }
+
     @Test
     @Rollback
     public void testGeoDocScale() throws SolrServerException, IOException, ParseException {

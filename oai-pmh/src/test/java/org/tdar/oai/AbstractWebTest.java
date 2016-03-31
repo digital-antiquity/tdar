@@ -323,6 +323,13 @@ public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
 
     private void addSchemaToValidatorWithLocalFallback(Validator v, String url, File schemaFile) {
         File schema = null;
+        
+        if (schemaFile.exists()) {
+        	schema = schemaFile;
+        	schemaMap.put(url, schemaFile);
+        	logger.trace("found schema, using: {}" , schemaFile);
+        }
+        
         if (schemaMap.containsKey(url)) {
             schema = schemaMap.get(url);
             logger.debug("using cache of: {}", url);
@@ -332,17 +339,9 @@ public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
                 File tmpFile = File.createTempFile(schemaFile.getName(), ".temp.xsd");
                 FileUtils.writeStringToFile(tmpFile, IOUtils.toString(new URI(url)));
                 schema = tmpFile;
+                schemaMap.put(url, schema);
             } catch (Throwable e) {
                 logger.debug("could not validate against remote schema, attempting to use cached fallback:" + schemaFile);
-            }
-            if (schema == null) {
-                try {
-                    schema = schemaFile;
-                } catch (Exception e) {
-                    logger.debug("could not validate against local schema");
-                }
-            } else {
-                schemaMap.put(url, schema);
             }
         }
 
@@ -365,18 +364,18 @@ public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.loc.gov/standards/xlink/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", new File(TestConstants.TEST_XML_DIR,
-                "schemaCache/xlink.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", 
+        		new File(TestConstants.TEST_SCHEMA_DIR, "xlink.xsd"));
 
         // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(TestConstants.TEST_XML_DIR,
-                "schemaCache/oaipmh.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",
+        		new File(TestConstants.TEST_SCHEMA_DIR, "oaipmh.xsd"));
         addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
-                new File(TestConstants.TEST_XML_DIR, "schemaCache/oaidc.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(TestConstants.TEST_XML_DIR,
-                "schemaCache/mods3.3.xsd"));
-        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(TestConstants.TEST_XML_DIR,
-                "schemaCache/oai-identifier.xsd"));
+                new File(TestConstants.TEST_XML_DIR, "oaidc.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", 
+        		new File(TestConstants.TEST_SCHEMA_DIR,"mods3.3.xsd"));
+        addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", 
+        		new File(TestConstants.TEST_SCHEMA_DIR, "oai-identifier.xsd"));
 
         try {
         	logger.debug("{}",serializationService);

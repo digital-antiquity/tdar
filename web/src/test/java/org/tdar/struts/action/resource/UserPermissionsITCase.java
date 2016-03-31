@@ -87,6 +87,10 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
     }
 
+    /**
+     * tests that a user with MODIFY_METADATA Permissions has limited rights -- specifically cannot modify collection assignments or authorized users
+     * @throws Exception
+     */
     @Test
     @Rollback
     public void testUserRemovingCollectionWithTheirRights() throws Exception {
@@ -129,10 +133,12 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
         authUsers = resourceCollectionService.getAuthorizedUsersForResource(image, p);
         assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
-        assertEquals("we should have cleared the collections list should be empty now", 0, image.getSharedResourceCollections().size());
+        assertEquals("we should have cleared the collections list should not be empty now", 1, image.getSharedResourceCollections().size());
 
         assertNotEquals("submitter and p should not be the same", image.getSubmitter().getId(), p.getId());
         image.markUpdated(getAdminUser());
+        genericService.saveOrUpdate(image);
+        image.getResourceCollections().clear();
         genericService.saveOrUpdate(image);
         image = null;
         evictCache();
