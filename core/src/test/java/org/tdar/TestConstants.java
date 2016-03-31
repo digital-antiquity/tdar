@@ -30,6 +30,7 @@ public interface TestConstants {
     public static final String TEST_ONTOLOGY_DIR = TEST_ROOT_DIR + "ontology/";
     public static final String TEST_IMAGE_DIR = TEST_ROOT_DIR + "images/";
     public static String TEST_XML_DIR = TEST_ROOT_DIR + "xml/";
+    public static String TEST_SCHEMA_DIR = TEST_ROOT_DIR + "schemaCache/";
     public static String TEST_CODING_SHEET_DIR = TEST_ROOT_DIR + "coding sheet/";
     public static final String TEST_DATA_INTEGRATION_DIR = TEST_ROOT_DIR + "data_integration_tests/";
 
