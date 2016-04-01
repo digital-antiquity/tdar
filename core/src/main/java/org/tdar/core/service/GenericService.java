@@ -52,11 +52,6 @@ public class GenericService {
     public static final int MINIMUM_VALID_ID = 0;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    /**
-     * A 2nd-level cache of objects that don't change frequently.
-     * 
-     */
-    private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
 
     /**
      * Find a random set of items of the specified class
@@ -252,19 +247,17 @@ public class GenericService {
         return genericDao.findAll(persistentClass);
     }
 
+    @Deprecated
     /**
      * Find all @link Persistable but use the cache object. If the cache is empty, populate it first
-     * 
+     * @deprecated  This method no longer uses a cache.  Consider using hibernate query caches instead.
      * @param persistentClass
      * @return
      */
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true)
     public <T> List<T> findAllWithCache(Class<T> persistentClass) {
-        if (!cache.containsKey(persistentClass)) {
-            cache.put(persistentClass, findAll(persistentClass));
-        }
-        return (List<T>) cache.get(persistentClass);
+        return findAll(persistentClass);
     }
 
     /**
