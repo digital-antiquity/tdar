@@ -1,0 +1,96 @@
+<article class="span12 results" id="articleBody">
+
+    <div class="glide">
+        <h3 class="dire-warning">WARNING</h3>
+
+        <p>Please note that act of de-duping entities is currently <em>irreversable</em> and should only be performed by curators and administrators only
+            only after receiving approval to do so. </p>
+
+        <p>If you feel you may have made a mistake and de-duped the wrong enitity (or entities) please notify a tDAR administrator immediately.</p>
+    </div>
+    <div class="glide">
+        <div class="control-group "><label class="control-label" for="selEntityType">Select Type</label>    <div class="controls">
+            <select name="entityType" id="selEntityType">
+                <option value="INSTITUTION">Institution</option>
+                <option value="PERSON">Person</option>
+                <option value="KEYWORD_CULTURE_KEYWORD">Culture Keyword</option>
+                <option value="KEYWORD_GEOGRAPHIC_KEYWORD">Geographic Keyword</option>
+                <option value="KEYWORD_INVESTIGATION_TYPE">Investigation Type</option>
+                <option value="KEYWORD_MATERIAL_KEYWORD">Material Keyword</option>
+                <option value="KEYWORD_OTHER_KEYWORD">Other Keyword</option>
+                <option value="KEYWORD_SITE_NAME_KEYWORD">Site Name Keyword</option>
+                <option value="KEYWORD_SITE_TYPE_KEYWORD">Site Type Keyword</option>
+            </select>
+        </div>
+        </div>
+    </div>
+    <div class="glide" id="divSearchControl">
+        <form method="post" action="#" id="frm">
+            <input type="hidden" name="struts.token.name" value="struts.csrf.token">
+            <input type="hidden" name="struts.csrf.token" value="83ZMDX6P4S1MTESQ7059JI5Y13BXM827">        <div id="divKeywordSearchControl" class="searchControl" style="display: none;">
+            <h3>Keyword Search</h3>
+
+            <div class="control-group "><label class="control-label" for="txtKeyword">Keyword value</label>    <div class="controls">
+
+                <input type="text" name="keyword" value="" id="txtKeyword" class="longfield"></div>
+            </div>
+        </div>
+            <div id="divInstitutionSearchControl" class="searchControl" style="display: none;">
+                <h3>Institution Search</h3>
+
+                <div class="control-group "><label class="control-label" for="txtInstitution">Institution</label>    <div class="controls">
+
+                    <input type="text" name="institution" value="" id="txtInstitution" class="longfield"></div>
+                </div>
+            </div>
+            <div id="divPersonSearchControl" class="searchControl" style="display: block;">
+                <h3>Person Search</h3>
+
+                <div class="width30percent marginLeft10">
+
+                    <div class="control-group ">    <div class="controls">
+
+                        <input type="text" name="firstName" maxlength="255" value="" id="txtFirstName" placeholder="First Name"></div>
+                    </div>
+
+                    <div class="control-group ">    <div class="controls">
+
+                        <input type="text" name="lastName" maxlength="255" value="" id="txtLastName" placeholder="Last Name"></div>
+                    </div>
+
+                    <div class="control-group ">    <div class="controls">
+
+                        <input type="text" name="email" maxlength="255" value="" id="txtEmail" placeholder="Email"></div>
+                    </div>
+                    <br>
+                </div>
+                <div class="width99percent marginLeft10">
+
+                    <div class="control-group ">    <div class="controls">
+
+                        <input type="text" name="institution" maxlength="255" value="" id="txtInstitution" placeholder="Institution Name"></div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="glide" id="divIdentifyDupes">
+        <table id='dupe_datatable' class="table tableFormat"></table>
+    </div>
+
+
+    <div class="glide" id="divSelectAuthority">
+        <h3>Selected Duplicates</h3>
+        <form id="frmDupes" name="frmDupes" action="/admin/authority-management/select-authority" method="post">
+            <fieldset>
+                <input type="hidden" name="struts.token.name" value="struts.csrf.token">
+                <input type="hidden" name="struts.csrf.token" value="83ZMDX6P4S1MTESQ7059JI5Y13BXM827">    <p id="pDupeInfo" style="display: none;">
+                <span id="spanDupeCount">0</span>
+                item(s) selected. <span class="button">Clear</span>
+            </p>
+                <input type="hidden" name="entityType" id="hdnEntityType" value="PERSON">
+                <input type="submit" id="frmDupes_0" value="Submit" class="btn btn-primary">
+            </fieldset><ul></ul></form>
+    </div>
+</article>
