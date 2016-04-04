@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -625,7 +626,7 @@ public class AuthorizationService implements Accessible {
      */
     @Transactional(readOnly = true)
     public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
-        String referrer = request.getHeader("referer");
+        String referrer = request.getHeader(HttpHeaders.REFERER);
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
         try {
             URL url = new URL(referrer);
@@ -635,8 +636,7 @@ public class AuthorizationService implements Accessible {
             referrer = "";
         }
         if (StringUtils.isBlank(referrer)) {
-            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
-            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid");
+            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid", Arrays.asList(request.getPathInfo(), referrer, request.getHeader(HttpHeaders.USER_AGENT)));
         }
         List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
         return CollectionUtils.isNotEmpty(authorizations);
