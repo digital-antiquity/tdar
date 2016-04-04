@@ -56,20 +56,18 @@ public class GenericKeywordService {
         return genericKeywordDao.findAllByProperty(cls, "approved", true);
     }
 
-    private Map<Class<?>, List<?>> cache = new ConcurrentHashMap<Class<?>, List<?>>();
 
+    @Deprecated
     /**
      * Find all Approved keywords (controlled) from the keyword cache
-     * 
+     *
+     * @deprecated This method no longer caches results. Consider using Hibernate query caches instead.
      * @param cls
      * @return
      */
     @SuppressWarnings("unchecked")
     public synchronized <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
-        if (!cache.containsKey(cls)) {
-            cache.put(cls, findAllApproved(cls));
-        }
-        return (List<W>) cache.get(cls);
+        return findAllApproved(cls);
     }
 
     /**
@@ -263,7 +261,6 @@ public class GenericKeywordService {
     @Transactional
     public void updateOccurranceValues() {
         genericKeywordDao.updateOccuranceValues();
-        cache.clear();
     }
 
     /**

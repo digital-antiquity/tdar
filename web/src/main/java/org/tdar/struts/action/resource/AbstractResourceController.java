@@ -696,7 +696,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<MaterialKeyword> getAllMaterialKeywords() {
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = genericKeywordService.findAllApprovedWithCache(MaterialKeyword.class);
+            allMaterialKeywords = genericKeywordService.findAllApproved(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;

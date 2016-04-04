@@ -21,6 +21,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
@@ -44,6 +45,7 @@ public class InvoiceController extends AbstractCartController {
     private static final long serialVersionUID = -9156927670405819626L;
 
     public static final String PENDING_INVOICE_ID_KEY = "pending_invoice_id";
+    private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
     private List<BillingActivity> activities = new ArrayList<>();
 
@@ -270,5 +272,14 @@ public class InvoiceController extends AbstractCartController {
             }
         }
     }
+
+	public List<UserAffiliation> getAffiliations() {
+		return affiliations;
+	}
+
+	public void setAffiliations(List<UserAffiliation> affiliations) {
+		this.affiliations = affiliations;
+	}
+
 
 }

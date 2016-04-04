@@ -1,11 +1,14 @@
 package org.tdar.struts.action.download;
 
+import java.util.List;
+
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.service.download.DownloadTransferObject;
@@ -41,6 +44,7 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     private transient AuthorizationService authorizationService;
 
     private DownloadTransferObject downloadTransferObject;
+    private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
     public static final String SUCCESS_DOWNLOAD_ALL = "success-download-all";
     public static final String GET = "get";
@@ -160,4 +164,12 @@ public class AbstractDownloadController extends AuthenticationAware.Base impleme
     public void setRecaptchaService(RecaptchaService recaptchaService) {
         this.recaptchaService = recaptchaService;
     }
+
+	public List<UserAffiliation> getAffiliations() {
+		return affiliations;
+	}
+
+	public void setAffiliations(List<UserAffiliation> affiliations) {
+		this.affiliations = affiliations;
+	}
 }

@@ -1,5 +1,7 @@
 package org.tdar.struts.action.account;
 
+import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.EntityService;
@@ -67,6 +70,7 @@ public class UserAccountController extends AuthenticationAware.Base implements V
     private String reminderEmail;
     private AntiSpamHelper h = new AntiSpamHelper();
     private UserRegistration registration = new UserRegistration(h);
+    private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
     public boolean isUsernameRegistered(String username) {
         getLogger().debug("testing username:", username);
@@ -224,5 +228,13 @@ public class UserAccountController extends AuthenticationAware.Base implements V
         ErrorTransferObject errors = registration.validate(authenticationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
     }
+
+	public List<UserAffiliation> getAffiliations() {
+		return affiliations;
+	}
+
+	public void setAffiliations(List<UserAffiliation> affiliations) {
+		this.affiliations = affiliations;
+	}
 
 }
