@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.List;
 
 public enum ProjectionModel {
-	HIBERNATE_DEFAULT, LUCENE, RESOURCE_PROXY, RESOURCE_PROXY_INVALIDATE_CACHE, LUCENE_EXPERIMENTAL;
+	HIBERNATE_DEFAULT, LUCENE, RESOURCE_PROXY, LUCENE_EXPERIMENTAL;
 
 	private List<String> projections = new ArrayList<>();
 

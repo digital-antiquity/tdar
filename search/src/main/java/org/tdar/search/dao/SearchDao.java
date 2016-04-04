@@ -254,7 +254,6 @@ public class SearchDao<I extends Indexable> {
 					toReturn = processSerialSearch(resultHandler, results);
 				}
 				break;
-			case RESOURCE_PROXY_INVALIDATE_CACHE:
 			case RESOURCE_PROXY:
 				for (I i : (List<I>) datasetDao.findSkeletonsForSearch(false, results.getIdList())) {
 					obfuscateAndMarkViewable(resultHandler, i);
