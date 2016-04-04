@@ -51,7 +51,7 @@
     </div>
     <div class="span4">
     <#-- listValueKey="localeKey"	       theme="tdar" -->
-            <@s.select list="${beanPrefix}.affiliations" name="${beanPrefix}.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
+            <@s.select list="affiliations" name="${beanPrefix}.affiliation" label="Affiliation / Interest" listValue="label" headerKey=""
     headerValue="Select Affiliation"   />
 </div>
 
