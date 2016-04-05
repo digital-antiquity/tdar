@@ -40,9 +40,7 @@
     <#else>
 
 
-        <#if resourceCollection.parent??>
-        <@whitelabel.subcollectionSidebar />
-        </#if>
+        <@commonCollection.sidebar />
 
         <@commonCollection.descriptionSection>
                 <#-- TODO: move this logic to logoAvailable() -->

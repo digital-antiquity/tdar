@@ -14,6 +14,20 @@
 
 </#macro>
 
+<#macro sidebar>
+
+    <!-- Don't show header if header doesn't exist -->
+    <div id="sidebar-right" parse="true">
+        <#if results?has_content>
+            <h3 class="sidebar-spacer">Overview</h3>
+            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" icon=false />
+        </#if>
+
+        <h3>Child Collections</h3>
+        <@common.listCollections collections=collections showOnlyVisible=true />
+    </div>
+</#macro>
+
 <#macro header>
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
