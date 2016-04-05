@@ -61,7 +61,7 @@ public class GenericDao {
     private static final String DESC = " desc";
     private static final String ASC = " asc";
 
-    private static final String SELECT_ID_FROM_S_ORDER_BY_ID_ASC = "select id from \"%s\" order by id asc";
+    private static final String SELECT_ID_FROM_HQL_ORDER_BY_ID_ASC = "select id from %s order by id asc";
 
     public enum FindOptions {
         FIND_FIRST,
@@ -125,7 +125,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass) {
-        return getCurrentSession().createQuery(String.format(SELECT_ID_FROM_S_ORDER_BY_ID_ASC, persistentClass.getName())).list();
+        return getCurrentSession().createQuery(String.format(SELECT_ID_FROM_HQL_ORDER_BY_ID_ASC, persistentClass.getName())).list();
     }
 
     @SuppressWarnings("unchecked")
