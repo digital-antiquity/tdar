@@ -54,6 +54,14 @@ import org.tdar.utils.PersistableUtils;
 @Component("genericDao")
 public class GenericDao {
 
+    private static final String SELECT_RANGE = "select id from \"%s\" where id between '%s' and '%s' order by id asc";
+    private static final String RANDOM = "1=1 order by random()";
+    private static final String FROM_S = "from \"%s\" ";
+    private static final String DESC = " desc";
+    private static final String ASC = " asc";
+
+    private static final String SELECT_ID_FROM_S_ORDER_BY_ID_ASC = "select id from \"%s\" order by id asc";
+
     public enum FindOptions {
         FIND_FIRST,
         FIND_ALL,
@@ -116,7 +124,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass) {
-        return getCurrentSession().createQuery(String.format("select id from %s order by id asc", persistentClass.getName())).list();
+        return getCurrentSession().createQuery(String.format(SELECT_ID_FROM_S_ORDER_BY_ID_ASC, persistentClass.getName())).list();
     }
 
     @SuppressWarnings("unchecked")
@@ -142,7 +150,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass, long startId, long endId) {
-        String hqlfmt = "select id from %s where id between %s and %s order by id asc";
+        String hqlfmt = SELECT_RANGE;
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
     }
@@ -180,7 +188,7 @@ public class GenericDao {
         if (Resource.class.isAssignableFrom(persistentClass)) {
             criteria.add(Restrictions.eq("status", Status.ACTIVE));
         }
-        criteria.add(Restrictions.sqlRestriction("1=1 order by random()"));
+        criteria.add(Restrictions.sqlRestriction(RANDOM));
         criteria.setMaxResults(maxResults);
         return criteria.list();
     }
@@ -235,7 +243,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Class<T> cls, int maxResults) {
-        Query query = getCurrentSession().createQuery("from " + cls.getName());
+        Query query = getCurrentSession().createQuery(String.format(FROM_S, cls.getName()));
         if (maxResults > 0) {
             query.setMaxResults(maxResults);
         }
@@ -247,7 +255,7 @@ public class GenericDao {
     }
 
     public <T> List<T> findAllSorted(Class<T> cls, boolean ascending) {
-        String ordering = ascending ? " asc" : " desc";
+        String ordering = ascending ? ASC : DESC;
         return findAllSorted(cls, getDefaultOrderingProperty() + ordering);
     }
 
@@ -255,7 +263,7 @@ public class GenericDao {
     public <T> List<T> findAllSorted(Class<T> cls, String orderingProperty) {
         if (StringUtils.isBlank(orderingProperty)) {
             getLogger().warn("Trying to find all sorted with no order by clause, using default ordering property.");
-            orderingProperty = getDefaultOrderingProperty() + " asc";
+            orderingProperty = getDefaultOrderingProperty() + ASC;
         }
         StringBuilder hqlBuilder = new StringBuilder("from ").append(cls.getName());
         hqlBuilder.append(" order by ").append(orderingProperty);
