@@ -19,8 +19,9 @@
     <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
         <#if results?has_content>
-            <h3 class="sidebar-spacer">Overview</h3>
-            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" icon=false />
+            <h3 class="sidebar-spacer">Contents</h3>
+            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
+<i class="icon-document-red"></i>
         </#if>
 
         <h3>Child Collections</h3>
