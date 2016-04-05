@@ -55,7 +55,7 @@ import org.tdar.utils.PersistableUtils;
 public class GenericDao {
 
     private static final String FROM_HQL_ORDER_BY = "from %s order by %s";
-    private static final String SELECT_RANGE = "select id from \"%s\" where id between '%s' and '%s' order by id asc";
+    private static final String SELECT_RANGE_HQL = "select id from %s where id between '%s' and '%s' order by id asc";
     private static final String RANDOM = "1=1 order by random()";
     private static final String FROM_HQL = "from %s ";
     private static final String DESC = " desc";
@@ -151,7 +151,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass, long startId, long endId) {
-        String hqlfmt = SELECT_RANGE;
+        String hqlfmt = SELECT_RANGE_HQL;
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
         return getCurrentSession().createQuery(hql).list();
     }
