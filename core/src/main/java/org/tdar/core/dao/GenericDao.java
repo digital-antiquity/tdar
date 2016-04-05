@@ -54,9 +54,10 @@ import org.tdar.utils.PersistableUtils;
 @Component("genericDao")
 public class GenericDao {
 
+    private static final String FROM_HQL_ORDER_BY = "from %s order by %s";
     private static final String SELECT_RANGE = "select id from \"%s\" where id between '%s' and '%s' order by id asc";
     private static final String RANDOM = "1=1 order by random()";
-    private static final String FROM_S = "from \"%s\" ";
+    private static final String FROM_HQL = "from %s ";
     private static final String DESC = " desc";
     private static final String ASC = " asc";
 
@@ -243,7 +244,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Class<T> cls, int maxResults) {
-        Query query = getCurrentSession().createQuery(String.format(FROM_S, cls.getName()));
+        Query query = getCurrentSession().createQuery(String.format(FROM_HQL, cls.getName()));
         if (maxResults > 0) {
             query.setMaxResults(maxResults);
         }
@@ -260,14 +261,14 @@ public class GenericDao {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> List<T> findAllSorted(Class<T> cls, String orderingProperty) {
+    public <T> List<T> findAllSorted(Class<T> cls, String orderingProperty_) {
+        String orderingProperty = orderingProperty_;
         if (StringUtils.isBlank(orderingProperty)) {
             getLogger().warn("Trying to find all sorted with no order by clause, using default ordering property.");
             orderingProperty = getDefaultOrderingProperty() + ASC;
         }
-        StringBuilder hqlBuilder = new StringBuilder("from ").append(cls.getName());
-        hqlBuilder.append(" order by ").append(orderingProperty);
-        Query query = getCurrentSession().createQuery(hqlBuilder.toString());
+        String sql = String.format(FROM_HQL_ORDER_BY, cls.getName(), orderingProperty);
+        Query query = getCurrentSession().createQuery(sql);
         return query.list();
     }
 
