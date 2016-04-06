@@ -14,7 +14,7 @@
         var codingInfo = $target.find("div.codingInfo");
         var measurementInfo = $target.find("div.measurementInfo");
 
-        if (val == 'COUNT' || val == 'MEASUREMENT') {
+        if (val == 'COUNT' || val == 'MEASUREMENT' || val == 'FILENAME') {
             ontologyInfo.hide();
         } else {
             ontologyInfo.show();
@@ -70,7 +70,7 @@
                 square.addClass("coded");
                 valid = true;
             }
-        } else if (val == 'UNCODED_VALUE') {
+        } else if (val == 'UNCODED_VALUE' || val == 'FILENAME') {
             square.addClass("uncoded");
             uncoded = true;
             valid = true;

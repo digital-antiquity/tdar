@@ -316,4 +316,15 @@ public class DataTable extends Persistable.Base {
         return columns;
     }
 
+    @Transient
+    public List<DataTableColumn> getFilenameColumns() {
+        List<DataTableColumn> columns = new ArrayList<>();
+        for (DataTableColumn column : getDataTableColumns()) {
+            if (column.isFilenameColumn()) {
+                columns.add(column);
+            }
+        }
+        return columns;
+    }
+
 }

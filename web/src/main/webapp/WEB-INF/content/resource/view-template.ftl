@@ -33,7 +33,7 @@
             <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
-            <#if administrator && resource.project?? && resource.project.id != -1 >
+            <#if mappingFeatureEnabled >
             <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
             </#if>
         </#if>
@@ -226,13 +226,13 @@
 
         <h3>Data Set Structure</h3>
         <div class="row">
-            <div class="span3"><span class="columnSquare measurement"></span> Measurement Column</div>
+            <div class="span3"><span class="columnSquare measurement"></span>Measurement Column</div>
             <div class="span3"><span class="columnSquare count"></span>Count Column</div>
             <div class="span3"><span class="columnSquare coded"></span>Coded Column</div>
         </div>
         <div class="row">
-            <div class="span3"><span class="columnSquare mapped"></span>Mapping Column</div>
-            <div class="span6"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
+            <div class="span3"><span class="columnSquare mapped"></span>Filename Column</div>
+            <div class="span3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
     <br/>
             <#list resource.dataTables as dataTable>
@@ -262,7 +262,7 @@
                         <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
                         <#if (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
                         <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
-                        <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
+                        <#if column.filenameColumn ><#assign typeLabel = "mapped"/></#if>
                         <#assign hasDescription = false />
                         <#if column.description?has_content >
                             <#assign hasDescription = true />

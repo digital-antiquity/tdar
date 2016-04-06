@@ -83,7 +83,7 @@ public class ResourceMappingMetadataController extends AuthenticationAware.Base 
             addActionError(getText("abstractDatasetController.no_tables"));
             return INPUT;
         }
-        setDataTableColumns(getDataTable().getDataTableColumns());
+        setDataTableColumns(getDataTable().getFilenameColumns());
 
         return SUCCESS;
     }

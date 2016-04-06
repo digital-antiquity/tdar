@@ -470,4 +470,9 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         this.transientOntology = transientOntology;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isFilenameColumn() {
+        return this.getColumnEncodingType().isFilename();
+    }
 }
