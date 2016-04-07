@@ -1326,3 +1326,20 @@ p.tableDescription {
     color:  #7a1501;
     font-family: "ff-tisa-web-pro", serif !important;
 }
+
+.black {
+    color:#000;
+}
+
+.white {
+   color:white;
+   fill:white;
+}
+
+.beige {
+   background-color: #E3E0D8;
+}
+
+.white-border-bottom {
+    border-bottom:4px solid white;
+}

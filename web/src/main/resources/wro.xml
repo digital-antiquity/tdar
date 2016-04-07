@@ -9,6 +9,8 @@
         <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
         <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
         <js>/includes/jquery.cookie.js</js>
+        <css>/css/tdar.svg.css</css>
+        <js>/components/svgxuse/svgxuse.min.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
         <js>/includes/jquery.metadata.2.1/jquery.metadata.js</js>
         <!-- LICENSE: MIT -->

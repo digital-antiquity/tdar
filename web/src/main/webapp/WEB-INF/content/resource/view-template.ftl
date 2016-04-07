@@ -546,7 +546,11 @@
 
 
 <div id="sidebar-right" parse="true">
-    <i class="${resource.resourceType?lower_case}-bg-large"></i>
+    <div class="beige white-border-bottom">
+        <div class="iconbox">
+            <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${resource.resourceType?lower_case}"></use></svg>
+        </div>
+    </div>
     <#if whiteLabelLogoAvailable>
         <@s.a href="/collection/${whiteLabelCollection.id?c}/${whiteLabelCollection.slug}"
             title="${whiteLabelCollection.title}"

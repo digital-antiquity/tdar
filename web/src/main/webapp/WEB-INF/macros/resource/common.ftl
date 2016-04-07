@@ -262,7 +262,8 @@ Common macros used in multiple contexts
 
     <#macro cartouche persistable useDocumentType=false>
         <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-    <span class="cartouche"><i class="icon-${cartouchePart?replace(" ","")?lower_case}"></i>
+    <span class="cartouche">
+    <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_icon-${persistable.resourceType?lower_case}"></use></svg>
     <#--        <#if (persistable.status)?? && !persistable.active>
             ${persistable.status} <#t>
         </#if>  -->
