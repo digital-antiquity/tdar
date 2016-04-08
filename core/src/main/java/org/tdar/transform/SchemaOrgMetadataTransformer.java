@@ -3,7 +3,6 @@ package org.tdar.transform;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,11 +25,15 @@ import org.tdar.utils.PersistableUtils;
 
 public class SchemaOrgMetadataTransformer implements Serializable {
 
+    private static final String SCHEMA_DESCRIPTION = "schema:description";
+    private static final String DATE_PUBLISHED = "schema:datePublished";
+    private static final String GRAPH = "@graph";
     private static final String CONTEXT = "@context";
     private static final String NAME = "schema:name";
     private static final String TYPE = "@type";
     private static final String ID = "@id";
     private static final String PUBLISHER = "schema:publisher";
+    private List<Map<String,Object>> graph = new ArrayList<>();
 
     private static final long serialVersionUID = -5903659479081408357L;
 
@@ -46,7 +49,7 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             add(jsonLd, "url", UrlService.absoluteUrl(creator));
         }
         add(jsonLd, NAME, creator.getProperName());
-        add(jsonLd, "schema:description", creator.getDescription());
+        add(jsonLd, SCHEMA_DESCRIPTION, creator.getDescription());
         add(jsonLd, "schema:image", imageUrl);
         if (creator instanceof Person) {
             Person person = (Person) creator;
@@ -105,9 +108,10 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
     private void addGraphSection(Map<String,Object> json, Resource r) {
         Map<String,Object> jsonLd = new HashMap<>();
-        json.put("@graph", Arrays.asList(jsonLd));
+        json.put(GRAPH, graph);
+        graph.add(jsonLd);
         jsonLd.put(NAME, r.getTitle());
-        jsonLd.put("description", r.getDescription());
+        jsonLd.put(SCHEMA_DESCRIPTION, r.getDescription());
         switch (r.getResourceType()) {
             case AUDIO:
                 jsonLd.put(TYPE, "AudioObject");
@@ -165,7 +169,7 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
             add(jsonLd, "schema:sameAs", ir.getDoi());
             if (PersistableUtils.isNotNullOrTransient(ir.getDate())) {
-                jsonLd.put("datePublished", ir.getDate());
+                jsonLd.put(DATE_PUBLISHED, ir.getDate());
             }
 
             if (ir instanceof Document) {
@@ -188,23 +192,22 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                         add(isPartOf, PUBLISHER, ir.getPublisher().getName());
                     }
                     jsonLd.remove(PUBLISHER);
-                    List<Object> graph = new ArrayList<>();
                     Map<String, Object> issue = new HashMap<>();
                     Map<String, Object> article = new HashMap<>();
                     graph.add(issue);
                     graph.add(article);
                     article.put("schema:headline", doc.getTitle());
 
-                    article.put("schema:datePublished", doc.getDate());
+                    article.put(DATE_PUBLISHED, doc.getDate());
                     issue.put(ID, "#issue");
                     issue.put(TYPE, "PublicationIssue");
                     add(issue, "schema:issueNumber", doc.getSeriesNumber());
-                    issue.put("schema:datePublished", doc.getDate());
+                    issue.put(DATE_PUBLISHED, doc.getDate());
                     issue.put("schema:isPartOf", isPartOf);
 
                     article.put(TYPE, "ScholarlyArticle");
                     article.put("schema:isPartOf", "#issue");
-                    add(article, "schema:description", doc.getDescription());
+                    add(article, SCHEMA_DESCRIPTION, doc.getDescription());
                     add(article, NAME, doc.getTitle());
                     add(article, "schema:pageStart", doc.getStartPage());
                     add(article, "schema:pageEnd", doc.getEndPage());
