@@ -31,6 +31,13 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    public void testJsonLDExtensions() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
+        SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+        Resource r = generateDocumentWithUser();
+        logger.debug(transformer.convert(serializationService, r));
+    }
+
+    @Test
     public void testCreators() throws IOException, ClassNotFoundException {
         SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
 

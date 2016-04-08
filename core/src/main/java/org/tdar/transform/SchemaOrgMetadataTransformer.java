@@ -3,6 +3,7 @@ package org.tdar.transform;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,12 +26,11 @@ import org.tdar.utils.PersistableUtils;
 
 public class SchemaOrgMetadataTransformer implements Serializable {
 
-    private static final String SCHEMA_ORG = "http://schema.org";
     private static final String CONTEXT = "@context";
-    private static final String NAME = "name";
+    private static final String NAME = "schema:name";
     private static final String TYPE = "@type";
     private static final String ID = "@id";
-    private static final String PUBLISHER = "publisher";
+    private static final String PUBLISHER = "schema:publisher";
 
     private static final long serialVersionUID = -5903659479081408357L;
 
@@ -39,7 +39,6 @@ public class SchemaOrgMetadataTransformer implements Serializable {
         if (creator == null) {
             return ss.convertToJson(jsonLd);
         }
-        jsonLd.put(CONTEXT, SCHEMA_ORG);
         jsonLd.put(TYPE, "Organization");
         if (StringUtils.isNotBlank(creator.getUrl())) {
             add(jsonLd, "url", creator.getUrl());
@@ -47,46 +46,66 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             add(jsonLd, "url", UrlService.absoluteUrl(creator));
         }
         add(jsonLd, NAME, creator.getProperName());
-        add(jsonLd, "description", creator.getDescription());
-        add(jsonLd, "image", imageUrl);
+        add(jsonLd, "schema:description", creator.getDescription());
+        add(jsonLd, "schema:image", imageUrl);
         if (creator instanceof Person) {
             Person person = (Person) creator;
             jsonLd.put(TYPE, "Person");
             if (person.getEmailPublic()) {
-                add(jsonLd, "email", person.getEmail());
+                add(jsonLd, "schema:email", person.getEmail());
             }
             if (person.getPhonePublic()) {
-                add(jsonLd, "telephone", person.getPhone());
+                add(jsonLd, "schema:telephone", person.getPhone());
             }
-            add(jsonLd, "affiliation", person.getInstitutionName());
+            add(jsonLd, "schema:affiliation", person.getInstitutionName());
 
         } else {
-            add(jsonLd, "logo", imageUrl);
+            add(jsonLd, "schema:logo", imageUrl);
         }
         if (CollectionUtils.isNotEmpty(creator.getAddresses())) {
             for (Address address : creator.getAddresses()) {
                 if (address.getType() == AddressType.MAILING) {
                     Map<String, Object> addLd = new HashMap<String, Object>();
                     add(addLd, TYPE, "PostalAddress");
-                    add(addLd, "addressLocality", address.getCity());
-                    add(addLd, "addressRegion", address.getState());
-                    add(addLd, "postalCode", address.getPostal());
+                    add(addLd, "schema:addressLocality", address.getCity());
+                    add(addLd, "schema:addressRegion", address.getState());
+                    add(addLd, "schema:postalCode", address.getPostal());
                     String street = address.getStreet1();
                     if (StringUtils.isNotBlank(address.getStreet2())) {
                         street += "\n" + address.getStreet2();
                     }
-                    add(addLd, "streetAddress", street);
-                    jsonLd.put("address", addLd);
+                    add(addLd, "schema:streetAddress", street);
+                    jsonLd.put("schema:address", addLd);
                     break;
                 }
             }
         }
 
+        addContextSection(jsonLd);
+        
         return ss.convertToJson(jsonLd);
+    }
+
+    private void addContextSection(Map<String, Object> jsonLd) {
+        Map<String, String> context = new HashMap<>();
+        context.put("schema", "http://schema.org");
+        context.put("dc", "http://purl.org/dc/elements/1.1/");
+        context.put("dcterms", "http://purl.org/dc/terms/");
+        context.put("tdar", "http://core.tdar.org/");
+        jsonLd.put(CONTEXT, context);
+
     }
 
     public String convert(SerializationService ss, Resource r) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
+        addGraphSection(jsonLd, r);
+        addContextSection(jsonLd);
+        return ss.convertToJson(jsonLd);
+    }
+
+    private void addGraphSection(Map<String,Object> json, Resource r) {
+        Map<String,Object> jsonLd = new HashMap<>();
+        json.put("@graph", Arrays.asList(jsonLd));
         jsonLd.put(NAME, r.getTitle());
         jsonLd.put("description", r.getDescription());
         switch (r.getResourceType()) {
@@ -123,9 +142,9 @@ public class SchemaOrgMetadataTransformer implements Serializable {
         }
 
         if (StringUtils.isNotBlank(r.getUrl())) {
-            add(jsonLd, "url", r.getUrl());
+            add(jsonLd, "schema:url", r.getUrl());
         } else {
-            add(jsonLd, "url", UrlService.absoluteUrl(r));
+            add(jsonLd, "schema:url", UrlService.absoluteUrl(r));
         }
 
         if (r instanceof InformationResource) {
@@ -133,18 +152,18 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
             List<InformationResourceFile> thumbs = ir.getVisibleFilesWithThumbnails();
             if (CollectionUtils.isNotEmpty(thumbs)) {
-                add(jsonLd, "thumbnailUrl", UrlService.thumbnailUrl(thumbs.get(0).getLatestThumbnail()));
+                add(jsonLd, "schema:thumbnailUrl", UrlService.thumbnailUrl(thumbs.get(0).getLatestThumbnail()));
             }
 
             if (ir.getResourceProviderInstitution() != null) {
-                add(jsonLd, "provider", ir.getResourceProviderInstitution().getName());
+                add(jsonLd, "schema:provider", ir.getResourceProviderInstitution().getName());
             }
 
             if (ir.getPublisher() != null) {
                 add(jsonLd, PUBLISHER, ir.getPublisher().getName());
             }
 
-            add(jsonLd, "sameAs", ir.getDoi());
+            add(jsonLd, "schema:sameAs", ir.getDoi());
             if (PersistableUtils.isNotNullOrTransient(ir.getDate())) {
                 jsonLd.put("datePublished", ir.getDate());
             }
@@ -152,10 +171,10 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             if (ir instanceof Document) {
                 Document doc = (Document) ir;
                 jsonLd.put(TYPE, "Book");
-                add(jsonLd, "alternateName", doc.getSeriesName());
-                add(jsonLd, "isbn", doc.getIsbn());
-                add(jsonLd, "bookEdition", doc.getEdition());
-                add(jsonLd, "volumeNumber", doc.getVolume());
+                add(jsonLd, "schema:alternateName", doc.getSeriesName());
+                add(jsonLd, "schema:isbn", doc.getIsbn());
+                add(jsonLd, "schema:bookEdition", doc.getEdition());
+                add(jsonLd, "schema:volumeNumber", doc.getVolume());
 
                 if (doc.getDocumentType() == DocumentType.JOURNAL_ARTICLE) {
                     Map<String, Object> isPartOf = new HashMap<>();
@@ -174,33 +193,29 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                     Map<String, Object> article = new HashMap<>();
                     graph.add(issue);
                     graph.add(article);
-                    article.put("headline", doc.getTitle());
+                    article.put("schema:headline", doc.getTitle());
 
-                    article.put("datePublished", doc.getDate());
+                    article.put("schema:datePublished", doc.getDate());
                     issue.put(ID, "#issue");
                     issue.put(TYPE, "PublicationIssue");
-                    add(issue, "issueNumber", doc.getSeriesNumber());
-                    issue.put("datePublished", doc.getDate());
-                    issue.put("isPartOf", isPartOf);
+                    add(issue, "schema:issueNumber", doc.getSeriesNumber());
+                    issue.put("schema:datePublished", doc.getDate());
+                    issue.put("schema:isPartOf", isPartOf);
 
                     article.put(TYPE, "ScholarlyArticle");
-                    article.put("isPartOf", "#issue");
-                    add(article, "description", doc.getDescription());
+                    article.put("schema:isPartOf", "#issue");
+                    add(article, "schema:description", doc.getDescription());
                     add(article, NAME, doc.getTitle());
-                    add(article, "pageStart", doc.getStartPage());
-                    add(article, "pageEnd", doc.getEndPage());
+                    add(article, "schema:pageStart", doc.getStartPage());
+                    add(article, "schema:pageEnd", doc.getEndPage());
                     for (ResourceCreator rc : r.getActiveResourceCreators()) {
                         if (rc.getRole().isPartOfSchemaOrg()) {
                             article.put(rc.getRole().getSchemaOrgLabel(), rc.getCreator().getProperName());
                         }
                     }
-                    jsonLd.clear();
-                    jsonLd.put("@graph", graph);
                 }
             }
-            jsonLd.put(CONTEXT, SCHEMA_ORG);
-        }
-        return ss.convertToJson(jsonLd);
+        }        
     }
 
     private void add(Map<String, Object> map, String key, String val) {
