@@ -6,14 +6,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
@@ -92,23 +96,52 @@ public class SchemaOrgMetadataTransformer implements Serializable {
     private void addContextSection(Map<String, Object> jsonLd) {
         Map<String, String> context = new HashMap<>();
         context.put("schema", "http://schema.org");
-        context.put("dc", "http://purl.org/dc/elements/1.1/");
-        context.put("dcterms", "http://purl.org/dc/terms/");
         context.put("tdar", "http://core.tdar.org/");
+        for (RelationType type : RelationType.values()) {
+            context.put(type.getPrefix(), type.getUri());
+        }
         jsonLd.put(CONTEXT, context);
 
     }
 
     public String convert(SerializationService ss, Resource r) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
-        addGraphSection(jsonLd, r);
+        jsonLd.put(GRAPH, graph);
+        addGraphSection(r);
+        addGraphSection(r.getActiveCultureKeywords(), "tdar:cultureKeywords");
+        addGraphSection(r.getActiveGeographicKeywords(), "tdar:geographicKeywords");
+        addGraphSection(r.getActiveInvestigationTypes(), "tdar:investigationTypes");
+        addGraphSection(r.getActiveMaterialKeywords(), "tdar:materialKeywords");
+        addGraphSection(r.getActiveOtherKeywords(), "tdar:otherKeywords");
+        addGraphSection(r.getActiveSiteNameKeywords(), "tdar:siteNameKeywords");
+        addGraphSection(r.getActiveSiteTypeKeywords(), "tdar:siteTypeKeywords");
+        addGraphSection(r.getActiveTemporalKeywords(), "tdar:temporalKeywords");
         addContextSection(jsonLd);
         return ss.convertToJson(jsonLd);
     }
 
-    private void addGraphSection(Map<String,Object> json, Resource r) {
+    private void addGraphSection(Set<? extends Keyword> keywords, String string) {
+        List<Map<String,Object>> all = new ArrayList<>();
+        keywords.forEach(kwd -> {
+            Map<String,Object> js = new HashMap<>();
+            js.put("tdar:name", kwd.getLabel());
+            js.put("tdar:id", kwd.getId());
+            js.put("tdar:url", UrlService.absoluteUrl(kwd));
+            kwd.getExternalMappings().forEach(map -> {
+                js.put(map.getRelationType().getJsonKey(),map.getRelation());
+            });
+            all.add(js);
+        });
+        if (all.size() > 0) {
+            Map<String,Object> obj = new HashMap<>();
+            obj.put(string, all);
+            graph.add(obj);
+        }
+        
+    }
+
+    private void addGraphSection(Resource r) {
         Map<String,Object> jsonLd = new HashMap<>();
-        json.put(GRAPH, graph);
         graph.add(jsonLd);
         jsonLd.put(NAME, r.getTitle());
         jsonLd.put(SCHEMA_DESCRIPTION, r.getDescription());

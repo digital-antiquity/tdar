@@ -47,7 +47,7 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();
 
-    @OneToMany(orphanRemoval=true)
+    @OneToMany(orphanRemoval=true,cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(nullable = false, updatable = false, name = "geographic_keyword_id")
     private Set<ExternalKeywordMapping> externalMappings = new HashSet<>(); 
 

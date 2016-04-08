@@ -7,7 +7,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.keyword.ExternalKeywordMapping;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.transform.SchemaOrgMetadataTransformer;
 
@@ -34,6 +37,16 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     public void testJsonLDExtensions() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
         Resource r = generateDocumentWithUser();
+        GeographicKeyword gk = new GeographicKeyword();
+        gk.setLabel("Petra");
+        ExternalKeywordMapping map = new ExternalKeywordMapping();
+        map.setRelation("http://www.petra.com");
+        map.setRelationType(RelationType.DCTERMS_RELATION);
+        gk.getExternalMappings().add(map);
+        r.getGeographicKeywords().add(gk);
+        genericService.saveOrUpdate(map);
+        genericService.saveOrUpdate(gk);
+        genericService.saveOrUpdate(r);
         logger.debug(transformer.convert(serializationService, r));
     }
 
