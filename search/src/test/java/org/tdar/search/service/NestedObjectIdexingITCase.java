@@ -64,6 +64,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     }
     
     @Test
+    @Ignore
     @Rollback(true)
     public void testIndexing() throws SolrServerException, IOException, ParseException {
 //    	sessionFactory.getCurrentSession().
