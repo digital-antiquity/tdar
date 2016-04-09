@@ -70,7 +70,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
             doc.setTitle(title);
             doc.setDescription(title);
             doc.markUpdated(getBasicUser());
-            genericService.saveOrUpdate(doc);
+            genericService.save(doc);
             if (title.contains("MACROFLORAL")) {
                 badMatches.add(doc);
             }
@@ -285,7 +285,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         List<Long> sheetIds = PersistableUtils.extractIds(sheets);
         sheets = null;
         genericService.synchronize();
-//        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         ReservedSearchParameters params = new ReservedSearchParameters();
         params.setResourceTypes(Arrays.asList(ResourceType.CODING_SHEET));
         SearchResult<Resource> result = performSearch("Taxonomic Level", null, null, null, null, null, params, 10);

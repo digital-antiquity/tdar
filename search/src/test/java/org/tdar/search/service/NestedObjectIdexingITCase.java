@@ -79,6 +79,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         genericService.saveOrUpdate(image);
         genericService.synchronize();
         searchIndexService.flushToIndexes();
+        searchIndexService.index(collection, image);
         SearchResult<Resource> result = new SearchResult<>();
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         SearchParameters params = new SearchParameters();
