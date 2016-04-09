@@ -107,7 +107,7 @@ public class SearchIndexService {
     }
     
     @EventListener
-    @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
+//    @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
     public void handleIndexingEvent(IndexingEvent event) throws SolrServerException, IOException {
     	if (template == null) {
     		logger.warn("indexer not enabled to process event");

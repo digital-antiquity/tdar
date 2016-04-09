@@ -29,6 +29,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.scheduling.annotation.SchedulingConfigurer;
 import org.springframework.scheduling.config.ScheduledTaskRegistrar;
@@ -84,7 +85,7 @@ import com.google.common.collect.Sets;
  * @author Adam Brin
  */
 @Service
-public class ScheduledProcessService implements ApplicationListener<ContextRefreshedEvent>, SchedulingConfigurer, ApplicationContextAware {
+public class ScheduledProcessService implements  SchedulingConfigurer, ApplicationContextAware {
 
     private static final long ONE_HOUR_MS = 3600000;
     private static final long ONE_MIN_MS = 60000;
@@ -376,7 +377,7 @@ public class ScheduledProcessService implements ApplicationListener<ContextRefre
      * 
      */
     @Transactional
-    @Override
+    @EventListener()
     public void onApplicationEvent(ContextRefreshedEvent event) {
         logger.debug("received app context event: " + event);
         if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
