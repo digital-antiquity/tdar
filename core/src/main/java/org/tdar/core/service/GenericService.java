@@ -18,15 +18,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.event.EventType;
+import org.tdar.core.event.IndexingEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.PersistableUtils;
@@ -48,6 +52,9 @@ public class GenericService {
     @Autowired
     @Qualifier("genericDao")
     private GenericDao genericDao;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     public static final int MINIMUM_VALID_ID = 0;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -408,6 +415,9 @@ public class GenericService {
     @Transactional
     public void save(Object obj) {
         enforceValidation(obj);
+        if (obj instanceof Indexable) {
+        	publisher.publishEvent(new IndexingEvent((Indexable)obj, EventType.CREATE_OR_UPDATE));
+        }
         genericDao.save(obj);
     }
 

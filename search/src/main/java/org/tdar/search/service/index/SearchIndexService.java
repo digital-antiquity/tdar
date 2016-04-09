@@ -107,9 +107,14 @@ public class SearchIndexService {
     }
     
     @EventListener
-//    @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
+    @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
     public void handleIndexingEvent(IndexingEvent event) throws SolrServerException, IOException {
-    	logger.debug("{} {} ({})", event.getType(), event.getIndexable().getClass(), event.getIndexable().getId());
+    	if (template == null) {
+    		logger.warn("indexer not enabled to process event");
+    		return;
+    	}
+
+    	logger.debug("EVENT: {} {} ({})", event.getType(), event.getIndexable().getClass(), event.getIndexable().getId());
     	switch (event.getType()) {
 	    	case CREATE_OR_UPDATE:
 	    		index(event.getIndexable());
