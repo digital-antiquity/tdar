@@ -431,10 +431,10 @@ public class GenericDao {
         if (entity instanceof Obfuscatable && ((Obfuscatable) entity).isObfuscated()) {
             throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
         }
+        session.save(entity);
         if (entity instanceof Indexable) {
         	publisher.publishEvent(new IndexingEvent((Indexable)entity, EventType.CREATE_OR_UPDATE));
         }
-        session.save(entity);
     }
 
     public <T> void saveOrUpdate(T entity) {
