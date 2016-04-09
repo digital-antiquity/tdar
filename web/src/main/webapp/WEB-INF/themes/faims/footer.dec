@@ -1,0 +1,65 @@
+<div class="row screen footer-links">
+    <div class="span3"> 
+        <h4>About</h4> 
+            <ul> 
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?cat=3">News</a></li>
+                <!-- li><a class="" href="${helpUrl}">Getting started</a></li --> 
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=648">Our Team</a></li>
+                <li><a class="external" href="http://www.fedarch.org">The ${siteAcronym} Project</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=655">Software</a></li>
+            </ul> 
+    </div> 
+    <div class="span3">
+        <h4>Use</h4> 
+            <ul> 
+                <li><a class="external" href='http://www.guidestogoodpractice.org/'>Guides to Good Practice</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=640">Help</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=634">User Agreement</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=661">Contributing</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=659">Pricing</a></li> 
+            </ul> 
+    </div> 
+    <div class="span3"> 
+        <h4>Contact</h4> 
+            <ul>
+                <li><a href="mailto:${contactEmail}?subject=FAIMS%20comments">Email: ${contactEmail}</a></li>
+                <li><a class="external" href="http://www.fedarch.org/wordpress/?page_id=84">Other contacts</a></li>
+            </ul> 
+     </div>
+     <div class="span3">
+        <h4>Start Digging</h4>
+        <ul>
+            <li><a href="<@s.url value="/search/results"/>">Browse</a></li>
+            <li><a href="<@s.url value="/resource/add"/>">Start a project &amp; add data</a></li>
+            <#if sessionData?? && sessionData.authenticated>
+                <li><a href="<@s.url value='/logout'/>">Logout</a></li>
+            <#else>
+                <li><a href="<@s.url value='/login'/>">Login</a></li>
+                <li><a href="<@s.url value='/account/new'/>">Sign Up</a></li>
+            </#if> 
+        </ul>
+    </div>
+</div>
+<div class="row  screen footerlogos" id="copyright" >  
+    <p>OUR PARTNERS
+    <div class="footerlogos">
+        <a href="http://www.nectar.org.au/"><img alt="Nectar Logo" title="Nectar Logo" class="footerlogo" src="/includes/themes/faims/images/nectar-small.jpg"></a>
+        <a href="http://www.unsw.edu.au/"><img class="footerlogo" alt="UNSW Logo" title="UNSW Logo" src="/includes/themes/faims/images/unswL.png"></a>
+        <a href="http://www.latrobe.edu.au/"><img class="footerlogo" alt="laTrobe Logo" title=";aTrobe Logo" src="/includes/themes/faims/images/LaTrobe.png"></a>
+        <a href="http://www.intersect.org.au/"><img class="footerlogo" alt="Intersect Logo" title="Intersect Logo" src="/includes/themes/faims/images/Intersect_Logo2colour-small.png"></a>
+        <a href="http://www.versi.edu.au/"><img class="footerlogo" alt="Versi Logo" title="Versi Logo" src="/includes/themes/faims/images/versi2.png"></a>
+        <a href="http://sydney.edu.au/"><img class="footerlogo" alt="USYD Logo" title="USYD Logo" src="/includes/themes/faims/images/usyd.png"></a>
+    </div>
+    <p class="copyright-notice">This repository is hosted by the <a class="external" href="http://www.fedarch.org">${siteAcronym} Project</a>, 
+    led by the <a class="external" href="http://www.unsw.edu.au/">University of NSW</a> in partnership with the 
+    <a class="external" href="http://www.nectar.org.au/">National eResearch Collaboration Tools and Resources</a> (NeCTAR) project and the 
+    <a class="external" href="http://www.versi.edu.au/">Victorian eResearch Strategic Initiative</a> (VeRSI). 
+    It is powered by <a class="external" href="http://www.tdar.org">tDAR</a>, an application built by 
+    <a class="external" href="http://digitalantiquity.org">Digital Antiquity</a>, and builds 
+    on initiatives by <a class="external" href="http://www.latrobe.edu.au/">La Trobe University</a> and the 
+    <a class="external" href="http://ands.org.au/">Australian National Data Service</a> ß(ANDS).
+    Unless otherwise stated the copyright to all data, documents and metadata is retained by the copyright holder. 
+    The opinions, methods and conclusions expressed or implicit in these works may not represent the views of the 
+    ${siteAcronym} Project, its partners, the Australian Government, Digital Antiquity or any related organisation, 
+    ßand remain the responsibility of the Depositor</p>
+</div>
