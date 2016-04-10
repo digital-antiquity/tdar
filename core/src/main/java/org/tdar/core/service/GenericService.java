@@ -415,9 +415,6 @@ public class GenericService {
     @Transactional
     public void save(Object obj) {
         enforceValidation(obj);
-        if (obj instanceof Indexable) {
-        	publisher.publishEvent(new IndexingEvent((Indexable)obj, EventType.CREATE_OR_UPDATE));
-        }
         genericDao.save(obj);
     }
 
