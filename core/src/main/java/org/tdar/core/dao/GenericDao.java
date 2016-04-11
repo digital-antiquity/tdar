@@ -443,6 +443,7 @@ public class GenericDao {
             throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
         }
         session.saveOrUpdate(entity);
+        fireIndexingEvent(entity);
     }
 
     public <T> void update(T entity) {
@@ -451,6 +452,7 @@ public class GenericDao {
             throw new TdarRecoverableRuntimeException(String.format("trying to update an obfuscated object %s ", entity));
         }
         session.update(entity);
+        fireIndexingEvent(entity);
     }
 
     @SuppressWarnings("unchecked")
@@ -475,9 +477,7 @@ public class GenericDao {
         if (entity instanceof HasStatus) {
             ((HasStatus) entity).setStatus(Status.DELETED);
             saveOrUpdate(entity);
-            if (entity instanceof Indexable) {
-            	publisher.publishEvent(new IndexingEvent((Indexable)entity, EventType.CREATE_OR_UPDATE));
-            }
+            fireIndexingEvent(entity);
 
             return;
         }
@@ -494,6 +494,12 @@ public class GenericDao {
         }
 
         forceDelete(entity);
+    }
+
+    private <T> void fireIndexingEvent(T entity) {
+        if (entity instanceof Indexable) {
+        	publisher.publishEvent(new IndexingEvent((Indexable)entity, EventType.CREATE_OR_UPDATE));
+        }
     }
 
     public <T> void forceDelete(T entity) {
