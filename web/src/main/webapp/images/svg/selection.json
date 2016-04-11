@@ -4,33 +4,156 @@
 		{
 			"icon": {
 				"paths": [
-					"M435.2 460.8h332.8v51.2h-332.8v-51.2z",
-					"M230.4 460.8h102.4v51.2h-102.4v-51.2z",
-					"M435.2 563.2h332.8v51.2h-332.8v-51.2z",
-					"M230.4 563.2h102.4v51.2h-102.4v-51.2z",
-					"M435.2 665.6h332.8v51.2h-332.8v-51.2z",
-					"M230.4 665.6h102.4v51.2h-102.4v-51.2z",
-					"M435.2 768h332.8v51.2h-332.8v-51.2z",
-					"M230.4 768h102.4v51.2h-102.4v-51.2z",
-					"M632.32 76.8h-504.32v921.6h768v-683.52l-263.68-238.080zM844.8 947.2h-665.6v-819.2h435.2v204.8h230.4v614.4z"
+					"M619.52 38.4h-514.56v936.96h768v-678.4l-253.44-258.56zM762.88 865.28h-547.84v-714.24h348.16v184.32h199.68v529.92z",
+					"M430.080 496.64h107.52v325.12h-107.52v-325.12z",
+					"M591.36 386.56h107.52v432.64h-107.52v-432.64z",
+					"M268.8 604.16h107.52v215.040h-107.52v-215.040z"
 				],
 				"attrs": [],
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_coding_sheet"
-				]
+					"svg_dataset2"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 27,
-				"id": 23,
+				"order": 25,
+				"id": 38,
 				"prevSize": 32,
-				"name": "icons_coding_sheet"
+				"name": "svg_dataset2"
 			},
 			"setIdx": 0,
 			"setId": 1,
 			"iconIdx": 0
+		},
+		{
+			"icon": {
+				"paths": [
+					"M266.24 657.92v-512h296.96v158.72h168.96v353.28h94.72v-386.56l-215.040-220.16h-440.32v606.72z",
+					"M171.52 752.64h94.72v94.72h-94.72v-94.72z",
+					"M358.4 862.72h94.72v94.72h-94.72v-94.72z",
+					"M732.16 752.64h94.72v94.72h-94.72v-94.72z",
+					"M588.8 903.68h94.72v94.72h-94.72v-94.72z",
+					"M540.16 729.6h94.72v94.72h-94.72v-94.72z",
+					"M491.52 537.6h94.72v94.72h-94.72v-94.72z",
+					"M353.28 670.72h94.72v94.72h-94.72v-94.72z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_digitize"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 26,
+				"id": 37,
+				"prevSize": 32,
+				"name": "svg_digitize"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 1
+		},
+		{
+			"icon": {
+				"paths": [
+					"M92.16 194.56c12.8-12.8 25.6-17.92 38.4-17.92 15.36 0 28.16 5.12 40.96 17.92s17.92 30.72 17.92 56.32v215.040c-15.36 2.56-28.16 7.68-43.52 17.92-10.24 12.8-17.92 25.6-17.92 38.4 0 10.24 2.56 20.48 7.68 28.16l71.68 120.32v-12.8l-66.56-110.080c-5.12-7.68-7.68-15.36-7.68-23.040s2.56-15.36 5.12-20.48c5.12-5.12 10.24-12.8 15.36-17.92 7.68-5.12 12.8-7.68 23.040-12.8 7.68-2.56 15.36-5.12 23.040-5.12 12.8 0 25.6 5.12 33.28 17.92l168.96 230.4c12.8 17.92 20.48 35.84 25.6 61.44 5.12 23.040 7.68 46.080 7.68 64v135.68h-207.36v-112.64c0-12.8-2.56-23.040-7.68-33.28s-10.24-17.92-12.8-20.48c-30.72-43.52-53.76-76.8-71.68-102.4s-30.72-46.080-40.96-64c-7.68-15.36-15.36-30.72-17.92-40.96s-2.56-20.48-2.56-33.28v-320c0-25.6 7.68-43.52 17.92-56.32v0z",
+					"M985.6 573.44c0 12.8 0 23.040-2.56 33.28s-7.68 23.040-17.92 40.96c-7.68 15.36-23.040 38.4-38.4 64-17.92 25.6-40.96 61.44-69.12 102.4-2.56 2.56-7.68 10.24-12.8 20.48s-7.68 20.48-7.68 33.28v112.64h-209.92v-135.68c0-20.48 2.56-40.96 7.68-64s12.8-43.52 25.6-61.44l166.4-230.4c10.24-12.8 20.48-17.92 35.84-17.92s28.16 5.12 43.52 17.92c15.36 10.24 23.040 25.6 23.040 40.96 0 7.68-2.56 15.36-5.12 20.48l-69.12 110.080v12.8l71.68-120.32c2.56-5.12 5.12-7.68 5.12-12.8 0-2.56 0-7.68 0-12.8 0-15.36-5.12-30.72-17.92-40.96-12.8-12.8-25.6-17.92-40.96-20.48v-215.040c0-25.6 5.12-43.52 17.92-56.32s23.040-17.92 38.4-17.92c12.8 0 28.16 5.12 38.4 17.92 12.8 12.8 17.92 30.72 17.92 56.32v322.56h0z",
+					"M537.6 504.32c130.56 0 238.080-107.52 238.080-238.080 0-133.12-107.52-240.64-238.080-240.64s-238.080 107.52-238.080 240.64c2.56 130.56 107.52 238.080 238.080 238.080zM537.6 81.92c99.84 0 181.76 81.92 181.76 184.32s-81.92 184.32-181.76 184.32c-99.84 0-181.76-81.92-181.76-184.32s81.92-184.32 181.76-184.32z",
+					"M581.12 381.44c-2.56 0-5.12-2.56-5.12-7.68v-161.28h-102.4v20.48h17.92c2.56 0 5.12 2.56 5.12 5.12v138.24c0 2.56-2.56 5.12-5.12 5.12h-17.92v20.48h125.44v-20.48h-17.92z",
+					"M581.12 153.6c0 24.035-19.485 43.52-43.52 43.52s-43.52-19.485-43.52-43.52c0-24.035 19.485-43.52 43.52-43.52s43.52 19.485 43.52 43.52z"
+				],
+				"attrs": [
+					{
+						"fill": "rgb(226, 223, 216)"
+					},
+					{
+						"fill": "rgb(226, 223, 216)"
+					},
+					{
+						"fill": "rgb(1, 1, 1)"
+					},
+					{
+						"fill": "rgb(1, 1, 1)"
+					},
+					{
+						"fill": "rgb(1, 1, 1)"
+					}
+				],
+				"isMulticolor": true,
+				"grid": 0,
+				"tags": [
+					"svg_info-hands"
+				],
+				"colorPermutations": {
+					"11112262232161": [
+						1,
+						1,
+						0,
+						0,
+						0
+					]
+				}
+			},
+			"attrs": [
+				{
+					"fill": "rgb(226, 223, 216)"
+				},
+				{
+					"fill": "rgb(226, 223, 216)"
+				},
+				{
+					"fill": "rgb(1, 1, 1)"
+				},
+				{
+					"fill": "rgb(1, 1, 1)"
+				},
+				{
+					"fill": "rgb(1, 1, 1)"
+				}
+			],
+			"properties": {
+				"order": 27,
+				"id": 36,
+				"prevSize": 32,
+				"name": "svg_info-hands"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 2
+		},
+		{
+			"icon": {
+				"paths": [],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_add"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 28,
+				"id": 35,
+				"prevSize": 32,
+				"name": "svg_add"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 3
 		},
 		{
 			"icon": {
@@ -47,72 +170,134 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_collection"
-				]
-			},
-			"attrs": [],
-			"properties": {
-				"order": 28,
-				"id": 22,
-				"prevSize": 32,
-				"name": "icons_collection"
-			},
-			"setIdx": 0,
-			"setId": 1,
-			"iconIdx": 1
-		},
-		{
-			"icon": {
-				"paths": [
-					"M435.2 512h102.4v358.4h-102.4v-358.4z",
-					"M614.4 384h102.4v486.4h-102.4v-486.4z",
-					"M281.6 640h102.4v230.4h-102.4v-230.4z",
-					"M632.32 76.8h-504.32v921.6h768v-670.72l-263.68-250.88zM844.8 947.2h-665.6v-819.2h435.2v204.8h230.4v614.4z"
+					"svg_collection"
 				],
-				"attrs": [],
-				"isMulticolor": false,
-				"grid": 0,
-				"tags": [
-					"icons_dataset"
-				]
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
 				"order": 29,
-				"id": 21,
+				"id": 34,
 				"prevSize": 32,
-				"name": "icons_dataset"
+				"name": "svg_collection"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 2
+			"iconIdx": 4
 		},
 		{
 			"icon": {
 				"paths": [
-					"M632.32 38.4h-504.32v947.2h768v-688.64l-263.68-258.56zM844.8 934.4h-665.6v-819.2h435.2v204.8h230.4v614.4z",
-					"M307.2 396.8h384v51.2h-384v-51.2z",
-					"M307.2 524.8h384v51.2h-384v-51.2z",
-					"M307.2 652.8h384v51.2h-384v-51.2z",
-					"M307.2 780.8h384v51.2h-384v-51.2z"
+					"M632.32 53.76l250.88 256v670.72h-762.88v-926.72h512zM230.4 870.4h540.16v-522.24h-197.12v-184.32h-343.040v706.56zM304.64 512h386.56v-43.52h-386.56v43.52zM304.64 634.88h386.56v-43.52h-386.56v43.52zM304.64 757.76h386.56v-43.52h-386.56v43.52z"
 				],
 				"attrs": [],
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_document"
-				]
+					"svg_document2"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
 				"order": 30,
-				"id": 20,
+				"id": 33,
 				"prevSize": 32,
-				"name": "icons_document"
+				"name": "svg_document2"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 3
+			"iconIdx": 5
+		},
+		{
+			"icon": {
+				"paths": [
+					"M921.6 583.68l-396.8 391.68-396.8-391.68v-258.56l307.2 299.52v-573.44h153.6v570.88l332.8-296.96z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_download"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 31,
+				"id": 32,
+				"prevSize": 32,
+				"name": "svg_download"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 6
+		},
+		{
+			"icon": {
+				"paths": [
+					"M916.48 842.24l-256-240.64c40.96-51.2 81.92-133.12 81.92-209.92 0-181.76-166.4-317.44-348.16-317.44-181.76-2.56-322.56 133.12-322.56 317.44 0 181.76 122.88 340.48 304.64 340.48 79.36 0 133.12-20.48 171.52-40.96l258.56 258.56c15.36 15.36 38.4 15.36 53.76 0l53.76-53.76c17.92-15.36 17.92-38.4 2.56-53.76zM409.6 627.2c-122.88 0-222.72-99.84-222.72-222.72-2.56-125.44 97.28-225.28 222.72-225.28 122.88 0 222.72 99.84 222.72 222.72 0 125.44-99.84 225.28-222.72 225.28z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_find"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 32,
+				"id": 31,
+				"prevSize": 32,
+				"name": "svg_find"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 7
+		},
+		{
+			"icon": {
+				"paths": [
+					"M51.2 51.2h256v256h-256v-256z",
+					"M384 51.2h256v256h-256v-256z",
+					"M716.8 51.2h256v256h-256v-256z",
+					"M51.2 384h256v256h-256v-256z",
+					"M384 384h256v256h-256v-256z",
+					"M716.8 384h256v256h-256v-256z",
+					"M51.2 716.8h256v256h-256v-256z",
+					"M384 716.8h256v256h-256v-256z",
+					"M716.8 716.8h256v256h-256v-256z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_gallery"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 33,
+				"id": 30,
+				"prevSize": 32,
+				"name": "svg_gallery"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 8
 		},
 		{
 			"icon": {
@@ -125,19 +310,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_geospatial"
-				]
+					"svg_geospatial"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 31,
-				"id": 19,
+				"order": 34,
+				"id": 29,
 				"prevSize": 32,
-				"name": "icons_geospatial"
+				"name": "svg_geospatial"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 4
+			"iconIdx": 9
 		},
 		{
 			"icon": {
@@ -154,19 +342,131 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_image"
-				]
+					"svg_image"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 32,
-				"id": 18,
+				"order": 35,
+				"id": 28,
 				"prevSize": 32,
-				"name": "icons_image"
+				"name": "svg_image"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 5
+			"iconIdx": 10
+		},
+		{
+			"icon": {
+				"paths": [
+					"M514.56 983.040c256 0 463.36-209.92 463.36-468.48s-207.36-468.48-463.36-468.48c-256-2.56-465.92 207.36-465.92 465.92 0 261.12 209.92 471.040 465.92 471.040zM514.56 151.040c197.12 0 358.4 161.28 355.84 360.96 0 199.68-158.72 360.96-355.84 360.96s-358.4-161.28-358.4-360.96c-0-197.12 161.28-360.96 358.4-360.96z",
+					"M599.040 742.4c-5.12 0-10.24-5.12-10.24-12.8v-322.56h-199.68v40.96h35.84c5.12 0 10.24 5.12 10.24 10.24v273.92c0 5.12-5.12 10.24-10.24 10.24h-35.84v43.52h250.88v-43.52h-40.96z",
+					"M599.040 294.4c0 46.657-37.823 84.48-84.48 84.48s-84.48-37.823-84.48-84.48c0-46.657 37.823-84.48 84.48-84.48s84.48 37.823 84.48 84.48z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_info"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 60,
+				"id": 27,
+				"prevSize": 32,
+				"name": "svg_info"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 11
+		},
+		{
+			"icon": {
+				"paths": [
+					"M998.4 903.68l-386.56-384 386.56-386.56-102.4-99.84-486.4 486.4 486.4 486.4z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_left"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 61,
+				"id": 26,
+				"prevSize": 32,
+				"name": "svg_left"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 12
+		},
+		{
+			"icon": {
+				"paths": [
+					"M51.2 76.8h921.6v76.8h-921.6v-76.8z",
+					"M51.2 332.8h921.6v76.8h-921.6v-76.8z",
+					"M51.2 588.8h921.6v76.8h-921.6v-76.8z",
+					"M51.2 819.2h921.6v102.4h-921.6v-102.4z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_list"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 62,
+				"id": 25,
+				"prevSize": 32,
+				"name": "svg_list"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 13
+		},
+		{
+			"icon": {
+				"paths": [
+					"M506.88 71.68c-133.12 0-238.080 128-238.080 258.56 0 25.6 238.080 632.32 238.080 632.32l235.52-616.96c2.56 0 5.12-25.6 5.12-40.96 0-133.12-107.52-232.96-240.64-232.96zM506.88 424.96c-56.32 0-102.4-46.080-102.4-102.4s46.080-102.4 102.4-102.4c56.32 0 102.4 46.080 102.4 102.4s-46.080 102.4-102.4 102.4z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_map"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 36,
+				"id": 24,
+				"prevSize": 32,
+				"name": "svg_map"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 14
 		},
 		{
 			"icon": {
@@ -182,44 +482,130 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_ontology"
-				]
+					"svg_ontology"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 33,
-				"id": 17,
+				"order": 37,
+				"id": 23,
 				"prevSize": 32,
-				"name": "icons_ontology"
+				"name": "svg_ontology"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 6
+			"iconIdx": 15
 		},
 		{
 			"icon": {
 				"paths": [
-					"M860.16 64h-691.2c-15.36 0-28.16 2.56-28.16 15.36v883.2c0 12.8 12.8 23.040 28.16 23.040h691.2c15.36 0 23.040-10.24 23.040-23.040v-883.2c0-12.8-10.24-15.36-23.040-15.36zM857.6 960h-691.2v-435.2h691.2v435.2zM857.6 550.4h-691.2v-435.2h691.2v435.2z",
+					"M860.16 64h-691.2c-15.36 0-28.16 2.56-28.16 15.36v883.2c0 12.8 12.8 23.040 28.16 23.040h691.2c15.36 0 23.040-10.24 23.040-23.040v-883.2c0-12.8-10.24-15.36-23.040-15.36zM857.6 934.4h-691.2v-409.6h691.2v409.6zM857.6 550.4h-691.2v-435.2h691.2v435.2z",
 					"M714.24 435.2h-409.6v-202.24h53.76v151.040h296.96v-151.040h58.88z",
-					"M714.24 870.4h-409.6v-202.24h53.76v151.040h296.96v-151.040h58.88z"
+					"M714.24 844.8h-409.6v-202.24h53.76v151.040h296.96v-151.040h58.88z"
 				],
 				"attrs": [],
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_project"
-				]
+					"svg_project"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 51,
-				"id": 16,
+				"order": 38,
+				"id": 22,
 				"prevSize": 32,
-				"name": "icons_project"
+				"name": "svg_project"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 7
+			"iconIdx": 16
+		},
+		{
+			"icon": {
+				"paths": [
+					"M17.92 903.68l386.56-384-386.56-386.56 102.4-99.84 486.4 486.4-486.4 486.4z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_right"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 39,
+				"id": 21,
+				"prevSize": 32,
+				"name": "svg_right"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 17
+		},
+		{
+			"icon": {
+				"paths": [
+					"M327.68 688.64c74.24 69.12 115.2 181.76 115.2 258.56h97.28c0-76.8-51.2-232.96-143.36-322.56-94.72-87.040-245.76-133.12-345.6-133.12v89.6c99.84 0 199.68 38.4 276.48 107.52z",
+					"M481.28 545.28c117.76 110.080 179.2 222.72 179.2 401.92h97.28c0-179.2-71.68-337.92-207.36-465.92s-296.96-194.56-496.64-194.56v89.6c197.12 2.56 309.76 61.44 427.52 168.96z",
+					"M634.88 404.48c153.6 143.36 253.44 353.28 256 542.72h79.36c0-220.16-92.16-445.44-271.36-611.84-176.64-168.96-448-250.88-647.68-253.44v87.040c199.68 0 430.080 92.16 583.68 235.52z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_rss"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 40,
+				"id": 20,
+				"prevSize": 32,
+				"name": "svg_rss"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 18
+		},
+		{
+			"icon": {
+				"paths": [
+					"M186.88 312.32c5.12 2.56 7.68 7.68 7.68 12.8v79.36c0 7.68-2.56 10.24-7.68 12.8v184.32c5.12 2.56 7.68 7.68 7.68 12.8v79.36c0 7.68-2.56 10.24-7.68 12.8v10.24c0 15.36 12.8 30.72 28.16 38.4l250.88 104.96c12.8 5.12 20.48 0 20.48-10.24v-417.28c0-15.36-12.8-30.72-28.16-38.4l-250.88-104.96c-12.8-5.12-20.48 0-20.48 10.24l-0 12.8zM248.32 832l-43.52 17.92c0 0-2.56 0-2.56 0s-2.56 0-2.56 0l-48.64-20.48c-2.56 0-5.12-2.56-5.12-5.12 0 0 0-2.56 0-2.56v-583.68c0-5.12 0-10.24 2.56-15.36 5.12-15.36 20.48-30.72 35.84-38.4l307.2-130.56c5.12-2.56 10.24-2.56 17.92-2.56 5.12 0 10.24 0 15.36 2.56l307.2 130.56c15.36 7.68 28.16 20.48 35.84 38.4 2.56 5.12 2.56 10.24 2.56 15.36v0 581.12c0 2.56 0 2.56 0 2.56 0 2.56-2.56 5.12-5.12 5.12l-48.64 20.48c0 0-2.56 0-2.56 0s-2.56 0-2.56 0l-46.080-17.92-197.12 84.48v33.28c0 2.56 0 2.56 0 2.56 0 2.56-2.56 5.12-5.12 5.12l-51.2 25.6c0 0-2.56 0-2.56 0s-2.56 0-2.56 0l-48.64-20.48c-2.56 0-5.12-2.56-5.12-5.12 0 0 0-2.56 0-2.56v-33.28l-204.8-87.040zM220.16 565.76c5.12 20.48 20.48 33.28 35.84 30.72 15.36-5.12 23.040-23.040 17.92-43.52s-20.48-33.28-35.84-30.72c-12.8 5.12-20.48 23.040-17.92 43.52v0zM238.080 506.88c7.68-17.92 17.92-30.72 35.84-35.84 30.72-7.68 61.44 20.48 71.68 61.44s-7.68 81.92-38.4 89.6c-15.36 2.56-30.72 0-40.96-10.24-2.56 0-2.56 0-5.12 2.56-20.48 5.12-43.52-12.8-51.2-43.52s5.12-58.88 28.16-64v0 0zM366.080 665.6v-74.24c0-20.48 10.24-40.96 25.6-53.76 0-15.36 7.68-28.16 20.48-33.28 15.36-5.12 30.72 10.24 35.84 30.72s-2.56 40.96-17.92 43.52c-7.68 2.56-12.8 0-17.92-5.12-2.56 5.12-5.12 10.24-5.12 15.36v76.8c-2.56 25.6-40.96 25.6-40.96 0v0z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_safe"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 41,
+				"id": 19,
+				"prevSize": 32,
+				"name": "svg_safe"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 19
 		},
 		{
 			"icon": {
@@ -236,65 +622,85 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_sensory_data"
-				]
+					"svg_sensory_data"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 42,
+				"id": 18,
+				"prevSize": 32,
+				"name": "svg_sensory_data"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 20
+		},
+		{
+			"icon": {
+				"paths": [
+					"M435.2 460.8h332.8v51.2h-332.8v-51.2z",
+					"M230.4 460.8h102.4v51.2h-102.4v-51.2z",
+					"M435.2 563.2h332.8v51.2h-332.8v-51.2z",
+					"M230.4 563.2h102.4v51.2h-102.4v-51.2z",
+					"M435.2 665.6h332.8v51.2h-332.8v-51.2z",
+					"M230.4 665.6h102.4v51.2h-102.4v-51.2z",
+					"M435.2 768h332.8v51.2h-332.8v-51.2z",
+					"M230.4 768h102.4v51.2h-102.4v-51.2z",
+					"M632.32 76.8h-504.32v921.6h768v-683.52l-263.68-238.080zM844.8 947.2h-665.6v-819.2h435.2v204.8h230.4v614.4z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_coding_sheet"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
 				"order": 43,
-				"id": 15,
+				"id": 17,
 				"prevSize": 32,
-				"name": "icons_sensory_data"
+				"name": "svg_coding_sheet"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 8
+			"iconIdx": 21
 		},
 		{
 			"icon": {
 				"paths": [
-					"M512 105.412l102.4 316.235h334.306l-271.059 192.753 105.412 313.224-271.059-198.776-271.059 195.765 102.4-313.224-271.059-192.753h334.306l105.412-313.224zM427.671 451.765h-277.082l237.929 147.576-96.376 262.024 216.847-174.682 231.906 189.741-99.388-271.059 234.918-153.6h-274.071l-90.353-259.012-84.329 259.012z"
+					"M435.2 512h102.4v358.4h-102.4v-358.4z",
+					"M614.4 384h102.4v486.4h-102.4v-486.4z",
+					"M281.6 640h102.4v230.4h-102.4v-230.4z",
+					"M632.32 76.8h-504.32v921.6h768v-670.72l-263.68-250.88zM844.8 947.2h-665.6v-819.2h435.2v204.8h230.4v614.4z"
 				],
 				"attrs": [],
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_star-deselected"
-				]
+					"svg_dataset"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
 				"order": 44,
-				"id": 14,
+				"id": 16,
 				"prevSize": 32,
-				"name": "icons_star-deselected"
+				"name": "svg_dataset"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 9
-		},
-		{
-			"icon": {
-				"paths": [
-					"M512 90.353l102.4 316.235h334.306l-271.059 198.776 105.412 319.247-271.059-195.765-271.059 195.765 105.412-319.247-271.059-198.776h334.306z"
-				],
-				"attrs": [],
-				"isMulticolor": false,
-				"grid": 0,
-				"tags": [
-					"icons_star-selected"
-				]
-			},
-			"attrs": [],
-			"properties": {
-				"order": 45,
-				"id": 13,
-				"prevSize": 32,
-				"name": "icons_star-selected"
-			},
-			"setIdx": 0,
-			"setId": 1,
-			"iconIdx": 10
+			"iconIdx": 22
 		},
 		{
 			"icon": {
@@ -305,19 +711,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_delete"
-				]
+					"svg_delete"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 46,
-				"id": 12,
+				"order": 45,
+				"id": 15,
 				"prevSize": 32,
-				"name": "icons_delete"
+				"name": "svg_delete"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 11
+			"iconIdx": 23
 		},
 		{
 			"icon": {
@@ -328,19 +737,52 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_deselected"
-				]
+					"svg_deselected"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 50,
-				"id": 11,
+				"order": 59,
+				"id": 14,
 				"prevSize": 32,
-				"name": "icons_deselected"
+				"name": "svg_deselected"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 12
+			"iconIdx": 24
+		},
+		{
+			"icon": {
+				"paths": [
+					"M632.32 38.4h-504.32v947.2h768v-688.64l-263.68-258.56zM844.8 934.4h-665.6v-819.2h435.2v204.8h230.4v614.4z",
+					"M307.2 396.8h384v51.2h-384v-51.2z",
+					"M307.2 524.8h384v51.2h-384v-51.2z",
+					"M307.2 652.8h384v51.2h-384v-51.2z",
+					"M307.2 780.8h384v51.2h-384v-51.2z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_document"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 58,
+				"id": 13,
+				"prevSize": 32,
+				"name": "svg_document"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 25
 		},
 		{
 			"icon": {
@@ -352,19 +794,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_edit"
-				]
+					"svg_edit"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 47,
-				"id": 10,
+				"order": 64,
+				"id": 12,
 				"prevSize": 32,
-				"name": "icons_edit"
+				"name": "svg_edit"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 13
+			"iconIdx": 26
 		},
 		{
 			"icon": {
@@ -382,19 +827,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-coding_sheet"
-				]
+					"svg_icon-coding_sheet"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 48,
-				"id": 9,
+				"order": 63,
+				"id": 11,
 				"prevSize": 32,
-				"name": "icons_icon-coding_sheet"
+				"name": "svg_icon-coding_sheet"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 14
+			"iconIdx": 27
 		},
 		{
 			"icon": {
@@ -407,19 +855,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-dataset"
-				]
+					"svg_icon-dataset"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 49,
-				"id": 8,
+				"order": 47,
+				"id": 10,
 				"prevSize": 32,
-				"name": "icons_icon-dataset"
+				"name": "svg_icon-dataset"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 15
+			"iconIdx": 28
 		},
 		{
 			"icon": {
@@ -430,19 +881,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-document"
-				]
+					"svg_icon-document"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 35,
-				"id": 7,
+				"order": 48,
+				"id": 9,
 				"prevSize": 32,
-				"name": "icons_icon-document"
+				"name": "svg_icon-document"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 16
+			"iconIdx": 29
 		},
 		{
 			"icon": {
@@ -454,19 +908,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-geospatial"
-				]
+					"svg_icon-geospatial"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 36,
-				"id": 6,
+				"order": 49,
+				"id": 8,
 				"prevSize": 32,
-				"name": "icons_icon-geospatial"
+				"name": "svg_icon-geospatial"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 17
+			"iconIdx": 30
 		},
 		{
 			"icon": {
@@ -477,19 +934,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-image"
-				]
+					"svg_icon-image"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 37,
-				"id": 5,
+				"order": 50,
+				"id": 7,
 				"prevSize": 32,
-				"name": "icons_icon-image"
+				"name": "svg_icon-image"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 18
+			"iconIdx": 31
 		},
 		{
 			"icon": {
@@ -504,19 +964,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-ontology"
-				]
+					"svg_icon-ontology"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 38,
-				"id": 4,
+				"order": 51,
+				"id": 6,
 				"prevSize": 32,
-				"name": "icons_icon-ontology"
+				"name": "svg_icon-ontology"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 19
+			"iconIdx": 32
 		},
 		{
 			"icon": {
@@ -529,19 +992,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-project"
-				]
+					"svg_icon-project"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 39,
-				"id": 3,
+				"order": 52,
+				"id": 5,
 				"prevSize": 32,
-				"name": "icons_icon-project"
+				"name": "svg_icon-project"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 20
+			"iconIdx": 33
 		},
 		{
 			"icon": {
@@ -554,19 +1020,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_icon-sensory_data"
-				]
+					"svg_icon-sensory_data"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 40,
-				"id": 2,
+				"order": 53,
+				"id": 4,
 				"prevSize": 32,
-				"name": "icons_icon-sensory_data"
+				"name": "svg_icon-sensory_data"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 21
+			"iconIdx": 34
 		},
 		{
 			"icon": {
@@ -577,19 +1046,22 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_search"
-				]
+					"svg_search"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 41,
-				"id": 1,
+				"order": 54,
+				"id": 3,
 				"prevSize": 32,
-				"name": "icons_search"
+				"name": "svg_search"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 22
+			"iconIdx": 35
 		},
 		{
 			"icon": {
@@ -600,19 +1072,74 @@
 				"isMulticolor": false,
 				"grid": 0,
 				"tags": [
-					"icons_selected"
-				]
+					"svg_selected"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
 			},
 			"attrs": [],
 			"properties": {
-				"order": 42,
-				"id": 0,
+				"order": 55,
+				"id": 2,
 				"prevSize": 32,
-				"name": "icons_selected"
+				"name": "svg_selected"
 			},
 			"setIdx": 0,
 			"setId": 1,
-			"iconIdx": 23
+			"iconIdx": 36
+		},
+		{
+			"icon": {
+				"paths": [
+					"M512 105.412l102.4 316.235h334.306l-271.059 192.753 105.412 313.224-271.059-198.776-271.059 195.765 102.4-313.224-271.059-192.753h334.306l105.412-313.224zM427.671 451.765h-277.082l237.929 147.576-96.376 262.024 216.847-174.682 231.906 189.741-99.388-271.059 234.918-153.6h-274.071l-90.353-259.012-84.329 259.012z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_star-deselected"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 56,
+				"id": 1,
+				"prevSize": 32,
+				"name": "svg_star-deselected"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 37
+		},
+		{
+			"icon": {
+				"paths": [
+					"M512 90.353l102.4 316.235h334.306l-271.059 198.776 105.412 319.247-271.059-195.765-271.059 195.765 105.412-319.247-271.059-198.776h334.306z"
+				],
+				"attrs": [],
+				"isMulticolor": false,
+				"grid": 0,
+				"tags": [
+					"svg_star-selected"
+				],
+				"colorPermutations": {
+					"11112262232161": []
+				}
+			},
+			"attrs": [],
+			"properties": {
+				"order": 57,
+				"id": 0,
+				"prevSize": 32,
+				"name": "svg_star-selected"
+			},
+			"setIdx": 0,
+			"setId": 1,
+			"iconIdx": 38
 		}
 	],
 	"height": 1024,
