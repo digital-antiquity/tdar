@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,6 +37,8 @@ import org.tdar.utils.Pair;
 @Service("genericKeywordSerice")
 public class GenericKeywordService {
 
+    private static final String APPROVED = "approved";
+
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -52,7 +53,7 @@ public class GenericKeywordService {
      */
     @Transactional
     public <W extends SuggestedKeyword> List<W> findAllApproved(Class<W> cls) {
-        return genericKeywordDao.findAllByProperty(cls, "approved", true);
+        return genericKeywordDao.findAllByProperty(cls, APPROVED, true);
     }
 
 
