@@ -106,11 +106,11 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             uploadFileAsync(restriction, file);
         }
         waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
-        takeScreenshot();
+        takeScreenshot("before-submit");
         submitForm("#submitButton");
         waitForPageload();
         String path = getDriver().getCurrentUrl();
-
+        takeScreenshot("after-submit");
         logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
