@@ -12,6 +12,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -644,8 +645,6 @@ public class AuthorizationService implements Accessible {
             if(CollectionUtils.isEmpty(authorizations)) {
                 errors.add("authorizationService.invalid_request");
             }
-
-//            logger.error("Invalid referrer.  Url:{}  referrer:{}", request.getPathInfo(), referrer);
         }
         return errors;
     }

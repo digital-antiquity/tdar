@@ -45,7 +45,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LINK)).first().click();
-        waitFor(By.name("send")).click();
+        waitFor(By.id("followup-send")).click();
         waitFor(visibilityOf(find("#emailErrorContainer").first()));
         assertTrue(getText().contains("An error occurred"));
         find(By.id("email-close-button")).click();
@@ -61,7 +61,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LINK)).first().click();
         find(By.name("messageBody")).sendKeys("This is a test email");
-        find(By.name("send")).click();
+        find(By.id("followup-send")).click();
         Thread.sleep(2000);
         reportJavascriptErrors();
         assertTrue(getText().contains("An error occurred"));

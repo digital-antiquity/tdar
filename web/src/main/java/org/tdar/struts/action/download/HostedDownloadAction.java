@@ -3,6 +3,7 @@ package org.tdar.struts.action.download;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.http.HttpHeaders;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -76,7 +77,7 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
             addActionError("hostedDownloadController.api_key_required");
         }
 
-        String referrer = getServletRequest().getHeader("referer");
+        String referrer = getServletRequest().getHeader(HttpHeaders.REFERER);
 
         if (PersistableUtils.isNotNullOrTransient(informationResourceFile)) {
             fileVersion = informationResourceFile.getLatestUploadedVersion();

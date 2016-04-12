@@ -199,7 +199,7 @@
     </#macro>
 
 
-    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true >
+    <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
         <#if (facetlist?? && !facetlist.empty)>
             <#if label != ''>
             <h4>${label}:</h4>
@@ -226,7 +226,9 @@
                     <#nested>
                 </@s.url></#compress>"></#if>
 <#compress>
-                    <#if icon><i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i></#if>
+                    <#if icon || pictoralIcon><#if pictoralIcon && facetParam=='selectedResourceTypes'>
+                        <i class="icon-red icon-${facet.raw?lower_case}"/></i>
+                    <#else><i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i></#if></#if>
                 <@s.text name="${facet.label}"/>
 				<#if link></a></#if>
 				 <span>(${facet.count})</span></span></#compress>

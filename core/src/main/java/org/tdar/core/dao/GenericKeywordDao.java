@@ -179,6 +179,9 @@ public class GenericKeywordDao extends GenericDao {
      */
     public Map<Keyword, Integer> getRelatedKeywordCounts(Set<Long> resourceIds) {
         Map<Keyword, Integer> results = new HashMap<Keyword, Integer>();
+        if (CollectionUtils.isEmpty(resourceIds)) {
+            return results;
+        }
         String drop = TdarNamedQueries.CREATOR_ANALYSIS_KWD_DROP_TEMP;
         getCurrentSession().createSQLQuery(drop).executeUpdate();
         String sql = TdarNamedQueries.CREATOR_ANALYSIS_KWD_CREATE_TEMP;

@@ -26,14 +26,7 @@ ${resourceCollection.name!"untitled collection"}</h1>
     This collection is not accessible
     <#else>
 
-        <#if !collections.empty>
-        <!-- Don't show header if header doesn't exist -->
-        <div id="sidebar-right" parse="true">
-            <h3 class="sidebar-spacer">Child Collections</h3>
-            <@common.listCollections collections=collections showOnlyVisible=true />
-        </div>
-        </#if>
-
+        <@commonCollection.sidebar />
 
         <@commonCollection.descriptionSection/>
 

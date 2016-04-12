@@ -14,6 +14,21 @@
 
 </#macro>
 
+<#macro sidebar>
+
+    <!-- Don't show header if header doesn't exist -->
+    <div id="sidebar-right" parse="true">
+        <#if results?has_content>
+            <h3 class="sidebar-spacer">Contents</h3>
+            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
+<i class="icon-document-red"></i>
+        </#if>
+
+        <h3>Child Collections</h3>
+        <@common.listCollections collections=collections showOnlyVisible=true />
+    </div>
+</#macro>
+
 <#macro header>
     <#if editable>
         <@nav.collectionToolbar "collection" "view">
@@ -68,7 +83,6 @@
         <#if results?has_content>
         <div id="divResultsSortControl">
             <h2>Resources Inside This Collection</h2>
-	        <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
             <div class="row">
                 <div class="span4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
