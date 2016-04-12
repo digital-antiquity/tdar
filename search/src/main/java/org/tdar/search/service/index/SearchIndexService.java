@@ -22,8 +22,6 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionPhase;
-import org.springframework.transaction.event.TransactionalEventListener;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
@@ -178,7 +176,7 @@ public class SearchIndexService {
                 document = InstitutionDocumentConverter.convert((Institution) item);
             }
             if (item instanceof Resource) {
-                document = ResourceDocumentConverter.convert((Resource) item, resourceService, resourceCollectionService);
+                document = ResourceDocumentConverter.convert((Resource) item);
             }
             if (item instanceof ResourceCollection) {
                 document = CollectionDocumentConverter.convert((ResourceCollection) item);
