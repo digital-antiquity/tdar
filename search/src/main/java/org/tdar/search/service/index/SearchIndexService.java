@@ -40,7 +40,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -340,7 +339,6 @@ public class SearchIndexService {
      */
     @Deprecated
     public void flushToIndexes() {
-    	SessionProxy.getInstance().flushAll();
         // getFullTextSession().flushToIndexes();
     }
 
