@@ -22,6 +22,8 @@ import javax.xml.bind.SchemaOutputResolver;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.validation.Schema;
@@ -29,32 +31,42 @@ import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tools.ant.filters.StringInputStream;
+import org.hibernate.proxy.HibernateProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.event.TdarEvent;
+import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLog;
 import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLogPart;
 import org.tdar.filestore.FileStoreFile;
+import org.tdar.filestore.Filestore.StorageMethod;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 import org.tdar.utils.jaxb.JaxbValidationEvent;
-import org.tdar.utils.jaxb.XMLFilestoreLogger;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
@@ -88,6 +100,9 @@ public class SerializationService {
     private static final String XSD = ".xsd";
     private static final String TDAR_SCHEMA = "tdar-schema";
     private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
+
+    private boolean useTransactionalEvents = true;
+
     @SuppressWarnings("unchecked")
     private static final Class<Class<?>>[] rootClasses = new Class[] { Resource.class, Creator.class, JaxbResultContainer.class, ResourceCollection.class,
             FileProxies.class, FileProxy.class };
@@ -99,12 +114,92 @@ public class SerializationService {
 
     @Autowired
     private JaxbResourceCollectionRefConverter collectionRefConverter;
+    private Class<?>[] jaxbClasses;
 
-    XMLFilestoreLogger xmlFilestoreLogger;
-
+    
     public SerializationService() throws ClassNotFoundException {
-        xmlFilestoreLogger = new XMLFilestoreLogger();
+        jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
+    
+    @EventListener
+    public void handleFilestoreEvent(TdarEvent event) {
+        if (!(event.getRecord() instanceof XmlLoggable)) {
+            return;
+        }
+
+        if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
+            filestoreLoggingTransactionalEvent(event);
+            return;
+        }
+    }
+
+    @TransactionalEventListener
+    public void filestoreLoggingTransactionalEvent(TdarEvent event) {
+        if (!(event.getRecord() instanceof XmlLoggable)) {
+            return;
+        }
+        XmlLoggable record = (XmlLoggable)event.getRecord();
+        logger.debug("FS EVENT: {} {} ({})", event.getType(), event.getRecord().getClass(), ((XmlLoggable)event.getRecord()).getId());
+        // addToSession(event.getSession(), (XmlLoggable) event.getEntity());
+        String xml = "";
+        try {
+            if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
+                XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
+                newInstance.setId(record.getId());
+                ((HasStatus) newInstance).setStatus(Status.DELETED);
+                xml = convertToXML(newInstance);
+            } else {
+                xml = convertToXML(record);
+            }
+            writeToFilestore(FilestoreObjectType.fromClass(record.getClass()), record.getId(), xml);
+            
+        } catch (Exception e) {
+            logger.error("exception converting to XML: {}", e);
+        }
+    }
+
+    
+    /**
+     * Serializes the JAXB-XML representation of a @link Record to the tDAR @link Filestore
+     * 
+     * @param resource
+     */
+    @Transactional(readOnly = true)
+    public <T extends Persistable> void logRecordXmlToFilestore(T resource) {
+        if (!(resource instanceof XmlLoggable)) {
+            return;
+        }
+        logger.trace("serializing record to XML: [{}] {}", resource.getClass().getSimpleName().toUpperCase(), resource.getId());
+
+        String xml;
+        try {
+            xml = convertToXML(resource);
+        } catch (Exception e) {
+            logger.error("something happend when converting record to XML:" + resource, e);
+            throw new FilestoreLoggingException("serializationService.could_not_save");
+        }
+        
+        writeToFilestore(FilestoreObjectType.fromClass(resource.getClass()), resource.getId(), xml);
+        logger.trace("done saving");
+    }
+
+    
+    public <T extends Persistable> void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, String xml) {
+        @SuppressWarnings("deprecation")
+        InformationResourceFileVersion version = new InformationResourceFileVersion();
+        version.setFilename("record.xml");
+        version.setExtension("xml");
+        version.setFileVersionType(VersionType.RECORD);
+        version.setInformationResourceId(id);
+        try {
+            StorageMethod rotate = StorageMethod.DATE;
+            TdarConfiguration.getInstance().getFilestore().storeAndRotate(filestoreObjectType, new StringInputStream(xml, "UTF-8"), version, rotate);
+        } catch (Exception e) {
+            logger.error("something happend when converting record to XML:" + filestoreObjectType, e);
+            throw new FilestoreLoggingException("serializationService.could_not_save");
+        }
+    }
+
 
     /**
      * Convert the existing object to an XML representation using JAXB
@@ -115,7 +210,9 @@ public class SerializationService {
      */
     @Transactional(readOnly = true)
     public String convertToXML(Object object) throws Exception {
-        return xmlFilestoreLogger.convertToXML(object);
+        StringWriter sw = new StringWriter();
+        convertToXML(object, sw);
+        return sw.toString();
     }
 
     /**
@@ -151,10 +248,25 @@ public class SerializationService {
      */
     @Transactional(readOnly = true)
     public Writer convertToXML(Object object, Writer writer) throws Exception {
-        return xmlFilestoreLogger.convertToXML(object, writer);
+        // get rid of proxies
+        if (object == null) {
+            return writer;
+        }
+        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
+            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
+        }
+
+        JAXBContext jc = JAXBContext.newInstance(jaxbClasses);
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+        marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, UrlService.getPairedSchemaUrl());
+        // marshaller.setProperty(Marshaller.JAXB_, urlService.getSchemaUrl());
+        logger.trace("converting: {}", object);
+        marshaller.marshal(object, writer);
+        return writer;
     }
 
-        /**
+    /**
      * Convert an object to JSON using JAXB using writer
      * 
      * @param object
@@ -162,7 +274,7 @@ public class SerializationService {
      * @throws JsonProcessingException
      * @throws IOException
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
@@ -195,7 +307,7 @@ public class SerializationService {
      * Takes an object, a @JsonView class (optional); and callback-name (optional); and constructs a JSON or JSONP object passing it back to the controller.
      * Most commonly used to produce a stream.
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String convertFilteredJsonForStream(Object object, Class<?> view, String callback) {
         Object wrapper = wrapObjectIfNeeded(object, callback);
         String result = null;
@@ -227,7 +339,7 @@ public class SerializationService {
         return wrapper;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public String convertToFilteredJson(Object object, Class<?> view) throws IOException {
         StringWriter writer = new StringWriter();
         convertToJson(object, writer, view, null);
@@ -244,7 +356,15 @@ public class SerializationService {
      */
     @Transactional(readOnly = true)
     public Document convertToXML(Object object, Document document) throws JAXBException {
-        return xmlFilestoreLogger.convertToXML(object, document);
+        // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
+        if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
+            object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
+        }
+        JAXBContext jc = JAXBContext.newInstance(object.getClass());
+        Marshaller marshaller = jc.createMarshaller();
+        marshaller.marshal(object, document);
+
+        return document;
     }
 
     /**
@@ -303,7 +423,7 @@ public class SerializationService {
      * @param log
      * @throws IOException
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void generateFOAF(Creator<?> creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
         String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
@@ -397,7 +517,7 @@ public class SerializationService {
      * @return
      * @throws Exception
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void generateRelatedLog(Persistable creator, RelatedInfoLog log) throws Exception {
         File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
@@ -413,7 +533,7 @@ public class SerializationService {
 
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public <C> void convertToXMLFragment(Class<C> cls, C object, Writer writer) throws JAXBException {
         JAXBContext jc = JAXBContext.newInstance(cls);
         Marshaller marshaller = jc.createMarshaller();
@@ -424,13 +544,14 @@ public class SerializationService {
 
     }
 
-    @Transactional(readOnly=true)
-    public String createGeoJsonFromResourceList(Map<String, Object> result, String resultKey, String rssUrl, Class<?> filter, String callback) throws IOException {
+    @Transactional(readOnly = true)
+    public String createGeoJsonFromResourceList(Map<String, Object> result, String resultKey, String rssUrl, Class<?> filter, String callback)
+            throws IOException {
         List<Object> rslts = (List<Object>) result.get(resultKey);
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
         for (Object obj : rslts) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource)obj, filter));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter));
             }
         }
         result.put(resultKey, wrappers);
@@ -438,5 +559,13 @@ public class SerializationService {
         logger.debug("filter: {}", filter);
         convertToJson(result, writer, filter, callback);
         return writer.toString();
+    }
+
+    public boolean isUseTransactionalEvents() {
+        return useTransactionalEvents;
+    }
+
+    public void setUseTransactionalEvents(boolean useTransactionalEvents) {
+        this.useTransactionalEvents = useTransactionalEvents;
     }
 }

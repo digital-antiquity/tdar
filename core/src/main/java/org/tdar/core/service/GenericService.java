@@ -30,7 +30,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.PersistableUtils;

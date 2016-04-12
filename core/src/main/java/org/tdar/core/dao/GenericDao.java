@@ -42,7 +42,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
@@ -441,9 +441,7 @@ public class GenericDao {
             throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
         }
         session.save(entity);
-        if (entity instanceof Indexable) {
-        	publisher.publishEvent(new IndexingEvent((Indexable)entity, EventType.CREATE_OR_UPDATE));
-        }
+    	publisher.publishEvent(new TdarEvent(entity, EventType.CREATE_OR_UPDATE));
     }
 
     public <T> void saveOrUpdate(T entity) {
@@ -452,7 +450,7 @@ public class GenericDao {
             throw new TdarRecoverableRuntimeException(String.format("trying to save an obfuscated object %s ", entity));
         }
         session.saveOrUpdate(entity);
-        fireIndexingEvent(entity);
+        fireEvent(entity);
     }
 
     public <T> void update(T entity) {
@@ -461,7 +459,7 @@ public class GenericDao {
             throw new TdarRecoverableRuntimeException(String.format("trying to update an obfuscated object %s ", entity));
         }
         session.update(entity);
-        fireIndexingEvent(entity);
+        fireEvent(entity);
     }
 
     @SuppressWarnings("unchecked")
@@ -486,15 +484,11 @@ public class GenericDao {
         if (entity instanceof HasStatus) {
             ((HasStatus) entity).setStatus(Status.DELETED);
             saveOrUpdate(entity);
-            fireIndexingEvent(entity);
+            fireEvent(entity);
 
             return;
         }
-
-        if (entity instanceof Indexable) {
-            publisher.publishEvent(new IndexingEvent((Indexable)entity, EventType.DELETE));
-
-        }
+        publisher.publishEvent(new TdarEvent(entity, EventType.DELETE));
 
         if (entity instanceof InformationResourceFileVersion) {
             if (((InformationResourceFileVersion) entity).isUploadedOrArchival()) {
@@ -505,10 +499,8 @@ public class GenericDao {
         forceDelete(entity);
     }
 
-    private <T> void fireIndexingEvent(T entity) {
-        if (entity instanceof Indexable) {
-        	publisher.publishEvent(new IndexingEvent((Indexable)entity, EventType.CREATE_OR_UPDATE));
-        }
+    private <T> void fireEvent(T entity) {
+        	publisher.publishEvent(new TdarEvent(entity, EventType.CREATE_OR_UPDATE));
     }
 
     public <T> void forceDelete(T entity) {

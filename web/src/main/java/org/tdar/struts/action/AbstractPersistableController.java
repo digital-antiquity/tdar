@@ -30,7 +30,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
@@ -242,7 +242,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
 
     protected void indexPersistable() throws SolrServerException, IOException {
     	if (getPersistable() instanceof Indexable) {
-    		publisher.publishEvent(new IndexingEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
+    		publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
     	}
     }
 

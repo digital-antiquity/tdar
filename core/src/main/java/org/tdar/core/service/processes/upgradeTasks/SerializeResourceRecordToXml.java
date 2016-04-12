@@ -1,9 +1,10 @@
 package org.tdar.core.service.processes.upgradeTasks;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
-import org.tdar.utils.jaxb.XMLFilestoreLogger;
 
 /**
  * $Id$
@@ -20,11 +21,9 @@ public class SerializeResourceRecordToXml extends AbstractScheduledBatchProcess<
 
     private static final long serialVersionUID = 7024941986161148001L;
 
-    private XMLFilestoreLogger xmlFilestoreLogger;
+    @Autowired
+    SerializationService serializationService;
 
-    public SerializeResourceRecordToXml() throws ClassNotFoundException {
-        xmlFilestoreLogger = new XMLFilestoreLogger();
-    }
 
     @Override
     public String getDisplayName() {
@@ -43,7 +42,7 @@ public class SerializeResourceRecordToXml extends AbstractScheduledBatchProcess<
 
     @Override
     public void process(Resource resource) {
-        xmlFilestoreLogger.logRecordXmlToFilestore(resource);
+        serializationService.logRecordXmlToFilestore(resource);
     }
 
     @Override

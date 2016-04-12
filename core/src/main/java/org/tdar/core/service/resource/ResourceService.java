@@ -65,7 +65,7 @@ import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.DeleteIssue;
@@ -851,7 +851,7 @@ public class ResourceService {
             account = genericDao.markWritableOnExistingSession(account);
             accountDao.updateQuota(account, toEvaluate);
             genericDao.saveOrUpdate(account);
-            publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
     }

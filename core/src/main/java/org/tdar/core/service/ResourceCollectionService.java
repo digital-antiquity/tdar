@@ -43,7 +43,7 @@ import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -199,7 +199,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void delete(ResourceCollection resourceCollection) {
         getDao().delete(resourceCollection.getAuthorizedUsers());
         for (Resource resource : resourceCollection.getResources()) {
-            publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         getDao().delete(resourceCollection);
     }
@@ -451,7 +451,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
                 collection.setHidden(false);
                 collectionToAdd = collection;
-                publisher.publishEvent(new IndexingEvent(collection, EventType.CREATE_OR_UPDATE));
+                publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             }
         } else if (collection.isInternal()) {
             collectionToAdd = collection;
@@ -751,7 +751,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             } else {
                 resource.getResourceCollections().add(persistable);
                 resources.add(resource);
-                publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+                publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             }
         }
 
@@ -761,7 +761,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 ineligibleToAdd.add(resource);
             } else {
                 resource.getResourceCollections().remove(persistable);
-                publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+                publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
                 resources.remove(resource);
             }
         }
@@ -786,13 +786,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         for (Resource resource : resourcesToAdd) {
             resource.getUnmanagedResourceCollections().add(persistable);
             resources.add(resource);
-            publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
         for (Resource resource : resourcesToRemove) {
             resource.getUnmanagedResourceCollections().remove(persistable);
             resources.remove(resource);
-            publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         saveOrUpdate(persistable);
     }
@@ -803,12 +803,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         for (Resource resource : persistable.getResources()) {
             resource.getResourceCollections().remove(persistable);
             getDao().saveOrUpdate(resource);
-            publisher.publishEvent(new IndexingEvent(resource, EventType.CREATE_OR_UPDATE));
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         getDao().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
         getDao().delete(persistable);
-        publisher.publishEvent(new IndexingEvent(persistable, EventType.DELETE));
+        publisher.publishEvent(new TdarEvent(persistable, EventType.DELETE));
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
 
     }
@@ -843,7 +843,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         reconcileIncomingResourcesForCollectionWithoutRights(persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
         saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
-        publisher.publishEvent(new IndexingEvent(persistable, EventType.CREATE_OR_UPDATE));
+        publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
 
     @Transactional(readOnly = false)

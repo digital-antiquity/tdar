@@ -2,21 +2,19 @@ package org.tdar.core.event;
 
 import java.io.Serializable;
 
-import org.tdar.core.bean.Indexable;
-
-public class IndexingEvent implements Serializable {
+public class TdarEvent implements Serializable {
 
 	private static final long serialVersionUID = -6141090148370581562L;
 	private EventType type;
-	private Indexable indexable;
+	private Object indexable;
 	private Long extraId;
 
-	public IndexingEvent(Indexable irFile, EventType type, Long extraId) {
+	public TdarEvent(Object irFile, EventType type, Long extraId) {
 		this(irFile, type);
 		this.setExtraId(extraId);
 	}
 
-	public IndexingEvent(Indexable indexable, EventType type) {
+	public TdarEvent(Object indexable, EventType type) {
 		this.indexable = indexable;
 		this.type = type;
 	}
@@ -29,11 +27,11 @@ public class IndexingEvent implements Serializable {
 		this.type = type;
 	}
 
-	public Indexable getIndexable() {
+	public Object getRecord() {
 		return indexable;
 	}
 
-	public void setIndexable(Indexable indexable) {
+	public void setIndexable(Object indexable) {
 		this.indexable = indexable;
 	}
 

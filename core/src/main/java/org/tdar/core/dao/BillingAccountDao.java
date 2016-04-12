@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.AccountEvaluationHelper;
@@ -377,7 +377,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         for (Resource resource : resources) {
             if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
                 resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
-                publisher.publishEvent(new IndexingEvent((Indexable)resource, EventType.CREATE_OR_UPDATE));
+                publisher.publishEvent(new TdarEvent((Indexable)resource, EventType.CREATE_OR_UPDATE));
             }
         }
 
@@ -398,7 +398,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                 status = Status.ACTIVE;
             }
             resource.setStatus(status);
-            publisher.publishEvent(new IndexingEvent((Indexable)resource, EventType.CREATE_OR_UPDATE));
+            publisher.publishEvent(new TdarEvent((Indexable)resource, EventType.CREATE_OR_UPDATE));
         }
     }
 

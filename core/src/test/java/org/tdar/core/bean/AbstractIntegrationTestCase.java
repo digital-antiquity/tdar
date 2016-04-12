@@ -222,6 +222,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             ((MockMailSender) emailService.getMailSender()).getMessages().clear();
         }
         String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
+        if (TdarConfiguration.getInstance().shouldLogToFilestore()) {
+            serializationService.setUseTransactionalEvents(false);
+        }
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));

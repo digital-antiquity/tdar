@@ -19,7 +19,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DatasetImportService;
@@ -155,7 +155,7 @@ public class WorkflowContextService {
                 logger.info("clearing status?: {}", irFile.getStatus());
                 irFile.setStatus(FileStatus.PROCESSED);
                 irFile.setErrorMessage(null);
-                publisher.publishEvent(new IndexingEvent(irFile, EventType.CREATE_OR_UPDATE, informationResource.getId()));
+                publisher.publishEvent(new TdarEvent(irFile, EventType.CREATE_OR_UPDATE, informationResource.getId()));
             } else {
                 if (ctx.isErrorFatal()) {
                     irFile.setStatus(FileStatus.PROCESSING_ERROR);

@@ -44,9 +44,8 @@ import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.ActivityManager;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.converter.AnnotationKeyDocumentConverter;
@@ -105,7 +104,11 @@ public class SearchIndexService {
     }
     
     @EventListener
-    public void handleIndexingEvent(IndexingEvent event) throws SolrServerException, IOException {
+    public void handleIndexingEvent(TdarEvent event) throws SolrServerException, IOException {
+        if (!(event.getRecord() instanceof Indexable)) {
+            return;
+        }
+        
         if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
             handleIndexingEventTransactional(event);
             return;
@@ -113,19 +116,23 @@ public class SearchIndexService {
     }
     
     @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
-    public void handleIndexingEventTransactional(IndexingEvent event) throws SolrServerException, IOException {
-    	if (template == null) {
+    public void handleIndexingEventTransactional(TdarEvent event) throws SolrServerException, IOException {
+        if (!(event.getRecord() instanceof Indexable)) {
+            return;
+        }
+        Indexable record = (Indexable) event.getRecord();
+        if (template == null) {
     		logger.warn("indexer not enabled to process event");
     		return;
     	}
 
-    	logger.debug("EVENT: {} {} ({})", event.getType(), event.getIndexable().getClass(), event.getIndexable().getId());
+    	logger.debug("INDEX EVENT: {} {} ({})", event.getType(), event.getRecord().getClass(), record.getId());
     	switch (event.getType()) {
 	    	case CREATE_OR_UPDATE:
-	    		index(event.getIndexable());
+	    		index(record);
 	    		break;
 	    	case DELETE:
-	    		purge(event.getIndexable());
+	    		purge(record);
     	}
     }
 

@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.dao.hibernateEvents.SessionProxy;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
@@ -22,7 +21,6 @@ import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
-import com.google.common.base.Objects;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.ActionProxy;
 import com.opensymphony.xwork2.interceptor.Interceptor;
@@ -82,11 +80,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             logger.trace(String.format("marking %s/%s session %s", action.getClass().getSimpleName(), methodName, mark));
             registerObfuscationListener(invocation, mark);
             String invoke = invocation.invoke();
-            if (!Objects.equal(TdarActionSupport.INPUT, invocation.getResultCode()) && !Objects.equal(TdarActionSupport.ERROR, invocation.getResultCode())) {
-                SessionProxy.getInstance().registerSessionClose(genericService.getCurrentSessionHashCode(), mark == SessionType.READ_ONLY);
-            } else {
-                SessionProxy.getInstance().registerSessionCancel(genericService.getCurrentSessionHashCode());
-            }
             return invoke;
         } catch (TdarActionException exception) {
             if (StatusCode.shouldShowException(exception.getStatusCode())) {
@@ -99,10 +92,8 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 genericService.clearCurrentSession();
                 setSessionClosed(true);
             }
-            SessionProxy.getInstance().registerSessionCancel(genericService.getCurrentSessionHashCode());
             return resultName;
         } catch (Exception e) {
-            SessionProxy.getInstance().registerSessionCancel(genericService.getCurrentSessionHashCode());
             if (e.getClass().getName().equals("org.apache.catalina.connector.ClientAbortException")) {
                 logger.warn("ClientAbortException:{}", e, e);
             }
@@ -118,11 +109,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
             }
         } catch (SecurityException | NoSuchMethodException e) {
             logger.error("issue registering manually processed events", e);
-        }
-        if (managed) {
-            SessionProxy.getInstance().registerSession(genericService.getCurrentSessionHashCode());
-        } else {
-            SessionProxy.getInstance().registerIgnoreSession(genericService.getCurrentSessionHashCode());
         }
     }
 

@@ -30,7 +30,7 @@ import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
 import org.tdar.core.event.EventType;
-import org.tdar.core.event.IndexingEvent;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -478,7 +478,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     public void deleteForController(Creator creator, String deletionReason, TdarUser authenticatedUser) {
     	creator.setStatus(Status.DELETED);
     	getDao().saveOrUpdate(creator);
-        publisher.publishEvent(new IndexingEvent(creator, EventType.CREATE_OR_UPDATE));
+        publisher.publishEvent(new TdarEvent(creator, EventType.CREATE_OR_UPDATE));
     }
 
     @Transactional(readOnly = true)
