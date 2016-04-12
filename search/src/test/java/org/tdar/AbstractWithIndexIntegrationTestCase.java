@@ -18,10 +18,14 @@ public abstract class AbstractWithIndexIntegrationTestCase extends AbstractInteg
     public SearchIndexService getSearchIndexService() {
         return searchIndexService;
     }
+    
+    @Before
+    public void setupIndexingEvents() {
+        searchIndexService.setUseTransactionalEvents(false);
+    }
 
     @Before
     public void reindex() {
-        searchIndexService.setUseTransactionalEvents(false);
         getSearchIndexService().indexAll(new QuietIndexReciever(), getAdminUser());
     }
 

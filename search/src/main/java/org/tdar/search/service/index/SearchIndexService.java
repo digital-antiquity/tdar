@@ -80,9 +80,6 @@ public class SearchIndexService {
     private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
-    private ResourceCollectionService resourceCollectionService;
-
-    @Autowired
     private ResourceService resourceService;
 
     @Autowired
@@ -90,7 +87,7 @@ public class SearchIndexService {
 
     @Autowired
     private ProjectDao projectDao;
-    private boolean useTransactionalEvents;
+    private boolean useTransactionalEvents = true;
 
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
@@ -109,10 +106,10 @@ public class SearchIndexService {
     
     @EventListener
     public void handleIndexingEvent(IndexingEvent event) throws SolrServerException, IOException {
-        if (TdarConfiguration.getInstance().useTransactionalEvents() || isUseTransactionalEvents()) {
+        if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
+            handleIndexingEventTransactional(event);
             return;
         }
-        handleIndexingEventTransactional(event);
     }
     
     @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
