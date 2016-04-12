@@ -936,4 +936,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean useSeparateLinkedDataIndexForSearching() {
         return assistant.getBooleanProperty("indexing.separate_linked", true);
     }
+
+    public boolean useTransactionalEvents() {
+        return assistant.getBooleanProperty("transactional.events",true);
+    }
 }

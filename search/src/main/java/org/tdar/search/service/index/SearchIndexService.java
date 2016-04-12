@@ -22,6 +22,8 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.event.TransactionPhase;
+import org.springframework.transaction.event.TransactionalEventListener;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
@@ -88,6 +90,7 @@ public class SearchIndexService {
 
     @Autowired
     private ProjectDao projectDao;
+    private boolean useTransactionalEvents;
 
     private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
@@ -105,8 +108,15 @@ public class SearchIndexService {
     }
     
     @EventListener
-//    @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
     public void handleIndexingEvent(IndexingEvent event) throws SolrServerException, IOException {
+        if (TdarConfiguration.getInstance().useTransactionalEvents() || isUseTransactionalEvents()) {
+            return;
+        }
+        handleIndexingEventTransactional(event);
+    }
+    
+    @TransactionalEventListener(phase=TransactionPhase.AFTER_COMMIT, fallbackExecution=true)
+    public void handleIndexingEventTransactional(IndexingEvent event) throws SolrServerException, IOException {
     	if (template == null) {
     		logger.warn("indexer not enabled to process event");
     		return;
@@ -480,6 +490,14 @@ public class SearchIndexService {
     @Transactional(readOnly = true)
     public void clearIndexingActivities() {
         ActivityManager.getInstance().clearIndexingActivities();
+    }
+
+    public boolean isUseTransactionalEvents() {
+        return useTransactionalEvents;
+    }
+
+    public void setUseTransactionalEvents(boolean useTransactionalEvents) {
+        this.useTransactionalEvents = useTransactionalEvents;
     }
 
 }

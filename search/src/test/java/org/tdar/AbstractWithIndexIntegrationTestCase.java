@@ -21,6 +21,7 @@ public abstract class AbstractWithIndexIntegrationTestCase extends AbstractInteg
 
     @Before
     public void reindex() {
+        searchIndexService.setUseTransactionalEvents(false);
         getSearchIndexService().indexAll(new QuietIndexReciever(), getAdminUser());
     }
 
