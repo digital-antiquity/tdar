@@ -160,7 +160,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
-        submitGISForm();
+        String path = submitGISForm();
         logger.trace(find("body").getText());
         assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
