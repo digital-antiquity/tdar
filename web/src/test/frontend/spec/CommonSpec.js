@@ -149,9 +149,9 @@ describe("TDAR.common: session timeout tests", function() {
         $(document).data("sessionTimeout", 960);
         $(document).data("currentTime", 600);
         TDAR.common.sessionTimeoutWarning();
-        expect($.fn.dialog).toHaveBeenCalled();
-        expect(window.setTimeout).toHaveBeenCalled();
-
+        //verify that sessionTimeoutwarning() opened a dialog with the title 'session timeout warning'
+        expect($.fn.dialog.calls.count()).toBe(1);
+        expect($.fn.dialog.calls.argsFor(0)[0].title).toContain('Session Timeout Warning');
     });
 
     it("notifies user when session has timed out", function () {
@@ -159,7 +159,6 @@ describe("TDAR.common: session timeout tests", function() {
         $(document).data("currentTime", 90 * 60);
         TDAR.common.sessionTimeoutWarning();
         expect($('#timeoutDialog').text()).toContain('Your Session has timed out');
-        expect(window.setTimeout).not.toHaveBeenCalled();
     });
 
 });
