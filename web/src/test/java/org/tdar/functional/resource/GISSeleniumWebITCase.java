@@ -112,11 +112,18 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         String path = getDriver().getCurrentUrl();
         takeScreenshot("after-submit");
         logger.trace(find("body").getText());
+        // if we end up still on the add page, try and submit again
+        if (path.endsWith("add")) {
+            submitForm("#submitButton");
+            waitForPageload();
+            path = getDriver().getCurrentUrl();
+            
+        }
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
         try {
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
-        submitForm("#submitButton");
+            waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
+            submitForm("#submitButton");
         } catch (Exception e) {
             submitForm("#fakeSubmitButton");
         }
