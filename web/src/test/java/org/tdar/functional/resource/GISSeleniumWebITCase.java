@@ -105,20 +105,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         for (File file : dir.listFiles()) {
             uploadFileAsync(restriction, file);
         }
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
-        takeScreenshot("before-submit");
-        submitForm("#submitButton");
-        waitForPageload();
-        String path = getDriver().getCurrentUrl();
-        takeScreenshot("after-submit");
-        logger.trace(find("body").getText());
-        // if we end up still on the add page, try and submit again
-        if (path.endsWith("add")) {
-            submitForm("#submitButton");
-            waitForPageload();
-            path = getDriver().getCurrentUrl();
-            
-        }
+        String path = submitGISForm();
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
         try {
@@ -133,6 +120,24 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
         // assertFalse("no errors present", getText().toLowerCase().contains("error"));
         // may have issues with 'submitAction'
+    }
+
+    private String submitGISForm() {
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
+        takeScreenshot("before-submit");
+        submitForm("#submitButton");
+        waitForPageload();
+        String path = getDriver().getCurrentUrl();
+        takeScreenshot("after-submit");
+        logger.trace(find("body").getText());
+        // if we end up still on the add page, try and submit again
+        if (path.endsWith("add")) {
+            submitForm("#submitButton");
+            waitForPageload();
+            path = getDriver().getCurrentUrl();
+            
+        }
+        return path;
     }
 
     @Test
@@ -155,11 +160,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
-        waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
-        submitForm("#submitButton");
-        //waitForPageload();
-        String path = getDriver().getCurrentUrl();
-
+        submitGISForm();
         logger.trace(find("body").getText());
         assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
