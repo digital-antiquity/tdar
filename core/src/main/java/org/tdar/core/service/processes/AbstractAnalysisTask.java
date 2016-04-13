@@ -37,7 +37,9 @@ public abstract class AbstractAnalysisTask<P extends Persistable> extends Abstra
     private transient SerializationService serializationService;
 
     protected void generateLogEntry(Set<Long> resourceIds, Persistable creator, int total, List<Long> idsToIgnoreInLargeTasks) {
-
+        if (CollectionUtils.isEmpty(resourceIds )) {
+            return;
+        }
         Map<Keyword, Integer> keywords = incrementKeywords(resourceIds);
         Map<Creator, Integer> collaborators = incrementCreators(resourceIds, idsToIgnoreInLargeTasks);
 

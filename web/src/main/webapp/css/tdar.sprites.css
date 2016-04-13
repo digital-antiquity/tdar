@@ -552,35 +552,6 @@ h3.collection-mid-black:before {
     display: inline-block;
 }
 
-.icon-project {
-    background: url(../images/r4/resource-types-large.gif) -398px -2474px;
-    background-repeat: no-repeat;
-    width: 14px;
-    height: 16px;
-    margin-top: -1px;
-    display: inline-block;
-}
-
-.icon-collection {
-    background: url(../images/r4/resource-types-large.gif) -447px -2477px;
-    background-repeat: no-repeat;
-    width: 14px;
-    height: 14px;
-    display: inline-block;
-}
-
-.icon-collection.icon-red {
-    background: url(../images/r4/resource-types-large.gif) no-repeat -447px -2455px;
-    width: 14px;
-    height: 16px;
-}
-
-.icon-project.icon-red {
-    background: url(../images/r4/resource-types-large.gif) no-repeat -397px -2454px;
-    width: 14px;
-    height: 16px;
-}
-
 .icon-geospatial {
     background: url(../images/r4/resource-types-large.gif) -431px -2477px;
     background-repeat: no-repeat;
@@ -612,4 +583,100 @@ h3.collection-mid-black:before {
     width: 14px;
     height: 14px;
     display: inline-block;
+}
+.icon-project {
+    background: url(../images/r4/resource-types-large.gif) -398px -2474px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 16px;
+    margin-top: -1px;
+    display: inline-block;
+}
+
+.icon-collection {
+    background: url(../images/r4/resource-types-large.gif) -447px -2477px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+
+
+.icon-document.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -296px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 15px;
+    display: inline-block;
+}
+
+.icon-dataset.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -344px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-image.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -326px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-codingsheet.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -361px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    margin-top: -1px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-geospatial {
+    background: url(../images/r4/resource-types-large.gif) -431px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-sensorydata.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -462px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    margin-top: -2px;
+    display: inline-block;
+}
+
+.icon-ontology.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -378px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-video.icon-red {
+    background: url(../images/r4/resource-types-large.gif) -415px -2455px;
+    background-repeat: no-repeat;
+    width: 14px;
+    height: 14px;
+    display: inline-block;
+}
+
+.icon-collection.icon-red {
+    background: url(../images/r4/resource-types-large.gif) no-repeat -447px -2455px;
+    width: 14px;
+    height: 16px;
+}
+
+.icon-project.icon-red {
+    background: url(../images/r4/resource-types-large.gif) no-repeat -397px -2454px;
+    width: 14px;
+    height: 16px;
 }

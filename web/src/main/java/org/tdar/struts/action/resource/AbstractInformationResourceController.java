@@ -696,6 +696,11 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     @Override
     public void validate() {
         super.validate();
+        // parent should catch and report action errors for null persistable
+        if (getPersistable() == null) {
+            return;
+        }
+
         if (getPersistable().getDate() == null) {
             getLogger().debug("Invalid date created for {}", getPersistable());
             String resourceTypeLabel = getText(getPersistable().getResourceType().name());
