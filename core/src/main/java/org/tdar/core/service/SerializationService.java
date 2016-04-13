@@ -139,6 +139,11 @@ public class SerializationService {
             return;
         }
         XmlLoggable record = (XmlLoggable)event.getRecord();
+        
+        if (record instanceof Persistable && PersistableUtils.isNullOrTransient((Persistable)record)) {
+            return;
+        }
+
         logger.debug("FS EVENT: {} {} ({})", event.getType(), event.getRecord().getClass(), ((XmlLoggable)event.getRecord()).getId());
         // addToSession(event.getSession(), (XmlLoggable) event.getEntity());
         String xml = "";

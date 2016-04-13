@@ -59,6 +59,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.utils.ImmutableScrollableCollection;
+import org.tdar.utils.PersistableUtils;
 
 @Service
 @Transactional(readOnly = true)
@@ -119,7 +120,13 @@ public class SearchIndexService {
         if (!(event.getRecord() instanceof Indexable)) {
             return;
         }
+        
         Indexable record = (Indexable) event.getRecord();
+
+        if (PersistableUtils.isNullOrTransient(record)) {
+            return;
+        }
+
         if (template == null) {
     		logger.warn("indexer not enabled to process event");
     		return;
