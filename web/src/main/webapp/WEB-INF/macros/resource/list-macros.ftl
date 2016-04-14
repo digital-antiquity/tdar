@@ -178,9 +178,10 @@
 
             <#-- if we're a grid, then reset rows -->
                 <#if isGridLayout>
-                <div class='resource-list row ${orientation}'>
+                    <div class='resource-list row ${orientation}'>
                 <#else>
-                <${listTag_} class="resource-list ${orientation}">
+                    <#if listTag_ == 'ul'><#local styling="unstyled"><#else><#local styling=""></#if>
+                    <${listTag_} class="resource-list ${orientation} ${styling}">
                 </#if>
             </#if>
             <#assign prev=key />
@@ -189,7 +190,8 @@
             <#if isGridLayout>
             <div class='resource-list row ${orientation}'>
             <#else>
-                <${listTag_} class="resource-list ${orientation}">
+                    <#if listTag_ == 'ul'><#local styling="unstyled"><#else><#local styling=""></#if>
+                    <${listTag_} class="resource-list ${orientation} ${styling}">
             </#if>
         </#if>
     </#macro>

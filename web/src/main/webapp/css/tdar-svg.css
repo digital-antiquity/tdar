@@ -34,3 +34,8 @@
     height:1em;
     width:1em;
 }
+
+.grey {
+    fill-color:#555555;
+    color:#555555;
+}

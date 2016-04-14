@@ -227,8 +227,14 @@
                 </@s.url></#compress>"></#if>
 <#compress>
                     <#if icon || pictoralIcon><#if pictoralIcon && facetParam=='selectedResourceTypes'>
-                        <i class="icon-red icon-${facet.raw?lower_case}"/></i>
-                    <#else><i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i></#if></#if>
+                        <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
+                    <#else>
+                        <#if currentValues?size == 1>
+                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                        <#else>
+                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_deselected"></use></svg>
+                        </#if>
+                    </#if></#if>
                 <@s.text name="${facet.label}"/>
 				<#if link></a></#if>
 				 <span>(${facet.count})</span></span></#compress>
@@ -258,6 +264,10 @@
                 <#if facet.plural?has_content><#assign facetText=facet.plural/>
                 <#elseif facet.label?has_content><#assign facetText=facet.label/>
                 </#if>
+        
+        <ul class="media-list tools">
+                <li class="media">
+                    <span class="media-body">
             <a rel="noindex" href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
             <@s.param name="startRecord" value="0"/>
@@ -268,9 +278,12 @@
                 <@s.param name="integratableOptions" value=""/>
             </#if>
             <#nested>
-        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i>
-                <div class="media-body">${facetText}</div>
-            </a>
+        </@s.url>">
+                        <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                        ${facetText}</a>
+                    </span>
+                </li>
+        </ul>
             </#if>
         </#if>
     </#macro>
