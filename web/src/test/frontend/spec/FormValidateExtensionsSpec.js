@@ -198,12 +198,7 @@ xdescribe("form validation suite - root", function(){
 
                     $form.valid();
                     // should have only one error
-                    expect(validator.errorList.length).toBe(1)
-                    if(validator.errorList.length) {
-                        // expecting a specific error message
-                        expect(validator.errorList[0].message).toBe($.validator.messages["authuserNotSubmitter"]);
-                    }
-
+                    expect(validator.errorList.length).toBe(0)
             }
         );
 

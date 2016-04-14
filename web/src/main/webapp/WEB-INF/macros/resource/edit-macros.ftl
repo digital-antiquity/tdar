@@ -331,7 +331,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                             <div class="controls-row repeat-row" id="authorizedUsersRow_${authorizedUser_index}_">
                                 <div class="span6">
                                     <@registeredUserRow person=authorizedUser.user isDisabled=!authorizedUser.enabled _indexNumber=authorizedUser_index  _personPrefix="user"
-                                    prefix="authorizedUsers" includeRights=true includeRepeatRow=false textfieldCssClass="authuserNotSubmitter" />
+                                    prefix="authorizedUsers" includeRights=true includeRepeatRow=false />
                                 </div>
                                 <div class="span1">
                                     <@nav.clearDeleteButton id="accessRightsRecordsDelete${authorizedUser_index}" disabled=!authorizedUser.enabled />
