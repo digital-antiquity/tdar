@@ -38,7 +38,9 @@
 
 
         <div class="span4">
-            <h3><a href="<@s.url value="/cart/add"/>">Add Space</a></h3>
+            <h3>
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_digitize"></use></svg>
+            <a href="<@s.url value="/cart/add"/>">Add Files or Space</a></h3>
             Create a new account or add files or space to your account.  
         </div>
     </div>
