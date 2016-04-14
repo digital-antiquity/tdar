@@ -60,9 +60,10 @@
         <td>${email.date?string.short}</td>
         <td>${email.status}</td>
         <td>${email.subject!'no subject'}</td>
+        <td><button class="button btn small" onClick="$('#email-${email.id?c}').toggleClass('hidden');return false;">show/hide</button></td>
     </tr>
-    <tr class="<#if email.status=='SENT' || !email.userGenerated>hidden hide</#if>">
-        <td colspan=6>
+    <tr id="email-${email.id?c}" class="<#if email.status=='SENT' || !email.userGenerated>hidden</#if>">
+        <td colspan=7>
         <pre>${email.message}</pre>
         <hr/>
         </td>
