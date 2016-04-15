@@ -11,7 +11,8 @@ public enum EmailMessageType implements Localizable, HasLabel {
     CONTACT("email-form/contact.ftl"),
     REQUEST_ACCESS("email-form/access-request.ftl"),
     SUGGEST_CORRECTION("email-form/correction.ftl"),
-    MERGE_PEOPLE("email-form/merge-people.ftl");
+    MERGE_PEOPLE("email-form/merge-people.ftl"),
+    SAA("email-form/saa.ftl");
 
     private String templateName;
 
@@ -50,5 +51,15 @@ public enum EmailMessageType implements Localizable, HasLabel {
         }
         return types;
     }
+
+	public static List<EmailMessageType> valuesWithoutSAA() {
+        ArrayList<EmailMessageType> types = new ArrayList<EmailMessageType>();
+        for (EmailMessageType type : values()) {
+            if (type != SAA && type != MERGE_PEOPLE) {
+                types.add(type);
+            }
+        }
+        return types;
+	}
 
 }

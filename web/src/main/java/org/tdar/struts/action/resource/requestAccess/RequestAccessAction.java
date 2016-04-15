@@ -140,9 +140,14 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             if (informationResource.hasConfidentialFiles()) {
-                emailTypes = Arrays.asList(EmailMessageType.values());
+                emailTypes = EmailMessageType.valuesWithoutSAA();
             }
         }
+        resource.getResourceCollections().forEach(c -> {
+        	if (c.getId() == -1) {
+        		emailTypes.add(EmailMessageType.SAA);
+        	}
+        });
         return emailTypes;
     }
 
