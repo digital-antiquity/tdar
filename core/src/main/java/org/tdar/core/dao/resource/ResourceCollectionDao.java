@@ -13,7 +13,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
@@ -315,6 +314,32 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Query query = getNamedQuery(TdarNamedQueries.COLLECTION_TIME_LIMITED_IDS);
         query.setReadOnly(true);
         return query.list();
+    }
+
+    public void addToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
+        ResourceCollection internal = resource.getInternalResourceCollection();
+        if (internal == null) {
+            internal = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, true);
+        }
+        internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
+        saveOrUpdate(internal);
+    }
+
+    public ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
+        ResourceCollection internalCollection;
+        internalCollection = new ResourceCollection();
+        internalCollection.setType(CollectionType.INTERNAL);
+        internalCollection.setOwner(owner);
+        internalCollection.markUpdated(owner);
+        if (resource != null) {
+            resource.getResourceCollections().add(internalCollection);
+        }
+        // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
+        if (shouldSave) {
+            saveOrUpdate(internalCollection);
+            refresh(internalCollection);
+        }
+        return internalCollection;
     }
 
 }

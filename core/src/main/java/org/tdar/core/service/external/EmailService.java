@@ -28,11 +28,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.MessageHelper;
@@ -55,6 +58,9 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender mailSender;
+
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
     @Autowired
     private GenericDao genericDao;
@@ -263,6 +269,37 @@ public class EmailService {
             }
         }
         return toReturn;
+    }
+
+    public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
+            EmailMessageType type, GeneralPermissions permission) {
+        Email email = new Email();
+        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + "- " + resource.getTitle());
+        email.setTo(requestor.getEmail());
+        Map<String, Object> map = new HashMap<>();
+        map.put("requestor", requestor);
+        map.put("resource", resource);
+        map.put("authorizedUser", authenticatedUser);
+        if (StringUtils.isNotBlank(comment)) {
+            map.put("message", comment);
+        }
+        String template = "email-form/access-request-granted.ftl";
+        if (reject) {
+            template = "email-form/access-request-rejected.ftl";
+        } else {
+            switch (type) {
+                case SAA:
+                    template = "email-form/saa-accept.ftl";
+                    break;
+                default:
+                    break;
+            }
+            resourceCollectionDao.addToInternalCollection(resource, requestor, permission);
+        }
+        queueWithFreemarkerTemplate(template, map, email);
+        email.setUserGenerated(false);
+        send(email);
+        
     }
 
 }

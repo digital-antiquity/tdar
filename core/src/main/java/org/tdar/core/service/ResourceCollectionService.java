@@ -94,7 +94,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // if none, create one
         if (internalCollection == null) {
-            internalCollection = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
+            internalCollection = getDao().createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(resource, internalCollection, authorizedUsers, shouldSave, actor);
@@ -104,22 +104,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // }
     }
 
-    private ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
-        ResourceCollection internalCollection;
-        internalCollection = new ResourceCollection();
-        internalCollection.setType(CollectionType.INTERNAL);
-        internalCollection.setOwner(owner);
-        internalCollection.markUpdated(owner);
-        if (resource != null) {
-            resource.getResourceCollections().add(internalCollection);
-        }
-        // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
-        if (shouldSave) {
-            getDao().saveOrUpdate(internalCollection);
-            getDao().refresh(internalCollection);
-        }
-        return internalCollection;
-    }
 
     /**
      * Get All @link AuthorizedUser entries for a @Link Resource based on all @link ResourceCollection entries.
@@ -704,12 +688,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional
     public void addUserToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
-        ResourceCollection internal = resource.getInternalResourceCollection();
-        if (internal == null) {
-            internal = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, true);
-        }
-        internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
-        saveOrUpdate(internal);
+        getDao().addToInternalCollection(resource, user, permission);
     }
 
     @Transactional(readOnly=true)
