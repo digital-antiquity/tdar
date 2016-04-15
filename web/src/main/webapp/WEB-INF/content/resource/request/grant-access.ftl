@@ -6,7 +6,7 @@
         <p>Please specify the level of rights you'd like to grant <b><a href="${requestor.detailUrl}">${requestor.properName}</a></b> access to <a href="<@s.url value="/${resource.urlNamespace}/${resource.id?c}"/>">${resource.title}</a></p>
         <@s.hidden name="resourceId" value="${resource.id?c}"/>
         <@s.hidden name="requestorId" value="${requestor.id?c}"/>
-        <@s.hidden name="type" value="${type}"/>
+        <@s.hidden name="type" value="${type!''}"/>
 
         
     <div class="control-group">

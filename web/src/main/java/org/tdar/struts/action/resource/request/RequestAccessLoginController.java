@@ -40,7 +40,7 @@ public class RequestAccessLoginController extends AbstractRequestAccessControlle
     @Action(value = "process-request-login",
             results = {
                     @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SUCCESS_REDIRECT_REQUEST_ACCESS),
-                    @Result(name = INPUT, type = FREEMARKER, location = LOGIN_REGISTER_PROMPT)
+                    @Result(name = INPUT, type = FREEMARKER, location = "request-access-unauthenticated.ftl")
             })
     @HttpsOnly
     @WriteableSession

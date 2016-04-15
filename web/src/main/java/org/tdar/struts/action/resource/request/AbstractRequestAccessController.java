@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
@@ -36,34 +37,33 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
 
     private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
-    public static final String LOGIN_REGISTER_PROMPT = "/resource/request/request-access-unauthenticated.ftl";
     public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/request/${id}";
     public static final String FORBIDDEN = "forbidden";
     private Long id;
 
 
     // the resource being downloaded (or the resource that the file is being downloade from)
-    private InformationResource informationResource;
+    private Resource resource;
 
     @Autowired
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
 
-    public InformationResource getInformationResource() {
-        return informationResource;
+    public Resource getResource() {
+        return resource;
     }
 
-    public void setInformationResource(InformationResource informationResource) {
-        this.informationResource = informationResource;
+    public void setResource(Resource resource) {
+        this.resource = resource;
     }
 
 
     @Override
     public void prepare() {
         if (PersistableUtils.isNotNullOrTransient(getId())) {
-            setInformationResource(getGenericService().find(InformationResource.class, getId()));
+            setResource(getGenericService().find(InformationResource.class, getId()));
             // bad, but force onto session until better way found
-            authorizationService.applyTransientViewableFlag(informationResource, getAuthenticatedUser());
+            authorizationService.applyTransientViewableFlag(resource, getAuthenticatedUser());
         }
     }
 

@@ -72,6 +72,11 @@ public class ProcessPermissonsAction extends AbstractProcessPermissonsAction imp
     @HttpsOnly
     public String processAccessRequest() throws TdarActionException {
         emailService.proccessPermissionsRequest(getRequestor(), getResource(), getAuthenticatedUser(), getComment(),isReject(), getType(), getPermission());
+        if (isReject()) {
+            addActionMessage("Access has been denied");
+        } else {
+            addActionMessage("Access has been granted");
+        }
         return SUCCESS;
     }
 

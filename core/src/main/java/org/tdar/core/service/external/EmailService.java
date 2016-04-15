@@ -232,9 +232,7 @@ public class EmailService {
         Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
-        map.put("baseUrl", CONFIG.getBaseUrl());
-        map.put("siteAcronym", CONFIG.getSiteAcronym());
-        map.put("serviceProvider", CONFIG.getServiceProvider());
+        setupBasicComponents(map);
         if (MapUtils.isNotEmpty(params)) {
             map.putAll(params);
         }
@@ -280,6 +278,7 @@ public class EmailService {
         map.put("requestor", requestor);
         map.put("resource", resource);
         map.put("authorizedUser", authenticatedUser);
+        setupBasicComponents(map);
         if (StringUtils.isNotBlank(comment)) {
             map.put("message", comment);
         }
@@ -287,12 +286,14 @@ public class EmailService {
         if (reject) {
             template = "email-form/access-request-rejected.ftl";
         } else {
-            switch (type) {
-                case SAA:
-                    template = "email-form/saa-accept.ftl";
-                    break;
-                default:
-                    break;
+            if (type != null) {
+                switch (type) {
+                    case SAA:
+                        template = "email-form/saa-accept.ftl";
+                        break;
+                    default:
+                        break;
+                }
             }
             resourceCollectionDao.addToInternalCollection(resource, requestor, permission);
         }
@@ -300,6 +301,12 @@ public class EmailService {
         email.setUserGenerated(false);
         send(email);
         
+    }
+
+    private void setupBasicComponents(Map<String, Object> map) {
+        map.put("baseUrl", CONFIG.getBaseUrl());
+        map.put("siteAcronym", CONFIG.getSiteAcronym());
+        map.put("serviceProvider", CONFIG.getServiceProvider());
     }
 
 }
