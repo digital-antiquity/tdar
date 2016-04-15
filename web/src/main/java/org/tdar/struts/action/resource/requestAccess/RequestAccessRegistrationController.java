@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.resource.requestAccess;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -21,7 +21,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
 @ParentPackage("default")
-@Namespace("/resource")
+@Namespace("/resource/request-access")
 @Component
 @Scope("prototype")
 public class RequestAccessRegistrationController extends AbstractRequestAccessController implements Validateable, Preparable {
@@ -67,10 +67,6 @@ public class RequestAccessRegistrationController extends AbstractRequestAccessCo
         processErrorObject(errors);
     }
 
-    @Override
-    public void prepare() {
-        super.prepare();
-    }
 
     public RequestUserRegistration getRequestUserRegistration() {
         return requestRegistration;

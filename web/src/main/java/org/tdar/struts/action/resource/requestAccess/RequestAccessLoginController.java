@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.resource.requestAccess;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
 @ParentPackage("default")
-@Namespace("/resoruce")
+@Namespace("/resource/request-access")
 @Component
 @Scope("prototype")
 public class RequestAccessLoginController extends AbstractRequestAccessController implements Validateable, Preparable {
@@ -69,10 +69,6 @@ public class RequestAccessLoginController extends AbstractRequestAccessControlle
         return SUCCESS;
     }
 
-    @Override
-    public void prepare() {
-        super.prepare();
-    };
 
     @Override
     public void validate() {

@@ -4,8 +4,6 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
-    <#import "/WEB-INF/content/cart/common-invoice.ftl" as invoicecommon >
-    <#import "/WEB-INF/content/billing/common-account.ftl" as accountcommon >
     <#import "/WEB-INF/macros/common-auth.ftl" as auth>
 
 <head>
@@ -13,37 +11,25 @@
 </head>
 
 <body>
-    <@invoicecommon.proxyNotice />
 
 <h1>Confirm Selection: Login Required</h1>
+<h3>${resource.title}</h3>
 <div class="row">
     <div class="span5 " >
-        <h3>Invoice Details</h3>
-        <@invoicecommon.printInvoice />
-        <h3>Invoice Summary</h3>
-        <@invoicecommon.printSubtotal invoice/>
-        <p></p>
     </div>
 </div>
-<#if sessionData.person?has_content>
-	<@s.form action='process-payment-request' method='post'>
-    <div class="form-actions">
-    	<@s.token name='struts.csrf.token' />
-        <button type='submit' class='btn btn-mini tdar-button'>Pay now</button>
-    </div>
-    </@s.form>        
-<#else>
 	<@auth.loginWarning />
 
     <div class="row">
         <div class="span9" id="divRegistrationSection">
                 <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed"
-                        enctype='multipart/form-data' action="process-registration">
+                        enctype='multipart/form-data' action="process-request-registration">
                     <@s.token name='struts.csrf.token' />
                         <legend>Register</legend>
                         <div class="authpane">
                             <div class="authfields">
-                                <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false />
+                                <@auth.registrationFormFields detail="minimal" cols=9 showSubmit=false beanPrefix="requestUserRegistration"/>
+							    <@s.hidden name="id" />
                             </div>
                             <div class="form-actions">
                                 <input type="submit" class='submitButton tdar-button' name="submitAction" value="Register and Continue">
@@ -55,13 +41,14 @@
 
         <div class="span3" id="divLoginSection">
             <@s.form name='loginForm' id='loginForm'  method="post" cssClass="disableFormNavigate form-condensed"
-                    enctype='multipart/form-data' action="/cart/process-cart-login">
+                    enctype='multipart/form-data' action="process-request-login">
                     <legend>
                         Log In
                     </legend>
                 <div class="authpane">
                     <div class="authfields">
                         <@auth.login showLegend=false>
+					    <@s.hidden name="id" />
 
                     </div>
                     <div class="form-actions">
@@ -73,7 +60,6 @@
         </div>
 
     </div>
-</#if>
 
 </body>
 </#escape>

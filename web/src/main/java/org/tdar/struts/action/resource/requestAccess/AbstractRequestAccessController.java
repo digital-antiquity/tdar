@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.resource.requestAccess;
 
 import java.util.List;
 
@@ -37,9 +37,10 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
     private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
     public static final String LOGIN_REGISTER_PROMPT = "/resource/request-access-unauthenticated.ftl";
-    public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/access/${id}";
+    public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/request-access/${id}";
     public static final String FORBIDDEN = "forbidden";
     private Long id;
+
 
     // the resource being downloaded (or the resource that the file is being downloade from)
     private InformationResource informationResource;
@@ -56,14 +57,6 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
         this.informationResource = informationResource;
     }
 
-
-    public AntiSpamHelper getH() {
-        return h;
-    }
-
-    public void setH(AntiSpamHelper h) {
-        this.h = h;
-    }
 
     @Override
     public void prepare() {
@@ -101,4 +94,12 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
     public void setId(Long id) {
         this.id = id;
     }
+
+	public AntiSpamHelper getH() {
+		return h;
+	}
+
+	public void setH(AntiSpamHelper h) {
+		this.h = h;
+	}
 }
