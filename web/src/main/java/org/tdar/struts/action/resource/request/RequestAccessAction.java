@@ -1,7 +1,6 @@
-package org.tdar.struts.action.resource.requestAccess;
+package org.tdar.struts.action.resource.request;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -12,21 +11,13 @@ import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
@@ -41,7 +32,7 @@ import org.tdar.utils.PersistableUtils;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("default")
-@Namespace("/resource/request-access")
+@Namespace("/resource/request")
 @Component
 @Scope("prototype")
 public class RequestAccessAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource.requestAccess;
+package org.tdar.struts.action.resource.request;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import org.tdar.utils.PersistableUtils;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/resource/request-access")
+@Namespace("/resource/request")
 @Component
 @Scope("prototype")
 public class RequestAccessEmailAction extends AbstractRequestAccessController implements Preparable, ParameterAware {

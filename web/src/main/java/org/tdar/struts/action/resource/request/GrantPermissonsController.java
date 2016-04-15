@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.resource.request;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,7 +35,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/resource")
+@Namespace("/resource/access")
 @Component
 @Scope("prototype")
 public class GrantPermissonsController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {
@@ -71,9 +71,9 @@ public class GrantPermissonsController extends AuthenticationAware.Base implemen
         }
     }
 
-    @Action(value = "grant-access",
+    @Action(value = "grant",
             results = {
-                    @Result(name = SUCCESS, location = "../resource/grant-access.ftl"),
+                    @Result(name = SUCCESS, location = "grant-access.ftl"),
                     @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
                             params = { "status", "500" }),
                     @Result(name = INPUT, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl",
