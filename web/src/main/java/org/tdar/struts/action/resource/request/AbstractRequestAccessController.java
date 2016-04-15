@@ -36,7 +36,7 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
 
     private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
-    public static final String LOGIN_REGISTER_PROMPT = "/resource/request-access-unauthenticated.ftl";
+    public static final String LOGIN_REGISTER_PROMPT = "/resource/request/request-access-unauthenticated.ftl";
     public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/request/${id}";
     public static final String FORBIDDEN = "forbidden";
     private Long id;

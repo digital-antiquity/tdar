@@ -71,33 +71,7 @@ public class ProcessPermissonsAction extends AbstractProcessPermissonsAction imp
     @WriteableSession
     @HttpsOnly
     public String processAccessRequest() throws TdarActionException {
-        Email email = new Email();
-        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + "- " + getResource().getTitle());
-        email.setTo(getRequestor().getEmail());
-        Map<String, Object> map = new HashMap<>();
-        map.put("requestor", getRequestor());
-        map.put("resource", getResource());
-        map.put("authorizedUser", getAuthenticatedUser());
-        if (StringUtils.isNotBlank(comment)) {
-            map.put("message", getComment());
-        }
-        String template = "email-form/access-request-granted.ftl";
-        if (reject) {
-            template = "email-form/access-request-rejected.ftl";
-        } else {
-            switch (getType()) {
-                case SAA:
-                    template = "email-form/saa-accept.ftl";
-                    break;
-                default:
-                    break;
-            }
-            resourceCollectionService.addUserToInternalCollection(getResource(), getRequestor(), getPermission());
-        }
-        emailService.queueWithFreemarkerTemplate(template, map, email);
-        email.setUserGenerated(false);
-        emailService.send(email);
-
+        emailService.proccessPermissionsRequest(getRequestor(), getResource(), getAuthenticatedUser(), getComment(),isReject(), getType(), getPermission());
         return SUCCESS;
     }
 

@@ -8,7 +8,7 @@ ${siteAcronym} allows you to extend view and download privileges for confidentia
 records to registered ${siteAcronym} users.  If you decide to share this resource
 with ${from.properName}, you may log in to ${siteAcronym}, and visit:
 
-${baseUrl}/resource/access/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}
+${baseUrl}/resource/request/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}
 
 Below is the detailed request from the User. To view the record in ${siteAcronym} visit:
 ${baseUrl}/${resource.urlNamespace}/${resource.id?c}
