@@ -166,4 +166,8 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
         return proxies;
 
     }
+    
+    public EmailMessageType getType() {
+        return EmailMessageType.CONTACT;
+    }
 }
