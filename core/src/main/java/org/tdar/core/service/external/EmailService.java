@@ -74,6 +74,7 @@ public class EmailService {
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
      */
+    @Transactional(readOnly=true)
     public void queueWithFreemarkerTemplate(String templateName, Map<String,?> dataModel, Email email) {
         try {
             email.setMessage(freemarkerService.render(templateName, dataModel));
@@ -83,6 +84,7 @@ public class EmailService {
         }
     }
 
+    @Transactional(readOnly=true)
     public void sendMimeMessage(String templateName, Map<String,?> dataModel, Email email, List<File> attachments, List<File> inline) {
 
         try {
@@ -132,6 +134,7 @@ public class EmailService {
      * @param recipients
      *            set of String varargs
      */
+    @Transactional(readOnly=false)
     public void queue(Email email) {
         logger.debug("Queuing email {}", email);
         enforceFromAndTo(email);
@@ -155,6 +158,7 @@ public class EmailService {
      * @param recipients
      *            set of String varargs
      */
+    @Transactional(readOnly=false)
     public void send(Email email) {
         logger.debug("sending: {}", email);
         if (email.getNumberOfTries() < 1) {
@@ -258,6 +262,7 @@ public class EmailService {
 
     }
 
+    @Transactional(readOnly=true)
     public List<Email> findEmailsWithStatus(Status status) {
         List<Email> allEmails = genericDao.findAll(Email.class);
         List<Email> toReturn = new ArrayList<>();
@@ -269,6 +274,7 @@ public class EmailService {
         return toReturn;
     }
 
+    @Transactional(readOnly=false)
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
             EmailMessageType type, GeneralPermissions permission) {
         Email email = new Email();
