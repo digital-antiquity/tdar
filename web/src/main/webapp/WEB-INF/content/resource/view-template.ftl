@@ -567,7 +567,7 @@
             <#if (authenticatedUser.id)?has_content>
                     <a href="#" id="emailButton" class="">${txt}</a>
             <#else>
-                    <a href="<@s.url value="/login?url=${currentUrl}?showEmail"/>">${txt} (requires login)</a>
+                    <a href="<@s.url value="/resource/request/${id?c}?showEmail"/>">${txt} (requires login)</a>
             </#if>
             </div>
             </li>

@@ -4,7 +4,7 @@
 
 <h3>Contact:</h3>
 <b>${resource}</b><br/>
-    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='deliver'>
+    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal validate" method='post' enctype='multipart/form-data' action='deliver'>
         <@s.token name='struts.csrf.token' />
               <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
                  <br/>
@@ -32,6 +32,6 @@
                 <p><b>Note:</b> Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
                 <@common.antiSpam />
         
-    <@s.submit name="submit" />
+    <@s.submit name="submit" cssClass="button btn btn-primary tdar-button" />
 </@s.form>
 </#escape>

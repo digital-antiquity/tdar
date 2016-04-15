@@ -12,7 +12,7 @@ public enum EmailMessageType implements Localizable, HasLabel {
     REQUEST_ACCESS("email-form/access-request.ftl"),
     SUGGEST_CORRECTION("email-form/correction.ftl"),
     MERGE_PEOPLE("email-form/merge-people.ftl"),
-    SAA("email-form/saa.ftl");
+    SAA("email-form/saa-request.ftl");
 
     private String templateName;
 

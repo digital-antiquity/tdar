@@ -15,6 +15,7 @@ import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
@@ -41,19 +42,47 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
+    private List<ResourceCreatorProxy> proxies = new ArrayList<>();
 
     @Autowired
     private transient ObfuscationService obfuscationService;
     private static final String SUCCESS_UNAUTH = "success-unauth";
-	private static final long serialVersionUID = -6110216327414755768L;
+    private static final long serialVersionUID = -6110216327414755768L;
     private Long id;
     private Resource resource;
-    
-    
+
     @Override
     public void prepare() throws Exception {
-    	getLogger().debug("id: {}, {}", getId(), getPersistableClass());
+        getLogger().debug("id: {}, {}", getId(), getPersistableClass());
         prepareAndLoad(this, RequestType.VIEW);
+
+        // this may be duplicative... check
+        for (ResourceCreator rc : resource.getActiveResourceCreators()) {
+            if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
+                if ((rc.getCreatorType() == CreatorType.PERSON) && !isAuthenticated()) {
+                    obfuscationService.obfuscate(rc.getCreator(), getAuthenticatedUser());
+                }
+            }
+
+            ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
+            if (proxy.isValidEmailContact()) {
+                proxies.add(proxy);
+            }
+        }
+
+        if (getResource() instanceof InformationResource) {
+            InformationResource informationResource = (InformationResource) getResource();
+            if (informationResource.hasConfidentialFiles()) {
+                emailTypes = EmailMessageType.valuesWithoutSAA();
+            }
+        }
+        //only add the SAA option if ...
+        resource.getResourceCollections().forEach(c -> {
+            if (TdarConfiguration.getInstance().getSaaCollectionIds().contains(c.getId())) {
+                emailTypes.add(EmailMessageType.SAA);
+            }
+        });
+
     }
 
     @Action(value = "{id}",
@@ -69,9 +98,9 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
     @SkipValidation
     @Override
     public String execute() throws TdarActionException {
-    	if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
-    		return SUCCESS_UNAUTH;
-    	}
+        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            return SUCCESS_UNAUTH;
+        }
 
         return SUCCESS;
     }
@@ -88,7 +117,7 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
 
     @Override
     public void setPersistable(Resource persistable) {
-    	getLogger().debug("set persistable: {}", persistable);
+        getLogger().debug("set persistable: {}", persistable);
         this.resource = persistable;
     }
 
@@ -109,9 +138,9 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
     public Long getId() {
         return id;
     }
-    
+
     public void setId(Long id) {
-    	this.id = id;
+        this.id = id;
     }
 
     @Override
@@ -119,44 +148,19 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
         return InternalTdarRights.VIEW_ANYTHING;
     }
 
-	public AntiSpamHelper getH() {
-		return h;
-	}
+    public AntiSpamHelper getH() {
+        return h;
+    }
 
-	public void setH(AntiSpamHelper h) {
-		this.h = h;
-	}
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
+    }
 
     public List<EmailMessageType> getEmailTypes() {
-        if (getResource() instanceof InformationResource) {
-            InformationResource informationResource = (InformationResource) getResource();
-            if (informationResource.hasConfidentialFiles()) {
-                emailTypes = EmailMessageType.valuesWithoutSAA();
-            }
-        }
-        resource.getResourceCollections().forEach(c -> {
-        	if (c.getId() == -1) {
-        		emailTypes.add(EmailMessageType.SAA);
-        	}
-        });
         return emailTypes;
     }
 
-    public ResourceCreatorProxy getContactProxies() {
-        // this may be duplicative... check
-    	List<ResourceCreatorProxy> proxies = new ArrayList<>();
-        for (ResourceCreator rc : resource.getActiveResourceCreators()) {
-            if (getTdarConfiguration().obfuscationInterceptorDisabled()) {
-                if ((rc.getCreatorType() == CreatorType.PERSON) && !isAuthenticated()) {
-                    obfuscationService.obfuscate(rc.getCreator(), getAuthenticatedUser());
-                }
-            }
-
-            ResourceCreatorProxy proxy = new ResourceCreatorProxy(rc);
-            if (proxy.isValidEmailContact()) {
-                proxies.add(proxy);
-            }
-        }
+    public List<ResourceCreatorProxy> getContactProxies() {
         return proxies;
 
     }

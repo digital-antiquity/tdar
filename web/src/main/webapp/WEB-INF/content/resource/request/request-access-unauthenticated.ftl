@@ -12,8 +12,9 @@
 
 <body>
 
-<h1>Confirm Selection: Login Required</h1>
+<h1>Login Required</h1>
 <h3>${resource.title}</h3>
+<br/>
 <div class="row">
     <div class="span5 " >
     </div>
