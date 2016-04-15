@@ -4,7 +4,7 @@
 
 <h3>Contact:</h3>
 <b>${resource}</b><br/>
-    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal validate" method='post' enctype='multipart/form-data' action='deliver'>
+    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal tdarvalidate" method='post' enctype='multipart/form-data' action='deliver'>
         <@s.token name='struts.csrf.token' />
               <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
                  <br/>
