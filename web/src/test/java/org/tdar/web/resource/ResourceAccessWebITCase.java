@@ -2,7 +2,7 @@ package org.tdar.web.resource;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,6 +34,34 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     }
 
     @Test
+    public void testRequestAccess() throws IOException {
+        logout();
+        clickAccessLink();
+
+        // login
+        setInput("userLogin.loginUsername", getAdminUsername());
+        setInput("userLogin.loginPassword", getAdminPassword());
+        assertTrue(getPageText().contains("New Philadelphia Archaeology"));
+        submitForm("submitLogin");
+        
+        // try and submit without comment
+        assertTrue(getPageText().contains("New Philadelphia Archaeology"));
+        assertFalse(getPageText().contains("SAA"));
+        assertCurrentUrlContains("/resource/request");
+        submitFormWithoutErrorCheck("submit");
+        assertFalse(getPageText().contains("Message Sent"));
+        
+        // add comment
+        setInput("messageBody", "this is my comment");
+        assertTrue(getPageText().contains("New Philadelphia Archaeology"));
+
+        // submit and confirm message sent
+        submitForm("submit");
+        assertTrue(getPageText().contains("New Philadelphia Archaeology"));
+        assertTrue(getPageText().contains("Message Sent"));
+    }
+
+    @Test
     public void testShareAccessFailureEmptyPermission() throws IOException {
         logout();
         clickAccessLink();
@@ -41,7 +69,8 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         setInput("userLogin.loginUsername", getAdminUsername());
         setInput("userLogin.loginPassword", getAdminPassword());
         submitForm("submitLogin");
-        assertCurrentUrlContains("/request/request");
+        assertCurrentUrlContains("/resource/request");
+        gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
         setInput("permission", "");
         submitFormWithoutErrorCheck("submit");
         assertTrue(getPageText().contains("Please specify the level of rights"));

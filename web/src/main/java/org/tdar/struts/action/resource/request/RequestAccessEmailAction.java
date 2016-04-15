@@ -67,7 +67,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     @PostOnly
     public String execute() {
         setEmail(emailService.constructEmail(from, to, resource, subject, messageBody, type, params));
-        addActionMessage("Sucess");
+        addActionMessage("Message Sent");
 
         return SUCCESS;
     }
