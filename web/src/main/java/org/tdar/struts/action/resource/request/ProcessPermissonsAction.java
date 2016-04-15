@@ -1,8 +1,5 @@
 package org.tdar.struts.action.resource.request;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
@@ -12,10 +9,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
@@ -23,10 +17,13 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
-import org.tdar.utils.EmailMessageType;
 
 import com.opensymphony.xwork2.Preparable;
-
+/**
+ * Process the Request to grant permissions (or reject)
+ * @author abrin
+ *
+ */
 @ParentPackage("secured")
 @Namespace("/resource/request")
 @Component
@@ -36,8 +33,6 @@ public class ProcessPermissonsAction extends AbstractProcessPermissonsAction imp
     private static final long serialVersionUID = 4719778524052804432L;
     private boolean reject = false;
     private String comment;
-    @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient EmailService emailService;
 

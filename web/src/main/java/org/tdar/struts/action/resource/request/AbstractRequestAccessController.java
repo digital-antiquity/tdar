@@ -29,6 +29,11 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
+/**
+ * Abstract class for backing unauthenticated requests (Login and Register)
+ * @author abrin
+ *
+ */
 public class AbstractRequestAccessController extends AuthenticationAware.Base implements Preparable {
 
     private static final long serialVersionUID = -1831798412944149018L;
@@ -40,9 +45,6 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
     public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/request/${id}";
     public static final String FORBIDDEN = "forbidden";
     private Long id;
-
-
-    // the resource being downloaded (or the resource that the file is being downloade from)
     private Resource resource;
 
     @Autowired
@@ -60,6 +62,7 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
 
     @Override
     public void prepare() {
+    	// make sure the Reosurce ID is set
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             setResource(getGenericService().find(InformationResource.class, getId()));
             // bad, but force onto session until better way found

@@ -12,13 +12,10 @@
 
 <body>
 
-<h1>Login Required</h1>
-<h3>${resource.title}</h3>
+<h1>Send a Message: <span class="red">Login Required</span></h1>
+<h3>${resource.title} (${resource.id?c})</h3>
 <br/>
-<div class="row">
-    <div class="span5 " >
-    </div>
-</div>
+<p>To send the owner of this record a message, you need to login or register. Creating an account in ${siteAcronym} is free and easy.
 	<@auth.loginWarning />
 
     <div class="row">

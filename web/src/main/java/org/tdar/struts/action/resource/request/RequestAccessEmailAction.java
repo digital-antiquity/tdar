@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource.request;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
@@ -26,7 +24,11 @@ import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
-
+/**
+ * Sends email for the request-access / contact action
+ * @author abrin
+ *
+ */
 @ParentPackage("secured")
 @Namespace("/resource/request")
 @Component
@@ -48,16 +50,12 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     private String subject;
     private String messageBody;
     private EmailMessageType type;
-    private Map<String, Object> jsonResult = new HashMap<>();
 
     @Autowired
     private transient EmailService emailService;
 
     @Autowired
     private transient GenericService genericService;
-
-    private Email email;
-
     private Map<String, String[]> params;
 
     @Action(value = "deliver", results = {
@@ -66,7 +64,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     })
     @PostOnly
     public String execute() {
-        setEmail(emailService.constructEmail(from, to, resource, subject, messageBody, type, params));
+        emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");
 
         return SUCCESS;
@@ -126,7 +124,6 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
         h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost());
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);
-        resource = genericService.find(Resource.class, resourceId);
     }
 
     @Override
@@ -167,14 +164,6 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
         this.from = from;
     }
 
-    public Map<String, Object> getJsonResult() {
-        return jsonResult;
-    }
-
-    public void setJsonResult(Map<String, Object> jsonResult) {
-        this.jsonResult = jsonResult;
-    }
-
     public Long getResourceId() {
         return resourceId;
     }
@@ -189,14 +178,6 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
 
     public void setResource(Resource resource) {
         this.resource = resource;
-    }
-
-    public Email getEmail() {
-        return email;
-    }
-
-    public void setEmail(Email email) {
-        this.email = email;
     }
 
     @Override

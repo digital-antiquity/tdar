@@ -20,6 +20,11 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
+/**
+ * Handle registration for new users and pass back to request-access-action
+ * @author abrin
+ *
+ */
 @ParentPackage("default")
 @Namespace("/resource/request")
 @Component
