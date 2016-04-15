@@ -11,6 +11,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.utils.EmailMessageType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
@@ -25,7 +26,9 @@ public abstract class AbstractProcessPermissonsAction extends AuthenticationAwar
     private TdarUser requestor;
     private GeneralPermissions permission;
     private Resource resource;
-    private List<GeneralPermissions> availablePermissions = Arrays.asList(GeneralPermissions.values());
+    private EmailMessageType type;
+
+    private List<GeneralPermissions> availablePermissions = GeneralPermissions.resourcePermissions();
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -125,4 +128,12 @@ public abstract class AbstractProcessPermissonsAction extends AuthenticationAwar
         return InternalTdarRights.EDIT_ANYTHING;
     }
 
+
+    public EmailMessageType getType() {
+        return type;
+    }
+
+    public void setType(EmailMessageType type) {
+        this.type = type;
+    }
 }

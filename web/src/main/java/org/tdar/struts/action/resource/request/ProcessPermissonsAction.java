@@ -28,14 +28,13 @@ import org.tdar.utils.EmailMessageType;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/resource/access")
+@Namespace("/resource/request")
 @Component
 @Scope("prototype")
 public class ProcessPermissonsAction extends AbstractProcessPermissonsAction implements Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 4719778524052804432L;
     private boolean reject = false;
-    private EmailMessageType type;
     private String comment;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
@@ -86,7 +85,7 @@ public class ProcessPermissonsAction extends AbstractProcessPermissonsAction imp
         if (reject) {
             template = "email-form/access-request-rejected.ftl";
         } else {
-            switch (type) {
+            switch (getType()) {
                 case SAA:
                     template = "email-form/saa-accept.ftl";
                     break;
@@ -116,14 +115,6 @@ public class ProcessPermissonsAction extends AbstractProcessPermissonsAction imp
 
     public void setComment(String comment) {
         this.comment = comment;
-    }
-
-    public EmailMessageType getType() {
-        return type;
-    }
-
-    public void setType(EmailMessageType type) {
-        this.type = type;
     }
 
 }

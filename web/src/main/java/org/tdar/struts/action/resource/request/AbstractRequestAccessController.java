@@ -19,7 +19,7 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Namespace("/resource")
+@Namespace("/resource/request")
 @Component
 @Scope("prototype")
 @Results({

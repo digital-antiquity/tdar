@@ -1,7 +1,9 @@
 package org.tdar.struts.action.resource.request;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -41,7 +43,7 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
     @Autowired
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();
-    private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
+    private Set<EmailMessageType> emailTypes = new HashSet<>(EmailMessageType.valuesWithoutConfidentialFiles());
     private List<ResourceCreatorProxy> proxies = new ArrayList<>();
 
     @Autowired
@@ -73,7 +75,7 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
             if (informationResource.hasConfidentialFiles()) {
-                emailTypes = EmailMessageType.valuesWithoutSAA();
+                emailTypes = new HashSet<>(EmailMessageType.valuesWithoutSAA());
             }
         }
         //only add the SAA option if ...
@@ -156,7 +158,7 @@ public class RequestAccessAction extends AuthenticationAware.Base implements Pre
         this.h = h;
     }
 
-    public List<EmailMessageType> getEmailTypes() {
+    public Set<EmailMessageType> getEmailTypes() {
         return emailTypes;
     }
 

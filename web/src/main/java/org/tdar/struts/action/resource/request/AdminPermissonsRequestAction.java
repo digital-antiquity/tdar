@@ -15,7 +15,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/resource/access")
+@Namespace("/resource/request")
 @Component
 @Scope("prototype")
 public class AdminPermissonsRequestAction extends AbstractProcessPermissonsAction implements Preparable, PersistableLoadingAction<Resource> {

@@ -8,7 +8,7 @@
         <@s.token name='struts.csrf.token' />
               <p>Select the type of message you'd like to send to another ${siteAcronym} user.</p>
                  <br/>
-                <@s.select name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type'/>
+                <@s.radio name='type'  emptyOption='false' listValue='label' list='%{emailTypes}' label='Email Type' cssClass="required"/>
                 <#assign contactId = resource.submitter.id />
                 <#if contactProxies?has_content>
                 <#list contactProxies as prox>

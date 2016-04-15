@@ -1,4 +1,4 @@
-Dear ${to.properName},
+Dear ${requestor.properName},
 
 Thanks for your interest in the SAA Abstract Project.  You have been granted access
 to the requested tDAR record.

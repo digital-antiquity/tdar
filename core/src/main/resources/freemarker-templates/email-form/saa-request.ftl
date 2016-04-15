@@ -5,7 +5,7 @@ abstract project: ${resource.title} (${resource.id?c}).  You can view
 ${from.properName}'s email address below if you need more information from them.
 
 
-${baseUrl}/resource/access/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}
+${baseUrl}/resource/access/grant?resourceId=${resource.id?c}&requestorId=${from.id?c}&type=SAA
 
 Below is the detailed request from the User. To view the record in ${siteAcronym} visit:
 ${baseUrl}/${resource.urlNamespace}/${resource.id?c}
