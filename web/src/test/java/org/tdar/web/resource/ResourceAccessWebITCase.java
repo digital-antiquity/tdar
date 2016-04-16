@@ -34,6 +34,19 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
     }
 
     @Test
+    public void testShareAccessDenied() {
+        gotoPage("/resource/request/grant?resourceId=3088&requestorId=" + CONFIG.getUserId());
+        setInput("permission", GeneralPermissions.MODIFY_METADATA.name());
+        setInput("reject", "true");
+        setInput("comment","message!");
+        submitForm("submit");
+        logger.info(getCurrentUrlPath());
+        logger.info(getPageText());
+        assertThat(getPageText(), containsString("has been granted"));
+        logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
+    }
+
+    @Test
     public void testRequestAccess() throws IOException {
         logout();
         clickAccessLink();

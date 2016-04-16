@@ -27,13 +27,11 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LINK)).click();
-        waitFor("div.modal.hide.fade.in"); // modal adds .in after animation complete (maybe?)
+        waitForPageload();
         find("#messageBody").sendKeys("This is a test email");
         find(By.name("send")).click();
-
-        WebElement statusModal = waitFor(visibilityOf(find("#emailStatusModal").first()));
-        assertThat(statusModal.getText(), containsString("Your message has been sent"));
-        find(By.id("email-close-button")).click();
+        waitForPageload();
+        assertThat(getText(), containsString("Your message has been sent"));
         // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
@@ -44,11 +42,10 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         gotoPage(url);
         waitFor("body");
         logger.debug("on page: {}", url);
-        find(By.partialLinkText(EMAIL_LINK)).first().click();
+        find(By.partialLinkText(EMAIL_LINK)).click();
+        waitForPageload();
         waitFor(By.name("send")).click();
-        waitFor(visibilityOf(find("#emailErrorContainer").first()));
         assertTrue(getText().contains("An error occurred"));
-        find(By.id("email-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
@@ -60,12 +57,11 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         waitFor("body");
         logger.debug("on page: {}", url);
         find(By.partialLinkText(EMAIL_LINK)).first().click();
-        find(By.name("messageBody")).sendKeys("This is a test email");
+        waitForPageload();
         find(By.name("send")).click();
         Thread.sleep(2000);
         reportJavascriptErrors();
         assertTrue(getText().contains("An error occurred"));
-        find(By.id("email-close-button")).click();
         // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
