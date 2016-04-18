@@ -38,6 +38,6 @@
                  Please include sufficient information to fulfill your request (e.g. why you are requesting access to a file, or specific comments or corrections). Your contact information and a link to this resource will automatically be included in your message.</p>
                 <@common.antiSpam />
         
-    <@s.submit name="submit" cssClass="button btn btn-primary tdar-button" />
+    <@s.submit name="send" cssClass="button btn btn-primary tdar-button" />
 </@s.form>
 </#escape>

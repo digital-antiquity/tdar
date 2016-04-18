@@ -42,7 +42,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         submitForm("submit");
         logger.info(getCurrentUrlPath());
         logger.info(getPageText());
-        assertThat(getPageText(), containsString("has been granted"));
+        assertThat(getPageText(), containsString("has been denied"));
         logger.info("we are now on page: {}", getWebClient().getCurrentWindow().getEnclosedPage().getUrl());
     }
 
