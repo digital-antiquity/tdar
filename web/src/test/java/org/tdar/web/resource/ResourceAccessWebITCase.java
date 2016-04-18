@@ -61,7 +61,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
         assertFalse(getPageText().contains("SAA"));
         assertCurrentUrlContains("/resource/request");
-        submitFormWithoutErrorCheck("submit");
+        submitFormWithoutErrorCheck("send");
         assertFalse(getPageText().contains("Message Sent"));
         
         // add comment
@@ -69,7 +69,7 @@ public class ResourceAccessWebITCase extends AbstractAdminAuthenticatedWebTestCa
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
 
         // submit and confirm message sent
-        submitForm("submit");
+        submitForm("send");
         assertTrue(getPageText().contains("New Philadelphia Archaeology"));
         assertTrue(getPageText().contains("Message Sent"));
     }

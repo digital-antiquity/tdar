@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.UserAffiliation;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
@@ -64,7 +63,7 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
     public void prepare() {
     	// make sure the Reosurce ID is set
         if (PersistableUtils.isNotNullOrTransient(getId())) {
-            setResource(getGenericService().find(InformationResource.class, getId()));
+            setResource(getGenericService().find(Resource.class, getId()));
             // bad, but force onto session until better way found
             authorizationService.applyTransientViewableFlag(resource, getAuthenticatedUser());
         }

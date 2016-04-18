@@ -29,7 +29,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         find("#messageBody").sendKeys("This is a test email");
         find(By.name("send")).click();
         waitForPageload();
-        assertThat(getText(), containsString("Your message has been sent"));
+        assertThat(getText(), containsString("Message Sent"));
         // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
@@ -43,7 +43,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         find(By.partialLinkText(EMAIL_LINK)).click();
         waitForPageload();
         waitFor(By.name("send")).click();
-        assertTrue(getText().contains("An error occurred"));
+        assertTrue(getText().contains("required"));
         // we could do this implicitly by going to any other page but this makes the test faster
         reportJavascriptErrors();
     }
