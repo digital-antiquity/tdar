@@ -59,6 +59,7 @@ public class RequestAccessAction extends AuthenticationAware.Base
 	private static final long serialVersionUID = -6110216327414755768L;
 	private Long id;
 	private Resource resource;
+    private EmailMessageType tupe = EmailMessageType.CONTACT;
 
 	@Override
 	public void prepare() throws Exception {
@@ -172,7 +173,11 @@ public class RequestAccessAction extends AuthenticationAware.Base
 
 	}
 
-	public EmailMessageType getType() {
-		return EmailMessageType.CONTACT;
-	}
+    public EmailMessageType getTupe() {
+        return tupe;
+    }
+
+    public void setTupe(EmailMessageType tupe) {
+        this.tupe = tupe;
+    }
 }
