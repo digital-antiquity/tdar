@@ -1,0 +1,151 @@
+<form>
+    <textarea id="autosave"></textarea>
+</form>
+
+<form id="searchGroups" name="searchGroups" method="get">
+    <fieldset>
+        <input type="hidden" name="_tdar.searchType" value="advanced">
+
+        <div class="searchgroup">
+            <h2>Choose Search Terms</h2>
+
+            <div class="groupingSelectDiv control-group fade">
+                <label class="control-label">Include in results</label>
+
+                <div class="controls controls-row">
+                    <select name="groups[0].operator" class="span5" style="display: none;">
+                        <option value="AND" selected="">When resource matches ALL terms below
+                        </option>
+                        <option value="OR">When resource matches ANY terms below</option>
+                    </select>
+                </div>
+            </div>
+            <div id="groupTable0" class="grouptable repeatLastRow" style="width:100%"
+                    callback="TDAR.advancedSearch.setDefaultTerm" data-groupnum="0"
+                    data-add-another="add another search term">
+                <div id="grouptablerow_0_" class="control-group termrow repeat-row">
+                    <select id="group0searchType_0_" name="groups[0].fieldTypes[0]"
+                            class="control-label searchType repeatrow-noreset" style="font-size:smaller">
+                        <optgroup label="Basic Fields">
+                            <option value="ALL_FIELDS">All Fields</option>
+                            <option value="TITLE">Title</option>
+                            <option value="CONTENTS">Full-Text</option>
+                            <option value="RESOURCE_CREATOR_PERSON">Person</option>
+                            <option value="RESOURCE_CREATOR_INSTITUTION">Institution</option>
+                            <option value="TDAR_ID">Id</option>
+                            <option value="COVERAGE_DATE_CALENDAR">Calendar Dates</option>
+                            <option value="COVERAGE_DATE_RADIOCARBON">RadioCarbon Dates</option>
+                            <option value="PROJECT">Project</option>
+                            <option value="COLLECTION">Collection</option>
+                            <option value="FILENAME">File Name</option>
+                            <option value="DATE_CREATED">Year</option>
+                            <option value="DATE_REGISTERED">Date Registered</option>
+                            <option value="DATE_UPDATED">Date Updated</option>
+                        </optgroup>
+                        <optgroup label="Controlled Keywords">
+                            <option value="KEYWORD_INVESTIGATION">Investigation Types</option>
+                            <option value="KEYWORD_SITE">Site Type(Controlled)</option>
+                            <option value="KEYWORD_MATERIAL">Material Types</option>
+                            <option value="KEYWORD_CULTURAL">Culture Keywords</option>
+                        </optgroup>
+                        <optgroup label="Freeform Keywords">
+                            <option value="FFK_GEOGRAPHIC">Geographic Keywords</option>
+                            <option value="FFK_SITE">Site Names</option>
+                            <option value="FFK_SITE_TYPE">Site Type</option>
+                            <option value="FFK_CULTURAL">Culture Keywords</option>
+                            <option value="FFK_MATERIAL">Material Keywords</option>
+                            <option value="FFK_TEMPORAL">Temporal Keywords</option>
+                            <option value="FFK_GENERAL">General Keywords</option>
+                        </optgroup>
+                    </select>
+
+                    <div class="controls controls-row">
+                        <div class="span8 term-container">
+                            <span class="term retain  ALL_FIELDS">
+                                <input type="text" name="groups[0].allFields[0]" class="input-xxlarge">
+                            </span>
+                        </div>
+                        <div class="span1">
+                            <button class="btn  btn-mini repeat-row-delete " type="button" tabindex="-1"><i
+                                    class="icon-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="control-group add-another-control">
+                <div class="controls">
+                    <button class="btn addanother" id="groupTable0AddAnotherButton" type="button"><i
+                            class="icon-plus-sign"></i>add another search term
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="glide" id="searchFilter">
+            <h2>Narrow Your Search</h2>
+
+            <div class="control-group "><label class="control-label" for="includedResourceTypes">Resource Type</label>
+
+                <div class="controls controls-row">
+                    <div class="span2">
+
+                        <label class="checkbox"> <input type="checkbox" name="resourceTypes"
+                                id="includedResourceTypesCODING_SHEET" value="CODING_SHEET">Coding Sheet </label> <label
+                            class="checkbox"> <input type="checkbox" name="resourceTypes"
+                            id="includedResourceTypesDATASET" value="DATASET">Dataset </label>
+                    </div>
+                    <div class="span2">
+                        <label class="checkbox"> <input type="checkbox" name="resourceTypes"
+                                id="includedResourceTypesDOCUMENT" value="DOCUMENT">Document </label> <label
+                            class="checkbox"> <input type="checkbox" name="resourceTypes"
+                            id="includedResourceTypesIMAGE" value="IMAGE">Image </label>
+                    </div>
+                    <div class="span2">
+                        <label class="checkbox"> <input type="checkbox" name="resourceTypes"
+                                id="includedResourceTypesSENSORY_DATA" value="SENSORY_DATA">3D &amp; Sensory Data
+                        </label> <label class="checkbox"> <input type="checkbox" name="resourceTypes"
+                            id="includedResourceTypesGEOSPATIAL" value="GEOSPATIAL">GIS </label>
+                    </div>
+                    <div class="span2">
+                        <label class="checkbox"> <input type="checkbox" name="resourceTypes"
+                                id="includedResourceTypesONTOLOGY" value="ONTOLOGY">Ontology </label> <label
+                            class="checkbox"> <input type="checkbox" name="resourceTypes"
+                            id="includedResourceTypesPROJECT" value="PROJECT">Project </label>
+                    </div>
+                </div>
+            </div>
+
+            <h4>Limit by geographic region:</h4>
+
+            <div id="latlongoptions">
+                <div id="large-google-map">
+                </div>
+
+                <input type="hidden" name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" value="" id="maxx"
+                        class="ne-lng latLongInput"><input type="hidden"
+                    name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude" value="" id="miny"
+                    class="sw-lat latLongInput"><input type="hidden"
+                    name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" value="" id="minx"
+                    class="sw-lng latLongInput"><input type="hidden"
+                    name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude" value="" id="maxy"
+                    class="ne-lat latLongInput"></div>
+            <h2>Sorting Options and Submit</h2>
+            <label>Sort By <select name="sortField" id="searchGroups_sortField" class="input-large">
+                <option value="RELEVANCE" selected="selected">Relevance
+                </option>
+                <option value="ID">ID</option>
+                <option value="ID_REVERSE">ID (Most Recent)</option>
+                <option value="TITLE">Title</option>
+                <option value="TITLE_REVERSE">Title (Z-A)</option>
+                <option value="PROJECT">Project</option>
+                <option value="DATE">Date</option>
+                <option value="DATE_REVERSE">Date (Most Recent)</option>
+                <option value="DATE_UPDATED">Date Updated</option>
+                <option value="DATE_UPDATED_REVERSE">Date Updated (Most Recent)</option>
+            </select> </label>
+        </div>
+        <div>
+            <div id="error"></div>
+            <input type="submit" id="searchButton" value="Search" class="btn btn-primary">
+        </div>
+    </fieldset>
+</form>
