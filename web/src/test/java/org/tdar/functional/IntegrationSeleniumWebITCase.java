@@ -308,9 +308,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // wait until the one of the rows contains the specified text in the 'title' column
         waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
-        By checkbox = id(cbid);
-        waitFor(elementToBeClickable(checkbox));
-        find(checkbox).click();
+        waitFor(elementToBeClickable(id(cbid)));
+        find(id(cbid)).click();
     }
 
     private void openDatasetsModal() throws InterruptedException {
