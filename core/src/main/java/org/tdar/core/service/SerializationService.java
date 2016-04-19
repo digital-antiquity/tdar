@@ -1,8 +1,11 @@
 package org.tdar.core.service;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.io.StringReader;
@@ -13,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -39,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.event.TransactionalEventListener;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasStatus;
@@ -57,6 +60,10 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.event.EventBusResourceHolder;
+import org.tdar.core.service.event.EventBusUtils;
+import org.tdar.core.service.event.LoggingObjectContainer;
+import org.tdar.core.service.event.TxMessageBus;
 import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLog;
 import org.tdar.core.service.processes.relatedInfoLog.RelatedInfoLogPart;
 import org.tdar.filestore.FileStoreFile;
@@ -87,7 +94,7 @@ import com.hp.hpl.jena.vocabulary.RDFS;
  * class to help with marshalling and unmarshalling of resources
  */
 @Service
-public class SerializationService {
+public class SerializationService implements TxMessageBus<LoggingObjectContainer>{
 
     private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
     private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
@@ -122,46 +129,46 @@ public class SerializationService {
     }
     
     @EventListener
-    public void handleFilestoreEvent(TdarEvent event) {
+    public void handleFilestoreEvent(TdarEvent event) throws InstantiationException, IllegalAccessException, Exception {
         if (!(event.getRecord() instanceof XmlLoggable)) {
             return;
         }
 
-        if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
-            filestoreLoggingTransactionalEvent(event);
-            return;
-        }
-    }
-
-    @TransactionalEventListener
-    public void filestoreLoggingTransactionalEvent(TdarEvent event) {
-        if (!(event.getRecord() instanceof XmlLoggable)) {
-            return;
-        }
         XmlLoggable record = (XmlLoggable)event.getRecord();
-        
         if (record instanceof Persistable && PersistableUtils.isNullOrTransient((Persistable)record)) {
+        	return;
+        }
+        String id = record.getClass().getSimpleName() + "-" + record.toString();
+
+        File file = writeToTempFile(id, record);
+        LoggingObjectContainer container = new LoggingObjectContainer(file, id, event.getType(), FilestoreObjectType.fromClass(record.getClass()), record.getId());
+        if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
+			post(container);
             return;
         }
+        
 
-        logger.debug("FS EVENT: {} {} ({})", event.getType(), event.getRecord().getClass(), ((XmlLoggable)event.getRecord()).getId());
-        // addToSession(event.getSession(), (XmlLoggable) event.getEntity());
-        String xml = "";
-        try {
-            if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
-                XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
-                newInstance.setId(record.getId());
-                ((HasStatus) newInstance).setStatus(Status.DELETED);
-                xml = convertToXML(newInstance);
-            } else {
-                xml = convertToXML(record);
-            }
-            writeToFilestore(FilestoreObjectType.fromClass(record.getClass()), record.getId(), xml);
-            
-        } catch (Exception e) {
-            logger.error("exception converting to XML: {}", e);
-        }
+		Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
+		if (holder.isPresent() ) {
+			holder.get().addMessage(container);
+		} else {
+			post(container);
+		}
+
     }
+
+	private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
+		File temp = File.createTempFile(recordId, ".xml");
+		if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
+		    XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
+		    newInstance.setId(record.getId());
+		    ((HasStatus) newInstance).setStatus(Status.DELETED);
+		    convertToXML(newInstance, new FileWriter(temp));
+		} else {
+			convertToXML(record, new FileWriter(temp));
+		}
+		return temp;
+	}
 
     
     /**
@@ -190,7 +197,12 @@ public class SerializationService {
 
     
     public <T extends Persistable> void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, String xml) {
-        @SuppressWarnings("deprecation")
+    	StringInputStream content = new StringInputStream(xml, "UTF-8");
+        writeToFilestore(filestoreObjectType, id, content);
+    }
+
+	private void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, InputStream content) {
+		@SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename("record.xml");
         version.setExtension("xml");
@@ -198,12 +210,12 @@ public class SerializationService {
         version.setInformationResourceId(id);
         try {
             StorageMethod rotate = StorageMethod.DATE;
-            TdarConfiguration.getInstance().getFilestore().storeAndRotate(filestoreObjectType, new StringInputStream(xml, "UTF-8"), version, rotate);
+			TdarConfiguration.getInstance().getFilestore().storeAndRotate(filestoreObjectType, content, version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + filestoreObjectType, e);
             throw new FilestoreLoggingException("serializationService.could_not_save");
         }
-    }
+	}
 
 
     /**
@@ -573,4 +585,9 @@ public class SerializationService {
     public void setUseTransactionalEvents(boolean useTransactionalEvents) {
         this.useTransactionalEvents = useTransactionalEvents;
     }
+
+	@Override
+	public void post(LoggingObjectContainer o) throws Exception {
+       writeToFilestore(o.getFilestoreObjectType(), o.getPersistableId(), new FileInputStream(o.getDoc()));		
+	}
 }
