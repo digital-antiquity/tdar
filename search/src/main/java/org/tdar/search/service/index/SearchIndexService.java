@@ -195,7 +195,6 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
 	private void index(String core, String id, SolrInputDocument doc) throws SolrServerException, IOException {
 		purge(core, id);
-		doc.remove(QueryFieldNames.CORE);
 		template.add(core, doc);
 	}
 
@@ -536,7 +535,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 			} else {
 				index(core, id, doc);
 			}
-
+			commit(core);
 	}
 
 }

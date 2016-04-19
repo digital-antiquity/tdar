@@ -24,10 +24,12 @@ public class MessageBusResourceSynchronization<T extends ObjectContainer>
 
 	@Override
 	public void afterCompletion(int status) {
+        logger.trace("completion: {}", status);
 		if (status == TransactionSynchronization.STATUS_COMMITTED) {
+		    logger.debug("COMMITTING EVENTS {}", holder.getPendingMessages().size());
 			for (Object o : holder.getPendingMessages()) {
 				try {
-					messageBus.post((ObjectContainer) o);
+				    messageBus.post((ObjectContainer) o);
 				} catch (Exception e) {
 					logger.error("exception in post-transaction procesisng", e);
 				}

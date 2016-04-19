@@ -12,8 +12,8 @@ public abstract class ObjectContainer<T> {
 	private EventType eventType;
 
 
-	public ObjectContainer(T doc2, String generateId, EventType eventType) {
-		this.doc = doc2;
+	public ObjectContainer(T doc, String generateId, EventType eventType) {
+		this.doc = doc;
 		this.id = generateId;
 		this.setEventType(eventType);
 	}

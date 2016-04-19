@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Updatable;
-import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;
 
@@ -25,7 +24,6 @@ public class AbstractSolrDocumentConverter {
         Class<? extends Indexable> class1 = persist.getClass();
 		doc.setField(QueryFieldNames.CLASS, class1.getName());
         doc.setField(QueryFieldNames._ID, SearchUtils.createKey(persist));
-        doc.setField(QueryFieldNames.CORE, LookupSource.getCoreForClass(class1));
         if (persist instanceof HasStatus) {
             doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus().name());
         }
