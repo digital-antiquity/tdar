@@ -573,8 +573,12 @@ TDAR.common = function (TDAR, fileupload) {
         _applyWatermarks(form);
 
         // prevent "enter" from submitting
-        $form.delegate('input,select', "keypress", function (event) {
-            return event.keyCode != 13;
+        $form.on('keypress', 'input,select', function (event) {
+            var elem = this;
+            if(event.keyCode != 13) {return true;}
+
+            //don't ignore ENTER key in a leaflet geocoder control
+            return $(elem).closest('.leaflet-control-geocoder').length > 0;
         });
 
         //initialize form validation

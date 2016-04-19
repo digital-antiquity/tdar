@@ -37,18 +37,25 @@
 
             <h2 class="totalRecords">Search Options</h2>
             <ul class="tools media-list">
-                <li class="media"><a href="<@search.refineUrl/>" rel="noindex"><i class="search-magnify-icon-red"></i> Refine your search &raquo;</a></li>
+                <li class="media"><a href="<@search.refineUrl/>" rel="noindex">
+                <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_find"></use></svg>
+                 Refine your search &raquo;</a></li>
 
                 <#if (contextualSearch!false)>
                     <#if projectId??>
-                        <li class="media"><@s.a href="/project/${projectId?c}"><i class="icon-project icon-red"></i> Return to project page &raquo;</@s.a></li>
+                        <li class="media"><@s.a href="/project/${projectId?c}">
+                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                            Return to project page &raquo;</@s.a></li>
                     <#else>
-                        <li class="media"><@s.a href="/collection/${collectionId?c}"><i class="icon-collection icon-red"></i> Return To collection
-                            page &raquo;</@s.a></li>
+                        <li class="media"><@s.a href="/collection/${collectionId?c}">
+                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                            Return To collection page &raquo;</@s.a></li>
                     </#if>
                 </#if>
 
-                <li class="media"><i class="search-download-icon-red"></i> <span>Download these results &raquo;
+                <li class="media">
+                <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_download"></use></svg>
+                <span>Download these results &raquo;
                     <#if sessionData?? && sessionData.authenticated && (totalRecords > 0) && (actionName=="results")>
 	                    <@search.searchLink "download" "to Excel" />
 	                    <#if (totalRecords > maxDownloadRecords)>
@@ -65,16 +72,24 @@
                 <ul class="tools media-list">
                     <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST</@s.param>
-	                </@s.url>"><i class="search-list-icon-red"></i> <@s.text name="DisplayOrientation.LIST"/></a></li>
+	                </@s.url>">
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_list"></use></svg>
+                    <@s.text name="DisplayOrientation.LIST"/></a></li>
                     <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">LIST_FULL</@s.param>
-	                </@s.url>"><i class="search-list-icon-red"></i> <@s.text name="DisplayOrientation.LIST_FULL"/></a></li>
+	                </@s.url>">
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_list"></use></svg>
+                     <@s.text name="DisplayOrientation.LIST_FULL"/></a></li>
                     <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">GRID</@s.param>
-	                </@s.url>"><i class="search-grid-icon-red"></i> <@s.text name="DisplayOrientation.GRID"/></a></li>
+	                </@s.url>">
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_gallery"></use></svg>
+                    <@s.text name="DisplayOrientation.GRID"/></a></li>
                     <li class="media"><a href="<@s.url includeParams="all">
 	                    <@s.param name="orientation">MAP</@s.param>
-	                </@s.url>"><i class="search-map-icon-red"></i> <@s.text name="DisplayOrientation.MAP"/></a></li>
+	                </@s.url>">
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_map"></use></svg>
+                    <@s.text name="DisplayOrientation.MAP"/></a></li>
                 </ul>
             <form>
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />

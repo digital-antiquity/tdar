@@ -302,7 +302,7 @@ Common macros used in multiple contexts
         <#else>
             <#--<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>-->
             <li>
-            <form class="form-unstyled seleniumIgnoreForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
+            <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
                     <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
             </form>
             </li>
