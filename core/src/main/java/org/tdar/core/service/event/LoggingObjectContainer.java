@@ -18,7 +18,7 @@ public class LoggingObjectContainer extends ObjectContainer<File> {
 
 	@Override
 	public String getType() {
-		return "LOG";
+		return "XML";
 	}
 
 	public FilestoreObjectType getFilestoreObjectType() {

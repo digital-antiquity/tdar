@@ -125,6 +125,16 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
 		Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
 		SolrInputDocument doc = createDocument(record);
+//		FileOutputStream fout = new FileOutputStream("G:\\address.ser");
+//		ObjectOutputStream oos = new ObjectOutputStream(fout);
+//		oos.writeObject(MyClassList);
+
+//		ObjectInputStream objectinputstream = null;
+//		try {
+//		    streamIn = new FileInputStream("G:\\address.ser");
+//		    ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
+//		    List<MyClass> readCase = (List<MyClass>) objectinputstream.readObject();
+//		 
 		SolrDocumentContainer container = new SolrDocumentContainer(doc, generateId(record), event.getType(), LookupSource.getCoreForClass(record.getClass()));
 		if (holder.isPresent() ) {
 			holder.get().addMessage(container);

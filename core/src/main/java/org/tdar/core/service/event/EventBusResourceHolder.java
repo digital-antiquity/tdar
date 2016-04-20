@@ -17,7 +17,7 @@ public class EventBusResourceHolder<T extends ObjectContainer> extends ResourceH
 		String id = message.getId();
 		if (pendingMessages.containsKey(id)) {
 			T existing = pendingMessages.get(id);
-			if (existing.getDateAdded().getTime() > message.getDateAdded().getTime()) {
+			if (existing.getDateAdded() > message.getDateAdded()) {
 				logger.debug(" SKIP {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
 				return;
 			}

@@ -8,7 +8,7 @@ public abstract class ObjectContainer<T> {
 
 	String id;
 	T doc;
-	Date dateAdded = new Date();
+	Long dateAdded = System.nanoTime();
 	private EventType eventType;
 
 
@@ -34,11 +34,11 @@ public abstract class ObjectContainer<T> {
 		this.doc = doc;
 	}
 
-	public Date getDateAdded() {
+	public Long getDateAdded() {
 		return dateAdded;
 	}
 
-	public void setDateAdded(Date dateAdded) {
+	public void setDateAdded(Long dateAdded) {
 		this.dateAdded = dateAdded;
 	}
 

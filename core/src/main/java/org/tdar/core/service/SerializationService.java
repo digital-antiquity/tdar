@@ -96,7 +96,8 @@ import com.hp.hpl.jena.vocabulary.RDFS;
 @Service
 public class SerializationService implements TxMessageBus<LoggingObjectContainer>{
 
-    private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+	private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
     private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
     private static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
     private static final String FOAF_XML = ".foaf.xml";
@@ -129,7 +130,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     }
     
     @EventListener
-    public void handleFilestoreEvent(TdarEvent event) throws InstantiationException, IllegalAccessException, Exception {
+    public void handleFilestoreEvent(TdarEvent event) {
         if (!(event.getRecord() instanceof XmlLoggable)) {
             return;
         }
@@ -138,11 +139,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         if (record instanceof Persistable && PersistableUtils.isNullOrTransient((Persistable)record)) {
         	return;
         }
-        String id = record.getClass().getSimpleName() + "-" + record.toString();
+        String id = record.getClass().getSimpleName() + "-" + record.getId().toString();
 
+        try {
         File file = writeToTempFile(id, record);
         LoggingObjectContainer container = new LoggingObjectContainer(file, id, event.getType(), FilestoreObjectType.fromClass(record.getClass()), record.getId());
-        if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
+        if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
 			post(container);
             return;
         }
@@ -154,11 +156,15 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
 		} else {
 			post(container);
 		}
-
+        } catch (Throwable t) {
+        	logger.error("error processing XML Log: {}", t,t);
+        }
     }
+    
 
 	private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
-		File temp = File.createTempFile(recordId, ".xml");
+		File temp =  new File(CONFIG.getTempDirectory(),String.format("%s-%s.xml", recordId, System.nanoTime()));
+		temp.deleteOnExit();
 		if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
 		    XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
 		    newInstance.setId(record.getId());
@@ -210,7 +216,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         version.setInformationResourceId(id);
         try {
             StorageMethod rotate = StorageMethod.DATE;
-			TdarConfiguration.getInstance().getFilestore().storeAndRotate(filestoreObjectType, content, version, rotate);
+			CONFIG.getFilestore().storeAndRotate(filestoreObjectType, content, version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + filestoreObjectType, e);
             throw new FilestoreLoggingException("serializationService.could_not_save");
@@ -240,7 +246,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws JAXBException
      */
     public File generateSchema() throws IOException, JAXBException {
-        final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, TdarConfiguration.getInstance().getTempDirectory());
+        final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, CONFIG.getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(rootClasses);
 
         // WRITE OUT SCHEMA
@@ -443,7 +449,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     @Transactional(readOnly = true)
     public void generateFOAF(Creator<?> creator, RelatedInfoLog log) throws IOException {
         Model model = ModelFactory.createDefaultModel();
-        String baseUrl = TdarConfiguration.getInstance().getBaseUrl();
+        String baseUrl = CONFIG.getBaseUrl();
         com.hp.hpl.jena.rdf.model.Resource rdf = null;
         switch (creator.getCreatorType()) {
             case INSTITUTION:
@@ -482,12 +488,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEAN), log.getKeywordMean().toString());
         rdf.addProperty(ResourceFactory.createProperty(baseUrl + RDF_KEYWORD_MEDIAN), log.getKeywordMedian().toString());
 
-        File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + FOAF_XML);
+        File file = new File(CONFIG.getTempDirectory(), creator.getId() + FOAF_XML);
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         model.write(writer, RDF_XML_ABBREV);
         IOUtils.closeQuietly(writer);
         FileStoreFile fsf = new FileStoreFile(FilestoreObjectType.CREATOR, VersionType.METADATA, creator.getId(), file.getName());
-        TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.CREATOR, file, fsf);
+        CONFIG.getFilestore().store(FilestoreObjectType.CREATOR, file, fsf);
 
     }
 
@@ -536,7 +542,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      */
     @Transactional(readOnly = true)
     public void generateRelatedLog(Persistable creator, RelatedInfoLog log) throws Exception {
-        File file = new File(TdarConfiguration.getInstance().getTempDirectory(), creator.getId() + ".xml");
+        File file = new File(CONFIG.getTempDirectory(), creator.getId() + ".xml");
         OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder());
         convertToXML(log, writer);
         IOUtils.closeQuietly(writer);
@@ -546,7 +552,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         }
 
         FileStoreFile fsf = new FileStoreFile(type, VersionType.METADATA, creator.getId(), file.getName());
-        TdarConfiguration.getInstance().getFilestore().store(type, file, fsf);
+        CONFIG.getFilestore().store(type, file, fsf);
 
     }
 
