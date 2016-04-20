@@ -53,7 +53,7 @@ public class RequestAccessAction extends AuthenticationAware.Base
     private AntiSpamHelper h = new AntiSpamHelper();
     private Set<EmailMessageType> emailTypes = new HashSet<>(EmailMessageType.valuesWithoutConfidentialFiles());
     private List<ResourceCreatorProxy> proxies = new ArrayList<>();
-
+    private String messageBody;
     @Autowired
     private transient ObfuscationService obfuscationService;
     private static final String SUCCESS_UNAUTH = "success-unauth";
@@ -187,5 +187,13 @@ public class RequestAccessAction extends AuthenticationAware.Base
 
     public void setType(EmailMessageType tupe) {
         this.type = tupe;
+    }
+
+    public String getMessageBody() {
+        return messageBody;
+    }
+
+    public void setMessageBody(String messageBody) {
+        this.messageBody = messageBody;
     }
 }
