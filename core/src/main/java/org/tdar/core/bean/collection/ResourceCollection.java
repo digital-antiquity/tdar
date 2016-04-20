@@ -140,11 +140,10 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private static final long serialVersionUID = -5308517783896369040L;
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
-//    private transient Explanation explanation;
 
     @Column
     @JsonView(JsonLookupFilter.class)
-    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @Length(max = FieldLength.FIELD_LENGTH_500)
     private String name;
 
     @Lob

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
@@ -40,6 +41,7 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
+import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
@@ -113,9 +115,18 @@ public class ResourceSearchService extends AbstractSearchService {
             colQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
 
-        if (PersistableUtils.isNotNullOrTransient(look.getCollectionId())) {
-            q.append(new FieldQueryPart<Long>(colQueryField, look.getCollectionId()));
+        if (StringUtils.isNotBlank(look.getGeneralQuery())) {
+        	q.append(new GeneralSearchResourceQueryPart(look.getGeneralQuery()));
         }
+        
+        Set<Long> filtered = new HashSet<>();
+        for (Long cid : look.getCollectionIds()) {
+        	if (PersistableUtils.isNotNullOrTransient(cid)) {
+        		filtered.add(cid);
+        	}
+        };
+
+        q.append(new FieldQueryPart<Long>(colQueryField,Operator.OR, filtered));
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();
         initializeReservedSearchParameters(reservedSearchParameters, user);
