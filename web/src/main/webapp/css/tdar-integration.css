@@ -1,0 +1,127 @@
+/**
+These style definitions will likely go away when I'm certain that they don't screw up anything outside of integration
+**/
+
+#tabControl li.integration-column {
+}
+
+/* close button on tabs */
+.nav-tabs > li .close {
+    margin: -2px 0 0 10px;
+    font-size: 18px;
+}
+
+
+.modal.modal-big {
+    /* allow for 10 columns per row  */
+    width:82%;
+    left: 9%;
+    margin-left:0;
+}
+
+.modal.modal-big.fade.in {
+    top: 5%;
+}
+
+.modal.modal-big .modal-header {
+    padding: 4px 8px;
+}
+
+.modal.modal-big .modal-body {
+    padding: 8px;
+}
+
+.modal.modal-big .modal-footer {
+    padding: 10px 8px 10px;
+}
+
+
+/* shrink the modal body if we don't have enough screen real-estate (due to physical dimensions or text-zoom)  */
+@media all and (min-height: 20em) {
+    .modal.modal-big .modal-body {
+        max-height: 15em;
+    }
+}
+@media all and (min-height: 45em) {
+    .modal.modal-big .modal-body {
+        max-height: 35em;
+    }
+}
+
+/* truncate too-wide text with ellipses (must also specify 'max-width' via styleAttr or some other class) */
+td.ellipsified {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.nodechild0,.nodeChild {margin-left:0em;}
+.nodechild1 {margin-left:1em;}
+.nodechild2 {margin-left:2em;}
+.nodechild3 {margin-left:3em;}
+.nodechild4 {margin-left:4em;}
+.nodechild5 {margin-left:5em;}
+.nodechild6 {margin-left:6em;}
+.nodechild7 {margin-left:7em;}
+.nodechild8 {margin-left:8em;}
+.nodechild9 {margin-left:9em;}
+.nodechild10 {margin-left:10em;}
+
+.inthead {
+    margin-top: 1em;
+    margin-bottom: 2.5em;
+    padding: 1em;
+    background-color: #fdfdfd;
+    border: 1px solid #ddd;
+    border-radius: 1em;
+    line-height: normal;
+
+}
+.inthead li.active {
+    font-weight: bold;
+}
+.inthead h1, .inthead h2{
+    margin:0;
+    padding:0;
+    line-height: normal;
+    font-weight: normal;
+
+
+}
+.inthead h1 {
+    font-size: 18pt;
+}
+.inthead h2 {
+    margin-left: 1em;
+    font-size: 15pt;
+}
+
+h2.compact {
+    margin-top:-3pt ;
+}
+input.intcol, select.intcol {
+    width: 90pt;
+}
+
+div.table-modal-results-container {
+    height: 25em;
+}
+
+table.table-modal-results.disabled {
+	opacity: 0.5;
+}
+
+/* put border around tabbed controls so that it's easier to distinguish the content associated with each tab (unless it wraps, which looks as bad as it did before) */
+.tab-content {
+    border-left: 1px solid #ddd;
+    border-right: 1px solid #ddd;
+    border-bottom: 1px solid #ddd;
+    padding: 1em;
+}
+.nav-tabs {
+    margin-bottom: 0;
+}
+
+table#tblPivotData tr, table#tblPreviewData tr {
+    border-bottom: 1px solid #AAA;
+}

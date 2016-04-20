@@ -1,0 +1,33 @@
+div.dataTables_length label {
+    width: 460px;
+    float: left;
+    text-align: left;
+}
+
+div.dataTables_length select {
+    width: 75px;
+}
+
+div.dataTables_filter label {
+    float: right;
+    width: 460px;
+}
+
+div.dataTables_info {
+    padding-top: 8px;
+}
+
+/* TODO: this is not necessary if you use bootstrap's pagination-right class, but i'm not sure how to get widget to inject this class into pagination section */
+div.dataTables_paginate {
+    float: right;
+    margin: 0;
+}
+
+table.display.tableFormat {
+    margin-top: 0px !important;
+}
+
+/* See TDAR-3106 */
+table.dataTable {
+    max-width: none;
+}
