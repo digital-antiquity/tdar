@@ -89,7 +89,7 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
             }
             if (!CollectionUtils.isEmpty(moreInValues)) {
                 if (!CollectionUtils.isEmpty(inValues)) {
-                    sb.append(" OR ");
+                    sb.append(" OR ").append(quote(column));
                 }
                 createInPart(sb, getMoreInValues());
             }
