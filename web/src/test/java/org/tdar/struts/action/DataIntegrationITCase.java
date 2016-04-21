@@ -19,6 +19,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.odm.core.impl.UnmanagedClassException;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
@@ -420,6 +421,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
         ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
 
+        int unmapped = 0;
+        int nulls = 0;
         Sheet sheet = result.getWorkbook().getWorkbook().getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
@@ -433,12 +436,23 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
                 if (value2.equalsIgnoreCase("tarsal")) {
                     tarsal++;
+                    continue;
                 }
                 if (value2.equalsIgnoreCase("ulna")) {
                     ulna++;
+                    continue;
                 }
                 if (value2.equalsIgnoreCase("astragalus")) {
                     astragalus++;
+                    continue;
+                }
+                if (StringUtils.equals(CodingRule.UNMAPPED.getTerm(), value2)) {
+                    unmapped++;
+                    continue;
+                }
+                if (StringUtils.equals(CodingRule.NULL.getTerm(), value2)) {
+                    nulls++;
+                    continue;
                 }
                 if (value2.equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
                     empty++;
@@ -449,11 +463,18 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         logger.info("astragalus: {}", astragalus);
         logger.info("ulna: {}", ulna);
         logger.info("empty: {}", empty);
+        logger.info("unmapped: {}", unmapped);
+        logger.info("nulls: {}", nulls);
         assertEquals(41, astragalus);
         assertEquals(111, tarsal);
         assertEquals(332, ulna);
-        assertEquals(276, empty);
         assertTrue(seenElementNull);
+        if (getTdarConfiguration().includeSpecialCodingRules()) {
+            assertEquals("expect to see NULL value",276,nulls);
+            assertEquals("expect to see Unmapped", 9187, unmapped);
+        } else {
+            assertEquals(276, empty);
+        }
     }
 
     @Override

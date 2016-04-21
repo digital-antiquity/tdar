@@ -117,22 +117,28 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 boolean isNullOrMissing = false;
                 if (StringUtils.isBlank(value)) {
                     value = MessageHelper.getMessage("database.null_empty_integration_value");
-                    mappedVal = CodingRule.NULL.getTerm();
+                    if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                        mappedVal = CodingRule.NULL.getTerm();
+                    }
                     isNullOrMissing = true;
                 }
                 
-                // HANDLE MISSING
-                if (StringUtils.contains(value, Database.NO_CODING_SHEET_VALUE)) {
-                    mappedVal = CodingRule.MISSING.getTerm();
-                    isNullOrMissing = true;
+                if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                    // HANDLE MISSING
+                    if (StringUtils.contains(value, Database.NO_CODING_SHEET_VALUE)) {
+                        mappedVal = CodingRule.MISSING.getTerm();
+                        isNullOrMissing = true;
+                    }
                 }
                 
                 values.add(value);
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
-                if (!isNullOrMissing && mappedOntologyNode == null) {
-                    mappedVal = CodingRule.UNMAPPED.getTerm();
-                    mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
+                if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                    if (!isNullOrMissing && mappedOntologyNode == null) {
+                        mappedVal = CodingRule.UNMAPPED.getTerm();
+                        mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
+                    }
                 }
                 
                 if (mappedOntologyNode != null && StringUtils.isNotBlank(mappedOntologyNode.getDisplayName())) {
