@@ -36,7 +36,7 @@
         <div class="control-group">
             <label class="control-label">Mappings</label>
             <#list codingRules as rule>
-                <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}">
+                <div class="controls controls-row mappingPair ${rule.code}" id="row_${rule.code}" data-idx="${rule_index?c}">
                     <@s.hidden name='codingRules[${rule_index?c}].id' />
                     <@s.textfield theme="simple" name='codingRules[${rule_index?c}].formattedTerm' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
 
@@ -49,6 +49,28 @@
                         <div class="input-append">
                             <@s.textfield theme="simple" name="codingRules[${rule_index?c}].ontologyNode.displayName" id="autocomp_${rule_index?c}"
                             cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_${rule_index?c}"/>
+                            <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </#list>
+
+        <label class="control-label">Special Mappings</label>
+            <#list specialRules as rule>
+                <div class="controls controls-row mappingPair ${rule.code}" id="row_s_${rule.code}" data-idx="${(10000 + rule_index)?c}">
+                    <@s.hidden name='specialRules[${rule_index?c}].id' />
+                    <@s.hidden name='specialRules[${rule_index?c}].code'  />
+                    <@s.textfield theme="simple" name='specialRules[${rule_index?c}].term' size='50' readonly=true cssClass="span4 codingSheetTerm"/>
+
+                    <div class="span1">
+                        <img src="<@s.url value='/images/arrow_right.png' />" alt="right arrow"/>
+                    </div>
+
+                    <div>
+                        <@s.hidden name="specialRules[${rule_index?c}].ontologyNode.id" id="ontologyNodeId_s_${rule_index?c}" />
+                        <div class="input-append">
+                            <@s.textfield theme="simple" name="specialRules[${rule_index?c}].ontologyNode.displayName" id="autocomp_${(10000 + rule_index)?c}"
+                            cssClass="manualAutocomplete ontologyValue span4" autocompleteIdElement="#ontologyNodeId_s_${rule_index?c}"/>
                             <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
                         </div>
                     </div>
@@ -73,6 +95,9 @@
                     {id: "${suggestion.id?c}", name: "${suggestion.displayName?js_string}"}
                 </#list>
             ];
+            </#list>
+            <#list specialRules as rule>
+            var autocomp_${(10000 + rule_index)?c}Suggestions = [];
             </#list>
         </#noescape>
 

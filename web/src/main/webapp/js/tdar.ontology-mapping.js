@@ -53,8 +53,10 @@
             $textfield.focus().autocomplete("search", "");
         });
 
-        for (var i = 0; i < $(".mappingPair").length; i++) {
-            _applyLocalAutoComplete($("#autocomp_" + i), ctx["autocomp_" + i + "Suggestions"]);
+        var pairs = $(".mappingPair");
+        for (var i = 0; i < pairs.length; i++) {
+            var idx = $(pairs[i]).data("idx");
+            _applyLocalAutoComplete($("#autocomp_" + idx), ctx["autocomp_" + idx + "Suggestions"]);
         }
     };
 
