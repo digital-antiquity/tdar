@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CodingSheetService;
@@ -111,6 +112,9 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
      * for these rules, we want to group them separately for the user
      */
     private void addSpecialCodingRules() {
+        if (!TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+            return;
+        }
         Map<String, CodingRule> codeToRuleMap = getCodingSheet().getCodeToRuleMap();
         CodingRule _null = codeToRuleMap.get(CodingRule.NULL.getCode());
         if (_null != null) {

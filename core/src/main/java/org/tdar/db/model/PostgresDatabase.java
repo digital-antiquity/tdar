@@ -66,6 +66,7 @@ import org.tdar.db.builder.WhereCondition.Condition;
 import org.tdar.db.builder.WhereCondition.ValueCondition;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.db.model.abstracts.Database;
 import org.tdar.db.model.abstracts.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.utils.MessageHelper;
@@ -1010,13 +1011,20 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     builder.getColumns().add(null);
 
                     WhereCondition cond = new WhereCondition(column.getName());
+                    cond.setInComment("mapped values");
                     for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                         cond.getInValues().addAll(column.getMappedDataValues(node));
                     }
                     boolean includeUnmapepdValues = true;
+                    boolean includeUncodedValues = true;
                     
                     if (includeUnmapepdValues) {
+                        cond.setMoreInComment("unmapped values");
                         cond.getMoreInValues().addAll(column.getUnmappedDataValues());
+                    }
+                    
+                    if (includeUncodedValues) {
+                        cond.addOrLikeValue(Database.NO_CODING_SHEET_VALUE + "%");
                     }
 
                     boolean nullIncluded = integrationColumn.isNullIncluded();
