@@ -949,4 +949,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         }
         return toReturn;
     }
+
+    public Long getSAAContactId() {
+        return assistant.getLongProperty("saa.contact_id", getAdminUserId());
+    }
 }

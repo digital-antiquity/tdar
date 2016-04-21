@@ -3,7 +3,7 @@
 
 
 <h1>Send a Message</h1>
-<h3>Resource: <span class="red">${resource.title} (${resource.id?c})</span></h3>
+<h3>Resource: <span class="red"><a href="${resource.detailUrl}">${resource.title}</a> (${resource.id?c})</span></h3>
 <br/>
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal tdarvalidate" method='post' enctype='multipart/form-data' action='deliver'>
         <@s.token name='struts.csrf.token' />

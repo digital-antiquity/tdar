@@ -1190,5 +1190,9 @@
             <column name="relation_type"  type="varchar(255)" />
         </addColumn>
     </changeSet>
+
+    <changeSet id="neolithic-search-14" author="abrin">
+        <modifyDataType tableName="collection" columnName="name" newDataType="varchar(500)"/>
+    </changeSet>
     
 </databaseChangeLog>

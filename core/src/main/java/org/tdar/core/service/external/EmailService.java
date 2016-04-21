@@ -278,7 +278,7 @@ public class EmailService {
     public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
             EmailMessageType type, GeneralPermissions permission) {
         Email email = new Email();
-        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + "- " + resource.getTitle());
+        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle());
         email.setTo(requestor.getEmail());
         Map<String, Object> map = new HashMap<>();
         map.put("requestor", requestor);

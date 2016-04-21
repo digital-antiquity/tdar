@@ -14,7 +14,9 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
@@ -64,6 +66,10 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     })
     @PostOnly
     public String execute() {
+        // if we're in the SAA process, then override the "to" with the specified ID
+        if (type == EmailMessageType.SAA) {
+            to = genericService.find(TdarUser.class, TdarConfiguration.getInstance().getSAAContactId());
+        }
         emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
         addActionMessage("Message Sent");
 
