@@ -998,7 +998,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
         builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
-            logger.info("table:" + table + " column: " + integrationColumn);
+            logger.trace("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             if (column == null) {
                 builder.getColumns().add(null);
