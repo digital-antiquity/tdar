@@ -564,11 +564,11 @@
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
-            <#if (authenticatedUser.id)?has_content>
-                    <a href="#" id="emailButton" class="">${txt}</a>
-            <#else>
-                    <a href="<@s.url value="/login?url=${currentUrl}?showEmail"/>">${txt} (requires login)</a>
-            </#if>
+                    <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
+                <#if !(authenticatedUser.id)?has_content>
+                         (requires login)
+                </#if>
+            </a>
             </div>
             </li>
         </ul>

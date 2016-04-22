@@ -2,8 +2,10 @@ package org.tdar.struts.action.lookup;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
@@ -45,9 +47,9 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
     public static final String SELECTED_RESULTS = "selectedResults";
 
     private Long projectId;
-    private Long collectionId;
+    private List<Long> collectionId;
     private String term;
-    private String title;
+    private String query;
     private Long sortCategoryId;
     private boolean includeCompleteRecord = false;
     private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
@@ -74,7 +76,10 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         ResourceLookupObject look = new ResourceLookupObject();
         look.setTerm(term);
         look.setProjectId(projectId);
-        look.setCollectionId(collectionId);
+        look.setGeneralQuery(query);
+        if (CollectionUtils.isNotEmpty(collectionId)) {
+        	look.getCollectionIds().addAll(collectionId);
+        }
         look.setCategoryId(sortCategoryId);
         look.setReservedSearchParameters(getReservedSearchParameters());
         look.setPermission(permission);
@@ -130,14 +135,6 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         this.projectId = projectId;
     }
 
-    public Long getCollectionId() {
-        return collectionId;
-    }
-
-    public void setCollectionId(Long collectionId) {
-        this.collectionId = collectionId;
-    }
-
     public Long getSortCategoryId() {
         return sortCategoryId;
     }
@@ -170,14 +167,6 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         this.selectResourcesFromCollectionid = selectResourcesFromCollectionid;
     }
 
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
-    }
-
     public boolean isParentCollectionsIncluded() {
         return parentCollectionsIncluded;
     }
@@ -190,5 +179,21 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
 	@Override
 	public DisplayOrientation getOrientation() {
 		return DisplayOrientation.LIST;
+	}
+
+	public List<Long> getCollectionId() {
+		return collectionId;
+	}
+
+	public void setCollectionId(List<Long> collectionIds) {
+		this.collectionId = collectionIds;
+	}
+
+	public String getQuery() {
+		return query;
+	}
+
+	public void setQuery(String query) {
+		this.query = query;
 	}
 }

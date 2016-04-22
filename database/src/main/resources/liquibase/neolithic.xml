@@ -1242,4 +1242,8 @@
         
         </createTable>
     </changeSet>
+
+    <changeSet id="neolithic-search-14" author="abrin">
+        <modifyDataType tableName="collection" columnName="name" newDataType="varchar(500)"/>
+    </changeSet>
 </databaseChangeLog>
