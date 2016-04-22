@@ -158,6 +158,9 @@
             return mappedTables;
         };
 
+        self.sharedOntologyPolicy = "relaxed";
+        //self.sharedOntologyPolicy = "strict";
+
         /**
          * Append an 'integration column' to the columns list.
          * 
@@ -384,10 +387,16 @@
                     return c.mappedOntologyId;
                 }));
 
-
-            // We now have a deduped list of all mapped ontology id's,
-            // Now we remove the ids that do not appear in at least two data tables.
-            ids = mappedOntologyIds.filter(function(ontologyId) {
+            if(self.sharedOntologyPolicy === "strict") {
+                ids  = mappedOntologyIds.filter(function(ontologyId) {
+                    return self.dataTables.every(function(dataTable) {
+                        return dataTable.dataTableColumns.some(function(dtc) {
+                            return ontologyId === dtc.mappedOntologyId
+                        });
+                    });
+                });
+            } else {
+                ids = mappedOntologyIds.filter(function(ontologyId) {
                     var participatingDataTables = self.dataTables.filter(function(dataTable){
                         return dataTable.dataTableColumns.some(function(dtc){
                             return ontologyId === dtc.mappedOntologyId;
@@ -395,6 +404,10 @@
                     });
                     return participatingDataTables.length > 1;
                 });
+            }
+
+            // We now have a deduped list of all mapped ontology id's,
+            // Now we remove the ids that do not appear in at least two data tables.
             // And... scene! Here are your shared ontology id's.
             _sharedOntologyIds = ids;
             return _sharedOntologyIds;
