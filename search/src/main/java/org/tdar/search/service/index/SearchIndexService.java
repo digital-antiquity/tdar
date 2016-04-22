@@ -1,6 +1,10 @@
 package org.tdar.search.service.index;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -69,483 +74,482 @@ import org.tdar.utils.PersistableUtils;
 @Transactional(readOnly = true)
 public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
-	private final Logger logger = LoggerFactory.getLogger(getClass());
-	public static final String INDEXING_COMPLETED = "indexing completed";
-	public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    public static final String INDEXING_COMPLETED = "indexing completed";
+    public static final String INDEXING_STARTED = "indexing of %s on %s complete.\n Started: %s \n Completed: %s";
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
-	@Autowired
-	private GenericDao genericDao;
+    @Autowired
+    private GenericDao genericDao;
 
-	@Autowired
-	private EmailService emailService;
+    @Autowired
+    private EmailService emailService;
 
-	@Autowired
-	private ResourceCollectionDao resourceCollectionDao;
+    @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
 
-	@Autowired
-	private ResourceService resourceService;
+    @Autowired
+    private ResourceService resourceService;
 
-	@Autowired
-	private DatasetDao datasetDao;
+    @Autowired
+    private DatasetDao datasetDao;
 
-	@Autowired
-	private ProjectDao projectDao;
-	private boolean useTransactionalEvents = true;
+    @Autowired
+    private ProjectDao projectDao;
+    private boolean useTransactionalEvents = true;
 
-	private static final int FLUSH_EVERY = TdarConfiguration.getInstance().getIndexerFlushSize();
-	public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
+    private static final int FLUSH_EVERY = CONFIG.getIndexerFlushSize();
+    public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
-	@Transactional(readOnly = true)
-	public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
-		indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
-	}
+    @Transactional(readOnly = true)
+    public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
+        indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
+    }
 
-	@Transactional(readOnly = true)
-	public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex, Person person) {
-		BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
-		batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
-	}
+    @Transactional(readOnly = true)
+    public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex, Person person) {
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
+        batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
+    }
 
-	@EventListener
-	public void handleIndexingEvent(TdarEvent event) throws Exception {
-		if (!(event.getRecord() instanceof Indexable)) {
-			return;
-		}
+    @EventListener
+    public void handleIndexingEvent(TdarEvent event) throws Exception {
+        if (!(event.getRecord() instanceof Indexable)) {
+            return;
+        }
 
-		Indexable record = (Indexable) event.getRecord();
+        Indexable record = (Indexable) event.getRecord();
 
-		if (PersistableUtils.isNullOrTransient(record)) {
-			return;
-		}
+        if (PersistableUtils.isNullOrTransient(record)) {
+            return;
+        }
 
-		if (!isUseTransactionalEvents() || !TdarConfiguration.getInstance().useTransactionalEvents()) {
-			index(record);
-			return;
-		}
+        if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
+            index(record);
+            return;
+        }
 
-		Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
-		SolrInputDocument doc = createDocument(record);
-//		FileOutputStream fout = new FileOutputStream("G:\\address.ser");
-//		ObjectOutputStream oos = new ObjectOutputStream(fout);
-//		oos.writeObject(MyClassList);
+        Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
+        SolrInputDocument doc = createDocument(record);
+        //
+        String recordId = generateId(record);
+        File temp = new File(CONFIG.getTempDirectory(), String.format("%s-%s.xml", recordId, System.nanoTime()));
+        temp.deleteOnExit();
 
-//		ObjectInputStream objectinputstream = null;
-//		try {
-//		    streamIn = new FileInputStream("G:\\address.ser");
-//		    ObjectInputStream objectinputstream = new ObjectInputStream(streamIn);
-//		    List<MyClass> readCase = (List<MyClass>) objectinputstream.readObject();
-//		 
-		SolrDocumentContainer container = new SolrDocumentContainer(doc, generateId(record), event.getType(), LookupSource.getCoreForClass(record.getClass()));
-		if (holder.isPresent() ) {
-			holder.get().addMessage(container);
-		} else {
-			post(container);
-		}
-	}
+        SerializationUtils.serialize(doc, new FileOutputStream(temp));
+        SolrDocumentContainer container = new SolrDocumentContainer(temp, recordId, event.getType(), LookupSource.getCoreForClass(record.getClass()));
 
-	@Autowired
-	private SolrClient template;
+        if (holder.isPresent()) {
+            holder.get().addMessage(container);
+        } else {
+            post(container);
+        }
+    }
 
-	private String generateId(Persistable pers) {
-		return SearchUtils.createKey(pers);
-	}
+    @Autowired
+    private SolrClient template;
 
-	/**
-	 * The default classes to reindex
-	 * 
-	 * @return
-	 */
-	public List<Class<? extends Indexable>> getDefaultClassesToIndex() {
-		return getClassesToReindex(Arrays.asList(LookupSource.values()));
-	}
+    private String generateId(Persistable pers) {
+        return SearchUtils.createKey(pers);
+    }
 
-	public List<Class<? extends Indexable>> getClassesToReindex(List<LookupSource> values) {
-		List<Class<? extends Indexable>> toReindex = new ArrayList<>();
-		for (LookupSource source : values) {
-			toReindex.addAll(Arrays.asList(source.getClasses()));
-		}
-		return toReindex;
-	}
+    /**
+     * The default classes to reindex
+     * 
+     * @return
+     */
+    public List<Class<? extends Indexable>> getDefaultClassesToIndex() {
+        return getClassesToReindex(Arrays.asList(LookupSource.values()));
+    }
 
-	/**
-	 * Index an item of some sort.
-	 * 
-	 * @param fullTextSession
-	 * @param item
-	 */
-	SolrInputDocument index(LookupSource src, final Indexable item, boolean deleteFirst) {
-		if (item == null) {
-			return null;
-		}
-		try {
-			String core = LookupSource.getCoreForClass(item.getClass());
+    public List<Class<? extends Indexable>> getClassesToReindex(List<LookupSource> values) {
+        List<Class<? extends Indexable>> toReindex = new ArrayList<>();
+        for (LookupSource source : values) {
+            toReindex.addAll(Arrays.asList(source.getClasses()));
+        }
+        return toReindex;
+    }
 
-			SolrInputDocument document = createDocument(item);
+    /**
+     * Index an item of some sort.
+     * 
+     * @param fullTextSession
+     * @param item
+     */
+    SolrInputDocument index(LookupSource src, final Indexable item, boolean deleteFirst) {
+        if (item == null) {
+            return null;
+        }
+        try {
+            String core = LookupSource.getCoreForClass(item.getClass());
 
-			if (Objects.equals(src, LookupSource.DATA)) {
-				List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource) item,
-						resourceService);
-				template.add(CoreNames.DATA_MAPPINGS, convert);
-				if (deleteFirst) {
-					template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:" + item.getId());
-				}
-				return null;
-			}
+            SolrInputDocument document = createDocument(item);
 
-			if (document == null) {
-				return null;
-			}
-			index(core, generateId(item), document);
-			return document;
-		} catch (Throwable t) {
-			logger.error("error ocurred in indexing", t);
-		}
-		return null;
-	}
+            if (Objects.equals(src, LookupSource.DATA)) {
+                List<SolrInputDocument> convert = DataValueDocumentConverter.convert((InformationResource) item,
+                        resourceService);
+                template.add(CoreNames.DATA_MAPPINGS, convert);
+                if (deleteFirst) {
+                    template.deleteByQuery(CoreNames.DATA_MAPPINGS, "id:" + item.getId());
+                }
+                return null;
+            }
 
-	private void index(String core, String id, SolrInputDocument doc) throws SolrServerException, IOException {
-		purge(core, id);
-		template.add(core, doc);
-	}
+            if (document == null) {
+                return null;
+            }
+            index(core, generateId(item), document);
+            return document;
+        } catch (Throwable t) {
+            logger.error("error ocurred in indexing", t);
+        }
+        return null;
+    }
 
-	private SolrInputDocument createDocument(final Indexable item) {
-		SolrInputDocument document = null;
-		if (item instanceof Person) {
-			document = PersonDocumentConverter.convert((Person) item);
-		}
-		if (item instanceof Institution) {
-			document = InstitutionDocumentConverter.convert((Institution) item);
-		}
-		if (item instanceof Resource) {
-			document = ResourceDocumentConverter.convert((Resource) item);
-		}
-		if (item instanceof ResourceCollection) {
-			document = CollectionDocumentConverter.convert((ResourceCollection) item);
-		}
-		if (item instanceof Keyword) {
-			document = KeywordDocumentConverter.convert((Keyword) item);
-		}
-		if (item instanceof ResourceAnnotationKey) {
-			document = AnnotationKeyDocumentConverter.convert((ResourceAnnotationKey) item);
-		}
-		if (item instanceof InformationResourceFile) {
-			document = ContentDocumentConverter.convert((InformationResourceFile) item);
-		}
-		return document;
-	}
+    private void index(String core, String id, SolrInputDocument doc) throws SolrServerException, IOException {
+        purge(core, id);
+        template.add(core, doc);
+    }
 
-	/**
-	 * Reindex a set of @link ResourceCollection Entries and their subtrees to
-	 * update rights and permissions
-	 * 
-	 * @param collectionToReindex
-	 */
-	@Transactional
-	public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
-		logger.trace("indexing collection async");
-		Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
-		ScrollableResults results = resourceCollectionDao
-				.findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
-		BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
-		batch.indexScrollable(total, Resource.class, results);
-	}
+    private SolrInputDocument createDocument(final Indexable item) {
+        SolrInputDocument document = null;
+        if (item instanceof Person) {
+            document = PersonDocumentConverter.convert((Person) item);
+        }
+        if (item instanceof Institution) {
+            document = InstitutionDocumentConverter.convert((Institution) item);
+        }
+        if (item instanceof Resource) {
+            document = ResourceDocumentConverter.convert((Resource) item);
+        }
+        if (item instanceof ResourceCollection) {
+            document = CollectionDocumentConverter.convert((ResourceCollection) item);
+        }
+        if (item instanceof Keyword) {
+            document = KeywordDocumentConverter.convert((Keyword) item);
+        }
+        if (item instanceof ResourceAnnotationKey) {
+            document = AnnotationKeyDocumentConverter.convert((ResourceAnnotationKey) item);
+        }
+        if (item instanceof InformationResourceFile) {
+            document = ContentDocumentConverter.convert((InformationResourceFile) item);
+        }
+        return document;
+    }
 
-	/**
-	 * Reindex a set of @link ResourceCollection Entries and their subtrees to
-	 * update rights and permissions
-	 * 
-	 * @param collectionToReindex
-	 */
-	@Async
-	@Transactional
-	public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
-		indexAllResourcesInCollectionSubTree(collectionToReindex);
-	}
+    /**
+     * Reindex a set of @link ResourceCollection Entries and their subtrees to
+     * update rights and permissions
+     * 
+     * @param collectionToReindex
+     */
+    @Transactional
+    public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
+        logger.trace("indexing collection async");
+        Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
+        ScrollableResults results = resourceCollectionDao
+                .findAllResourcesInCollectionAndSubCollectionScrollable(collectionToReindex);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
+        batch.indexScrollable(total, Resource.class, results);
+    }
 
-	/**
-	 * @see #indexCollection(Collection)
-	 * @param collectionToReindex
-	 * @throws IOException
-	 * @throws SolrServerException
-	 */
-	@Async
-	public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex)
-			throws SolrServerException, IOException {
-		indexCollection(collectionToReindex);
-	}
+    /**
+     * Reindex a set of @link ResourceCollection Entries and their subtrees to
+     * update rights and permissions
+     * 
+     * @param collectionToReindex
+     */
+    @Async
+    @Transactional
+    public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
+        indexAllResourcesInCollectionSubTree(collectionToReindex);
+    }
 
-	/**
-	 * @see #indexCollection(Collection)
-	 * @param indexable
-	 * @throws IOException
-	 * @throws SolrServerException
-	 */
-	@SuppressWarnings("unchecked")
-	public <C extends Indexable> void index(C... indexable) throws SolrServerException, IOException {
-		indexCollection(Arrays.asList(indexable));
-	}
+    /**
+     * @see #indexCollection(Collection)
+     * @param collectionToReindex
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    @Async
+    public <C extends Indexable> void indexCollectionAsync(final Collection<C> collectionToReindex)
+            throws SolrServerException, IOException {
+        indexCollection(collectionToReindex);
+    }
 
-	/**
-	 * Index a collection of @link Indexable entities
-	 * 
-	 * @param indexable
-	 * @throws IOException
-	 * @throws SolrServerException
-	 */
-	public <C extends Indexable> boolean indexCollection(Collection<C> indexable)
-			throws SolrServerException, IOException {
-		boolean exceptions = false;
+    /**
+     * @see #indexCollection(Collection)
+     * @param indexable
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    @SuppressWarnings("unchecked")
+    public <C extends Indexable> void index(C... indexable) throws SolrServerException, IOException {
+        indexCollection(Arrays.asList(indexable));
+    }
 
-		if (CollectionUtils.isNotEmpty(indexable)) {
-			if (CollectionUtils.size(indexable) > 1) {
-				logger.debug("manual indexing ... {}", indexable.size());
-			}
-			// FullTextSession fullTextSession = getFullTextSession();
-			int count = 0;
-			String core = "";
-			for (C toIndex : indexable) {
-				count++;
-				core = LookupSource.getCoreForClass(toIndex.getClass());
-				try {
-					// if we were called via async, the objects will belong to
-					// managed by the current hib session.
-					// purge them from the session and merge w/ transient object
-					// to get it back on the session before indexing.
-					if (genericDao.sessionContains(toIndex)) {
-						index(null, toIndex, true);
-					} else {
-						index(null, genericDao.merge(toIndex), true);
-					}
-					if (count % FLUSH_EVERY == 0) {
-						logger.debug("indexing: {}", toIndex);
-						logger.debug("flush to index ... every {}", FLUSH_EVERY);
-					}
-				} catch (Throwable e) {
-					logger.error("exception in indexing, {} [{}]", toIndex, e);
-					logger.error(
-							String.format("%s %s", ExceptionUtils.getRootCauseMessage(e),
-									Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
-							ExceptionUtils.getRootCause(e));
-					exceptions = true;
-				}
-			}
-			logger.trace("begin flushing");
-			// fullTextSession.flushToIndexes();
-			commit(core);
-			// processBatch(docs);
-		}
+    /**
+     * Index a collection of @link Indexable entities
+     * 
+     * @param indexable
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    public <C extends Indexable> boolean indexCollection(Collection<C> indexable)
+            throws SolrServerException, IOException {
+        boolean exceptions = false;
 
-		if (indexable != null && CollectionUtils.size(indexable) > 1) {
-			logger.debug("Done indexing");
-		}
-		return exceptions;
-	}
+        if (CollectionUtils.isNotEmpty(indexable)) {
+            if (CollectionUtils.size(indexable) > 1) {
+                logger.debug("manual indexing ... {}", indexable.size());
+            }
+            // FullTextSession fullTextSession = getFullTextSession();
+            int count = 0;
+            String core = "";
+            for (C toIndex : indexable) {
+                count++;
+                core = LookupSource.getCoreForClass(toIndex.getClass());
+                try {
+                    // if we were called via async, the objects will belong to
+                    // managed by the current hib session.
+                    // purge them from the session and merge w/ transient object
+                    // to get it back on the session before indexing.
+                    if (genericDao.sessionContains(toIndex)) {
+                        index(null, toIndex, true);
+                    } else {
+                        index(null, genericDao.merge(toIndex), true);
+                    }
+                    if (count % FLUSH_EVERY == 0) {
+                        logger.debug("indexing: {}", toIndex);
+                        logger.debug("flush to index ... every {}", FLUSH_EVERY);
+                    }
+                } catch (Throwable e) {
+                    logger.error("exception in indexing, {} [{}]", toIndex, e);
+                    logger.error(
+                            String.format("%s %s", ExceptionUtils.getRootCauseMessage(e),
+                                    Arrays.asList(ExceptionUtils.getRootCauseStackTrace(e))),
+                            ExceptionUtils.getRootCause(e));
+                    exceptions = true;
+                }
+            }
+            logger.trace("begin flushing");
+            // fullTextSession.flushToIndexes();
+            commit(core);
+            // processBatch(docs);
+        }
 
-	void commit(String core) throws SolrServerException, IOException {
-		UpdateResponse commit = template.commit(core);
-		logger.trace("response: {}", commit.getResponseHeader());
-	}
+        if (indexable != null && CollectionUtils.size(indexable) > 1) {
+            logger.debug("Done indexing");
+        }
+        return exceptions;
+    }
 
-	// private void processBatch(List<SolrInputDocument> docs) throws
-	// SolrServerException, IOException {
-	// UpdateRequest req = new UpdateRequest();
-	// req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
-	// req.add( docs );
-	// UpdateResponse rsp = req.process( template );
-	// logger.error("resp: {}", rsp);
-	// }
+    void commit(String core) throws SolrServerException, IOException {
+        UpdateResponse commit = template.commit(core);
+        logger.trace("response: {}", commit.getResponseHeader());
+    }
 
-	/**
-	 * Similar to @link GenericService.synchronize() forces all pending indexing
-	 * actions to be written.
-	 * 
-	 * Should only be used in tests...
-	 * 
-	 */
-	@Deprecated
-	public void flushToIndexes() {
-		// getFullTextSession().flushToIndexes();
-	}
+    // private void processBatch(List<SolrInputDocument> docs) throws
+    // SolrServerException, IOException {
+    // UpdateRequest req = new UpdateRequest();
+    // req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
+    // req.add( docs );
+    // UpdateResponse rsp = req.process( template );
+    // logger.error("resp: {}", rsp);
+    // }
 
-	/**
-	 * Index/Reindex everything. Requested by the @link Person
-	 * 
-	 * @param person
-	 */
-	public void indexAll(Person person) {
-		BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
-		batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
-	}
+    /**
+     * Similar to @link GenericService.synchronize() forces all pending indexing
+     * actions to be written.
+     * 
+     * Should only be used in tests...
+     * 
+     */
+    @Deprecated
+    public void flushToIndexes() {
+        // getFullTextSession().flushToIndexes();
+    }
 
-	/**
-	 * Index all items of the Specified Class; person is the person requesting
-	 * the index
-	 * 
-	 * @param person
-	 * @param classes
-	 */
-	public void indexAll(Person person, LookupSource... sources) {
-		BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
-		batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
-	}
+    /**
+     * Index/Reindex everything. Requested by the @link Person
+     * 
+     * @param person
+     */
+    public void indexAll(Person person) {
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
+        batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
+    }
 
-	/**
-	 * The AsyncUpdateReciever allows us to pass data about the indexing back to
-	 * the requester. The default one does nothing.
-	 * 
-	 * @return
-	 */
-	private AsyncUpdateReceiver getDefaultUpdateReceiver() {
-		return AsyncUpdateReceiver.DEFAULT_RECEIVER;
-	}
+    /**
+     * Index all items of the Specified Class; person is the person requesting
+     * the index
+     * 
+     * @param person
+     * @param classes
+     */
+    public void indexAll(Person person, LookupSource... sources) {
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
+        batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
+    }
 
-	/**
-	 * Wipe everything from the index
-	 * 
-	 */
-	public void purgeAll() {
-		purgeAll(LookupSource.values());
-	}
+    /**
+     * The AsyncUpdateReciever allows us to pass data about the indexing back to
+     * the requester. The default one does nothing.
+     * 
+     * @return
+     */
+    private AsyncUpdateReceiver getDefaultUpdateReceiver() {
+        return AsyncUpdateReceiver.DEFAULT_RECEIVER;
+    }
 
-	/**
-	 * Purge all objects of the specified Class frmo the index
-	 * 
-	 * @param classes
-	 */
-	public void purgeAll(LookupSource... sources) {
-		for (LookupSource src : sources) {
-			for (Class<? extends Indexable> clss : src.getClasses()) {
-				purgeCore(LookupSource.getCoreForClass(clss));
-			}
-		}
-	}
+    /**
+     * Wipe everything from the index
+     * 
+     */
+    public void purgeAll() {
+        purgeAll(LookupSource.values());
+    }
 
-	void purgeCore(String core) {
-		try {
-			template.deleteByQuery(core, "*:*");
-			commit(core);
-		} catch (SolrServerException | IOException e) {
-			logger.error("error purging index: {}", core, e);
-		}
-	}
+    /**
+     * Purge all objects of the specified Class frmo the index
+     * 
+     * @param classes
+     */
+    public void purgeAll(LookupSource... sources) {
+        for (LookupSource src : sources) {
+            for (Class<? extends Indexable> clss : src.getClasses()) {
+                purgeCore(LookupSource.getCoreForClass(clss));
+            }
+        }
+    }
 
-	/**
-	 * Optimizes all lucene indexes
-	 * 
-	 */
-	public void optimizeAll() {
-		for (Class<? extends Indexable> toIndex : getDefaultClassesToIndex()) {
-			logger.info("optimizing {}", toIndex.getSimpleName());
-			String core = LookupSource.getCoreForClass(toIndex);
-			try {
-				template.optimize(core);
-			} catch (SolrServerException | IOException e) {
-				logger.error("error in optimize of {}", core, e);
-			}
-		}
-	}
+    void purgeCore(String core) {
+        try {
+            template.deleteByQuery(core, "*:*");
+            commit(core);
+        } catch (SolrServerException | IOException e) {
+            logger.error("error purging index: {}", core, e);
+        }
+    }
 
-	/**
-	 * Indexes a @link Project and it's contents. It loads the project's
-	 * child @link Resource entries before indexing
-	 * 
-	 * @param project
-	 * @throws IOException
-	 * @throws SolrServerException
-	 */
-	public boolean indexProject(Project project) throws SolrServerException, IOException {
-		setupProjectForIndexing(project);
-		index(project);
-		logger.debug("reindexing project contents");
-		ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
-		BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
-		batch.indexScrollable(0L, Resource.class, scrollableResults);
-		logger.debug("completed reindexing project contents");
-		return false;
-	}
+    /**
+     * Optimizes all lucene indexes
+     * 
+     */
+    public void optimizeAll() {
+        for (Class<? extends Indexable> toIndex : getDefaultClassesToIndex()) {
+            logger.info("optimizing {}", toIndex.getSimpleName());
+            String core = LookupSource.getCoreForClass(toIndex);
+            try {
+                template.optimize(core);
+            } catch (SolrServerException | IOException e) {
+                logger.error("error in optimize of {}", core, e);
+            }
+        }
+    }
 
-	private void setupProjectForIndexing(Project project) {
-		Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(
-				projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT));
-		project.setCachedInformationResources(irs);
-	}
+    /**
+     * Indexes a @link Project and it's contents. It loads the project's
+     * child @link Resource entries before indexing
+     * 
+     * @param project
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    public boolean indexProject(Project project) throws SolrServerException, IOException {
+        setupProjectForIndexing(project);
+        index(project);
+        logger.debug("reindexing project contents");
+        ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
+        batch.indexScrollable(0L, Resource.class, scrollableResults);
+        logger.debug("completed reindexing project contents");
+        return false;
+    }
 
-	/**
-	 * @see #indexProject(Project)
-	 * @param project
-	 * @throws IOException
-	 * @throws SolrServerException
-	 */
-	@Async
-	@Transactional(readOnly = true)
-	public void indexProjectAsync(final Project project) throws SolrServerException, IOException {
-		indexProject(project);
-	}
+    private void setupProjectForIndexing(Project project) {
+        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(
+                projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT));
+        project.setCachedInformationResources(irs);
+    }
 
-	@Transactional(readOnly = true)
-	public boolean indexProject(Long id) throws SolrServerException, IOException {
-		return indexProject(genericDao.find(Project.class, id));
-	}
+    /**
+     * @see #indexProject(Project)
+     * @param project
+     * @throws IOException
+     * @throws SolrServerException
+     */
+    @Async
+    @Transactional(readOnly = true)
+    public void indexProjectAsync(final Project project) throws SolrServerException, IOException {
+        indexProject(project);
+    }
 
-	@Async
-	@Transactional(readOnly = false)
-	public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex,
-			final Person person) {
-		Date startDate = new Date();
-		logger.info("reindexing indexall");
-		BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
-		batch.indexAll(reciever, toReindex, person);
-		sendEmail(startDate, toReindex);
+    @Transactional(readOnly = true)
+    public boolean indexProject(Long id) throws SolrServerException, IOException {
+        return indexProject(genericDao.find(Project.class, id));
+    }
 
-	}
+    @Async
+    @Transactional(readOnly = false)
+    public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex,
+            final Person person) {
+        Date startDate = new Date();
+        logger.info("reindexing indexall");
+        BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
+        batch.indexAll(reciever, toReindex, person);
+        sendEmail(startDate, toReindex);
 
-	@Transactional(readOnly = false)
-	public void sendEmail(Date date, final List<LookupSource> toReindex) {
-		TdarConfiguration CONFIG = TdarConfiguration.getInstance();
-		if (CONFIG.isProductionEnvironment()) {
-			Email email = new Email();
-			email.setSubject(INDEXING_COMPLETED);
-			email.setMessage(String.format(INDEXING_STARTED, toReindex, CONFIG.getHostName(), date, new Date()));
-			email.setUserGenerated(false);
-			emailService.send(email);
-		}
-	}
+    }
 
-	@Transactional(readOnly = true)
-	public void purge(Indexable entity) throws SolrServerException, IOException {
-		String core = LookupSource.getCoreForClass(entity.getClass());
-		purge(core, generateId(entity));
-	}
+    @Transactional(readOnly = false)
+    public void sendEmail(Date date, final List<LookupSource> toReindex) {
+        if (CONFIG.isProductionEnvironment()) {
+            Email email = new Email();
+            email.setSubject(INDEXING_COMPLETED);
+            email.setMessage(String.format(INDEXING_STARTED, toReindex, CONFIG.getHostName(), date, new Date()));
+            email.setUserGenerated(false);
+            emailService.send(email);
+        }
+    }
 
-	@Transactional(readOnly = true)
-	public void purge(String core, String id) throws SolrServerException, IOException {
-		template.deleteById(core, id);
-	}
+    @Transactional(readOnly = true)
+    public void purge(Indexable entity) throws SolrServerException, IOException {
+        String core = LookupSource.getCoreForClass(entity.getClass());
+        purge(core, generateId(entity));
+    }
 
-	@Transactional(readOnly = true)
-	public void clearIndexingActivities() {
-		ActivityManager.getInstance().clearIndexingActivities();
-	}
+    @Transactional(readOnly = true)
+    public void purge(String core, String id) throws SolrServerException, IOException {
+        template.deleteById(core, id);
+    }
 
-	public boolean isUseTransactionalEvents() {
-		return useTransactionalEvents;
-	}
+    @Transactional(readOnly = true)
+    public void clearIndexingActivities() {
+        ActivityManager.getInstance().clearIndexingActivities();
+    }
 
-	public void setUseTransactionalEvents(boolean useTransactionalEvents) {
-		this.useTransactionalEvents = useTransactionalEvents;
-	}
+    public boolean isUseTransactionalEvents() {
+        return useTransactionalEvents;
+    }
 
-	@Override
-	public void post(SolrDocumentContainer o) throws Exception {
-			SolrInputDocument doc = o.getDoc();
-			String id = (String) doc.getField(QueryFieldNames._ID).getFirstValue();
-			String core = o.getCore();
-			if (o.getEventType() == EventType.DELETE) {
-				purge(core, id);
-			} else {
-				index(core, id, doc);
-			}
-			commit(core);
-	}
+    public void setUseTransactionalEvents(boolean useTransactionalEvents) {
+        this.useTransactionalEvents = useTransactionalEvents;
+    }
+
+    @Override
+    public void post(SolrDocumentContainer o) throws Exception {
+
+        Object object = SerializationUtils.deserialize(new FileInputStream(o.getDoc()));
+        SolrInputDocument doc = (SolrInputDocument)object;
+        String id = (String) doc.getField(QueryFieldNames._ID).getFirstValue();
+        String core = o.getCore();
+        if (o.getEventType() == EventType.DELETE) {
+            purge(core, id);
+        } else {
+            index(core, id, doc);
+        }
+        commit(core);
+    }
 
 }

@@ -22,7 +22,7 @@ public class EventBusResourceHolder<T extends ObjectContainer> extends ResourceH
 				return;
 			}
 		}
-		logger.debug("{} EVENT: {} ({})", message.getType(), message.getEventType(), id);
+		logger.debug("PENDING {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
 		pendingMessages.put(id, message);
 	}
 
