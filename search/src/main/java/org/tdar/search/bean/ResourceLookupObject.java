@@ -1,17 +1,21 @@
 package org.tdar.search.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.utils.PersistableUtils;
 
 public class ResourceLookupObject implements Serializable {
 
 
     private static final long serialVersionUID = 5762691918094910192L;
     private String term;
+    private String generalQuery;
     private Long projectId;
     private Boolean includeParent;
-    private Long collectionId;
+    private List<Long> collectionIds = new ArrayList<Long>();
     private Long categoryId;
     private GeneralPermissions permission;
     private ReservedSearchParameters reservedSearchParameters;
@@ -24,7 +28,9 @@ public class ResourceLookupObject implements Serializable {
         this.term = term;
         this.projectId = projectId;
         this.includeParent = includeParent;
-        this.collectionId = collectionId;
+        if (PersistableUtils.isNotNullOrTransient(collectionId)) {
+        	collectionIds.add(collectionId);
+        }
         this.categoryId = categoryId;
         this.permission = permission;
         this.setReservedSearchParameters(reservedSearchParameters);
@@ -52,14 +58,6 @@ public class ResourceLookupObject implements Serializable {
 
     public void setIncludeParent(Boolean includeParent) {
         this.includeParent = includeParent;
-    }
-
-    public Long getCollectionId() {
-        return collectionId;
-    }
-
-    public void setCollectionId(Long collectionId) {
-        this.collectionId = collectionId;
     }
 
     public Long getCategoryId() {
@@ -96,5 +94,21 @@ public class ResourceLookupObject implements Serializable {
     public void setSearchParameters(SearchParameters searchParameters) {
         this.searchParameters = searchParameters;
     }
+
+	public List<Long> getCollectionIds() {
+		return collectionIds;
+	}
+
+	public void setCollectionIds(List<Long> collectionIds) {
+		this.collectionIds = collectionIds;
+	}
+
+	public String getGeneralQuery() {
+		return generalQuery;
+	}
+
+	public void setGeneralQuery(String generalQuery) {
+		this.generalQuery = generalQuery;
+	}
     
 }

@@ -28,11 +28,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.FreemarkerService;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.MessageHelper;
@@ -57,6 +60,9 @@ public class EmailService {
     private JavaMailSender mailSender;
 
     @Autowired
+    private ResourceCollectionDao resourceCollectionDao;
+
+    @Autowired
     private GenericDao genericDao;
 
     @Autowired
@@ -68,6 +74,7 @@ public class EmailService {
     /*
      * sends a message using a freemarker template instead of a string; templates are stored in src/main/resources/freemarker-templates
      */
+    @Transactional(readOnly=true)
     public void queueWithFreemarkerTemplate(String templateName, Map<String,?> dataModel, Email email) {
         try {
             email.setMessage(freemarkerService.render(templateName, dataModel));
@@ -77,6 +84,7 @@ public class EmailService {
         }
     }
 
+    @Transactional(readOnly=true)
     public void sendMimeMessage(String templateName, Map<String,?> dataModel, Email email, List<File> attachments, List<File> inline) {
 
         try {
@@ -126,6 +134,7 @@ public class EmailService {
      * @param recipients
      *            set of String varargs
      */
+    @Transactional(readOnly=false)
     public void queue(Email email) {
         logger.debug("Queuing email {}", email);
         enforceFromAndTo(email);
@@ -149,6 +158,7 @@ public class EmailService {
      * @param recipients
      *            set of String varargs
      */
+    @Transactional(readOnly=false)
     public void send(Email email) {
         logger.debug("sending: {}", email);
         if (email.getNumberOfTries() < 1) {
@@ -226,9 +236,7 @@ public class EmailService {
         Map<String, Object> map = new HashMap<>();
         map.put("from", from);
         map.put("to", to);
-        map.put("baseUrl", CONFIG.getBaseUrl());
-        map.put("siteAcronym", CONFIG.getSiteAcronym());
-        map.put("serviceProvider", CONFIG.getServiceProvider());
+        setupBasicComponents(map);
         if (MapUtils.isNotEmpty(params)) {
             map.putAll(params);
         }
@@ -254,6 +262,7 @@ public class EmailService {
 
     }
 
+    @Transactional(readOnly=true)
     public List<Email> findEmailsWithStatus(Status status) {
         List<Email> allEmails = genericDao.findAll(Email.class);
         List<Email> toReturn = new ArrayList<>();
@@ -263,6 +272,47 @@ public class EmailService {
             }
         }
         return toReturn;
+    }
+
+    @Transactional(readOnly=false)
+    public void proccessPermissionsRequest(TdarUser requestor, Resource resource, TdarUser authenticatedUser, String comment, boolean reject,
+            EmailMessageType type, GeneralPermissions permission) {
+        Email email = new Email();
+        email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle());
+        email.setTo(requestor.getEmail());
+        Map<String, Object> map = new HashMap<>();
+        map.put("requestor", requestor);
+        map.put("resource", resource);
+        map.put("authorizedUser", authenticatedUser);
+        setupBasicComponents(map);
+        if (StringUtils.isNotBlank(comment)) {
+            map.put("message", comment);
+        }
+        String template = "email-form/access-request-granted.ftl";
+        if (reject) {
+            template = "email-form/access-request-rejected.ftl";
+        } else {
+            if (type != null) {
+                switch (type) {
+                    case SAA:
+                        template = "email-form/saa-accept.ftl";
+                        break;
+                    default:
+                        break;
+                }
+            }
+            resourceCollectionDao.addToInternalCollection(resource, requestor, permission);
+        }
+        queueWithFreemarkerTemplate(template, map, email);
+        email.setUserGenerated(false);
+        send(email);
+        
+    }
+
+    private void setupBasicComponents(Map<String, Object> map) {
+        map.put("baseUrl", CONFIG.getBaseUrl());
+        map.put("siteAcronym", CONFIG.getSiteAcronym());
+        map.put("serviceProvider", CONFIG.getServiceProvider());
     }
 
 }
