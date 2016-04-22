@@ -342,4 +342,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return internalCollection;
     }
 
+    public void makeCollectionWhiteLabel(ResourceCollection collection) {
+        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.INSERT_SQL_CREATE_WHITELABEL, collection.getId()));
+        query.executeUpdate();
+        // we're changing the nature of the underlying object, so evict from cache
+        evictFromCache(collection);
+        
+    }
+
 }

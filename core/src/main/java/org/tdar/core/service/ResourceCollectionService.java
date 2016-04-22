@@ -856,8 +856,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param name name that the method will use when filtering by exact name
      * @return
      */
+    @Transactional(readOnly=true)
     public List<ResourceCollection> findCollectionsWithName(TdarUser user, String name) {
         boolean isAdmin = authenticationAndAuthorizationService.isEditor(user);
         return getDao().findCollectionsWithName(user, isAdmin, name);
+    }
+
+    @Transactional(readOnly=false)
+    /**
+     * make a collection a whitelabel collection
+     * @param collection
+     */
+    public void makeCollectionWhiteLabel(ResourceCollection collection) {
+        getDao().makeCollectionWhiteLabel(collection);
+        
     }
 }

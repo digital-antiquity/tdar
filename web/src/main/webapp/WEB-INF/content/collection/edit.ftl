@@ -101,10 +101,6 @@
             </div>
         </#if>
 
-            <#if resourceCollection.whiteLabelCollection>
-                <@s.textarea cols=80 rows=20 name="resourceCollection.css" label="WhiteLabel CSS" />
-            </#if>
-
         </div>
 
         <div id="divBrowseOptionsTips" style="display:none">
