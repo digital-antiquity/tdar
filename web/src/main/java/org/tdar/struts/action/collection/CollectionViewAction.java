@@ -115,6 +115,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private FacetWrapper facetWrapper = new FacetWrapper();
 
 	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+
+    private boolean keywordSectionVisible = false;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -450,6 +452,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public void prepare() throws TdarActionException {
         super.prepare();
         if (!isRedirectBadSlug() && PersistableUtils.isNotTransient(getPersistable())) {
+            if (isKeywordSectionVisible()) {
             getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
             getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
             getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
@@ -458,7 +461,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_OTHER_KEYWORDS, OtherKeyword.class);
             getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, SiteTypeKeyword.class);
             getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
-
+            }
             try {
                 buildLuceneSearch();
             } catch (Exception e) {
@@ -539,5 +542,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 	public DisplayOrientation getOrientation() {
 		return getPersistable().getOrientation();
 	}
+
+    public boolean isKeywordSectionVisible() {
+        return keywordSectionVisible;
+    }
+
+    public void setKeywordSectionVisible(boolean keywordSectionVisible) {
+        this.keywordSectionVisible = keywordSectionVisible;
+    }
 
 }

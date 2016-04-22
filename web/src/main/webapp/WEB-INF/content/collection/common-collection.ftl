@@ -83,6 +83,7 @@
                     </p>
                 </#if>
             </div>
+            <#if keywordSectionVisible>
             <div class="row">
                 <div class="span4">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />
@@ -98,6 +99,7 @@
                 <@_keywordSection "Geographic Keywords" facetWrapper.facetResults['activeGeographicKeywords']![] "query" />
                 </div>
             </div>
+            </#if>
         </div>
         </#if>
 </#macro>
