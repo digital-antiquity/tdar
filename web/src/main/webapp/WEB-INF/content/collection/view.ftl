@@ -37,13 +37,6 @@ ${resourceCollection.name!"untitled collection"}</h1>
 
     <@commonCollection.javascript />
 
-<#if administrator && !whiteLabelCollection>
-<b>Make Whitelabel</b>
-<form action="/collection/admin/makeWhitelabel/${id?c}" method="POST">
-    <@s.submit cssClass="button btn tdar-button" />
-</form>
-</#if>
-
 </body>
 
 </#escape>
