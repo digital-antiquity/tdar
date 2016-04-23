@@ -1,4 +1,4 @@
-package org.tdar.struts.action.collection;
+package org.tdar.struts.action;
 
 import java.util.List;
 

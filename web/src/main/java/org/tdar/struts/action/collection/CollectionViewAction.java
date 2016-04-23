@@ -24,6 +24,14 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -45,6 +53,7 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
+import org.tdar.struts.action.ResourceFacetedAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -106,6 +115,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private FacetWrapper facetWrapper = new FacetWrapper();
 
 	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+
+    private boolean keywordSectionVisible = false;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -441,6 +452,16 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public void prepare() throws TdarActionException {
         super.prepare();
         if (!isRedirectBadSlug() && PersistableUtils.isNotTransient(getPersistable())) {
+            if (isKeywordSectionVisible()) {
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, TemporalKeyword.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, GeographicKeyword.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_OTHER_KEYWORDS, OtherKeyword.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, SiteTypeKeyword.class);
+            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
+            }
             try {
                 buildLuceneSearch();
             } catch (Exception e) {
@@ -452,6 +473,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
             }
         }
+        
     }
 
     @Override
@@ -520,5 +542,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 	public DisplayOrientation getOrientation() {
 		return getPersistable().getOrientation();
 	}
+
+    public boolean isKeywordSectionVisible() {
+        return keywordSectionVisible;
+    }
+
+    public void setKeywordSectionVisible(boolean keywordSectionVisible) {
+        this.keywordSectionVisible = keywordSectionVisible;
+    }
 
 }

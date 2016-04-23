@@ -4,7 +4,7 @@
  *
  */
 
-package org.tdar.web;
+package org.tdar.web.resource;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
@@ -20,6 +20,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 import org.w3c.dom.Element;
 
 import com.gargoylesoftware.htmlunit.html.DomNode;

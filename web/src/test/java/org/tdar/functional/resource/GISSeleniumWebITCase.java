@@ -106,12 +106,13 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             uploadFileAsync(restriction, file);
         }
         String path = submitGISForm();
-        assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
+        assertTrue("expecting to be on column-metadata page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
         try {
             waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
             submitForm("#submitButton");
         } catch (Exception e) {
+            logger.error("Exception changing page: {}", e);
             submitForm("#fakeSubmitButton");
         }
         takeScreenshot();

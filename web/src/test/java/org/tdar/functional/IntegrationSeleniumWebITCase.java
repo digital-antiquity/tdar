@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.functional.util.ByLabelText;
@@ -309,7 +310,11 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
         waitFor(elementToBeClickable(id(cbid)));
-        find(id(cbid)).click();
+        try {
+            find(id(cbid)).click();
+        } catch (StaleElementReferenceException stale) {
+            find(id(cbid)).click();
+        }
     }
 
     private void openDatasetsModal() throws InterruptedException {

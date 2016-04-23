@@ -15,9 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.ScrollableResults;
+import org.hibernate.*;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -342,4 +340,34 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return internalCollection;
     }
 
+    /**
+     * Convert a resource collection into a white-label collection.
+     * @param rc
+     * @return
+     */
+    public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
+        Long id = rc.getId();
+        detachFromSession(rc);
+        SQLQuery query = getCurrentSession().createSQLQuery(QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL);
+        query.setLong("id", id);
+        query.executeUpdate();
+        WhiteLabelCollection wlc = find(WhiteLabelCollection.class, id);
+        return wlc;
+    }
+
+    /**
+     * Detach the provided white-label collection and return a persisted resource collection object.
+     *
+     * @param wlc
+     * @return
+     */
+    public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
+        Long id = wlc.getId();
+        detachFromSession(wlc);
+        SQLQuery query = getCurrentSession().createSQLQuery(QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION);
+        query.setLong("id", id);
+        query.executeUpdate();
+        ResourceCollection rc = find(ResourceCollection.class, id);
+        return rc;
+    }
 }

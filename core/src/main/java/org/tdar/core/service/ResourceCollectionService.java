@@ -860,4 +860,33 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         boolean isAdmin = authenticationAndAuthorizationService.isEditor(user);
         return getDao().findCollectionsWithName(user, isAdmin, name);
     }
+
+    @Transactional
+    /**
+     * Convert a resource collection into a persisted white-label collection with all default values.
+     * Note that this has the effect of detaching the input collection from the session.
+     * @param rc
+     * @return
+     */
+    public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
+        if(rc.isWhiteLabelCollection()) {
+            return (WhiteLabelCollection)rc;
+        }
+        return getDao().convertToWhitelabelCollection(rc);
+    }
+
+    @Transactional
+    /**
+     * Detach the provided white-label collection and return a persisted resource collection object.
+     *
+     * @param wlc
+     * @return
+     */
+    public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
+        return getDao().convertToResourceCollection(wlc);
+    }
+
+
 }
+
+
