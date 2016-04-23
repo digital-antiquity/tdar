@@ -42,7 +42,7 @@ public class MakeCollectionWhiteLabelAction extends Base implements Preparable {
     @PostOnly
     @WriteableSession
     @Action(value = "makeWhitelabel/{id}", results={
-            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${collection.detailUrl}"),
+            @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
         if (collection instanceof WhiteLabelCollection) {

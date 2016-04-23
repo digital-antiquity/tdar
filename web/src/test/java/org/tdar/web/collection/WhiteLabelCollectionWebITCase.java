@@ -66,7 +66,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 			}
 			
 			if (name.contains("subCollections")) {
-				assertEquals("page contains subcollection", 2, StringUtils.countMatches(getPageText(), "display_orientationGRID"));
+				assertEquals("page contains subcollection 3 times (title 2x, description 1x)", 3, StringUtils.countMatches(getPageText(), "display_orientationGRID"));
 			}
 
 		}
