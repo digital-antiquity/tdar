@@ -398,12 +398,20 @@ View freemarker macros
 
 <#-- emit a link to the search page for the label of the supplied keyword (see @search)-->
     <#macro keywordSearch _keywords fieldName="query" quoted=true>
+    <#if _keywords[0]?has_content && _keywords[0].deleted?has_content >
         <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
             <#if !_keyword.deleted>
                 <@common.searchFor keyword=_keyword asList=false showOccurrence=false />
                 <#sep>&bull;</#sep> 
             </#if>
         </#list>
+    <#else>
+        <#list _keywords.toArray()?sort_by("label") as _keyword><#t>
+                ${_keyword}
+                <#sep>&bull;</#sep> 
+        </#list>
+    
+    </#if>
     </#macro>
 
 <#--emit the download count for the supplied information resource file -->

@@ -63,6 +63,10 @@ navigation freemarker macros
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />
                     <#local _large = (persistable.resources?size &gt; 50000) />
                     <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
+
+             <#if administrator && whiteLabelCollection>
+                        <@makeLink namespace "admin/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
+             </#if>
         </#if>
         <#nested>
 			</ul>

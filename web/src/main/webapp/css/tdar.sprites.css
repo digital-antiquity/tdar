@@ -636,7 +636,7 @@ h3.collection-mid-black:before {
     display: inline-block;
 }
 
-.icon-geospatial {
+.icon-geospatial.icon-red {
     background: url(../images/r4/resource-types-large.gif) -431px -2455px;
     background-repeat: no-repeat;
     width: 14px;
