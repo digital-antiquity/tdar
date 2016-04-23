@@ -17,6 +17,7 @@ public @interface RunWithTdarConfiguration {
     String TDAR_DISABLED_OBFUSCATION = "src/test/resources/tdar.no_obfs.properties";
     String BROKEN_KETTLE = "src/test/resources/tdar.broken.kettle.properties";
     String TDARDATA_SMALL_BATCH = "src/test/resources/tdar.small.batch.properties";
+    String SMALL_EXCEL = "src/test/resources/tdar.small.excel.properties";
 
     public String[] runWith() default {};
 

@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
@@ -415,6 +416,21 @@ public class DataTableColumn extends Persistable.Sequence<DataTableColumn> imple
         Set<String> values = new HashSet<>();
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
             if (Objects.equals(node, rule.getOntologyNode())) {
+                values.add(rule.getTerm());
+            }
+        }
+        return values;
+    }
+
+    @XmlTransient
+    @Transient
+    public Set<String> getUnmappedDataValues() {
+        Set<String> values = new HashSet<>();
+        if (getDefaultCodingSheet() == null || CollectionUtils.isEmpty(getDefaultCodingSheet().getCodingRules())) {
+        	return values;
+        }
+        for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
+            if (rule.getOntologyNode() == null) {
                 values.add(rule.getTerm());
             }
         }
