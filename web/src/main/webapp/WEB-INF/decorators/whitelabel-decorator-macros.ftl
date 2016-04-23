@@ -4,7 +4,7 @@
 <div class="searchheader">
     <div class="hero">
         <div class="container">
-            <div class="pull-right whitelabel-login-menu" ><@common.loginMenu false/></div>
+            <div class="pull-right whitelabel-login-menu" ><ul><@common.loginMenu false/></ul></div>
             <h2 class="color-title">${title}</h2>
             <#if subtitle?has_content>
             <p class="color-subtitle">${subtitle}</p>

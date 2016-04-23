@@ -190,7 +190,7 @@
 			 <li>
                 <b>Make Whitelabel</b>
                 <form action="/collection/admin/makeWhitelabel/${id?c}" method="POST">
-                    <@s.submit cssClass="button btn tdar-button" />
+                    <@s.submit cssClass="button btn tdar-button" id="makeWhiteLabelCollection" />
                 </form>
 			 
 			 </li>

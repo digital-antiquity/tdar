@@ -1,4 +1,4 @@
-package org.tdar.web;
+package org.tdar.web.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 
 public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 

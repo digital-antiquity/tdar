@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.junit.Test;
 import org.tdar.TestConstants;
+import org.tdar.web.resource.EditWebITCase;
 
 /**
  * @author Adam Brin
