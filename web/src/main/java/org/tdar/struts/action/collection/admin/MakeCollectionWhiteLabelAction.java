@@ -35,7 +35,7 @@ public class MakeCollectionWhiteLabelAction extends Base implements Preparable {
 
     @Override
     public void prepare() throws Exception {
-        collection = resourceCollectionService.find(id);
+        setCollection(resourceCollectionService.find(id));
     }
 
     @Override
@@ -45,10 +45,15 @@ public class MakeCollectionWhiteLabelAction extends Base implements Preparable {
             @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
-        if (collection instanceof WhiteLabelCollection) {
+        if (getCollection() instanceof WhiteLabelCollection) {
             return SUCCESS;
         }
-        resourceCollectionService.convertToWhitelabelCollection(collection);
+        try {
+        	setCollection(resourceCollectionService.convertToWhitelabelCollection(getCollection()));
+        	getLogger().debug(getCollection().getDetailUrl());
+        } catch (Exception e) {
+        	getLogger().error("{}",e,e);
+        }
         return SUCCESS;
     }
     
@@ -59,5 +64,13 @@ public class MakeCollectionWhiteLabelAction extends Base implements Preparable {
     public void setId(Long id) {
         this.id = id;
     }
+
+	public ResourceCollection getCollection() {
+		return collection;
+	}
+
+	public void setCollection(ResourceCollection collection) {
+		this.collection = collection;
+	}
 
 }
