@@ -64,4 +64,14 @@
             SELECT setval('download_authorization_id_seq', (SELECT MAX(id) FROM download_authorization)+1);
         </sql>
 	</changeSet>
+		<changeSet id="collection-parent" author="abrin">
+        <insert tableName="collection_parents">
+			<column name="collection_id" valueNumeric="2580"/>
+			<column name="parent_id" valueNumeric="1003"/>
+        </insert>
+		<update tableName="collection">
+		<column name="parent_id" valueNumeric="1003"/>
+		<where>id=2580</where>
+		</update>
+	</changeSet>
 </databaseChangeLog>
