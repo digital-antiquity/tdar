@@ -133,7 +133,7 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 		result.setProjectionModel(ProjectionModel.LUCENE);
 		resourceSearchService.generateQueryForRelatedResources(creator, null, result, MessageHelper.getInstance());
 		total = result.getTotalRecords();
-		if (total == 0) {
+		if (total == 0 || CollectionUtils.isEmpty(result.getResults())) {
 			return;
 		}
 		Set<Long> resourceIds = new HashSet<>();
