@@ -105,16 +105,11 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         for (File file : dir.listFiles()) {
             uploadFileAsync(restriction, file);
         }
-        String path = submitGISForm();
+        String path = submitGISForm("/add");
         assertTrue("expecting to be on column-metadata page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
-        try {
-            waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
-            submitForm("#submitButton");
-        } catch (Exception e) {
-            logger.error("Exception changing page: {}", e);
-            submitForm("#fakeSubmitButton");
-        }
+
+        submitGISForm("/columns/");
         takeScreenshot();
         waitForPageload();
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
@@ -123,7 +118,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         // may have issues with 'submitAction'
     }
 
-    private String submitGISForm() {
+    private String submitGISForm(String urlTest) {
         waitFor(ExpectedConditions.elementToBeClickable(By.id("submitButton")));
         takeScreenshot("before-submit");
         submitForm("#submitButton");
@@ -132,7 +127,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         takeScreenshot("after-submit");
         logger.trace(find("body").getText());
         // if we end up still on the add page, try and submit again
-        if (path.endsWith("add")) {
+        if (path.contains(urlTest)) {
             submitForm("#submitButton");
             waitForPageload();
             path = getDriver().getCurrentUrl();
@@ -161,7 +156,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         FileAccessRestriction restriction = FileAccessRestriction.PUBLIC;
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF));
         uploadFileAsync(restriction, new File(TestConstants.TEST_GEOTIFF_TFW));
-        String path = submitGISForm();
+        String path = submitGISForm("/add");
         logger.trace(find("body").getText());
         assertFalse("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
