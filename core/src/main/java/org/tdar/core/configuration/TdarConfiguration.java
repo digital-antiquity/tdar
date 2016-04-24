@@ -957,4 +957,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public Long getSAAContactId() {
         return assistant.getLongProperty("saa.contact_id", getAdminUserId());
     }
+
+	public boolean isSelenium() {
+		return assistant.getBooleanProperty("is.selenium", false);
+	}
 }
