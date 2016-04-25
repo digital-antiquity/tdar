@@ -127,6 +127,8 @@ public class AdminController extends AuthenticationAware.Base {
     @Action(value = "verifyFilestore", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
+    @PostOnly
+    @WriteableSession
     public String verifyFilestore() throws IOException {
         scheduledProcessService.cronVerifyTdarFiles();
         getActionMessages().add("Running ... this may take a while");
@@ -136,6 +138,8 @@ public class AdminController extends AuthenticationAware.Base {
     @Action(value = "updateDois", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
+    @PostOnly
+    @WriteableSession
     public String updateDois() throws IOException {
         scheduledProcessService.cronUpdateDois();
         getActionMessages().add("Running ... this may take a while");
@@ -145,6 +149,8 @@ public class AdminController extends AuthenticationAware.Base {
     @Action(value = "runWeekly", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
+    @PostOnly
+    @WriteableSession
     public String runWeekly() throws IOException {
         scheduledProcessService.queue(WeeklyStatisticsLoggingProcess.class);
         getActionMessages().add("Running ... this may take a while");
@@ -154,6 +160,8 @@ public class AdminController extends AuthenticationAware.Base {
     @Action(value = "rebuildCaches", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
+    @PostOnly
+    @WriteableSession
     public String rebuildCaches() {
         scheduledProcessService.queue(SitemapGeneratorProcess.class);
         scheduledProcessService.queue(RebuildHomepageCache.class);
@@ -161,18 +169,11 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "logAccounts", results = {
-            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
-    })
-    public String logAccounts() {
-        scheduledProcessService.queue(AccountUsageHistoryLoggingTask.class);
-        getActionMessages().add("Scheduled... check admin activity controller to test");
-        return SUCCESS;
-    }
-
     @Action(value = "buildCreators", results = {
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
+    @PostOnly
+    @WriteableSession
     public String buildCreators() {
         getLogger().debug("manually running 'build creator'");
         scheduledProcessService.queue(CreatorAnalysisProcess.class);
@@ -191,22 +192,22 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "fix-pluralization", results = {
-            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
-    @WriteableSession
-    @PostOnly
-    public String cleanupPluralization() {
-        authorityManagementService.cleanupKeywordDups(getAuthenticatedUser());
-        return SUCCESS;
-    }
-
-    @Action(value = "fix-institutions", results = {
-            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
-    @WriteableSession
-    public String cleanupInstitutionNames() {
-        authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
-        return SUCCESS;
-    }
+//    @Action(value = "fix-pluralization", results = {
+//            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
+//    @WriteableSession
+//    @PostOnly
+//    public String cleanupPluralization() {
+//        authorityManagementService.cleanupKeywordDups(getAuthenticatedUser());
+//        return SUCCESS;
+//    }
+//
+//    @Action(value = "fix-institutions", results = {
+//            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin/internal") })
+//    @WriteableSession
+//    public String cleanupInstitutionNames() {
+//        authorityManagementService.cleanupInstitutionsWithSpaces(getAuthenticatedUser());
+//        return SUCCESS;
+//    }
 
     public List<Pair<CultureKeyword, Integer>> getUncontrolledCultureKeywordStats() {
         if (uncontrolledCultureKeywordStats == null) {

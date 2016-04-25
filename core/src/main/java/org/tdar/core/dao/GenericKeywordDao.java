@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -177,8 +178,11 @@ public class GenericKeywordDao extends GenericDao {
      * @param resourceIds
      * @return
      */
-    public Map<Keyword, Integer> getRelatedKeywordCounts(Set<Long> resourceIds) {
+    public Map<Keyword, Integer> getRelatedKeywordCounts(final Set<Long> resourceIds_) {
         Map<Keyword, Integer> results = new HashMap<Keyword, Integer>();
+        
+        Set<Long> resourceIds = new HashSet<>(resourceIds_);
+        resourceIds.remove(null);
         if (CollectionUtils.isEmpty(resourceIds)) {
             return results;
         }

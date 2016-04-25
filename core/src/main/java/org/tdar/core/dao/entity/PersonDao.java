@@ -118,7 +118,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Person findAuthorityFromDuplicate(Creator dup) {
-        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
+        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         @SuppressWarnings("unchecked")
         List<BigInteger> result = query.list();
         if (CollectionUtils.isNotEmpty(result)) {
@@ -298,7 +298,15 @@ public class PersonDao extends Dao.HibernateBase<Person> {
      * @param resourceIds
      * @return
      */
-    public Map<Creator, Integer> getRelatedCreatorCounts(Set<Long> resourceIds) {
+    public Map<Creator, Integer> getRelatedCreatorCounts(Set<Long> resourceIds_) {
+        Map<Creator, Integer> results = new HashMap<Creator, Integer>();
+
+        Set<Long> resourceIds = new HashSet<>(resourceIds_);
+        resourceIds.remove(null);
+        if (CollectionUtils.isEmpty(resourceIds)) {
+            return results;
+        }
+
         String drop = TdarNamedQueries.CREATOR_DROP_TEMP;
         getCurrentSession().createSQLQuery(drop).executeUpdate();
 
@@ -312,7 +320,6 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         getCurrentSession().createSQLQuery(sql12).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
         String sql2 = TdarNamedQueries.CREATOR_ANALYSIS_INHERITED_CREATORS_INSERT;
         getCurrentSession().createSQLQuery(sql2).setParameterList(RESOURCE_IDS, resourceIds).executeUpdate();
-        Map<Creator, Integer> results = new HashMap<Creator, Integer>();
         String sql3 = TdarNamedQueries.CREATOR_ANALYSIS__SLECT_COUNTS;
         for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {
             Object[] row = (Object[]) row_;

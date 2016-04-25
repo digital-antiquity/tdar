@@ -15,6 +15,7 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -41,10 +42,12 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
 
     private List<UserAffiliation> affiliations = UserAffiliation.getUserSubmittableAffiliations();
 
-    public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/request/${id}";
+    public static final String SUCCESS_REDIRECT_REQUEST_ACCESS = "/resource/request/${id}?type=${type}&messageBody=${messageBody}";
     public static final String FORBIDDEN = "forbidden";
     private Long id;
     private Resource resource;
+    private String messageBody;
+    private EmailMessageType type;
 
     @Autowired
     private transient RecaptchaService recaptchaService;
@@ -104,4 +107,20 @@ public class AbstractRequestAccessController extends AuthenticationAware.Base im
 	public void setH(AntiSpamHelper h) {
 		this.h = h;
 	}
+
+    public EmailMessageType getType() {
+        return type;
+    }
+
+    public void setType(EmailMessageType type) {
+        this.type = type;
+    }
+
+    public String getMessageBody() {
+        return messageBody;
+    }
+
+    public void setMessageBody(String messageBody) {
+        this.messageBody = messageBody;
+    }
 }
