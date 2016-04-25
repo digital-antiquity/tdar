@@ -487,9 +487,10 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     @Transactional(readOnly = false)
-    public void saveInstitutionForController(Institution persistable, String name, FileProxy fileProxy) {
+    public void saveInstitutionForController(Institution persistable, String name, String email, FileProxy fileProxy) {
         // name has a unique key; so we need to be careful with it
         persistable.setName(name);
+        persistable.setEmail(email);
         getDao().saveOrUpdate(persistable);
         if (fileProxy != null) {
             simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
