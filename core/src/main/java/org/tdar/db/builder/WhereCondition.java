@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public class WhereCondition extends AbstractSqlTools implements Serializable {
 
@@ -23,7 +24,12 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
     private Object value;
     private Condition condition = Condition.AND;
     private List<Object> inValues = new ArrayList<>();
+    // THIS MAY SEEM SILLY, but adding to be clearer when the SQL is produced what the second set of unmapped values is vs. the selected set  
+    private List<Object> moreInValues = new ArrayList<>();
+    private String moreInComment;
+    private String inComment;
     private boolean includeNullsWithInQuery;
+    private String likeValue;
 
     public WhereCondition(String name) {
         this.column = name;
@@ -75,23 +81,42 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
 
     public String toSql() {
         StringBuilder sb = new StringBuilder(" ");
-        if (includeNullsWithInQuery) {
-            sb.append(" (");
-        }
         sb.append(quote(column));
-        if (CollectionUtils.isEmpty(inValues)) {
+        if (CollectionUtils.isEmpty(inValues) && CollectionUtils.isEmpty(moreInValues)) {
             buildSimpleCondition(sb);
         } else {
-            createInPart(sb, getInValues());
+            addComment(sb,inComment);
+            if (!CollectionUtils.isEmpty(inValues)) {
+                createInPart(sb, getInValues());
+            }
+            addComment(sb, moreInComment);
+            if (!CollectionUtils.isEmpty(moreInValues)) {
+                if (!CollectionUtils.isEmpty(inValues)) {
+                    sb.append(" OR ").append(quote(column));
+                }
+                createInPart(sb, getMoreInValues());
+            }
             if (includeNullsWithInQuery) {
                 sb.append(" OR ").append(quote(column)).append(" IS NULL");
             }
         }
-        if (includeNullsWithInQuery) {
-            sb.append(") ");
+        
+        if (sb.length() > 0 && StringUtils.isNotBlank(likeValue)) {
+            sb.append(" OR ");
+            sb.append(quote(column)).append(" LIKE ");
+            sb.append(quote(likeValue,false));
         }
+        
+        sb.insert(0, "(");
+        sb.append(") ");
 
         return sb.toString();
+    }
+
+    private void addComment(StringBuilder sb, String msg) {
+        if (StringUtils.isNotBlank(msg)) {
+            sb.append(" /** ").append(msg).append(" **/\n");
+        }
     }
 
     private void buildSimpleCondition(StringBuilder sb) {
@@ -119,6 +144,34 @@ public class WhereCondition extends AbstractSqlTools implements Serializable {
             }
             appendValue(sb, getValue());
         }
+    }
+
+    public List<Object> getMoreInValues() {
+        return moreInValues;
+    }
+
+    public void setMoreInValues(List<Object> moreInValues) {
+        this.moreInValues = moreInValues;
+    }
+
+    public void addOrLikeValue(String val) {
+        this.likeValue = val;
+    }
+
+    public String getMoreInComment() {
+        return moreInComment;
+    }
+
+    public void setMoreInComment(String moreInComment) {
+        this.moreInComment = moreInComment;
+    }
+
+    public String getInComment() {
+        return inComment;
+    }
+
+    public void setInComment(String inComment) {
+        this.inComment = inComment;
     }
 
 }

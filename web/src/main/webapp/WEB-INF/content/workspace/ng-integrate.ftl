@@ -176,6 +176,9 @@
                                                                 <!-- FIXME: shouldn't this be the dataset name? -->
                                                                 <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
                                                             </div>
+                                                            <div ng-switch-when="0">
+                                                                <i>n/a</i>
+                                                            </div>
                                                             <div ng-switch-default>
                                                                 <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
                                                             </div>

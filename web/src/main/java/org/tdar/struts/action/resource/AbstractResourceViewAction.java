@@ -1,6 +1,5 @@
 package org.tdar.struts.action.resource;
 
-import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,10 +52,7 @@ import org.tdar.struts.action.AbstractPersistableViewableAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.transform.MetaTag;
 import org.tdar.transform.OpenUrlFormatter;
-import org.tdar.transform.SchemaOrgMetadataTransformer;
-import org.tdar.transform.ScholarMetadataTransformer;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.ResourceCitationFormatter;
@@ -158,9 +154,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         }
         Collections.sort(authorshipProxies);
         Collections.sort(creditProxies);
-    }
-
-    protected void loadCustomMetadata() throws TdarActionException {
     }
 
     public String getOpenUrl() {

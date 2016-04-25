@@ -3,6 +3,8 @@ package org.tdar.struts.action.codingSheet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -21,9 +23,11 @@ import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CodingSheetService;
+import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.ontology.OntologyNodeSuggestionGenerator;
 import org.tdar.struts.action.*;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
@@ -60,6 +64,8 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     private transient AuthorizationService authorizationService;
     @Autowired
     private transient CodingSheetService codingSheetService;
+    @Autowired
+    private transient DataTableService dataTableService;
     
     private CodingSheet codingSheet;
     private List<OntologyNode> ontologyNodes;
@@ -67,6 +73,15 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     private Ontology ontology;
     private Long id;
     private SortedMap<String, List<OntologyNode>> suggestions;
+    private Set<String> missingCodingKeys;
+
+    private List<CodingRule> specialRules = new ArrayList<>();
+
+    @Override
+    public void prepare() throws Exception {
+        prepareAndLoad(this, RequestType.EDIT);
+
+    }
 
     @SkipValidation
     @Action(value = MAPPING, results = {
@@ -77,16 +92,55 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         getLogger().debug("loading ontology mapped columns for {}", getPersistable());
         Ontology ontology = getCodingSheet().getDefaultOntology();
+        setMissingCodingKeys(dataTableService.getMissingCodingKeys(getCodingSheet(), null));
         setOntologyNodes(ontology.getSortedOntologyNodesByImportOrder());
         getLogger().debug("{}", getOntologyNodes());
         setCodingRules(new ArrayList<CodingRule>(getCodingSheet().getSortedCodingRules()));
-
         // generate suggestions for all distinct column values or only those columns that aren't already mapped?
+        addSpecialCodingRules();
         OntologyNodeSuggestionGenerator generator = new OntologyNodeSuggestionGenerator();
         suggestions = generator.applySuggestions(getCodingSheet().getCodingRules(), getOntologyNodes());
         // load existing ontology mappings
 
         return SUCCESS;
+    }
+
+    /**
+     * We have a few special rules:
+     * NULL , MISSING, and UNMAPPED
+     * 
+     * for these rules, we want to group them separately for the user
+     */
+    private void addSpecialCodingRules() {
+        if (!TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+            return;
+        }
+        Map<String, CodingRule> codeToRuleMap = getCodingSheet().getCodeToRuleMap();
+        CodingRule _null = codeToRuleMap.get(CodingRule.NULL.getCode());
+        if (_null != null) {
+            getCodingRules().remove(_null);
+            getSpecialRules().add(_null);
+        } else {
+            getSpecialRules().add(CodingRule.NULL);
+        }
+
+        CodingRule _missing = codeToRuleMap.get(CodingRule.MISSING.getCode());
+        if (_missing != null) {
+            getCodingRules().remove(_missing);
+            getSpecialRules().add(_missing);
+        } else {
+            getSpecialRules().add(CodingRule.MISSING);
+        }
+
+        CodingRule _unmapped = codeToRuleMap.get(CodingRule.UNMAPPED.getCode());
+        if (_unmapped != null) {
+            getCodingRules().remove(_unmapped);
+            getSpecialRules().add(_unmapped);
+
+        } else {
+            getSpecialRules().add(CodingRule.UNMAPPED);
+        }
+
     }
 
     @WriteableSession
@@ -100,6 +154,7 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
     public String saveValueOntologyNodeMapping() throws TdarActionException {
         // checkValidRequest(RequestType.MODIFY_EXISTING, this, InternalTdarRights.EDIT_ANYTHING);
         try {
+            getCodingRules().addAll(getSpecialRules());
             List<String> mappingIssues = codingSheetService.updateCodingSheetMappings(getCodingSheet(), getAuthenticatedUser(), getCodingRules());
             if (CollectionUtils.isNotEmpty(mappingIssues)) {
                 addActionMessage(getText("codingSheetMappingController.could_not_map", Arrays.asList(mappingIssues)));
@@ -200,14 +255,24 @@ public class CodingSheetMappingController extends AuthenticationAware.Base imple
         return InternalTdarRights.EDIT_ANY_RESOURCE;
     }
 
-    @Override
-    public void prepare() throws Exception {
-        prepareAndLoad(this, RequestType.EDIT);
-
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Set<String> getMissingCodingKeys() {
+        return missingCodingKeys;
+    }
+
+    public void setMissingCodingKeys(Set<String> missingCodingKeys) {
+        this.missingCodingKeys = missingCodingKeys;
+    }
+
+    public List<CodingRule> getSpecialRules() {
+        return specialRules;
+    }
+
+    public void setSpecialRules(List<CodingRule> specialRules) {
+        this.specialRules = specialRules;
     }
 
 }

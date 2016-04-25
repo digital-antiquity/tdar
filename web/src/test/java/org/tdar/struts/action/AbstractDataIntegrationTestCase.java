@@ -118,7 +118,12 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         Set<Long> idSet = PersistableUtils.createIdMap(toSave).keySet();
         for (Long toCheck : idSet) {
             CodingRule find = genericService.find(CodingRule.class, toCheck);
-            assertNotNull(find.getOntologyNode());
+            if (find == null) {
+                logger.error("{} {}", toCheck, find);
+                logger.error("{}", toSave);
+            } else {
+                assertNotNull(find.getOntologyNode());
+            }
         }
         Assert.assertNotSame(0, toSave.size());
     }

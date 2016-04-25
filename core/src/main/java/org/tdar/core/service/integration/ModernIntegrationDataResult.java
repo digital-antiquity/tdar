@@ -2,6 +2,7 @@ package org.tdar.core.service.integration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +14,8 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.db.model.PostgresDatabase;
+import org.tdar.utils.MessageHelper;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -115,8 +118,15 @@ public class ModernIntegrationDataResult implements Serializable {
     @JsonView(JsonIntegrationFilter.class)
     public List<String> getPreviewColumnLabels() {
         List<String> labels = new ArrayList<String>();
+        MessageHelper instance = MessageHelper.getInstance();
+        logger.debug("{}",integrationContext.getTempTable().getDataTableColumns());
         for (DataTableColumn dtc : integrationContext.getTempTable().getDataTableColumns()) {
             labels.add(dtc.getDisplayName());
+
+            if (dtc.getName().contains(PostgresDatabase.INTEGRATION_SUFFIX)) {
+                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value"));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value"));
+            }
         }
         return labels;
     }
