@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!-- vim:sts=2:sw=2: -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       ">
+
+    <!-- If we want the MockAuthentication Service activated set the property 
+        "enableMockAuth" via JVM command line for the test like so: -DenableMockAuth=true -->
+
+<!--
+         <bean id="AuthenticationProvider" 
+            class="org.tdar.core.dao.external.auth.MockAuthenticationProvider">
+-->            
+            <!-- define local passwords and rights -->
+<!-- 
+            <property name="localValues">
+                <map>
+ -->                    
+                    <!-- Key is username -->
+
+<!--                     <entry key="adminuser">
+                        <bean
+                            class="org.tdar.core.dao.external.auth.MockAuthenticationInfo">
+                            <property name="memberships">
+                                <set>
+                                    <value>TDAR_USERS</value>
+                                </set>
+                            </property>
+                            <property name="password" value="" />
+                        </bean>
+                    </entry>
+                </map>
+            </property>
+        </bean>
+
+ -->
+
+      <!-- <bean id="DoiProvider" class="org.tdar.core.dao.external.pid.EZIDDao" /> -->
+
+ 
+  
+    <!-- Site specific labels -->
+    <!-- <import resource="spring-tag-ahad.xml" /> -->
+
+
+</beans>

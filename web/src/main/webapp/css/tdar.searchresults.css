@@ -1,0 +1,134 @@
+
+/* fancy double-border for top of search results. */
+div.tdarresults {
+    border-top: double #222;
+    border-bottom: double #222;
+    padding-bottom: 3em;
+    margin-bottom: 0.1em;
+}
+
+/* first row of grid results should have margin similar to rows that follow an HR */
+div.tdarresults .row.GRID:first-child div.listItem {
+    margin-top: 24px;
+}
+
+/* override the bootstrap defaults for the 'sort by' control */
+#divResultsSortControl label {
+    font-size: 10pt;
+}
+
+#divResultsSortControl .control-group {
+    margin-bottom: 0;
+}
+
+.collectionResultsBox {
+    border:1px solid #999 !important;
+    padding:10px !important;
+    margin-top:1em;
+    margin-bottom:1em;
+}
+
+
+/* javascript:javascript:$('.luceneScore').fadeIn('fast') */
+.luceneScore, .luceneExplanation {
+    display: none;
+}
+
+/* counter-acting ff's rendering of right-aligned elements in labels */
+select.searchType {
+    text-align: left !important;
+}
+
+.searchresults h2, .searchresults h3, .searchresults h4, .searchresults p, .searchresults aside li {
+    margin: 0;
+    padding: 0;
+}
+
+.searchresults h1 {
+    font-size: 30px;
+    line-height: 34px;
+    font-weight: 700;
+    margin: 45px 0 50px 40px;
+}
+
+h2.totalRecords {
+    font-size: 20px;
+    line-height: 24px;
+    margin-top: 7px;
+    margin-bottom: 10px;
+}
+
+.searchresults aside h4 {
+    font-size: 14px;
+    font-weight: 700;
+    border-top: 1px solid #e5e5e5;
+    padding-top: 15px;
+    margin-bottom: 5px;
+    margin-top: 20px !important;
+}
+
+.searchresults aside ul, .searchresults aside li {
+    margin: 0 !important;
+    padding: 0;
+    list-style: none;
+    clear: left;
+}
+
+.searchresults aside ul {
+    margin-bottom: 15px;
+}
+
+.searchresults aside li, .searchresults aside label {
+    font-size: 13px;
+    line-height: 23px;
+    color: #1b1a18;
+    margin: 0;
+}
+
+.searchresults aside label.checked {
+    color: #7a1501;
+}
+
+.searchresults aside label span {
+    color: #7d7a77 !important;
+}
+
+.searchresults aside li input {
+    float: left;
+    margin: 7px 7px 0 0;
+}
+
+.searchresults ul.tools {
+    margin: 0 0 20px 0 !important;
+}
+
+.searchresults ul.tools li {
+    line-height: 14px;
+    margin-bottom: 5px !important;
+}
+
+.searchresults ul.tools li:first-child {
+    background-position: 0 1px;
+}
+
+.searchresults .sort p {
+    font-size: 13px;
+    font-weight: 700;
+    margin: 8px 12px 0 0;
+}
+
+.searchresults article h3 {
+    font-size: 20px;
+    line-height: 24px;
+    font-weight: 700;
+    clear: both;
+}
+
+.searchresults hr {
+    margin: 24px 0;
+}
+
+.searchresults article p {
+    font-size: 14px;
+    line-height: 20px;
+}
