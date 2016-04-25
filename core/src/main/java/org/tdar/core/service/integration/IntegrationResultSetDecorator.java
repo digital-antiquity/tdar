@@ -21,6 +21,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.db.model.abstracts.Database;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Wrapping an iterator for a ResultSet which is used by the workbook to write out the results. This wrapper does two separate things:
@@ -114,20 +115,20 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 resultSetPosition = resultSetPosition + 1;
                 // HANDLE NULL
                 String mappedVal = (String) row[resultSetPosition];
-                boolean isNullOrMissing = false;
+                String type = "";
                 if (StringUtils.isBlank(value)) {
                     value = MessageHelper.getMessage("database.null_empty_integration_value");
                     if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
                         mappedVal = CodingRule.NULL.getTerm();
+                        type = CodingRule.NULL.getTerm();
                     }
-                    isNullOrMissing = true;
                 }
                 
                 if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
                     // HANDLE MISSING
                     if (StringUtils.contains(value, Database.NO_CODING_SHEET_VALUE)) {
                         mappedVal = CodingRule.MISSING.getTerm();
-                        isNullOrMissing = true;
+                        type = CodingRule.MISSING.getTerm();
                     }
                 }
                 
@@ -135,9 +136,15 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
                 if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
-                    if (!isNullOrMissing && mappedOntologyNode == null) {
+                    Map<String, OntologyNode> nodeMap = realColumn.getDefaultCodingSheet().getTermToOntologyNodeMap();
+                    if (StringUtils.isNotBlank(type)) {
+                        // if type == NULL || MISSING, try and get value:
+                        mappedOntologyNode = nodeMap.get(mappedVal);
+                        
+                    } else if ( mappedOntologyNode == null) {
                         mappedVal = CodingRule.UNMAPPED.getTerm();
-                        mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
+                        type = CodingRule.UNMAPPED.getTerm();
+                        mappedOntologyNode = nodeMap.get(value);
                     }
                 }
                 
@@ -152,13 +159,13 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 }
                 row[resultSetPosition] = mappedVal;
                 values.add(mappedVal);
-                // increment for "sort" column
-                resultSetPosition++;
-                if (row[resultSetPosition] != null) {
-                    values.add(row[resultSetPosition].toString());
+
+                if (PersistableUtils.isNotNullOrTransient(mappedOntologyNode)) {
+                    values.add(mappedOntologyNode.getImportOrder().toString());
                 } else {
                     values.add(null);
                 }
+                values.add(type);
             }
             resultSetPosition++;
         }

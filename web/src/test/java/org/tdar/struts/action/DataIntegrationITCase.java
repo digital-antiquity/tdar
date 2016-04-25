@@ -19,7 +19,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.ldap.odm.core.impl.UnmanagedClassException;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
@@ -279,7 +278,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
                 if (stringCellValue.equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }
-                if (row.getCell(4).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+                if (row.getCell(5).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenSpeciesNull = true;
                 }
             }

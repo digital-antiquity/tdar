@@ -31,6 +31,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -282,6 +283,18 @@ public class ExcelWorkbookWriter {
     }
 
     /**
+     * create a workbook, but with a specific name and vesrion
+     * 
+     * @param name
+     * @param version
+     * @return
+     */
+    public Sheet createWorkbook(String name, SpreadsheetVersion version) {
+        Workbook createWorkbook = createWorkbook(version);
+        return createWorkbook.createSheet(name);
+    }
+
+    /**
      * Create a cell and set the value
      * 
      * @param row
@@ -421,7 +434,7 @@ public class ExcelWorkbookWriter {
      * @param fieldNames
      */
     public CellStyle addDocumentHeaderRow(Sheet sheet, int rowNum, int columnNumber, List<String> fieldNames) {
-        CellStyle headerStyle = CellFormat.build(Style.BOLD).setFontSize((short) 14).setBackgroundColor(new HSSFColor.WHITE()).createStyle(sheet.getWorkbook());
+        CellStyle headerStyle = CellFormat.build(Style.BOLD).setFontSize((short) 14).createStyle(sheet.getWorkbook());
         addRow(sheet, rowNum, columnNumber, fieldNames, headerStyle);
         return headerStyle;
     }
@@ -564,6 +577,15 @@ public class ExcelWorkbookWriter {
                 addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
             }
         }
+        
+        if (proxy.hasFreezeRow()) {
+            sheet.createFreezePane(0, proxy.getStartRow()+1, 0, proxy.getFreezeRow()+1);
+        }
+        
+        if (proxy.isAutosizeCols()) {
+            autoSizeColumnsOnSheet(sheet);
+        }
+        
         proxy.postProcess();
     }
 
