@@ -66,6 +66,7 @@ import org.tdar.db.builder.WhereCondition.Condition;
 import org.tdar.db.builder.WhereCondition.ValueCondition;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.db.model.abstracts.Database;
 import org.tdar.db.model.abstracts.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.utils.MessageHelper;
@@ -998,7 +999,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
         builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
-            logger.info("table:" + table + " column: " + integrationColumn);
+            logger.trace("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             if (column == null) {
                 builder.getColumns().add(null);
@@ -1010,8 +1011,20 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     builder.getColumns().add(null);
 
                     WhereCondition cond = new WhereCondition(column.getName());
+                    cond.setInComment("mapped values");
                     for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                         cond.getInValues().addAll(column.getMappedDataValues(node));
+                    }
+                    boolean includeUnmapepdValues = true;
+                    boolean includeUncodedValues = true;
+                    
+                    if (includeUnmapepdValues) {
+                        cond.setMoreInComment("unmapped values");
+                        cond.getMoreInValues().addAll(column.getUnmappedDataValues());
+                    }
+                    
+                    if (includeUncodedValues) {
+                        cond.addOrLikeValue(Database.NO_CODING_SHEET_VALUE + "%");
                     }
 
                     boolean nullIncluded = integrationColumn.isNullIncluded();
