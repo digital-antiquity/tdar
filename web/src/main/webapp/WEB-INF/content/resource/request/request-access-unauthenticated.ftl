@@ -46,7 +46,9 @@
                 <div class="authpane">
                     <div class="authfields">
                         <@auth.login showLegend=false>
-					    <@s.hidden name="id" />
+                        <@s.hidden name="id" />
+                        <@s.hidden name="type" />
+                        <@s.hidden name="messageBody" />
 
                     </div>
                     <div class="form-actions">
