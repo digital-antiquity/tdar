@@ -561,6 +561,20 @@ Common macros used in multiple contexts
                             <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
                         </tr>
                         </#list>
+                        <#list missingCodingKeys![]>
+                        <tr>
+                        <td colspan=4><b>The following coding rules exist in datasets mapped to this coding sheet, but are not in the coding sheet</b></td>
+                        </tr>
+                        <#items as missing>
+                        <tr>
+                            <td class="red">${missing}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </#items>
+                        </#list>
+
                     </tbody>
                 </table>
             </div>

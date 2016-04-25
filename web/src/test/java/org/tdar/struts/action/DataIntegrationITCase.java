@@ -11,12 +11,15 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ldap.odm.core.impl.UnmanagedClassException;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
@@ -252,7 +255,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // assuming we're dealing with alexandria here
         boolean seenElementNull = false;
         boolean seenSpeciesNull = false;
-
+        boolean seenUnmapped = false;
+        
         ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
         logger.trace("result: {}", result);
         Workbook workbook = result.getWorkbook().getWorkbook();
@@ -260,11 +264,19 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();
-            // logger.trace(" {} | {} | {} | {} | {}", row.getCell(0).getRichStringCellValue(), row.getCell(1).getRichStringCellValue(),
-            // row.getCell(2).getRichStringCellValue(), row.getCell(3).getRichStringCellValue(), row.getCell(4).getRichStringCellValue());
+            if (logger.isTraceEnabled()) {
+                logger.trace(" {} | {} | {} | {} | {}", getVal(row, 0), getVal(row, 1), getVal(row, 2), getVal(row, 3), getVal(row, 4));
+            }
+            
             if (row.getCell(1) != null) {
                 // avoid note column
-                if (row.getCell(1).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
+                String stringCellValue = row.getCell(1).getStringCellValue();
+                
+                if (StringUtils.equals(stringCellValue,"rockfish")) {
+                    seenUnmapped = true;
+                }
+                
+                if (stringCellValue.equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }
                 if (row.getCell(4).getStringCellValue().equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
@@ -273,8 +285,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             }
         }
         // assertTrue(resultingDataTableColumns.containsAll(displayRulesColumns));
-        assertTrue(seenElementNull);
-        assertTrue(seenSpeciesNull);
+        assertTrue("should have seen null element values",seenElementNull);
+        assertTrue("should have seen 'unmapped values'",seenUnmapped);
+        assertTrue("should have seen null species values",seenSpeciesNull);
 
         // confirm that the pivot sheet is created properly with names and at least one known value
         Sheet summarySheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
@@ -312,6 +325,13 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // assertions on descriptions too?
 
         logger.info("hi, we're done here");
+    }
+
+    private RichTextString getVal(Row row, int val) {
+        if (row.getCell(val) != null) {
+            return row.getCell(val).getRichStringCellValue();
+        }
+        return null;
     }
 
     /**
@@ -401,6 +421,8 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
         ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
 
+        int unmapped = 0;
+        int nulls = 0;
         Sheet sheet = result.getWorkbook().getWorkbook().getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
@@ -414,12 +436,23 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
                 if (value2.equalsIgnoreCase("tarsal")) {
                     tarsal++;
+                    continue;
                 }
                 if (value2.equalsIgnoreCase("ulna")) {
                     ulna++;
+                    continue;
                 }
                 if (value2.equalsIgnoreCase("astragalus")) {
                     astragalus++;
+                    continue;
+                }
+                if (StringUtils.equals(CodingRule.UNMAPPED.getTerm(), value2)) {
+                    unmapped++;
+                    continue;
+                }
+                if (StringUtils.equals(CodingRule.NULL.getTerm(), value2)) {
+                    nulls++;
+                    continue;
                 }
                 if (value2.equalsIgnoreCase(MessageHelper.getMessage("database.null_empty_mapped_value"))) {
                     empty++;
@@ -430,11 +463,18 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         logger.info("astragalus: {}", astragalus);
         logger.info("ulna: {}", ulna);
         logger.info("empty: {}", empty);
+        logger.info("unmapped: {}", unmapped);
+        logger.info("nulls: {}", nulls);
         assertEquals(41, astragalus);
         assertEquals(111, tarsal);
         assertEquals(332, ulna);
-        assertEquals(276, empty);
         assertTrue(seenElementNull);
+        if (getTdarConfiguration().includeSpecialCodingRules()) {
+            assertEquals("expect to see NULL value",276,nulls);
+            assertEquals("expect to see Unmapped", 9187, unmapped);
+        } else {
+            assertEquals(276, empty);
+        }
     }
 
     @Override
