@@ -284,16 +284,4 @@ public class ResourceSearchService extends AbstractSearchService {
 
     }
 
-    public LuceneSearchResultHandler<Indexable> mulitCoreSearch(String string, LuceneSearchResultHandler<Indexable> resultHandler) throws ParseException, SolrServerException, IOException {
-        QueryBuilder q = new QueryBuilder() {
-
-            @Override
-            public String getCoreName() {
-                return "multicore";
-            }
-        };
-        q.append(new GeneralSearchQueryPart(string));
-        searchService.handleSearch(q, resultHandler, MessageHelper.getInstance());
-        return resultHandler;
-    }
 }
