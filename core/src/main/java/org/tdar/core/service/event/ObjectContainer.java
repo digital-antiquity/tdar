@@ -1,16 +1,21 @@
 package org.tdar.core.service.event;
 
-import java.util.Date;
-
 import org.tdar.core.event.EventType;
 
+/**
+ * Generic object for holding a event result. It has a reference most likely to
+ * the File, the Id, the EventType, and the current time in Nanoseconds.
+ * 
+ * @author abrin
+ *
+ * @param <T>
+ */
 public abstract class ObjectContainer<T> {
 
 	String id;
 	T doc;
 	Long dateAdded = System.nanoTime();
 	private EventType eventType;
-
 
 	public ObjectContainer(T doc, String generateId, EventType eventType) {
 		this.doc = doc;

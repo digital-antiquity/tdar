@@ -5,6 +5,11 @@ import java.io.File;
 import org.tdar.core.event.EventType;
 import org.tdar.filestore.FilestoreObjectType;
 
+/**
+ * Default ObjectContainer tracking a file that needs to be logged in the filestore
+ * @author abrin
+ *
+ */
 public class LoggingObjectContainer extends ObjectContainer<File> {
 
 	private FilestoreObjectType filestoreObjectType;
