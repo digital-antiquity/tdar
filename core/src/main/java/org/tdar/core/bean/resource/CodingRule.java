@@ -51,7 +51,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         
         @Override
         public String getCode() {
-            return "_NULL";
+            return "__NULL";
         }
 
         public String getFormattedTerm() {
@@ -72,7 +72,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         
         @Override
         public String getCode() {
-            return "_MISSING";
+            return "__MISSING";
         }
         
         public String getFormattedTerm() {
@@ -93,7 +93,7 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
         
         @Override
         public String getCode() {
-            return "_UNMAPPED";
+            return "__UNMAPPED";
         }
 
         public String getFormattedTerm() {

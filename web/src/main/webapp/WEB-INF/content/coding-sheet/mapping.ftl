@@ -56,6 +56,8 @@
             </#list>
 
         <label class="control-label">Special Mappings</label>
+        <i>These mapping rules are not in the dataset, but can be used to map 'special' values to an ontology. There are 3 custom mappings that represent NULLs in the database, entries missing from the coding sheet, and entries that are not mapped to the ontology (unmapped).</i>
+
             <#list specialRules as rule>
                 <div class="controls controls-row mappingPair ${rule.code}" id="row_s_${rule.code}" data-idx="${(10000 + rule_index)?c}">
                     <@s.hidden name='specialRules[${rule_index?c}].id' />

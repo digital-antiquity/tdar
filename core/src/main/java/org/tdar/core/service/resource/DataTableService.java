@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 import org.tdar.core.dao.resource.DataTableColumnDao;
@@ -115,9 +116,17 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         for (DataTable table : tables) {
             for (DataTableColumn col : table.getDataTableColumns()) {
                 if (PersistableUtils.isEqual(col.getDefaultCodingSheet(), sheet)) {
+                	try {
                         List<String> selectNonNullDistinctValues = tdarDataImportDatabase.selectNonNullDistinctValues(col,true);
                         logger.debug("unique values for {}: {}", table.getName(), selectNonNullDistinctValues);
                         uniqueValues.addAll(selectNonNullDistinctValues);
+                	} catch(Exception e) {
+                		if (TdarConfiguration.getInstance().isProductionEnvironment()) {
+                			throw e;
+                		} else {
+                			logger.warn("table doesn't exist: {}", table.getName());
+                		}
+                	}
                 }
             }
         }
