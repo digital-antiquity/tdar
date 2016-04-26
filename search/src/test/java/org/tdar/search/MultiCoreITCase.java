@@ -17,7 +17,7 @@ public class MultiCoreITCase extends AbstractResourceSearchITCase {
     @Test
     @Ignore
     @Rollback
-    public void testExpermientalProjectionModel() throws SolrServerException, IOException, ParseException {
+    public void testMulticoreSearch() throws SolrServerException, IOException, ParseException {
         SearchResult<Indexable> result = new SearchResult<>(10000);
         ResourceCollection createAndSaveNewResourceCollection = createAndSaveNewResourceCollection("test test");
         searchIndexService.index(createAndSaveNewResourceCollection);

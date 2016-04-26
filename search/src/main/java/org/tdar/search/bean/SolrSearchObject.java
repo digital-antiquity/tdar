@@ -80,7 +80,7 @@ public class SolrSearchObject<I extends Indexable> {
 		if (coreName.equals("multicore")) {
 		    logger.debug("HI : MULTICORE");
 		    multiCore = "resources,collections";
-		    coreName = multiCore;
+		    coreName = "resources";
 		}
 		this.setMaxResults(handler.getRecordsPerPage());
 		this.setFirstResult(handler.getStartRecord());
@@ -183,12 +183,15 @@ public class SolrSearchObject<I extends Indexable> {
 		this.resultSize = recordsPerPage;
 	}
 
-	public SolrParams getSolrParams() {
+	public SolrQuery getSolrParams() {
 		SolrQuery solrQuery = new SolrQuery();
 		setQueryString(builder.generateQueryString());
 		solrQuery.setParam("q", getQueryString());
 		solrQuery.setParam("start", Integer.toString(startRecord));
-		solrQuery.setParam("shards", multiCore);
+		if (StringUtils.isNotBlank(multiCore)) {
+			solrQuery.setParam("shards", multiCore);
+			solrQuery.setRequestHandler("/multicore");
+		}
 		solrQuery.setParam("rows", Integer.toString(resultSize));
 		String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
 		solrQuery.setParam("_logtag", tag);
