@@ -570,7 +570,7 @@ Common macros used in multiple contexts
                         <#list resource.sortedCodingRules as codeRule>
                         	<#if codeRule.code?starts_with("__") >
 	                        <tr>
-	                            <td>${codeRule.code}</td>
+	                            <td></td>
 	                            <td>${codeRule.term}</td>
 	                            <td>${codeRule.description!""}</td>
 	                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
