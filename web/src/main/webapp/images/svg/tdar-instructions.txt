@@ -1,0 +1,3 @@
+1. In illustrator export icons.ai as a SVG file
+2. upload to https://icomoon.io/app
+3. download svg, replace files as needed (mainly symbol-defs.svg)
