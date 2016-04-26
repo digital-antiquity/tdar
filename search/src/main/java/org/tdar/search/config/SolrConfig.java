@@ -1,6 +1,7 @@
 package org.tdar.search.config;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.List;
@@ -112,7 +113,11 @@ public class SolrConfig {
     @PreDestroy
     public void close() {
         if (this.solrServer != null) {
-            this.solrServer.shutdown();
+            try {
+                this.solrServer.close();
+            } catch (IOException e) {
+                logger.error("error closing solr: {}", e,e);
+            };
         }
     }
     

@@ -5,6 +5,7 @@
 
 <h1>Administrative info for <span>${resource.title}</span></h1>
 
+
 <h2>Resource Revision History</h2>
 <table class="table tableFormat">
     <tr>

@@ -186,7 +186,7 @@ public interface TdarNamedQueries {
     String QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL = "insert into whitelabel_collection(id) values(:id)";
 
     // generated HQL formats
-    String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from %1$s where id=%2$s";
+    String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from creator where id=%1$s";
 
     String QUERY_KEYWORD_MERGE_ID = "select merge_keyword_id from %1$s where id=%2$s";
 
