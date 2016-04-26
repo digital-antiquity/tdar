@@ -50,12 +50,14 @@
 </#macro>
 
     <#macro _keywordSection label keywordList searchParam>
-        <#if keywordList?has_content>
+        <#list keywordList>
         <p>
             <strong>${label}</strong><br>
-            <@view.keywordSearch keywordList searchParam false />
+            <#items as item>
+                <a href="${item.url}">${item.label}</a><#sep> &bull;</#sep>
+            </#items>
         </p>
-        </#if>
+        </#list>
     </#macro>
 
 <#macro descriptionSection>
@@ -84,6 +86,7 @@
                 </#if>
             </div>
             <#if keywordSectionVisible>
+            <h5>Common Keywords found within this Collection</h5>
             <div class="row">
                 <div class="span4">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />
@@ -99,6 +102,7 @@
                 <@_keywordSection "Geographic Keywords" facetWrapper.facetResults['activeGeographicKeywords']![] "query" />
                 </div>
             </div>
+            <hr/>
             </#if>
         </div>
         </#if>
