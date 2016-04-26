@@ -83,7 +83,7 @@ ${head}
     
     <#if selenium>
     	<style>
-    		#sidebar-right #notice, .subnavbar-scrollspy, .popover {display:none;visibility:hidden}
+    		#sidebar-right #notice, .subnavbar.affix, .subnavbar.affix-top, .popover {display:none;visibility:hidden}
     	</style>
     </#if>
 </head>

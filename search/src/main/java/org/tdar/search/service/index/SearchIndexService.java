@@ -542,6 +542,10 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
         Object object = SerializationUtils.deserialize(new FileInputStream(o.getDoc()));
         SolrInputDocument doc = (SolrInputDocument)object;
+        if (doc == null || !doc.containsKey(QueryFieldNames._ID)) {
+            logger.trace("possibly null doc:{}", doc);
+            return;
+        }
         String id = (String) doc.getField(QueryFieldNames._ID).getFirstValue();
         String core = o.getCore();
         if (o.getEventType() == EventType.DELETE) {
