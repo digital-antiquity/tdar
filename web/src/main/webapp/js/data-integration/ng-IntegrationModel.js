@@ -158,8 +158,8 @@
             return mappedTables;
         };
 
-        self.sharedOntologyPolicy = "relaxed";
-        //self.sharedOntologyPolicy = "strict";
+        // self.sharedOntologyPolicy = "relaxed";
+        self.sharedOntologyPolicy = "strict";
 
         /**
          * Append an 'integration column' to the columns list.
