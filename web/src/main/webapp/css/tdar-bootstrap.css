@@ -777,6 +777,6 @@ form.form-unstyled {
 }
 
 
-#home .logoutForm {
+form.logoutForm {
     margin-left:13px;
 }
