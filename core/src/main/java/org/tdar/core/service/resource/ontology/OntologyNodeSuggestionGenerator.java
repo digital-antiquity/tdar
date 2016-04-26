@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.utils.Pair;
 
 /*
@@ -62,7 +63,7 @@ public class OntologyNodeSuggestionGenerator {
             String normalizedColumnValue = normalize(codingRule.getTerm());
             for (OntologyNode ontologyNode : ontologyNodes) {
                 String displayName = ontologyNode.getDisplayName();
-                if (StringUtils.isBlank(displayName)) {
+                if (StringUtils.isBlank(displayName) && TdarConfiguration.getInstance().isProductionEnvironment()) {
                     logger.warn("blank ontology node display name for node {}, shouldn't happen", ontologyNode.getId());
                     continue;
                 }

@@ -156,9 +156,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         Collections.sort(creditProxies);
     }
 
-    protected void loadCustomMetadata() throws TdarActionException {
-    }
-
     public String getOpenUrl() {
         return OpenUrlFormatter.toOpenURL(getResource());
     }

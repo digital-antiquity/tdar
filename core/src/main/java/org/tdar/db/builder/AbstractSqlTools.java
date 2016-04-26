@@ -37,7 +37,7 @@ public class AbstractSqlTools {
         sb.append(") ");
     }
 
-    public void appendValue(StringBuilder sb, Object value) {
+    protected void appendValue(StringBuilder sb, Object value) {
         if (value instanceof Number) {
             sb.append(value);
         } else {

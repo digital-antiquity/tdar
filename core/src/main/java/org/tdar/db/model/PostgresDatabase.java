@@ -66,6 +66,7 @@ import org.tdar.db.builder.WhereCondition.Condition;
 import org.tdar.db.builder.WhereCondition.ValueCondition;
 import org.tdar.db.conversion.analyzers.DateAnalyzer;
 import org.tdar.db.model.abstracts.AbstractDataRecord;
+import org.tdar.db.model.abstracts.Database;
 import org.tdar.db.model.abstracts.RowOperations;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.utils.MessageHelper;
@@ -86,8 +87,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase, RowOperations, PostgresConstants {
 
     private static final String INTEGRATION_TABLE_NAME_COL = "tableName";
-    private static final String INTEGRATION_SUFFIX = "_int";
-    private static final String SORT_SUFFIX = "_sort";
+    public static final String INTEGRATION_SUFFIX = "_int";
     private static final String SELECT_ROW_COUNT = "SELECT COUNT(0) FROM %s";
     private static final String SELECT_ALL_FROM_TABLE_WHERE = "SELECT * FROM \"%s\" WHERE \"%s\"=?";
     private static final String SELECT_ALL_FROM_TABLE_WHERE_LOWER = "SELECT * FROM \"%s\" WHERE lower(\"%s\")=lower(?)";
@@ -823,12 +823,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * @param result
      */
     private void extractIntegationResults(final ModernIntegrationDataResult result) {
-        List<String> sortColumns = new ArrayList<>();
-        for (DataTableColumn col : result.getIntegrationContext().getTempTable().getDataTableColumns()) {
-            if (col.getName().endsWith(SORT_SUFFIX)) {
-                sortColumns.add(col.getName());
-            }
-        }
         selectAllFromTable(result.getIntegrationContext().getTempTable(), new ResultSetExtractor<Object>() {
 
             @Override
@@ -839,7 +833,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 workbook.generate();
                 return null;
             }
-        }, sortColumns.toArray(new String[0]));
+        });
     }
 
     /**
@@ -887,9 +881,6 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     StringBuilder sb = new StringBuilder("UPDATE ");
                     sb.append(proxy.getTempTableName());
                     sb.append(" SET ").append(quote(column.getName() + INTEGRATION_SUFFIX)).append("=").append(quote(node.getDisplayName(), false));
-                    String order = node.getImportOrder().toString();
-                    sb.append(" , ").append(quote(column.getName() + SORT_SUFFIX)).append("=");
-                    sb.append(order);
                     sb.append(" WHERE ");
                     sb.append(tableCond.toSql());
                     sb.append(" AND ");
@@ -954,16 +945,10 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     DataTableColumn integrationColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
+                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value"));
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
-                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value", Arrays.asList(column.getName())));
-
-                    DataTableColumn sortColumn = new DataTableColumn();
-                    integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
-                    sortColumn.setName(name + SORT_SUFFIX);
-                    tempTable.getDataTableColumns().add(sortColumn);
-                    executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), sortColumn.getName()));
-                    sortColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_sort_value", Arrays.asList(column.getName())));
+//                    dtc.setDisplayName(integrationColumn.getDisplayName());
                 }
             }
         }
@@ -998,7 +983,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
         builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
-            logger.info("table:" + table + " column: " + integrationColumn);
+            logger.trace("table:" + table + " column: " + integrationColumn);
             DataTableColumn column = integrationColumn.getColumnForTable(table);
             if (column == null) {
                 builder.getColumns().add(null);
@@ -1007,11 +992,22 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                 // pull the column name thrice if an integration column so we have mapped and unmapped values, and sort
                 if (integrationColumn.isIntegrationColumn()) {
                     builder.getColumns().add(column.getName());
-                    builder.getColumns().add(null);
 
                     WhereCondition cond = new WhereCondition(column.getName());
+                    cond.setInComment("mapped values");
                     for (OntologyNode node : integrationColumn.getOntologyNodesForSelect()) {
                         cond.getInValues().addAll(column.getMappedDataValues(node));
+                    }
+                    boolean includeUnmapepdValues = true;
+                    boolean includeUncodedValues = true;
+                    
+                    if (includeUnmapepdValues) {
+                        cond.setMoreInComment("unmapped values");
+                        cond.getMoreInValues().addAll(column.getUnmappedDataValues());
+                    }
+                    
+                    if (includeUncodedValues) {
+                        cond.addOrLikeValue(Database.NO_CODING_SHEET_VALUE + "%");
                     }
 
                     boolean nullIncluded = integrationColumn.isNullIncluded();

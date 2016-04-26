@@ -58,7 +58,7 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
 
     @Autowired
     SerializationService serializationService;
-    
+
     public List<CodingSheet> findSparseCodingSheetList() {
         return getDao().findSparseResourceBySubmitterType(null, ResourceType.CODING_SHEET);
     }
@@ -210,8 +210,7 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
             if (PersistableUtils.isNullOrTransient(ontology)) {
                 // clamp the ontology to null
                 ontology = null;
-            }
-            else {
+            } else {
                 for (CodingRule rule : codingSheet.getCodingRules()) {
                     OntologyNode existingNode = rule.getOntologyNode();
                     OntologyNode node = null;
@@ -246,23 +245,35 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         return getDao().findAllUsingOntology(ontology, Arrays.asList(Status.ACTIVE));
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public List<String> updateCodingSheetMappings(CodingSheet codingSheet, TdarUser authenticatedUser, List<CodingRule> incomingRules) {
         List<String> mappingIssues = new ArrayList<>();
         getLogger().debug("saving coding rule -> ontology node mappings for {} - this will generate a new default coding sheet!", codingSheet);
         for (CodingRule transientRule : incomingRules) {
             OntologyNode ontologyNode = transientRule.getOntologyNode();
             getLogger().debug(" matching column values: {} -> node ids {}", transientRule, ontologyNode);
-            
+
             if (ontologyNode != null && StringUtils.isNotBlank(ontologyNode.getDisplayName()) && ontologyNode.getId() == null) {
                 getLogger().warn("mapping>> ontology node label has text {}, but id is null for rule: {}", ontologyNode, transientRule);
                 mappingIssues.add(transientRule.getTerm());
             }
-            
+
             CodingRule rule = codingSheet.getCodingRuleById(transientRule.getId());
             Ontology ontology = codingSheet.getDefaultOntology();
 
             if (ontologyNode != null) {
+                if (rule == null && PersistableUtils.isNullOrTransient(transientRule.getId())) {
+                    String code = transientRule.getCode();
+                    logger.debug("{} -- {} ", code, transientRule);
+                    if (StringUtils.equals(code, CodingRule.MISSING.getCode())
+                            || StringUtils.equals(code, CodingRule.UNMAPPED.getCode())
+                            || StringUtils.equals(code, CodingRule.NULL.getCode())) {
+                        codingSheet.getCodingRules().add(transientRule);
+                        transientRule.setCodingSheet(codingSheet);
+                        getDao().saveOrUpdate(transientRule);
+                        rule = transientRule;
+                    }
+                }
                 rule.setOntologyNode(ontology.getOntologyNodeById(ontologyNode.getId()));
             }
         }
@@ -276,7 +287,7 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         }
         getDao().saveOrUpdate(rrl);
         codingSheet.getResourceRevisionLog().add(rrl);
-        getDao().saveOrUpdate(codingSheet.getCodingRules());       
+        getDao().saveOrUpdate(codingSheet.getCodingRules());
         return mappingIssues;
     }
 }

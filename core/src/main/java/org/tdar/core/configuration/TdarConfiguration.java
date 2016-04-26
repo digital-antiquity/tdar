@@ -961,4 +961,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 	public boolean isSelenium() {
 		return assistant.getBooleanProperty("is.selenium", false);
 	}
+
+    public boolean includeSpecialCodingRules() {
+        return assistant.getBooleanProperty("integration.special_coding_rules", true);
+    }
 }

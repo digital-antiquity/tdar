@@ -79,7 +79,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Test
     @Rollback
-    public void test() {
+    public void testSaveandMerge() {
         TdarUser p = genericService.find(TdarUser.class, getUser().getId());
         Dataset dataset = genericService.findRandom(Dataset.class, 1).get(0);
         dataset.setTitle("test");
