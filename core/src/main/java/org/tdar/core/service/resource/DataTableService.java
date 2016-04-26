@@ -121,11 +121,13 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
                         logger.debug("unique values for {}: {}", table.getName(), selectNonNullDistinctValues);
                         uniqueValues.addAll(selectNonNullDistinctValues);
                 	} catch(Exception e) {
-                		if (TdarConfiguration.getInstance().isProductionEnvironment()) {
-                			throw e;
-                		} else {
-                			logger.warn("table doesn't exist: {}", table.getName());
-                		}
+                        logger.error("table doesn't exist: {}", table.getName());
+                        // temporarily avoiding blocking to make sure that deploy is safer 
+//                		if (TdarConfiguration.getInstance().isProductionEnvironment()) {
+//                			throw e;
+//                		} else {
+//                			logger.warn("table doesn't exist: {}", table.getName());
+//                		}
                 	}
                 }
             }
