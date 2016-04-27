@@ -34,7 +34,7 @@
         var contributor = $("#contributor-id").is(':checked');
         _switchContributorReasonDisplay(contributor);
 
-        TDAR.common.initRegformValidation("#accountForm");
+//        TDAR.common.initRegformValidation("#accountForm");
 
         $('#firstName').focus();
 

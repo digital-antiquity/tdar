@@ -6,7 +6,6 @@ TDAR.advancedSearch = (function () {
      * Initialize the "advanced search" page (including form validation,  autocompletes, term UI, backbutton safety)
      */
     function _initAdvancedSearch() {
-        TDAR.common.initFormValidation($('#searchGroups')[0]);
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
 
         // when user changes searchType: swap out the term ui snippet

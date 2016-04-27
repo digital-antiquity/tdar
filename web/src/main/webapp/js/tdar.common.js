@@ -62,61 +62,6 @@ TDAR.common = function (TDAR, fileupload) {
 
     var self = {};
 
-    /**
-     * Default settings for form validation in tDAR forms
-     *
-     * @type {{errorLabelContainer: (*|jQuery|HTMLElement), wrapper: string, highlight: highlight, unhighlight: unhighlight, showErrors: showErrors, invalidHandler: invalidHandler}}
-     * @private
-     */
-    var _defaultValidateOptions = {
-        errorLabelContainer: $("#error ul"),
-        wrapper: "li",
-        highlight: function (element, errorClass, validClass) {
-            $(element).addClass("error");
-            $(element).closest("div.control-group").addClass("error");
-        },
-        unhighlight: function (element, errorClass, validClass) {
-            $(element).trigger("unhighlight", [errorClass, validClass]);
-            $(element).removeClass("error");
-            //highlight this div until all visible controls in group are valid
-            var $controlGroup = $(element).closest("div.control-group");
-            if ($controlGroup.find('.error:visible').length === 0) {
-                $controlGroup.removeClass("error");
-            }
-        },
-        showErrors: function (errorMap, errorList) {
-            this.defaultShowErrors();
-        },
-        //send validation errors to the server  TODO: cap the total number of errors
-        invalidHandler: function (event, validator) {
-            var form = event.target, errors = validator.errorList, submitCount = $(form).data("submitCount") || 0, totalErrors = $(form).data("totalErrors") || 0;
-
-            submitCount++;
-            //cap the included errors, but show the correct total number of errors
-            totalErrors += errors.length;
-            $(form).data("submitCount", submitCount).data("totalErrors", totalErrors);
-            errors = errors.slice(0 - TDAR.common.maxJavascriptValidationMessages);
-
-            //todo: we really only need to build the dom when the submit is finally successful
-            $(form).find("#divClientValidationInfo").remove();
-            var $clientInfo = $('<div id="divClientValidationInfo"></div>');
-
-            var template = $.validator.format('<input type="hidden" name="clientValidationInfo[\'{0}\']" value="{1}">');
-
-            $.each(errors, function (idx, error) {
-                var key = "error_" + idx;
-                var msg = _htmlEncode("" + error.element.id + ": " + error.message);
-                var $input = $(template(key, msg));
-                $input.val(msg);
-                $clientInfo.append($input);
-            });
-
-            //now tack on the total errors and submission attempts
-            $clientInfo.append($(template("totalErrors", totalErrors)));
-            $clientInfo.append($(template("submitCount", submitCount)));
-            $(form).append($clientInfo);
-        }
-    };
 
     /**
      * Specify the target element for any adhoc child windows spawned from the current page.
@@ -224,166 +169,6 @@ TDAR.common = function (TDAR, fileupload) {
                     }
                 });
     }
-
-    /**
-     * Initialize jquery valiation for the specified tdar edit form
-     *
-     * @param form form element to apply validation rules
-     */
-    var _setupFormValidate = function (form) {
-        var options = {
-            onkeyup: function () {
-                return;
-            },
-            onclick: function () {
-                return;
-            },
-            onfocusout: function (element) {
-                return;
-            },
-            showErrors: function (errorMap, errorList) {
-                this.defaultShowErrors();
-                //spawn a modal widget and copy the errorLabelContainer contents (a separate div) into the widget's body section
-                //TODO: docs say this is only called when errorList is not empty - can we remove this check?
-                if (typeof errorList !== "undefined" && errorList.length > 0) {
-                    $('#validationErrorModal .modal-body p').empty().append($("<ul></ul>").append($('#error ul').html()));
-                    $('#validationErrorModal').modal();
-
-                }
-                $('#error').show();
-            },
-            submitHandler: function (f) {
-                //prevent double submit and dazzle user with animated gif
-                _submitButtonStartWait();
-
-                /* Creator entry controls display one of two field sets if the creator is "person" or
-                 institution". Disable the hidden set so the set's input vals aren't sent to server.
-                 */
-                $(f).find(".creatorPerson.hidden, .creatorInstitution.hidden").find(":input").prop("disabled", true);
-
-                $('#error').hide();
-                $(f).FormNavigate("clean");
-                f.submit();
-            }
-        };
-
-        var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
-        $(form).validate(allValidateOptions);
-    };
-
-    /**
-     * Specific initialization for the user registration form
-     * @param form
-     */
-    var _initRegformValidation = function (form) {
-
-        var $form = $(form);
-        //disable double-submit protection if user gets here via backbutton
-        var $submit = $form.find(".submitButton").prop("disabled", false);
-        var options = {
-            errorLabelContainer: $("#error"),
-            rules: {
-                confirmEmail: {
-                    equalTo: "#emailAddress"
-                },
-                password: {
-                    minlength: 3
-                },
-                username: {
-                    minlength: 5
-                },
-                confirmPassword: {
-                    minlength: 3,
-                    equalTo: "#password"
-                },
-                'contributorReason': {
-                    maxlength: 512
-                }
-            },
-            messages: {
-                confirmEmail: {
-                    email: "Please enter a valid email address.",
-                    equalTo: "Your confirmation email doesn't match."
-                },
-                password: {
-                    required: "Please enter a password.",
-                    minlength: $.validator.format("Your password must be at least {0} characters.")
-                },
-                confirmPassword: {
-                    required: "Please confirm your password.",
-                    minlength: $.validator.format("Your password must be at least {0} characters."),
-                    equalTo: "Please make sure your passwords match."
-                }
-            }, submitHandler: function (f) {
-                var $submit = $(f).find(".submitButton").prop("disabled", true);
-                //prevent doublesubmit for certain amount of time.
-                $submit.prop("disabled", true);
-                setTimeout(function () {
-                    $submit.prop("disabled", false);
-                }, 10 * 1000)
-                f.submit();
-            }
-        };
-        $form.validate($.extend({}, _defaultValidateOptions, options));
-
-    };
-
-
-    // called whenever date type changes
-    //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
-//         used via $.validator.addClassRules.  The benefit would be that we don't need to register these registration rules each time a date
-//         gets added to the dom.
-    //FIXME: this might be duplicated in tdar.formValidateExtensions.  If not, it should probably be migrated there.
-    /**
-     * Add specific rules to a the text fields associated with a "coverage date" control.
-     *
-     * @param selectElem the select input element associated with the "fromYear" and "toYear" text inputs (must be a
-     *          sibling element in the same container)
-     * @private
-     */
-    var _prepareDateFields = function (selectElem) {
-        var startElem = $(selectElem).siblings('.coverageStartYear');
-        var endElem = $(selectElem).siblings('.coverageEndYear');
-        $(startElem).rules("remove");
-        $(endElem).rules("remove");
-        switch ($(selectElem).val()) {
-            case "CALENDAR_DATE":
-                $(startElem).rules("add", {
-                    range: [ -99900, 2100 ],
-                    lessThanEqual: [endElem, "Calender Start", "Calendar End"],
-                    required: function () {
-                        return $(endElem).val() != "";
-                    }
-                });
-                $(endElem).rules("add", {
-                    range: [ -99900, 2100 ],
-                    required: function () {
-                        return $(startElem).val() != "";
-                    }
-                });
-                break;
-            case "RADIOCARBON_DATE":
-                $(startElem).rules("add", {
-                    range: [ 0, 100000 ],
-                    greaterThanEqual: [endElem, "Radiocarbon Start", "Radiocarbon End"],
-                    required: function () {
-                        return $(endElem).val() != "";
-                    }
-                });
-                $(endElem).rules("add", {
-                    range: [ 0, 100000 ],
-                    required: function () {
-                        return $(startElem).val() != "";
-                    }
-                });
-                break;
-            case "NONE":
-                $(startElem).rules("add", {
-                    blankCoverageDate: {"start": startElem, "end": endElem}
-                });
-                break;
-        }
-    };
 
     /**
      * Initialize an unordered list element (with .tdar-treeview class) so that it renders as a "tree view" control
@@ -581,9 +366,6 @@ TDAR.common = function (TDAR, fileupload) {
             return $(elem).closest('.leaflet-control-geocoder').length > 0;
         });
 
-        //initialize form validation
-        _setupFormValidate(form);
-
         //prepwork prior to form submit (trimming fields)
         $form.submit(function (f) {
             try {
@@ -604,9 +386,6 @@ TDAR.common = function (TDAR, fileupload) {
             return true;
         });
 
-        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
-            _prepareDateFields(elem);
-        });
 
         var $uploaded = $(formid + '_uploadedFiles');
         if ($uploaded.length > 0) {
@@ -625,9 +404,6 @@ TDAR.common = function (TDAR, fileupload) {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }
 
-        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
-            _prepareDateFields(this);
-        });
         _showAccessRightsLinkIfNeeded();
         $('.fileProxyConfidential').change(_showAccessRightsLinkIfNeeded);
 
@@ -1274,13 +1050,10 @@ TDAR.common = function (TDAR, fileupload) {
 
     $.extend(self, {
         "initEditPage": _initEditPage,
-        "initFormValidation": _setupFormValidate,
         "applyTreeviews": _applyTreeviews,
         "initializeView": _initializeView,
-        "initRegformValidation": _initRegformValidation,
         "determineResponsiveClass": _determineResponsiveClass,
         "populateTarget": _populateTarget,
-        "prepareDateFields": _prepareDateFields,
         "setAdhocTarget": _setAdhocTarget,
         "changeSubcategory": _changeSubcategory,
         "registerDownload": _registerDownload,

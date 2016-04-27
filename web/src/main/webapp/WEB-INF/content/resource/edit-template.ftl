@@ -57,9 +57,8 @@
     <#else>
         <#assign submitterId = resource.submitter.id>
     </#if>
-    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'
-            dynamicAttributes={"data-submitterid":"${submitterId?c}"}
-            >
+    <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal tdarvalidate" method='post' enctype='multipart/form-data' action='save'
+            dynamicAttributes={"data-submitterid":"${submitterId?c}","data-validate-method":"initBasicForm"} >
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />

@@ -45,7 +45,7 @@
 
             $.each(errors, function (idx, error) {
                 var key = "error_" + idx;
-                var msg = _htmlEncode("" + error.element.id + ": " + error.message);
+                var msg = TDAR.common.htmlEncode("" + error.element.id + ": " + error.message);
                 var $input = $(template(key, msg));
                 $input.val(msg);
                 $clientInfo.append($input);
@@ -68,6 +68,7 @@
             console.log(method);
             if (method != undefined) {
             	var method_ = window[method];
+            	// FIXME: There has to be a better way to bind these
             	if ($.isFunction(window['TDAR']['validate'][method])) {
             		method_ = window['TDAR']['validate'][method];
             	}
@@ -78,8 +79,11 @@
                     var options  = method_(this);
                     var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
                     $t.validate(allValidateOptions);
-                    console.log(allValidateOptions);
+                    console.log("validate: " + method);
                     $t.data("tdar-validate-status","valid-custom");
+                    if (method == 'initBasicForm') {
+                    	_postValidateBasic();
+                    }
                 } else {
                     console.log("validate method specified, but not a function");
                     $t.data("tdar-validate-status","failed-invalid-method");
@@ -92,8 +96,16 @@
         });
     };
 
+    var _postValidateBasic =  function(form) {
+        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
+            _prepareDateFields(elem);
+        });
+        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
+            _prepareDateFields(this);
+        });
+    }
     
-    var _initResourceForm = function(form) {
+    var _initBasicForm = function(form) {
         var options = {
                 onkeyup: function () {
                     return;
@@ -131,6 +143,62 @@
             };
         return options;
     }
+
+    // called whenever date type changes
+    //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
+//         used via $.validator.addClassRules.  The benefit would be that we don't need to register these registration rules each time a date
+//         gets added to the dom.
+    //FIXME: this might be duplicated in tdar.formValidateExtensions.  If not, it should probably be migrated there.
+    /**
+     * Add specific rules to a the text fields associated with a "coverage date" control.
+     *
+     * @param selectElem the select input element associated with the "fromYear" and "toYear" text inputs (must be a
+     *          sibling element in the same container)
+     * @private
+     */
+    var _prepareDateFields = function (selectElem) {
+        var startElem = $(selectElem).siblings('.coverageStartYear');
+        var endElem = $(selectElem).siblings('.coverageEndYear');
+        $(startElem).rules("remove");
+        $(endElem).rules("remove");
+        switch ($(selectElem).val()) {
+            case "CALENDAR_DATE":
+                $(startElem).rules("add", {
+                    range: [ -99900, 2100 ],
+                    lessThanEqual: [endElem, "Calender Start", "Calendar End"],
+                    required: function () {
+                        return $(endElem).val() != "";
+                    }
+                });
+                $(endElem).rules("add", {
+                    range: [ -99900, 2100 ],
+                    required: function () {
+                        return $(startElem).val() != "";
+                    }
+                });
+                break;
+            case "RADIOCARBON_DATE":
+                $(startElem).rules("add", {
+                    range: [ 0, 100000 ],
+                    greaterThanEqual: [endElem, "Radiocarbon Start", "Radiocarbon End"],
+                    required: function () {
+                        return $(endElem).val() != "";
+                    }
+                });
+                $(endElem).rules("add", {
+                    range: [ 0, 100000 ],
+                    required: function () {
+                        return $(startElem).val() != "";
+                    }
+                });
+                break;
+            case "NONE":
+                $(startElem).rules("add", {
+                    blankCoverageDate: {"start": startElem, "end": endElem}
+                });
+                break;
+        }
+    };
     
     var _initRegForm = function(form) {
 
@@ -187,7 +255,7 @@
     TDAR.validate = {
         "init" : _init,
         "initRegForm" : _initRegForm,
-        "initResourceForm": _initResourceForm
+        "initBasicForm": _initBasicForm
     }
 
 })(TDAR, jQuery);

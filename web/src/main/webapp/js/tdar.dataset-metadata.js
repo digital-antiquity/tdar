@@ -164,7 +164,6 @@
             TDAR.datasetMetadata.gotoColumn($(this));
         });
 
-        TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
     }
 
     function _pagination(idPrefix) {
