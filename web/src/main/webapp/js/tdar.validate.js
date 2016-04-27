@@ -59,40 +59,52 @@
     };
     
     /**
+     * Validate a single form, called out and returning the validator to enable testing 
+     */
+    var _initForm = function (form) {
+        var $t = form;
+        if (!(form instanceof jQuery)) {
+            $t = $(form);
+        }
+        var method = $t.data('validate-method');
+        var validator;
+        console.log(method);
+        if (method != undefined) {
+            var method_ = window[method];
+            // FIXME: There has to be a better way to bind these
+            if ($.isFunction(window['TDAR']['validate'][method])) {
+                method_ = window['TDAR']['validate'][method];
+            }
+            if ($.isFunction(window[method])) {
+                method_ = window[method];
+            }               
+            if (method_ != undefined) {
+                var options  = method_($t);
+                var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
+                validator = $t.validate(allValidateOptions);
+                console.log("validate: " + method);
+                $t.data("tdar-validate-status","valid-custom");
+                if (method == 'initBasicForm') {
+                    _postValidateBasic();
+                }
+            } else {
+                console.log("validate method specified, but not a function");
+                $t.data("tdar-validate-status","failed-invalid-method");
+            }
+        } else {
+            var allValidateOptions = $.extend({}, _defaultValidateOptions);
+            validator = $t.validate(allValidateOptions);
+            $t.data("tdar-validate-status","valid-default");
+        }
+        return validator;
+    };
+    
+    /**
      * if there's a data attribute to associate with valdiateMethod, then see if it's a function. if it's not a function, then call validate() plain.
      */
     var _init = function() {
         $("form.tdarvalidate").each(function() {
-            var $t = $(this);
-            var method = $t.data('validate-method');
-            console.log(method);
-            if (method != undefined) {
-            	var method_ = window[method];
-            	// FIXME: There has to be a better way to bind these
-            	if ($.isFunction(window['TDAR']['validate'][method])) {
-            		method_ = window['TDAR']['validate'][method];
-            	}
-                if ($.isFunction(window[method])) {
-                	method_ = window[method];
-                }            	
-                if (method_ != undefined) {
-                    var options  = method_(this);
-                    var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
-                    $t.validate(allValidateOptions);
-                    console.log("validate: " + method);
-                    $t.data("tdar-validate-status","valid-custom");
-                    if (method == 'initBasicForm') {
-                    	_postValidateBasic();
-                    }
-                } else {
-                    console.log("validate method specified, but not a function");
-                    $t.data("tdar-validate-status","failed-invalid-method");
-                }
-            } else {
-                var allValidateOptions = $.extend({}, _defaultValidateOptions);
-                $t.validate(allValidateOptions);
-                $t.data("tdar-validate-status","valid-default");
-            }
+            _initForm($(this));
         });
     };
 
@@ -212,7 +224,7 @@
     
     var _initRegForm = function(form) {
 
-        var $form = $(form);
+        var $form = form;
         //disable double-submit protection if user gets here via backbutton
         var $submit = $form.find(".submitButton").prop("disabled", false);
         var options = {
@@ -265,6 +277,7 @@
 
     TDAR.validate = {
         "init" : _init,
+        "initForm" : _initForm,
         "initRegForm" : _initRegForm,
         "initBasicForm": _initBasicForm
     }

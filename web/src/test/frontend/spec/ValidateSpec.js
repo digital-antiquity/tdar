@@ -12,15 +12,14 @@ describe("TDAR.validate: edit page tests", function () {
 
         expect($j('#divSpatialInformation .google-map')).toHaveLength(1);
         var form = document.getElementById('metadataForm');
-        var result = TDAR.common.initFormValidation(form);
+        var validator = TDAR.validate.initForm($(form));
     });
 
     it("should register the validation form when we call initRegformValidation", function () {
         loadFixtures("registration-form.html");
         var form = document.getElementById('accountForm');
 
-        var result = TDAR.common.initRegformValidation(form);
-        var validator = $(form).validate();
+        var validator = TDAR.validate.initForm($(form));
         //before we validate we should have no errors
         expect(validator.errorList).toHaveLength(0);
 
@@ -33,7 +32,7 @@ describe("TDAR.validate: edit page tests", function () {
     it("should work when we call prepareDateFields", function () {
         var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
         var sel = $form.find('select')[0];
-        var validator = $form.validate();
+        var validator = TDAR.validate.initForm($form);
         setFixtures($form);
 
         //validation: everything blank - no errors 
@@ -70,7 +69,7 @@ describe("TDAR.validate: edit page tests", function () {
         var form = $j('<form class="tdarvalidate" data-validate-method="initBasicForm"></form>');
         form.append(readFixtures('supporting-resource-upload.html'));
         setFixtures(form);
-        $('form').validate();
+        var validator = TDAR.validate.initForm(form);
         TDAR.common.setupSupportingResourceForm(1, 'coding-sheet');
     });
 
@@ -85,9 +84,10 @@ describe("TDAR.validate: edit page tests", function () {
         $('form').valid()
         expect(validator.errorList).toHaveLength(2);
     });
+
     it("should add image extension validation to profile image uploads validateProfileImage", function () {
         setFixtures('<form class="tdarvalidate" data-validate-method="initBasicForm"><input type="file" name="fileupload" class="profileImage"></form>');
-        $('form').validate()
+        var validator = $('form').validate();
         expect(Object.keys($('input[type=file]').rules())).toContain('extension');
     });
 });
