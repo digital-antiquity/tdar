@@ -11,6 +11,8 @@
 <h1>${siteAcronym} Registration</h1>
 
 <@s.form id="accountForm" method="post" action="/account/register" cssClass="">
+<!-- <form id="accountForm" method="post" action="/account/register" class="tdarvalidate" data-validate-method="initRegForm">
+ -->
 <@s.token name='struts.csrf.token' />
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
