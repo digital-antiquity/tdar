@@ -118,7 +118,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DATASET_COLUMNS));
         logger.trace(find("body").getText());
-        submitForm("#fakeSubmitButton");
+        submitForm("#submitButton");
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         logger.debug(getText());
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
