@@ -11,7 +11,7 @@
 <h1>${siteAcronym} Registration</h1>
 
 <@s.form id="accountForm" method="post" action="/account/register"  
-	cssClass="tdarvalidate" dynamicAttributes={"data-validate-method":"initRegForm"} />
+	cssClass="tdarvalidate" dynamicAttributes={"data-validate-method":"initRegForm"} >
 	<@s.token name='struts.csrf.token' />
 
 <div class="alert alert-block alert-error" style="display:none" id="error">
