@@ -13,13 +13,13 @@ Example showing how to change the color/size of the icons:
 }
 ======================================================================================== */
 .fill-color1 {
-	fill: #000;
-}
-.fill-color2 {
 	fill: rgba(0, 0, 0, 0.41999998688697815);
 }
-.fill-color3 {
+.fill-color2 {
 	fill: #010101;
+}
+.fill-color3 {
+	fill: #000;
 }
 .fill-color4 {
 	fill: #781a15;
