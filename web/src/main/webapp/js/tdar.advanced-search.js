@@ -107,10 +107,10 @@ TDAR.advancedSearch = (function () {
         TDAR.common.applyWatermarks(containerElem);
 
         // HACK: registering datetype fields if any were created. We should just
-        // make a smarter validator rule
-        if ($('.coverageDateType', containerElem).length) {
-            TDAR.common.prepareDateFields($('.coverageDateType', containerElem));
-        }
+//        // make a smarter validator rule
+//        if ($('.coverageDateType', containerElem).length) {
+//            TDAR.common.prepareDateFields($('.coverageDateType', containerElem));
+//        }
 
         // register any treeviews
         $('.tdar-treeview', containerElem).treeview({

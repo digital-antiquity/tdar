@@ -404,10 +404,6 @@
             <#if multipleUpload??>
             multipleUpload : ${multipleUpload?string},
         </#if>
-        <#if validFileExtensions??>
-            validExtensions : "<@edit.join sequence=validFileExtensions delimiter="|"/>",
-            validExtensionsWarning : "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)",
-        </#if>
         <#if ableToUploadFiles??>
             ableToUpload : ${ableToUploadFiles?string},
         </#if>
@@ -420,7 +416,7 @@
             <@local_.localJavascript />
         </#if>
 
-        <#if test>
+        <#if selenium>
             var $up = $("#fileAsyncUpload");
             $up.css("position", "static");
             $up.css("top", "auto");
@@ -433,6 +429,11 @@
         </#if>
 
         });
+<#if validFileExtensions??>
+    var _multipleUpload =  ${multipleUpload?string};
+    var _validExtensions = "<@edit.join sequence=validFileExtensions delimiter="|"/>";
+    var _validExtensionsWarning = "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)";
+</#if>
         </#noescape>
 </script>
 

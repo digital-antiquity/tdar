@@ -248,17 +248,6 @@ TDAR.common = function (TDAR, fileupload) {
                     fileuploadSelector: '#divFileUpload'
                 });
 
-                var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
-                fileValidator.addRule("nodupes");
-
-                //fixme: (TDAR-4722) prohibit file replacements on 'add' pages. Due to bug, UI may display 'replace' option even when it shouldn't.
-                // Until bug is fixed, we use this additional workaround to prevent the user from submitting if the UI allowed an invalid replacement.
-                var path = window.location.pathname
-                if(path.length && path.match(/(document|dataset|image).add$/)) {
-                    fileValidator.addRule("noreplacements");
-                }
-
-                TDAR.fileupload.validator = fileValidator;
             }
         }
 
@@ -376,16 +365,6 @@ TDAR.common = function (TDAR, fileupload) {
         });
 
 
-        var $uploaded = $(formid + '_uploadedFiles');
-        if ($uploaded.length > 0) {
-            var validateUploadedFiles = function () {
-                if ($uploaded.val().length > 0) {
-                    $("#reminder").hide();
-                }
-            };
-            $uploaded.change(validateUploadedFiles);
-            validateUploadedFiles();
-        }
 
         Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
 
@@ -452,17 +431,6 @@ TDAR.common = function (TDAR, fileupload) {
         }
 
 
-        if (props.validExtensions != undefined) {
-            var validate = $('.validateFileType');
-            if ($(validate).length > 0) {
-                $(validate).rules("add", {
-                    extension: props.validExtensions,
-                    messages: {
-                        extension: props.validExtensionsWarning
-                    }
-                });
-            }
-        }
         if (props.dataTableEnabled) {
             TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
         }

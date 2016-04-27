@@ -29,39 +29,72 @@ describe("TDAR.validate: edit page tests", function () {
     });
 
 
-    it("should work when we call prepareDateFields", function () {
+    it("should work when we call prepareDateFields (NONE)", function () {
+        console.log("prepare-date-test");
         var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
         var sel = $form.find('select')[0];
-        var validator = TDAR.validate.initForm($form);
         setFixtures($form);
+        var validator = TDAR.validate.initForm($form);
 
         //validation: everything blank - no errors 
         $(sel).val('NONE');
+        $(sel).change();
 //        TDAR.common.prepareDateFields(sel);
         $form.valid();
         expect(validator.errorList.length).toBe(0);
-        
+    });
+
+
+    it("should work when we call prepareDateFields (calendar missing)", function () {
+        console.log("prepare-date-test");
+        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
+        var sel = $form.find('select')[0];
+        setFixtures($form);
+        var validator = TDAR.validate.initForm($form);
+
         //validation: coverage date incomplete 
         $(sel).val('CALENDAR_DATE');
+        $(sel).change();
 //        TDAR.common.prepareDateFields(sel);
         $form.find('.coverageStartYear').val('2001');
         $form.valid();
         expect(validator.errorList.length).toBeGreaterThan(0);
+    });
+
+    it("should work when we call prepareDateFields (calendar wrong order)", function () {
+        console.log("prepare-date-test");
+        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
+        var sel = $form.find('select')[0];
+        setFixtures($form);
+        var validator = TDAR.validate.initForm($form);
 
         //validation: 2001-1999 is an invalid calendar date...
         $(sel).val('CALENDAR_DATE');
+        $(sel).change();
 //        TDAR.common.prepareDateFields(sel);
         $form.find('.coverageStartYear').val('2001');
         $form.find('.coverageEndYear').val('1999');
         $form.valid();
         expect(validator.errorList.length).toBeGreaterThan(0);
+    });
+    it("should work when we call prepareDateFields (RC valid)", function () {
+        console.log("prepare-date-test");
+        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
+        var sel = $form.find('select')[0];
+        setFixtures($form);
+        var validator = TDAR.validate.initForm($form);
 
         //validation: ...but it's a valid radiocarbon date
+        console.log($(sel).val());
         $(sel).val('RADIOCARBON_DATE');
-//        TDAR.common.prepareDateFields(sel);
+        $(sel).change();
+        $form.find('.coverageStartYear').val('2001');
+        $form.find('.coverageEndYear').val('1999');
         $form.valid();
+        console.log(validator.errorList);
         expect(validator.errorList.length).toBe(0);
     });
+
 
 
 
@@ -86,8 +119,9 @@ describe("TDAR.validate: edit page tests", function () {
     });
 
     it("should add image extension validation to profile image uploads validateProfileImage", function () {
-        setFixtures('<form class="tdarvalidate" data-validate-method="initBasicForm"><input type="file" name="fileupload" class="profileImage"></form>');
-        var validator = $('form').validate();
+        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm"><input type="file" name="fileupload" class="profileImage"></form>');
+        setFixtures($form);
+        var validator = TDAR.validate.initForm($form);
         expect(Object.keys($('input[type=file]').rules())).toContain('extension');
     });
 });
