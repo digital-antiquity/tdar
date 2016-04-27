@@ -202,6 +202,23 @@
         return options;
     }
 
+    
+    /**
+     * Disable any submit buttons on a form, and display a "please wait" graphic beside the submit buttons.
+     * Useful for  preventing double-submits.
+     * @private
+     */
+    var _submitButtonStartWait = function () {
+        var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
+        var $buttons = $submitDivs.find(".submitButton");
+        $buttons.prop("disabled", true);
+
+        //fade in the wait icon
+        $submitDivs.find(".waitingSpinner").show();
+    };
+
+
+    
     // called whenever date type changes
     //FIXME: I think we can improve lessThanEqual and greaterThenEqual so that they do not require parameters, and hence can be
 //         used via $.validator.addClassRules.  The benefit would be that we don't need to register these registration rules each time a date

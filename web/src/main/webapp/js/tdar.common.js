@@ -173,20 +173,6 @@ TDAR.common = function (TDAR, fileupload) {
     };
 
     /**
-     * Disable any submit buttons on a form, and display a "please wait" graphic beside the submit buttons.
-     * Useful for  preventing double-submits.
-     * @private
-     */
-    var _submitButtonStartWait = function () {
-        var $submitDivs = $('#editFormActions, #fakeSubmitDiv');
-        var $buttons = $submitDivs.find(".submitButton");
-        $buttons.prop("disabled", true);
-
-        //fade in the wait icon
-        $submitDivs.find(".waitingSpinner").show();
-    };
-
-    /**
      * re-enable buttons disabled by submitButtonStartWait()
      * @private
      */
