@@ -103,6 +103,16 @@
         $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
             _prepareDateFields(this);
         });
+
+        $(".profileImage").each(function(i, profileElement){
+            $(profileElement).rules("add", {
+                extension: "jpg,tiff,jpeg,png",
+                messages: {
+                    extension: "please upload a JPG, TIFF, or PNG file for a profile image"
+                }
+            });
+        });
+
     }
     
     var _initBasicForm = function(form) {
@@ -251,7 +261,9 @@
         };
         return options;
     };
-    
+
+    TDAR.common.validateProfileImage();
+
     TDAR.validate = {
         "init" : _init,
         "initRegForm" : _initRegForm,

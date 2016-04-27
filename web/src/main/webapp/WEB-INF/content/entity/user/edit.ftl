@@ -22,7 +22,7 @@
 </head>
 <body>
 <h1>${pageTitle}</h1>
-    <@s.form name='personForm' id='frmPerson'  cssClass="form-vertical"  method='post' enctype='multipart/form-data' action='save'>
+    <@s.form name='personForm' id='frmPerson'  cssClass="form-vertical tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"}  method='post' enctype='multipart/form-data' action='save'>
     <@common.chromeAutofillWorkaround />
     <@s.token name='struts.csrf.token' />
     <@common.jsErrorLog />
@@ -138,7 +138,6 @@
         $frmPerson = $('#frmPerson');
         TDAR.autocomplete.applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
         TDAR.common.initEditPage($('#frmPerson')[0]);
-        TDAR.common.validateProfileImage();
         //tack on the confirm-password rules
     });
 </script>
