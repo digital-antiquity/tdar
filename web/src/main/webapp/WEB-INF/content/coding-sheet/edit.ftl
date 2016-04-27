@@ -128,6 +128,7 @@
     var $form = $("#metadataForm");
     TDAR.common.setupSupportingResourceForm(${codingSheet.totalNumberOfFiles?c}, "coding sheet");
     TDAR.autocomplete.applyComboboxAutocomplete($('input.ontologyfield', $form), "ONTOLOGY");
+    var _totalNumberOfFiles = ${codingSheet.totalNumberOfFiles?c};
     </#macro>
 
 </body>

@@ -417,10 +417,6 @@ TDAR.common = function (TDAR, fileupload) {
         }
 
 
-        if (props.dataTableEnabled) {
-            TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
-        }
-
         $("#fileUploadField").each(function(){
             var $fileUploadField = $(this);
             var _updateReminderVisibility = function() {
@@ -757,29 +753,6 @@ TDAR.common = function (TDAR, fileupload) {
         // the ontology textarea or file upload field is required whenever it is
         // visible AND
         // no ontology rules are already present from a previous upload
-
-        $('#fileInputTextArea').rules("add", {
-                    required: {
-                        depends: isFieldRequired
-                    },
-                    messages: {
-                        required: "No " + rtype + " data entered. Please enter " + rtype + " manually or upload a file."
-                    }
-                });
-
-        $('#fileUploadField').rules("add", {
-                    required: {
-                        depends: isFieldRequired
-                    },
-                    messages: {
-                        required: "No " + rtype + " file selected. Please select a file or enter " + rtype + " data manually."
-                    }
-                });
-
-        function isFieldRequired(elem) {
-            var noRulesExist = !((totalNumberOfFiles > 0) || ($("#fileInputTextArea").val().length > 0) || ($("#fileUploadField").val().length > 0));
-            return noRulesExist && $(elem).is(":visible");
-        }
 
         _refreshInputDisplay();
     }

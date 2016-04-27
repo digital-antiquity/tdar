@@ -411,6 +411,7 @@
          };
         var form = $(props.formSelector)[0];
         TDAR.common.initEditPage(form, props);
+		var	_dataTableEnabled = ${(resource.resourceType.dataTableSupported?string)!"false"};
             
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
@@ -430,7 +431,7 @@
 
         });
 <#if validFileExtensions??>
-    var _multipleUpload =  ${multipleUpload?string};
+    var _multipleUpload =  ${(multipleUpload?string)!'false'};
     var _validExtensions = "<@edit.join sequence=validFileExtensions delimiter="|"/>";
     var _validExtensionsWarning = "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)";
 </#if>

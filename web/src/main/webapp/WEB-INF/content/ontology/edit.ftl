@@ -69,6 +69,7 @@ Core
     <#macro localJavascript>
     TDAR.common.setupSupportingResourceForm(${resource.totalNumberOfFiles?c}, "ontology");
     $('#fileInputTextArea').tabby();
+    var _totalNumberOfFiles = ${codingSheet.totalNumberOfFiles?c};
     </#macro>
 
 </#escape>

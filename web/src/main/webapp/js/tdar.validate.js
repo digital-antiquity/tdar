@@ -148,6 +148,11 @@
             }
         }
 
+        
+        if (window["_dataTableEnabled"]) {
+        	TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+        }
+        
         if (window["_multipleUpload"]) {
             var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
             fileValidator.addRule("nodupes");
@@ -160,7 +165,33 @@
             }
     
             TDAR.fileupload.validator = fileValidator;
+        } else if (window["_totalNumberOfFiles"]) {
+
+            $('#fileInputTextArea').rules("add", {
+                        required: {
+                            depends: _isSupportingFileFieldRequired
+                        },
+                        messages: {
+                            required: "No " + rtype + " data entered. Please enter " + rtype + " manually or upload a file."
+                        }
+                    });
+
+            $('#fileUploadField').rules("add", {
+                        required: {
+                            depends: _isSupportingFileFieldRequired
+                        },
+                        messages: {
+                            required: "No " + rtype + " file selected. Please select a file or enter " + rtype + " data manually."
+                        }
+                    });
+
+
         }
+    }
+    
+    var _isSupportingFileFieldRequired = function(elem) {
+    	var noRulesExist = !((totalNumberOfFiles > 0) || ($("#fileInputTextArea").val().length > 0) || ($("#fileUploadField").val().length > 0));
+    	return noRulesExist && $(elem).is(":visible");
     }
     
     var _initBasicForm = function(form) {
@@ -332,7 +363,8 @@
         "init" : _init,
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
-        "initBasicForm": _initBasicForm
+        "initBasicForm": _initBasicForm,
+        "prepareDateFields": _prepareDateFields
     }
 
 })(TDAR, jQuery);
