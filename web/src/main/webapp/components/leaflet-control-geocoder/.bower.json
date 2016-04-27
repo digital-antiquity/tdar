@@ -1,6 +1,6 @@
 {
   "name": "leaflet-control-geocoder",
-  "version": "1.3.4",
+  "version": "1.4.0",
   "homepage": "https://github.com/perliedman/leaflet-control-geocoder",
   "authors": [
     "Per Liedman <per@liedman.net>"
@@ -27,7 +27,8 @@
     "photon",
     "what3words",
     "mapquest",
-    "mapzen"
+    "mapzen",
+    "here"
   ],
   "license": "BSD-2-Clause",
   "ignore": [
@@ -40,14 +41,13 @@
   "dependencies": {
     "leaflet": "~0.7.2"
   },
-  "_release": "1.3.4",
+  "_release": "1.4.0",
   "_resolution": {
     "type": "version",
-    "tag": "v1.3.4",
-    "commit": "efe24f24cf661aba60edf02877ef44acbd7a19c0"
+    "tag": "v1.4.0",
+    "commit": "2e8ed0144cc85b265bb01e4f45d6e829d0b40f07"
   },
-  "_source": "git://github.com/perliedman/leaflet-control-geocoder.git",
-  "_target": "~1.3.4",
-  "_originalSource": "leaflet-control-geocoder",
-  "_direct": true
+  "_source": "https://github.com/perliedman/leaflet-control-geocoder.git",
+  "_target": "~1.4.0",
+  "_originalSource": "leaflet-control-geocoder"
 }
