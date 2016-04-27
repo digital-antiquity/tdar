@@ -262,7 +262,6 @@
         return options;
     };
 
-    TDAR.common.validateProfileImage();
 
     TDAR.validate = {
         "init" : _init,
