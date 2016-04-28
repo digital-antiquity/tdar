@@ -354,6 +354,7 @@ TDAR.common = function (TDAR, fileupload) {
 
         Modernizr.addTest('cssresize', Modernizr.testAllProps('resize'));
 
+        //http://caniuse.com/#feat=css-resize
         if (!Modernizr.cssresize) {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }

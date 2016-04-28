@@ -117,6 +117,7 @@
         TDAR.common.suppressKeypressFormSubmissions($form);
 
         //Use a plugin if browser doesn't support resizeable textareas
+        //http://caniuse.com/#feat=css-resize
         if (!Modernizr.cssresize) {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }
