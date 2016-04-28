@@ -61,8 +61,8 @@
 
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal tdarvalidate" method='post' enctype='multipart/form-data' action='save'
             dynamicAttributes={"data-submitterid":"${submitterId?c}","data-validate-method":"initBasicForm","data-resource-type","${resource.resourceType.label}",
-            "data-total-files","${resource.totalNumberOfFiles!0}","data-multiple-upload","${(multipleUpload?string)!'false'}","data-datatable","${(resource.resourceType.dataTableSupported?string)!'false'}",
-            "data-valid-extensions","${validExtensions}"} >
+            "data-total-files","${resource.totalNumberOfFiles!-1}","data-multiple-upload","${(multipleUpload?string)!'false'}","data-datatable","${(resource.resourceType.dataTableSupported?string)!'false'}",
+            "data-valid-extensions","${validExtensions}","data-type","${resource.resourceType}"} >
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />

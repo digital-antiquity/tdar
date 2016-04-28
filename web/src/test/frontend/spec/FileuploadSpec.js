@@ -57,7 +57,7 @@ xdescribe("fileupload suite - root", function(){
                 inputSelector: '#fileAsyncUpload'
             });
 
-            fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
+            fileValidator = new TDAR.fileupload.FileuploadValidator($("#metadataForm"));
         });
 
         afterEach(function() {
@@ -184,7 +184,7 @@ xdescribe("fileupload suite - root", function(){
                 inputSelector: '#fileAsyncUpload'
             });
 
-            fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
+            fileValidator = new TDAR.fileupload.FileuploadValidator($("#metadataForm"));
             fileValidator.addRule("nodupes");
             TDAR.fileupload.addGisValidation(fileValidator);
         });

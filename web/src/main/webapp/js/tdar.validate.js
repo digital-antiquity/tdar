@@ -83,7 +83,7 @@
                 console.log("validate: " + method);
                 $t.data("tdar-validate-status","valid-custom");
                 if (method == 'initBasicForm') {
-                    _postValidateBasic($t);
+                    _postValidateBasic($t, validator);
                 }
             } else {
                 console.log("validate method specified, but not a function");
@@ -106,7 +106,7 @@
         });
     };
 
-    var _postValidateBasic =  function($form) {
+    var _postValidateBasic =  function($form, validator) {
         $('.coverageTypeSelect', "#coverageDateRepeatable",$form).each(function (i, elem) {
             _prepareDateFields(elem);
         });
@@ -140,24 +140,20 @@
         	var validExtensions = $form.data("valid-extensions");
         	console.log(validExtensions);
         	var msg = "Please enter a valid file (" + validExtensions.replace("|", ", ")+ ")";
-            var validate = $('.validateFileType',$form);
-            if ($(validate).length > 0) {
-                $(validate).rules("add", {
+            $(".validateFileType",$form).each(function(i, elem) {
+                $(elem).rules("add", {
                     extension: validExtensions,
                     messages: {
                         extension: msg
                     }
                 });
-            }
+            });
         }
 
         
-        if ($form.data("datatable")) {
-        	TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
-        }
-        
+        var fileValidator;
         if ($form.data("multiple-upload")) {
-            var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
+            fileValidator = new TDAR.fileupload.FileuploadValidator($form);
             fileValidator.addRule("nodupes");
     
             //fixme: (TDAR-4722) prohibit file replacements on 'add' pages. Due to bug, UI may display 'replace' option even when it shouldn't.
@@ -169,10 +165,39 @@
     
             TDAR.fileupload.validator = fileValidator;
         }
+        
+        
+        if ($form.data("datatable")) {
+            if (fileValidator) {
+                TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
+            } else {
+                console.error("no file validator defined");
+            }
+        }
+        
+        
+        if ($form.data("type") == 'GEOSPATIAL') {
+            TDAR.fileupload.addGisValidation(fileValidator);
+        }
 
-        if ($form.data("total-files") == 0 || $form.data("total-files") > 0) {
+        if ($form.data("type") == 'SENSORY_DATA') {
+            $(".scannerTechnology", $form).each(function(i, elem) {
+                $(elem).rules("add", {
+                    valueRequiresAsyncUpload: {
+                        possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
+                        fileExt: "xls",
+                        inputElementId: "fileAsyncUpload"
+                    },
+                    messages: {
+                        valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"
+                    }
+                });
+            });
+        }
+        
+        if (!$form.data("multiple-upload") && ($form.data("total-files") == 0 || $form.data("total-files") > 0)) {
         	var rtype = $form.data("resource-type");
-            $('#fileInputTextArea').rules("add", {
+            $('#fileInputTextArea',$form).rules("add", {
                         required: {
                             depends: _isSupportingFileFieldRequired
                         },
@@ -181,7 +206,7 @@
                         }
                     });
 
-            $('#fileUploadField').rules("add", {
+            $('#fileUploadField',$form).rules("add", {
                         required: {
                             depends: _isSupportingFileFieldRequired
                         },

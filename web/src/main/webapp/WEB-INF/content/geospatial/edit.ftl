@@ -5,10 +5,6 @@
     <#global hideRelatedCollections=true/>
     <#import "/${themeDir}/local-helptext.ftl" as  helptext>
 
-    <#macro localJavascript>
-    console.log("adding gis validation rules");
-    TDAR.fileupload.addGisValidation(TDAR.fileupload.validator);
-    </#macro>
 
     <#macro basicInformation>
     <br/>
