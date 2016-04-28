@@ -195,25 +195,30 @@
             });
         }
         
+        // FIXME: custom data attribuet?
         if (!$form.data("multiple-upload") && ($form.data("total-files") == 0 || $form.data("total-files") > 0)) {
         	var rtype = $form.data("resource-type");
-            $('#fileInputTextArea',$form).rules("add", {
-                        required: {
-                            depends: _isSupportingFileFieldRequired
-                        },
-                        messages: {
-                            required: "No " + rtype + " data entered. Please enter " + rtype + " manually or upload a file."
-                        }
-                    });
-
-            $('#fileUploadField',$form).rules("add", {
-                        required: {
-                            depends: _isSupportingFileFieldRequired
-                        },
-                        messages: {
-                            required: "No " + rtype + " file selected. Please select a file or enter " + rtype + " data manually."
-                        }
-                    });
+        	var $textarea = $('#fileInputTextArea',$form);
+        	var $uploadfield = $('#fileUploadField',$form);
+        	// both must exist...
+        	if ($textarea.length > 0 && $uploadfield.length  > 0) {
+                $textarea.rules("add", {
+                            required: {
+                                depends: _isSupportingFileFieldRequired
+                            },
+                            messages: {
+                                required: "No " + rtype + " data entered. Please enter " + rtype + " manually or upload a file."
+                            }
+                        });
+        	    $uploadfield.rules("add", {
+        	        required: {
+        	            depends: _isSupportingFileFieldRequired
+        	        },
+        	        messages: {
+        	            required: "No " + rtype + " file selected. Please select a file or enter " + rtype + " data manually."
+        	        }
+        	    });
+        	}
 
 
         }
