@@ -267,7 +267,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
-        saveOrUpdate(resourcesToEvaluate);
+//        saveOrUpdate(resourcesToEvaluate);
 
         /* make sure the account associations are properly set for each resource in the bunch */
         updateTransientAccountOnResources(resourcesToEvaluate);
@@ -321,7 +321,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                     account.setStatus(Status.ACTIVE);
                 }
             }
-            saveOrUpdate(resourcesToEvaluate);
+//            saveOrUpdate(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account, getResourceEvaluator());
         } else {
@@ -370,6 +370,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         for (Resource resource : resources) {
             if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
                 resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+                saveOrUpdate(resource);
             }
         }
 
@@ -390,6 +391,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                 status = Status.ACTIVE;
             }
             resource.setStatus(status);
+            saveOrUpdate(resource);
         }
     }
 
