@@ -62,10 +62,8 @@
      * Validate a single form, called out and returning the validator to enable testing 
      */
     var _initForm = function (form) {
-        var $t = form;
-        if (!(form instanceof jQuery)) {
-            $t = $(form);
-        }
+        var $t = $(form);
+        console.log($t.attr('id'));
         var method = $t.data('validate-method');
         var validator;
         console.log(method);
@@ -85,7 +83,7 @@
                 console.log("validate: " + method);
                 $t.data("tdar-validate-status","valid-custom");
                 if (method == 'initBasicForm') {
-                    _postValidateBasic();
+                    _postValidateBasic($t);
                 }
             } else {
                 console.log("validate method specified, but not a function");
@@ -108,24 +106,26 @@
         });
     };
 
-    var _postValidateBasic =  function(form) {
-        $('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
+    var _postValidateBasic =  function($form) {
+        $('.coverageTypeSelect', "#coverageDateRepeatable",$form).each(function (i, elem) {
             _prepareDateFields(elem);
         });
-        $("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
+        $("#coverageDateRepeatable", $form).delegate(".coverageTypeSelect", "change", function () {
             _prepareDateFields(this);
         });
 
-        $(".profileImage").each(function(i, profileElement){
-            $(profileElement).rules("add", {
-                extension: "jpg,tiff,jpeg,png",
-                messages: {
-                    extension: "please upload a JPG, TIFF, or PNG file for a profile image"
-                }
-            });
+
+    	$(".profileImage",$form).each(function(i, elem) {
+        	$(elem).rules("add", {
+        		extension: "jpg,tiff,jpeg,png",
+        		messages: {
+        			extension: "please upload a JPG, TIFF, or PNG file for a profile image"
+        		}
+        	});
         });
 
-        var $uploaded = $( '_uploadedFiles', form);
+
+        var $uploaded = $( '_uploadedFiles', $form);
         if ($uploaded.length > 0) {
             var _validateUploadedFiles = function () {
                 if ($uploaded.val().length > 0) {
@@ -136,24 +136,27 @@
             _validateUploadedFiles();
         }
         
-        if (window["_validExtensions"]) {
-            var validate = $('.validateFileType');
+        if ($form.data("valid-extensions")) {
+        	var validExtensions = $form.data("valid-extensions");
+        	console.log(validExtensions);
+        	var msg = "Please enter a valid file (" + validExtensions.replace("|", ", ")+ ")";
+            var validate = $('.validateFileType',$form);
             if ($(validate).length > 0) {
                 $(validate).rules("add", {
-                    extension: _validExtensions,
+                    extension: validExtensions,
                     messages: {
-                        extension: _validExtensionsWarning
+                        extension: msg
                     }
                 });
             }
         }
 
         
-        if (window["_dataTableEnabled"]) {
+        if ($form.data("datatable")) {
         	TDAR.fileupload.addDataTableValidation(TDAR.fileupload.validator);
         }
         
-        if (window["_multipleUpload"]) {
+        if ($form.data("multiple-upload")) {
             var fileValidator = new TDAR.fileupload.FileuploadValidator("metadataForm");
             fileValidator.addRule("nodupes");
     
@@ -165,8 +168,10 @@
             }
     
             TDAR.fileupload.validator = fileValidator;
-        } else if (window["_totalNumberOfFiles"]) {
+        }
 
+        if ($form.data("total-files") == 0 || $form.data("total-files") > 0) {
+        	var rtype = $form.data("resource-type");
             $('#fileInputTextArea').rules("add", {
                         required: {
                             depends: _isSupportingFileFieldRequired
@@ -190,6 +195,7 @@
     }
     
     var _isSupportingFileFieldRequired = function(elem) {
+    	var totalNumberOfFiles = $(elem.form).data("total-files");
     	var noRulesExist = !((totalNumberOfFiles > 0) || ($("#fileInputTextArea").val().length > 0) || ($("#fileUploadField").val().length > 0));
     	return noRulesExist && $(elem).is(":visible");
     }

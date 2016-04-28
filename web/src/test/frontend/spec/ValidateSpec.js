@@ -30,10 +30,10 @@ describe("TDAR.validate: edit page tests", function () {
 
 
     it("should work when we call prepareDateFields (NONE)", function () {
-        console.log("prepare-date-test");
-        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
+        console.log("prepare-date-test (none)");
+    	loadFixtures("coverage-dates.html");
+    	var $form = $("#coverage");
         var sel = $form.find('select')[0];
-        setFixtures($form);
         var validator = TDAR.validate.initForm($form);
 
         //validation: everything blank - no errors 
@@ -46,10 +46,10 @@ describe("TDAR.validate: edit page tests", function () {
 
 
     it("should work when we call prepareDateFields (calendar missing)", function () {
-        console.log("prepare-date-test");
-        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
+        console.log("prepare-date-test calendar(missing value)");
+    	loadFixtures("coverage-dates.html");
+    	var $form = $("#coverage");
         var sel = $form.find('select')[0];
-        setFixtures($form);
         var validator = TDAR.validate.initForm($form);
 
         //validation: coverage date incomplete 
@@ -62,11 +62,11 @@ describe("TDAR.validate: edit page tests", function () {
     });
 
     it("should work when we call prepareDateFields (calendar wrong order)", function () {
-        console.log("prepare-date-test");
-        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
-        var sel = $form.find('select')[0];
-        setFixtures($form);
+        console.log("prepare-date-test calendar(invalid)");
+    	loadFixtures("coverage-dates.html");
+    	var $form = $("#coverage");
         var validator = TDAR.validate.initForm($form);
+        var sel = $form.find('select')[0];
 
         //validation: 2001-1999 is an invalid calendar date...
         $(sel).val('CALENDAR_DATE');
@@ -77,9 +77,11 @@ describe("TDAR.validate: edit page tests", function () {
         $form.valid();
         expect(validator.errorList.length).toBeGreaterThan(0);
     });
+    
     it("should work when we call prepareDateFields (RC valid)", function () {
-        console.log("prepare-date-test");
-        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('coverage-dates.html') + '</form>');
+        console.log("prepare-date-test rc-valid");
+    	loadFixtures("coverage-dates.html");
+    	var $form = $("#coverage");
         var sel = $form.find('select')[0];
         setFixtures($form);
         var validator = TDAR.validate.initForm($form);
@@ -106,22 +108,30 @@ describe("TDAR.validate: edit page tests", function () {
         TDAR.common.setupSupportingResourceForm(1, 'coding-sheet');
     });
 
-    it("should apply coding-sheet & ontology validation rules", function() {
-        setFixtures('<form class="tdarvalidate" data-validate-method="initBasicForm">' + readFixtures('supporting-resource-upload.html') + '</form>');
-        var validator = $('form').validate();
+    it("should apply coding-sheet & ontology validation rules (1 file - valid)", function() {
+    	loadFixtures("supporting-resource-upload.html");
+    	var $form = $("#supporting");
+    	$form.data("total-files",1);
+        var validator = TDAR.validate.initForm($form);
         TDAR.common.setupSupportingResourceForm(1, 'coding-sheet');
-        $('form').valid()
+        $form.valid();
         expect(validator.errorList).toHaveLength(0);
-
-        TDAR.common.setupSupportingResourceForm(0, 'coding-sheet');
-        $('form').valid()
+    });
+    
+    it("should apply coding-sheet & ontology validation rules (0 files - invalid)", function() {
+    	console.log("test coding-sheet-upload invalid");
+    	loadFixtures("supporting-resource-upload.html");
+    	var $form = $("#supporting");
+        var validator = TDAR.validate.initForm($form);
+        $form.valid();
+        console.log(validator.errorList);
         expect(validator.errorList).toHaveLength(2);
     });
 
     it("should add image extension validation to profile image uploads validateProfileImage", function () {
-        var $form = $('<form class="tdarvalidate" data-validate-method="initBasicForm"><input type="file" name="fileupload" class="profileImage"></form>');
-        setFixtures($form);
-        var validator = TDAR.validate.initForm($form);
+    	loadFixtures("profile-image.html");
+        var form = $('#profile');
+        var validator = TDAR.validate.initForm(form);
         expect(Object.keys($('input[type=file]').rules())).toContain('extension');
     });
 });

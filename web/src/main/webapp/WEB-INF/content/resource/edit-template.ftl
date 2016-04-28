@@ -57,8 +57,12 @@
     <#else>
         <#assign submitterId = resource.submitter.id>
     </#if>
+    <#assign validExtensions><@edit.join sequence=validFileExtensions![] delimiter="|"/></#assign>
+
     <@s.form name='metadataForm' id='metadataForm'   cssClass="form-horizontal tdarvalidate" method='post' enctype='multipart/form-data' action='save'
-            dynamicAttributes={"data-submitterid":"${submitterId?c}","data-validate-method":"initBasicForm"} >
+            dynamicAttributes={"data-submitterid":"${submitterId?c}","data-validate-method":"initBasicForm","data-resource-type","${resource.resourceType.label}",
+            "data-total-files","${resource.totalNumberOfFiles!0}","data-multiple-upload","${(multipleUpload?string)!'false'}","data-datatable","${(resource.resourceType.dataTableSupported?string)!'false'}",
+            "data-valid-extensions","${validExtensions}"} >
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
         <@s.hidden name="epochTimeUpdated" />
@@ -273,7 +277,7 @@
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
 	                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
 	                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-	                truncate="70" value='${_projectId}' required=true  cssClass="required input-xxlarge" />
+	                truncate="70" value='${_projectId}' required=false  cssClass="input-xxlarge" />
             </div>
 
             <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
@@ -411,7 +415,6 @@
          };
         var form = $(props.formSelector)[0];
         TDAR.common.initEditPage(form, props);
-		var	_dataTableEnabled = ${(resource.resourceType.dataTableSupported?string)!"false"};
             
         <#if local_.localJavascript?? && local_.localJavascript?is_macro>
             <@local_.localJavascript />
@@ -430,11 +433,6 @@
         </#if>
 
         });
-<#if validFileExtensions??>
-    var _multipleUpload =  ${(multipleUpload?string)!'false'};
-    var _validExtensions = "<@edit.join sequence=validFileExtensions delimiter="|"/>";
-    var _validExtensionsWarning = "Please enter a valid file (<@edit.join sequence=validFileExtensions delimiter=", "/>)";
-</#if>
         </#noescape>
 </script>
 
