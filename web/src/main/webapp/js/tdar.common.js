@@ -1065,6 +1065,8 @@ TDAR.common = function (TDAR, fileupload) {
         _refreshInputDisplay();
     }
 
+
+    //FIXME: we need to refactor this method when upgrading from Google Analytics to Universal Analytics (TDAR-3515)
     /**
      * Wrapper for triggering custom Google Analytics events.
      *
@@ -1085,6 +1087,7 @@ TDAR.common = function (TDAR, fileupload) {
         return true;
     }
 
+    //FIXME: we need to refactor this method when upgrading from Google Analytics to Universal Analytics (TDAR-3515)
     /**
      * emit "file downloaded" google analytics event
      * @param url
@@ -1099,6 +1102,7 @@ TDAR.common = function (TDAR, fileupload) {
         }
     }
 
+    //FIXME: we need to refactor this method when upgrading from Google Analytics to Universal Analytics (TDAR-3515)
     /**
      * emit "file downloaded" google analytics event
      * @param url
@@ -1113,6 +1117,7 @@ TDAR.common = function (TDAR, fileupload) {
         }
     }
 
+    //FIXME: we need to refactor this method when upgrading from Google Analytics to Universal Analytics (TDAR-3515)
     /**
      * emit "outbound link clicked" event.
      * @param elem

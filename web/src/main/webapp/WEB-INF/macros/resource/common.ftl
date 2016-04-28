@@ -41,6 +41,7 @@ Common macros used in multiple contexts
     </#macro>
 
 <#-- emit the javascript necessary for google analytics -->
+<#-- FIXME: replace this embed and wrapper functions as part of upgrade to Universal Analytics (TDAR-3515) -->
     <#macro googleAnalyticsJavascript>
         <#noescape>
         var _gaq = _gaq || [];
