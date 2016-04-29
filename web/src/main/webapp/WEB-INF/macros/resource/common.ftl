@@ -553,14 +553,51 @@ Common macros used in multiple contexts
                     </tr>
                     </thead>
                     <tbody>
+                        <#assign hasSpecial=false />
                         <#list resource.sortedCodingRules as codeRule>
-                        <tr>
-                            <td>${codeRule.code}</td>
-                            <td>${codeRule.term}</td>
-                            <td>${codeRule.description!""}</td>
-                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
-                        </tr>
+                        	<#if !(codeRule.code?starts_with("__")) >
+	                        <tr>
+	                            <td>${codeRule.code}</td>
+	                            <td>${codeRule.term}</td>
+	                            <td>${codeRule.description!""}</td>
+	                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
+	                        </tr>
+                            <#else>
+                              <#assign hasSpecial=true />
+	                    	</#if>
                         </#list>
+
+                        <tr>
+                        <td colspan=4><b>Special Coding Rules:</b> These entries are not in the coding-sheet, but represent edge-cases in Data Integration that may benefit from custom mappings</td>
+                        </tr>
+                       <#if hasSpecial>
+                        <#list resource.sortedCodingRules as codeRule>
+                        	<#if codeRule.code?starts_with("__") >
+	                        <tr>
+	                            <td></td>
+	                            <td>${codeRule.term}</td>
+	                            <td>${codeRule.description!""}</td>
+	                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
+	                        </tr>
+	                    	</#if>
+                        </#list>
+                        </#if>
+
+                        <#list missingCodingKeys![]>
+                        <tr>
+                        <td colspan=4><b>The following coding rules exist in datasets mapped to this coding sheet, but are not in the coding sheet</b></td>
+                        </tr>
+                        <#items as missing>
+                        <tr>
+                            <td class="red">${missing}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                        </#items>
+                        </#list>
+                        	
+
                     </tbody>
                 </table>
             </div>

@@ -40,6 +40,7 @@ public class SheetProxy implements Serializable {
 
     // cleanup needed after rendering a sheet?
     private boolean isCleanupNeeded = true;
+    private boolean autosizeCols;
 
     // optional work that a caller can perform before/after exporter processes its data.
     public static abstract class Callback {
@@ -210,6 +211,14 @@ public class SheetProxy implements Serializable {
 
     public void setNoteRow(String noteRow) {
         this.noteRow = noteRow;
+    }
+
+    public boolean isAutosizeCols() {
+        return autosizeCols;
+    }
+
+    public void setAutosizeCols(boolean autosizeCols) {
+        this.autosizeCols = autosizeCols;
     }
 
 }

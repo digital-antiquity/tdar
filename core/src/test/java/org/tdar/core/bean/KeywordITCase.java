@@ -1,5 +1,6 @@
 package org.tdar.core.bean;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -19,6 +20,7 @@ import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
@@ -69,6 +71,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testFindAndReconcilePlurals() {
         createAndAddTK("Rock");
         createAndAddTK("Rocks");
@@ -78,10 +81,27 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         authorityManagementService.findPluralDups(TemporalKeyword.class, getUser(), true);
     }
 
-    private void createAndAddTK(String term) {
+    
+    @Test
+    @Rollback
+    public void findByDupTest() {
+        TemporalKeyword master = createAndAddTK("Rock");
+        TemporalKeyword dup = createAndAddTK("Rocks");
+        genericService.saveOrUpdate(master,dup);
+        dup.setStatus(Status.DUPLICATE);
+        master.getSynonyms().add(dup);
+        genericService.saveOrUpdate(dup,master);
+        genericService.synchronize();
+        assertEquals(master,genericKeywordService.findAuthority(dup));
+
+
+    }
+    
+    private TemporalKeyword createAndAddTK(String term) {
         TemporalKeyword tk2 = new TemporalKeyword();
         tk2.setLabel(term);
         genericService.saveOrUpdate(tk2);
+        return tk2;
     }
 
     // make sure that deleting a hierarchical keyword does not implicitly delete it's parent.

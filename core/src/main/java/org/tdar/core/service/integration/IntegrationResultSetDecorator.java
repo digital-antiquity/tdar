@@ -13,12 +13,15 @@ import org.apache.commons.collections4.iterators.AbstractIteratorDecorator;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.db.model.abstracts.Database;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * Wrapping an iterator for a ResultSet which is used by the workbook to write out the results. This wrapper does two separate things:
@@ -110,14 +113,41 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             // if it's an integration column, add mapped value as well
             if (integrationColumn.isIntegrationColumn()) { // MAPPED VALUE if not display column
                 resultSetPosition = resultSetPosition + 1;
+                // HANDLE NULL
+                String mappedVal = (String) row[resultSetPosition];
+                String type = "";
                 if (StringUtils.isBlank(value)) {
                     value = MessageHelper.getMessage("database.null_empty_integration_value");
+                    if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                        mappedVal = CodingRule.NULL.getTerm();
+                        type = CodingRule.NULL.getTerm();
+                    }
                 }
+                
+                if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                    // HANDLE MISSING
+                    if (StringUtils.contains(value, Database.NO_CODING_SHEET_VALUE)) {
+                        mappedVal = CodingRule.MISSING.getTerm();
+                        type = CodingRule.MISSING.getTerm();
+                    }
+                }
+                
                 values.add(value);
-                String mappedVal = (String) row[resultSetPosition];
-
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
+                if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                    Map<String, OntologyNode> nodeMap = realColumn.getDefaultCodingSheet().getTermToOntologyNodeMap();
+                    if (StringUtils.isNotBlank(type)) {
+                        // if type == NULL || MISSING, try and get value:
+                        mappedOntologyNode = nodeMap.get(mappedVal);
+                        
+                    } else if ( mappedOntologyNode == null) {
+                        mappedVal = CodingRule.UNMAPPED.getTerm();
+                        type = CodingRule.UNMAPPED.getTerm();
+                        mappedOntologyNode = nodeMap.get(value);
+                    }
+                }
+                
                 if (mappedOntologyNode != null && StringUtils.isNotBlank(mappedOntologyNode.getDisplayName())) {
                     mappedVal = mappedOntologyNode.getDisplayName();
                     ontologyNodes.add(mappedOntologyNode);
@@ -129,13 +159,13 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 }
                 row[resultSetPosition] = mappedVal;
                 values.add(mappedVal);
-                // increment for "sort" column
-                resultSetPosition++;
-                if (row[resultSetPosition] != null) {
-                    values.add(row[resultSetPosition].toString());
+
+                if (PersistableUtils.isNotNullOrTransient(mappedOntologyNode)) {
+                    values.add(mappedOntologyNode.getImportOrder().toString());
                 } else {
                     values.add(null);
                 }
+                values.add(type);
             }
             resultSetPosition++;
         }

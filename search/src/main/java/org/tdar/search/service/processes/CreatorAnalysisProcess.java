@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.hibernate.ScrollableResults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -132,11 +133,14 @@ public class CreatorAnalysisProcess extends AbstractAnalysisTask<Creator> {
 		result.setProjectionModel(ProjectionModel.LUCENE);
 		resourceSearchService.generateQueryForRelatedResources(creator, null, result, MessageHelper.getInstance());
 		total = result.getTotalRecords();
-		if (total == 0) {
+		if (total == 0 || CollectionUtils.isEmpty(result.getResults())) {
 			return;
 		}
 		Set<Long> resourceIds = new HashSet<>();
 		resourceIds.addAll(PersistableUtils.extractIds(result.getResults()));
+		if (CollectionUtils.isEmpty(resourceIds)) {
+			return;
+		}
 		try {
 			generateLogEntry(resourceIds, creator, total, userIdsToIgnoreInLargeTasks);
 		} catch (Exception e) {

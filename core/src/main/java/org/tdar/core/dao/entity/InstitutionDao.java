@@ -33,7 +33,7 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
     }
 
     public Institution findAuthorityFromDuplicate(Institution dup) {
-        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getClass().getSimpleName(), dup.getId()));
+        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         @SuppressWarnings("unchecked")
         List<BigInteger> result = query.list();
         if (CollectionUtils.isEmpty(result)) {

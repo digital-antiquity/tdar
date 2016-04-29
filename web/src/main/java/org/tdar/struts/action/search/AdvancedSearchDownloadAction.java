@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.struts2.convention.annotation.Action;
@@ -39,6 +40,11 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchController {
 
+    private static final String RESOURCETYPE = "resourcetype";
+    private static final String PROJECT = "project";
+    private static final String DESCRIPTION = "description";
+    private static final String TITLE = "title";
+
     private static final long serialVersionUID = 7426286742246468225L;
 
     @Autowired
@@ -51,7 +57,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
     @Action(value = "download", results = { @Result(name = SUCCESS, type = "stream", params = {
             "contentType", "application/vnd.ms-excel", "inputName",
             "inputStream", "contentDisposition",
-            "attachment;filename=\"report.xls\"", "contentLength",
+            "attachment;filename=\"report.xlsx\"", "contentLength",
             "${contentLength}" }) })
     public String viewExcelReport() throws ParseException, TdarActionException {
         if (!isAuthenticated()) {
@@ -68,11 +74,11 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
             }
             if (getTotalRecords() > 0) {
                 ExcelWorkbookWriter excelWriter  = new ExcelWorkbookWriter();
-                Sheet sheet = excelWriter.createWorkbook("results");
+                Sheet sheet = excelWriter.createWorkbook("results",SpreadsheetVersion.EXCEL2007);
 
                 List<String> fieldNames = new ArrayList<String>(Arrays.asList(
-                        "id", "resourcetype", "title", "date", "authors",
-                        "project", "description", "number_of_files", "url",
+                        "id", RESOURCETYPE, TITLE, "date", "authors",
+                        PROJECT, DESCRIPTION, "number_of_files", "url",
                         "physical_location"));
 
                 if (isEditor()) {
@@ -161,8 +167,14 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                     }
                 }
 
-                excelWriter.setColumnWidth(sheet, 0, 5000);
-
+//                excelWriter.setColumnWidth(sheet, 0, 5000);
+                for (int i=0; i < fieldNames.size();i++) {
+                    if (StringUtils.containsAny(fieldNames.get(i), TITLE,PROJECT,DESCRIPTION,RESOURCETYPE)) {
+                        sheet.setColumnWidth(i, 20);
+                    } else {
+                        sheet.autoSizeColumn(i, false);
+                    }
+                }
                 File tempFile = File.createTempFile("results", ".xls");
                 FileOutputStream fos = new FileOutputStream(tempFile);
                 sheet.getWorkbook().write(fos);
