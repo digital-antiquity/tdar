@@ -1,5 +1,5 @@
-(function(TDAR, $) {
-    'use strict';
+TDAR.validate = (function($, ctx) {
+    "use strict";
 
 
     /**
@@ -62,9 +62,9 @@
      * Validate a single form, called out and returning the validator to enable testing 
      */
     var _initForm = function (form) {
-        var $t = $(form);
-        console.log($t.attr('id'));
-        var method = $t.data('validate-method');
+        var $form = $(form);
+        console.log($form.attr('id'));
+        var method = $form.data('validate-method');
         var validator;
         console.log(method);
         if (method != undefined) {
@@ -77,23 +77,24 @@
                 method_ = window[method];
             }               
             if (method_ != undefined) {
-                var options  = method_($t);
+                var options  = method_($form);
                 var allValidateOptions = $.extend({}, _defaultValidateOptions, options);
-                validator = $t.validate(allValidateOptions);
+                validator = $form.validate(allValidateOptions);
                 console.log("validate: " + method);
-                $t.data("tdar-validate-status","valid-custom");
+                $form.data("tdar-validate-status","valid-custom");
                 if (method == 'initBasicForm') {
-                    _postValidateBasic($t, validator);
+                    _postValidateBasic($form, validator);
                 }
             } else {
                 console.log("validate method specified, but not a function");
-                $t.data("tdar-validate-status","failed-invalid-method");
+                $form.data("tdar-validate-status","failed-invalid-method");
             }
-        } else {
-            var allValidateOptions = $.extend({}, _defaultValidateOptions);
-            validator = $t.validate(allValidateOptions);
-            $t.data("tdar-validate-status","valid-default");
         }
+
+
+        var allValidateOptions = $.extend({}, _defaultValidateOptions);
+        validator = $form.validate(allValidateOptions);
+        $form.data("tdar-validate-status","valid-default");
         return validator;
     };
     
@@ -348,40 +349,9 @@
         //disable double-submit protection if user gets here via backbutton
         var $submit = $form.find(".submitButton").prop("disabled", false);
         var options = {
+            //FIXME: allow for error label container to be specified from options,
             errorLabelContainer: $("#error"),
-            rules: {
-                confirmEmail: {
-                    equalTo: "#emailAddress"
-                },
-                password: {
-                    minlength: 3
-                },
-                username: {
-                    minlength: 5
-                },
-                confirmPassword: {
-                    minlength: 3,
-                    equalTo: "#password"
-                },
-                'contributorReason': {
-                    maxlength: 512
-                }
-            },
-            messages: {
-                confirmEmail: {
-                    email: "Please enter a valid email address.",
-                    equalTo: "Your confirmation email doesn't match."
-                },
-                password: {
-                    required: "Please enter a password.",
-                    minlength: $.validator.format("Your password must be at least {0} characters.")
-                },
-                confirmPassword: {
-                    required: "Please confirm your password.",
-                    minlength: $.validator.format("Your password must be at least {0} characters."),
-                    equalTo: "Please make sure your passwords match."
-                }
-            }, submitHandler: function (f) {
+            submitHandler: function (f) {
                 var $submit = $(f).find(".submitButton").prop("disabled", true);
                 //prevent doublesubmit for certain amount of time.
                 $submit.prop("disabled", true);
@@ -395,15 +365,16 @@
     };
 
 
-    TDAR.validate = {
+    return {
         "init" : _init,
         "initForm" : _initForm,
         "initRegForm" : _initRegForm,
         "initBasicForm": _initBasicForm,
         "prepareDateFields": _prepareDateFields
     }
+})(jQuery, window);
 
-})(TDAR, jQuery);
+//FIXME: inline onload binding complicates testing and makes it harder to discover the total number of initializers (and their sequence)
 $(function() {
     TDAR.validate.init();
 });

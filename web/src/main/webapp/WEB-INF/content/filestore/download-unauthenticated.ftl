@@ -54,8 +54,6 @@
             <@s.form name='registrationForm' id='registrationForm' method="post" cssClass="disableFormNavigate form-condensed tdarvalidate"
                     enctype='multipart/form-data' action="/filestore/process-download-registration" dynamicAttributes={"data-validate-method":"initRegForm"}>
 
-				<@s.token name='struts.csrf.token' />
-
                     <@s.token name='struts.csrf.token' />
                 <fieldset>
                     <legend>Register</legend>
