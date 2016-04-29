@@ -29,16 +29,20 @@ TDAR.validate = (function($, ctx) {
         },
         //send validation errors to the server  TODO: cap the total number of errors
         invalidHandler: function (event, validator) {
-            var form = event.target, errors = validator.errorList, submitCount = $(form).data("submitCount") || 0, totalErrors = $(form).data("totalErrors") || 0;
+            var form = event.target;
+            var $form = $(form);
+            var errors = validator.errorList;
+            var submitCount = $form.data("submitCount") || 0;
+            var totalErrors = $form.data("totalErrors") || 0;
 
             submitCount++;
             //cap the included errors, but show the correct total number of errors
             totalErrors += errors.length;
-            $(form).data("submitCount", submitCount).data("totalErrors", totalErrors);
+            $form.data("submitCount", submitCount).data("totalErrors", totalErrors);
             errors = errors.slice(0 - TDAR.common.maxJavascriptValidationMessages);
 
             //todo: we really only need to build the dom when the submit is finally successful
-            $(form).find("#divClientValidationInfo").remove();
+            $form.find("#divClientValidationInfo").remove();
             var $clientInfo = $('<div id="divClientValidationInfo"></div>');
 
             var template = $.validator.format('<input type="hidden" name="clientValidationInfo[\'{0}\']" value="{1}">');
@@ -54,7 +58,7 @@ TDAR.validate = (function($, ctx) {
             //now tack on the total errors and submission attempts
             $clientInfo.append($(template("totalErrors", totalErrors)));
             $clientInfo.append($(template("submitCount", submitCount)));
-            $(form).append($clientInfo);
+            $form.append($clientInfo);
         }
     };
     
@@ -108,21 +112,21 @@ TDAR.validate = (function($, ctx) {
     };
 
     var _postValidateBasic =  function($form, validator) {
-        $('.coverageTypeSelect', "#coverageDateRepeatable",$form).each(function (i, elem) {
+        $find.('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
             _prepareDateFields(elem);
         });
-        $("#coverageDateRepeatable", $form).delegate(".coverageTypeSelect", "change", function () {
+        $find.("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
             _prepareDateFields(this);
         });
 
 
-    	$(".profileImage",$form).each(function(i, elem) {
-        	$(elem).rules("add", {
-        		extension: "jpg,tiff,jpeg,png",
-        		messages: {
-        			extension: "please upload a JPG, TIFF, or PNG file for a profile image"
-        		}
-        	});
+        $form.find(".profileImage").each(function(i, elem) {
+            $(elem).rules("add", {
+                extension: "jpg,tiff,jpeg,png",
+                messages: {
+                    extension: "please upload a JPG, TIFF, or PNG file for a profile image"
+                }
+            });
         });
 
 
@@ -138,9 +142,9 @@ TDAR.validate = (function($, ctx) {
         }
         
         if ($form.data("valid-extensions")) {
-        	var validExtensions = $form.data("valid-extensions");
-        	console.log(validExtensions);
-        	var msg = "Please enter a valid file (" + validExtensions.replace("|", ", ")+ ")";
+            var validExtensions = $form.data("valid-extensions");
+            console.log(validExtensions);
+            var msg = "Please enter a valid file (" + validExtensions.replace("|", ", ")+ ")";
             $(".validateFileType",$form).each(function(i, elem) {
                 $(elem).rules("add", {
                     extension: validExtensions,
@@ -181,28 +185,25 @@ TDAR.validate = (function($, ctx) {
             TDAR.fileupload.addGisValidation(fileValidator);
         }
 
-        if ($form.data("type") == 'SENSORY_DATA') {
-            $(".scannerTechnology", $form).each(function(i, elem) {
-                $(elem).rules("add", {
-                    valueRequiresAsyncUpload: {
-                        possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
-                        fileExt: "xls",
-                        inputElementId: "fileAsyncUpload"
-                    },
-                    messages: {
-                        valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"
-                    }
-                });
+        $form.find(".scannerTechnology").each(function(i, elem) {
+            $(elem).rules("add", {
+                valueRequiresAsyncUpload: {
+                    possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
+                    fileExt: "xls",
+                    inputElementId: "fileAsyncUpload"
+                },
+                messages: {
+                    valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"
+                }
             });
-        }
-        
-        // FIXME: custom data attribuet?
+        });
+
         if (!$form.data("multiple-upload") && ($form.data("total-files") == 0 || $form.data("total-files") > 0)) {
-        	var rtype = $form.data("resource-type");
-        	var $textarea = $('#fileInputTextArea',$form);
-        	var $uploadfield = $('#fileUploadField',$form);
-        	// both must exist...
-        	if ($textarea.length > 0 && $uploadfield.length  > 0) {
+            var rtype = $form.data("resource-type");
+            var $textarea = $('#fileInputTextArea',$form);
+            var $uploadfield = $('#fileUploadField',$form);
+            // both must exist...
+            if ($textarea.length > 0 && $uploadfield.length  > 0) {
                 $textarea.rules("add", {
                             required: {
                                 depends: _isSupportingFileFieldRequired
@@ -211,24 +212,24 @@ TDAR.validate = (function($, ctx) {
                                 required: "No " + rtype + " data entered. Please enter " + rtype + " manually or upload a file."
                             }
                         });
-        	    $uploadfield.rules("add", {
-        	        required: {
-        	            depends: _isSupportingFileFieldRequired
-        	        },
-        	        messages: {
-        	            required: "No " + rtype + " file selected. Please select a file or enter " + rtype + " data manually."
-        	        }
-        	    });
-        	}
+                $uploadfield.rules("add", {
+                    required: {
+                        depends: _isSupportingFileFieldRequired
+                    },
+                    messages: {
+                        required: "No " + rtype + " file selected. Please select a file or enter " + rtype + " data manually."
+                    }
+                });
+            }
 
 
         }
     }
     
     var _isSupportingFileFieldRequired = function(elem) {
-    	var totalNumberOfFiles = $(elem.form).data("total-files");
-    	var noRulesExist = !((totalNumberOfFiles > 0) || ($("#fileInputTextArea").val().length > 0) || ($("#fileUploadField").val().length > 0));
-    	return noRulesExist && $(elem).is(":visible");
+        var totalNumberOfFiles = $(elem.form).data("total-files");
+        var noRulesExist = !((totalNumberOfFiles > 0) || ($("#fileInputTextArea").val().length > 0) || ($("#fileUploadField").val().length > 0));
+        return noRulesExist && $(elem).is(":visible");
     }
     
     var _initBasicForm = function(form) {
