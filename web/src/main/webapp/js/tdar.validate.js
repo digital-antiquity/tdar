@@ -112,10 +112,10 @@ TDAR.validate = (function($, ctx) {
     };
 
     var _postValidateBasic =  function($form, validator) {
-        $find.('.coverageTypeSelect', "#coverageDateRepeatable").each(function (i, elem) {
+        $('.coverageTypeSelect', "#coverageDateRepeatable",$form).each(function (i, elem) {
             _prepareDateFields(elem);
         });
-        $find.("#coverageDateRepeatable").delegate(".coverageTypeSelect", "change", function () {
+        $("#coverageDateRepeatable", $form).delegate(".coverageTypeSelect", "change", function () {
             _prepareDateFields(this);
         });
 
