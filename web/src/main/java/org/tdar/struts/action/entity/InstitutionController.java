@@ -27,22 +27,34 @@ public class InstitutionController extends AbstractCreatorController<Institution
     private transient AuthorizationService authorizationService;
 
     private String name;
+    private String email;
+
 
     @Override
     protected String save(Institution persistable) {
         if (hasActionErrors()) {
             return INPUT;
         }
-        entityService.saveInstitutionForController(persistable, name, generateFileProxy(getFileFileName(), getFile()));
+        entityService.saveInstitutionForController(persistable, name, email, generateFileProxy(getFileFileName(), getFile()));
         return SUCCESS;
     }
 
     @Override
     public void validate() {
+
+        //if name changed, make sure it's not already taken
         if (!StringUtils.equalsIgnoreCase(name, getInstitution().getName())) {
             Institution findInstitutionByName = entityService.findInstitutionByName(name);
             if (findInstitutionByName != null) {
                 addActionError(getText("institutionController.cannot_rename", Arrays.asList(name)));
+            }
+        }
+
+        //if email changed, make sure it's not already taken
+        if(StringUtils.isNotBlank(getEmail()) && !StringUtils.equalsIgnoreCase(email, getInstitution().getEmail())) {
+            Institution inst = getGenericService().findByProperty(Institution.class, "email", email);
+            if(inst != null) {
+                addActionError("institutionController.email_taken");
             }
         }
     }
@@ -56,6 +68,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
     public String loadEditMetadata() {
         if (PersistableUtils.isNotNullOrTransient(getPersistable())) {
             setName(getPersistable().getName());
+            setEmail(getPersistable().getEmail());
         }
         return SUCCESS;
     }
@@ -92,4 +105,11 @@ public class InstitutionController extends AbstractCreatorController<Institution
         this.name = name;
     }
 
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 }

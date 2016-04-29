@@ -99,26 +99,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // if none, create one
         if (internalCollection == null) {
-            internalCollection = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
+            internalCollection = getDao().createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(resource, internalCollection, authorizedUsers, shouldSave, actor);
-    }
-
-    private ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
-        ResourceCollection internalCollection;
-        internalCollection = new ResourceCollection(CollectionType.INTERNAL);
-        internalCollection.setOwner(owner);
-        internalCollection.markUpdated(owner);
-        if (resource != null) {
-            resource.getResourceCollections().add(internalCollection);
-        }
-        // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
-        if (shouldSave) {
-            getDao().saveOrUpdate(internalCollection);
-            getDao().refresh(internalCollection);
-        }
-        return internalCollection;
     }
 
     /**
@@ -705,12 +689,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional
     public void addUserToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
-        ResourceCollection internal = resource.getInternalResourceCollection();
-        if (internal == null) {
-            internal = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, true);
-        }
-        internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
-        saveOrUpdate(internal);
+        getDao().addToInternalCollection(resource, user, permission);
     }
 
     @Transactional(readOnly=true)
@@ -881,4 +860,33 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         boolean isAdmin = authenticationAndAuthorizationService.isEditor(user);
         return getDao().findCollectionsWithName(user, isAdmin, name);
     }
+
+    @Transactional
+    /**
+     * Convert a resource collection into a persisted white-label collection with all default values.
+     * Note that this has the effect of detaching the input collection from the session.
+     * @param rc
+     * @return
+     */
+    public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
+        if(rc.isWhiteLabelCollection()) {
+            return (WhiteLabelCollection)rc;
+        }
+        return getDao().convertToWhitelabelCollection(rc);
+    }
+
+    @Transactional
+    /**
+     * Detach the provided white-label collection and return a persisted resource collection object.
+     *
+     * @param wlc
+     * @return
+     */
+    public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
+        return getDao().convertToResourceCollection(wlc);
+    }
+
+
 }
+
+

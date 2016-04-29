@@ -10,11 +10,13 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.SimpleOrderedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,7 +78,8 @@ public class SearchDao<I extends Indexable> {
 	public SolrSearchObject<I> search(SolrSearchObject<I> query, LuceneSearchResultHandler<I> resultHandler,
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
 		query.markStartSearch();
-		QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
+		SolrQuery solrParams = query.getSolrParams();
+		QueryResponse rsp = template.query(query.getCoreName(), solrParams);
 		query.processResults(rsp);
 		convertProjectedResultIntoObjects(resultHandler, query);
 		query.markStartFacetSearch();

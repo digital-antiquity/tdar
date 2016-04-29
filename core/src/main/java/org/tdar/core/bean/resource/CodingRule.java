@@ -40,6 +40,69 @@ public class CodingRule extends Persistable.Base implements Comparable<CodingRul
 
     private static final long serialVersionUID = -577936920767925065L;
 
+    public static final CodingRule NULL = new CodingRule() {
+
+        private static final long serialVersionUID = -4642755669423445084L;
+
+        @Override
+        public String getTerm() {
+            return "NULL";
+        }
+        
+        @Override
+        public String getCode() {
+            return "__NULL";
+        }
+
+        public String getFormattedTerm() {
+            return getTerm();
+        }
+
+        
+    };
+
+    public static final CodingRule MISSING = new CodingRule() {
+
+        private static final long serialVersionUID = 7942595387432781223L;
+
+        @Override
+        public String getTerm() {
+            return "MISSING";
+        }
+        
+        @Override
+        public String getCode() {
+            return "__MISSING";
+        }
+        
+        public String getFormattedTerm() {
+            return getTerm();
+        }
+
+        
+    };
+
+    public static final CodingRule UNMAPPED = new CodingRule() {
+
+        private static final long serialVersionUID = -5773650328175904771L;
+
+        @Override
+        public String getTerm() {
+            return "UNMAPPED";
+        }
+        
+        @Override
+        public String getCode() {
+            return "__UNMAPPED";
+        }
+
+        public String getFormattedTerm() {
+            return getTerm();
+        }
+
+    };
+
+    
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
     private CodingSheet codingSheet;

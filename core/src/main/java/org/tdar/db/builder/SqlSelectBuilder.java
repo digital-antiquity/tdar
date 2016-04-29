@@ -154,7 +154,7 @@ public class SqlSelectBuilder extends AbstractSqlTools implements Serializable {
     public void evaluateWhereForEmpty() {
         boolean onlyEmptyWhere = true;
         for (WhereCondition cond : getWhere()) {
-            if (CollectionUtils.isNotEmpty(cond.getInValues())) {
+            if (CollectionUtils.isNotEmpty(cond.getInValues()) || CollectionUtils.isNotEmpty(cond.getMoreInValues())) {
                 onlyEmptyWhere = false;
             }
         }

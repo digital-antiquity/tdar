@@ -30,7 +30,6 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
     // special characters need to be escaped or stripped prior to search
     public void testLookupWithSpecialCharactors() throws SolrServerException, IOException {
         controller.setTerm(L_BL_AW);
-        controller.setTitle(L_BL_AW);
         controller.setMinLookupLength(0);
         controller.lookupResource();
         PersonLookupAction pcontroller = generateNewInitializedController(PersonLookupAction.class);
@@ -49,7 +48,6 @@ public class LookupControllerITCase extends AbstractIntegrationControllerTestCas
         kcontroller.lookupKeyword();
         CollectionLookupAction ccontroller = generateNewInitializedController(CollectionLookupAction.class);
         controller.setTerm(L_BL_AW);
-        controller.setTitle(L_BL_AW);
         ccontroller.lookupResourceCollection();
         ResourceAnnotationKeyLookupAction rcontroller = generateNewController(ResourceAnnotationKeyLookupAction.class);
         rcontroller.setTerm(L_BL_AW);

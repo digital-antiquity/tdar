@@ -182,8 +182,11 @@ public interface TdarNamedQueries {
             + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf "
             + "from (select distinct resource_type from resource) as rt";
 
+    String QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION = "delete from whitelabel_collection where id = :id";
+    String QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL = "insert into whitelabel_collection(id) values(:id)";
+
     // generated HQL formats
-    String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from %1$s where id=%2$s";
+    String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from creator where id=%1$s";
 
     String QUERY_KEYWORD_MERGE_ID = "select merge_keyword_id from %1$s where id=%2$s";
 
@@ -197,9 +200,6 @@ public interface TdarNamedQueries {
 
     String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES_MAP = "select new map(ck.id as id, count(*) as referenceCount) from %1$s r2 inner join r2.%2$s ck where ck.id in (:idlist) group by ck.id";
     String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP = "select new map(%2$s.id as id, count(*) as referenceCount) from %1$s r1 where %2$s.id in (:idlist) group by %2$s.id";
-
-    String QUERY_HQL_UPDATE_MANY_TO_MANY_REFERENCES = ""; // TODO: //Not possible, I think.
-    String QUERY_HQL_UPDATE_MANY_TO_ONE_REFERENCES = ""; // TODO: use many_to_one_count in exists clause.
 
     String HQL_EDITABLE_RESOURCE_SUFFIX = " FROM Resource as res  where "
             +

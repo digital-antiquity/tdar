@@ -29,6 +29,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.tdar.functional.util.ByLabelText;
@@ -308,9 +309,12 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // wait until the one of the rows contains the specified text in the 'title' column
         waitFor(textToBePresentInElementsLocated(cssSelector("#modalResults tbody tr>td:nth-child(2)"), text));
         // note that IDs are dataTable ids
-        By checkbox = id(cbid);
-        waitFor(elementToBeClickable(checkbox));
-        find(checkbox).click();
+        waitFor(elementToBeClickable(id(cbid)));
+        try {
+            find(id(cbid)).click();
+        } catch (StaleElementReferenceException stale) {
+            find(id(cbid)).click();
+        }
     }
 
     private void openDatasetsModal() throws InterruptedException {

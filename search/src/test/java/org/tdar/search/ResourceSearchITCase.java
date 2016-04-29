@@ -119,7 +119,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Document doc = createAndSaveNewResource(Document.class);
         doc.getSiteNameKeywords().add(snk);
         genericService.saveOrUpdate(doc);
-        searchIndexService.index(doc);
         SearchParameters sp = new SearchParameters();
         sp.getSiteNames().add(snk.getLabel());
         SearchResult<Resource> result = doSearch(null,null,sp,null);

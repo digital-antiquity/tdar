@@ -940,4 +940,29 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean useTransactionalEvents() {
         return assistant.getBooleanProperty("transactional.events",true);
     }
+
+    public List<Long> getSaaCollectionIds() {
+        String ids = assistant.getStringProperty("saa.conferences", "29442,29441");
+        List<Long> toReturn = new ArrayList<>();
+        for (String id_ : ids.split(",")) {
+            try {
+             toReturn.add(Long.parseLong(id_));
+            } catch (Exception e) {
+                logger.warn("{}",e,e);
+            }
+        }
+        return toReturn;
+    }
+
+    public Long getSAAContactId() {
+        return assistant.getLongProperty("saa.contact_id", getAdminUserId());
+    }
+
+	public boolean isSelenium() {
+		return assistant.getBooleanProperty("is.selenium", false);
+	}
+
+    public boolean includeSpecialCodingRules() {
+        return assistant.getBooleanProperty("integration.special_coding_rules", true);
+    }
 }

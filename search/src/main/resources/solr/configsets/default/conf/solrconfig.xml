@@ -1581,5 +1581,16 @@
   <admin>
     <defaultQuery>*:*</defaultQuery>
   </admin>
+	
+	<requestHandler name="/multicore" class="solr.SearchHandler">
+	    <lst name="defaults">
+	      <str name="echoParams">explicit</str>
+	      <int name="rows">10</int>
+	      <!-- <str name="df">text</str> -->
+	    </lst>
+	  <lst name="invariants">
+	    <str name="shards">resources,collections</str>
+	  </lst>
+	</requestHandler>
 
 </config>

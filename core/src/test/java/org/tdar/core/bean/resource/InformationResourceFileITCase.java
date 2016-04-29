@@ -61,7 +61,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
     SerializationService serializationService;
 
     @Test
-    public void testXMLSave() throws ClassNotFoundException {
+    public void testXMLSave() throws InstantiationException, IllegalAccessException, Exception {
         for (Document resource : genericService.findAll(Document.class)) {
             serializationService.handleFilestoreEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }

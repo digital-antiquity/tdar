@@ -993,7 +993,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
 
     @After
     public void cleanup() {
-        webClient.closeAllWindows();
+        webClient.close();;
         webClient.getCookieManager().clearCookies();
         webClient.getCache().clear();
     }

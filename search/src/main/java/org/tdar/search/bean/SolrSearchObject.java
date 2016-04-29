@@ -177,7 +177,7 @@ public class SolrSearchObject<I extends Indexable> {
 		this.resultSize = recordsPerPage;
 	}
 
-	public SolrParams getSolrParams() {
+	public SolrQuery getSolrParams() {
 		SolrQuery solrQuery = new SolrQuery();
 		setQueryString(builder.generateQueryString());
 		solrQuery.setParam("q", getQueryString());
