@@ -86,7 +86,7 @@
             dynamicAttributes={
                 "data-rule-minlength":"8",
                 "data-msg-required":"Please enter a password.",
-                "data-msg-minlength":"Your password must be at least {0} characters."
+                "data-msg-minlength":"Your password must be at least 8 characters."
             }/>
     </div>
     <div class="span4">
@@ -96,7 +96,7 @@
             "data-rule-minlength":"8",
             "data-rule-equalto":"#password",
             "data-msg-required":"Please confirm your password.",
-            "data-msg-minlength":"Your password must be at least {0} characters.",
+            "data-msg-minlength":"Your password must be at least 8 characters.",
             "data-msg-equalto":"Please make sure your passwords match."
         }/>
     </div>
