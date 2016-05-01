@@ -16,6 +16,8 @@ TDAR.worldmap = (function(console, $, ctx) {
         "fillOpacity": 1
     }
 
+    
+    var c3colors = [];
     /**
      * Look for embedded json in the specified container  and return the parsed result.  Embedded json should be
      * tagged with a boolean attribute named 'data-mapdata'.  If no embedded json found, method returns null.
@@ -37,6 +39,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 		$mapDiv = $("#"+mapId);
         var mapdata = _getMapdata($mapDiv.parent());
+		c3colors = JSON.parse($("#c3colors").html());
 
         map = L.map(mapId,{
         // config for leaflet.sleep
@@ -66,17 +69,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         //FIXME: consider embedding data for faster rendering
         var jqxhr = $.getJSON(TDAR.uri("/js/maps/world.json"));
         jqxhr.done(function(data) {
-            hlayer = new L.GeoJSON(data, {
-                style: myStyle,
-                onEachFeature: function(feature, layer_) {
-                    layer_.on({
-                        click: _clickWorldMapLayer,
-                        mouseover: _highlightFeature,
-                        mouseout: _resetHighlight
-                    });
-                }
-            }).addTo(map);
-            _setupLayers(hlayer);
+        	_setupMapLayer(data,map);
         });
         jqxhr.fail(function(xhr){
             console.error("Failed to load world.json file. XHR result follows this line.", xhr);
@@ -108,31 +101,36 @@ TDAR.worldmap = (function(console, $, ctx) {
         return map;
     }
     
-    function _setupLayers(lyr) {
-        lyr.eachLayer(function(layer) {
-            var color = _getColor(geodata[layer.feature.id]);
-            if (typeof layer._path != 'undefined') {
-                layer._path.id = layer.feature.id;
-                _redrawLayer(layer, color,1);
-            } else {
-                layer.eachLayer(function(layer2) {
-                    layer2._path.id = layer.feature.id;
-                    _redrawLayer(layer2, color,1);
-                });
-            }
-
-        });
+    function _setupMapLayer(data,map) {
+  	 var layer = L.choropleth(data, {
+		    valueProperty: function (feature) {
+		    	console.log(feature.id + " " + geodata[feature.id]);
+		    	if (geodata[feature.id]) {
+		    		return geodata[feature.id];
+		    	} else {
+		    		return 0;
+		    	}
+		    },
+		    scale: c3colors,
+		    steps: c3colors.length,
+		    mode: 'q',
+		    style: {
+		      color: '#ffffff',
+		      weight: 2,
+		      fillOpacity: 0.8
+		    },
+		    onEachFeature: function (feature, layer) {
+              layer.on({
+                  click: _clickWorldMapLayer,
+                  mouseover: _highlightFeature,
+                  mouseout: _resetHighlight
+              });
+		    }
+	  });
+  	  layer.addTo(map);
+  	  return layer;
     }
     
-    function _redrawLayer(layer, fillColor, opacity, id) {
-        layer.options.fill = fillColor;
-        layer.options.opacity = 1;
-        layer.options.color = OUTLINE;
-        layer._path.style.fill = fillColor;
-        layer._path.style.opacity = 1;
-        layer.redraw();
-    }
-
     var stateLayer = undefined;
     var overlay = false;
     
@@ -144,36 +142,24 @@ TDAR.worldmap = (function(console, $, ctx) {
             fillOpacity: 1
         };
         $.getJSON(TDAR.uri("/js/maps/USA.json"), function(data) {
-            stateLayer = new L.GeoJSON(data, {
-                style: usStyle,
-                onEachFeature: function(feature, layer_) {
-                    layer_.on({
-                        click: _clickWorldMapLayer,
-                        mouseover: _highlightFeature,
-                        mouseout: _resetHighlight
-                    });
-                }
-            }).addTo(map);
-            _setupLayers(stateLayer);
-
-        hlayer.setStyle({
-            "fillOpacity": .1
-        });
+        	stateLayer = _setupMapLayer(data,map);
         });
         
     }
 
     function _clickWorldMapLayer(event) {
         var ly = event.target.feature.geometry.coordinates[0];
+        console.log(event.target.feature);
         if (event.target.feature.id && event.target.feature.id.indexOf('USA') == -1) {
             if (stateLayer != undefined) {
                 map.removeLayer(stateLayer);
+                stateLayer = undefined;
             }
         }
         
         
         if (event.target.feature.id == 'USA' && stateLayer == undefined) {
-//            _loadStateData();
+            _loadStateData();
         }
 
         _drawDataGraph(event.target.feature.properties.name, event.target.feature.id);
@@ -329,9 +315,6 @@ TDAR.worldmap = (function(console, $, ctx) {
             return false;
         }
         layer.setStyle({
-            weight: 1,
-            color: '#666',
-            dashArray: '',
             fillOpacity: 0.7
         });
     }
@@ -342,7 +325,10 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 
         var layer = e.target;
-        hlayer.resetStyle(layer);
+        layer.setStyle({
+        	fillOpacity: 1
+        });
+//        hlayer.resetStyle(layer);
         $("#data").html("");
     }
 
