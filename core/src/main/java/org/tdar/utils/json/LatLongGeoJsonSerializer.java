@@ -49,6 +49,7 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
         jgen.writeFieldName("properties");
         jgen.writeStartObject();
         jgen.writeStringField("title", value.getResource().getTitle());
+        jgen.writeStringField("description", value.getResource().getDescription());
         jgen.writeNumberField("id", value.getResource().getId());
         jgen.writeStringField("resourceType", value.getResource().getResourceType().name());
         jgen.writeStringField("status", value.getResource().getStatus().name());
@@ -64,8 +65,8 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
             }
             jgen.writeStringField("thumbnailUrl", UrlService.thumbnailUrl(t));
         }
-        jgen.writeFieldName("resource");
-        objectWriter.writeValue(jgen, value.getResource());
+//        jgen.writeFieldName("resource");
+//        objectWriter.writeValue(jgen, value.getResource());
         // jgen.writeObjectField("resource", value.getResource());
         jgen.writeEndObject();
     }
