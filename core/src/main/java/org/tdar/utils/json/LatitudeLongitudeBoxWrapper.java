@@ -25,8 +25,9 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     private Class<?> jsonView = null;
     private boolean spatial;
 
-    public LatitudeLongitudeBoxWrapper(Resource resource, Class<?> filter) {
+    public LatitudeLongitudeBoxWrapper(Resource resource, Class<?> filter, GeoRssMode mode) {
         this.jsonView = filter;
+        this.mode = mode;
         if (resource != null) {
             this.resource = resource;
             LatitudeLongitudeBox llb = resource.getFirstActiveLatitudeLongitudeBox();

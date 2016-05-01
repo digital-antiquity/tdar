@@ -28,22 +28,15 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
     public void serialize(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException, JsonProcessingException {
         /*
-         * { "type": "Feature",
-         * "bbox": [-180.0, -90.0, 180.0, 90.0],
-         * "geometry": {
-         * "type": "Polygon",
-         * "coordinates": [[
-         * [-180.0, 10.0], [20.0, 90.0], [180.0, -5.0], [-30.0, -90.0]
-         * ]]
-         * }
-         * ...
-         * }
+         * { "type": "Feature", "bbox": [-180.0, -90.0, 180.0, 90.0],
+         * "geometry": { "type": "Polygon", "coordinates": [[ [-180.0, 10.0],
+         * [20.0, 90.0], [180.0, -5.0], [-30.0, -90.0] ]] } ... }
          * //http://www.baeldung.com/jackson-custom-serialization
          * //http://geojson.org/geojson-spec.html#polygon
          */
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, value.getJsonView());
-        
+
         jgen.writeStartObject();
         jgen.writeStringField("type", "Feature");
         writeGeometry(value, jgen);
@@ -51,7 +44,8 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
         jgen.writeEndObject();
     }
 
-    private void writeProperties(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen, ObjectWriter objectWriter) throws IOException {
+    private void writeProperties(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen, ObjectWriter objectWriter)
+            throws IOException {
         jgen.writeFieldName("properties");
         jgen.writeStartObject();
         jgen.writeStringField("title", value.getResource().getTitle());
@@ -72,11 +66,12 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
         }
         jgen.writeFieldName("resource");
         objectWriter.writeValue(jgen, value.getResource());
-//        jgen.writeObjectField("resource", value.getResource());
+        // jgen.writeObjectField("resource", value.getResource());
         jgen.writeEndObject();
     }
 
-    private void writeGeometry(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen) throws IOException, JsonGenerationException {
+    private void writeGeometry(LatitudeLongitudeBoxWrapper value, JsonGenerator jgen)
+            throws IOException, JsonGenerationException {
         jgen.writeFieldName("geometry");
         jgen.writeStartObject();
         if (value.isSpatial()) {
@@ -86,22 +81,20 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
                     jgen.writeFieldName("coordinates");
                     jgen.writeStartArray();
                     jgen.writeStartArray();
-                    writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
-                    writeArrayEntry(value.getMinLatitude(), value.getMaxLongitude(), jgen);
-                    writeArrayEntry(value.getMaxLatitude(), value.getMaxLongitude(), jgen);
-                    writeArrayEntry(value.getMaxLatitude(), value.getMinLongitude(), jgen);
-                    writeArrayEntry(value.getMinLatitude(), value.getMinLongitude(), jgen);
+                    writeArrayEntry(value.getMinLongitude(), value.getMinLatitude(), jgen);
+                    writeArrayEntry(value.getMinLongitude(), value.getMaxLatitude(), jgen);
+                    writeArrayEntry(value.getMaxLongitude(), value.getMaxLatitude(), jgen);
+                    writeArrayEntry(value.getMaxLongitude(), value.getMinLatitude(), jgen);
+                    writeArrayEntry(value.getMinLongitude(), value.getMinLatitude(), jgen);
                     jgen.writeEndArray();
                     jgen.writeEndArray();
                     break;
                 case POINT:
                     // "geometry": {"type": "Point", "coordinates": [102.0, 0.5]},
                     jgen.writeStringField("type", "Point");
-                    jgen.writeFieldName("coordinate");
-                    jgen.writeStartArray();
-                    writeArrayEntry(value.getCenterLatitude(), value.getCenterLongitude(), jgen);
-                    jgen.writeEndArray();
-    
+                    jgen.writeFieldName("coordinates");
+                    writeArrayEntry(value.getCenterLongitude(), value.getCenterLatitude(), jgen);
+
                 default:
                     break;
             }
@@ -109,7 +102,8 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
         jgen.writeEndObject();
     }
 
-    private void writeArrayEntry(Double lat, Double lon, JsonGenerator jgen) throws IOException, JsonGenerationException {
+    private void writeArrayEntry(Double lat, Double lon, JsonGenerator jgen)
+            throws IOException, JsonGenerationException {
         jgen.writeStartArray();
         jgen.writeNumber(lat);
         jgen.writeNumber(lon);

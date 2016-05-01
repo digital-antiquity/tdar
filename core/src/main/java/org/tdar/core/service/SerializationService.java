@@ -60,6 +60,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.FilestoreLoggingException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.event.EventBusResourceHolder;
 import org.tdar.core.service.event.EventBusUtils;
 import org.tdar.core.service.event.LoggingObjectContainer;
@@ -568,16 +569,19 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     }
 
     @Transactional(readOnly = true)
-    public String createGeoJsonFromResourceList(Map<String, Object> result, String resultKey, String rssUrl, Class<?> filter, String callback)
+    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, Class<?> filter, String callback)
             throws IOException {
-        List<Object> rslts = (List<Object>) result.get(resultKey);
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
+        GeoRssMode mode = GeoRssMode.POINT;
         for (Object obj : rslts) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode));
             }
         }
-        result.put(resultKey, wrappers);
+        Map<String,Object> result = new HashMap<>();
+        result.put("type", "FeatureCollection");
+        result.put("features", wrappers);
+        result.put("properties", params);
         StringWriter writer = new StringWriter();
         logger.debug("filter: {}", filter);
         convertToJson(result, writer, filter, callback);
