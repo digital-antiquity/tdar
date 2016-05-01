@@ -104,18 +104,17 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _setupMapLayer(data,map) {
   	 var layer = L.choropleth(data, {
 		    valueProperty: function (feature) {
-		    	console.log(feature.id + " " + geodata[feature.id]);
 		    	if (geodata[feature.id]) {
-		    		return geodata[feature.id];
+		    		return Math.log(geodata[feature.id]);
 		    	} else {
 		    		return 0;
 		    	}
 		    },
-		    scale: c3colors,
-		    steps: c3colors.length,
+		    colors: ["#fff","#FED976","#FEB24C","#FD8D3C","#FC4E2A","#E31A1C","#BD0026","#800026"],
+		    steps: 8,
 		    mode: 'q',
 		    style: {
-		      color: '#ffffff',
+		      color: '#ccc',
 		      weight: 2,
 		      fillOpacity: 0.8
 		    },
@@ -296,6 +295,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         });
         if (stateLayer != undefined) {
             map.removeLayer(stateLayer);
+            stateLayer = undefined;
         }
         _drawDataGraph();
     }
