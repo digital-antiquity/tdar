@@ -39,7 +39,10 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
 		$mapDiv = $("#"+mapId);
         var mapdata = _getMapdata($mapDiv.parent());
-		c3colors = JSON.parse($("#c3colors").html());
+        var c3_ = $("#c3colors");
+        if (c3_.length > 0) {
+        	c3colors = JSON.parse(c3_.html());
+        }
 
         map = L.map(mapId,{
         // config for leaflet.sleep
@@ -270,11 +273,9 @@ TDAR.worldmap = (function(console, $, ctx) {
             };
 		}
 		
-		var c3colors = $("#c3colors");
 		if (c3colors.length > 0) {
-			var c3colorsobj = JSON.parse(c3colors.html());
 			obj.color = {};
-			obj.color.pattern = c3colorsobj;
+			obj.color.pattern = c3colors;
 		}
 		setTimeout(100,  c3.generate(obj));
         
