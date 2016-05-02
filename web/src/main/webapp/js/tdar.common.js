@@ -759,26 +759,6 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
     /**
-     * Wrapper for triggering custom Google Analytics events.
-     *
-     * @returns {boolean}
-     * @param {...string} values to include in event. "_trackEvent" is implied -- do not include it in arguments.
-     * @private
-     */
-    var _gaevent = function () {
-        if (!_gaq || arguments.length < 1) {
-            return true;
-        }
-        var args = Array.prototype.slice.call(arguments, 0);
-        args.unshift('_trackEvent');
-        var errcount = _gaq.push(args);
-        if (errcount) {
-            //console.warn("_trackEvent failed:%s", args[1]);
-        }
-        return true;
-    }
-
-    /**
      * emit "file downloaded" google analytics event
      * @param url
      * @param tdarId
@@ -786,11 +766,11 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _registerDownload = function (url, tdarId) {
         if (tdarId) {
-            _gaevent("Download", url, tdarId);
+            ga("send" , "event", "Download", url, tdarId);
         } else {
-            _gaevent("Download", url);
+            ga("send", "event", "Download", url, "none");
         }
-    }
+    };
 
     /**
      * emit "file downloaded" google analytics event
@@ -800,11 +780,11 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _registerShare = function (service, url, tdarId) {
         if (tdarId) {
-            _gaevent(service, url, tdarId);
+            ga("send", "event", "share", service, url, tdarId);
         } else {
-            _gaevent(service, url);
+            ga("send", "event", "share", service, url, "none");
         }
-    }
+    };
 
     /**
      * emit "outbound link clicked" event.
@@ -812,7 +792,7 @@ TDAR.common = function (TDAR, fileupload) {
      * @private
      */
     var _outboundLink = function (elem) {
-        _gaevent("outboundLink", elem.href, window.location);
+        ga("send", "event", "outboundLink", elem.href, window.location);
     }
 
     /**
@@ -975,7 +955,6 @@ TDAR.common = function (TDAR, fileupload) {
         "changeSubcategory": _changeSubcategory,
         "registerDownload": _registerDownload,
         "registerShare": _registerShare,
-        "gaevent": _gaevent,
         "outboundLink": _outboundLink,
         "setupSupportingResourceForm": _setupSupportingResourceForm,
         "switchType": _switchType,

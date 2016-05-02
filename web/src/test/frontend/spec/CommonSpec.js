@@ -172,11 +172,14 @@ describe("TDAR.common: edit page tests", function () {
         "use strict";
     
         beforeEach(function(){
-            window._gaq = [];
+            //we don't include analytics.js in our fixtures,   so fake it.
+            window.ga = jasmine.createSpy();
         });
     
         afterEach(function(){
-            delete window._gaq;
+            if(!!window.ga) {
+                delete window.ga;
+            }
         });
     
     
@@ -254,9 +257,9 @@ describe("TDAR.common: edit page tests", function () {
             setFixtures($container);
     
             var selector = "#adhocTarget"
-            TDAR.common.setAdhocTarget($('#hiddenParentId')[0], selector )
+            TDAR.common.setAdhocTarget($('#hiddenParentId')[0], selector );
     
-            expect($('body').data()).toBeDefined()
+            expect($('body').data()).toBeDefined();
             expect($('body').data('adhocTarget').html()).toBe($container.html())
         });
     
@@ -264,10 +267,10 @@ describe("TDAR.common: edit page tests", function () {
             var url = 'http://insanity.today';
             var tdarId = 110102;
             var expectedVal = null;
-    
-            //ignore '_trackEvent failed'; we only care that the message is put on the queue
-            var result = TDAR.common.registerDownload(url, tdarId); 
-            expect(_gaq).toHaveLength(1);
+
+            var result = TDAR.common.registerDownload(url, tdarId);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", "Download", url, tdarId);
+
         });
     
         it("registers 'share' buttons", function () {
@@ -276,33 +279,21 @@ describe("TDAR.common: edit page tests", function () {
             var tdarId = 1234;
             //ignore '_trackEvent failed'; we only care that the message is put on the queue
             var result = TDAR.common.registerShare(service, url, tdarId);
-            expect(_gaq).toHaveLength(1);
-            expect(_gaq[0][1]).toBe(service);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", "share", service, url, tdarId);
         });
     
-        it("queues google analytics events", function () {
-            var expectedVal = null;
-    
-            //ignore '_trackEvent failed'; we only care that the message is put on the queue
-            var result = TDAR.common.gaevent('one', 'two', 'three');
-            expect(_gaq[0][1]).toBe('one');
-            expect(_gaq[0][2]).toBe('two');
-            expect(_gaq[0][3]).toBe('three');
-    
-        });
-    
+
         it("registers outbound link clicks", function () {
             var elem = document.createElement('A');
             elem.href = 'http://www.cnn.com'
-            var expectedVal = null;
-    
+
             //ignore '_trackEvent failed'; we only care that the message is put on the queue
             var result = TDAR.common.outboundLink(elem);
-            expect(_gaq).toHaveLength(1);
-            expect(_gaq[0][2]).toBe(elem.href);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", "outboundLink", elem.href, window.location);
+
         });
-    
-    
+
+
         it("field visibility changes depending on documenttype", function () {
             var $form = $('<form></form>');
             var $container = $('<div id="divContainer"></div>');
