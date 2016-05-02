@@ -15,7 +15,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -34,7 +36,16 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.SiteNameKeyword;
+import org.tdar.core.bean.keyword.SiteTypeKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
@@ -58,6 +69,8 @@ import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.query.ProjectionModel;
+import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.facet.Facet;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -122,6 +135,8 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     private float keywordMean = 0;
     private List<NodeModel> keywords;
     private List<NodeModel> collaborators;
+    private Map<String, Facet> creatorFacetMap = new HashMap<>();
+    private Map<String, Facet> keywordFacetMap = new HashMap<>();
     private String slug = "";
     private String slugSuffix = "";
     private boolean redirectBadSlug;
@@ -150,7 +165,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient ResourceSearchService resourceSearchService;
-    
+
     @Autowired
     private transient FileSystemResourceService fileSystemResourceService;
 
@@ -169,8 +184,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                             "contentType", "application/rdf+xml",
                             "inputName", "inputStream",
                             "contentLength", "${contentLength}"
-                    }
-            )
+                    })
     })
     @SkipValidation
     public String creatorRdf() throws FileNotFoundException {
@@ -222,11 +236,11 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         if (isEditor() && getPersistable() instanceof TdarUser) {
-            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser)getPersistable()));
-            getOwnerCollections().addAll(entityService.findAccessibleResourceCollections((TdarUser)getPersistable()));
+            getOwnerCollections().addAll(resourceCollectionService.findParentOwnerCollections((TdarUser) getPersistable()));
+            getOwnerCollections().addAll(entityService.findAccessibleResourceCollections((TdarUser) getPersistable()));
 
         }
-        
+
         if (isLogoAvailable()) {
             setLogoUrl(UrlService.creatorLogoUrl(creator));
         }
@@ -308,12 +322,35 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             setRecordsPerPage(50);
             try {
                 setProjectionModel(ProjectionModel.RESOURCE_PROXY);
-                resourceSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this,this);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, TemporalKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_OTHER_KEYWORDS, OtherKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, SiteTypeKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, GeographicKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
+                List<String> roles = new ArrayList<>();
+                List<String> kwds = Arrays.asList(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES,
+                        QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS,
+                        QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS,
+                        QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS);
+                for (ResourceCreatorRole role : ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creator.getCreatorType())) {
+                    roles.add(role.name());
+                    getFacetWrapper().facetBy(role.name(), Creator.class);
+                }
+                resourceSearchService.generateQueryForRelatedResources(creator, getAuthenticatedUser(), this, this);
+                List<Long> ignoreIds = new ArrayList<>();
+                ignoreIds.add(creator.getId());
+                ignoreIds.addAll(PersistableUtils.extractIds(creator.getSynonyms()));
+                summarizeFacets(getCreatorFacetMap(), roles, ignoreIds);
+                summarizeFacets(getKeywordFacetMap(), kwds, null);
+
                 bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
 
             } catch (SearchPaginationException spe) {
                 throw new TdarActionException(StatusCode.NOT_FOUND, spe);
-            } catch (TdarRecoverableRuntimeException tdre ) {
+            } catch (TdarRecoverableRuntimeException tdre) {
                 getLogger().warn("search parse exception", tdre);
                 addActionError(tdre.getMessage());
             } catch (ParseException e) {
@@ -324,6 +361,29 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
                 getLogger().warn("search parse exception", e);
             }
 
+        }
+    }
+
+    private void summarizeFacets(Map<String, Facet> facetMap, List<String> roles, List<Long> ignoreIds) {
+        if (getFacetWrapper() == null || MapUtils.isEmpty(getFacetWrapper().getFacetResults())) {
+            return;
+        }
+        for (String role : roles) {
+            if (CollectionUtils.isEmpty(getFacetWrapper().getFacetResults().get(role))) {
+                continue;
+            }
+            for (Facet facet : getFacetWrapper().getFacetResults().get(role)) {
+                // skip things in the ignoreId
+                if (NumberUtils.isNumber(facet.getRaw()) && CollectionUtils.isNotEmpty(ignoreIds) &&ignoreIds.contains(Long.parseLong(facet.getRaw()))) {
+                    continue;
+                }
+                Facet stored = facetMap.get(facet.getUniqueKey());
+                if (stored != null) {
+                    stored.incrementCountBy(facet.getCount());
+                } else {
+                    facetMap.put(facet.getUniqueKey(), facet);
+                }
+            }
         }
     }
 
@@ -397,7 +457,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         try {
             collaborators = fileSystemResourceService.parseCreatorInfoLog("*/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
                     dom);
-            
+
         } catch (TdarRecoverableRuntimeException trre) {
             getLogger().warn(trre.getLocalizedMessage());
         }
@@ -414,6 +474,14 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             getLogger().warn(trre.getLocalizedMessage());
         }
         return keywords;
+    }
+
+    @Override
+    public boolean isRightSidebar() {
+        if (MapUtils.isEmpty(creatorFacetMap) && MapUtils.isEmpty(keywordFacetMap)) {
+            return false;
+        }
+        return true;
     }
 
     public float getKeywordMedian() {
@@ -560,6 +628,22 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     public void setOwnerCollections(Set<ResourceCollection> ownerCollections) {
         this.ownerCollections = ownerCollections;
+    }
+
+    public Map<String, Facet> getCreatorFacetMap() {
+        return creatorFacetMap;
+    }
+
+    public void setCreatorFacetMap(Map<String, Facet> creatorFacetMap) {
+        this.creatorFacetMap = creatorFacetMap;
+    }
+
+    public Map<String, Facet> getKeywordFacetMap() {
+        return keywordFacetMap;
+    }
+
+    public void setKeywordFacetMap(Map<String, Facet> keywordFacetMap) {
+        this.keywordFacetMap = keywordFacetMap;
     }
 
 }
