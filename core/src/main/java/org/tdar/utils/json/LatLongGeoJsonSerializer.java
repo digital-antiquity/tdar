@@ -58,16 +58,12 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
             InformationResource ir = ((InformationResource) value.getResource());
             InformationResourceFileVersion t = null;
             for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
-                t = irf.getLatestThumbnail();
                 if (t != null) {
+                    jgen.writeStringField("thumbnailUrl", UrlService.thumbnailUrl(t));
                     break;
                 }
             }
-            jgen.writeStringField("thumbnailUrl", UrlService.thumbnailUrl(t));
         }
-//        jgen.writeFieldName("resource");
-//        objectWriter.writeValue(jgen, value.getResource());
-        // jgen.writeObjectField("resource", value.getResource());
         jgen.writeEndObject();
     }
 
