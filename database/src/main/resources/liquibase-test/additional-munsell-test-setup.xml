@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	<changeSet id="usage-stats" author="abrin">
+		<comment>adding entries into the aggregate view and download pages to try and initialize data for tests</comment>
+		<insert tableName="resource_access_day_agg">
+			<column name="resource_id" valueNumeric="3088" />
+			<column name="count" valueNumeric="21" />
+			<column name="date_accessed" valueDate="2014-01-25" />
+			<column name="year" valueNumeric="2014" />
+			<column name="month" valueNumeric="01" />
+		</insert>
+		<insert tableName="resource_access_day_agg">
+			<column name="resource_id" valueNumeric="3088" />
+			<column name="count" valueNumeric="21" />
+			<column name="date_accessed" valueDate="2012-05-05" />
+			<column name="year" valueNumeric="2012" />
+			<column name="month" valueNumeric="01" />
+		</insert>
+		<insert tableName="resource_access_day_agg">
+			<column name="resource_id" valueNumeric="3088" />
+			<column name="count" valueNumeric="21" />
+			<column name="date_accessed" valueDate="2013-11-02" />
+			<column name="year" valueNumeric="2013" />
+			<column name="month" valueNumeric="02" />
+		</insert>
+		<insert tableName="resource_access_day_agg">
+			<column name="resource_id" valueNumeric="3073" />
+			<column name="count" valueNumeric="21" />
+			<column name="date_accessed" valueDate="2014-11-20" />
+			<column name="year" valueNumeric="2014" />
+			<column name="month" valueNumeric="11" />
+		</insert>
+		<insert tableName="file_download_day_agg">
+			<column name="information_resource_file_id" valueNumeric="45" />
+			<column name="count" valueNumeric="15" />
+			<column name="date_accessed" valueDate="2014-01-25" />
+			<column name="year" valueNumeric="2014" />
+			<column name="month" valueNumeric="01" />
+		</insert>
+		<update tableName="resource">
+			<column name="account_id" valueNumeric="1" />
+			<where>id in (3088, 3073)</where>
+		</update>
+		<insert tableName="collection_resource">
+			<column name="collection_id" valueNumeric="1575" />
+			<column name="resource_id" valueNumeric="3073" />
+		</insert>
+		<insert tableName="collection_resource">
+			<column name="collection_id" valueNumeric="1575" />
+			<column name="resource_id" valueNumeric="3088" />
+		</insert>
+        <insert tableName="download_authorization">
+            <column name="id" valueNumeric="1" />
+            <column name="resource_collection_id" valueNumeric="1000" />
+            <column name="api_key">aabc123</column>
+        </insert>
+        <insert tableName="referrer_hostnames">
+            <column name="download_authorization_id" valueNumeric="1" />
+            <column name="hostname">www.samplewebsite.info</column>
+        </insert>
+        <sql>
+            SELECT setval('download_authorization_id_seq', (SELECT MAX(id) FROM download_authorization)+1);
+        </sql>
+	</changeSet>
+	<changeSet id="collection-parent" author="abrin">
+        <insert tableName="collection_parents">
+			<column name="collection_id" valueNumeric="1002"/>
+			<column name="parent_id" valueNumeric="1003"/>
+        </insert>
+		<update tableName="collection">
+		<column name="parent_id" valueNumeric="1003"/>
+		<where>id=1002</where>
+		</update>
+        <insert tableName="whitelabel_featured_resource">
+			<column name="collection_id" valueNumeric="1003"/>
+			<column name="resource_id" valueNumeric="4230"/>
+        </insert>
+		
+	</changeSet>
+</databaseChangeLog>

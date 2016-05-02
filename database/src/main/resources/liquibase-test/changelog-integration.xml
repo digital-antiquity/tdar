@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+	<!-- setup the test database -->
+	<include file="target/liquibase-test/changelog-test-base.xml"/>
+	<include file="target/liquibase-test/changelog-integration-setup.xml" />
+	<include file="target/liquibase-test/changelog-integration-data.xml" />
+	<include file="target/liquibase-test/reset-sequences.xml"/>
+	<!-- load the production updates -->
+	<include file="target/liquibase/changelog.xml" />
+	<include file="target/liquibase-test/additional-munsell-test-setup.xml"/>
+</databaseChangeLog>
