@@ -67,7 +67,6 @@ TDAR.worldmap = (function(console, $, ctx) {
                 }
             }
         }
-
         // load map data
         //FIXME: consider embedding data for faster rendering
         var jqxhr = $.getJSON(TDAR.uri("/js/maps/world.json"));
@@ -94,7 +93,6 @@ TDAR.worldmap = (function(console, $, ctx) {
                 legnd.innerHTML +=
                 '<i style="width:10px;height:10px;display:inline-block;background:' + _getColor(grades[i] + 1) + '">&nbsp;</i> ';
             }
-            console.log(max);
             legnd.innerHTML += " <span>"+TDAR.common.formatNumber(max)+"</span> ";
             $(div).append(legnd);
             return div;
