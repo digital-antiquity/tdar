@@ -277,7 +277,8 @@
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
 	                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
 	                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-	                truncate="70" value='${_projectId}' required=false  cssClass="input-xxlarge" />
+	                truncate="70" value='${_projectId}'  cssClass="input-xxlarge" />
+                    <!-- ' required=true -->
             </div>
 
             <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
