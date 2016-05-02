@@ -189,7 +189,7 @@ public class SearchDao<I extends Indexable> {
 				logger.trace("  {} - {}", c.getCount(), label);
 				Facet f = new Facet(c.getName(), label, c.getCount(), facetClass);
 				if (persistable instanceof Addressable) {
-					f.setUrl(((Addressable) persistable).getDetailUrl());
+					f.setDetailUrl(((Addressable) persistable).getDetailUrl());
 				}
 				facet.add(f);
 			}

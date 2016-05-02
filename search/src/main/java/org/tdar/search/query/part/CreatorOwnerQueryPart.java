@@ -2,8 +2,8 @@ package org.tdar.search.query.part;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -22,11 +22,14 @@ public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<
 
     private Creator<C> term;
 
+    private Collection<ResourceCreatorRole> roles;
+
     @SuppressWarnings("unchecked")
-    public CreatorOwnerQueryPart(Creator<C> term) {
+    public CreatorOwnerQueryPart(Creator<C> term, Collection<ResourceCreatorRole> roles) {
         this.setTerm(term);
         setAllowInvalid(true);
         add((C) term);
+        this.roles = roles;
     }
 
     @Override
@@ -45,30 +48,18 @@ public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<
 
     @SuppressWarnings("rawtypes")
     private QueryPartGroup generateGroupForCreator(Creator creator) {
-        QueryPartGroup notGroup = new QueryPartGroup();
-        notGroup.setOperator(Operator.AND);
-
-        Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creator.getCreatorType());
-
-        FieldQueryPart<ResourceCreatorRole> notRoles = new FieldQueryPart<ResourceCreatorRole>(QueryFieldNames.CREATOR_ROLE, Operator.OR, roles);
-        notRoles.setInverse(true);
-
-        notGroup.append(new FieldQueryPart<Long>(QueryFieldNames.SUBMITTER_ID, Operator.AND, creator.getId()));
-        notGroup.append(notRoles);
-
         QueryPartGroup parent = new QueryPartGroup(Operator.OR);
+        // FIND ME ALL Resources that are related to this creator, but are not the submitter.
+        parent.append(new FieldQueryPart(QueryFieldNames.RESOURCE_OWNER,creator.getId()));
         List<String> terms = new ArrayList<String>();
+        if (CollectionUtils.isEmpty(roles)) {
+            roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creator.getCreatorType());
+        }
+        
         for (ResourceCreatorRole role : roles) {
             terms.add(ResourceCreator.getCreatorRoleIdentifier(creator, role));
         }
-        QueryPartGroup inherit = new QueryPartGroup(Operator.OR);
-
-        inherit.append(new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
-        FieldQueryPart subPart = new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms);
-        inherit.append(new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, subPart ));
-
-        parent.append(notGroup);
-        parent.append(inherit);
+        parent.append(new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
         return parent;
     }
 

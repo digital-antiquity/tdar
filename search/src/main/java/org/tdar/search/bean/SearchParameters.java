@@ -17,6 +17,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.DocumentType;
@@ -325,11 +326,12 @@ public class SearchParameters {
                 getOperator(), filenames));
 
         if (creatorOwner != null) {
+            Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creatorOwner.getType());
             if (PersistableUtils.isNotNullOrTransient(creatorOwner.getPerson())) {
-                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson()));
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson(), roles));
             }
             if (PersistableUtils.isNotNullOrTransient(creatorOwner.getInstitution())) {
-                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution()));
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution(), roles));
             }
         }
 
