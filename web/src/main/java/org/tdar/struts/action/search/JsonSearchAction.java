@@ -62,7 +62,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
             	params.put(	"description", this.getSearchDescription());
             	params.put(	"title", this.getSearchTitle());
             	params.put(	"url", this.getRssUrl());
-                ex = serializationService.createGeoJsonFromResourceList(getResults(), getRssUrl(), params, filter, getCallback());
+                ex = serializationService.createGeoJsonFromResourceList(getResults(), getRssUrl(), params, getGeoMode(), filter, getCallback());
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }
