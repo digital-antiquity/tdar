@@ -19,7 +19,6 @@ import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
-import org.tdar.search.service.processes.CreatorAnalysisProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
 public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTestCase {
@@ -31,12 +30,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     private transient ScheduledProcessService scheduledProcessService;
 
     
-    @Test
-    @Rollback(true)
-    public void cronGenerateWeeklyStats() {
-        sps.cronGenerateWeeklyStats();
-    }
-
     @Autowired
     DailyEmailProcess dailyEmailProcess;
 
@@ -77,20 +70,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         dtarp.execute();
     }
 
-    @Autowired
-    CreatorAnalysisProcess pqp;
-    
-    @Test
-    @Rollback(true)
-    public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
-//    	reindex();
-        pqp.setDaysToRun(3000);
-        pqp.execute();
-        pqp.cleanup();
-        pqp.setAllIds(null);
-        // resetting
-        pqp.execute();
-    }
 
     @Test
     @Rollback(true)

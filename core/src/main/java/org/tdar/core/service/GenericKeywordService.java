@@ -292,9 +292,4 @@ public class GenericKeywordService {
         return genericKeywordDao.countActiveWithStatus(type, null);
     }
 
-    @Transactional(readOnly = true)
-    public Map<Keyword, Integer> getRelatedKeywordCounts(Set<Long> resourceIds) {
-        return genericKeywordDao.getRelatedKeywordCounts(resourceIds);
-    }
-
 }

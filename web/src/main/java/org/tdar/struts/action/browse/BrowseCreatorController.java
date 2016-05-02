@@ -79,8 +79,6 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.utils.PersistableUtils;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -128,13 +126,10 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     private transient InputStream inputStream;
     private Long contentLength;
-    private Document dom;
     private float keywordMedian = 0;
     private float creatorMedian = 0;
     private float creatorMean = 0;
     private float keywordMean = 0;
-    private List<NodeModel> keywords;
-    private List<NodeModel> collaborators;
     private Map<String, Facet> creatorFacetMap = new HashMap<>();
     private Map<String, Facet> keywordFacetMap = new HashMap<>();
     private String slug = "";
@@ -287,26 +282,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             getGenericService().saveOrUpdate(cvs);
         }
 
-        FileStoreFile personInfo = new FileStoreFile(FilestoreObjectType.CREATOR, VersionType.METADATA, getId(), getId() + XML);
-        try {
-            File foafFile = getTdarConfiguration().getFilestore().retrieveFile(FilestoreObjectType.CREATOR, personInfo);
-            if (foafFile.exists()) {
-                dom = fileSystemResourceService.openCreatorInfoLog(foafFile);
-                getKeywords();
-                getCollaborators();
-                // legacy name, deprecated
-
-                NamedNodeMap attributes = dom.getChildNodes().item(0).getAttributes();
-                setKeywordMedian(Float.parseFloat(attributes.getNamedItem("keywordMedian").getTextContent()));
-                setKeywordMean(Float.parseFloat(attributes.getNamedItem("keywordMean").getTextContent()));
-                setCreatorMedian(Float.parseFloat(attributes.getNamedItem("creatorMedian").getTextContent()));
-                setCreatorMean(Float.parseFloat(attributes.getNamedItem("creatorMean").getTextContent()));
-            }
-        } catch (FileNotFoundException fnf) {
-            getLogger().trace("{} does not exist in filestore", personInfo.getFilename());
-        } catch (Exception e) {
-            getLogger().debug("error", e);
-        }
         // reset fields which can be broken by the searching hydration obfuscating things
         creator = getGenericService().find(Creator.class, getId());
         return SUCCESS;
@@ -448,32 +423,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
             }
         }
         return searchFieldLookup;
-    }
-
-    public List<NodeModel> getCollaborators() throws TdarActionException {
-        if (collaborators != null) {
-            return collaborators;
-        }
-        try {
-            collaborators = fileSystemResourceService.parseCreatorInfoLog("*/collaborators/*", false, getCreatorMean(), getSidebarValuesToShow(),
-                    dom);
-
-        } catch (TdarRecoverableRuntimeException trre) {
-            getLogger().warn(trre.getLocalizedMessage());
-        }
-        return collaborators;
-    }
-
-    public List<NodeModel> getKeywords() throws TdarActionException {
-        if (keywords != null) {
-            return keywords;
-        }
-        try {
-            keywords = fileSystemResourceService.parseCreatorInfoLog("*/keywords/*", true, getKeywordMean(), getSidebarValuesToShow(), dom);
-        } catch (TdarRecoverableRuntimeException trre) {
-            getLogger().warn(trre.getLocalizedMessage());
-        }
-        return keywords;
     }
 
     @Override

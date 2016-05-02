@@ -225,30 +225,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         return kwds;
     }
 
-    private static void indexTdarDataDatabaseValues(SolrInputDocument doc, Map<DataTableColumn, String> data) {
-        List<String> values = new ArrayList<>();
-        if (data != null) {
-            for (Object key : data.keySet()) {
-                if (key == null) {
-                    continue;
-                }
-                String keyName = "";
-                if (key instanceof DataTableColumn) {
-                    keyName = ((DataTableColumn) key).getName();
-                } else {
-                    keyName = DataUtil.extractStringValue(key);
-                }
-                String mapValue = data.get(key);
-                if (keyName == null || StringUtils.isBlank(mapValue)) {
-                    continue;
-                }
-                values.add(keyName + ":" + mapValue);
-            }
-            doc.setField(QueryFieldNames.DATA_VALUE_PAIR, values);
-        }
-    }
 
->>>>>>> theirs
     private static void indexTemporalInformation(SolrInputDocument doc, Resource resource) {
         for (CoverageDate date : resource.getActiveCoverageDates()) {
             doc.setField(QueryFieldNames.ACTIVE_END_DATE, date.getEndDate());
