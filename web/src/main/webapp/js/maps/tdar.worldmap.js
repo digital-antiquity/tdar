@@ -54,7 +54,8 @@ TDAR.worldmap = (function(console, $, ctx) {
         // defines whether or not the user is prompted oh how to wake map
         sleepNote: false,
         // should hovering wake the map? (clicking always will)
-        hoverToWake: true
+        hoverToWake: true,
+        sleepOpacity: 1
         });
         _resetView();
         var max = 0;
@@ -116,7 +117,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 		    mode: 'q',
 		    style: {
 		      color: '#ccc',
-		      weight: 2,
+		      weight: 1,
 		      fillOpacity: 0.8
 		    },
 		    onEachFeature: function (feature, layer) {
