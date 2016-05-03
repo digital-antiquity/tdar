@@ -39,7 +39,7 @@
 
         <div class="span4">
             <h3>
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_digitize"></use></svg>
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_cart"></use></svg>
             <a href="<@s.url value="/cart/add"/>">Add Files or Space</a></h3>
             Create a new account or add files or space to your account.  
         </div>
@@ -55,8 +55,7 @@
         </div>
         <div class="span4">
             <h3><a href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">
-            <img src="<@s.url value="/images/r4/bulk.png"/>" alt='Bulk Upload' title="Bulk Upload" style="vertical-align:text-bottom">
-            Bulk Upload</a></h3>
+            <svg class="svgicon svg-small"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_bulk"></use></svg>Bulk Upload</a></h3>
             Useful for uploading groups of resources with similar metadata at once.  Complete an excel file template that includes the filename, title, date, 
             and other basic information and then upload your files.                
 

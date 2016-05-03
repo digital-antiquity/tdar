@@ -1,6 +1,8 @@
 package org.tdar.struts.action.codingSheet;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -11,12 +13,12 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.utils.PersistableUtils;
+
 
 /**
  * $Id$
@@ -94,7 +96,8 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Override
     public Set<String> getValidFileExtensions() {
-        return getAnalyzer().getExtensionsForType(ResourceType.CODING_SHEET);
+    	//FIXME: was showing all valid dataset extensions
+        return new HashSet<>(Arrays.asList("csv","xlsx","xls"));
     }
 
     @Override

@@ -89,7 +89,7 @@
             The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
             <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
             above.
-        <p><strong>Jump To:</strong><a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Profile</a>
+        <p><strong>Jump To:</strong> <a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Profile</a>
             <#if payPerIngestEnabled>| <a href="#billing">Billing Accounts</a></#if>
             | <a href="#boomkarks">Bookmarks</a>
         </p>

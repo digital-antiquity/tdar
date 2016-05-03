@@ -64,52 +64,6 @@ public class FileSystemResourceDao {
         return template;
     }
 
-    public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
-        logger.info("opening {}", filename);
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        // use the factory to take an instance of the document builder
-        DocumentBuilder db = dbf.newDocumentBuilder();
-        // parse using the builder to get the DOM mapping of the XML file
-
-        if (filename.exists()) {
-            return db.parse(filename);
-        }
-        return null;
-    }
-
-    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
-        List<NodeModel> toReturn = new ArrayList<>();
-        if (dom == null) {
-            return toReturn;
-        }
-        try {
-            // Create XPath object from XPathFactory
-            XPath xpath = xPathFactory.newXPath();
-            XPathExpression xPathExpr = xpath.compile(prefix);
-            NodeList nodes = (NodeList) xPathExpr.evaluate(dom, XPathConstants.NODESET);
-            logger.trace("xpath returned: {}", nodes.getLength());
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node node = nodes.item(i);
-                String name = node.getAttributes().getNamedItem("name").getTextContent();
-                Float count = Float.parseFloat(node.getAttributes().getNamedItem("count").getTextContent());
-                if (sidebarValuesToShow < toReturn.size()) {
-                    return toReturn;
-                }
-                if (limit || count < mean) {
-                    if (StringUtils.contains(name, GeographicKeyword.Level.COUNTRY.getLabel()) ||
-                            StringUtils.contains(name, GeographicKeyword.Level.CONTINENT.getLabel()) ||
-                            StringUtils.contains(name, GeographicKeyword.Level.FIPS_CODE.getLabel())) {
-                        continue;
-                    }
-                }
-
-                toReturn.add(NodeModel.wrap(nodes.item(i)));
-            }
-        } catch (Exception e) {
-            throw new TdarRecoverableRuntimeException("browseController.parse_creator_log", e);
-        }
-        return toReturn;
-    }
 
     public boolean checkHostedFileAvailable(String filename, FilestoreObjectType type, Long id) {
         if (getHostedFile(filename, type, id) != null) {

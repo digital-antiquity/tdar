@@ -30,48 +30,44 @@
     <@view.pageStatusCallout />
 
     <#if creator?? >
-        <#if  keywords?has_content || collaborators?has_content >
+    
+        <#if  creatorFacetMap?has_content || keywordFacetMap?has_content >
         <div id="sidebar-right" parse="true">
             <div class="sidebar-spacer">
-                <#if collaborators?has_content>
+                <#list creatorFacetMap?values >
                     <div id="related-creators">
                         <h3>Related Creators</h3>
                         <ul>
-                            <#list collaborators as collab>
+                            <#items as collab>
                                 <li>
                                    <#if authenticatedUser?has_content>
-                                    <a href="<@s.url value="/browse/creators/${collab.@id}"/>">${collab.@name}</a>
+                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
                                     <#else>
-                                    ${collab.@name}
+                                        ${collab.label}
                                     </#if>
                                 </li>
-                            </#list>
+                            </#items>
                         </ul>
                     </div>
-                </#if>
+                </#list>
 
-                <#if keywords?has_content>
+                <#list keywordFacetMap?values >
                     <div id="related-keywords">
                         <h3>Related Keywords</h3>
                         <ul>
-                            <#list keywords as keyword>
-                                <#if keyword.@name?has_content >
-                                    <#assign tst = keyword.@simpleClassName!"" />
-                                    <#if keywordTypeBySimpleName[tst]?? >
-                                        <#assign keywordType = keywordTypeBySimpleName[tst] />
-                                        <li>
-                                            <#assign term = keyword.@id />
-                                            <#if !keywordType.fieldName?contains("IdList")>
-                                                <#assign term = keyword.@name?url />
-                                            </#if>
-                                            <a href="<@s.url value="/search/results?groups%5B0%5D.operator=AND&groups%5B0%5D.${keywordType.fieldName}%5B0%5D=${term}&groups%5B0%5D.fieldTypes%5B0%5D=${keywordType}"/>">${keyword.@name}</a>
-                                        </li>
+                            <#items as collab>
+                                <li>
+                                   <#if authenticatedUser?has_content>
+                                    <a href="<@s.url value="${collab.detailUrl}"/>">${collab.label}</a>
+                                    <#else>
+                                        ${collab.label}
                                     </#if>
-                                </#if>
-                            </#list>
+                                </li>
+                            </#items>
                         </ul>
                     </div>
-                </#if>
+                </#list>
+
                 <div>
                     <small>Related Keywords and Creators are determined by looking at all of the Creators and Keywords
                         associated with a Creator and highlighting the most commonly used.

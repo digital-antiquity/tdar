@@ -14,53 +14,48 @@
     </#macro>
 
     <#macro divImageInfo>
-        <#local _images=sensoryDataImages, divclass="" />
-        <#if _images.isEmpty()>
-            <#local _images=blankSensoryDataImage, divclass="hidden" />
-        </#if>
-    <div id="divImageInfo" data-tooltipcontent='#imageInfoTooltip' class="${divclass}">
-        <h2>Image Information</h2>
-
-        <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
-            <#list _images as _image>
-                <div id="sensoryDataImagesRow_${_image_index}_" class='repeat-row'>
-                    <@s.hidden name="sensoryDataImages[${_image_index}].id" />
-                    <div class='control-group'>
-                        <div class='controls controls-row'>
-                            <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
-                <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" />
-                <@nav.clearDeleteButton id="sensoryDataImagesRow" />
+    <#list sensoryDataImages![]> 
+        <div id="divImageInfo" data-tooltipcontent='#imageInfoTooltip'>
+            <h2>Image Information</h2>
+    
+            <div id="sensoryDataImagesDiv" class="repeatLastRow" addAnother="add another image">
+                <#items as _image>
+                    <div id="sensoryDataImagesRow_${_image_index}_" class='repeat-row'>
+                        <@s.hidden name="sensoryDataImages[${_image_index}].id" />
+                        <div class='control-group'>
+                            <div class='controls controls-row'>
+                                <@s.textfield theme='simple' placeholder='Filename' maxLength="255" name="sensoryDataImages[${_image_index}].filename"  />
+                    <@s.textfield theme='simple' placeholder='Description' maxLength="255" name="sensoryDataImages[${_image_index}].description" />
+                    <@nav.clearDeleteButton id="sensoryDataImagesRow" />
+                            </div>
                         </div>
                     </div>
-                </div>
-            </#list>
+                </#items>
+            </div>
         </div>
-    </div>
-    <div id="imageInfoTooltip" class="hide">
-        <h2>Image Information</h2>
-
-        <div>
-            Use this section to specify information about reference images included in with this resource.
-            <dl>
-                <dt>Name</dt>
-                <dd>The filename of the reference image</dd>
-                <dt>Description</dt>
-                <dd>Description of the image</dd>
-            </dl>
+        <div id="imageInfoTooltip" class="hide">
+            <h2>Image Information</h2>
+    
+            <div>
+                Use this section to specify information about reference images included in with this resource.
+                <dl>
+                    <dt>Name</dt>
+                    <dd>The filename of the reference image</dd>
+                    <dt>Description</dt>
+                    <dd>Description of the image</dd>
+                </dl>
+            </div>
         </div>
-    </div>
+    </#list>
     </#macro>
 
     <#macro divScanInfo>
-    <div id="divScanInfo" style="display:none">
-        <#assign _scans=sensoryDataScans />
-        <#if _scans.isEmpty()>
-            <#assign _scans=blankSensoryDataScan />
-        </#if>
+    <div id="divScanInfo">
+        <#list sensoryDataScans![]>
         <h2>Level 1: Original Scan Files</h2>
 
         <div id='sensoryDataScans' class='repeatLastRow' addAnother='add another scan' callback='scanAdded'>
-            <#list _scans as _scan>
+        <#items as _scan>
                 <div id="sensoryDataScanRow_${_scan_index}_" class='repeat-row'>
                     <@s.hidden name="sensoryDataScans[${_scan_index}].id" />
                     <div class='control-group'>
@@ -123,8 +118,9 @@
                         </div>
                     </div>
                 </div>
-            </#list>
+                </#items>
         </div>
+            </#list>
     </div>
     </#macro>
 
@@ -280,7 +276,7 @@
 
         <div id="divScannerTechnologyOptions">
             <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
-            list='%{scannerTechnologyTypes}' label="Scan Technology" />
+            list='%{scannerTechnologyTypes}' label="Scan Technology"  /><#--cssClass="scannerTechnology"-->
         </div>
 
         <div class="conditional-scantype phase_based time_of_flight triangulation">

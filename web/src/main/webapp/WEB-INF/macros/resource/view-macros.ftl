@@ -218,7 +218,7 @@ View freemarker macros
 		    <h3 class="downloads">Find a Copy</h3>
 	        <div id="fileSummaryContainer">
 	    	    <ul class="downloads media-list">
-	                <li class="citationNote"><b>This resource is a citation only.</b><#if resource.copyLocation?has_content> The information that we have indicates that a copy is located
+	                <li class="citationNote"><b>We do not have a copy of this ${resource.resourceType.label?lower_case}, it is a citation.</b><#if resource.copyLocation?has_content><br/><br/> The information that we have indicates that a paper copy may be located
 	                at ${resource.copyLocation}.</#if></li>
 	    		</ul>
 			</div>

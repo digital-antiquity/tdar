@@ -264,4 +264,13 @@
                 return contactCount > 0;
 
             }, "You must have at least one person/institution listed as a 'contact' under <b>Individual and Institutional Roles</b> when marking a file 'confidential'");
+
+    /**
+     * Case-insensitive version of equalTo builtin.
+     */
+    $.validator.addMethod("equalToIgnoreCase", function (value, element, param) {
+        return this.optional(element) ||
+            (value.toLowerCase() == $(param).val().toLowerCase());
+    }, "Please enter the same value again. Not case-sensitive.");
+
 })(jQuery);

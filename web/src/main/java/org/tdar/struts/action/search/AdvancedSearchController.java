@@ -194,6 +194,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     @Actions({
             @Action(value = "basic", results = { @Result(name = SUCCESS, location = ADVANCED_FTL) }),
+            @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl") }),
             @Action(value = "collection", results = { @Result(name = SUCCESS, location = "collection.ftl") }),
             @Action(value = "person", results = { @Result(name = SUCCESS, location = "person.ftl") }),
             @Action(value = "institution", results = { @Result(name = SUCCESS, location = "institution.ftl") })
