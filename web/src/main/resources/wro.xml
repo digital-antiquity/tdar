@@ -4,7 +4,7 @@
     <group name='default'>
         <css>/css/tdar-bootstrap.css</css>
         <css>/css/famfamfam.css</css>
-        <css>/includes/jquery-treeview/jquery.treeview.css</css>
+        <css>/components/jquery.treeview/jquery.treeview.css</css>
         <css>/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css</css>
         <css>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css</css>
         <!--  used by jquery.treeview -->
@@ -24,7 +24,7 @@
         <!-- LICENSE: BSD /GPL 2.0 -->
         <js>/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js</js>
         <!-- LICENSE: BSD /GPL 2.0 -->
-        <js>/includes/jquery-treeview/jquery.treeview.js</js>
+        <js>/components/jquery.treeview/jquery.treeview.js</js>
         <!-- LICENSE: MIT /GPL 2.0 -->
         <css>/components/jquery-file-upload/css/jquery.fileupload-ui.css</css>
         <js>/components/blueimp-tmpl/js/tmpl.js</js>
@@ -43,6 +43,8 @@
         <!-- LICENSE:CC Attribution 3.0 Unported -->
         <js>/components/leaflet/dist/leaflet.js</js>
         <js>/components/leaflet-choropleth/dist/choropleth.js</js>
+        <js>/components/select2/dist/js/select2.min.js</js>
+        <css>/components/select2/dist/css/select2.min.css</css>
         <!--  https://github.com/CliffCloud/Leaflet.Sleep -->
         <js>/includes/Leaflet.Sleep.js</js>
         <css>/components/leaflet/dist/leaflet.css</css>

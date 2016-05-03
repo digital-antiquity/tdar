@@ -12,11 +12,13 @@
     "jquery": "~1.11.3",
     "jquery-file-upload": "8.6.1",
     "jquery-validation": "~1.8.1",
+    "jquery.treeview": "~1.4.1",
     "leaflet": "~0.7.3",
     "leaflet-choropleth": "~1.0.3",
     "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v0.4.0-hotfix.1 ",
     "leaflet-control-geocoder": "~1.4.0",
     "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.3.0",
+    "select2": "~4.0.2",
     "svgxuse": "~1.1.16"
   },
   "homepage": "https://bitbucket.org/tdar/tdar.src",

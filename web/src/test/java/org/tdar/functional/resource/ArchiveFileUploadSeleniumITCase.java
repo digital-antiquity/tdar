@@ -15,8 +15,8 @@ import org.tdar.functional.AbstractBasicSeleniumWebITCase;
 public class ArchiveFileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
 
     private final List<String> REQUIRED_FIELDS = java.util.Arrays.asList(new String[] {
-            "resourceRegistrationTitle", "dateCreated", "resourceDescription", "projectId", "resourceRegistrationTitle", "dateCreated",
-            "resourceDescription", "projectId" });
+            "resourceRegistrationTitle", "dateCreated", "resourceDescription", "resourceRegistrationTitle", "dateCreated",
+            "resourceDescription" });
 
     @Test
     public void requiredFieldsAreRequested() {
@@ -29,7 +29,7 @@ public class ArchiveFileUploadSeleniumITCase extends AbstractBasicSeleniumWebITC
             assertTrue(input.isDisplayed());
             foundElementsFor.add(input.getAttribute("for"));
         }
-        assertTrue(foundElementsFor.containsAll(REQUIRED_FIELDS));
+        assertTrue("foundElementsFor contains: " + foundElementsFor, foundElementsFor.containsAll(REQUIRED_FIELDS));
     }
 
 }
