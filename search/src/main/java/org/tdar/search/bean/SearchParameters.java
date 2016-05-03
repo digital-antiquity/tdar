@@ -99,6 +99,7 @@ public class SearchParameters {
 
     private boolean join = false;
     private ResourceCreatorProxy creatorOwner;
+    private Set<ResourceCreatorRole> creatorOwnerRoles = new HashSet<>();
     private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
@@ -326,12 +327,14 @@ public class SearchParameters {
                 getOperator(), filenames));
 
         if (creatorOwner != null) {
-            Set<ResourceCreatorRole> roles = ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creatorOwner.getType());
+            if (CollectionUtils.isNotEmpty(getCreatorOwnerRoles())) {
+                setCreatorOwnerRoles(ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creatorOwner.getActualCreatorType()));
+            }
             if (PersistableUtils.isNotNullOrTransient(creatorOwner.getPerson())) {
-                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson(), roles));
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson(), getCreatorOwnerRoles()));
             }
             if (PersistableUtils.isNotNullOrTransient(creatorOwner.getInstitution())) {
-                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution(), roles));
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution(), getCreatorOwnerRoles()));
             }
         }
 
@@ -627,6 +630,14 @@ public class SearchParameters {
 
     public void setLatScaleUsed(boolean latScaleUsed) {
         this.latScaleUsed = latScaleUsed;
+    }
+
+    public Set<ResourceCreatorRole> getCreatorOwnerRoles() {
+        return creatorOwnerRoles;
+    }
+
+    public void setCreatorOwnerRoles(Set<ResourceCreatorRole> creatorOwnerRoles) {
+        this.creatorOwnerRoles = creatorOwnerRoles;
     }
 
 }
