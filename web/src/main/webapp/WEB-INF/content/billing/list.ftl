@@ -20,7 +20,7 @@
     </thead>
     <tbody>
         <#list accounts as account>
-        <tr>
+        <tr class="${account.status}">
             <td><a href="<@s.url value="/billing/${account.id?c}"/>">${account.name}</a></td>
             <td><a href="<@s.url value="${account.owner.detailUrl}"/>">${account.owner.properName} </a></td>
             <td>${account.status}</td>

@@ -17,6 +17,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.DocumentType;
@@ -98,6 +99,7 @@ public class SearchParameters {
 
     private boolean join = false;
     private ResourceCreatorProxy creatorOwner;
+    private Set<ResourceCreatorRole> creatorOwnerRoles = new HashSet<>();
     private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
@@ -325,11 +327,14 @@ public class SearchParameters {
                 getOperator(), filenames));
 
         if (creatorOwner != null) {
+            if (CollectionUtils.isNotEmpty(getCreatorOwnerRoles())) {
+                setCreatorOwnerRoles(ResourceCreatorRole.getResourceCreatorRolesForProfilePage(creatorOwner.getActualCreatorType()));
+            }
             if (PersistableUtils.isNotNullOrTransient(creatorOwner.getPerson())) {
-                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson()));
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getPerson(), getCreatorOwnerRoles()));
             }
             if (PersistableUtils.isNotNullOrTransient(creatorOwner.getInstitution())) {
-                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution()));
+                queryPartGroup.append(new CreatorOwnerQueryPart(creatorOwner.getInstitution(), getCreatorOwnerRoles()));
             }
         }
 
@@ -614,6 +619,14 @@ public class SearchParameters {
 
     public void setJoin(boolean join) {
         this.join = join;
+    }
+
+    public Set<ResourceCreatorRole> getCreatorOwnerRoles() {
+        return creatorOwnerRoles;
+    }
+
+    public void setCreatorOwnerRoles(Set<ResourceCreatorRole> creatorOwnerRoles) {
+        this.creatorOwnerRoles = creatorOwnerRoles;
     }
 
 }

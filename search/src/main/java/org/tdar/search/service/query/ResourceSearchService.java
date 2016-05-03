@@ -39,6 +39,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
+import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.query.part.CategoryTermQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
@@ -238,7 +239,7 @@ public class ResourceSearchService extends AbstractSearchService {
      * @throws ParseException 
      */
     @Transactional(readOnly=true)
-    public LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
+    public LuceneSearchResultHandler<Resource> generateQueryForRelatedResources(Creator<?> creator, TdarUser user, FacetedResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
 //        result.setRecordsPerPage(MAX_FTQ_RESULTS);
         queryBuilder.setOperator(Operator.AND);

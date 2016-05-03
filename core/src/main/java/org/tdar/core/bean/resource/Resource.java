@@ -1545,7 +1545,6 @@ public class Resource implements Persistable,
      * ResourceCreators, this makes the resource show up in the browse page for
      * that creator
      */
-    //@Field(name = QueryFieldNames.RESOURCE_OWNER, store = Store.YES, analyzer = //@Analyzer(impl = KeywordAnalyzer.class))
     @XmlTransient
     public Long getResourceOwner() {
         if (CollectionUtils.isEmpty(getResourceCreators())) {
