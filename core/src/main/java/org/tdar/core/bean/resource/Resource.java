@@ -149,9 +149,6 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "resource_type_index", columnList = "resource_type"),
         @Index(name = "idx_created", columnList = "date_created")
 })
-//@ClassBridge(impl = ResourceClassBridge.class)
-//@Indexed(index = "Resource", interceptor = DontIndexWhenNotReadyInterceptor.class)
-//@DynamicBoost(impl = InformationResourceBoostStrategy.class)
 @Inheritance(strategy = InheritanceType.JOINED)
 @XmlRootElement
 @XmlSeeAlso({ Document.class, InformationResource.class, Project.class, CodingSheet.class, Dataset.class, Ontology.class,

@@ -34,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @MappedSuperclass
 @XmlType(name = "kwdbase")
+@XmlTransient
 public abstract class AbstractKeyword<T extends Keyword> extends Persistable.Base implements Keyword, HasStatus, Comparable<T>, Slugable {
 
     private static final long serialVersionUID = -7516574981065004043L;
