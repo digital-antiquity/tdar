@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +24,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Coupon;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
@@ -41,7 +38,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -59,7 +56,7 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-public class APIController extends AuthenticationAware.Base {
+public class APIController extends AbstractAuthenticatableAction {
 
     @Autowired
     private transient AuthorizationService authorizationService;

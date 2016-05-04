@@ -8,12 +8,12 @@ import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
-public abstract class AbstractKeywordController extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractKeywordController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -7469398370759336245L;
 

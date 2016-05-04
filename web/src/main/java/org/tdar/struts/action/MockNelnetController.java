@@ -42,7 +42,7 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/mock-nelnet")
-public class MockNelnetController extends AuthenticationAware.Base implements ParameterAware, Serializable {
+public class MockNelnetController extends AbstractAuthenticatableAction implements ParameterAware, Serializable {
 
     private static final long serialVersionUID = -973297044126882831L;
 

@@ -58,7 +58,7 @@ import org.tdar.utils.PersistableUtils;
 @Namespace("")
 @Component
 @Scope("prototype")
-public class DashboardController extends AuthenticationAware.Base implements DataTableResourceDisplay {
+public class DashboardController extends AbstractAuthenticatableAction implements DataTableResourceDisplay {
 
 	private static final long serialVersionUID = -2959809512424441740L;
 	private List<Resource> recentlyEditedResources = new ArrayList<Resource>();

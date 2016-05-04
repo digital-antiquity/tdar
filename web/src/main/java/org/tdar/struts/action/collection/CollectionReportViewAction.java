@@ -33,8 +33,8 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -46,7 +46,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/collection/report")
 @HttpsOnly
-public class CollectionReportViewAction extends AuthenticationAware.Base
+public class CollectionReportViewAction extends AbstractAuthenticatableAction
         implements FacetedResultHandler<Resource>, PersistableLoadingAction<ResourceCollection>, Preparable {
 
     private static final long serialVersionUID = 5515399574166871914L;

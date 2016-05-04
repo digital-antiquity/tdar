@@ -27,7 +27,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -40,7 +40,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/billing")
 @HttpsOnly
-public class BillingAccountSelectionAction extends AuthenticationAware.Base implements Preparable {
+public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable {
 
 	public static final String UPDATE_QUOTAS = "updateQuotas";
 	public static final String FIX_FOR_DELETE_ISSUE = "fix";

@@ -19,8 +19,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.URLConstants;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Persistable.Sequence;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -65,7 +65,9 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
-import org.tdar.struts.action.*;
+import org.tdar.struts.action.AbstractPersistableController;
+import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -568,7 +570,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
             return;
         }
         list.removeAll(Collections.singletonList(null));
-        Sequence.applySequence(list);
+        AbstractSequenced.applySequence(list);
     }
 
     protected void logModification(String message) {

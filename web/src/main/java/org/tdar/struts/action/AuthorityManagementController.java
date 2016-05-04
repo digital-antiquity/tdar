@@ -34,7 +34,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AuthorityManagementController extends AuthenticationAware.Base implements Preparable {
+public class AuthorityManagementController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -264345419370974992L;
     private DedupeableType entityType;

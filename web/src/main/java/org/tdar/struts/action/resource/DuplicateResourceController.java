@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.PersistableUtils;
@@ -21,7 +21,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource/duplicate")
 @Component
 @Scope("prototype")
-public class DuplicateResourceController extends AuthenticationAware.Base implements Preparable {
+public class DuplicateResourceController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final String DUPLICATE_ERROR_FTL = "duplicate-error.ftl";
 

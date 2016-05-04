@@ -26,7 +26,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 /**
  * $Id$
@@ -40,7 +40,7 @@ import org.tdar.struts.action.AuthenticationAware;
 @Namespace("/workspace")
 @Component
 @Scope("prototype")
-public class WorkspaceAction extends AuthenticationAware.Base {
+public class WorkspaceAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 8232843043333817727L;
 

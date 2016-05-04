@@ -51,7 +51,7 @@ import com.opensymphony.xwork2.Preparable;
  * @author Adam Brin, <a href='mailto:Allen.Lee@asu.edu'>Allen Lee</a>
  * @version $Revision$
  */
-public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<P> {
+public abstract class AbstractPersistableController<P extends Persistable & Updatable> extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<P> {
 
     public static final String SAVE_SUCCESS_PATH = "/${saveSuccessPath}/${persistable.id}${saveSuccessSuffix}";
     public static final String DRAFT = "draft";

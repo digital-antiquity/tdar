@@ -33,13 +33,12 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.StatisticService;
-import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.processes.CreatorAnalysisProcess;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -58,7 +57,7 @@ import org.tdar.utils.Pair;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AdminController extends AuthenticationAware.Base {
+public class AdminController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 4385039298623767568L;
 

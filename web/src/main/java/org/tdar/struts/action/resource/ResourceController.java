@@ -13,7 +13,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 
 
@@ -30,7 +30,7 @@ import org.tdar.struts.action.TdarActionSupport;
 @Component
 @Scope("prototype")
 @Namespace("/resource")
-public class ResourceController extends AuthenticationAware.Base {
+public class ResourceController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 7080916909862991142L;
 
