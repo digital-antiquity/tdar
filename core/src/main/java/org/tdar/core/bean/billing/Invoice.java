@@ -25,8 +25,8 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.TdarUser;
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "pos_invoice")
-public class Invoice extends Base implements Updatable {
+public class Invoice extends AbstractPersistable implements Updatable {
 
     private static final long serialVersionUID = -3613460318580954253L;
     private final transient Logger logger = LoggerFactory.getLogger(getClass());

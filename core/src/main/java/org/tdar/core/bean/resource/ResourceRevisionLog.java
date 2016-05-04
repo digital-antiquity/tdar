@@ -17,6 +17,7 @@ import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
@@ -31,7 +32,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 @Table(name = "resource_revision_log")
-public class ResourceRevisionLog extends Persistable.Base {
+public class ResourceRevisionLog extends AbstractPersistable {
 
     private static final long serialVersionUID = -6544867903833975781L;
 

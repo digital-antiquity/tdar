@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 
 /**
  * This Class represents a Primary or Foreign Key relationship between two data tables
@@ -25,7 +25,7 @@ import org.tdar.core.bean.Persistable;
  */
 @Entity
 @Table(name = "data_table_relationship")
-public class DataTableRelationship extends Persistable.Base {
+public class DataTableRelationship extends AbstractPersistable {
 
     private static final long serialVersionUID = 7389360675412671860L;
 

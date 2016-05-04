@@ -14,7 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AbstractPersistable;
 
 /**
  * A class to manage scheduled processes and upgrades ... really just running things once
@@ -23,7 +23,7 @@ import org.tdar.core.bean.Persistable;
  */
 @Entity
 @Table(name = "upgrade_task")
-public class UpgradeTask extends Persistable.Base {
+public class UpgradeTask extends AbstractPersistable {
 
     private static final long serialVersionUID = -564380362132231493L;
     private String comment;

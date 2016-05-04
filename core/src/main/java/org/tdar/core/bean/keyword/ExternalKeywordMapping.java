@@ -7,13 +7,13 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.RelationType;
 
 @Entity
 @Table(name = "keyword_mapping")
-public class ExternalKeywordMapping extends Persistable.Base {
+public class ExternalKeywordMapping extends AbstractPersistable {
 
     private static final long serialVersionUID = 7035836586397546286L;
 

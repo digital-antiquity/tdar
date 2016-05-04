@@ -6,11 +6,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.AbstractPersistable;
 
 @Table(name="homepage_featured_collection")
 @Entity
-public class HomepageFeaturedCollections extends Base {
+public class HomepageFeaturedCollections extends AbstractPersistable {
 
     private static final long serialVersionUID = -800964224885668226L;
 

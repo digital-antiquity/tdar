@@ -11,9 +11,9 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarValidationException;
 
@@ -25,7 +25,7 @@ import org.tdar.core.exception.TdarValidationException;
  */
 @Entity
 @Table(name = "creator_address")
-public class Address extends Base implements Persistable, Validatable {
+public class Address extends AbstractPersistable implements Persistable, Validatable {
 
     private static final long serialVersionUID = 3179122792715811371L;
 

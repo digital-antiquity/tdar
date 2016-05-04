@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -38,7 +38,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 //@Indexed(index = "AnnotationKey")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotationKey")
 @Cacheable
-public class ResourceAnnotationKey extends Persistable.Base implements Indexable, HasLabel {
+public class ResourceAnnotationKey extends AbstractPersistable implements Indexable, HasLabel {
 
     private static final long serialVersionUID = 6596067112791213904L;
 

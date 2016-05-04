@@ -29,6 +29,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
@@ -62,7 +63,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
-public class DataTableColumn extends Persistable.Sequence<DataTableColumn> implements Validatable {
+public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable {
 
     private static final long serialVersionUID = 430090539610139732L;
 

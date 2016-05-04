@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AbstractPersistable;
 
 /**
  * A downloadauth designates a collection of resources that allow file downloads from unauthenticated users. Instead, the download request includes
@@ -23,7 +23,7 @@ import org.tdar.core.bean.Persistable;
 @Entity
 @Table(name = "download_authorization")
 @XmlRootElement(name = "DownloadAuthorization")
-public class DownloadAuthorization extends Persistable.Base {
+public class DownloadAuthorization extends AbstractPersistable {
 
     private static final long serialVersionUID = 2087845303008388117L;
     private static final int UUID_BEGIN_INDEX = 24;

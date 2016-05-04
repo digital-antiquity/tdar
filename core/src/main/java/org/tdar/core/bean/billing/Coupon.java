@@ -15,7 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.entity.TdarUser;
 
 /**
@@ -26,7 +26,7 @@ import org.tdar.core.bean.entity.TdarUser;
  */
 @Entity
 @Table(name = "pos_coupon")
-public class Coupon extends Base {
+public class Coupon extends AbstractPersistable {
 
     private static final long serialVersionUID = -8987513032996536732L;
 

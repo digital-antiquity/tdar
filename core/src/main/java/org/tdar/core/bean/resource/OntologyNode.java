@@ -26,8 +26,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
@@ -51,7 +51,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "ontology_node_interval_end_index", columnList = "interval_end"),
         @Index(name = "ontology_node_index", columnList = "index")
 })
-public class OntologyNode extends Persistable.Base implements Comparable<OntologyNode> {
+public class OntologyNode extends AbstractPersistable implements Comparable<OntologyNode> {
 
     private static final long serialVersionUID = 6997306639142513872L;
 

@@ -8,6 +8,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.Persistable;
 
 @MappedSuperclass
@@ -17,7 +18,7 @@ import org.tdar.core.bean.Persistable;
  *
  * @param <S>
  */
-public abstract class AbstractResourceStatistic<S extends Persistable> extends Persistable.Base {
+public abstract class AbstractResourceStatistic<S extends Persistable> extends AbstractPersistable {
 
     private static final long serialVersionUID = 2582663062973969024L;
 
