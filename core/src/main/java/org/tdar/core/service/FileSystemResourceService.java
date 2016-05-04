@@ -41,16 +41,6 @@ public class FileSystemResourceService {
     }
 
     @Transactional(readOnly=true)
-    public Document openCreatorInfoLog(File filename) throws SAXException, IOException, ParserConfigurationException {
-        return fileSystemResourceDao.openCreatorInfoLog(filename);
-    }
-
-    @Transactional(readOnly=true)
-    public List<NodeModel> parseCreatorInfoLog(String prefix, boolean limit, float mean, int sidebarValuesToShow, Document dom) {
-        return fileSystemResourceDao.parseCreatorInfoLog(prefix, limit, mean, sidebarValuesToShow, dom);
-    }
-
-    @Transactional(readOnly=true)
     public boolean checkHostedFileAvailable(String filename, FilestoreObjectType type, Long id) {
         return fileSystemResourceDao.checkHostedFileAvailable(filename, type, id);
     }

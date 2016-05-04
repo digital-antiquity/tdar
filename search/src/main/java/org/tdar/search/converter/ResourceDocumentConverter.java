@@ -177,16 +177,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addKeyword(doc, QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, KeywordType.SITE_TYPE_KEYWORD, resource.getActiveSiteTypeKeywords());
         addKeyword(doc, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, KeywordType.TEMPORAL_KEYWORD, resource.getActiveTemporalKeywords());
 
-        HashSet<String> kwds = new HashSet<>();
-        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle()));
-        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getDescription()));
-        for (SiteNameKeyword kwd : resource.getActiveSiteNameKeywords()) {
-            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
-        }
-        for (OtherKeyword kwd : resource.getActiveOtherKeywords()) {
-            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
-        }
-
+        doc.addField(QueryFieldNames.SITE_CODE, extractSiteCodeTokens(resource));
+        
         GeneralKeywordBuilder gkb = new GeneralKeywordBuilder(resource, data);
         String text = gkb.getKeywords();
         doc.setField(QueryFieldNames.ALL, text);
@@ -218,6 +210,21 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         return doc;
     }
+
+    
+    private static HashSet<String> extractSiteCodeTokens(Resource resource) {
+        HashSet<String> kwds = new HashSet<>();
+        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle()));
+        kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getDescription()));
+        for (SiteNameKeyword kwd : resource.getActiveSiteNameKeywords()) {
+            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+        }
+        for (OtherKeyword kwd : resource.getActiveOtherKeywords()) {
+            kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(kwd.getLabel()));
+        }
+        return kwds;
+    }
+
 
     private static void indexTemporalInformation(SolrInputDocument doc, Resource resource) {
         for (CoverageDate date : resource.getActiveCoverageDates()) {
@@ -272,6 +279,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         Set<String> roles = new HashSet<>();
         Set<String> names = new HashSet<>();
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
+            if (!rc.getCreator().isActive() && !rc.getCreator().isDuplicate()) {
+                continue;
+            }
             map.get(rc.getRole()).add(rc.getCreator());
         }
 
@@ -285,6 +295,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             Set<Long> typeIds = new HashSet<>();
             for (Creator creator : creators) {
                 if (creator == null) {
+                    continue;
+                }
+                if (!creator.isActive() && !creator.isDuplicate()) {
                     continue;
                 }
                 names.add(creator.getProperName());
@@ -328,6 +341,11 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         Set<Long> ids = new HashSet<>();
         Set<String> labels = new HashSet<>();
         for (K k : keywords) {
+            if (!k.isActive() && !k.isDuplicate()) {
+                continue;
+            }
+            
+            
             ids.add(k.getId());
             labels.add(k.getLabel());
             if (k instanceof HierarchicalKeyword) {

@@ -1,10 +1,10 @@
-//2015-08-21
 L.Map.mergeOptions({
   sleep: true,
   sleepTime: 750,
   wakeTime: 750,
   sleepNote: true,
-  hoverToWake: true
+  hoverToWake: true,
+  sleepOpacity:.7
 });
 
 L.Map.Sleep = L.Handler.extend({
@@ -15,15 +15,23 @@ L.Map.Sleep = L.Handler.extend({
     this._exitTimeout = null;
 
 
-    var noteString = this._map.options.wakeMessage || ('Click ' + (this._map.options.hoverToWake?'or Hover ':'') + 'to Wake');
+    var mapStyle = this._map.getContainer().style;
+    mapStyle.WebkitTransition += 'opacity .5s';
+    mapStyle.MozTransition += 'opacity .5s';
+
+    var noteString = this._map.options.wakeMessage ||
+                     ('Click ' + (this._map.options.hoverToWake?'or Hover ':'') + 'to Wake');
     var style = this.sleepNote.style;
     if( this._map.options.sleepNote ){
       this.sleepNote.appendChild(document.createTextNode( noteString ));
-      style['max-width'] = '150px';
+      style.pointerEvents = 'none';
+      style.maxWidth = '150px';
+      style.transitionDuration = '.2s';
+      style.zIndex = 5000;
       style.opacity = '.6';
       style.margin = 'auto';
-      style['text-align'] = 'center';
-      style['border-radius'] = '4px';
+      style.textAlign = 'center';
+      style.borderRadius = '4px';
       style.top = '50%';
       style.position = 'relative';
       style.padding = '5px';
@@ -53,13 +61,13 @@ L.Map.Sleep = L.Handler.extend({
   _sleepMap: function () {
     this._stopWaiting();
     this._map.scrollWheelZoom.disable();
-    L.DomUtil.setOpacity( this._map._container, .7);
+    L.DomUtil.setOpacity( this._map._container, this._map.options.sleepOpacity);
     this.sleepNote.style.opacity = .4;
     this._addSleepingListeners();
   },
 
   _wakePending: function () {
-    this._map.once('click', this._wakeMap, this);
+    this._map.once('mousedown', this._wakeMap, this);
     if (this._map.options.hoverToWake){
       var self = this;
       this._map.once('mouseout', this._sleepMap, this);
@@ -90,7 +98,7 @@ L.Map.Sleep = L.Handler.extend({
   _removeSleepingListeners: function(){
     this._map.options.hoverToWake &&
       this._map.off('mouseover', this._wakePending, this);
-    this._map.off('mousedown click', this._wakeMap, this);
+    this._map.off('mousedown', this._wakeMap, this);
   },
 
   _removeAwakeListeners: function(){

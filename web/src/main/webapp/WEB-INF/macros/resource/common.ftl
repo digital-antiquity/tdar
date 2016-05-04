@@ -36,74 +36,25 @@ Common macros used in multiple contexts
 -->
     <#macro globalJavascript>
     <script type="text/javascript">
+    </script>
     <@googleAnalyticsJavascript />
-</script>
     </#macro>
 
 <#-- emit the javascript necessary for google analytics -->
 <#-- FIXME: replace this embed and wrapper functions as part of upgrade to Universal Analytics (TDAR-3515) -->
     <#macro googleAnalyticsJavascript>
-        <#noescape>
-        var _gaq = _gaq || [];
-            <#if !production>
-            _gaq.push(['_setAccount', 'UA-13102200-5']); // TEST ACCOUNT
-            _gaq.push(['_setDomainName', 'none']);
-            <#else>
-            _gaq.push(['_setAccount', '${googleAnalyticsId}']);
-            </#if>
+    <#noescape>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        _gaq.push(['_trackPageview']);
+        ga('create', '${googleAnalyticsId}', 'auto');
+        ga('send', 'pageview');
 
-        (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-
-        //return basic perf stats (excellent diagram: http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#processing-model)
-        (function() {
-        var _getPerfStats = function() {
-        var timing = window.performance.timing;
-        return {
-        //dns lookup timespan
-        dns: timing.domainLookupEnd - timing.domainLookupStart,
-        //connection timespan
-        connect: timing.connectEnd - timing.connectStart,
-        //time to first byte
-        ttfb: timing.responseStart - timing.connectEnd,
-        //timespan of response load
-        basePage: timing.responseEnd - timing.responseStart,
-        //time to document.load
-        frontEnd: timing.loadEventStart - timing.responseEnd
-        };
-        };
-
-        var _trackEvent = function() {
-        var arr = ["_trackEvent"].concat(Array.prototype.slice.call(arguments));
-        _gaq.push(arr);
-        };
-
-        var _reportPerfStats = function() {
-        if (!(window.performance && window.performance.timing )) return;
-        var nav = window.performance.navigation;
-        var navtype = undefined;
-        //backbutton navigation may skew stats. try to identify and tag w/ label (only supported in IE/chrome for now)
-        if(nav && nav.type === nav.TYPE_BACK_FORWARD) {
-        navtype = "backbutton";
-        }
-
-        if (typeof _gaq === "undefined") return;
-        var perf = _getPerfStats();
-        var key;
-        for(key in perf) {
-        _trackEvent("Navigation Timing(ms)", key, navtype, perf[key] ,  true);
-        }
-        };
-
-        //here we explicitly hook into 'onload' since DOM timing stats are incomplete upon 'ready'.
-        $(window).load(_reportPerfStats);
-        })();
-        </#noescape>
+    </script>
+    </#noescape>
     </#macro>
 
 <#--
@@ -565,6 +516,7 @@ Common macros used in multiple contexts
                     </tr>
                     </thead>
                     <tbody>
+                        <#assign hasSpecial=false />
                         <#list resource.sortedCodingRules as codeRule>
                         	<#if !(codeRule.code?starts_with("__")) >
 	                        <tr>
@@ -573,12 +525,15 @@ Common macros used in multiple contexts
 	                            <td>${codeRule.description!""}</td>
 	                            <td><#if codeRule.ontologyNode?has_content>${codeRule.ontologyNode.displayName!'Unlabeled'}</#if></td>
 	                        </tr>
+                            <#else>
+                              <#assign hasSpecial=true />
 	                    	</#if>
                         </#list>
 
                         <tr>
                         <td colspan=4><b>Special Coding Rules:</b> These entries are not in the coding-sheet, but represent edge-cases in Data Integration that may benefit from custom mappings</td>
                         </tr>
+                       <#if hasSpecial>
                         <#list resource.sortedCodingRules as codeRule>
                         	<#if codeRule.code?starts_with("__") >
 	                        <tr>
@@ -589,6 +544,7 @@ Common macros used in multiple contexts
 	                        </tr>
 	                    	</#if>
                         </#list>
+                        </#if>
 
                         <#list missingCodingKeys![]>
                         <tr>

@@ -4,7 +4,7 @@
 <div class="glide span9">
     <h3><@s.text name="${keywordType.localeKey}"/><span class="red">:${keyword.label}</span></h3>
 
-    <@s.form  name='keywordForm' id='keywordForm'   cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
+    <@s.form  name='keywordForm' id='keywordForm'   cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} method='post' enctype='multipart/form-data' action='save'>
     <@s.hidden name="id" />
     <@s.hidden name="keywordType" />
     <@s.textfield name="label" value="${keyword.label}" label="Label" cssClass="input-xxlarge" labelPosition="left" required=true />

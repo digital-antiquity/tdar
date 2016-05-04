@@ -9,7 +9,8 @@
         function($rootScope, $scope, integration, dataService, validationService){
         var self = this,
             _openModal,
-            _processAddedIntegrationColumns;
+            _processAddedIntegrationColumns,
+            _isBusy =false;
 
         // controller public fields
         self.integration = integration;
@@ -24,8 +25,7 @@
             kind: "default",
             message: ""
         };
-        
-        
+
 
         // controller public methods
         self.setTab  = function(idx) {
@@ -222,6 +222,12 @@
 
         // FIXME: proper validation required
         $scope.isValid = function() {
+
+            // is the system already working on a preview or an integration
+            if(_isBusy) {
+                return false;
+            }
+
             // do we have title or enough to "save"
             if (!$scope.isMinimallyValid()) {
                 return false;
@@ -315,10 +321,12 @@
          * Send the integration to the server for processing.  If successful,  show notification.
          */
         self.submitIntegration  = function() {
+            _isBusy = true;
             $scope.downloadReady = false
             var results = dataService.processIntegration(integration);
             self.promiseStatus(results, "Processing integration, please wait...", "Integration Results ready!");
             results.then(function(data){
+                _isBusy = false;
                 $scope.downloadReady = true;
                 $('#divResultContainer').modal({show:true});
                 $scope.download = {
@@ -335,6 +343,7 @@
                 };
                 console.debug(data);
             }, function(err) {
+                _isBusy = false;
                 console.debug("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });

@@ -7,10 +7,12 @@ public class Facet implements Serializable {
 	private static final long serialVersionUID = -2689381884158539009L;
 
 	private String label;
-	private Long count;
+	private Long count = 0L;
 	private String raw;
-	private String url;
+	private String detailUrl;
 	private Class className;
+
+    public Object getCount;
 
 	public Facet() {
 	}
@@ -18,7 +20,9 @@ public class Facet implements Serializable {
 	public Facet(String raw, String label, Long value, Class facetClass) {
 		this.setRaw(raw);
 		this.label = label;
-		this.count = value;
+		if (value!= null) {
+		    this.count = value;
+		}
 		this.className = facetClass;
 	}
 
@@ -51,13 +55,6 @@ public class Facet implements Serializable {
 		this.raw = raw;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
 
 	public Class getClassName() {
 		return className;
@@ -73,4 +70,22 @@ public class Facet implements Serializable {
 	public void setClassName(Class className) {
 		this.className = className;
 	}
+
+    public String getUniqueKey() {
+        return String.format("%s-%s", className.getSimpleName(), label);
+    }
+
+    public void incrementCountBy(Long add) {
+        if (add != null) {
+            count += add;
+        }
+    }
+
+    public String getDetailUrl() {
+        return detailUrl;
+    }
+
+    public void setDetailUrl(String detailUrl) {
+        this.detailUrl = detailUrl;
+    }
 }

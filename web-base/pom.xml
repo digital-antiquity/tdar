@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
+        <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencies>
@@ -192,6 +192,10 @@
                                 <systemProperty>
                                     <name>slf4j</name>
                                     <value>true</value>
+                                </systemProperty>
+                                <systemProperty>
+                                    <name>solr.data.dir</name>
+                                    <value>../Indexes/${hg.branch}/</value>
                                 </systemProperty>
                             </systemProperties>
                             <webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>

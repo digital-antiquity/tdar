@@ -21,6 +21,7 @@ The plugin supports many different data providers:
 * [What3Words](http://what3words.com/)
 * [Photon](http://photon.komoot.de/)
 * [Mapzen Search](https://mapzen.com/projects/search)
+* [HERE Geocoder API] (https://developer.here.com/rest-apis/documentation/geocoder/topics/overview.html)
 
 The plugin can easily be extended to support other providers.
 
@@ -28,7 +29,8 @@ See the [Leaflet Control Geocoder Demo](http://perliedman.github.com/leaflet-con
 
 # Usage
 
-[Download latest release](http://www.liedman.net/leaflet-control-geocoder/download). Load the CSS and Javascript:
+[Download latest release](https://github.com/perliedman/leaflet-control-geocoder/releases). Load the CSS and Javascript, located in
+the `dist` folder:
 
 ```HTML
 <link rel="stylesheet" href="Control.Geocoder.css" />

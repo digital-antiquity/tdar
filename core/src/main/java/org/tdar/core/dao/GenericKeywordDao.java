@@ -171,52 +171,5 @@ public class GenericKeywordDao extends GenericDao {
         return (Number) criteria.uniqueResult();
     }
 
-    /**
-     * Creates a temporary table with Keyword IDs for all resources Ids in list. This is used by the creator analysis process for related creators. It was
-     * initially designed to run in loops but it took too much memory, so using temp tables in the database to generate the logic
-     * 
-     * @param resourceIds
-     * @return
-     */
-    public Map<Keyword, Integer> getRelatedKeywordCounts(final Set<Long> resourceIds_) {
-        Map<Keyword, Integer> results = new HashMap<Keyword, Integer>();
-        
-        Set<Long> resourceIds = new HashSet<>(resourceIds_);
-        resourceIds.remove(null);
-        if (CollectionUtils.isEmpty(resourceIds)) {
-            return results;
-        }
-        String drop = TdarNamedQueries.CREATOR_ANALYSIS_KWD_DROP_TEMP;
-        getCurrentSession().createSQLQuery(drop).executeUpdate();
-        String sql = TdarNamedQueries.CREATOR_ANALYSIS_KWD_CREATE_TEMP;
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
-        for (KeywordType type : KeywordType.values()) {
-            getCurrentSession().createSQLQuery(TdarNamedQueries.CREATOR_ANALYSIS_TRUNCATE_TEMP).executeUpdate();
-            String sql1 = String.format(TdarNamedQueries.CREATOR_ANALYSIS_KWD_INSERT, type.getJoinTableKey(), type.getJoinTable(), type.getTableName(),
-                    type.getJoinTableKey());
-            String sql2 = String.format(TdarNamedQueries.CREATOR_ANALYSIS_KWD_INHERIT_INSERT, type.getJoinTableKey(), type.getJoinTable(), type.getTableName(),
-                    type.getJoinTableKey());
-            String sql3 = TdarNamedQueries.CREATOR_ANALYSIS_KWD_SELECT_COUNTS;
-            logger.debug("resources:{}", resourceIds);
-            logger.debug(sql1);
-            logger.debug(sql2);
-            getCurrentSession().createSQLQuery(sql1).setParameterList("resourceIds", resourceIds).executeUpdate();
-            getCurrentSession().createSQLQuery(sql2).setParameterList("resourceIds", resourceIds).executeUpdate();
-            for (Object row_ : getCurrentSession().createSQLQuery(sql3).list()) {
-                Object[] row = (Object[]) row_;
-                Integer count = ((BigInteger) row[0]).intValue();
-                Long id = ((BigInteger) row[1]).longValue();
-                Keyword kwd = find(type.getKeywordClass(), id);
-                if (kwd.isDuplicate()) {
-                    kwd = findAuthority(kwd);
-                }
 
-                if (results.containsKey(kwd)) {
-                    count += results.get(kwd);
-                }
-                results.put(kwd, count);
-            }
-        }
-        return results;
-    }
 }

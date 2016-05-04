@@ -1,6 +1,7 @@
 <h1>About tDAR</h1>
 
 
+
 <h2>About the Design</h2>
 Digital Antiquity worked with <a href="http://fervorcreative.com/">Fervor
     Creative</a> to re-envision the public interface for tDAR, with the primary goals of simplifying and enhancing the interface.<br/>

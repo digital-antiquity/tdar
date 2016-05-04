@@ -13,19 +13,16 @@
 <body>
     <@nav.billingToolbar "${account.urlNamespace}" "transfer"/>
 
-	<h1>${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></h1>
+	<h1>Transfer Balance <span class="red">${account.name!"Your account"} <#if accountGroup?has_content><span>${accountGroup.name}</span></#if></span></h1>
 
-    <#if account.description?has_content>
-    <p>${account.description!""}</p>
-    </#if>
-
-<h3>Transfer the balance of extra files (${account.availableNumberOfFiles}) into annother account:</h3>
-
-<@s.form action="${id?c}/transfer" method="POST">
-    <@s.select name="toAccountId" list="%{accounts}" label="Select destination account" title="Select an account to transfer to" listValue="name" listKey="id"
-         emptyOption="false" required=true cssClass="required"/>
-
-    <@s.submit />
+    
+    <h3>Transfer the balance of extra files (${account.availableNumberOfFiles}) into another account:</h3>
+    
+    <@s.form action="${id?c}/transfer" method="POST">
+        <@s.select name="toAccountId" list="%{accounts}" label="Select destination account" title="Select an account to transfer to" listValue="name" listKey="id"
+             emptyOption="false" required=true cssClass="required"/>
+    
+        <@s.submit />
 </@s.form>
 </body>
 </#escape>
