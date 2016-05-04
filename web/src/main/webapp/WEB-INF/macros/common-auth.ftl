@@ -23,25 +23,48 @@
 
 <div class="row">
     <div class="span8">
-        <@s.textfield spellcheck="false" required=true id='username' label="Username" name="${beanPrefix}.person.username" cssClass="required username input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='username' label="Username"
+            name="${beanPrefix}.person.username" cssClass="required username input-xlarge"
+            dynamicAttributes={"data-rule-minlength":"5",  "data-msg-required":"Username is required.",
+                "data-msg-minlength":"Username length must be at least 5 characters."} />
     </div>
 </div>
 
 <div class="row">
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='firstName' label='First name'  name='${beanPrefix}.person.firstName' cssClass="required input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='firstName' label='First name'
+            name='${beanPrefix}.person.firstName' cssClass="required input-xlarge"
+            dynamicAttributes={
+                "data-msg-required":"First name is required."
+            }/>
     </div>
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='lastName' label='Last name' name='${beanPrefix}.person.lastName' cssClass="required input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='lastName' label='Last name'
+            name='${beanPrefix}.person.lastName' cssClass="required input-xlarge"
+            dynamicAttributes={
+                "data-msg-required":"Last name is required."
+            }/>
     </div>
 </div>
 
 <div class="row">
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address" name="${beanPrefix}.person.email" cssClass="required email input-xlarge" />
+        <@s.textfield spellcheck="false" required=true id='emailAddress' label="Email address"
+        name="${beanPrefix}.person.email" cssClass="required email input-xlarge"
+        dynamicAttributes={
+            "data-msg-email":"Please enter a valid email address.",
+            "data-msg-required":"Email address is required."
+        }/>
     </div>
     <div class="span4">
-        <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email" name="${beanPrefix}.confirmEmail" cssClass="required email input-xlarge"/>
+        <@s.textfield spellcheck="false" required=true id='confirmEmail' label="Confirm email"
+            name="${beanPrefix}.confirmEmail" cssClass="required email input-xlarge"
+            dynamicAttributes={
+                "data-rule-equaltoignorecase":"#emailAddress",
+                "data-msg-equaltoignorecase":"Your confirmation email doesn't match.",
+                "data-msg-email":"Please enter a valid email address.",
+                "data-msg-required":"Please confirm your email address."
+            }/>
     </div>
 </div>
 
@@ -58,10 +81,24 @@
 </div>
 <div class="row">
     <div class="span4">
-        <@s.password required=true label='Password' name='${beanPrefix}.password' id='password'  cssClass="required input-xlarge" autocomplete="off" />
+        <@s.password required=true label='Password' name='${beanPrefix}.password' id='password'
+            cssClass="required input-xlarge" autocomplete="off"
+            dynamicAttributes={
+                "data-rule-minlength":"8",
+                "data-msg-required":"Please enter a password.",
+                "data-msg-minlength":"Your password must be at least 8 characters."
+            }/>
     </div>
     <div class="span4">
-        <@s.password required=true label='Confirm password' name='${beanPrefix}.confirmPassword' id='confirmPassword'  cssClass="required input-xlarge" autocomplete="off" />
+        <@s.password required=true label='Confirm password' name='${beanPrefix}.confirmPassword' id='confirmPassword'
+        cssClass="required input-xlarge" autocomplete="off"
+        dynamicAttributes={
+            "data-rule-minlength":"8",
+            "data-rule-equalto":"#password",
+            "data-msg-required":"Please confirm your password.",
+            "data-msg-minlength":"Your password must be at least 8 characters.",
+            "data-msg-equalto":"Please make sure your passwords match."
+        }/>
     </div>
 </div>
 
@@ -110,7 +147,13 @@
                         Please briefly describe the geographical areas, time periods, or other subjects for which you
                         would like to contribute information
                     </span>
-                        <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge" name='${beanPrefix}.contributorReason' id='contributorReasonId'  cols="80" />
+                        <@s.textarea theme="simple" rows=6 cssClass="input-xxlarge"
+                            name='${beanPrefix}.contributorReason' id='contributorReasonId'  cols="80"
+                            dynamicAttributes={
+                                "data-rule-maxlength":"512",
+                                "data-msg-maxlength": "Please limit your summary to less than 512 characters"
+                            }
+                        />
                     </div>
                 </div>
             </div>

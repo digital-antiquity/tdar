@@ -26,6 +26,7 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
     public static final String SDOC_FIELD_DESCRIPTION = "sensoryData.description";
     public static String REGEX_SENSORY_DATA_VIEW = "\\/sensory-data\\/\\d+\\/(.+)$";
     HashMap<String, String> sensoryHash = new HashMap<String, String>();
+    private boolean oldSensoryModel = false;
 
     @Test
     public void testCreateSensoryDocumentMinimal() {
@@ -66,29 +67,32 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         sensoryHash.put("sensoryData.controlDataFilename", "controldata_filename");
         sensoryHash.put("sensoryData.rgbDataCaptureInfo", "rgb datacap val");
         sensoryHash.put("sensoryData.finalDatasetDescription", "finaldatasetsarchive val");
-        sensoryHash.put("sensoryDataScans[0].filename", "filename0");
-        sensoryHash.put("sensoryDataScans[0].transformationMatrix", "matrix0");
-        // sensoryHash.put("sensoryDataScans[0].monumentName", "objmon_name0");
-        sensoryHash.put("sensoryDataScans[0].scanDate", "11/01/2002");
-        sensoryHash.put("sensoryDataScans[0].pointsInScan", "0");
-        sensoryHash.put("sensoryDataScans[0].scannerTechnology", "TIME_OF_FLIGHT");
-        sensoryHash.put("sensoryDataScans[0].resolution", "123450");
-        sensoryHash.put("sensoryDataScans[0].tofReturn", "First Return");
-        sensoryHash.put("sensoryDataScans[0].cameraExposureSettings", "123450");
-        sensoryHash.put("sensoryDataScans[0].scanNotes", "scan notes 0");
-        sensoryHash.put("sensoryDataScans[1].filename", "filename1");
-        sensoryHash.put("sensoryDataScans[1].transformationMatrix", "matrix1");
-        // sensoryHash.put("sensoryDataScans[1].monumentName", "objmon_name1");
-        sensoryHash.put("sensoryDataScans[1].scanDate", "11/03/1974");
-        sensoryHash.put("sensoryDataScans[1].pointsInScan", "1");
-        sensoryHash.put("sensoryDataScans[1].scannerTechnology", "TRIANGULATION");
-        sensoryHash.put("sensoryDataScans[1].resolution", "123451");
-        sensoryHash.put("sensoryDataScans[1].triangulationDetails", "12345");
-        sensoryHash.put("sensoryDataScans[1].scanNotes", "123451");
-        sensoryHash.put("sensoryDataImages[0].filename", "imgname0");
-        sensoryHash.put("sensoryDataImages[0].description", "imgdesc0");
-        sensoryHash.put("sensoryDataImages[1].filename", "imgname1");
-        sensoryHash.put("sensoryDataImages[1].description", "imgdesc1");
+        if (oldSensoryModel) {
+            sensoryHash.put("sensoryDataScans[0].filename", "filename0");
+            sensoryHash.put("sensoryDataScans[0].transformationMatrix", "matrix0");
+            // sensoryHash.put("sensoryDataScans[0].monumentName", "objmon_name0");
+            sensoryHash.put("sensoryDataScans[0].scanDate", "11/01/2002");
+            sensoryHash.put("sensoryDataScans[0].pointsInScan", "0");
+            sensoryHash.put("sensoryDataScans[0].scannerTechnology", "TIME_OF_FLIGHT");
+            sensoryHash.put("sensoryDataScans[0].resolution", "123450");
+            sensoryHash.put("sensoryDataScans[0].tofReturn", "First Return");
+            sensoryHash.put("sensoryDataScans[0].cameraExposureSettings", "123450");
+            sensoryHash.put("sensoryDataScans[0].scanNotes", "scan notes 0");
+            sensoryHash.put("sensoryDataScans[1].filename", "filename1");
+            sensoryHash.put("sensoryDataScans[1].transformationMatrix", "matrix1");
+            // sensoryHash.put("sensoryDataScans[1].monumentName", "objmon_name1");
+            sensoryHash.put("sensoryDataScans[1].scanDate", "11/03/1974");
+            sensoryHash.put("sensoryDataScans[1].pointsInScan", "1");
+            sensoryHash.put("sensoryDataScans[1].scannerTechnology", "TRIANGULATION");
+            sensoryHash.put("sensoryDataScans[1].resolution", "123451");
+            sensoryHash.put("sensoryDataScans[1].triangulationDetails", "12345");
+            sensoryHash.put("sensoryDataScans[1].scanNotes", "123451");
+            sensoryHash.put("sensoryDataImages[0].filename", "imgname0");
+            sensoryHash.put("sensoryDataImages[0].description", "imgdesc0");
+            sensoryHash.put("sensoryDataImages[1].filename", "imgname1");
+            sensoryHash.put("sensoryDataImages[1].description", "imgdesc1");
+        }
+
         sensoryHash.put("sensoryData.registeredDatasetName", "regdatasetname_val");
         sensoryHash.put("sensoryData.registrationErrorUnits", "12345");
         sensoryHash.put("sensoryData.finalRegistrationPoints", "12345");
@@ -108,8 +112,12 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
 
         // sensoryHash.put("confidential", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.turntableUsed", "true"); // setting checkbox/radio
-        sensoryHash.put("sensoryDataScans[0].matrixApplied", "true"); // setting checkbox/radio
-        sensoryHash.put("sensoryDataScans[1].matrixApplied", "true"); // setting checkbox/radio
+
+        if (oldSensoryModel) {
+            sensoryHash.put("sensoryDataScans[0].matrixApplied", "true"); // setting checkbox/radio
+            sensoryHash.put("sensoryDataScans[1].matrixApplied", "true"); // setting checkbox/radio
+        }
+
         sensoryHash.put("sensoryData.premeshOverlapReduction", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.premeshSmoothing", "true"); // setting checkbox/radio
         sensoryHash.put("sensoryData.premeshSubsampling", "true"); // setting checkbox/radio
@@ -168,24 +176,27 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
 
         // remvove a scan and confirm it's gone
         HashMap<String, String> sensoryHash2 = new HashMap<String, String>();
-        HtmlInput htmlInput = (HtmlInput) htmlPage.getElementByName("sensoryDataScans[1].filename");
-        String removedName = htmlInput.getValueAttribute();
-        sensoryHash2.put("sensoryDataScans[1].id", "");
-        sensoryHash2.put("sensoryDataScans[1].filename", "");
-        sensoryHash2.put("sensoryDataScans[1].transformationMatrix", "");
-        // sensoryHash2.put("sensoryDataScans[1].monumentName", "");
-        sensoryHash2.put("sensoryDataScans[1].scanDate", "");
-        sensoryHash2.put("sensoryDataScans[1].matrixApplied", "");
-        sensoryHash2.put("sensoryDataScans[1].pointsInScan", "");
-        sensoryHash2.put("sensoryDataScans[1].scannerTechnology", "");
-        sensoryHash2.put("sensoryDataScans[1].resolution", "");
-        sensoryHash2.put("sensoryDataScans[1].triangulationDetails", "");
-        sensoryHash2.put("sensoryDataScans[1].scanNotes", "");
-        sensoryHash2.put("sensoryDataScans[1].tofReturn", "");
-        sensoryHash2.put("sensoryDataScans[1].phaseFrequencySettings", "");
-        sensoryHash2.put("sensoryDataScans[1].phaseNoiseSettings", "");
-        sensoryHash2.put("sensoryDataScans[1].scanNotes", "");
-        sensoryHash2.put("sensoryDataScans[1].cameraExposureSettings", "");
+        String removedName = null;
+        if (oldSensoryModel) {
+            HtmlInput htmlInput = (HtmlInput) htmlPage.getElementByName("sensoryDataScans[1].filename");
+            removedName = htmlInput.getValueAttribute();
+            sensoryHash2.put("sensoryDataScans[1].id", "");
+            sensoryHash2.put("sensoryDataScans[1].filename", "");
+            sensoryHash2.put("sensoryDataScans[1].transformationMatrix", "");
+            // sensoryHash2.put("sensoryDataScans[1].monumentName", "");
+            sensoryHash2.put("sensoryDataScans[1].scanDate", "");
+            sensoryHash2.put("sensoryDataScans[1].matrixApplied", "");
+            sensoryHash2.put("sensoryDataScans[1].pointsInScan", "");
+            sensoryHash2.put("sensoryDataScans[1].scannerTechnology", "");
+            sensoryHash2.put("sensoryDataScans[1].resolution", "");
+            sensoryHash2.put("sensoryDataScans[1].triangulationDetails", "");
+            sensoryHash2.put("sensoryDataScans[1].scanNotes", "");
+            sensoryHash2.put("sensoryDataScans[1].tofReturn", "");
+            sensoryHash2.put("sensoryDataScans[1].phaseFrequencySettings", "");
+            sensoryHash2.put("sensoryDataScans[1].phaseNoiseSettings", "");
+            sensoryHash2.put("sensoryDataScans[1].scanNotes", "");
+            sensoryHash2.put("sensoryDataScans[1].cameraExposureSettings", "");
+        }
         for (String key : sensoryHash.keySet()) {
             setInput(key, sensoryHash.get(key));
         }
@@ -206,7 +217,9 @@ public class SensoryDataWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         logger.debug("path is:" + path);
         assertTrue("expecting to be on view page. Actual path:" + path, path.matches(REGEX_SENSORY_DATA_VIEW));
 
-        assertTextNotPresent(removedName);
+        if (oldSensoryModel) {
+            assertTextNotPresent(removedName);
+        }
         assertTextPresent("some titlea");
         // confirm we landed on the view page
     }

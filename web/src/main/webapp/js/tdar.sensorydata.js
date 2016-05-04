@@ -118,18 +118,6 @@
         });
 
 
-        $('.scannerTechnology').rules("add", {
-            valueRequiresAsyncUpload: {
-                possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
-                fileExt: "xls",
-                inputElementId: "fileAsyncUpload"
-            },
-            messages: {
-                valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"
-            }
-        });
-
-
          //show/hide content that is conditional on the value of the Scanner Technology field
         $('#divScannerTechnologyOptions').click(function() {
             var val = $('#divScannerTechnologyOptions input[type=radio]:checked').val();

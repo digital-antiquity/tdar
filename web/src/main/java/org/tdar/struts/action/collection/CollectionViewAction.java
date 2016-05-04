@@ -117,6 +117,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
 
     private boolean keywordSectionVisible = false;
+
+	private DisplayOrientation orientation;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -540,9 +542,16 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
 	@Override
 	public DisplayOrientation getOrientation() {
-		return getPersistable().getOrientation();
+		if (orientation == null) {
+			return getPersistable().getOrientation();
+		}
+		return orientation;
 	}
 
+	public void setOrientation(DisplayOrientation orientation) {
+		this.orientation = orientation;
+	}
+	
     public boolean isKeywordSectionVisible() {
         return keywordSectionVisible;
     }

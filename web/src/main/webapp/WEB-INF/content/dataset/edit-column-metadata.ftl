@@ -67,7 +67,7 @@
 
         </div>
 
-    <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
+    <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"}  action='save-column-metadata'>
         <@common.jsErrorLog />
         <@s.token name='struts.csrf.token' />
         <@s.hidden name='id' id="resource_id" value='${resource.id?c}'/>

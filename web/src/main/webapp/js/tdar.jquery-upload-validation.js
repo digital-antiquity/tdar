@@ -226,8 +226,8 @@
      * @type {Class|*}
      */
 
-    function FileuploadValidator(formId, settings) {
-        this.init(formId, settings)
+    function FileuploadValidator(form, settings) {
+        this.init(form, settings)
     }
 
     FileuploadValidator.prototype = {
@@ -268,11 +268,11 @@
          * @param settings constructor settings - see _default settings above (FIXME: how do I document a 'settings' object?)
          * @constructs FileValidator
          */
-        init: function (formId, settings) {
+        init: function (form, settings) {
             var self = this;
             //console.debug("init");
             var errs = [];
-            this.fileupload = $("#" + formId)[0];
+            this.fileupload = $(form);
 
             //note the deep copy of defaults is necessary - otherwise modifications to instance properties will change the defaults
             $.extend(true, this, _defaults);

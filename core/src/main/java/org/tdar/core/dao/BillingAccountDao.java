@@ -20,11 +20,8 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingAccountGroup;
 import org.tdar.core.bean.billing.BillingActivityModel;
@@ -35,8 +32,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.event.EventType;
-import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarQuotaException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.AccountEvaluationHelper;
@@ -55,8 +50,6 @@ import org.tdar.utils.PersistableUtils;
 public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-    @Autowired
-    private ApplicationEventPublisher publisher;
 
     public BillingAccountDao() {
         super(BillingAccount.class);
@@ -274,7 +267,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
-        saveOrUpdate(resourcesToEvaluate);
+//        saveOrUpdate(resourcesToEvaluate);
 
         /* make sure the account associations are properly set for each resource in the bunch */
         updateTransientAccountOnResources(resourcesToEvaluate);
@@ -328,7 +321,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                     account.setStatus(Status.ACTIVE);
                 }
             }
-            saveOrUpdate(resourcesToEvaluate);
+//            saveOrUpdate(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account, getResourceEvaluator());
         } else {
@@ -377,7 +370,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         for (Resource resource : resources) {
             if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
                 resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
-                publisher.publishEvent(new TdarEvent((Indexable)resource, EventType.CREATE_OR_UPDATE));
+                saveOrUpdate(resource);
             }
         }
 
@@ -398,7 +391,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                 status = Status.ACTIVE;
             }
             resource.setStatus(status);
-            publisher.publishEvent(new TdarEvent((Indexable)resource, EventType.CREATE_OR_UPDATE));
+            saveOrUpdate(resource);
         }
     }
 

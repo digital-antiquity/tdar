@@ -33,12 +33,10 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.StatisticService;
-import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
 import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.service.processes.CreatorAnalysisProcess;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -169,16 +167,6 @@ public class AdminController extends AuthenticationAware.Base {
         return SUCCESS;
     }
 
-    @Action(value = "buildCreators", results = {
-            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
-    })
-    @PostOnly
-    @WriteableSession
-    public String buildCreators() {
-        getLogger().debug("manually running 'build creator'");
-        scheduledProcessService.queue(CreatorAnalysisProcess.class);
-        return SUCCESS;
-    }
 
     public List<ResourceRevisionLog> getResourceRevisionLogs() {
         if (resourceRevisionLogs == null) {

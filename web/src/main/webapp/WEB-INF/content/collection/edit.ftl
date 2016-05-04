@@ -40,7 +40,7 @@
 
 
     <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
-        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal" enctype='multipart/form-data' action='save'>
+        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
         <h2>Basic Information</h2>
@@ -230,7 +230,6 @@
                 TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
-                TDAR.common.validateProfileImage();
         });
         </script>
         </#noescape>

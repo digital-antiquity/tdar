@@ -77,8 +77,68 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
     </div>
     </#macro>
-
-
+<#-- 
+    <#macro select2 title array prefix>
+    
+    <select class="js-example-tags form-control select2-hidden-accessible" multiple="" tabindex="-1" aria-hidden="true" style="width:100%">
+        <#list array![] as term>
+        <option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option>
+        </#list>
+    </select>
+    
+    <script>
+    $(document).ready(function(){
+        $(".js-example-tags").select2({
+            tags: true,
+            templateResult: function(keyword) {
+                console.log(keyword);
+                return $("<span>"+keyword.label+"</span>");
+            },
+            templateSelection: function(keyword) {
+                console.log(keyword);
+                if (!keyword.id) { return keyword; }
+                return $("<span>"+keyword.label+"</span>");
+            },
+             ajax: {
+                url: "/lookup/keyword",
+                dataType: 'jsonp',
+                delay: 250,
+                data: function (params) {
+                  return {
+                    term: params.term, // search term
+                    keywordType: "GeographicKeyword",
+                    page: params.page
+                  };
+                },
+                
+                processResults: function (data, params) {
+                  // parse the results into the format expected by Select2
+                  // since we are using custom formatting functions we do not need to
+                  // alter the remote JSON data, except to indicate that infinite
+                  // scrolling can be used
+                  params.page = params.page || 1;
+            
+                  return {
+                    results: data.items,
+                    pagination: {
+                      more: (params.page * 30) < data.total_count
+                    }
+                  };
+                },
+                cache: true
+              },
+        })
+    });
+    </script>
+    <style>
+    .select2-container {
+  margin:0;
+}
+.add-on{
+    float:left;
+}</style>
+    </#macro>
+-->
 <#-- render the "spatial information" section:geographic keywords, map, coordinates, etc. -->
     <#macro spatialContext showInherited=true>
     <div class="well-alt" id="spatialSection">
@@ -88,7 +148,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
             <div data-tiplabel="Spatial Terms: Geographic"
                  data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;.">
-                <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' />
+                <#--                 
+                 <@select2 "Geographic Terms" geographicKeywords 'geographicKeywords' />
+                -->
+                 
+                <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' /> 
             </div>
             <@helptext.geo />
             <h4>Geographic Region</h4>
