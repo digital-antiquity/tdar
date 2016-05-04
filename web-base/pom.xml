@@ -193,6 +193,10 @@
                                     <name>slf4j</name>
                                     <value>true</value>
                                 </systemProperty>
+                                <systemProperty>
+                                    <name>solr.data.dir</name>
+                                    <value>../Indexes/${hg.branch}/</value>
+                                </systemProperty>
                             </systemProperties>
                             <webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
                             <scanIntervalSeconds>0</scanIntervalSeconds>
