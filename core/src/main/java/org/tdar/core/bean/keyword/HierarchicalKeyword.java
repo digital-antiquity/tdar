@@ -3,20 +3,27 @@ package org.tdar.core.bean.keyword;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
+import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
-
 //import com.sun.xml.txw2.annotation.XmlElement;
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
  * $Id$
@@ -31,7 +38,7 @@ import org.tdar.core.bean.FieldLength;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @XmlType(name = "hierKwdbase")
 @XmlTransient
-public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends Keyword.Base<HierarchicalKeyword<T>> {
+public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> extends AbstractKeyword<T> {
 
     private static final long serialVersionUID = -9098940417785842655L;
 
@@ -58,16 +65,31 @@ public abstract class HierarchicalKeyword<T extends HierarchicalKeyword<T>> exte
         this.index = index;
     }
 
-    public abstract void setParent(T parent);
 
-    @XmlTransient
-    public abstract T getParent();
+    @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE }, fetch = FetchType.LAZY, optional = true)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    private T parent;
 
-    //@Fields({ //@Field(name = "label"),
-            //@Field(name = "labelKeyword", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
+    
+    /**
+     * @param parent
+     *            the parent to set
+     */
+    public void setParent(T parent) {
+        this.parent = parent;
+    }
+
+    /**
+     * @return the parent
+     */
+    @XmlElement(name = "parentRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public T getParent() {
+        return parent;
+    }
+
     @Transient
     @ElementCollection
-    //@IndexedEmbedded
     public List<String> getParentLabelList() {
         List<String> list = new ArrayList<String>();
         if (getParent() == null) {

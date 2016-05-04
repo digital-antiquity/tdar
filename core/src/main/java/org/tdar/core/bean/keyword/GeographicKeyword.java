@@ -1,17 +1,13 @@
 package org.tdar.core.bean.keyword;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinColumns;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -34,22 +30,17 @@ import org.tdar.core.bean.FieldLength;
  */
 @Entity
 @Table(name = "geographic_keyword")
-//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable
-public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
+@AssociationOverrides({
+    @AssociationOverride(name = "externalMappings",
+       joinColumns = @JoinColumn(name="geographic_keyword_id"))
+ })
+public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 9120049059501138213L;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
-    @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();
-
-    @OneToMany(orphanRemoval=true,cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
-    @JoinColumn(nullable = false, updatable = false, name = "geographic_keyword_id")
-    private Set<ExternalKeywordMapping> externalMappings = new HashSet<>(); 
 
     public enum Level {
         CONTINENT("Continent"),
@@ -105,19 +96,6 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
     }
 
     @Override
-    public Set<GeographicKeyword> getSynonyms() {
-        return synonyms;
-    }
-
-    public void setSynonyms(Set<GeographicKeyword> synonyms) {
-        this.synonyms = synonyms;
-    }
-
-    public String getSynonymFormattedName() {
-        return getLabel();
-    }
-
-    @Override
     public String getUrlNamespace() {
         return KeywordType.GEOGRAPHIC_KEYWORD.getUrlNamespace();
     }
@@ -128,13 +106,5 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
 
     public void setCode(String code) {
         this.code = code;
-    }
-
-    public Set<ExternalKeywordMapping> getExternalMappings() {
-        return externalMappings;
-    }
-
-    public void setExternalMappings(Set<ExternalKeywordMapping> externalMappings) {
-        this.externalMappings = externalMappings;
     }
 }
