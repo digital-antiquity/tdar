@@ -25,7 +25,6 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.util.UrlUtils;
@@ -35,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @MappedSuperclass
 @XmlType(name = "kwdbase")
-@XmlTransient
 public abstract class AbstractKeyword<T extends Keyword> extends Persistable.Base implements Keyword, HasStatus, Comparable<T>, Slugable {
 
     private static final long serialVersionUID = -7516574981065004043L;

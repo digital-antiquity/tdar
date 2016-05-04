@@ -14,14 +14,13 @@
     <@search.headerLinks includeRss=false />
 
 </head>
-
 <div id="sidebar-right" parse="true">
     <div class="sidebar-spacer">
         <#list keyword.externalMappings>
         <h4>External Relationships</h4>
         <ul>
             <#items as item>
-                <li><a href="${item.relation}">${item.relation}(${item.relationType})</a></li>
+                <li><a href="${item.relation!'a'}">${item.relation!'a'}(${item.relationType!'a'})</a></li>
             </#items>        
         </ul>
         <#else>

@@ -16,11 +16,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 @Component
@@ -51,6 +53,7 @@ public class SimpleKeywordController extends AbstractKeywordController {
     })
     @PostOnly
     @HttpsOnly
+    @WriteableSession
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String save() {
         genericKeywordService.saveKeyword(label, description, getKeyword(), getMappings());
@@ -77,6 +80,11 @@ public class SimpleKeywordController extends AbstractKeywordController {
         this.label = label;
     }
 
+    
+    public ExternalKeywordMapping getBlankMapping() {
+        return new ExternalKeywordMapping();
+    }
+    
     public String getDescription() {
         return description;
     }

@@ -17,12 +17,21 @@ public class ExternalKeywordMapping extends Persistable.Base {
 
     private static final long serialVersionUID = 7035836586397546286L;
 
-    @Column(name = "relation")
+    public ExternalKeywordMapping() {
+    }
+
+    public ExternalKeywordMapping(String relationUrl, RelationType type) {
+        this.relation = relationUrl;
+        this.relationType = type;
+    }
+
+    
+    @Column(name = "relation", nullable=false)
     @Length(max = FieldLength.FIELD_LENGTH_2048)
     private String relation;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "relation_type")
+    @Column(name = "relation_type", nullable=false)
     private RelationType relationType;
 
     public RelationType getRelationType() {

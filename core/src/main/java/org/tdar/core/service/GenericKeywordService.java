@@ -66,7 +66,6 @@ public class GenericKeywordService {
      * @param cls
      * @return
      */
-    @SuppressWarnings("unchecked")
     public synchronized <W extends SuggestedKeyword> List<W> findAllApprovedWithCache(Class<W> cls) {
         return findAllApproved(cls);
     }
@@ -277,11 +276,19 @@ public class GenericKeywordService {
 
     @Transactional(readOnly = false)
     public void saveKeyword(String label, String description, Keyword keyword, List<ExternalKeywordMapping> list) {
-        genericKeywordDao.markUpdatable(keyword);
+//        genericKeywordDao.markUpdatable(keyword);
         keyword.setLabel(label);
         keyword.setDefinition(description);
+//        genericKeywordDao.markUpdatable(keyword.getExternalMappings());
         keyword.getExternalMappings().clear();
-        keyword.getExternalMappings().addAll(list);
+//        genericKeywordDao.delete(keyword.getExternalMappings());
+        genericKeywordDao.saveOrUpdate(keyword);
+        for (ExternalKeywordMapping map : list) {
+            if (map != null) {
+                keyword.getExternalMappings().add(map);
+                genericKeywordDao.saveOrUpdate(map);
+            }
+        }
         genericKeywordDao.saveOrUpdate(keyword);
     }
 

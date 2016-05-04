@@ -13,33 +13,26 @@
     <@s.textarea name="description" value="${keyword.definition!''}" label="Definition" labelposition="top" cssClass="input-xxlarge"  cols="80"  rows="4" />
 </div>
     <div id="mappingsTable" class="row repeatLastRow" addAnother="add another mapping">
-    <#list mappings>
+    <#assign maps = mappings>
+    <#if maps?size == 0>
+        <#assign maps = [blankMapping]>
+    </#if>
+    <#list maps>
+    <h4>External Relations</h4>
         <#items as map>
             <div id="mapping_row_${map_index}_" class="repeat-row control-row">
+               <div class="span6">
+               <@s.textfield name="mappings[${map_index}].relation"     value="${map.relation!''}"     label="Relation (url)" cssClass="input-xxlarge"/>            
+               </div>
                <div class="span4">
-                <@s.select name="mappings[map_index].relationType" list="%{relationTypes}" listKey="name" emptyOption='false'  label='Type' />
+                <@s.select name="mappings[${map_index}].relationType" list="%{relationTypes}" listKey="name" emptyOption='false'  label='Type' />
                </div>
-               <div class="span7">
-               <@s.textfield name="mappings[map_index].relation"     value="${map.relation}"     label="Relation (url)" cssClass="input-xxlarge"/>            
-               </div>
-               <div class="span1">
+               <div class="span1"><br/>
                <@nav.clearDeleteButton id="mapping_row" />
                </div>
             </div>
         </#items>
-    <#else>
-            <div id="mapping_row_0_" class="control-row repeat-row">
-               <div class='span4'>
-                <@s.select name="mappings[0].relationType" list="%{relationTypes}" listKey="name" emptyOption='false'  label='Type'  />
-               <div class="span7">
-               <@s.textfield name="mappings[0].relation"     value="${(map.relation)!''}"     label="Relation (url)" cssClass="input-xxlarge" />
-                </div>
-                 <div class="span1">
-               <@nav.clearDeleteButton id="mapping_row" />
-            </div>
-            </div>
-
-    </#list> 
+        </#list>
     </div>    
 
     

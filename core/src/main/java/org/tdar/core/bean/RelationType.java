@@ -1,8 +1,14 @@
 package org.tdar.core.bean;
 
-public enum RelationType {
+import org.tdar.utils.MessageHelper;
 
-    DCTERMS_RELATION("http://purl.org/dc/terms/", "dc","relation");
+public enum RelationType implements Localizable {
+
+    DCTERMS_RELATION("http://purl.org/dc/terms/", "dc", "relation"),
+    DCTERMS_PART_OF("http://purl.org/dc/terms/", "dc", "part of"),
+    DCTERMS_REPLACES("http://purl.org/dc/terms/", "dc", "replaces"),
+    DCTERMS_IS_REPLACED_BY("http://purl.org/dc/terms/", "dc", "is replaced by"),
+    DCTERMS_IS_VERSION_OF("http://purl.org/dc/terms/", "dc", "is version of");
 
     private String prefix;
     private String term;
@@ -17,11 +23,11 @@ public enum RelationType {
     public String getJsonKey() {
         return String.format("%s:%s", prefix, term);
     }
-    
+
     public String getTerm() {
         return term;
     }
-    
+
     public String getPrefix() {
         return prefix;
     }
@@ -36,6 +42,11 @@ public enum RelationType {
 
     public void setUri(String uri) {
         this.uri = uri;
+    }
+
+    @Override
+    public String getLocaleKey() {
+        return MessageHelper.formatLocalizableKey(this);
     }
 
 }
