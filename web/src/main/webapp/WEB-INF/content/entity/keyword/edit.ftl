@@ -12,7 +12,7 @@
     <@s.textfield name="label" value="${keyword.label}" label="Label" cssClass="input-xxlarge" labelPosition="left" required=true />
     <@s.textarea name="description" value="${keyword.definition!''}" label="Definition" labelposition="top" cssClass="input-xxlarge"  cols="80"  rows="4" />
 </div>
-    <div id="mappingsTable" class="row repeatLastRow" addAnother="add another mapping">
+    <div id="mappingsTable" class="control-group repeatLastRow" addAnother="add another mapping">
     <div class="span12">
     <#assign maps = keyword.externalMappings>
     <#if maps?size == 0>
@@ -22,7 +22,7 @@
     <#list maps>
     <h4>External Relations</h4>
         <#items as map>
-            <div id="mapping_row_${map_index}_" class="repeat-row control-row">
+            <div id="mapping_row_${map_index}_" class="repeat-row controls control-row">
                <div class="span6">
                    <@s.hidden name="mappings[${map_index}].id" /> 
                    <@s.textfield name="mappings[${map_index}].relation"       label="Relation (url)" cssClass="url input-xxlarge"/>            
