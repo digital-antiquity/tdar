@@ -18,16 +18,17 @@
     <#if maps?size == 0>
         <#assign maps = [blankMapping]>
     </#if>
+
     <#list maps>
     <h4>External Relations</h4>
         <#items as map>
             <div id="mapping_row_${map_index}_" class="repeat-row control-row">
                <div class="span6">
-                   <@s.hidden name="mappings[${map_index}].id" value="${(map.id?c)!''}" />
-                   <@s.textfield name="mappings[${map_index}].relation"     value="${map.relation!''}"     label="Relation (url)" cssClass="input-xxlarge"/>            
+                   <@s.hidden name="mappings[${map_index}].id" /> 
+                   <@s.textfield name="mappings[${map_index}].relation"       label="Relation (url)" cssClass="url input-xxlarge"/>            
                </div>
                <div class="span4">
-                  <@s.select theme="tdar" name="mappings[${map_index}].relationType" list="%{relationTypes}" listValue="term" emptyOption='false'  label='Type' />
+                  <@s.select theme="tdar" name="mappings[${map_index}].relationType" list="relationTypes" listValue="term"   label='Type'  emptyOption="true" />
                </div>
                <div class="span1"><br/>
                    <@nav.clearDeleteButton id="mapping_row" />

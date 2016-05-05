@@ -59,7 +59,6 @@ public class GenericKeywordService {
         return genericKeywordDao.findAllByProperty(cls, APPROVED, true);
     }
 
-
     @Deprecated
     /**
      * Find all Approved keywords (controlled) from the keyword cache
@@ -281,7 +280,7 @@ public class GenericKeywordService {
         keyword.setLabel(label);
         keyword.setDefinition(description);
         // FIXME: likely because of the weird-multi-managed relationship on keyword mapping, a manual delete needs to be handled
-        Map<Long,ExternalKeywordMapping> incoming = PersistableUtils.createIdMap(list);
+        Map<Long, ExternalKeywordMapping> incoming = PersistableUtils.createIdMap(list);
         for (ExternalKeywordMapping existing : keyword.getExternalMappings()) {
             ExternalKeywordMapping in = incoming.get(existing.getId());
             if (in != null) {
@@ -291,7 +290,7 @@ public class GenericKeywordService {
                 genericKeywordDao.saveOrUpdate(existing);
             } else {
                 logger.debug("deleting: {} ", existing.getId());
-               genericKeywordDao.delete(existing);
+                genericKeywordDao.delete(existing);
             }
         }
         incoming = null;
@@ -299,9 +298,13 @@ public class GenericKeywordService {
         for (ExternalKeywordMapping map : list) {
             logger.debug("evaluating: {}", map);
             if (map != null && PersistableUtils.isNullOrTransient(map.getId())) {
-                logger.debug("adding: {}", map);
-                keyword.getExternalMappings().add(map);
-                genericKeywordDao.saveOrUpdate(map);
+                if (map.isValidForController()) {
+                    logger.debug("adding: {}", map);
+                    keyword.getExternalMappings().add(map);
+                    genericKeywordDao.saveOrUpdate(map);
+                } else {
+                    logger.debug("skipping: {}", map);
+                }
             }
         }
         logger.debug("result: {} -- {}", keyword, keyword.getExternalMappings());

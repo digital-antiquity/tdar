@@ -48,6 +48,7 @@ public class SimpleKeywordController extends AbstractKeywordController {
     @SkipValidation
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String edit() {
+        getMappings().addAll(getKeyword().getExternalMappings());
         return SUCCESS;
     }
     
@@ -60,7 +61,6 @@ public class SimpleKeywordController extends AbstractKeywordController {
     @WriteableSession
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String save() {
-        logger.debug("{}", getMappings());
         genericKeywordService.saveKeyword(label, description, getKeyword(), getMappings());
         return SUCCESS;
     }
@@ -68,12 +68,22 @@ public class SimpleKeywordController extends AbstractKeywordController {
     @Override
     public void validate() {
         super.validate();
+        logger.debug("{}", getMappings());
         if (StringUtils.isBlank(label)) {
             addActionError(getText("simpleKeywordSaveAction.label_missing"));
         }
         Keyword byLabel = genericKeywordService.findByLabel(getKeywordType().getKeywordClass(), label);
         if (PersistableUtils.isNotNullOrTransient(byLabel) && !Objects.equals(getKeyword(), byLabel)) {
             addActionError(getText("simpleKeywordAction.label_duplicate"));
+        }
+        
+        for (ExternalKeywordMapping map : getMappings()) {
+            if (StringUtils.isNotBlank(map.getRelation()) && map.getRelationType() == null) {
+                addActionError(getText("simpleKeywordAction.relation_missing"));                
+            }
+            if (StringUtils.isBlank(map.getRelation()) && map.getRelationType() != null) {
+                addActionError(getText("simpleKeywordAction.url_missing"));                
+            }
         }
     }
 
