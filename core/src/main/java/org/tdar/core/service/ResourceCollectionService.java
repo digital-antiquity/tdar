@@ -30,8 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -622,7 +622,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (CollectionUtils.containsAny(collectionIds, list)) {
                 iter.remove();
             }
-            buildCollectionTreeForController(rc, authenticatedUser, ResourceCollection.CollectionType.SHARED);
+            buildCollectionTreeForController(rc, authenticatedUser, CollectionType.SHARED);
         }
     }
 

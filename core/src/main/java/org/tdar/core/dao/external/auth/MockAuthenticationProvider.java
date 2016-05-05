@@ -22,7 +22,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 
 //import org.tdar.utils.TestConfiguration;
 
