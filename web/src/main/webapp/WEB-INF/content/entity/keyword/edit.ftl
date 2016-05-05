@@ -36,7 +36,6 @@
                                         </div>
                                         <div class="span2">
                                           <@s.select theme="tdar" name="mappings[${map_index}].relationType"
-                                            placeholder="Relation Type"
                                             list="relationTypes" listValue="term" cssClass="input-medium" emptyOption="true"
                                               />
                                         </div>
