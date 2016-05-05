@@ -45,6 +45,7 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
     private String label;
 
     @OneToMany(orphanRemoval = true)
+    // note related_keyword_id is not used,it's overriden in the local class file
     @JoinColumn(nullable = false, updatable = false, name = "related_keyword_id")
     private Set<ExternalKeywordMapping> externalMappings = new HashSet<>();
 
