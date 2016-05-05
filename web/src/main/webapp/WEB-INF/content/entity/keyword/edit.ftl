@@ -13,7 +13,8 @@
     <@s.textarea name="description" value="${keyword.definition!''}" label="Definition" labelposition="top" cssClass="input-xxlarge"  cols="80"  rows="4" />
 </div>
     <div id="mappingsTable" class="row repeatLastRow" addAnother="add another mapping">
-    <#assign maps = mappings>
+    <div class="span12">
+    <#assign maps = keyword.externalMappings>
     <#if maps?size == 0>
         <#assign maps = [blankMapping]>
     </#if>
@@ -22,17 +23,19 @@
         <#items as map>
             <div id="mapping_row_${map_index}_" class="repeat-row control-row">
                <div class="span6">
-               <@s.textfield name="mappings[${map_index}].relation"     value="${map.relation!''}"     label="Relation (url)" cssClass="input-xxlarge"/>            
+                   <@s.hidden name="mappings[${map_index}].id" value="${(map.id?c)!''}" />
+                   <@s.textfield name="mappings[${map_index}].relation"     value="${map.relation!''}"     label="Relation (url)" cssClass="input-xxlarge"/>            
                </div>
                <div class="span4">
-                <@s.select name="mappings[${map_index}].relationType" list="%{relationTypes}" listKey="name" emptyOption='false'  label='Type' />
+                  <@s.select theme="tdar" name="mappings[${map_index}].relationType" list="%{relationTypes}" listValue="term" emptyOption='false'  label='Type' />
                </div>
                <div class="span1"><br/>
-               <@nav.clearDeleteButton id="mapping_row" />
+                   <@nav.clearDeleteButton id="mapping_row" />
                </div>
             </div>
         </#items>
         </#list>
+</div>
     </div>    
 
     

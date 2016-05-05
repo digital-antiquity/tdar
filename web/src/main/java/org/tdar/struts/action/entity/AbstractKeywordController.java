@@ -60,7 +60,6 @@ public abstract class AbstractKeywordController extends AbstractAuthenticatableA
         }
 
         setKeyword(genericService.find(getKeywordType().getKeywordClass(), getId()));
-        getMappings().addAll(getKeyword().getExternalMappings());
     }
 
     public List<ExternalKeywordMapping> getMappings() {

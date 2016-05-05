@@ -11,6 +11,8 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -34,7 +36,9 @@ public class SimpleKeywordController extends AbstractKeywordController {
     private static final long serialVersionUID = -6454678744854024278L;
     private String label;
     private String description;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    
     @Autowired
     private transient GenericKeywordService genericKeywordService;
 
@@ -56,6 +60,7 @@ public class SimpleKeywordController extends AbstractKeywordController {
     @WriteableSession
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String save() {
+        logger.debug("{}", getMappings());
         genericKeywordService.saveKeyword(label, description, getKeyword(), getMappings());
         return SUCCESS;
     }

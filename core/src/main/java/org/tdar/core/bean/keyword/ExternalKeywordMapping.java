@@ -49,5 +49,9 @@ public class ExternalKeywordMapping extends AbstractPersistable {
     public void setRelation(String relation) {
         this.relation = relation;
     }
-    
+
+    @Override
+    public String toString() {
+        return String.format("%s %s (%s)", relation, relationType, getId());
+    }
 }

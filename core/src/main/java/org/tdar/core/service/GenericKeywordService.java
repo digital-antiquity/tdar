@@ -8,6 +8,7 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.hibernate.dialect.lock.PessimisticEntityLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericKeywordDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.Pair;
+import org.tdar.utils.PersistableUtils;
 
 /*
  * A generic service to support the majority of keyword functions.
@@ -276,19 +278,33 @@ public class GenericKeywordService {
 
     @Transactional(readOnly = false)
     public void saveKeyword(String label, String description, Keyword keyword, List<ExternalKeywordMapping> list) {
-//        genericKeywordDao.markUpdatable(keyword);
         keyword.setLabel(label);
         keyword.setDefinition(description);
-//        genericKeywordDao.markUpdatable(keyword.getExternalMappings());
-        keyword.getExternalMappings().clear();
-//        genericKeywordDao.delete(keyword.getExternalMappings());
+        // FIXME: likely because of the weird-multi-managed relationship on keyword mapping, a manual delete needs to be handled
+        Map<Long,ExternalKeywordMapping> incoming = PersistableUtils.createIdMap(list);
+        for (ExternalKeywordMapping existing : keyword.getExternalMappings()) {
+            ExternalKeywordMapping in = incoming.get(existing.getId());
+            if (in != null) {
+                logger.debug("updating existing to: {} {} ", in.getRelation(), in.getRelationType());
+                existing.setRelation(in.getRelation());
+                existing.setRelationType(in.getRelationType());
+                genericKeywordDao.saveOrUpdate(existing);
+            } else {
+                logger.debug("deleting: {} ", existing.getId());
+               genericKeywordDao.delete(existing);
+            }
+        }
+        incoming = null;
         genericKeywordDao.saveOrUpdate(keyword);
         for (ExternalKeywordMapping map : list) {
-            if (map != null) {
+            logger.debug("evaluating: {}", map);
+            if (map != null && PersistableUtils.isNullOrTransient(map.getId())) {
+                logger.debug("adding: {}", map);
                 keyword.getExternalMappings().add(map);
                 genericKeywordDao.saveOrUpdate(map);
             }
         }
+        logger.debug("result: {} -- {}", keyword, keyword.getExternalMappings());
         genericKeywordDao.saveOrUpdate(keyword);
     }
 
