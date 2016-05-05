@@ -6,7 +6,9 @@
             <div class="control-group">
                 <label class="control-label">Add an Photo / Logo</label>
                 <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge" id="fileUploadField" labelposition='left' size='40' />
+                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField" labelposition='left' size='40' dynamicAttributes={
+                        "data-rule-extension":"jpg,tiff,jpeg,png"
+                    }/>
                 </div>
             </div>
         </#if>
