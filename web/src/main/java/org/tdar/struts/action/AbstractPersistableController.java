@@ -16,8 +16,10 @@ import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasStatus;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -27,6 +29,8 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
+import org.tdar.core.event.EventType;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
@@ -60,6 +64,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     @Autowired
     private transient RecaptchaService recaptchaService;
 
+    @Autowired
+    private transient ApplicationEventPublisher publisher;
+
+    
     private AntiSpamHelper h = new AntiSpamHelper();
     private static final long serialVersionUID = -559340771608580602L;
     private Long startTime = -1L;
@@ -233,9 +241,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     protected void indexPersistable() throws SolrServerException, IOException {
-//        if (persistable instanceof Indexable) {
-//            searchIndexService.index((Indexable) persistable);
-//        }
+    	if (getPersistable() instanceof Indexable) {
+    		publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
+    	}
     }
 
     private void logAction(String action_) {
@@ -390,9 +398,13 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     @Override
     public void prepare() throws TdarActionException {
         RequestType type = RequestType.EDIT;
-        if (getId() == null && (getCurrentUrl().contains("/add") || StringUtils.isBlank(getCurrentUrl()))) {
+
+        if (getId() == null && (getCurrentUrl().contains("/add") || 
+        		(getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
             getLogger().debug("setting persistable");
-            setPersistable(createPersistable());
+            if (getPersistable() == null) {
+            	setPersistable(createPersistable());
+            }
             type = RequestType.CREATE;
         }
         prepareAndLoad(this, type);

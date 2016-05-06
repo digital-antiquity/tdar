@@ -41,6 +41,8 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
+    private boolean ignoreScale;
+
     public SpatialQueryPart() {
 
     }
@@ -95,8 +97,11 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
 				q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,
 		                minLong, maxLong,  maxLat,minLat));            	
             }
-            q.append(String.format(" AND %s:[%s TO %s] ", QueryFieldNames.SCALE, 0,
-                    box.getScale() + SCALE_RANGE));
+			
+			if (!ignoreScale) {
+                q.append(String.format(" AND %s:[%s TO %s] ", QueryFieldNames.SCALE, 0,
+                        box.getScale() + SCALE_RANGE));
+			}
         }
 
         return q.toString();
@@ -132,6 +137,11 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
                 super.add(box);
             }
         }
+    }
+
+    public void ignoreScale(boolean b) {
+        this.ignoreScale = b;
+        
     }
 
 }

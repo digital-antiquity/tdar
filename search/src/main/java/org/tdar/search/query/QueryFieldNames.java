@@ -132,4 +132,5 @@ public interface QueryFieldNames {
 	String TOTAL_FILES = "totalFiles";
 	String SCORE = "score";
     String RESOURCE_ID = "resource.id";
+	String CORE = "_core";
 }

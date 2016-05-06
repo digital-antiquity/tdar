@@ -31,8 +31,8 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -1050,6 +1050,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.setAsync(false);
         controller.save();
         evictCache();
+        genericService.synchronize();
         searchIndexService.flushToIndexes();
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource

@@ -12,12 +12,13 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
 @Results({
-        @Result(name = "redirect-start", location = URLConstants.CART_ADD, type = "tdar-redirect")
+        @Result(name = "redirect-start", location = URLConstants.CART_ADD, type = TdarActionSupport.TDAR_REDIRECT)
 })
 /**
  * Base class for all cart based things. 

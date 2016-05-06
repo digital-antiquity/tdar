@@ -153,9 +153,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @DocumentId
     @JsonView(JsonLookupFilter.class)
-    //@Field(store = Store.YES, analyzer = //@Analyzer(impl = KeywordAnalyzer.class), name = QueryFieldNames.ID)
     private Long id = -1L;
     /*
      * @Boost(.5f)
@@ -167,8 +165,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
      * @JoinColumn(name = "updater_id")
      * private Person updatedBy;
      */
-    //@Field(norms = Norms.NO, store = Store.YES)
-//    @DateBridge(resolution = Resolution.MILLISECOND)
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_updated", nullable = false)
     @NotNull
@@ -183,8 +179,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     @JsonView(JsonLookupFilter.class)
-    //@Field(norms = Norms.NO, store = Store.YES)
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private Status status = Status.ACTIVE;
 
     @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST}, targetEntity=Creator.class, orphanRemoval=true)
@@ -222,9 +216,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     // private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 
     @Override
-    //@Fields({ //@Field(name = "name", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            //@Field(name = "name_kwd", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)),
-            //@Field(name = QueryFieldNames.CREATOR_NAME_SORT, norms = Norms.NO, store = Store.YES) })
     @JsonView(JsonLookupFilter.class)
     public abstract String getName();
 
@@ -233,14 +224,9 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     public String getLabel() {
     	return getName();
     }
-    //@Fields({ //@Field(name = QueryFieldNames.PROPER_NAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            //@Field(name = QueryFieldNames.PROPER_AUTO, norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)),
-//    })
     @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();
 
-    //@Fields({ //@Field(name = "institution", analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)),
-            //@Field(name = "institution_kwd", analyzer = //@Analyzer(impl = LowercaseWhiteSpaceStandardAnalyzer.class)) })
     @JsonView(JsonLookupFilter.class)
     public String getInstitutionName() {
         if (getCreatorType() == CreatorType.PERSON) {

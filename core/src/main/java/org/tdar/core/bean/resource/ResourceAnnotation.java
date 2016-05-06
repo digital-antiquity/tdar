@@ -54,11 +54,9 @@ public class ResourceAnnotation extends AbstractPersistable implements HasResour
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
-    //@Field
     @JsonView(JsonLookupFilter.class)
     private String value;
 
-    //@Field
     public String getPairedValue() {
         return getResourceAnnotationKey().getKey() + ":" + getValue();
     }

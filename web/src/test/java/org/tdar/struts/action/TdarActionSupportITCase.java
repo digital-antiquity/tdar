@@ -6,7 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.tdar.MultipleWebTdarConfigurationRunner;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.archive.ArchiveController;
 
@@ -16,7 +16,7 @@ import org.tdar.struts.action.archive.ArchiveController;
  * 
  * @author Martin Paulo
  */
-@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class TdarActionSupportITCase extends AbstractDataIntegrationTestCase {
 
     /** Our proxy for the abstract TdarActionSupport class */

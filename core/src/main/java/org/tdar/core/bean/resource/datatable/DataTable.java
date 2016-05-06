@@ -58,8 +58,6 @@ public class DataTable extends AbstractPersistable {
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 
-    //@Field
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "display_name")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
@@ -69,7 +67,6 @@ public class DataTable extends AbstractPersistable {
     private String description;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "dataTable")
-    //@IndexedEmbedded
     private List<DataTableColumn> dataTableColumns = new ArrayList<DataTableColumn>();
 
     private transient Map<String, DataTableColumn> nameToColumnMap;
@@ -313,6 +310,17 @@ public class DataTable extends AbstractPersistable {
         List<DataTableColumn> columns = new ArrayList<>();
         for (DataTableColumn column : getDataTableColumns()) {
             if (column.getMappedOntology() != null) {
+                columns.add(column);
+            }
+        }
+        return columns;
+    }
+
+    @Transient
+    public List<DataTableColumn> getFilenameColumns() {
+        List<DataTableColumn> columns = new ArrayList<>();
+        for (DataTableColumn column : getDataTableColumns()) {
+            if (column.isFilenameColumn()) {
                 columns.add(column);
             }
         }

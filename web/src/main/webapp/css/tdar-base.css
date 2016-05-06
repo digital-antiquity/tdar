@@ -991,7 +991,7 @@ span.cartouche {
     background-color: #888;
     padding: 3px 9px 4px 5px;
     font-size: 9px;
-    margin-left: 2px;
+    margin-left: -1px;
     margin-right: 5px;
     font-weight: 700;
     color: white;
@@ -1307,3 +1307,39 @@ tr.DELETED {
     visibility:hidden;
 }
 
+p.tableDescription {
+    font-style: italic;
+    font-size:90%;
+    margin-top: -10px;
+}
+
+.form-complete-inline {
+    margin: 0px !important;
+    padding: 0px !important;
+    display: inline;
+    float: none;
+    height: auto !important;
+}
+
+.tdar-btn-link {
+    padding: 0px;
+    color:  #7a1501;
+    font-family: "ff-tisa-web-pro", serif !important;
+}
+
+.black {
+    color:#000;
+}
+
+.white {
+   color:white;
+   fill:white;
+}
+
+.beige {
+   background-color: #E3E0D8;
+}
+
+.white-border-bottom {
+    border-bottom:4px solid white;
+}

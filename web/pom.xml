@@ -11,7 +11,7 @@
     <properties>
         <struts2.version>2.3.28.1</struts2.version>
         <servlet.api.version>3.0.1</servlet.api.version>
-        <wro4j.version>1.7.9</wro4j.version>
+        <wro4j.version>1.8.0</wro4j.version>
         <display.port></display.port>
         <skipWebTests>false</skipWebTests>
         <skipSeleniumTests>false</skipSeleniumTests>
@@ -24,7 +24,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>web-base</artifactId>
-        <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
+        <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
         <relativePath>../web-base/pom.xml</relativePath>
     </parent>
 
@@ -77,7 +77,7 @@
             <!-- needed by spring for @Transactional calls -->
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-            <version>3.1</version>
+            <version>3.2.1</version>
             <!-- LICENSE: APACHE 1.1 -->
         </dependency>
         <dependency>
@@ -354,6 +354,7 @@
                             <executable>npm</executable>
                             <arguments>
                                 <argument>install</argument>
+                                <argument>--cache-min 9999999</argument>
                             </arguments>
                         </configuration>
                         <goals>
@@ -417,13 +418,55 @@
                                 <exclude>**/org/tdar/experimental/**/*.java</exclude>
                                 <exclude>**/org/tdar/functional/**/*</exclude>
                                 <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/*</exclude>
                             </excludes>
                             <includes>
                                 <include>**/org/tdar/core/**/*</include>
-                                <include>**/org/tdar/struts/**/*</include>
                             </includes>
                             <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
                             <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-spring</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/Struts*ITCase.java</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/spring</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-spring-struts</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                                <!-- <exclude>**/org/tdar/struts/**/*ITCase.java</exclude> -->
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/Struts*ITCase.java</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/spring-struts</reportsDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -606,6 +649,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>selenium-maven-plugin</artifactId>
+                        <version>2.3</version>
                         <configuration>
                             <display>${display.port}</display>
                         </configuration>

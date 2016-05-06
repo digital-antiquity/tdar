@@ -3,7 +3,6 @@ package org.tdar.web;
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
-import org.tdar.utils.TestConfiguration;
 
 public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase {
 
@@ -14,7 +13,7 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
 
     @Test
     public void testPersonSelfLoggedIn() {
-        Long id = getUserId();
+        Long id = CONFIG.getUserId();
         String personViewUrl = ENTITY_VIEW + id;
 
         // assert the logged in user can go to the person view page
@@ -30,12 +29,12 @@ public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase 
     @Test
     public void testViewMyProfilePage() {
         gotoPage("/entity/user/myprofile");
-        assertTextPresent(getUser().getProperName());
+        assertTextPresent("test user");
     }
 
     @Test
     public void testPersonLoggedOut() {
-        Long id = entityService.findByEmail(TestConfiguration.getInstance().getUsername()).getId();
+        Long id = CONFIG.getUserId();
         String personEditUrl = String.format(ENTITY_PERSON_EDIT, id);
         String personViewUrl = ENTITY_VIEW + id;
 

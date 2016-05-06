@@ -23,7 +23,12 @@ public class AuthenticationResult {
         }
 
         public boolean isValid() {
-            return this == VALID;
+            switch(this) {
+	            case VALID:
+	            	return true;
+	            default:
+	            	return false;
+            }
         }
     }
 

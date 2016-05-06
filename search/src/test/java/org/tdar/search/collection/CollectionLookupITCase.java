@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -14,11 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.search.QuietIndexReciever;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.query.CollectionSearchService;
@@ -29,7 +31,7 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Override
     public void reindex() {
         searchIndexService.purgeAll(LookupSource.COLLECTION);
-        searchIndexService.indexAll(getAdminUser(),LookupSource.COLLECTION);
+        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.COLLECTION), getAdminUser());
     };
 
     @Autowired
@@ -64,9 +66,10 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
 
     }
 
-    private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title) throws ParseException, SolrServerException, IOException {
+    private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title)
+            throws ParseException, SolrServerException, IOException {
         SearchResult<ResourceCollection> results = new SearchResult<>(100);
-        collectionSearchService.findCollection(user, permission, title,results, MessageHelper.getInstance());
+        collectionSearchService.findCollection(user, permission, title, results, MessageHelper.getInstance());
         return results;
     }
 
@@ -100,7 +103,7 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
         ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
-        SearchResult<ResourceCollection> result = search(null, null,"test");
+        SearchResult<ResourceCollection> result = search(null, null, "test");
         assertTrue(result.getResults().contains(e));
     }
 

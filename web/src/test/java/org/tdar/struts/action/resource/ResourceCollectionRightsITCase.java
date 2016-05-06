@@ -16,8 +16,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -578,11 +578,12 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid = controller.getPersistable().getId();
 
         controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.setParentId(rcid);
+
         controller.prepare();
         ResourceCollection rcChild = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
-        controller.setParentId(rcid);
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());
@@ -635,11 +636,11 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         Long rcid = controller.getPersistable().getId();
 
         controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller.setParentId(rcid);
         controller.prepare();
-        ResourceCollection rcChild = controller.getPersistable();
         // project = null;
         // Long pid = project.getId();
-        controller.setParentId(rcid);
+        ResourceCollection rcChild = controller.getPersistable();
         controller.getPersistable().setName("test child");
         controller.getPersistable().setDescription("description");
         controller.setServletRequest(getServletPostRequest());

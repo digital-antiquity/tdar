@@ -29,3 +29,9 @@
 .tdar-gmap-control button:disabled {
     display: none;
 }
+
+
+form.leaflet-control-geocoder-form {
+    padding:0px;
+    margin:0px;
+}

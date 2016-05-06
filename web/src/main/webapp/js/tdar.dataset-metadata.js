@@ -14,7 +14,7 @@
         var codingInfo = $target.find("div.codingInfo");
         var measurementInfo = $target.find("div.measurementInfo");
 
-        if (val == 'COUNT' || val == 'MEASUREMENT') {
+        if (val == 'COUNT' || val == 'MEASUREMENT' || val == 'FILENAME') {
             ontologyInfo.hide();
         } else {
             ontologyInfo.show();
@@ -70,7 +70,7 @@
                 square.addClass("coded");
                 valid = true;
             }
-        } else if (val == 'UNCODED_VALUE') {
+        } else if (val == 'UNCODED_VALUE' || val == 'FILENAME') {
             square.addClass("uncoded");
             uncoded = true;
             valid = true;
@@ -117,6 +117,7 @@
         TDAR.common.suppressKeypressFormSubmissions($form);
 
         //Use a plugin if browser doesn't support resizeable textareas
+        //http://caniuse.com/#feat=css-resize
         if (!Modernizr.cssresize) {
             $('textarea.resizable:not(.processed)').TextAreaResizer();
         }
@@ -164,7 +165,6 @@
             TDAR.datasetMetadata.gotoColumn($(this));
         });
 
-        TDAR.common.initFormValidation($("#edit-metadata-form")[0]);
     }
 
     function _pagination(idPrefix) {

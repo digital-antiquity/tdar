@@ -42,8 +42,8 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @Action(value = "save-address",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "tdar-redirect", location = "../../browse/creators/${id}"),
-                    @Result(name = RETURN_URL, type = "tdar-redirect", location = "${returnUrl}"),
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "../../browse/creators/${id}"),
+                    @Result(name = RETURN_URL, type = TDAR_REDIRECT, location = "${returnUrl}"),
                     @Result(name = INPUT, location = "../address-info.ftl")
             })
     public String saveAddress() throws TdarActionException {
@@ -73,7 +73,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
     @Action(value = "delete-address",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = "tdar-redirect", location = "../../creator/browse?id=${id}")
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "../../creator/browse?id=${id}")
             })
     public String deleteAddress() throws TdarActionException {
         Address toDelete = getAddress();

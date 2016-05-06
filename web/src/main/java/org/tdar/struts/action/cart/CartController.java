@@ -76,11 +76,11 @@ public class CartController extends AbstractCartController {
     @SkipValidation
     @WriteableSession
     @Action(value = "process-payment-request", results = {
-            @Result(name = SUCCESS, type = "tdar-redirect", location = "/cart/${invoice.id}"),
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/cart/${invoice.id}"),
             @Result(name = POLLING, location = "polling.ftl"),
             @Result(name = ADD, type = TdarActionSupport.TDAR_REDIRECT, location = TdarActionSupport.ADD),
-            @Result(name = SUCCESS_COMPLETE, type = "tdar-redirect", location = URLConstants.DASHBOARD),
-            @Result(name = ERROR, type = "tdar-redirect", location = URLConstants.CART_ADD)
+            @Result(name = SUCCESS_COMPLETE, type = TDAR_REDIRECT, location = URLConstants.DASHBOARD),
+            @Result(name = ERROR, type = TDAR_REDIRECT, location = URLConstants.CART_ADD)
     })
     @HttpsOnly
     public String processPaymentRequest() throws TdarActionException {

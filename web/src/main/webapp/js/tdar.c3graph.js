@@ -72,7 +72,6 @@ TDAR.c3graph = (function(console, $, ctx) {
 					}
 				}
 			};
-			console.log($parent.data('colorcategories') != undefined);
 		    if ($parent.data('colorcategories') != undefined) {
     			if (c3colors != undefined && c3colors.length > 0) {
     			    cdata.data.color = function(c,d) {

@@ -24,7 +24,11 @@
     <ul>
         <li><a href="<@s.url value='/entity/user/myprofile'/>"><@s.text name="menu.my_profile"/></a></li>
         <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
-        <li><a href="<@s.url value="/logout"/>"><@s.text name="menu.logout"/></a></li>
+        <li>
+             <form class="form-complete-inline seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout" >
+                    <button type="submit" class="btn btn-link tdar-btn-link" name="logout" value="Logout">Logout</button>
+             </form>
+         </li>
     </ul>
 
     <#if administrator>
@@ -47,7 +51,7 @@
             <li class="button hidden-phone"><a href="<@s.url value="/contribute"/>">UPLOAD</a></li></#if>
         <li>
             <#if navSearchBoxVisible>
-                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform hidden-phone hidden-tablet  screen">
+                <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
                     <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
                 <#--<input type="hidden" name="_tdar.searchType" value="simple">-->

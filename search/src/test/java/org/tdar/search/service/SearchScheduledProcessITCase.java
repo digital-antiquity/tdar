@@ -10,8 +10,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
@@ -19,7 +19,6 @@ import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
-import org.tdar.search.service.processes.CreatorAnalysisProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
 public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTestCase {
@@ -31,12 +30,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     private transient ScheduledProcessService scheduledProcessService;
 
     
-    @Test
-    @Rollback(true)
-    public void cronGenerateWeeklyStats() {
-        sps.cronGenerateWeeklyStats();
-    }
-
     @Autowired
     DailyEmailProcess dailyEmailProcess;
 
@@ -77,19 +70,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         dtarp.execute();
     }
 
-    @Autowired
-    CreatorAnalysisProcess pqp;
-    
-    @Test
-    @Rollback(true)
-    public void testPersonAnalytics() throws InstantiationException, IllegalAccessException {
-        pqp.setDaysToRun(3000);
-        pqp.execute();
-        pqp.cleanup();
-        pqp.setAllIds(null);
-        // resetting
-        pqp.execute();
-    }
 
     @Test
     @Rollback(true)

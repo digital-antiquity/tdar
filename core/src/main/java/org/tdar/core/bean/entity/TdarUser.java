@@ -37,7 +37,6 @@ public class TdarUser extends Person {
 
     @Column(unique = true, nullable = true)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
-    //@Field(name = QueryFieldNames.USERNAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     private String username;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
@@ -55,8 +54,6 @@ public class TdarUser extends Person {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "affiliation", length = FieldLength.FIELD_LENGTH_255)
-    //@Field(norms = Norms.NO, store = Store.YES)
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     private UserAffiliation affiliation;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -183,8 +180,6 @@ public class TdarUser extends Person {
         this.username = username;
     }
 
-    //@Field
-    //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class)
     @JsonView(JsonAdminLookupFilter.class)
     @Override
     public boolean isRegistered() {

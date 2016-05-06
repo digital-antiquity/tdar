@@ -1,7 +1,7 @@
 package org.tdar.core.service;
 
-import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import java.text.SimpleDateFormat;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -12,11 +12,12 @@ import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.MapperFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.hibernate4.Hibernate4Module;
+import com.fasterxml.jackson.datatype.hibernate5.Hibernate5Module;
 import com.fasterxml.jackson.module.jaxb.JaxbAnnotationModule;
-
-import java.text.SimpleDateFormat;
 
 
 
@@ -31,8 +32,8 @@ public class JacksonUtils {
 
         mapper.setVisibility(PropertyAccessor.GETTER, JsonAutoDetect.Visibility.NONE);
         mapper.registerModules(new JaxbAnnotationModule());
-        Hibernate4Module hibernate4Module = new Hibernate4Module();
-        hibernate4Module.enable(Hibernate4Module.Feature.FORCE_LAZY_LOADING);
+        Hibernate5Module hibernate4Module = new Hibernate5Module();
+        hibernate4Module.enable(Hibernate5Module.Feature.FORCE_LAZY_LOADING);
         SimpleModule module = new SimpleModule();
         module.addSerializer(LatitudeLongitudeBoxWrapper.class, new LatLongGeoJsonSerializer());
         mapper.registerModules(hibernate4Module, module);

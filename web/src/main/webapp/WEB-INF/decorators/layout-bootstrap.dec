@@ -52,7 +52,6 @@
     <@header.css (webFilePreprocessingEnabled ) />
 
     <script>TDAR_jsErrorDelim = "${javascriptErrorLogDelimiter}?js_string";</script>
-
     <script type="text/javascript" src="${staticHost}/js/tdar.errorutils.js?build${common.tdarBuildId}"></script>
     <script src="${staticHost}/includes/modernizr-custom-2.6.2.min.js"></script>
     <#if useCDN>
@@ -80,6 +79,12 @@ ${head}
     </#if>
     <#if contextPath?has_content>
     <base id="basePath" href="<@s.url value='/'/>">
+    </#if>
+    
+    <#if selenium>
+    	<style>
+    		#sidebar-right #notice, .subnavbar.affix, .subnavbar.affix-top, .popover {display:none;visibility:hidden}
+    	</style>
     </#if>
 </head>
 <body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"

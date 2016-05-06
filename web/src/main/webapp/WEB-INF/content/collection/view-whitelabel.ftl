@@ -10,12 +10,8 @@
     <@commonCollection.head />
     <style>
     <#noescape>${whitelabelCollection.css!''}</#noescape>
-    </style>
 
-</head>
-<body>
-<#-- todo: move these to .css and use collection-specific css classes -->
-    <style>
+	<#-- todo: move these to .css and use collection-specific css classes -->
     <#if searchHeaderLogoAvailable>
         div.searchheader {
             background-image: url("${hostedContentBaseUrl}/search-header.jpg");
@@ -30,6 +26,9 @@
     </#if>
     </style>
     <!-- search header url: "${hostedContentBaseUrl}/search-header.jpg" -->
+
+</head>
+<body>
     <@commonCollection.header />
 
     <#if !searchHeaderEnabled><h1>${resourceCollection.name!"untitled collection"}</h1></#if>

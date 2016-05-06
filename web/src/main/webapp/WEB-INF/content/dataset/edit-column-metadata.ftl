@@ -12,7 +12,6 @@
 <h3>Table ${dataTable.displayName}, ${dataTable.dataTableColumns?size } columns</h3>
 
 
-
     <#if dataTable.dataTableColumns?has_content>
 
     <!--TODO: .container sets content width, it should be outside of grid layout  (or a grid-layout parent) -->
@@ -51,17 +50,7 @@
     </#if>
 
 
-    <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal"  action='save-column-metadata'>
-        <@common.jsErrorLog />
-        <@s.token name='struts.csrf.token' />
-        <@s.hidden name='id' id="resource_id" value='${resource.id?c}'/>
-        <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
-        <@s.hidden name="startRecord" value="${(startRecord!0)?c}" />
-        <@s.hidden name="recordsPerPage" value="${(recordsPerPage!10)?c}" />
-        <#if ( dataset.dataTables?size > 1 )>
-        <h2>Column Description and Mapping: ${dataTable.displayName}</h2>
-
-        <div class="">
+        <div class="well">
             <p>
                 There are multiple tables in this dataset. To switch between, click
                 on one of the links below. Please remember to save any changes before switching tables.
@@ -77,6 +66,21 @@
             </select>
 
         </div>
+
+    <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"}  action='save-column-metadata'>
+        <@common.jsErrorLog />
+        <@s.token name='struts.csrf.token' />
+        <@s.hidden name='id' id="resource_id" value='${resource.id?c}'/>
+        <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
+        <@s.hidden name="startRecord" value="${(startRecord!0)?c}" />
+        <@s.hidden name="recordsPerPage" value="${(recordsPerPage!10)?c}" />
+        <#if ( dataset.dataTables?size > 1 )>
+        <h2>Description: ${dataTable.displayName}</h2>
+
+        <@s.textarea name="tableDescription" label="Table Description" cssClass="resizable input-xxlarge" />
+
+        <h2>Column Description &amp; Mapping</h2>
+
         </#if>
         <@pagination "1"/>
 

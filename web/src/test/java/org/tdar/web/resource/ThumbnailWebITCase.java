@@ -14,11 +14,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.FileAction;
-import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.junit.RunWithTdarConfiguration;
@@ -160,17 +157,17 @@ public class ThumbnailWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
         assertDeniedAccess(irFileIds, irFileVersionIds);
 
-        // compile irfileversion ids in a different way and try again.
-        irFileVersionIds.clear();
-        Image image = genericService.find(Image.class, imageId);
-        for (InformationResourceFile irfile : image.getInformationResourceFiles()) {
-            for (InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
-                if (irv != null) {
-                    irFileVersionIds.add(irv.getId());
-                }
-            }
-        }
-        assertDeniedAccess(irFileIds, irFileVersionIds);
+//        // compile irfileversion ids in a different way and try again.
+//        irFileVersionIds.clear();
+//        Image image = genericService.find(Image.class, imageId);
+//        for (InformationResourceFile irfile : image.getInformationResourceFiles()) {
+//            for (InformationResourceFileVersion irv : irfile.getInformationResourceFileVersions()) {
+//                if (irv != null) {
+//                    irFileVersionIds.add(irv.getId());
+//                }
+//            }
+//        }
+//        assertDeniedAccess(irFileIds, irFileVersionIds);
 
     }
 

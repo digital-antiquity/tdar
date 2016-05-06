@@ -24,6 +24,7 @@ TDAR.inheritance = (function () {
             strutsNaming: true,
             noIndicesFor: indexExclusions
         });
+        $(elemSelector).trigger("heightchange");
     }
 
     /**
@@ -559,7 +560,8 @@ TDAR.inheritance = (function () {
                 enableSectionCallback: function () {
                     _enableSection('#temporalSection');
                     $("#temporalSection").find(".coverageTypeSelect").each(function (i, elem) {
-                        TDAR.common.prepareDateFields(elem)
+                    	//FIXME: required?
+                        TDAR.validate.prepareDateFields(elem);
                     });
                 }
 

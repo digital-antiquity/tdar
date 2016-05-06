@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
@@ -98,6 +99,7 @@ import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+import com.thoughtworks.selenium.SeleniumException;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -193,15 +195,6 @@ public abstract class AbstractSeleniumWebITCase {
             afterPageChange();
         }
 
-        @Override public void beforeNavigateRefresh(WebDriver webDriver) {
-            //TODO: what is proper cleanup prior/after a page refresh?
-        }
-
-        @Override public void afterNavigateRefresh(WebDriver webDriver) {
-            //TODO: what is proper cleanup prior/after a page refresh?
-
-        }
-
         @Override
         public void onError(Throwable throwable, WebDriver driver) {
             getBrowserConsoleLogEntries(driver);
@@ -250,6 +243,17 @@ public abstract class AbstractSeleniumWebITCase {
             beforePageChange();
         }
 
+        @Override
+        public void afterNavigateRefresh(WebDriver arg0) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void beforeNavigateRefresh(WebDriver arg0) {
+            // TODO Auto-generated method stub
+            
+        }
     };
 
     /**
@@ -292,7 +296,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     protected void applyEditPageHacks() {
         try {
-            executeJavascript("var n=document.getElementById('subnavbar');n.parentNode.removeChild(n)");
+            executeJavascript("var n=document.getElementById('subnavbar');if (n != undefined) {n.parentNode.removeChild(n);}");
         } catch (Exception ignored) {
         }
     }
@@ -307,12 +311,13 @@ public abstract class AbstractSeleniumWebITCase {
          * We define a specific binary so when running "headless" we can specify a PORT
          */
         String fmt = " ***   RUNNING TEST: {}.{}() ***";
+
         logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
         // typekit & google-analytics errors may occur on pretty much any page and are (relatively) harmless, so we ignore them by default
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_TYPEKIT);
         getJavascriptIgnorePatterns().add(TestConstants.REGEX_GOOGLE_ANALYTICS);
         WebDriver driver = null;
-        Browser browser = Browser.FIREFOX;
+        Browser browser = Browser.CHROME;
         String xvfbPort = System.getProperty("display.port");
         String browser_ = System.getProperty("browser");
         if (StringUtils.isNotBlank(browser_)) {
@@ -373,15 +378,17 @@ public abstract class AbstractSeleniumWebITCase {
                 // File dir = new File("src/test/resources/c1");
                 String profilePath = dir.getAbsolutePath();
                 logger.debug("chrome profile path set to: {}", profilePath);
-
+                
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
                 copts.addArguments(
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
                         "user-data-dir=" + profilePath, // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
+                        "browser.passwords=false",
                         "noerrdialogs");
                 driver = new ChromeDriver(service, copts);
+                
                 service.start();
                 break;
             case IE:
@@ -400,6 +407,7 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+        force1024x768();
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
@@ -418,6 +426,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @After
     public final void shutdownSelenium() {
+    	logout();
         try {
             driver.quit();
         } catch (UnhandledAlertException uae) {
@@ -729,8 +738,37 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void logout() {
-        gotoPage("/logout");
-//        driver.manage().deleteAllCookies();
+        WebElementSelection find = find("#logout-button");
+//		driver.manage().deleteAllCookies();
+		logger.debug("LOGOUT: {} ", find);
+
+        if (find.size() > 0) {
+            // handle modal dialogs
+        	try {
+        		find.click();
+        		try {
+					Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+        		return;
+        	} catch (WebDriverException se) {
+        		logger.error("error trying to logout {}", se);
+        	}
+        } 
+
+        gotoPage("/login");
+        find = find("#logout-button");
+        if (find.size() > 0) {
+            find.click();
+        }
+        try {
+			Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     public String getSource() {
@@ -908,7 +946,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public void submitForm() {
         reportJavascriptErrors();
-        submitForm("#submitButton,.submitButton,form input[type=submit]");
+        WebElementSelection find = find("#submitButton");
+        if (find.isEmpty()) {
+        	submitForm(".submitButton,form:not(.seleniumIgnoreForm) input[type=submit]");
+        } else {
+        	submitForm("#submitButton");
+        }
     }
 
     /**
@@ -1158,9 +1201,13 @@ public abstract class AbstractSeleniumWebITCase {
         // the creator fields may not yet exist (i.e. user just clicked  "add-another" button).
         // So we confirm it's presence before calling val();
         waitFor(By.name(prefix + ".person.firstName")).val(p.getFirstName());
-        find(By.name(prefix + ".person.lastName")).val(p.getLastName());
-        find(By.name(prefix + ".person.email")).val(p.getEmail());
-        find(By.name(prefix + ".person.institution.name")).val(p.getInstitutionName());
+        waitFor(By.name(prefix + ".person.lastName")).val(p.getLastName());
+        waitFor(By.name(prefix + ".person.email")).val(p.getEmail());
+        String iname = p.getInstitutionName();
+        if (iname == null) {
+        	iname = "";
+        }
+        find(By.name(prefix + ".person.institution.name")).val(iname);
         find(By.name(prefix + ".role")).visibleElements().val(role.name());
 
         // FIXME: wait for the autocomplete popup (autocomplete not working in selenium at the moment)
@@ -1169,7 +1216,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     protected void addInstitutionWithRole(Institution p, String prefix, ResourceCreatorRole role) {
         waitFor(By.name(prefix + ".institution.name")).val(p.getName());
-        find(By.name(prefix + ".role")).visibleElements().val(role.name());
+        waitFor(By.name(prefix + ".role")).visibleElements().val(role.name());
 
     }
 
@@ -1475,7 +1522,14 @@ public abstract class AbstractSeleniumWebITCase {
      * Assert that user is logged out.
      */
     public void assertLoggedOut() {
+        waitForPageload();
         List<WebElement> selection = find(By.linkText("LOG IN")).toList();
+        if (CollectionUtils.isEmpty(selection)) {
+        	selection = find(By.linkText("Log In")).toList();
+        }
+        if (CollectionUtils.isEmpty(selection)) {
+        	selection = find("#loginButton").toList();
+        }
         logger.debug(getCurrentUrl());
         assertThat("login button is missing", selection, is(not(empty())));
     }

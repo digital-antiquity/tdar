@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.geotools.geometry.jts.JTS;
 import org.tdar.core.bean.SupportsResource;
@@ -40,14 +39,11 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.index.GeneralKeywordBuilder;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.utils.DataUtil;
 import org.tdar.utils.PersistableUtils;
 
 import com.vividsolutions.jts.geom.Envelope;
@@ -58,7 +54,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 	private static final Filestore FILESTORE = CONFIG.getFilestore();
 
-    public static SolrInputDocument convert(Resource resource, ResourceService resourceService, ResourceCollectionService resourceCollectionService) {
+    public static SolrInputDocument convert(Resource resource) {
 
         SolrInputDocument doc = convertPersistable(resource);
         doc.setField(QueryFieldNames.NAME, resource.getName());
@@ -89,14 +85,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.DATE, ir.getDate());
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
-            if (true || !CONFIG.useSeparateLinkedDataIndexForSearching()) {
-	            try {
-	                data = resourceService.getMappedDataForInformationResource(ir);
-	                indexTdarDataDatabaseValues(doc, data);
-	            } catch (Throwable t) {
-	                logger.warn("exception in metadata indexing", t);
-	            }
-            }
             if (ir.getMetadataLanguage() != null) {
                 doc.setField(QueryFieldNames.METADATA_LANGUAGE, ir.getMetadataLanguage().name());
             }
@@ -115,7 +103,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 if (!irf.isDeleted() && !irf.isPartOfComposite()) {
                     total++;
                 }
-                if (true || !CONFIG.useSeparateContentsIndexForSearching()) {
+                if (!CONFIG.useSeparateContentsIndexForSearching()) {
 	                if (irf.getIndexableVersion() != null && irf.isPublic()) {
 	                    try {
 	                        sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
@@ -237,28 +225,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         return kwds;
     }
 
-    private static void indexTdarDataDatabaseValues(SolrInputDocument doc, Map<DataTableColumn, String> data) {
-        List<String> values = new ArrayList<>();
-        if (data != null) {
-            for (Object key : data.keySet()) {
-                if (key == null) {
-                    continue;
-                }
-                String keyName = "";
-                if (key instanceof DataTableColumn) {
-                    keyName = ((DataTableColumn) key).getName();
-                } else {
-                    keyName = DataUtil.extractStringValue(key);
-                }
-                String mapValue = data.get(key);
-                if (keyName == null || StringUtils.isBlank(mapValue)) {
-                    continue;
-                }
-                values.add(keyName + ":" + mapValue);
-            }
-            doc.setField(QueryFieldNames.DATA_VALUE_PAIR, values);
-        }
-    }
 
     private static void indexTemporalInformation(SolrInputDocument doc, Resource resource) {
         for (CoverageDate date : resource.getActiveCoverageDates()) {

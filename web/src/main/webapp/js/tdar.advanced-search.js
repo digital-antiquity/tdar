@@ -6,7 +6,6 @@ TDAR.advancedSearch = (function () {
      * Initialize the "advanced search" page (including form validation,  autocompletes, term UI, backbutton safety)
      */
     function _initAdvancedSearch() {
-        TDAR.common.initFormValidation($('#searchGroups')[0]);
         TDAR.repeatrow.registerRepeatable(".repeatLastRow");
 
         // when user changes searchType: swap out the term ui snippet
@@ -108,10 +107,10 @@ TDAR.advancedSearch = (function () {
         TDAR.common.applyWatermarks(containerElem);
 
         // HACK: registering datetype fields if any were created. We should just
-        // make a smarter validator rule
-        if ($('.coverageDateType', containerElem).length) {
-            TDAR.common.prepareDateFields($('.coverageDateType', containerElem));
-        }
+//        // make a smarter validator rule
+//        if ($('.coverageDateType', containerElem).length) {
+//            TDAR.common.prepareDateFields($('.coverageDateType', containerElem));
+//        }
 
         // register any treeviews
         $('.tdar-treeview', containerElem).treeview({

@@ -1,7 +1,5 @@
 package org.tdar.struts.action;
 
-import static org.junit.Assert.fail;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +33,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -160,6 +158,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         setIgnoreActionErrors(false);
         getActionErrors().clear();
         searchIndexService.purgeAll();
+        searchIndexService.setUseTransactionalEvents(false);
     }
 
     // Called when your test fails. Did I say "when"? I meant "if".

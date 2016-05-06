@@ -13,13 +13,13 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.AbstractIntegrationWebTestCase;
 import org.tdar.web.WebFileSystemResourceService;
 
 /**
  * Created by jimdevos on 2/26/15.
  */
-public class FileSystemResourceServiceITCase extends AbstractIntegrationTestCase {
+public class FileSystemResourceServiceITCase extends AbstractIntegrationWebTestCase {
 
     @Autowired
     private WebFileSystemResourceService service;

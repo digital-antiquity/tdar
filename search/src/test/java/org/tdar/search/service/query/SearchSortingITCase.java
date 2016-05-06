@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -21,19 +22,18 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.search.QuietIndexReciever;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.service.query.SearchService;
 import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
@@ -193,7 +193,8 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     public void testAllSortFields() throws ParseException, SolrServerException, IOException {
 
         for (SortTestStruct sortTestInfo : sortTests) {
-            getSearchIndexService().indexAll(getAdminUser(), sortTestInfo.type);
+            
+            getSearchIndexService().indexAll(new QuietIndexReciever(), Arrays.asList( sortTestInfo.type), getAdminUser());
             for (Map.Entry<SortOption, Comparator<?>> entry : sortTestInfo.comparators.entrySet()) {
                 // assumption: an empty queryBuilder returns alldocs
                 SortOption sortOption = entry.getKey();

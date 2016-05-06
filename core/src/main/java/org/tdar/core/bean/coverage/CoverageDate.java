@@ -42,22 +42,14 @@ public class CoverageDate extends AbstractPersistable implements HasResource<Res
     private static final long serialVersionUID = -5878760394443928287L;
 
     @Column(name = "start_date")
-    //@Field(name = "startDate", store = Store.YES)
-    // //@NumericField
-    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
     @JsonView(JsonLookupFilter.class)
     private Integer startDate;
 
     @Column(name = "end_date")
-    //@Field(name = "endDate", store = Store.YES)
-    // //@NumericField
-    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
     @JsonView(JsonLookupFilter.class)
     private Integer endDate;
 
     @Enumerated(EnumType.STRING)
-    //@Field
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Column(name = "date_type", length = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private CoverageType dateType;

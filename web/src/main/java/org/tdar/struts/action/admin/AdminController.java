@@ -37,7 +37,6 @@ import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.service.processes.CreatorAnalysisProcess;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -124,7 +123,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     }
 
     @Action(value = "verifyFilestore", results = {
-            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
     @PostOnly
     @WriteableSession
@@ -135,7 +134,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     }
 
     @Action(value = "updateDois", results = {
-            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
     @PostOnly
     @WriteableSession
@@ -146,7 +145,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     }
 
     @Action(value = "runWeekly", results = {
-            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
     @PostOnly
     @WriteableSession
@@ -157,7 +156,7 @@ public class AdminController extends AbstractAuthenticatableAction {
     }
 
     @Action(value = "rebuildCaches", results = {
-            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
+            @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/admin")
     })
     @PostOnly
     @WriteableSession
@@ -168,17 +167,6 @@ public class AdminController extends AbstractAuthenticatableAction {
         return SUCCESS;
     }
 
-
-    @Action(value = "buildCreators", results = {
-            @Result(name = SUCCESS, type = "tdar-redirect", location = "/admin")
-    })
-    @PostOnly
-    @WriteableSession
-    public String buildCreators() {
-        getLogger().debug("manually running 'build creator'");
-        scheduledProcessService.queue(CreatorAnalysisProcess.class);
-        return SUCCESS;
-    }
 
     public List<ResourceRevisionLog> getResourceRevisionLogs() {
         if (resourceRevisionLogs == null) {

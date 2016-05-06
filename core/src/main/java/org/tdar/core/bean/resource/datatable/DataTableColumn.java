@@ -112,8 +112,6 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     private String name;
 
     @Column(nullable = false, name = "display_name")
-    //@Field
-    //@Analyzer(impl = TdarCaseSensitiveStandardAnalyzer.class)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String displayName;
 
@@ -489,4 +487,9 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         this.transientOntology = transientOntology;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isFilenameColumn() {
+        return this.getColumnEncodingType().isFilename();
+    }
 }

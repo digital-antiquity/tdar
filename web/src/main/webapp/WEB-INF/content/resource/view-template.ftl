@@ -33,7 +33,7 @@
             <#assign disabled = (resource.dataTables?size==0 || resource.totalNumberOfActiveFiles == 0) />
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "table metadata" "columns" current true disabled "hidden-tablet hidden-phone"/>
             <@nav.makeLink "dataset" "columns/${persistable.id?c}" "metadata" "columns" current true disabled "hidden-desktop"/>
-            <#if administrator && resource.project?? && resource.project.id != -1 >
+            <#if mappingFeatureEnabled >
             <@nav.makeLink "dataset" "resource-mapping" "res. mapping" "columns" current true disabled ""/>
             </#if>
         </#if>
@@ -79,7 +79,7 @@
         <@view.kvp key="Year" val=resource.date?c />
     </#if>
 
-    <#if copyrightMandatory && resource.copyrightHolder?? >
+    <#if copyrightMandatory && resource.copyrightHolder?? || resource.copyrightHolder?has_content >
         <strong>Primary Copyright Holder:</strong>
         <@view.browse resource.copyrightHolder "copyrightHolder" />
     </p>
@@ -226,19 +226,19 @@
 
         <h3>Data Set Structure</h3>
         <div class="row">
-            <div class="span3"><span class="columnSquare measurement"></span> Measurement Column</div>
+            <div class="span3"><span class="columnSquare measurement"></span>Measurement Column</div>
             <div class="span3"><span class="columnSquare count"></span>Count Column</div>
             <div class="span3"><span class="columnSquare coded"></span>Coded Column</div>
         </div>
         <div class="row">
-            <div class="span3"><span class="columnSquare mapped"></span>Mapping Column</div>
-            <div class="span6"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
+            <div class="span3"><span class="columnSquare mapped"></span>Filename Column</div>
+            <div class="span3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
-
+    <br/>
             <#list resource.dataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <#if dataTable.description?has_content>
-			<p>${dataTable.description}</p>
+			<p class="tableDescription">${dataTable.description}</p>
 			</#if>
             <table class="tableFormat table table-bordered">
                 <thead class='highlight'>
@@ -262,7 +262,7 @@
                         <#if column.defaultCodingSheet?has_content><#assign typeLabel = "coded"/></#if>
                         <#if (column.defaultCodingSheet.defaultOntology)?has_content><#assign typeLabel = "integration"/></#if>
                         <#if column.columnEncodingType?has_content && column.columnEncodingType.count><#assign typeLabel = "count"/></#if>
-                        <#if column.mappingColumn?has_content && column.mappingColumn ><#assign typeLabel = "mapped"/></#if>
+                        <#if column.filenameColumn ><#assign typeLabel = "mapped"/></#if>
                         <#assign hasDescription = false />
                         <#if column.description?has_content >
                             <#assign hasDescription = true />
@@ -346,7 +346,7 @@
         <@view.categoryVariables />
     </#if>
     <#if !resource.resourceType.project >
-        <#if licensesEnabled?? &&  licensesEnabled>
+        <#if licensesEnabled?? &&  licensesEnabled || resource.licenseType?has_content >
             <@view.license />
         </#if>
     </#if>
@@ -546,7 +546,11 @@
 
 
 <div id="sidebar-right" parse="true">
-    <i class="${resource.resourceType?lower_case}-bg-large"></i>
+    <div class="beige white-border-bottom">
+        <div class="iconbox">
+            <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${resource.resourceType?lower_case}"></use></svg>
+        </div>
+    </div>
     <#if whiteLabelLogoAvailable>
         <@s.a href="/collection/${whiteLabelCollection.id?c}/${whiteLabelCollection.slug}"
             title="${whiteLabelCollection.title}"

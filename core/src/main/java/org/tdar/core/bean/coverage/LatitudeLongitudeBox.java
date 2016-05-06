@@ -82,24 +82,16 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     private Double maxObfuscatedLongitude = null;
 
     // ranges from -90 (South) to +90 (North)
-    //@Field
-    //@NumericField(precisionStep = 6)
     @Column(nullable = false, name = "minimum_latitude")
     private Double minimumLatitude;
 
-    //@Field
-    //@NumericField(precisionStep = 6)
     @Column(nullable = false, name = "maximum_latitude")
     private Double maximumLatitude;
 
     // ranges from -180 (West) to +180 (East)
-    //@Field
-    //@NumericField(precisionStep = 6)
     @Column(nullable = false, name = "minimum_longitude")
     private Double minimumLongitude;
 
-    //@Field
-    //@NumericField(precisionStep = 6)
     @Column(nullable = false, name = "maximum_longitude")
     private Double maximumLongitude;
 
@@ -587,8 +579,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * the relative scale of the bounding box. The smaller the scale the smaller the bounding region
      * the more regional the search.
      */
-    //@FieldBridge(impl = TdarPaddedNumberBridge.class)
-    //@Field(norms = Norms.NO, store = Store.YES, analyze = Analyze.NO)
     @Transient
     @JsonView(JsonLookupFilter.class)
     public Integer getScale() {

@@ -8,7 +8,6 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.dialect.lock.PessimisticEntityLockException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -319,11 +318,6 @@ public class GenericKeywordService {
     @Transactional(readOnly = true)
     public Number countActiveKeyword(KeywordType type) {
         return genericKeywordDao.countActiveWithStatus(type, null);
-    }
-
-    @Transactional(readOnly = true)
-    public Map<Keyword, Integer> getRelatedKeywordCounts(Set<Long> resourceIds) {
-        return genericKeywordDao.getRelatedKeywordCounts(resourceIds);
     }
 
 }

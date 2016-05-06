@@ -39,6 +39,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         id: 'abrin.n9j4f56m',
         // config for leaflet.sleep
         sleep: true,
+        sleepOpacity: 1,
         // time(ms) for the map to fall asleep upon mouseout
         sleepTime: 750,
         // time(ms) until map wakes on mouseover
@@ -106,7 +107,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
             _fitTo(map, glayer);
         }
-        
+        if (settings.search) {
+            L.Control.geocoder({}).addTo(map);
+        }
         return map;
     }
 

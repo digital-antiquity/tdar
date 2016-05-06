@@ -23,7 +23,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         testRegister(personmap, TERMS.TOS);
         assertCurrentUrlContains("dashboard");
         assertTextNotPresentIgnoreCase("new project");
-        gotoPage("/logout");
+        logout();
     }
 
     @Test
@@ -35,7 +35,7 @@ public class RegistrationWebITCase extends AbstractWebTestCase {
         assertTextPresentIgnoreCase("Start a new Project");
         clickLinkWithText("UPLOAD");
         assertPageTitleEquals("add a new resource");
-        gotoPage("/logout");
+        logout();
     }
 
     @Test

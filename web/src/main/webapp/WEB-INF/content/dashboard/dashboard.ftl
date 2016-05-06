@@ -277,7 +277,8 @@
             <#if authenticatedUser.penultimateLogin??>
                 <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br>
             </#if>
-            <a href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
+            <a href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a><br>
+            <a href="<@s.url value='/export/request'/>">Export</a>
         </div>
 
         <div class="span5" id="billing">

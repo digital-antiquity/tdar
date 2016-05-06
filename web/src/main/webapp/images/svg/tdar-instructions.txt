@@ -1,0 +1,14 @@
+How to export (screenshots here too)
+	https://issues.tdar.org/browse/TDAR-5222
+1. Open icons.ai in illustrator
+2. "Save a copy" as "icons.svg." *Make sure you check the "export artboards" box*
+3. go to http://icomoon.io/app/#/select
+4. if there's a set that's already there, delete it
+5. upload all of the SVGs
+6. Select all of the SVGs
+7. click the SVG Export tab (bottom left)
+8. click download
+9. replace the following files
+	* selection.json
+	* symbol-defs.svg
+	* (the demo files are nice, but not necessary)

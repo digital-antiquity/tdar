@@ -1,7 +1,5 @@
 package org.tdar.struts.action.login;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.ServletActionContext;
@@ -81,17 +79,17 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
 
     @Action(value = "logout",
             results = {
-                    @Result(name = SUCCESS, type = "tdar-redirect", location = "/")
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "/")
             })
+    @PostOnly
     @SkipValidation
     public String logout() {
-        // manually handle SSO TOken
-        HttpServletRequest request = ServletActionContext.getRequest();
-        String token = authenticationService.getSsoTokenFromRequest(request);
-        getLogger().trace("token:{}", token);
-        // login if SSO Token is set (logout will then remove it)
-        authenticationService.checkToken((String) token, getSessionData(), request);
+    	// manually handle SSO TOken
+        String token = authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
+        getLogger().debug("token:{}", token);
+        AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());
 
+    	getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
         if (getSessionData().isAuthenticated()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }

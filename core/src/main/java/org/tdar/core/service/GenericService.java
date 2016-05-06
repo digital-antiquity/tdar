@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.DeHydratable;
@@ -48,6 +48,9 @@ public class GenericService {
     @Autowired
     @Qualifier("genericDao")
     private GenericDao genericDao;
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     public static final int MINIMUM_VALID_ID = 0;
     private final Logger logger = LoggerFactory.getLogger(getClass());

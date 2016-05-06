@@ -24,12 +24,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -63,6 +64,8 @@ import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceTypeStatusInfo;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
+import org.tdar.core.event.EventType;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.DeleteIssue;
@@ -85,7 +88,9 @@ public class ResourceService {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    
+    @Autowired
+    private ApplicationEventPublisher publisher;
+
     public enum ErrorHandling {
         NO_VALIDATION,
         VALIDATE_SKIP_ERRORS,
@@ -846,6 +851,7 @@ public class ResourceService {
             account = genericDao.markWritableOnExistingSession(account);
             accountDao.updateQuota(account, toEvaluate);
             genericDao.saveOrUpdate(account);
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
     }

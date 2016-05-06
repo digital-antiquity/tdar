@@ -123,20 +123,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private transient Integer maxWidth;
     private transient VersionType maxSize;
 
-    public enum CollectionType {
-        INTERNAL("Internal"), SHARED("Shared"), PUBLIC("Public");
-
-        private String label;
-
-        private CollectionType(String label) {
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return this.label;
-        }
-    }
-
     private static final long serialVersionUID = -5308517783896369040L;
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
@@ -301,8 +287,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         this.type = type;
     }
 
-    // FIXME: want to serialize these out, but cannot properly obfuscate them because they're in a "managed" set
-    // if you do, and try and obfsucate by removing, you end up in a situation of completely removing the object
     @XmlTransient
     public Set<AuthorizedUser> getAuthorizedUsers() {
         return authorizedUsers;

@@ -83,6 +83,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     }
 
     private Long id;
+    private String tableDescription;
     private DataTable dataTable;
     private List<DataTableColumn> dataTableColumns;
     private PaginationHelper paginationHelper;
@@ -157,7 +158,8 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
             return INPUT;
         }
         List<DataTableColumn> columns = initializePaginationHelper();
-
+        setTableDescription(getDataTable().getDescription());
+        
         if (CollectionUtils.size(columns) > getRecordsPerPage()) {
             columns = columns.subList(getPaginationHelper().getFirstItem(), getPaginationHelper().getLastItem() + 1);
         }
@@ -201,7 +203,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     public String saveColumnMetadata() throws TdarActionException {
         boolean hasOntologies = false;
         initializePaginationHelper();
-
+        getDataTable().setDescription(getTableDescription());
         try {
             hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
         } catch (Throwable tde) {
@@ -376,6 +378,14 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    public String getTableDescription() {
+        return tableDescription;
+    }
+
+    public void setTableDescription(String tableDescription) {
+        this.tableDescription = tableDescription;
     }
 
 }

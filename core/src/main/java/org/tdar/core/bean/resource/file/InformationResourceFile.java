@@ -527,7 +527,6 @@ public class InformationResourceFile extends AbstractSequenced<InformationResour
         return false;
     }
 
-    //@Field(name = QueryFieldNames.FILENAME, analyzer = //@Analyzer(impl = NonTokenizingLowercaseKeywordAnalyzer.class))
     public String getFilename() {
         return filename;
     }

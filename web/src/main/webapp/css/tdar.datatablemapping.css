@@ -27,6 +27,8 @@
     border: 1px solid #999999;
 }
 
+
+
 .columnSquare span:before {
     font-size: 14px;
     font-weight: bold;
@@ -64,6 +66,12 @@
 .mappingInfo input {
     margin-left: 1em;
 }
+
+.columnSquare.filename {
+    background: #8b755e; /* Old browsers */
+    border: 1px solid #999999;
+}
+
 
 .mappingInfo input[type="checkbox"] {
     margin-left: 1em;

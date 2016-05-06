@@ -775,3 +775,8 @@ form.form-unstyled {
     margin: auto;
     display:inline;
 }
+
+
+form.logoutForm {
+    margin-left:13px;
+}

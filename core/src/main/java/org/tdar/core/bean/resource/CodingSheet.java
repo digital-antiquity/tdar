@@ -19,6 +19,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -53,11 +55,9 @@ public class CodingSheet extends InformationResource implements SupportsResource
 
     @ManyToOne
     @JoinColumn(name = "category_variable_id")
-    //@IndexedEmbedded(depth = 1)
     private CategoryVariable categoryVariable;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "codingSheet")
-    //@IndexedEmbedded
     private Set<CodingRule> codingRules = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "defaultCodingSheet")
@@ -68,7 +68,6 @@ public class CodingSheet extends InformationResource implements SupportsResource
     @JsonView(JsonLookupFilter.class)
     private Ontology defaultOntology;
 
-    //@Field
     private boolean generated;
 
     private transient Map<Long, CodingRule> idMap = new HashMap<>();
@@ -77,6 +76,8 @@ public class CodingSheet extends InformationResource implements SupportsResource
         setResourceType(ResourceType.CODING_SHEET);
     }
 
+    @XmlElementWrapper(name = "codingRules")
+    @XmlElement(name = "codingRule")
     public Set<CodingRule> getCodingRules() {
         return codingRules;
     }

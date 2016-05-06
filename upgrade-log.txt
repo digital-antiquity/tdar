@@ -75,4 +75,8 @@ standalone solr:
     copy JTS to solr dir:
     sudo cp /home/tdar/app/ROOT/WEB-INF/lib/jts-1.13.jar  /opt/solr/server/lib/
 
-	
+—————————————————
+::Obsidian:
+—————————————————
+ - for solr, change the field-types.xml's  spatialContextFactory entry to:
+     spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"

@@ -1,7 +1,10 @@
 package org.tdar.struts.action.download;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.springframework.http.HttpHeaders.REFERER;
 
 import java.io.File;
@@ -9,7 +12,6 @@ import java.io.FileOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -17,13 +19,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
+import org.tdar.junit.IgnoreActionErrors;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 
 import com.opensymphony.xwork2.Action;
@@ -60,9 +62,8 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
     @Test
     @Rollback
+    @IgnoreActionErrors
     public void testInvalidHostedDownloadReferrer() throws Exception {
-        setIgnoreActionErrors(true);
-
         // test bad referrer
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
@@ -74,13 +75,13 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
         controller.prepare();
         controller.validate();
-        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
+        assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
-    @Test(expected = TdarRecoverableRuntimeException.class)
+    @Test
     @Rollback
+    @IgnoreActionErrors
     public void testMissingHostedDownloadReferrer() throws Exception {
-        setIgnoreActionErrors(true);
         // test no referrer
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
@@ -92,13 +93,13 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
         controller.prepare();
         controller.validate();
+        assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
-    @Test()
+    @Test
     @Rollback
+    @IgnoreActionErrors
     public void testInvalidApiKeyHostedDownloadReferrer() throws Exception {
-        setIgnoreActionErrors(true);
-
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
         controller.setApiKey("testasasfasf");
@@ -110,14 +111,13 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
         controller.prepare();
         controller.validate();
-        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
+        assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
     @Test
     @Rollback
+    @IgnoreActionErrors
     public void testMissingApiKeyHostedDownloadReferrer() {
-        setIgnoreActionErrors(true);
-
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -128,7 +128,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
         controller.prepare();
         controller.validate();
-        assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
+        assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
     @Before

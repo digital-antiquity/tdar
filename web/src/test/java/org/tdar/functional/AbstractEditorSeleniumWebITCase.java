@@ -11,9 +11,4 @@ public class AbstractEditorSeleniumWebITCase extends AbstractSeleniumWebITCase {
         loginEditor();
     }
 
-    @After
-    public void afterTest() {
-        logout();
-    }
-
 }

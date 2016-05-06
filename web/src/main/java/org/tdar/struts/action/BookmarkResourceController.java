@@ -86,7 +86,7 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
 
     @Action(value = "bookmark",
             results = {
-                    @Result(name = SUCCESS, type = "tdar-redirect", location = URLConstants.BOOKMARKS)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.BOOKMARKS)
             })
     public String bookmarkResourceAction() {
         success = bookmarkResource();
@@ -104,7 +104,7 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
 
     @Action(value = "removeBookmark",
             results = {
-                    @Result(name = SUCCESS, type = "tdar-redirect", location = URLConstants.BOOKMARKS)
+                    @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.BOOKMARKS)
             })
     public String removeBookmarkAction() {
         success = removeBookmark();

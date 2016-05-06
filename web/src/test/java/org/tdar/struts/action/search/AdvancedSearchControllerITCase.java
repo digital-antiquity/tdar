@@ -20,8 +20,8 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -364,6 +364,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     public void testPersonSearchWithoutAutocomplete() throws SolrServerException, IOException {
         String lastName = "Watts";
         Person person = new Person(null, lastName, null);
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         lookForCreatorNameInResult(lastName, person);
     }
 
@@ -371,6 +372,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testInstitutionSearchWithoutAutocomplete() throws SolrServerException, IOException {
+        controller.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
         String name = "Digital Antiquity";
         Institution institution = new Institution(name);
         lookForCreatorNameInResult(name, institution);

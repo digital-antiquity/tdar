@@ -75,8 +75,8 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
@@ -222,6 +222,9 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
             ((MockMailSender) emailService.getMailSender()).getMessages().clear();
         }
         String base = TestConstants.TEST_ROOT_DIR + "schemaCache";
+        if (TdarConfiguration.getInstance().shouldLogToFilestore()) {
+            serializationService.setUseTransactionalEvents(false);
+        }
         schemaMap.put("http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", new File(base, "mods3.3.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", new File(base, "oai-identifier.xsd"));
         schemaMap.put("http://www.openarchives.org/OAI/2.0/oai_dc.xsd", new File(base, "oaidc.xsd"));
@@ -331,6 +334,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
+    @Transactional
     public <R extends InformationResource> R addFileToResource(R ir, File file) {
         return addFileToResource(ir, file, FileAccessRestriction.PUBLIC);
     }

@@ -25,6 +25,7 @@
     "xmldoc": "^0.3.2"
   },
   "scripts": {
+    "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",
     "pretest": "echo node src/test/frontend/pretest.js",
     "test": "karma start --no-single-run"
   },

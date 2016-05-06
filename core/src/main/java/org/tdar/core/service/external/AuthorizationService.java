@@ -10,11 +10,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,6 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /*
@@ -533,11 +529,15 @@ public class AuthorizationService implements Accessible {
 	private boolean setupViewable(TdarUser authenticatedUser, Viewable item) {
 		boolean viewable = false;
 		if (item instanceof HasStatus) { // if we have status, then work off that
-		    logger.trace("item 'has status': {}", item);
+//		    logger.trace("item 'has status': {}", item);
 		    HasStatus status = ((HasStatus) item);
 		    if (!status.isActive()) { // if not active, check other permissions
-		        logger.trace("item 'is not active': {}", item);
-		        if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
+//		        logger.trace("item 'is not active': {}", item);
+		    	TdarUser submitter = null;
+		    	if (item instanceof HasSubmitter) {
+		    		submitter = ((HasSubmitter)item).getSubmitter();
+		    	}
+		        if (can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser) || Objects.equals(submitter, authenticatedUser)) {
 		            logger.trace("\tuser is special': {}", item);
 		            viewable = true;
 		        }
@@ -621,13 +621,15 @@ public class AuthorizationService implements Accessible {
      * 
      * @param informationResourceFileVersion
      * @param apiKey
-     * @param request
-     * @return true, if download authorized.
+     * @param referrer
+     * @return List of errors in the form of localization messages to be expanded e.g. from a TextProvider.  An empty
+     * list indicates success.
      */
     @Transactional(readOnly = true)
-    public boolean checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, HttpServletRequest request) {
-        String referrer = request.getHeader(HttpHeaders.REFERER);
+    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+        //String referrer = request.getHeader("referer");
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
+        List<String> errors = new ArrayList<>();
         try {
             URL url = new URL(referrer);
             referrer = url.getHost();
@@ -636,10 +638,14 @@ public class AuthorizationService implements Accessible {
             referrer = "";
         }
         if (StringUtils.isBlank(referrer)) {
-            throw new TdarRecoverableRuntimeException("authorizationService.referrer_invalid", Arrays.asList(request.getPathInfo(), referrer, request.getHeader(HttpHeaders.USER_AGENT)));
+            errors.add("authorizationService.referrer_invalid");
+        } else {
+            List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
+            if(CollectionUtils.isEmpty(authorizations)) {
+                errors.add("authorizationService.invalid_request");
+            }
         }
-        List<DownloadAuthorization> authorizations = resourceCollectionDao.getDownloadAuthorizations(informationResourceFileVersion, apiKey, referrer);
-        return CollectionUtils.isNotEmpty(authorizations);
+        return errors;
     }
 
     @Transactional(readOnly = true)
@@ -679,6 +685,19 @@ public class AuthorizationService implements Accessible {
         Viewable item = (Viewable) r_;
         boolean viewable = setupViewable(authenticatedUser, item);
         boolean allowedToViewAll = authorizedUserDao.isAllowedTo(authenticatedUser, GeneralPermissions.VIEW_ALL, collectionIds);
+        if (logger.isTraceEnabled()) {
+        	Long auid = null;
+        	if (authenticatedUser != null) {
+        		auid = authenticatedUser.getId();
+        	}
+	        logger.trace("::applytransientViewable: r:{} u:{} c:{}", r_.getId(), auid, collectionIds);
+	        Long rid = null;
+	        if (r_.getSubmitter() != null) {
+	        	rid = r_.getSubmitter().getId();
+	        }
+	        logger.trace(":: st:{} admin:{} submitter:{}", r_.getStatus(), isAdministrator(authenticatedUser), rid);
+	        logger.trace(":: viewable:{} ({}) ", viewable, allowedToViewAll);
+        }
 		if (viewable) {
         	item.setViewable(true);
         } else if (allowedToViewAll) {
@@ -687,6 +706,9 @@ public class AuthorizationService implements Accessible {
 
         if (r_ instanceof InformationResource) {
 			InformationResource ir = (InformationResource)r_;
+			boolean adminOrOwner = isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO);
+			
+			
 			for (InformationResourceFile irFile : ir.getInformationResourceFiles()) {
 		        if (irFile == null) {
 		            continue;
@@ -694,7 +716,7 @@ public class AuthorizationService implements Accessible {
 		        if (irFile.isDeleted() && PersistableUtils.isNullOrTransient(authenticatedUser)) {
 		            continue;
 		        }
-		        if (!isAdminOrOwner(authenticatedUser, ir, InternalTdarRights.VIEW_AND_DOWNLOAD_CONFIDENTIAL_INFO) && 
+				if (!adminOrOwner && 
 		        		!irFile.isPublic() && !allowedToViewAll) {
 		            continue;
 		        }

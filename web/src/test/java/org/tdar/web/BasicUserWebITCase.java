@@ -59,7 +59,6 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
 
     private void chooseFirstBillingAccount() {
         HtmlElement input = null;
-        getTdarConfiguration();
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
             try {
                 input = getInput("accountId");

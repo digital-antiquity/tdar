@@ -1,5 +1,10 @@
 package org.tdar.core.bean;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.hasProperty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -12,8 +17,9 @@ import java.util.List;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Image;
@@ -130,6 +136,27 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1);
         assertNotEquals(withName, test);
+    }
+
+    @Test
+    @Rollback
+    public void testConvertToWhitelabelCollection() {
+        ResourceCollection resourceCollection = createAndSaveNewResourceCollection("normal collection");
+        WhiteLabelCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
+
+        assertThat(whitelabelCollection, is( not( nullValue())));
+        assertThat(resourceCollection.getId(), is(whitelabelCollection.getId()));
+        assertThat(resourceCollection.getTitle(), is(whitelabelCollection.getTitle()));
+    }
+
+    @Test
+    @Rollback
+    public void testConvertToResourceCollection() {
+        WhiteLabelCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
+        ResourceCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
+
+        assertThat(rc, is( not( nullValue())));
+        assertThat(rc, hasProperty("title", is("fancy collection")));
     }
 
 }

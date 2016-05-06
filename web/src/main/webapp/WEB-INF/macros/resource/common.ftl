@@ -36,73 +36,24 @@ Common macros used in multiple contexts
 -->
     <#macro globalJavascript>
     <script type="text/javascript">
+    </script>
     <@googleAnalyticsJavascript />
-</script>
     </#macro>
 
 <#-- emit the javascript necessary for google analytics -->
     <#macro googleAnalyticsJavascript>
-        <#noescape>
-        var _gaq = _gaq || [];
-            <#if !production>
-            _gaq.push(['_setAccount', 'UA-13102200-5']); // TEST ACCOUNT
-            _gaq.push(['_setDomainName', 'none']);
-            <#else>
-            _gaq.push(['_setAccount', '${googleAnalyticsId}']);
-            </#if>
+    <#noescape>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
-        _gaq.push(['_trackPageview']);
+        ga('create', '${googleAnalyticsId}', 'auto');
+        ga('send', 'pageview');
 
-        (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-
-        //return basic perf stats (excellent diagram: http://dvcs.w3.org/hg/webperf/raw-file/tip/specs/NavigationTiming/Overview.html#processing-model)
-        (function() {
-        var _getPerfStats = function() {
-        var timing = window.performance.timing;
-        return {
-        //dns lookup timespan
-        dns: timing.domainLookupEnd - timing.domainLookupStart,
-        //connection timespan
-        connect: timing.connectEnd - timing.connectStart,
-        //time to first byte
-        ttfb: timing.responseStart - timing.connectEnd,
-        //timespan of response load
-        basePage: timing.responseEnd - timing.responseStart,
-        //time to document.load
-        frontEnd: timing.loadEventStart - timing.responseEnd
-        };
-        };
-
-        var _trackEvent = function() {
-        var arr = ["_trackEvent"].concat(Array.prototype.slice.call(arguments));
-        _gaq.push(arr);
-        };
-
-        var _reportPerfStats = function() {
-        if (!(window.performance && window.performance.timing )) return;
-        var nav = window.performance.navigation;
-        var navtype = undefined;
-        //backbutton navigation may skew stats. try to identify and tag w/ label (only supported in IE/chrome for now)
-        if(nav && nav.type === nav.TYPE_BACK_FORWARD) {
-        navtype = "backbutton";
-        }
-
-        if (typeof _gaq === "undefined") return;
-        var perf = _getPerfStats();
-        var key;
-        for(key in perf) {
-        _trackEvent("Navigation Timing(ms)", key, navtype, perf[key] ,  true);
-        }
-        };
-
-        //here we explicitly hook into 'onload' since DOM timing stats are incomplete upon 'ready'.
-        $(window).load(_reportPerfStats);
-        })();
-        </#noescape>
+    </script>
+    </#noescape>
     </#macro>
 
 <#--
@@ -115,9 +66,9 @@ Common macros used in multiple contexts
         <#local _current = (currentUrl!'/') >
         <#if returnUrl != ''><#local _current = returnUrl /></#if>
         <#if _current == '/' || currentUrl?starts_with('/login')>
-        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow">Log In</a>
+        <a class="${class}" href="<@s.url value='/login'/>" rel="nofollow" id="loginButton">Log In</a>
         <#else>
-        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>">Log In</a>
+        <a class="${class}" rel="nofollow" href="<@s.url value='/login'><@s.param name="url">${_current}</@s.param></@s.url>" id="loginButton">Log In</a>
         </#if>
         </#noescape>
     </#macro>
@@ -262,7 +213,13 @@ Common macros used in multiple contexts
 
     <#macro cartouche persistable useDocumentType=false>
         <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
-    <span class="cartouche"><i class="icon-${cartouchePart?replace(" ","")?lower_case}"></i>
+    <span class="cartouche">
+    <#if persistable.resourceType?has_content>
+        <#local type>${persistable.resourceType?lower_case}</#local>
+    <#elseif persistable.type?has_content><#t>
+        <#local type>collection</#local>
+    </#if>
+    <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_icon-${type}"></use></svg>
     <#--        <#if (persistable.status)?? && !persistable.active>
             ${persistable.status} <#t>
         </#if>  -->
@@ -294,7 +251,12 @@ Common macros used in multiple contexts
             <li><a href="<@s.url value="/account/new" />" class="button" rel="nofollow">Sign Up</a></li>
             <li><@loginButton class="button" /></li>
         <#else>
-            <li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>
+            <#--<li><a href="<@s.url value="/logout" />" class="button">Logout</a></li>-->
+            <li>
+            <form class="form-unstyled seleniumIgnoreForm logoutForm" id="frmLogout" name="logoutForm" method="post" action="/logout">
+                    <input type="submit" class="tdar-button" name="logout" value="Logout" id="logout-button">
+            </form>
+            </li>
         </#if>
         <#if showMenu>
         </ul>

@@ -54,7 +54,6 @@ public abstract class Citation extends AbstractPersistable implements HasResourc
         return Arrays.asList(text);
     };
 
-    //@Field
     public String getText() {
         return text;
     }

@@ -35,7 +35,6 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "resource_annotation_key")
-//@Indexed(index = "AnnotationKey")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotationKey")
 @Cacheable
 public class ResourceAnnotationKey extends AbstractPersistable implements Indexable, HasLabel {
@@ -62,7 +61,6 @@ public class ResourceAnnotationKey extends AbstractPersistable implements Indexa
     private ResourceAnnotationDataType annotationDataType;
 
     @Column(length = FieldLength.FIELD_LENGTH_128, unique = true, nullable = false)
-    //@Fields({ //@Field(name = "annotationkey_auto", norms = Norms.NO, store = Store.YES, analyzer = //@Analyzer(impl = AutocompleteAnalyzer.class)) })
     @Length(max = FieldLength.FIELD_LENGTH_128)
     @JsonView(JsonLookupFilter.class)
     private String key;

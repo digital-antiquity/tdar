@@ -3,7 +3,6 @@ package org.tdar.core.bean.keyword;
 import java.util.Set;
 
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.HasLabel;

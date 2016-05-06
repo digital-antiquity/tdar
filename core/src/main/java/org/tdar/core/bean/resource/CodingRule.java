@@ -105,7 +105,6 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
     
     @ManyToOne(optional = false)
     @JoinColumn(name = "coding_sheet_id")
-//    @ContainedIn
     private CodingSheet codingSheet;
 
     @Column(nullable = false)
@@ -113,7 +112,6 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
     private String code;
 
     @Column(nullable = false)
-    //@Field
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String term;
 

@@ -24,7 +24,7 @@ public class SolrSetupITCase extends AbstractWithIndexIntegrationTestCase {
 
 	@Before
 	public void index() {
-		searchIndexService.indexAll(getAdminUser());
+		searchIndexService.indexAll(new QuietIndexReciever(), getAdminUser());
 	}
 
 	@Test

@@ -18,14 +18,12 @@
         <@s.checkboxlist id="includedResourceTypes" numColumns=4 spanClass="span2" name='resourceTypes' list='allResourceTypes'  listValue='label' label="Resource Type"/>
 
         <#if authenticated>
-        <#--FIXME: there seems to be a bug in numColumns when the value is 'too high' (not sure what that number is yet) -->
-        <#--FIXME: also,  we need a good,efficient way to emit bootstrap's version of an inline checkboxlist -->
-            <@s.checkboxlist theme="bootstrap" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
+        <@s.checkboxlist theme="bootstrap" numColumns=3 spanClass="span2" id="myincludedstatuses" name='includedStatuses' list='allStatuses'  listValue='label' label="Status" />
         </#if>
 
     <h4>Limit by geographic region:</h4>
     <div id="latlongoptions">
-        <div id='large-map' class='leaflet-map-editable'>
+        <div id='large-map' class='leaflet-map-editable' data-search="true">
             <span class="latlong-fields">
                 <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput maxx" />
                 <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput miny" />
@@ -227,8 +225,14 @@
                 </@s.url></#compress>"></#if>
 <#compress>
                     <#if icon || pictoralIcon><#if pictoralIcon && facetParam=='selectedResourceTypes'>
-                        <i class="icon-red icon-${facet.raw?lower_case}"/></i>
-                    <#else><i class="search-list-check<#if currentValues?size == 1>ed</#if>box-grey"></i></#if></#if>
+                        <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
+                    <#else>
+                        <#if currentValues?size == 1>
+                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                        <#else>
+                            <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_deselected"></use></svg>
+                        </#if>
+                    </#if></#if>
                 <@s.text name="${facet.label}"/>
 				<#if link></a></#if>
 				 <span>(${facet.count})</span></span></#compress>
@@ -258,6 +262,10 @@
                 <#if facet.plural?has_content><#assign facetText=facet.plural/>
                 <#elseif facet.label?has_content><#assign facetText=facet.label/>
                 </#if>
+        
+        <ul class="media-list tools">
+                <li class="media">
+                    <span class="media-body">
             <a rel="noindex" href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
             <@s.param name="startRecord" value="0"/>
@@ -268,9 +276,12 @@
                 <@s.param name="integratableOptions" value=""/>
             </#if>
             <#nested>
-        </@s.url>"><i class="pull-left search-list-checkedbox-grey"></i>
-                <div class="media-body">${facetText}</div>
-            </a>
+        </@s.url>">
+                        <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                        ${facetText}</a>
+                    </span>
+                </li>
+        </ul>
             </#if>
         </#if>
     </#macro>

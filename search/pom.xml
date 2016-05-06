@@ -9,13 +9,13 @@
     <name>tDAR (search)</name>
 
     <properties>
-        <lucene.version>5.4.1</lucene.version>
+        <lucene.version>6.0.0</lucene.version>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
+        <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <!-- 3rd party dependencies and libraries -->
@@ -86,7 +86,7 @@
 
 
     <build>
-        <finalName>search</finalName>
+        <finalName>tdar-search</finalName>
         <testResources>
             <testResource>
                 <directory>src/test/resources</directory>

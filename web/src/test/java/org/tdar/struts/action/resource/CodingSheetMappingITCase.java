@@ -34,7 +34,6 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -51,6 +50,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.TdarActionException;
@@ -64,7 +64,7 @@ import org.tdar.utils.ExcelUnit;
  * @author Adam Brin
  * 
  */
-@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWith(MultipleTdarConfigurationRunner.class)
 public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
 
     private static final String TEST_DATASET_FILENAME = "total-number-of-bones-per-period.xlsx";

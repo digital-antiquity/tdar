@@ -78,6 +78,16 @@
     </table>
     </#if>
 
+	<table class="table">
+		<thead>
+			<tr><th>filename</th><th>date</th><th>size</th></tr>
+		</thead>
+		<tbody>
+			<#list xmlFiles as file>
+				<tr><td><a href="<@s.url value="/resource/admin?id=${id?c}&filename=${file.name}"/>">${file.name}</a></td><td></td><td>${file.totalSpace}</td></tr>
+			</#list>
+		</tbody>
+	</table>
     <@view.accessRights />
 
     <@view.adminFileActions />

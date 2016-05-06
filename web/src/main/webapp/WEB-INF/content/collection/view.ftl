@@ -37,7 +37,6 @@ ${resourceCollection.name!"untitled collection"}</h1>
 
     <@commonCollection.javascript />
 
-
 </body>
 
 </#escape>

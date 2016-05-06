@@ -13,7 +13,7 @@
 </head>
 <body>
 
-    <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal" method='post' enctype='multipart/form-data' action='save'>
+    <@s.form  name="institutionForm" id="frmInstitution"  cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} method='post' enctype='multipart/form-data' action='save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
     <div class="glide">
@@ -39,7 +39,7 @@
 
         <@s.textfield name="institution.url" label="Website" id="txtUrl" cssClass="input-xlarge url"  maxlength=255 />
 
-        <@s.textfield name="institution.email" label="Email" id="txtEmail" cssClass="input-xlarge email"  maxlength=255 />
+        <@s.textfield name="email" label="Email" id="txtEmail" cssClass="input-xlarge email"  maxlength=255 />
 
         <@s.textarea name="institution.description" label="Description" cssClass="input-xxlarge"  cols="80"  rows="4"/>
 
@@ -56,7 +56,6 @@
     <script type="text/javascript">
         $(function () {
             TDAR.common.initEditPage($('#frmInstitution')[0]);
-            TDAR.common.validateProfileImage();
         });
     </script>
 </body>

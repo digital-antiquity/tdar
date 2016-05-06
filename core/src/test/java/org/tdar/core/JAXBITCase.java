@@ -15,7 +15,11 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
@@ -183,8 +187,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         List<Resource> list = new ArrayList<>();
         list.add(document);
         list.add(project);
-        map.put("result", list);
-        String result = serializationService.createGeoJsonFromResourceList(map , "result", "http://www.test.com", JsonLookupFilter.class, null);
+        String result = serializationService.createGeoJsonFromResourceList(list , "http://www.test.com", map, null, JsonLookupFilter.class, null);
         logger.info(result);
         assertFalse(result.contains("\"activeMaterialKeywords\":null"));
         assertFalse(result.contains("minLatitude"));
