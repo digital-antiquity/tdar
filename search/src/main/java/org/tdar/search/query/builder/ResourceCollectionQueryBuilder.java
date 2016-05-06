@@ -11,6 +11,6 @@ public class ResourceCollectionQueryBuilder extends QueryBuilder {
 
     @Override
     public String getCoreName() {
-        return CoreNames.COLLECTIONS;
+        return CoreNames.RESOURCES;
     }
 }

@@ -72,16 +72,10 @@ public class SolrSearchObject<I extends Indexable> {
 	private Map<String, List<Long>> searchByMap = new HashMap<>();
 	private StringBuilder facetText = new StringBuilder();
 	private ProjectionModel projection;
-    private String multiCore;
 
 	public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
 		this.builder = queryBuilder;
 		this.coreName = queryBuilder.getCoreName();
-		if (coreName.equals("multicore")) {
-		    logger.debug("HI : MULTICORE");
-		    multiCore = "resources,collections";
-		    coreName = "resources";
-		}
 		this.setMaxResults(handler.getRecordsPerPage());
 		this.setFirstResult(handler.getStartRecord());
 		this.projection = handler.getProjectionModel();
@@ -188,10 +182,6 @@ public class SolrSearchObject<I extends Indexable> {
 		setQueryString(builder.generateQueryString());
 		solrQuery.setParam("q", getQueryString());
 		solrQuery.setParam("start", Integer.toString(startRecord));
-		if (StringUtils.isNotBlank(multiCore)) {
-			solrQuery.setParam("shards", multiCore);
-			solrQuery.setRequestHandler("/multicore");
-		}
 		solrQuery.setParam("rows", Integer.toString(resultSize));
 		String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
 		solrQuery.setParam("_logtag", tag);
