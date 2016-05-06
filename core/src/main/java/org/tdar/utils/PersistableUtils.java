@@ -20,6 +20,8 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.exception.TdarRuntimeException;
 
 public class PersistableUtils {
+    
+    public static final String TITLE_SORT_REGEX = "^([\\s\\W]|The |A |An )+";
 
     /**
      * Should only be invoked after performing basic checks within your equals(Object) method to ensure that it's not null and equivalent types.

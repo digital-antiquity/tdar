@@ -63,7 +63,6 @@ import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
@@ -113,7 +112,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @Inheritance(strategy = InheritanceType.JOINED)
 public class ResourceCollection extends Persistable.Base implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
+        Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -560,12 +559,11 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return false;
     }
 
-    @Override
     public String getTitleSort() {
         if (getTitle() == null) {
             return "";
         }
-        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
+        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "");
     }
 
     @Override
