@@ -6,6 +6,7 @@
 
 <div class="row">
     <div class="span12">
+    <br/>
         <@s.form  name='keywordForm' id='keywordForm'   cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} method='post' enctype='multipart/form-data' action='save'>
             <@s.hidden name="id" />
             <@s.hidden name="keywordType" />
@@ -15,7 +16,7 @@
                 cssClass="input-xxlarge"  cols="80"  rows="4" />
 
             <div id="mappingsTable" class="repeatLastRow" addAnother="add another mapping">
-                    <#assign maps = keyword.externalMappings>
+                    <#assign maps = keyword.assertions>
                     <#if maps?size == 0>
                         <#assign maps = [blankMapping]>
                     </#if>

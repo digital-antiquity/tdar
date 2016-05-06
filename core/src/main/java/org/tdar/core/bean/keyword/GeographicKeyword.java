@@ -10,6 +10,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -34,9 +35,10 @@ import org.tdar.core.bean.FieldLength;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "externalMappings",
+    @AssociationOverride(name = "assertions",
        joinColumns = @JoinColumn(name="geographic_keyword_id"))
  })
+@XmlRootElement
 public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 9120049059501138213L;

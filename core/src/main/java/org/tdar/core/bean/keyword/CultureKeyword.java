@@ -8,6 +8,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -28,9 +29,10 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.CultureKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "externalMappings",
+    @AssociationOverride(name = "assertions",
        joinColumns = @JoinColumn(name="culture_keyword_id"))
  })
+@XmlRootElement
 public class CultureKeyword extends HierarchicalKeyword<CultureKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = -7196238088495993840L;

@@ -16,7 +16,7 @@
 </head>
 <div id="sidebar-right" parse="true">
     <div class="sidebar-spacer">
-        <#list keyword.externalMappings>
+        <#list keyword.assertions>
         <h4>External Relationships</h4>
         <ul>
             <#items as item>

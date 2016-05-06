@@ -46,8 +46,9 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
 
     @OneToMany(orphanRemoval = true)
     // note related_keyword_id is not used,it's overriden in the local class file
-    @JoinColumn(nullable = false, updatable = false, name = "related_keyword_id")
-    private Set<ExternalKeywordMapping> externalMappings = new HashSet<>();
+    @JoinColumn(nullable = false, updatable = false)
+    @JsonView(JsonLookupFilter.class)
+    private Set<ExternalKeywordMapping> assertions = new HashSet<>();
 
     @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(name = "merge_keyword_id")
@@ -182,14 +183,14 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         this.synonyms = synonyms;
     }
 
-    @XmlElementWrapper(name = "externalReferences")
-    @XmlElement(name = "externalReference")
-    public Set<ExternalKeywordMapping> getExternalMappings() {
-        return externalMappings;
+    @XmlElementWrapper(name = "assertions")
+    @XmlElement(name = "assertion")
+    public Set<ExternalKeywordMapping> getAssertions() {
+        return assertions;
     }
 
-    public void setExternalMappings(Set<ExternalKeywordMapping> externalMappings) {
-        this.externalMappings = externalMappings;
+    public void setAssertions(Set<ExternalKeywordMapping> externalMappings) {
+        this.assertions = externalMappings;
     }
 
     public String getSynonymFormattedName() {

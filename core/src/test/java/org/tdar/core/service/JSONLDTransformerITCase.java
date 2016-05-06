@@ -42,7 +42,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
         ExternalKeywordMapping map = new ExternalKeywordMapping();
         map.setRelation("http://www.petra.com");
         map.setRelationType(RelationType.DCTERMS_RELATION);
-        gk.getExternalMappings().add(map);
+        gk.getAssertions().add(map);
         r.getGeographicKeywords().add(gk);
         genericService.saveOrUpdate(map);
         genericService.saveOrUpdate(gk);

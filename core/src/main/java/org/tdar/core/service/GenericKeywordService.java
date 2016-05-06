@@ -280,7 +280,7 @@ public class GenericKeywordService {
         keyword.setDefinition(description);
         // FIXME: likely because of the weird-multi-managed relationship on keyword mapping, a manual delete needs to be handled
         Map<Long, ExternalKeywordMapping> incoming = PersistableUtils.createIdMap(list);
-        for (ExternalKeywordMapping existing : keyword.getExternalMappings()) {
+        for (ExternalKeywordMapping existing : keyword.getAssertions()) {
             ExternalKeywordMapping in = incoming.get(existing.getId());
             if (in != null) {
                 logger.debug("updating existing to: {} {} ", in.getRelation(), in.getRelationType());
@@ -299,14 +299,14 @@ public class GenericKeywordService {
             if (map != null && PersistableUtils.isNullOrTransient(map.getId())) {
                 if (map.isValidForController()) {
                     logger.debug("adding: {}", map);
-                    keyword.getExternalMappings().add(map);
+                    keyword.getAssertions().add(map);
                     genericKeywordDao.saveOrUpdate(map);
                 } else {
                     logger.debug("skipping: {}", map);
                 }
             }
         }
-        logger.debug("result: {} -- {}", keyword, keyword.getExternalMappings());
+        logger.debug("result: {} -- {}", keyword, keyword.getAssertions());
         genericKeywordDao.saveOrUpdate(keyword);
     }
 

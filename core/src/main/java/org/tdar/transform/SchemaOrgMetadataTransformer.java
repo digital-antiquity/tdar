@@ -23,12 +23,14 @@ import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.PersistableUtils;
 
 public class SchemaOrgMetadataTransformer implements Serializable {
 
+    private static final String HTTP_SCHEMA_ORG = "http://schema.org";
     private static final String SCHEMA_DESCRIPTION = "schema:description";
     private static final String DATE_PUBLISHED = "schema:datePublished";
     private static final String GRAPH = "@graph";
@@ -95,8 +97,8 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
     private void addContextSection(Map<String, Object> jsonLd) {
         Map<String, String> context = new HashMap<>();
-        context.put("schema", "http://schema.org");
-        context.put("tdar", "http://core.tdar.org/");
+        context.put("schema", HTTP_SCHEMA_ORG);
+        context.put("tdar", TdarConfiguration.getInstance().getBaseUrl());
         for (RelationType type : RelationType.values()) {
             context.put(type.getPrefix(), type.getUri());
         }
@@ -127,7 +129,7 @@ public class SchemaOrgMetadataTransformer implements Serializable {
             js.put("tdar:name", kwd.getLabel());
             js.put("tdar:id", kwd.getId());
             js.put("tdar:url", UrlService.absoluteUrl(kwd));
-            kwd.getExternalMappings().forEach(map -> {
+            kwd.getAssertions().forEach(map -> {
                 js.put(map.getRelationType().getJsonKey(),map.getRelation());
             });
             all.add(js);

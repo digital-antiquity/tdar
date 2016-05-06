@@ -12,6 +12,9 @@ import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.Validatable;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @Table(name = "keyword_mapping")
@@ -30,10 +33,12 @@ public class ExternalKeywordMapping extends AbstractPersistable implements Valid
     
     @Column(name = "relation", nullable=false)
     @Length(max = FieldLength.FIELD_LENGTH_2048)
+    @JsonView(JsonLookupFilter.class)
     private String relation;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "relation_type", nullable=false)
+    @JsonView(JsonLookupFilter.class)
     private RelationType relationType;
 
     public RelationType getRelationType() {

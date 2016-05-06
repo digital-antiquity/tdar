@@ -64,13 +64,13 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         ExternalKeywordMapping e = new ExternalKeywordMapping();
         e.setRelation("http://www.wikipedia.org");
         e.setRelationType(RelationType.DCTERMS_RELATION);
-        historicKeyword.getExternalMappings().add(e);
+        historicKeyword.getAssertions().add(e);
         genericService.saveOrUpdate(historicKeyword);
         historicKeyword = null;
         assertNotNull(e.getId());
         e = null;
         CultureKeyword cultureKeyword = genericService.find(CultureKeyword.class, id);
-        assertNotEmpty(cultureKeyword.getExternalMappings());
+        assertNotEmpty(cultureKeyword.getAssertions());
 
     }
 
@@ -80,15 +80,15 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         CultureKeyword historicKeyword = genericKeywordService.findByLabel(CultureKeyword.class, "Historic");
         Long id = historicKeyword.getId();
         ExternalKeywordMapping e = new ExternalKeywordMapping("http://www.wikipedia.org", RelationType.DCTERMS_IS_VERSION_OF);
-//        historicKeyword.getExternalMappings().add(e);
+//        historicKeyword.getAssertions().add(e);
         genericKeywordService.saveKeyword(historicKeyword.getLabel(), historicKeyword.getDefinition(), historicKeyword, Arrays.asList(e));
         historicKeyword = null;
         assertNotNull(e.getId());
         e = null;
         CultureKeyword keyword = genericService.find(CultureKeyword.class, id);
 
-        logger.debug("{} - - {}", keyword, keyword.getExternalMappings());
-        assertEquals("should have one mapping", 1, keyword.getExternalMappings().size());
+        logger.debug("{} - - {}", keyword, keyword.getAssertions());
+        assertEquals("should have one mapping", 1, keyword.getAssertions().size());
         ArrayList<ExternalKeywordMapping> list = new ArrayList<ExternalKeywordMapping>();
         ExternalKeywordMapping e2 = new ExternalKeywordMapping("http://www.wiki.com", RelationType.DCTERMS_RELATION);
         list.add(e2);
@@ -101,9 +101,9 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
                 genericService.synchronize();
                 evictCache();
                 CultureKeyword keyword = genericService.find(CultureKeyword.class, id);
-                logger.debug("{} - - {}", keyword, keyword.getExternalMappings());
-                assertEquals(1, CollectionUtils.size(keyword.getExternalMappings()));
-                assertEquals(RelationType.DCTERMS_RELATION, keyword.getExternalMappings().iterator().next().getRelationType());
+                logger.debug("{} - - {}", keyword, keyword.getAssertions());
+                assertEquals(1, CollectionUtils.size(keyword.getAssertions()));
+                assertEquals(RelationType.DCTERMS_RELATION, keyword.getAssertions().iterator().next().getRelationType());
                 return null;
             }
             

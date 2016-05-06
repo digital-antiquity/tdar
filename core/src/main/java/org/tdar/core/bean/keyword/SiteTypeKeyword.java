@@ -8,6 +8,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -27,9 +28,10 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteTypeKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "externalMappings",
+    @AssociationOverride(name = "assertions",
        joinColumns = @JoinColumn(name="site_type_keyword_id"))
  })
+@XmlRootElement
 public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implements SuggestedKeyword {
 
     private static final long serialVersionUID = 4043710177198125088L;

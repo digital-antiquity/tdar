@@ -48,7 +48,7 @@ public class SimpleKeywordController extends AbstractKeywordController {
     @SkipValidation
     @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
     public String edit() {
-        getMappings().addAll(getKeyword().getExternalMappings());
+        getMappings().addAll(getKeyword().getAssertions());
         return SUCCESS;
     }
     

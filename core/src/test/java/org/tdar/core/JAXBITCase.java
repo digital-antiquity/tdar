@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -35,11 +36,13 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
+import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
@@ -194,6 +197,24 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         assertFalse(result.contains("maxLatitude"));
     }
 
+    @Test()
+    @Rollback(true)
+    public void testRelatedKeyword() throws Exception {
+        CultureKeyword kwd = new CultureKeyword("Nabatean");
+        genericService.saveOrUpdate(kwd);
+        kwd.getAssertions().add(new ExternalKeywordMapping("http://www.tdar.org", RelationType.DCTERMS_IS_VERSION_OF));
+        genericService.saveOrUpdate(kwd.getAssertions());
+        genericService.saveOrUpdate(kwd);
+        String xml = serializationService.convertToXML(kwd);
+        logger.info(xml);
+        StringWriter json = new StringWriter();
+        serializationService.convertToJson(kwd,json,JsonLookupFilter.class,null);
+        logger.info(json.toString());
+        assertTrue("string contains assertions", StringUtils.contains(xml, "assertions"));
+        assertTrue("string contains assertions", StringUtils.contains(json.toString(), "assertions"));
+        
+    }
+    
     @Test
     public void testJAXBProjectConversion() throws Exception {
         Project project = genericService.find(Project.class, 2420l);

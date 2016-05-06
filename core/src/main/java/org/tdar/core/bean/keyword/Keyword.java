@@ -40,8 +40,8 @@ public interface Keyword extends Persistable, Indexable, HasLabel, Dedupable, Ad
 
     public void setDefinition(String definition);
 
-    public Set<ExternalKeywordMapping> getExternalMappings();
+    public Set<ExternalKeywordMapping> getAssertions();
 
-    public void setExternalMappings(Set<ExternalKeywordMapping> mappings);
+    public void setAssertions(Set<ExternalKeywordMapping> mappings);
 
 }

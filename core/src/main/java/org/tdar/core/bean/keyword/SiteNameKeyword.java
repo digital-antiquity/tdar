@@ -6,6 +6,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -23,9 +24,10 @@ import org.hibernate.annotations.Check;
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteNameKeyword")
 @Cacheable
 @AssociationOverrides({
-    @AssociationOverride(name = "externalMappings",
+    @AssociationOverride(name = "assertions",
        joinColumns = @JoinColumn(name="site_name_keyword_id"))
  })
+@XmlRootElement
 public class SiteNameKeyword extends AbstractKeyword<SiteNameKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 60750909588980398L;
