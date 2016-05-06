@@ -24,7 +24,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -40,8 +39,6 @@ import org.tdar.utils.MessageHelper;
 
 @SuppressWarnings("unchecked")
 public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
-
-    private ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
 
     @Autowired
     SearchService<Resource> searchService;
@@ -153,8 +150,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
         // get information resources only
         FieldQueryPart<String> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE,Operator.OR, 
-                Arrays.asList(ResourceType.PROJECT.name(), CollectionType.INTERNAL.name(),CollectionType.PUBLIC.name(),CollectionType.SHARED.name()));
-        fqp.setInverse(true);
+                Arrays.asList(ResourceType.DATASET.name(), ResourceType.DOCUMENT.name(),ResourceType.IMAGE.name(),ResourceType.CODING_SHEET.name(), ResourceType.ONTOLOGY.name()));
         resourceQueryBuilder.append(fqp);
         return resourceQueryBuilder;
     }

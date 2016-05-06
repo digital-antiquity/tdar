@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class ResourceQueryBuilder extends QueryBuilder {
 
     public ResourceQueryBuilder() {
-        this.setClasses(LookupSource.RESOURCE.getClasses());
+        setTypeLimit(LookupSource.RESOURCE.name());
     }
     
 

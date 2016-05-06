@@ -123,7 +123,7 @@ public class FieldQueryPart<C> implements QueryPart<C> {
     }
 
     protected void constructQueryPhrase(StringBuilder sb, String fieldName) {
-        StringBuilder startPhrase = new StringBuilder(getInverse());
+        StringBuilder startPhrase = new StringBuilder();
         // support for "all fields query"
         if (StringUtils.isNotBlank(fieldName)) {
             startPhrase.append(fieldName).append(":");
@@ -309,27 +309,27 @@ public class FieldQueryPart<C> implements QueryPart<C> {
         this.operator = operator;
     }
 
-    /**
-     * @param inverse
-     *            the inverse to set
-     */
-    public void setInverse(boolean inverse) {
-        this.inverse = inverse;
-    }
+//    /**
+//     * @param inverse
+//     *            the inverse to set
+//     */
+//    public void setInverse(boolean inverse) {
+//        this.inverse = inverse;
+//    }
 
-    protected String getInverse() {
-        if (isInverse()) {
-            return NOT;
-        }
-        return "";
-    }
-
-    /**
-     * @return the inverse
-     */
-    public boolean isInverse() {
-        return inverse;
-    }
+//    protected String getInverse() {
+//        if (isInverse()) {
+//            return NOT;
+//        }
+//        return "";
+//    }
+//
+//    /**
+//     * @return the inverse
+//     */
+//    public boolean isInverse() {
+//        return inverse;
+//    }
 
     public List<PhraseFormatter> getPhraseFormatters() {
         return phraseFormatters;

@@ -2,6 +2,7 @@ package org.tdar.search.converter;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
@@ -18,7 +19,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.TOP_LEVEL, collection.isTopLevel());
         doc.setField(QueryFieldNames.RESOURCE_TYPE, collection.getType());
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, "0" + collection.getType());
-        doc.setField(QueryFieldNames.TYPE, "col");
+        doc.setField(QueryFieldNames.TYPE, LookupSource.COLLECTION.name());
         doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, collection.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, collection.getUsersWhoCanAdminister());
