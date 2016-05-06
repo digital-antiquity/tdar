@@ -69,14 +69,14 @@ public enum LookupSource implements HasLabel,Localizable {
 
 	public String getCoreName() {
 		switch (this) {
-			case COLLECTION:
-				return CoreNames.COLLECTIONS;
 			case INSTITUTION:
 				return CoreNames.INSTITUTIONS;
 			case KEYWORD:
 				return CoreNames.KEYWORDS;
 			case PERSON:
 				return CoreNames.PEOPLE;
+			case COLLECTION:
+			    return CoreNames.RESOURCES;
 			case RESOURCE:
 				return CoreNames.RESOURCES;
 			case RESOURCE_ANNOTATION_KEY:
@@ -100,7 +100,7 @@ public enum LookupSource implements HasLabel,Localizable {
 			return CoreNames.RESOURCES;
 		}
 		if (ResourceCollection.class.isAssignableFrom(item)) {
-			return CoreNames.COLLECTIONS;
+			return CoreNames.RESOURCES;
 		}
 		if (Keyword.class.isAssignableFrom(item)) {
 			return CoreNames.KEYWORDS;

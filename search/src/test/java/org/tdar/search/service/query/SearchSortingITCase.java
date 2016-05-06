@@ -17,12 +17,14 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -45,9 +47,10 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     SearchService<Resource> searchService;
     
     public static class SortTestStruct {
-        public SortTestStruct(LookupSource type, QueryBuilder queryBuilder) {
+        public SortTestStruct(LookupSource type) {
             this.type = type;
-            this.qb = queryBuilder;
+            this.qb = setupQueryBuilder();
+            
         }
 
         public LookupSource type;
@@ -120,7 +123,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @BeforeClass
     public static void before() {
-        SortTestStruct resourceInfo = new SortTestStruct(LookupSource.RESOURCE, new ResourceQueryBuilder());
+        SortTestStruct resourceInfo = new SortTestStruct(LookupSource.RESOURCE);
         resourceInfo.comparators.put(SortOption.TITLE, titleComparator);
         resourceInfo.comparators.put(SortOption.TITLE_REVERSE, titleComparator);
         resourceInfo.comparators.put(SortOption.ID, idComparator);
@@ -132,11 +135,6 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
 
     @Test
     public void testYearSorting() throws ParseException, SolrServerException, IOException {
-        resourceQueryBuilder = new ResourceQueryBuilder();
-        // get information resources only
-        FieldQueryPart<ResourceType> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE, ResourceType.PROJECT);
-        fqp.setInverse(true);
-        resourceQueryBuilder.append(fqp);
         Comparator<Resource> yearComparator = new Comparator<Resource>() {
             @Override
             public int compare(Resource arg0, Resource arg1) {
@@ -148,6 +146,17 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
         };
         assertSortOrder(SortOption.DATE, yearComparator);
         assertSortOrder(SortOption.DATE_REVERSE, yearComparator);
+    }
+
+
+    static ResourceQueryBuilder setupQueryBuilder() {
+        ResourceQueryBuilder resourceQueryBuilder = new ResourceQueryBuilder();
+        // get information resources only
+        FieldQueryPart<String> fqp = new FieldQueryPart<>(QueryFieldNames.RESOURCE_TYPE,Operator.OR, 
+                Arrays.asList(ResourceType.PROJECT.name(), CollectionType.INTERNAL.name(),CollectionType.PUBLIC.name(),CollectionType.SHARED.name()));
+        fqp.setInverse(true);
+        resourceQueryBuilder.append(fqp);
+        return resourceQueryBuilder;
     }
 
     @SuppressWarnings({ "unused", "rawtypes" })
@@ -242,7 +251,7 @@ public class SearchSortingITCase extends AbstractWithIndexIntegrationTestCase {
     private void assertSortOrder(SortOption sortOption, Comparator<Resource> comparator) throws ParseException, SolrServerException, IOException {
         SearchResult<Resource> result = new SearchResult<>();
         result.setSortField(sortOption);
-        searchService.handleSearch(resourceQueryBuilder, result, MessageHelper.getInstance());
+        searchService.handleSearch(setupQueryBuilder(), result, MessageHelper.getInstance());
         List<Resource> resources = result.getResults();
         assertFalse("results should not be empty", resources.isEmpty());
         for (int i = 0; i < (resources.size() - 2); i++) {
