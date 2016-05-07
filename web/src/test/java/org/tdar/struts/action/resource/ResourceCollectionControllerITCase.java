@@ -521,7 +521,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Long fileId = testFile.getId();
         searchIndexService.flushToIndexes();
         genericService.synchronize();
-        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
+        searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE,LookupSource.COLLECTION);
         testFile = null;
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
