@@ -60,7 +60,7 @@ public interface QueryFieldNames {
 	String LAST_NAME_SORT = "lastName_sort";
 	String CREATOR_NAME_SORT = "creator_name_sort";
 
-	String COLLECTION_TYPE = "type";
+	String COLLECTION_TYPE = RESOURCE_TYPE;
 	String RESOURCE_USERS_WHO_CAN_VIEW = "usersWhoCanView";
 	String RESOURCE_USERS_WHO_CAN_MODIFY = "usersWhoCanModify";
 	String COLLECTION_USERS_WHO_CAN_ADMINISTER = "usersWhoCanAdminister";
