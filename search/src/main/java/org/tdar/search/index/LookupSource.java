@@ -117,4 +117,18 @@ public enum LookupSource implements HasLabel,Localizable {
 		return null;
 	}
 
+	/**
+	 * because resource and collection share an index, the query isn't *:* but type:{}
+	 * @return
+	 */
+    public String getDeleteQuery() {
+        switch (this) {
+            case COLLECTION:
+            case RESOURCE:
+                return String.format("%s:%s", "type",this.name());
+            default:
+                return "*:*";
+        }
+    }
+
 }

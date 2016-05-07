@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -417,18 +416,16 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     public void purgeAll(LookupSource... sources) {
         for (LookupSource src : sources) {
-            for (Class<? extends Indexable> clss : src.getClasses()) {
-                purgeCore(LookupSource.getCoreForClass(clss));
-            }
+            purgeCore(src);
         }
     }
 
-    void purgeCore(String core) {
+    void purgeCore(LookupSource src) {
         try {
-            template.deleteByQuery(core, "*:*");
-            commit(core);
+            template.deleteByQuery(src.getCoreName(), src.getDeleteQuery());
+            commit(src.getCoreName());
         } catch (SolrServerException | IOException e) {
-            logger.error("error purging index: {}", core, e);
+            logger.error("error purging index: {}", src.getCoreName(), e);
         }
     }
 

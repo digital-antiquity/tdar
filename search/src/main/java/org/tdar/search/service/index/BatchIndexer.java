@@ -89,12 +89,8 @@ public class BatchIndexer implements Serializable {
             }
             Counter counter = new Counter();
             counter.setTotal(total);
-            Set<String> seenCores = new HashSet<>();
             for (LookupSource src : sources) {
-                if (!seenCores.contains(src.getCoreName())) {
-                    searchIndexService.purgeCore(src.getCoreName());
-                    seenCores.add(src.getCoreName());
-                }
+                searchIndexService.purgeCore(src);
 	            for (Class<? extends Indexable> toIndex : src.getClasses()) {
 	                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
 	                ScrollableResults scrollableResults = null;

@@ -1,5 +1,30 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <schema name="collections" version="1.5">
+
+<!--
+
+
+
+
+
+
+
+
+								I AM NOT USED
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -->
     <field name="name" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
     <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="false" />
