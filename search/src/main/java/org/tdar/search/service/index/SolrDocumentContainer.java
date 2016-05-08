@@ -3,7 +3,6 @@ package org.tdar.search.service.index;
 import java.io.File;
 import java.io.Serializable;
 
-import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.event.EventType;
 import org.tdar.core.service.event.ObjectContainer;
 

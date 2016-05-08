@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.query.QueryFieldNames;

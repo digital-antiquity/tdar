@@ -119,17 +119,6 @@ TDAR.validate = (function($, ctx) {
             _prepareDateFields(this);
         });
 
-
-        $form.find(".profileImage").each(function(i, elem) {
-            $(elem).rules("add", {
-                extension: "jpg,tiff,jpeg,png",
-                messages: {
-                    extension: "please upload a JPG, TIFF, or PNG file for a profile image"
-                }
-            });
-        });
-
-
         var $uploaded = $( '_uploadedFiles', $form);
         if ($uploaded.length > 0) {
             var _validateUploadedFiles = function () {
@@ -140,7 +129,8 @@ TDAR.validate = (function($, ctx) {
             $uploaded.change(_validateUploadedFiles);
             _validateUploadedFiles();
         }
-        
+
+        //fixme:  confirm that input[file] elements actually use this validation rule - I'm pretty sure it's overridden by jquery-file-upload
         if ($form.data("valid-extensions")) {
             var validExtensions = $form.data("valid-extensions");
             console.log(validExtensions);
@@ -155,7 +145,6 @@ TDAR.validate = (function($, ctx) {
             });
         }
 
-        
         var fileValidator;
         if ($form.data("multiple-upload")) {
             fileValidator = new TDAR.fileupload.FileuploadValidator($form);
@@ -184,19 +173,6 @@ TDAR.validate = (function($, ctx) {
         if ($form.data("type") == 'GEOSPATIAL') {
             TDAR.fileupload.addGisValidation(fileValidator);
         }
-
-        $form.find(".scannerTechnology").each(function(i, elem) {
-            $(elem).rules("add", {
-                valueRequiresAsyncUpload: {
-                    possibleValues: ["TIME_OF_FLIGHT", "PHASE_BASED", "TRIANGULATION"],
-                    fileExt: "xls",
-                    inputElementId: "fileAsyncUpload"
-                },
-                messages: {
-                    valueRequiresAsyncUpload: "Please include a scan manifest file when choosing this scan type"
-                }
-            });
-        });
 
         if (!$form.data("multiple-upload") && ($form.data("total-files") == 0 || $form.data("total-files") > 0)) {
             var rtype = $form.data("resource-type");

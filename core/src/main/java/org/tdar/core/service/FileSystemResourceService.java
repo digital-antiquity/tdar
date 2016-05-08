@@ -2,9 +2,6 @@ package org.tdar.core.service;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,10 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.filestore.FilestoreObjectType;
-import org.w3c.dom.Document;
-import org.xml.sax.SAXException;
-
-import freemarker.ext.dom.NodeModel;
 
 /**
  * This Service provides support for getting resources off of the filesystem and

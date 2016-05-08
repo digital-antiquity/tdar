@@ -129,9 +129,12 @@ describe("TDAR.validate: edit page tests", function () {
     });
 
     it("should add image extension validation to profile image uploads validateProfileImage", function () {
-    	loadFixtures("profile-image.html");
-        var form = $('#profile');
-        var validator = TDAR.validate.initForm(form);
-        expect(Object.keys($('input[type=file]').rules())).toContain('extension');
+        loadFixtures("profile-image.html");
+        var $form = $("#profile");
+        $form.find('input').val('foo.bar');
+        var validator = $form.validate({debug:false, ignore:"none"});
+        expect($form.valid()).toBeFalsy();
+        expect(validator.errorList.length).toBe(1);
+        expect(validator.errorList[0].message).toContain("Please upload a file with one of the following extensions");
     });
 });
