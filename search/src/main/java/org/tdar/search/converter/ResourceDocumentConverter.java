@@ -349,7 +349,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     public static SolrInputDocument replaceCollectionFields(Resource r) {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
         ResourceDocumentConverter.indexCollectionInformation(doc, r);
-        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
         doc.setField(QueryFieldNames.RESOURCE_TYPE, r.getResourceType().name());
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
