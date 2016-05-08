@@ -410,7 +410,7 @@ TDAR.inheritance = (function () {
 
         var si = json.spatialInformation;
         if (si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
-            $(".locateCoordsButton",$("#divSpatialInformation")).click();
+            $(".locateCoordsButton",$section).click();
         }
         _disableMap();
 
