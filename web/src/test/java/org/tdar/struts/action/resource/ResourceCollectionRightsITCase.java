@@ -532,7 +532,6 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         result = controller.save();
         genericService.evictFromCache(controller.getResourceCollection());
         controller = null;
-        searchIndexService.flushToIndexes();
         genericService.synchronize();
         ResourceCollection collection = genericService.find(ResourceCollection.class, rcid);
         logger.debug("AU:{}", collection.getAuthorizedUsers());

@@ -403,7 +403,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         documentAfter.setDateUpdated(format.parse("2010-07-23"));
         genericService.saveOrUpdate(documentAfter);
         genericService.synchronize();
-        searchIndexService.flushToIndexes();
+        
         SearchParameters params = new SearchParameters();
         params.getUpdatedDates().add(new DateRange(format.parse("2010-03-05"), format.parse("2010-07-22")));
         SearchResult<Resource> result = doSearch(null,null, params, null, SortOption.DATE_UPDATED);
@@ -434,7 +434,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         searchIndexService.index(doc);
 
         // converstion from MST to UTC date advances registration date by one day.
-        searchIndexService.flushToIndexes();
+        
         DateRange dateRange = new DateRange();
         dateRange.setStart(searchDateTime.toDate());
         dateRange.setEnd(searchDateTime.plusDays(1).toDate());
@@ -635,7 +635,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(doc2);
         evictCache();
         searchIndexService.index(doc1, doc2);
-        searchIndexService.flushToIndexes();
+        
         SearchParameters params = new SearchParameters();
         params.setAllFields(Arrays.asList(ISTANBUL, CONSTANTINOPLE));
         params.setOperator(Operator.OR);
@@ -694,7 +694,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(doc);
         genericService.synchronize();
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
-        searchIndexService.flushToIndexes();
+        
         SearchParameters sp = new SearchParameters();
         sp.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
         SearchResult<Resource> result = doSearch(null, null, sp, null);

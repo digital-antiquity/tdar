@@ -38,7 +38,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     public void testResourceReport() throws SolrServerException, IOException {
         Dataset dataset = createAndSaveNewDataset();
         searchIndexService.index(dataset);
-        searchIndexService.flushToIndexes();
         scheduledProcessService.queue(WeeklyResourcesAdded.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         assertTrue(dailyEmailProcess.isCompleted());

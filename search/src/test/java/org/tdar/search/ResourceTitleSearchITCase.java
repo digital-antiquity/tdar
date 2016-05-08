@@ -79,7 +79,6 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         }
         genericService.synchronize();
 //        searchIndexService.indexCollection(docs);
-        searchIndexService.flushToIndexes();
         SearchResult<Resource> result = doSearch("AZ U:9:1(ASM)");
         List<Resource> results = result.getResults();
         for (Resource r : result.getResults()) {
@@ -361,7 +360,6 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         }
         genericService.synchronize();
         searchIndexService.indexCollection(docs);
-        searchIndexService.flushToIndexes();
         SearchResult<Resource> result = doSearch(exact);
         List<Resource> results = result.getResults();
         for (Resource r : result.getResults()) {

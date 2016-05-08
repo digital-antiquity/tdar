@@ -466,7 +466,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         genericService.synchronize();
         // flush, detach (important for test), setup
-        searchIndexService.flushToIndexes();
         searchIndexService.index(image);
         genericService.detachFromSession(person);
         genericService.detachFromSession(dup);
