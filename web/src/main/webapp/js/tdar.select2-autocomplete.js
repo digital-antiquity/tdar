@@ -52,8 +52,45 @@ TDAR.select2autocomplete = (function($, ctx) {
                     },
                   },
                   // hide input too short
-            })
+            });
 
+            $(".resource-autocomplete").select2({
+                templateResult: _highlightResource,
+                templateSelection: _highlightResource,
+                 ajax: {
+                    data: function (params) {
+                      return {
+                        term: params.term, // search term
+                        page: params.page
+                      };
+                    },
+                    
+                    processResults: function (data, params) {
+                    	console.log(data);
+                        if (data && data.resources && data.resources.length > 0) {
+                            for (var item in data.resources) {
+                                data.resources[item].text = data.resources[item].title;
+                            }
+                        }
+
+                      // parse the results into the ; format expected by Select2
+                      // since we are using custom formatting functions we do not need to
+                      // alter the remote JSON data, except to indicate that infinite
+                      // scrolling can be used
+                      params.page = params.page || 1;
+                
+                      return {
+                        results: data.resources,
+                        pagination: {
+                          more: (params.page * 30) < data.total_count
+                        }
+                      };
+                    },
+                  },
+            	
+            });
+            
+            
             $(".losenge").click(function(e) {
                 e.stopPropagation();
                 return false;       
@@ -72,6 +109,12 @@ TDAR.select2autocomplete = (function($, ctx) {
         // });
     };
 
+    var _highlightResource = function(resource) {
+    	if (resource.text) {
+    		resource.title = resource.text;
+    	}
+    	return $("<span data-id='"+resource.id+"' style='z-index:1000' >"+resource.title+"("+resource.id+")</span>");
+    };
     var _highlightKeyword = function(keyword) {
     	var label = keyword.text;
     	if (!keyword.id || !keyword.text) {
