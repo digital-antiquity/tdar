@@ -226,6 +226,11 @@ TDAR.inheritance = (function () {
                 return $(v).val();
             }
         });
+        
+        var $select2 = $(rootElementSelector);
+        if ($select2.length > 0) {
+        	repeatRowValues = $select2.val();
+        }
         return repeatRowValues.length === 0 || $.compareArray(repeatRowValues, values);
     }
 
@@ -397,7 +402,7 @@ TDAR.inheritance = (function () {
         _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
         _populateSection(formId, json.spatialInformation);
-//        _populateSelect2Keywords($section, json.spatialInformation['geographicKeywords']);
+        _populateSelect2Keywords($section, json.spatialInformation['geographicKeywords']);
         _disableSection($section);
 
         // clear the existing redbox and draw new one;

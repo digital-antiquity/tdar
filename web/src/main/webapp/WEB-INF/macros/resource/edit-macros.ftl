@@ -9,6 +9,8 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#import "/${themeDir}/settings.ftl" as settings>
     <#import "navigation-macros.ftl" as nav>
 
+	<#assign useSelect2=false  />
+
     <#macro basicInformation itemTypeLabel="file" itemPrefix="resource">
 
     </#macro>
@@ -77,68 +79,19 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         </div>
     </div>
     </#macro>
-<#-- 
-    <#macro select2 title array prefix>
+
+    <#macro select2 title array prefix type>
     
-    <select class="js-example-tags form-control select2-hidden-accessible" multiple="" tabindex="-1" aria-hidden="true" style="width:100%">
+    <select class="keyword-autocomplete form-control select2-hidden-accessible" multiple="" tabindex="-1" aria-hidden="true" style="width:100%"
+        name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type}&" id="${prefix}Repeatable">
         <#list array![] as term>
         <option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option>
         </#list>
     </select>
     
-    <script>
-    $(document).ready(function(){
-        $(".js-example-tags").select2({
-            tags: true,
-            templateResult: function(keyword) {
-                console.log(keyword);
-                return $("<span>"+keyword.label+"</span>");
-            },
-            templateSelection: function(keyword) {
-                console.log(keyword);
-                if (!keyword.id) { return keyword; }
-                return $("<span>"+keyword.label+"</span>");
-            },
-             ajax: {
-                url: "/lookup/keyword",
-                dataType: 'jsonp',
-                delay: 250,
-                data: function (params) {
-                  return {
-                    term: params.term, // search term
-                    keywordType: "GeographicKeyword",
-                    page: params.page
-                  };
-                },
-                
-                processResults: function (data, params) {
-                  // parse the results into the format expected by Select2
-                  // since we are using custom formatting functions we do not need to
-                  // alter the remote JSON data, except to indicate that infinite
-                  // scrolling can be used
-                  params.page = params.page || 1;
-            
-                  return {
-                    results: data.items,
-                    pagination: {
-                      more: (params.page * 30) < data.total_count
-                    }
-                  };
-                },
-                cache: true
-              },
-        })
-    });
-    </script>
-    <style>
-    .select2-container {
-  margin:0;
-}
-.add-on{
-    float:left;
-}</style>
     </#macro>
--->
+
+
 <#-- render the "spatial information" section:geographic keywords, map, coordinates, etc. -->
     <#macro spatialContext showInherited=true>
     <div class="well-alt" id="spatialSection">
@@ -148,21 +101,15 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
             <div data-tiplabel="Spatial Terms: Geographic"
                  data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;.">
-                <#--                 
-                 <@select2 "Geographic Terms" geographicKeywords 'geographicKeywords' />
-                -->
-                 
-                <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' /> 
+				<#if useSelect2>
+                    <@select2 "Geographic Terms" geographicKeywords 'geographicKeywords' "GeographicKeyword" />
+				<#else>
+                    <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' /> 
+				</#if>                 
             </div>
             <@helptext.geo />
             <h4>Geographic Region</h4>
 
-<!--
-            <div id='editmapv3' class="tdar-map-large google-map"
-                 data-tiplabel="Geographic Coordinates"
-                 data-tooltipcontent="#geoHelpDiv"
-                    ></div>
--->
         <div id='large-map' style="height:300px" class="leaflet-map-editable span9" data-search="true">
             <div id="divManualCoordinateEntry" data-tooltipcontent="#divManualCoordinateEntryTip" class="latlong-fields">
                 <@s.checkbox id="viewCoordinatesCheckbox" name="_tdar.viewCoordinatesCheckbox" onclick="TDAR.common.coordinatesCheckboxClicked(this);" label='Enter / View Coordinates' labelposition='right'  />
