@@ -1087,14 +1087,14 @@ TDAR.inheritance = (function () {
                                 _options.inheritSectionCallback();
                             }, function () {
                                 $cb.prop("checked", false);
-                                _options.enableSectionCallback(_options.divSelector);
+                                _options.enableSectionCallback($(_options.divSelector));
                                 _updateSelectAllCheckboxState();
                             });
                 }
                 ;
             } else {
                 //user unchecked inheritance - enable the controls
-                _options.enableSectionCallback(_options.divSelector);
+                _options.enableSectionCallback($(_options.divSelector));
                 _updateSelectAllCheckboxState();
                 $(_options.divSelector).find('input[type=hidden].dont-inherit').val("");
             }
