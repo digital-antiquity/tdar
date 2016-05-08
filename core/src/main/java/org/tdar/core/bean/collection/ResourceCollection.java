@@ -122,20 +122,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     private transient Integer maxWidth;
     private transient VersionType maxSize;
 
-    public enum CollectionType {
-        INTERNAL("Internal"), SHARED("Shared"), PUBLIC("Public");
-
-        private String label;
-
-        private CollectionType(String label) {
-            this.label = label;
-        }
-
-        public String getLabel() {
-            return this.label;
-        }
-    }
-
     private static final long serialVersionUID = -5308517783896369040L;
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
