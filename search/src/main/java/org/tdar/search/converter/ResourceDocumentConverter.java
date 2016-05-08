@@ -59,8 +59,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         SolrInputDocument doc = convertPersistable(resource);
         doc.setField(QueryFieldNames.NAME, resource.getName());
         doc.setField(QueryFieldNames.NAME_SORT, resource.getTitleSort());
-        doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
-        doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
+        addRequiredField(resource, doc);
         doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
         indexCreatorInformation(doc, resource);
@@ -208,6 +207,12 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         return doc;
     }
 
+
+    private static void addRequiredField(Resource resource, SolrInputDocument doc) {
+        doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
+        doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
+    }
+
     
     private static HashSet<String> extractSiteCodeTokens(Resource resource) {
         HashSet<String> kwds = new HashSet<>();
@@ -349,7 +354,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     public static SolrInputDocument replaceCollectionFields(Resource r) {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
         ResourceDocumentConverter.indexCollectionInformation(doc, r);
-        doc.setField(QueryFieldNames.RESOURCE_TYPE, r.getResourceType().name());
+        addRequiredField(r, doc);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_IDS);
