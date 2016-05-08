@@ -9,7 +9,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#import "/${themeDir}/settings.ftl" as settings>
     <#import "navigation-macros.ftl" as nav>
 
-	<#assign useSelect2=false  />
+	<#assign useSelect2=select2Enabled!true  />
 
     <#macro basicInformation itemTypeLabel="file" itemPrefix="resource">
 
@@ -59,7 +59,13 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
             input fields for each element in the list, with the value of the element pre-populated with the keyword.label value
     @param keywordField:string prefix to use when generating the name-attribute for the input fields in this section.
 -->
-    <#macro keywordRows label keywordList keywordField showDelete=true addAnother="add another keyword">
+    <#macro keywordRows label keywordList keywordField className showDelete=true addAnother="add another keyword">
+    
+		<#if useSelect2>
+                    <@select2 label keywordList keywordField className />
+			<#return />
+		</#if>
+    
     <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
         <label class="control-label">${label}</label>
         <#list keywordList as keyword>
@@ -81,14 +87,14 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#macro>
 
     <#macro select2 title array prefix type>
-    
+    <h5>${title}</h5>
     <select class="keyword-autocomplete form-control select2-hidden-accessible" multiple="" tabindex="-1" aria-hidden="true" style="width:100%"
         name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type}&" id="${prefix}Repeatable">
         <#list array![] as term>
-        <option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option>
+        	<#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
         </#list>
     </select>
-    
+    <p class="note">use a ; or | to separate multiple keywords when entering them, or simply use the autocomplete</p>
     </#macro>
 
 
@@ -101,11 +107,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
             <div data-tiplabel="Spatial Terms: Geographic"
                  data-tooltipcontent="Keyword list: Geographic terms relevant to the document, e.g. &quot;Death Valley&quot; or &quot;Kauai&quot;.">
-				<#if useSelect2>
-                    <@select2 "Geographic Terms" geographicKeywords 'geographicKeywords' "GeographicKeyword" />
-				<#else>
-                    <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' /> 
-				</#if>                 
+                <@keywordRows "Geographic Terms" geographicKeywords 'geographicKeywords' "GeographicKeyword" /> 
             </div>
             <@helptext.geo />
             <h4>Geographic Region</h4>
@@ -179,7 +181,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <div id="divTemporalInformation">
             <div data-tiplabel="Temporal Terms"
                  data-tooltipcontent="Keyword list: Temporal terms relevant to the document, e.g. &quot;Pueblo IV&quot; or &quot;Late Archaic&quot;.">
-                <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' true "add another temporal keyword" />
+                <@keywordRows "Temporal Terms" temporalKeywords 'temporalKeywords' "TemporalKeyword" true "add another temporal keyword" />
             </div>
             <@_coverageDatesSection />
         </div>
@@ -224,7 +226,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h2 id="generalInfoSectionLabel">General Keywords</h2>
         <@_inheritsection checkboxId="cbInheritingOtherInformation" name='resource.inheritingOtherInformation'  showInherited=showInherited sectionId='#divOtherInformation'/>
         <div id="divOtherInformation">
-            <@keywordRows "Keyword" otherKeywords 'otherKeywords' />
+            <@keywordRows "Keyword" otherKeywords 'otherKeywords' "OtherKeyword" />
         </div>
     </div>
     </#macro>
@@ -238,7 +240,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <h2 id="siteInfoSectionLabel">${divTitle}</h2>
         <@_inheritsection checkboxId='cbInheritingSiteInformation' name='resource.inheritingSiteInformation'  showInherited=showInherited sectionId='#divSiteInformation'/>
         <div id="divSiteInformation">
-            <@keywordRows "Site Name / Number" siteNameKeywords 'siteNameKeywords' />
+            <@keywordRows "Site Name / Number" siteNameKeywords 'siteNameKeywords' "SiteNameKeyword" />
 
             <div class="control-group">
                 <label class="control-label">Site Type</label>
@@ -248,7 +250,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </div>
             </div>
 
-            <@keywordRows "Other" uncontrolledSiteTypeKeywords 'uncontrolledSiteTypeKeywords' />
+            <@keywordRows "Other" uncontrolledSiteTypeKeywords 'uncontrolledSiteTypeKeywords' "SiteTypeKeyword" />
         </div>
     </div>
     </#macro>
@@ -270,7 +272,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 	            spanClass="span2" numColumns="3" />
     	    </div>
 
-            <@keywordRows "Other" uncontrolledMaterialKeywords 'uncontrolledMaterialKeywords' />
+            <@keywordRows "Other" uncontrolledMaterialKeywords 'uncontrolledMaterialKeywords' "MaterialKeyword" />
 		</div>
     </div>
     </#macro>
@@ -295,7 +297,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                 </div>
             </div>
             <!--"add another cultural term" -->
-            <@keywordRows "Other" uncontrolledCultureKeywords 'uncontrolledCultureKeywords' />
+            <@keywordRows "Other" uncontrolledCultureKeywords 'uncontrolledCultureKeywords'  "CultureKeyword" />
         </div>
     </div>
     </#macro>

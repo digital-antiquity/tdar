@@ -965,4 +965,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public boolean includeSpecialCodingRules() {
         return assistant.getBooleanProperty("integration.special_coding_rules", true);
     }
+
+    public boolean isSelect2Enabled() {
+        return assistant.getBooleanProperty("select2.enabled", false);
+    }
 }
