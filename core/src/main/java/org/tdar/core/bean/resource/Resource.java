@@ -453,59 +453,6 @@ public class Resource implements Persistable,
         return cultureKeywords;
     }
 
-    /*
-     * this function should introduce into the index all of the people who can
-     * modify a record which is useful for limiting things on the project page
-     */
-    @ElementCollection
-    public List<Long> getUsersWhoCanModify() {
-        List<Long> users = new ArrayList<Long>();
-        HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(getSubmitter());
-        writable.add(getUpdatedBy());
-        for (ResourceCollection collection : getResourceCollections()) {
-            writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_METADATA, true));
-        }
-        for (TdarUser p : writable) {
-            if (PersistableUtils.isNullOrTransient(p)) {
-                continue;
-            }
-            users.add(p.getId());
-        }
-        // FIXME: decide whether right should inherit from projects (1) of (2)
-        // change see authorizedUserDao
-        // sb.append(getAdditionalUsersWhoCanModify());
-        logger.trace("effectiveUsers:" + users);
-        return users;
-    }
-
-    /*
-     * this function should introduce into the index all of the people who can
-     * modify a record which is useful for limiting things on the project page
-     */
-    @ElementCollection
-    public List<Long> getUsersWhoCanView() {
-        List<Long> users = new ArrayList<Long>();
-        HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(getSubmitter());
-        writable.add(getUpdatedBy());
-        for (ResourceCollection collection : getRightsBasedResourceCollections()) {
-            writable.addAll(collection.getUsersWhoCan(
-                    GeneralPermissions.VIEW_ALL, true));
-        }
-        for (TdarUser p : writable) {
-            if (PersistableUtils.isNullOrTransient(p)) {
-                continue;
-            }
-            users.add(p.getId());
-        }
-        // FIXME: decide whether right should inherit from projects (1) of (2)
-        // change see authorizedUserDao
-        // sb.append(getAdditionalUsersWhoCanModify());
-        logger.trace("effectiveUsers:" + users);
-        return users;
-    }
-
     @JsonView(JsonProjectLookupFilter.class)
     public Set<CultureKeyword> getActiveCultureKeywords() {
         return getCultureKeywords();

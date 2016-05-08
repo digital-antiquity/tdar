@@ -59,7 +59,9 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
 
         FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
-
+        FieldQueryPart<String> collectionNamesContent = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_COLLECTION_NAME, cleanedQueryString);
+        queryPart.append(collectionNamesContent);
+        
         if (cleanedQueryString.contains(" ") && isUseProximity()) {
             creatorPart.setProximity(2);
         }
