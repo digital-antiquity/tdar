@@ -64,8 +64,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
         doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
-        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, resource.getUsersWhoCanModify());
-        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, resource.getUsersWhoCanView());
         doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
         indexCreatorInformation(doc, resource);
         indexCollectionInformation(doc, resource);
@@ -235,31 +233,16 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
     }
 
-    private static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
-        Set<Long> allCollectionIds = new HashSet<Long>();
-        Set<Long> collectionIds = new HashSet<Long>();
-        Set<Long> directCollectionIds = new HashSet<Long>();
-        Set<String> collectionNames = new HashSet<>();
-        Set<String> directCollectionNames = new HashSet<>();
-        Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
-        collections.addAll(resource.getUnmanagedResourceCollections());
-        for (ResourceCollection collection : collections) {
-            if (collection.isShared()) {
-                directCollectionIds.add(collection.getId());
-                directCollectionNames.add(collection.getName());
-                collectionIds.addAll(collection.getParentIds());
-                collectionNames.addAll(collection.getParentNameList());
-            } else if (collection.isInternal()) {
-                allCollectionIds.add(collection.getId());
-            }
-        }
-        collectionIds.addAll(directCollectionIds);
-        allCollectionIds.addAll(collectionIds);
+    public static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
+        ResourceRightsExtractor rightsExtractor = new ResourceRightsExtractor();
+        rightsExtractor.extract(resource);
+        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, resource.getUsersWhoCanModify());
+        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, resource.getUsersWhoCanView());
 
-        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, directCollectionIds);
-        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, collectionIds);
-        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_IDS, allCollectionIds);
-        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, collectionNames);
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, rightsExtractor.getDirectCollectionIds());
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, rightsExtractor.getCollectionIds());
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_IDS, rightsExtractor.getAllCollectionIds());
+        doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, rightsExtractor.getCollectionNames());
     }
 
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {

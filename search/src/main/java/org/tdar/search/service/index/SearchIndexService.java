@@ -8,13 +8,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang.SerializationUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.logging.log4j.core.Filter.Result;
 import org.apache.solr.client.solrj.SolrClient;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.UpdateResponse;
@@ -551,6 +554,63 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             index(core, id, doc);
         }
         commit(core);
+    }
+
+    @Transactional(readOnly=true)
+    public void partialIndexAllResourcesInCollectionSubTree(ResourceCollection persistable) {
+        Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(persistable);
+        ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(persistable);
+        int numProcessed =0;
+        while (results.next()) {
+            Resource r  = (Resource) results.get(0);
+            SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
+            ResourceDocumentConverter.indexCollectionInformation(doc, r);
+            doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
+            doc.setField(QueryFieldNames.RESOURCE_TYPE, r.getResourceType().name());
+            replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
+            replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
+            replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_IDS);
+            replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_NAME);
+            replaceField(doc, QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY);
+            replaceField(doc, QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW);
+            try {
+                template.add(LookupSource.RESOURCE.getCoreName(), doc);
+            } catch (SolrServerException | IOException e1) {
+                logger.error("error adding: {}", e1);
+            }
+            if ((numProcessed  % FLUSH_EVERY) == 0) {
+                logger.trace("flushing search index");
+                try {
+                    commit(LookupSource.RESOURCE.getCoreName());
+                } catch (SolrServerException | IOException e) {
+                    logger.error("error committing: {}", e);
+                }
+                genericDao.clearCurrentSession();
+                logger.trace("flushed search index");
+            }
+            numProcessed++;
+
+        }
+        try {
+            commit(LookupSource.RESOURCE.getCoreName());
+        } catch (SolrServerException | IOException e) {
+            logger.error("error in partial index: {}", e);
+        } finally {
+            genericDao.clearCurrentSession();
+        }
+        
+    }
+
+    private void replaceField(SolrInputDocument doc, String fieldName) {
+        Map<String, Object> partialUpdate = new HashMap<>();
+        partialUpdate.put("set", doc.getField(fieldName).getValues());
+        doc.setField(fieldName, partialUpdate);
+    }
+
+    @Transactional(readOnly=true)
+    @Async
+    public void partialIndexAllResourcesInCollectionSubTreeAsync(ResourceCollection persistable) {
+        partialIndexAllResourcesInCollectionSubTree(persistable);
     }
 
 }

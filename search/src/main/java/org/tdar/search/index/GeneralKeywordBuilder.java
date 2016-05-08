@@ -89,12 +89,6 @@ public class GeneralKeywordBuilder implements Serializable {
             sb.append(ann.getValue()).append(" ");
         }
 
-        for (ResourceCollection coll : r.getSharedResourceCollections()) {
-            if (!coll.isHidden()) {
-                sb.append(coll.getName()).append(" ");
-            }
-        }
-
         for (RelatedComparativeCollection rcc : r.getActiveRelatedComparativeCollections()) {
             sb.append(rcc.getText()).append(" ");
         }
