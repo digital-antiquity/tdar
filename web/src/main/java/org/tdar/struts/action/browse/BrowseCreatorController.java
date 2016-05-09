@@ -78,6 +78,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
+import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -252,8 +253,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         try {
-            AbstractSchemaOrgMetadataTransformer transformer = new AbstractSchemaOrgMetadataTransformer();
-            setSchemaOrgJsonLD(transformer.convert(serializationService, getCreator(), logoUrl));
+            setSchemaOrgJsonLD(entityService.createSchemaOrgJson(getCreator(), logoUrl));
         } catch (Exception e) {
             getLogger().error("error converting to json-ld", e);
         }

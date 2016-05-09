@@ -78,6 +78,9 @@ public class SimpleKeywordController extends AbstractKeywordController {
         }
         
         for (ExternalKeywordMapping map : getMappings()) {
+            if (map == null) {
+                continue;
+            }
             if (StringUtils.isNotBlank(map.getRelation()) && map.getRelationType() == null) {
                 addActionError(getText("simpleKeywordAction.relation_missing"));                
             }

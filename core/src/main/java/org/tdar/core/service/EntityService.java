@@ -1,5 +1,6 @@
 package org.tdar.core.service;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.resource.BookmarkedResourceDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
+import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -52,6 +54,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     private transient InstitutionDao institutionDao;
     @Autowired
     private transient AuthorizedUserDao authorizedUserDao;
+    @Autowired
+    private transient SerializationService serializationService;
     @Autowired
     private transient SimpleFileProcessingDao simpleFileProcessingDao;
     @Autowired
@@ -537,6 +541,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly=true)
     public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
         return getDao().getAffiliationCounts(true);
+    }
+
+    public String createSchemaOrgJson(Creator creator, String logoUrl) throws IOException {
+        SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
+        return transformer.convert(serializationService, creator, logoUrl);
     }
 
 }
