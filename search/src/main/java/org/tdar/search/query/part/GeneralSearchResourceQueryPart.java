@@ -56,9 +56,6 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         }
 
         FieldQueryPart<String> creatorPart = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_CREATORS_PROPER_NAME, cleanedQueryString);
-        FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, cleanedQueryString);
-
-        FieldQueryPart<String> linkedContent = new FieldQueryPart<String>(QueryFieldNames.DATA_VALUE_PAIR, cleanedQueryString);
         FieldQueryPart<String> collectionNamesContent = new FieldQueryPart<String>(QueryFieldNames.RESOURCE_COLLECTION_NAME, cleanedQueryString);
         queryPart.append(collectionNamesContent);
         
@@ -79,17 +76,8 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
             FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
             queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         }
-        if (TdarConfiguration.getInstance().useSeparateContentsIndexForSearching()) {
-            queryPart.append(new ContentQueryPart(cleanedQueryString));
-        } else {
-            queryPart.append(content);
-        }
-
-        if (TdarConfiguration.getInstance().useSeparateLinkedDataIndexForSearching()) {
-            queryPart.append(new DataValueQueryPart(cleanedQueryString));
-        } else {
-            queryPart.append(linkedContent);
-        }
+        queryPart.append(new ContentQueryPart(cleanedQueryString));
+        queryPart.append(new DataValueQueryPart(cleanedQueryString));
         return queryPart;
     }
 

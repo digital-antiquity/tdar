@@ -1,7 +1,5 @@
 package org.tdar.search.converter;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.geotools.geometry.jts.JTS;
 import org.tdar.core.bean.SupportsResource;
@@ -38,10 +35,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.filestore.Filestore;
-import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.index.GeneralKeywordBuilder;
-import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
@@ -52,7 +46,6 @@ import com.vividsolutions.jts.io.WKTWriter;
 public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
-	private static final Filestore FILESTORE = CONFIG.getFilestore();
 
     public static SolrInputDocument convert(Resource resource) {
 
@@ -89,7 +82,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
 
             Set<String> filenames = new HashSet<>();
-            StringBuilder sb = new StringBuilder();
             Set<Long> fileIds = new HashSet<>();
             int total = 0;
             for (InformationResourceFile irf : ir.getInformationResourceFiles()) {
@@ -99,19 +91,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 if (!irf.isDeleted() && !irf.isPartOfComposite()) {
                     total++;
                 }
-                if (!CONFIG.useSeparateContentsIndexForSearching()) {
-	                if (irf.getIndexableVersion() != null && irf.isPublic()) {
-	                    try {
-	                        sb.append(FileUtils.readFileToString(FILESTORE.retrieveFile(FilestoreObjectType.RESOURCE, irf.getIndexableVersion())));
-	                    } catch (FileNotFoundException fnf) {
-	
-	                    } catch (IOException e) {
-	                        logger.error("{}", e);
-	                    }
-	                }
-                }
             }
-            doc.setField(QueryFieldNames.CONTENT, sb.toString());
             if (ir.getResourceType().allowsMultipleFIles()) {
                 doc.setField(QueryFieldNames.TOTAL_FILES, total);
             } else {

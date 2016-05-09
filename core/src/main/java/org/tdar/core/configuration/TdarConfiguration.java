@@ -928,15 +928,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 		return Arrays.asList(assistant.getStringArray("tdar.colors", defaultColors));
 	}
 
-	
-	public boolean useSeparateContentsIndexForSearching() {
-	    return assistant.getBooleanProperty("indexing.separate_contents", true);
-	}
-
-    public boolean useSeparateLinkedDataIndexForSearching() {
-        return assistant.getBooleanProperty("indexing.separate_linked", true);
-    }
-
     public boolean useTransactionalEvents() {
         return assistant.getBooleanProperty("transactional.events",true);
     }
