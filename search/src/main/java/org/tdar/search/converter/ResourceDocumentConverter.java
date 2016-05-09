@@ -56,7 +56,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addRequiredField(resource, doc);
         doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
-        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
         indexCreatorInformation(doc, resource);
         indexCollectionInformation(doc, resource);
         indexTemporalInformation(doc, resource);
@@ -193,6 +192,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
+        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
     }
 
     
@@ -335,8 +335,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument replaceCollectionFields(Resource r) {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
-        ResourceDocumentConverter.indexCollectionInformation(doc, r);
         addRequiredField(r, doc);
+        ResourceDocumentConverter.indexCollectionInformation(doc, r);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_IDS);
