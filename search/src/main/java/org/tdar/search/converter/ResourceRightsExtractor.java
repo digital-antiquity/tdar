@@ -1,12 +1,35 @@
 package org.tdar.search.converter;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.resource.Resource;
+import javax.persistence.ElementCollection;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.utils.PersistableUtils;
+
+/**
+ * pull out the logic to get the rights info for a resource into a single spot for indexing.
+ * 
+ * @author abrin
+ *
+ */
 public class ResourceRightsExtractor {
+    
+    protected final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Resource resource;
+
+    public ResourceRightsExtractor(Resource resource) {
+        this.resource = resource;
+        extract();
+    }
 
     private HashSet<Long> directCollectionIds = new HashSet<>();;
     private HashSet<Long> collectionIds = new HashSet<>();;
@@ -14,7 +37,59 @@ public class ResourceRightsExtractor {
     private HashSet<String> collectionNames = new HashSet<>();;
     private Set<String> directCollectionNames = new HashSet<>();
 
-    public void extract(Resource resource) {
+    
+
+    /*
+     * this function should introduce into the index all of the people who can
+     * modify a record which is useful for limiting things on the project page
+     */
+    public List<Long> getUsersWhoCanModify() {
+        List<Long> users = new ArrayList<Long>();
+        HashSet<TdarUser> writable = new HashSet<>();
+        writable.add(resource.getSubmitter());
+        writable.add(resource.getUpdatedBy());
+        for (ResourceCollection collection : resource.getResourceCollections()) {
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan(collection, GeneralPermissions.MODIFY_METADATA, true));
+        }
+        for (TdarUser p : writable) {
+            if (PersistableUtils.isNullOrTransient(p)) {
+                continue;
+            }
+            users.add(p.getId());
+        }
+        // FIXME: decide whether right should inherit from projects (1) of (2)
+        // change see authorizedUserDao
+        // sb.append(getAdditionalUsersWhoCanModify());
+        logger.trace("effectiveUsers:" + users);
+        return users;
+    }
+
+    /*
+     * this function should introduce into the index all of the people who can
+     * modify a record which is useful for limiting things on the project page
+     */
+    public List<Long> getUsersWhoCanView() {
+        List<Long> users = new ArrayList<Long>();
+        HashSet<TdarUser> writable = new HashSet<>();
+        writable.add(resource.getSubmitter());
+        writable.add(resource.getUpdatedBy());
+        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+            writable.addAll(CollectionRightsExtractor.getUsersWhoCan(collection, GeneralPermissions.VIEW_ALL, true));
+        }
+        for (TdarUser p : writable) {
+            if (PersistableUtils.isNullOrTransient(p)) {
+                continue;
+            }
+            users.add(p.getId());
+        }
+        // FIXME: decide whether right should inherit from projects (1) of (2)
+        // change see authorizedUserDao
+        // sb.append(getAdditionalUsersWhoCanModify());
+        logger.trace("effectiveUsers:" + users);
+        return users;
+    }
+
+    public void extract() {
         Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
         collections.addAll(resource.getUnmanagedResourceCollections());
         for (ResourceCollection collection : collections) {

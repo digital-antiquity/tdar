@@ -10,7 +10,6 @@ import org.apache.commons.collections4.MapUtils;
 import org.tdar.core.bean.SupportsResource;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.HierarchicalKeyword;
 import org.tdar.core.bean.keyword.Keyword;

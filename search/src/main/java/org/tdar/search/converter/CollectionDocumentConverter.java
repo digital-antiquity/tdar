@@ -21,10 +21,13 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, "0" + collection.getType());
         doc.setField(QueryFieldNames.TYPE, LookupSource.COLLECTION.name());
         doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
-        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, collection.getUsersWhoCanModify());
-        doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, collection.getUsersWhoCanAdminister());
-        doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, collection.getUsersWhoCanView());
+        CollectionRightsExtractor extractor = new CollectionRightsExtractor(collection);
+        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, extractor.getUsersWhoCanModify());
+        doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
+        doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
         doc.setField(QueryFieldNames.ALL, collection.getAllFieldSearch());
         return doc;
     }
+    
+    
 }

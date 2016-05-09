@@ -275,10 +275,18 @@
             <h4>Choose a Project</h4>
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-	                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
-	                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
-	                truncate="70" value='${_projectId}'  cssClass="input-xxlarge" />
-                    <!-- ' required=true -->
+            <#if select2Enabled>
+	            <select name="projectId" class="resource-autocomplete" tabindex="-1" aria-hidden="true" style="width:100%"
+	            	data-ajax--url="/lookup/resource?term=Ith&resourceTypes=PROJECT&useSubmitterContext=true" data-minimum-input-length="0">
+	            	<#if resource.project?has_content>
+	            		<option value="${resource.project.id?c}">${resource.project.title}</option>
+	            	</#if>
+	            </select>
+            <#else>
+                <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
+                labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
+                truncate="70" value='${_projectId}'  cssClass="input-xxlarge" />
+			</#if>
             </div>
 
             <div class="modal hide fade" id="inheritOverwriteAlert" tabindex="-1" role="dialog" aria-labelledby="inheritOverwriteValidationErrorModalLabel" aria-hidden="true">
