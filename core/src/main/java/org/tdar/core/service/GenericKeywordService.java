@@ -30,6 +30,7 @@ import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericKeywordDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.transform.jsonld.SchemaOrgKeywordConverter;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
@@ -46,6 +47,9 @@ public class GenericKeywordService {
     @Autowired
     @Qualifier("genericKeywordDao")
     private GenericKeywordDao genericKeywordDao;
+
+    @Autowired
+    private SerializationService serializationService;
 
     /**
      * Find all approved keywords without the cache
@@ -318,6 +322,18 @@ public class GenericKeywordService {
     @Transactional(readOnly = true)
     public Number countActiveKeyword(KeywordType type) {
         return genericKeywordDao.countActiveWithStatus(type, null);
+    }
+
+    @Transactional(readOnly=true)
+    public String getSchemaOrgJsonLD(Keyword keyword) {
+        try {
+            SchemaOrgKeywordConverter transformer = new SchemaOrgKeywordConverter();
+            return transformer.convert(serializationService, keyword);
+        } catch (Exception e) {
+            logger.error("error converting to json-ld", e);
+        }
+
+        return null;
     }
 
 }

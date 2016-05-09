@@ -1,6 +1,5 @@
-package org.tdar.transform;
+package org.tdar.transform.jsonld;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,13 +9,10 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.RelationType;
-import org.tdar.core.bean.entity.Address;
-import org.tdar.core.bean.entity.AddressType;
-import org.tdar.core.bean.entity.Creator;
-import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
@@ -24,81 +20,41 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.PersistableUtils;
 
-public class SchemaOrgMetadataTransformer implements Serializable {
+/**
+ * Convert a persistable to a proper Schema.org / JSON LD String 
+ * @author abrin
+ *
+ */
+public abstract class AbstractSchemaOrgMetadataTransformer implements Serializable {
 
-    private static final String HTTP_SCHEMA_ORG = "http://schema.org";
-    private static final String SCHEMA_DESCRIPTION = "schema:description";
-    private static final String DATE_PUBLISHED = "schema:datePublished";
-    private static final String GRAPH = "@graph";
-    private static final String CONTEXT = "@context";
-    private static final String NAME = "schema:name";
-    private static final String TYPE = "@type";
-    private static final String ID = "@id";
-    private static final String PUBLISHER = "schema:publisher";
+    static final String SCHEMA = "schema";
+    static final String LOCAL_PREFIX = "tdar";
+    static final String HTTP_SCHEMA_ORG = "http://schema.org";
+    static final String SCHEMA_DESCRIPTION = "schema:description";
+    static final String DATE_PUBLISHED = "schema:datePublished";
+    static final String GRAPH = "@graph";
+    static final String CONTEXT = "@context";
+    static final String NAME = "schema:name";
+    static final String TYPE = "@type";
+    static final String ID = "@id";
+    static final String PUBLISHER = "schema:publisher";
     private List<Map<String,Object>> graph = new ArrayList<>();
 
-    private static final long serialVersionUID = -5903659479081408357L;
+    final transient Logger logger = LoggerFactory.getLogger(getClass());
+    static final long serialVersionUID = -5903659479081408357L;
 
-    public String convert(SerializationService ss, Creator<?> creator, String imageUrl) throws IOException {
-        Map<String, Object> jsonLd = new HashMap<String, Object>();
-        if (creator == null) {
-            return ss.convertToJson(jsonLd);
-        }
-        jsonLd.put(TYPE, "Organization");
-        if (StringUtils.isNotBlank(creator.getUrl())) {
-            add(jsonLd, "url", creator.getUrl());
-        } else {
-            add(jsonLd, "url", UrlService.absoluteUrl(creator));
-        }
-        add(jsonLd, NAME, creator.getProperName());
-        add(jsonLd, SCHEMA_DESCRIPTION, creator.getDescription());
-        add(jsonLd, "schema:image", imageUrl);
-        if (creator instanceof Person) {
-            Person person = (Person) creator;
-            jsonLd.put(TYPE, "Person");
-            if (person.getEmailPublic()) {
-                add(jsonLd, "schema:email", person.getEmail());
-            }
-            if (person.getPhonePublic()) {
-                add(jsonLd, "schema:telephone", person.getPhone());
-            }
-            add(jsonLd, "schema:affiliation", person.getInstitutionName());
 
-        } else {
-            add(jsonLd, "schema:logo", imageUrl);
-        }
-        if (CollectionUtils.isNotEmpty(creator.getAddresses())) {
-            for (Address address : creator.getAddresses()) {
-                if (address.getType() == AddressType.MAILING) {
-                    Map<String, Object> addLd = new HashMap<String, Object>();
-                    add(addLd, TYPE, "PostalAddress");
-                    add(addLd, "schema:addressLocality", address.getCity());
-                    add(addLd, "schema:addressRegion", address.getState());
-                    add(addLd, "schema:postalCode", address.getPostal());
-                    String street = address.getStreet1();
-                    if (StringUtils.isNotBlank(address.getStreet2())) {
-                        street += "\n" + address.getStreet2();
-                    }
-                    add(addLd, "schema:streetAddress", street);
-                    jsonLd.put("schema:address", addLd);
-                    break;
-                }
-            }
-        }
 
-        addContextSection(jsonLd);
-        
-        return ss.convertToJson(jsonLd);
-    }
-
-    private void addContextSection(Map<String, Object> jsonLd) {
+    /*
+     * the context section adds all of the prefixes and URIs for the various schema being processed.
+     */
+    protected void addContextSection(Map<String, Object> jsonLd) {
         Map<String, String> context = new HashMap<>();
-        context.put("schema", HTTP_SCHEMA_ORG);
-        context.put("tdar", TdarConfiguration.getInstance().getBaseUrl());
+        context.put(SCHEMA, HTTP_SCHEMA_ORG);
+        context.put(LOCAL_PREFIX, TdarConfiguration.getInstance().getBaseUrl());
         for (RelationType type : RelationType.values()) {
             context.put(type.getPrefix(), type.getUri());
         }
@@ -106,45 +62,36 @@ public class SchemaOrgMetadataTransformer implements Serializable {
 
     }
 
-    public String convert(SerializationService ss, Resource r) throws IOException {
-        Map<String, Object> jsonLd = new HashMap<String, Object>();
-        jsonLd.put(GRAPH, graph);
-        addGraphSection(r);
-        addGraphSection(r.getActiveCultureKeywords(), "tdar:cultureKeywords");
-        addGraphSection(r.getActiveGeographicKeywords(), "tdar:geographicKeywords");
-        addGraphSection(r.getActiveInvestigationTypes(), "tdar:investigationTypes");
-        addGraphSection(r.getActiveMaterialKeywords(), "tdar:materialKeywords");
-        addGraphSection(r.getActiveOtherKeywords(), "tdar:otherKeywords");
-        addGraphSection(r.getActiveSiteNameKeywords(), "tdar:siteNameKeywords");
-        addGraphSection(r.getActiveSiteTypeKeywords(), "tdar:siteTypeKeywords");
-        addGraphSection(r.getActiveTemporalKeywords(), "tdar:temporalKeywords");
-        addContextSection(jsonLd);
-        return ss.convertToJson(jsonLd);
-    }
-
-    private void addGraphSection(Set<? extends Keyword> keywords, String string) {
+    /*
+     * a JSON LD object can have multiple "graphs" each graph with a unique name.  This section is for a set of similar keywords
+     */
+    protected void addGraphSection(Set<? extends Keyword> keywords, String nodeName) {
         List<Map<String,Object>> all = new ArrayList<>();
+        logger.debug("adding keywords:{}", keywords);
         keywords.forEach(kwd -> {
             Map<String,Object> js = new HashMap<>();
             js.put("tdar:name", kwd.getLabel());
             js.put("tdar:id", kwd.getId());
             js.put("tdar:url", UrlService.absoluteUrl(kwd));
             kwd.getAssertions().forEach(map -> {
-                js.put(map.getRelationType().getJsonKey(),map.getRelation());
+                js.put(map.getRelationType().getJsonKey(), map.getRelation());
             });
             all.add(js);
         });
         if (all.size() > 0) {
             Map<String,Object> obj = new HashMap<>();
-            obj.put(string, all);
-            graph.add(obj);
+            obj.put(nodeName, all);
+            getGraph().add(obj);
         }
         
     }
 
-    private void addGraphSection(Resource r) {
+    /*
+     * Add a graph section for a resource
+     */
+    protected void addGraphSection(Resource r) {
         Map<String,Object> jsonLd = new HashMap<>();
-        graph.add(jsonLd);
+        getGraph().add(jsonLd);
         jsonLd.put(NAME, r.getTitle());
         jsonLd.put(SCHEMA_DESCRIPTION, r.getDescription());
         switch (r.getResourceType()) {
@@ -229,8 +176,8 @@ public class SchemaOrgMetadataTransformer implements Serializable {
                     jsonLd.remove(PUBLISHER);
                     Map<String, Object> issue = new HashMap<>();
                     Map<String, Object> article = new HashMap<>();
-                    graph.add(issue);
-                    graph.add(article);
+                    getGraph().add(issue);
+                    getGraph().add(article);
                     article.put("schema:headline", doc.getTitle());
 
                     article.put(DATE_PUBLISHED, doc.getDate());
@@ -256,10 +203,21 @@ public class SchemaOrgMetadataTransformer implements Serializable {
         }        
     }
 
-    private void add(Map<String, Object> map, String key, String val) {
+    /*
+     * Add a key/value pair to a map if the value is not blank
+     */
+    protected void add(Map<String, Object> map, String key, String val) {
         if (StringUtils.isNotBlank(val)) {
             map.put(key, val);
         }
+    }
+
+    public List<Map<String,Object>> getGraph() {
+        return graph;
+    }
+
+    public void setGraph(List<Map<String,Object>> graph) {
+        this.graph = graph;
     }
 
 }

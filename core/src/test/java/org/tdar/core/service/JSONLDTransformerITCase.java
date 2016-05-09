@@ -1,20 +1,32 @@
 package org.tdar.core.service;
 
-import java.io.IOException;
+import static org.junit.Assert.*;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
+import org.quartz.impl.jdbcjobstore.CUBRIDDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Creator.CreatorType;
+import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.transform.SchemaOrgMetadataTransformer;
+import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
+import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
+import org.tdar.transform.jsonld.SchemaOrgKeywordConverter;
+import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 
 public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
+
+    private static final String HTTP_WWW_TEST_COM = "http://www.test.com";
 
     protected transient Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -25,7 +37,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testResources() throws IOException, ClassNotFoundException {
-        SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+        SchemaOrgResourceTransformer transformer = new SchemaOrgResourceTransformer();
 
         for (Resource r : genericService.findAll(Resource.class)) {
             logger.debug("//  {} - {}", r.getId(), r.getResourceType());
@@ -35,7 +47,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
 
     @Test
     public void testJsonLDExtensions() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
-        SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+        SchemaOrgResourceTransformer transformer = new SchemaOrgResourceTransformer();
         Resource r = generateDocumentWithUser();
         GeographicKeyword gk = new GeographicKeyword();
         gk.setLabel("Petra");
@@ -47,16 +59,39 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(map);
         genericService.saveOrUpdate(gk);
         genericService.saveOrUpdate(r);
-        logger.debug(transformer.convert(serializationService, r));
+        String json = transformer.convert(serializationService, r);
+        logger.debug(json);
+        assertTrue(json.contains("petra"));
     }
 
     @Test
     public void testCreators() throws IOException, ClassNotFoundException {
-        SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+        SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
 
         for (Creator r : genericService.findAll(Creator.class)) {
             logger.debug("//  {} - {}", r.getId(), r.getCreatorType());
-            logger.debug(transformer.convert(serializationService, r, null));
+            String json = transformer.convert(serializationService, r, null);
+            logger.debug(json);
+            if (r.getCreatorType() == CreatorType.PERSON) {
+                assertTrue("contains type", StringUtils.containsIgnoreCase(json,r.getCreatorType().name()));
+            } else {
+                assertTrue("contains type", StringUtils.containsIgnoreCase(json,"Organization"));
+            }
+            // have to remove quotes
+            assertTrue("contains name", StringUtils.contains(json,r.getProperName().replace("\"", "")));
         }
+    }
+
+
+    @Test
+    public void testKeywords() throws IOException, ClassNotFoundException {
+        SchemaOrgKeywordConverter transformer = new SchemaOrgKeywordConverter();
+        CultureKeyword random = genericService.find(CultureKeyword.class, 4L);
+        ExternalKeywordMapping assertion = new ExternalKeywordMapping(HTTP_WWW_TEST_COM, RelationType.DCTERMS_IS_REPLACED_BY);
+        random.getAssertions().add(assertion );
+        String json = transformer.convert(serializationService, random);
+        logger.debug(json);
+        assertTrue("json contains URL", json.contains(HTTP_WWW_TEST_COM));
+        assertTrue("json contains short term", json.contains(RelationType.DCTERMS_IS_REPLACED_BY.getShortTerm()));
     }
 }
