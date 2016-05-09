@@ -11,6 +11,7 @@ import org.quartz.impl.jdbcjobstore.CUBRIDDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.entity.Creator;
@@ -36,6 +37,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     GenericService genericService;
 
     @Test
+    @Rollback
     public void testResources() throws IOException, ClassNotFoundException {
         SchemaOrgResourceTransformer transformer = new SchemaOrgResourceTransformer();
 
@@ -46,6 +48,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testJsonLDExtensions() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException {
         SchemaOrgResourceTransformer transformer = new SchemaOrgResourceTransformer();
         Resource r = generateDocumentWithUser();
@@ -65,6 +68,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback
     public void testCreators() throws IOException, ClassNotFoundException {
         SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
 
@@ -84,6 +88,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
 
 
     @Test
+    @Rollback
     public void testKeywords() throws IOException, ClassNotFoundException {
         SchemaOrgKeywordConverter transformer = new SchemaOrgKeywordConverter();
         CultureKeyword random = genericService.find(CultureKeyword.class, 4L);
