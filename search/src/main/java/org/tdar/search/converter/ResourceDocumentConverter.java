@@ -331,31 +331,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
 
     }
-<<<<<<< mine
-
-
-    public static SolrInputDocument replaceCollectionFields(Resource r) {
-        SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
-        ResourceDocumentConverter.indexCollectionInformation(doc, r);
-        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
-        doc.setField(QueryFieldNames.RESOURCE_TYPE, r.getResourceType().name());
-        replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
-        replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
-        replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_IDS);
-        replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_NAME);
-        replaceField(doc, QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY);
-        replaceField(doc, QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW);
-        return doc;
-    }
-
-    private static void replaceField(SolrInputDocument doc, String fieldName) {
-        Map<String, Object> partialUpdate = new HashMap<>();
-        partialUpdate.put("set", doc.getField(fieldName).getValues());
-        doc.setField(fieldName, partialUpdate);
-    }
-
-
-=======
 
 
     public static SolrInputDocument replaceCollectionFields(Resource r) {
@@ -377,6 +352,4 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(fieldName, partialUpdate);
     }
 
-
->>>>>>> theirs
 }
