@@ -76,6 +76,11 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
             kwd.getAssertions().forEach(map -> {
                 js.put(map.getRelationType().getJsonKey(), map.getRelation());
             });
+            
+            for (Keyword syn : (List<Keyword>)kwd.getSynonyms()) {
+                js.put(RelationType.DCTERMS_REPLACES.getJsonKey(), syn.getDetailUrl());
+            }
+            
             all.add(js);
         });
         if (all.size() > 0) {

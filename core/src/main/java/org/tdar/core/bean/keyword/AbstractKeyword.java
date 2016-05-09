@@ -175,6 +175,7 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
 
+    @Override
     public Set<T> getSynonyms() {
         return synonyms;
     }
