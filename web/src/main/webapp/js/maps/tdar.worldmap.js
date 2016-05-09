@@ -107,12 +107,13 @@ TDAR.worldmap = (function(console, $, ctx) {
   	 var layer = L.choropleth(data, {
 		    valueProperty: function (feature) {
 		    	if (geodata[feature.id]) {
-		    		return Math.log(geodata[feature.id]);
+		    		return geodata[feature.id];
 		    	} else {
 		    		return 0;
 		    	}
 		    },
 		    colors: ["#fff","#FED976","#FEB24C","#FD8D3C","#FC4E2A","#E31A1C","#BD0026","#800026"],
+		    colorProperty: _getColor,
 		    steps: 8,
 		    mode: 'q',
 		    style: {
