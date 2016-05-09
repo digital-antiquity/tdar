@@ -928,15 +928,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 		return Arrays.asList(assistant.getStringArray("tdar.colors", defaultColors));
 	}
 
-	
-	public boolean useSeparateContentsIndexForSearching() {
-	    return assistant.getBooleanProperty("indexing.separate_contents", true);
-	}
-
-    public boolean useSeparateLinkedDataIndexForSearching() {
-        return assistant.getBooleanProperty("indexing.separate_linked", true);
-    }
-
     public boolean useTransactionalEvents() {
         return assistant.getBooleanProperty("transactional.events",true);
     }
@@ -964,5 +955,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public boolean includeSpecialCodingRules() {
         return assistant.getBooleanProperty("integration.special_coding_rules", true);
+    }
+
+    public boolean isSelect2Enabled() {
+        return assistant.getBooleanProperty("select2.enabled", false);
     }
 }

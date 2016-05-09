@@ -159,23 +159,23 @@ TDAR.inheritance = (function () {
      * @param idSelector
      * @private
      */
-    function _disableSection(idSelector) {
+    function _disableSection($section) {
 
-        $(':input', idSelector).not(".alwaysEnabled").prop('disabled', true);
-        $('label', idSelector).not(".alwaysEnabled").addClass('disabled');
-        $('.addAnother, .minus', idSelector).hide();
+        $(':input', $section).not(".alwaysEnabled").prop('disabled', true);
+        $('label', $section).not(".alwaysEnabled").addClass('disabled');
+        $('.addAnother, .minus', $section).hide();
 
         //if sibling is an add-another button,  disable that too.
-        $(idSelector).next(".add-another-control").find("button").prop('disabled', true);
+        $section.next(".add-another-control").find("button").prop('disabled', true);
     }
 
-    function _enableSection(idSelector) {
-        $(':input', idSelector).prop('disabled', false); // here's call that spawns ghost elements (TDAR-4358)
-        $('label', idSelector).removeClass('disabled');
-        $('.addAnother, .minus', idSelector).show();
+    function _enableSection($section) {
+        $(':input', $section).prop('disabled', false); // here's call that spawns ghost elements (TDAR-4358)
+        $('label', $section).removeClass('disabled');
+        $('.addAnother, .minus', $section).show();
 
         //if sibling is an add-another button,  enable that too.
-        $(idSelector).next(".add-another-control").find("button").prop('disabled', false);
+        $section.next(".add-another-control").find("button").prop('disabled', false);
     }
 
     /**
@@ -206,11 +206,11 @@ TDAR.inheritance = (function () {
      * @param selector
      * @private
      */
-    function _clearFormSection(selector) {
+    function _clearFormSection($selector) {
         // Use a whitelist of fields to minimize unintended side effects.
-        $(selector).find('input:text, input:password, input:file, textarea').val('');
+        $selector.find('input:text, input:password, input:file, textarea').val('');
         // De-select any checkboxes, radios and drop-down menus
-        $(':input', selector).prop('checked', false).prop('selected', false);
+        $(':input', $selector).prop('checked', false).prop('selected', false);
     }
 
     /**
@@ -226,6 +226,11 @@ TDAR.inheritance = (function () {
                 return $(v).val();
             }
         });
+        
+        var $select2 = $(rootElementSelector);
+        if ($select2.length > 0) {
+        	repeatRowValues = $select2.val();
+        }
         return repeatRowValues.length === 0 || $.compareArray(repeatRowValues, values);
     }
 
@@ -308,7 +313,7 @@ TDAR.inheritance = (function () {
 
     function _inheritInformation(formId, json, sectionId, tableId) {
         //console.debug("_inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
-        _clearFormSection(sectionId);
+        _clearFormSection($(sectionId));
         if (tableId !== undefined) {
             if (document.getElementById("uncontrolled" + tableId + "Repeatable") !== null) {
                 TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
@@ -323,84 +328,106 @@ TDAR.inheritance = (function () {
             }
         }
         _populateSection(formId, json);
-        _disableSection(sectionId);
+        _disableSection($(sectionId));
     }
 
 //
 
     function _inheritSiteInformation(formId, json) {
-        _clearFormSection('#divSiteInformation');
+    	var $section = $('#divSiteInformation');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#siteNameKeywordsRepeatable', json.siteInformation['siteNameKeywords'].length);
         TDAR.inheritance.resetRepeatable('#uncontrolledSiteTypeKeywordsRepeatable', json.siteInformation['uncontrolledSiteTypeKeywords'].length);
         _populateSection(formId, json.siteInformation);
-        _disableSection('#divSiteInformation');
+        _disableSection($section);
     }
 
     function _inheritCulturalInformation(formId, json) {
-        _clearFormSection('#divCulturalInformation');
+    	var $section = $('#divCulturalInformation');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#uncontrolledCultureKeywordsRepeatable', json.culturalInformation['uncontrolledCultureKeywords'].length);
         _populateSection(formId, json.culturalInformation);
-        _disableSection('#divCulturalInformation');
+        _disableSection($section);
     }
 
     function _inheritMaterialInformation(formId, json) {
-        _clearFormSection('#allMaterialInformation');
+    	var $section = $('#allMaterialInformation');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#uncontrolledMaterialKeywordsRepeatable', json.materialInformation['uncontrolledMaterialKeywords'].length);
         _populateSection(formId, json.materialInformation);
-        _disableSection('#allMaterialInformation');
+        _disableSection($section);
     }
 
     function _inheritIdentifierInformation(formId, json) {
-        _clearFormSection('#divIdentifiers');
+    	var $section = $('#divIdentifiers');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#resourceAnnotationsTable', json.resourceAnnotations.length);
         _populateSection(formId, json);
-        _disableSection('#divIdentifiers');
+        _disableSection($section);
     }
 
     function _inheritCollectionInformation(formId, json) {
-        _clearFormSection('#relatedCollectionsSection');
+    	var $section = $('#relatedCollectionsSection');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#divSourceCollectionControl', json.collectionInformation.sourceCollections.length);
         TDAR.inheritance.resetRepeatable('#divRelatedComparativeCitationControl', json.collectionInformation.sourceCollections.length);
         _populateSection(formId, json.collectionInformation);
-        _disableSection('#relatedCollectionsSection');
+        _disableSection($section);
     }
 
     function _inheritNoteInformation(formId, json) {
-        _clearFormSection('#resourceNoteSection');
+    	var $section = $('#resourceNoteSection');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#resourceNoteSection', json.noteInformation['resourceNotes'].length);
         _populateSection(formId, json.noteInformation);
-        _disableSection('#resourceNoteSection');
+        _disableSection($section);
     }
 
+    function _populateSelect2Keywords($section, array) {
+        var $gk = $(".keyword-autocomplete", $section);
+        $gk.empty();
+        $.each(array, function (i, item) {
+            $gk.append($('<option>', { 
+                value: item,
+                text : item
+            }));
+        });
+        $gk.val(array).trigger("change");
+    	
+    }
+    
     function _inheritSpatialInformation(formId, json) {
         console.log("inherit spatial information(%s, %s)", formId, json);
-        _clearFormSection('#divSpatialInformation');
+        var $section = $('#divSpatialInformation');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#geographicKeywordsRepeatable', json.spatialInformation['geographicKeywords'].length);
         _populateSection(formId, json.spatialInformation);
-        _disableSection('#divSpatialInformation');
+        _populateSelect2Keywords($section, json.spatialInformation['geographicKeywords']);
+        _disableSection($section);
 
         // clear the existing redbox and draw new one;
         _populateLatLongTextFields();
 
         var si = json.spatialInformation;
         if (si.miny != null && si.minx != null && si.maxy != null && si.maxx != null) {
-            $(".locateCoordsButton",$("#divSpatialInformation")).click();
+            $(".locateCoordsButton",$section).click();
         }
         _disableMap();
 
     }
 
     function _inheritTemporalInformation(formId, json) {
-        var sectionId = '#divTemporalInformation';
-        _clearFormSection(sectionId);
+        var $section = $('#divTemporalInformation');
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords.length);
         TDAR.inheritance.resetRepeatable('#coverageDateRepeatable', json.temporalInformation.coverageDates.length);
         _populateSection(formId, json.temporalInformation);
-        _disableSection(sectionId);
+        _disableSection($section);
     }
 
     function _inheritCreditInformation(divSelector, creators) {
-        _clearFormSection(divSelector);
+    	var $section = $(divSelector);
+        _clearFormSection($section);
         TDAR.inheritance.resetRepeatable(divSelector, creators.length);
         if (creators.length > 0) {
             _populateSection(divSelector, {creditProxies: creators});
@@ -429,7 +456,7 @@ TDAR.inheritance = (function () {
 
         }
 
-        _disableSection(divSelector);
+        _disableSection($section);
     }
 
     function applyInheritance(formSelector) {
@@ -558,8 +585,9 @@ TDAR.inheritance = (function () {
                     _inheritTemporalInformation("#temporalSection", TDAR.inheritance.json);
                 },
                 enableSectionCallback: function () {
-                    _enableSection('#temporalSection');
-                    $("#temporalSection").find(".coverageTypeSelect").each(function (i, elem) {
+                	var $section = $('#temporalSection');
+                    _enableSection($section);
+                    $section.find(".coverageTypeSelect").each(function (i, elem) {
                     	//FIXME: required?
                         TDAR.validate.prepareDateFields(elem);
                     });
@@ -717,7 +745,7 @@ TDAR.inheritance = (function () {
                     _inheritSpatialInformation("#divSpatialInformation", TDAR.inheritance.json);
                 },
                 enableSectionCallback: function () {
-                    _enableSection('#divSpatialInformation');
+                    _enableSection($('#divSpatialInformation'));
                     _enableMap();
                 }
             },
@@ -792,18 +820,18 @@ TDAR.inheritance = (function () {
     }
 
     function _enableAll() {
-        _enableSection('#divInvestigationInformation');
-        _enableSection('#divSiteInformation');
-        _enableSection('#divMaterialInformation');
-        _enableSection('#divCulturalInformation');
-        _enableSection('#divSpatialInformation');
+        _enableSection($('#divInvestigationInformation'));
+        _enableSection($('#divSiteInformation'));
+        _enableSection($('#divMaterialInformation'));
+        _enableSection($('#divCulturalInformation'));
+        _enableSection($('#divSpatialInformation'));
         _enableMap();
-        _enableSection('#divTemporalInformation');
-        _enableSection('#divOtherInformation');
-        _enableSection('#divIdentifiers');
-        _enableSection('#relatedCollectionsSection');
-        _enableSection('#resourceNoteSection');
-        _enableSection("#creditTable");
+        _enableSection($('#divTemporalInformation'));
+        _enableSection($('#divOtherInformation'));
+        _enableSection($('#divIdentifiers'));
+        _enableSection($('#relatedCollectionsSection'));
+        _enableSection($('#resourceNoteSection'));
+        _enableSection($("#creditTable"));
     }
 
 //todo: this duplicates code (see all the calls to bindCheckbox); use  inheritOptionsList instead
@@ -931,11 +959,11 @@ TDAR.inheritance = (function () {
         var $cbSelectAllInheritance = $('#cbSelectAllInheritance');
         var projectId = $('#projectId').val();
         if (projectId > 0) {
-            _enableSection('#divInheritFromProject');
+            _enableSection($('#divInheritFromProject'));
 
         } else {
             $cbSelectAllInheritance.removeAttr('checked');
-            _disableSection('#divInheritFromProject');
+            _disableSection($('#divInheritFromProject'));
         }
     }
 
@@ -1059,14 +1087,14 @@ TDAR.inheritance = (function () {
                                 _options.inheritSectionCallback();
                             }, function () {
                                 $cb.prop("checked", false);
-                                _options.enableSectionCallback(_options.divSelector);
+                                _options.enableSectionCallback($(_options.divSelector));
                                 _updateSelectAllCheckboxState();
                             });
                 }
                 ;
             } else {
                 //user unchecked inheritance - enable the controls
-                _options.enableSectionCallback(_options.divSelector);
+                _options.enableSectionCallback($(_options.divSelector));
                 _updateSelectAllCheckboxState();
                 $(_options.divSelector).find('input[type=hidden].dont-inherit').val("");
             }

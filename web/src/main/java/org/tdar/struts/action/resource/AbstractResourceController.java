@@ -53,6 +53,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericKeywordService;
@@ -95,7 +96,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public static final String RESOURCE_EDIT_TEMPLATE = "../resource/edit-template.ftl";
 
     private static final long serialVersionUID = 8620875853247755760L;
-
+    private boolean select2Enabled = TdarConfiguration.getInstance().isSelect2Enabled();
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
@@ -1125,6 +1126,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setSubmitterProperName(String submitterProperName) {
         this.submitterProperName = submitterProperName;
+    }
+
+    public boolean isSelect2Enabled() {
+        return select2Enabled;
+    }
+
+    public void setSelect2Enabled(boolean select2Enabled) {
+        this.select2Enabled = select2Enabled;
     }
 
 }
