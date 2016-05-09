@@ -334,22 +334,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
     }
 
     /*
-     * Convenience Method that provides a list of users that match the permission
-     */
-    public Set<TdarUser> getUsersWhoCan(GeneralPermissions permission, boolean recurse) {
-        Set<TdarUser> people = new HashSet<>();
-        for (AuthorizedUser user : authorizedUsers) {
-            if (user.getEffectiveGeneralPermission() >= permission.getEffectivePermissions()) {
-                people.add(user.getUser());
-            }
-        }
-        if ((getParent() != null) && recurse) {
-            people.addAll(getParent().getUsersWhoCan(permission, recurse));
-        }
-        return people;
-    }
-
-    /*
      * (non-Javadoc)
      * 
      * @see org.tdar.core.bean.Updatable#markUpdated(org.tdar.core.bean.entity.Person)
@@ -430,40 +414,6 @@ public class ResourceCollection extends Persistable.Base implements HasName, Upd
         return getParent().getId();
     }
 
-    /*
-     * used for populating the Lucene Index with users that have appropriate rights to modify things in the collection
-     */
-    @Transient
-    @ElementCollection
-    public List<Long> getUsersWhoCanModify() {
-        return toUserList(GeneralPermissions.MODIFY_RECORD);
-    }
-
-    private List<Long> toUserList(GeneralPermissions permission) {
-        ArrayList<Long> users = new ArrayList<>();
-        HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(getOwner());
-        writable.addAll(getUsersWhoCan(permission, true));
-        for (TdarUser p : writable) {
-            if (PersistableUtils.isNullOrTransient(p)) {
-                continue;
-            }
-            users.add(p.getId());
-        }
-        return users;
-    }
-
-    @Transient
-    @ElementCollection
-    public List<Long> getUsersWhoCanAdminister() {
-        return toUserList(GeneralPermissions.ADMINISTER_GROUP);
-    }
-
-    @Transient
-    @ElementCollection
-    public List<Long> getUsersWhoCanView() {
-        return toUserList(GeneralPermissions.VIEW_ALL);
-    }
 
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree

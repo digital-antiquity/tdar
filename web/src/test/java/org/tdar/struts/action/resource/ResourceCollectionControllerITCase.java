@@ -606,8 +606,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 new ArrayList<Resource>(), collection1.getId());
         evictCache();
         searchIndexService.index(collection1, collection2);
-        logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
-        logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
+//        logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
+//        logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
         searchIndexService.flushToIndexes();
         genericService.synchronize();
         BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class, testPerson);
