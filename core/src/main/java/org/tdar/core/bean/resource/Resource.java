@@ -85,8 +85,8 @@ import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -451,59 +451,6 @@ public class Resource implements Persistable,
             this.cultureKeywords = new LinkedHashSet<CultureKeyword>();
         }
         return cultureKeywords;
-    }
-
-    /*
-     * this function should introduce into the index all of the people who can
-     * modify a record which is useful for limiting things on the project page
-     */
-    @ElementCollection
-    public List<Long> getUsersWhoCanModify() {
-        List<Long> users = new ArrayList<Long>();
-        HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(getSubmitter());
-        writable.add(getUpdatedBy());
-        for (ResourceCollection collection : getResourceCollections()) {
-            writable.addAll(collection.getUsersWhoCan(GeneralPermissions.MODIFY_METADATA, true));
-        }
-        for (TdarUser p : writable) {
-            if (PersistableUtils.isNullOrTransient(p)) {
-                continue;
-            }
-            users.add(p.getId());
-        }
-        // FIXME: decide whether right should inherit from projects (1) of (2)
-        // change see authorizedUserDao
-        // sb.append(getAdditionalUsersWhoCanModify());
-        logger.trace("effectiveUsers:" + users);
-        return users;
-    }
-
-    /*
-     * this function should introduce into the index all of the people who can
-     * modify a record which is useful for limiting things on the project page
-     */
-    @ElementCollection
-    public List<Long> getUsersWhoCanView() {
-        List<Long> users = new ArrayList<Long>();
-        HashSet<TdarUser> writable = new HashSet<>();
-        writable.add(getSubmitter());
-        writable.add(getUpdatedBy());
-        for (ResourceCollection collection : getRightsBasedResourceCollections()) {
-            writable.addAll(collection.getUsersWhoCan(
-                    GeneralPermissions.VIEW_ALL, true));
-        }
-        for (TdarUser p : writable) {
-            if (PersistableUtils.isNullOrTransient(p)) {
-                continue;
-            }
-            users.add(p.getId());
-        }
-        // FIXME: decide whether right should inherit from projects (1) of (2)
-        // change see authorizedUserDao
-        // sb.append(getAdditionalUsersWhoCanModify());
-        logger.trace("effectiveUsers:" + users);
-        return users;
     }
 
     @JsonView(JsonProjectLookupFilter.class)

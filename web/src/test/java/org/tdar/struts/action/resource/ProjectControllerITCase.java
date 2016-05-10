@@ -21,8 +21,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection.CollectionType;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -40,6 +40,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.search.converter.ResourceRightsExtractor;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.sensoryData.SensoryDataController;
@@ -153,7 +154,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         Long id = project.getId();
         project = null;
         Project project_ = genericService.find(Project.class, id);
-        assertTrue(project_.getUsersWhoCanModify().contains(getBasicUser().getId()));
+        ResourceRightsExtractor extractor = new ResourceRightsExtractor(project_);
+        assertTrue(extractor.getUsersWhoCanModify().contains(getBasicUser().getId()));
         assertNotNull(project_.getInternalResourceCollection());
         Set<AuthorizedUser> authorizedUsers = project_.getInternalResourceCollection().getAuthorizedUsers();
 

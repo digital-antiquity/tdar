@@ -318,11 +318,7 @@ public class SearchParameters {
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
 
-        if (TdarConfiguration.getInstance().useSeparateContentsIndexForSearching()) {
-            queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
-        } else {
-            queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
-        }
+        queryPartGroup.append(new ContentQueryPart(support.getText("searchParameter.file_contents"), getOperator(),contents));
         queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"),
                 getOperator(), filenames));
 

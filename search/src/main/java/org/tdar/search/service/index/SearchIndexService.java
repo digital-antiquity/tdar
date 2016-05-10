@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -554,6 +553,59 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             index(core, id, doc);
         }
         commit(core);
+    }
+
+    /**
+     * Solr supports indexing parts of documents, we can use this to optimize collection indexing which will 
+     * only ever change a few fields in a resources...
+     *  
+     * https://cwiki.apache.org/confluence/display/solr/Updating+Parts+of+Documents
+     * http://blog.thedigitalgroup.com/ujwalap/2015/05/11/atomic-updates-in-solr/
+     * 
+     * @param persistable
+     */
+    @Transactional(readOnly=true)
+    public void partialIndexAllResourcesInCollectionSubTree(ResourceCollection persistable) {
+        Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(persistable);
+        logger.debug("partially indexing {} resources from {} ({})", total, persistable.getName(), persistable.getId());
+        ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(persistable);
+        int numProcessed =0;
+        String coreName = LookupSource.RESOURCE.getCoreName();
+        while (results.next()) {
+            Resource r  = (Resource) results.get(0);
+            SolrInputDocument doc = ResourceDocumentConverter.replaceCollectionFields(r);
+            try {
+                template.add(LookupSource.RESOURCE.getCoreName(), doc);
+            } catch (SolrServerException | IOException e1) {
+                logger.error("error adding: {}", e1);
+            }
+            if ((numProcessed  % FLUSH_EVERY) == 0) {
+                logger.trace("flushing search index");
+                commitAndClearSession(coreName);
+                logger.trace("flushed search index");
+            }
+            numProcessed++;
+
+        }
+        commitAndClearSession(coreName);
+        logger.debug("completed partial indexing of {} ({})", total, persistable.getName(), persistable.getId());
+        
+    }
+
+    private void commitAndClearSession(String coreName) {
+        try {
+            commit(coreName);
+        } catch (SolrServerException | IOException e) {
+            logger.error("error in partial index: {}", e);
+        } finally {
+            genericDao.clearCurrentSession();
+        }
+    }
+
+    @Transactional(readOnly=true)
+    @Async
+    public void partialIndexAllResourcesInCollectionSubTreeAsync(ResourceCollection persistable) {
+        partialIndexAllResourcesInCollectionSubTree(persistable);
     }
 
 }

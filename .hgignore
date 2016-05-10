@@ -38,6 +38,7 @@ node_modules
 clover.snapshot
 log4j2.xml
 npm-debug.log
+Indexes
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 
