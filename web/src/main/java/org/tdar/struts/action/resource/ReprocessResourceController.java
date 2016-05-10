@@ -15,8 +15,8 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -27,7 +27,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/resource")
-public class ReprocessResourceController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<InformationResource> {
+public class ReprocessResourceController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<InformationResource> {
 
     private static final long serialVersionUID = 7557491462701114284L;
     public static final String RETRANSLATE = "retranslate";

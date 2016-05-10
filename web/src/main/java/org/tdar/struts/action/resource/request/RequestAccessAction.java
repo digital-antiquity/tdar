@@ -24,8 +24,8 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -45,7 +45,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource/request")
 @Component
 @Scope("prototype")
-public class RequestAccessAction extends AuthenticationAware.Base
+public class RequestAccessAction extends AbstractAuthenticatableAction
         implements Preparable, PersistableLoadingAction<Resource> {
 
     @Autowired

@@ -7,7 +7,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 
 /**
@@ -23,7 +23,7 @@ import org.tdar.struts.action.TdarActionSupport;
 @ParentPackage("default")
 @Scope("prototype")
 @Namespace("/resource")
-public class ResourceViewRedirectAction extends AuthenticationAware.Base {
+public class ResourceViewRedirectAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 7284484498129329713L;
 

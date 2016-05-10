@@ -26,8 +26,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
@@ -47,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "data_table")
 @XmlRootElement
-public class DataTable extends Persistable.Base {
+public class DataTable extends AbstractPersistable {
 
     private static final long serialVersionUID = -4875482933981074863L;
 

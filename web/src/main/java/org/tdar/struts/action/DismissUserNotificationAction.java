@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/notification")
 @Component
 @Scope("prototype")
-public class DismissUserNotificationAction extends AuthenticationAware.Base implements Preparable {
+public class DismissUserNotificationAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -1680185105953721985L;
 

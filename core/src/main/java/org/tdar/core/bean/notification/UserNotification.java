@@ -17,7 +17,7 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.CompareToBuilder;
 import org.hibernate.annotations.Type;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.entity.TdarUser;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.TextProvider;
  */
 @Entity
 @Table(name = "user_notification")
-public class UserNotification extends Persistable.Base implements Comparable<UserNotification> {
+public class UserNotification extends AbstractPersistable implements Comparable<UserNotification> {
 
     private static final long serialVersionUID = -644485386619012665L;
 

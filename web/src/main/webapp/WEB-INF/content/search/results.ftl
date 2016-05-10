@@ -67,30 +67,7 @@
 	                </#if></span>
 		            </li>
             </ul>
-
-                <h3>View Options</h3>
-                <ul class="tools media-list">
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">LIST</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_list"></use></svg>
-                    <@s.text name="DisplayOrientation.LIST"/></a></li>
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">LIST_FULL</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_list"></use></svg>
-                     <@s.text name="DisplayOrientation.LIST_FULL"/></a></li>
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">GRID</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_gallery"></use></svg>
-                    <@s.text name="DisplayOrientation.GRID"/></a></li>
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">MAP</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_map"></use></svg>
-                    <@s.text name="DisplayOrientation.MAP"/></a></li>
-                </ul>
+				<@rlist.displayWidget />
             <form>
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />

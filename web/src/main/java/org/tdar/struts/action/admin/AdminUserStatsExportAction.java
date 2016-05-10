@@ -22,7 +22,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ExcelWorkbookWriter;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
@@ -40,7 +40,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AdminUserStatsExportAction extends AuthenticationAware.Base implements Preparable {
+public class AdminUserStatsExportAction extends AbstractAuthenticatableAction implements Preparable {
 
     /**
      * 

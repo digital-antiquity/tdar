@@ -219,7 +219,7 @@
     								<pluginExecutionFilter>
     									<groupId>org.codehaus.mojo</groupId>
     									<artifactId>properties-maven-plugin</artifactId>
-    									<versionRange>[1.0-alpha-2,)</versionRange>
+    									<versionRange>[1.0.0,)</versionRange>
     									<goals>
     										<goal>read-project-properties</goal>
     									</goals>
@@ -611,7 +611,7 @@
                     <plugin>
                         <groupId>org.codehaus.mojo</groupId>
                         <artifactId>properties-maven-plugin</artifactId>
-                        <version>1.0-alpha-2</version>
+                        <version>1.0.0</version>
                         <executions>
                             <execution>
                                 <phase>initialize</phase>
@@ -621,6 +621,7 @@
                                 <configuration>
                                     <files>
                                         <file>${basedir}/src/main/resources/hibernate.properties</file>
+                                        <file>target/hg.properties</file>
                                     </files>
                                 </configuration>
                             </execution>

@@ -38,7 +38,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -56,7 +56,7 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-public class APIController extends AuthenticationAware.Base {
+public class APIController extends AbstractAuthenticatableAction {
 
     @Autowired
     private transient AuthorizationService authorizationService;

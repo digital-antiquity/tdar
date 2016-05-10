@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @HttpsOnly
-public abstract class AbstractStatisticsAction extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractStatisticsAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 7216945559477749480L;
 

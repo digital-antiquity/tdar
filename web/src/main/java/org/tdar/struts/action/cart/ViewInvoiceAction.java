@@ -12,7 +12,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 import com.opensymphony.xwork2.Preparable;
@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 @HttpsOnly
 @ParentPackage("secured")
 @Namespace("/cart")
-public class ViewInvoiceAction extends AuthenticationAware.Base implements Preparable, ValidationWorkflowAware {
+public class ViewInvoiceAction extends AbstractAuthenticatableAction implements Preparable, ValidationWorkflowAware {
 
     private static final long serialVersionUID = -8280706863708228864L;
 

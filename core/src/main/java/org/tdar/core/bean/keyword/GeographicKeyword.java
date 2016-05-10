@@ -1,18 +1,16 @@
 package org.tdar.core.bean.keyword;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -33,18 +31,18 @@ import org.tdar.core.bean.FieldLength;
  */
 @Entity
 @Table(name = "geographic_keyword")
-//@Indexed(index = "Keyword")
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.GeographicKeyword")
 @Cacheable
-public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeyword> {
+@AssociationOverrides({
+    @AssociationOverride(name = "assertions",
+       joinColumns = @JoinColumn(name="geographic_keyword_id"))
+ })
+@XmlRootElement
+public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 9120049059501138213L;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
-    @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<GeographicKeyword> synonyms = new HashSet<GeographicKeyword>();
 
     public enum Level {
         CONTINENT("Continent"),
@@ -97,19 +95,6 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
         StringBuffer toReturn = new StringBuffer();
         toReturn.append(label.trim()).append(" (").append(level.getLabel()).append(")");
         return toReturn.toString();
-    }
-
-    @Override
-    public Set<GeographicKeyword> getSynonyms() {
-        return synonyms;
-    }
-
-    public void setSynonyms(Set<GeographicKeyword> synonyms) {
-        this.synonyms = synonyms;
-    }
-
-    public String getSynonymFormattedName() {
-        return getLabel();
     }
 
     @Override

@@ -13,7 +13,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
@@ -34,7 +34,7 @@ import com.opensymphony.xwork2.Preparable;
  * @author abrin
  *
  */
-public class AbstractRequestAccessController extends AuthenticationAware.Base implements Preparable {
+public class AbstractRequestAccessController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -1831798412944149018L;
     @Autowired

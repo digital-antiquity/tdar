@@ -18,7 +18,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceExportProxy;
 import org.tdar.core.service.resource.ResourceExportService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -26,7 +26,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/export")
-public abstract class AbstractResourceExportAction extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractResourceExportAction extends AbstractAuthenticatableAction implements Preparable {
 
     /**
      * 

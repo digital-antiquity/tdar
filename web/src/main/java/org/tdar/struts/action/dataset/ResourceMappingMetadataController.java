@@ -22,8 +22,8 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/dataset")
 @HttpsOnly
-public class ResourceMappingMetadataController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Dataset> {
+public class ResourceMappingMetadataController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<Dataset> {
 
     private static final long serialVersionUID = 1252800268993263663L;
 

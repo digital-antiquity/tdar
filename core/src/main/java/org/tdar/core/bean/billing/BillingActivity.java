@@ -13,8 +13,8 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,7 +26,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
  */
 @Entity
 @Table(name = "pos_billing_activity")
-public class BillingActivity extends Persistable.Base implements Comparable<BillingActivity> {
+public class BillingActivity extends AbstractPersistable implements Comparable<BillingActivity> {
 
     private static final long serialVersionUID = 6891881586235180640L;
 

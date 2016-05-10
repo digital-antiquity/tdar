@@ -9,8 +9,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.EmailMessageType;
@@ -24,7 +24,7 @@ import com.opensymphony.xwork2.Preparable;
  * @author abrin
  *
  */
-public abstract class AbstractProcessPermissonsAction extends AuthenticationAware.Base
+public abstract class AbstractProcessPermissonsAction extends AbstractAuthenticatableAction
 		implements Preparable, PersistableLoadingAction<Resource> {
 
 	private static final long serialVersionUID = 6775247968159166454L;

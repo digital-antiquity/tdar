@@ -14,6 +14,21 @@
     <@search.headerLinks includeRss=false />
 
 </head>
+<div id="sidebar-right" parse="true">
+    <div class="sidebar-spacer">
+        <#list keyword.assertions>
+        <h4>External Relationships</h4>
+        <ul>
+            <#items as item>
+                <li><a href="${item.relation}">${item.relation}</a> (${item.relationType.term})</li>
+            </#items>        
+        </ul>
+        <#else>
+        </#list>
+    </div>
+</div>
+        <@nav.keywordToolbar "view" />
+
 <div class="glide">
     <h1>${keyword.label} <span class="xsmall red">(<@s.text name="${keywordType.localeKey}"/>)</span></h1>
     <#if keyword.synonyms?has_content>
@@ -22,7 +37,6 @@
     <#if keyword.parent?has_content>
     <p><b>Parent:</b><@common.searchFor keyword.parent false /></p>
     </#if>
-        <@nav.keywordToolbar "view" />
     
     <p>${keyword.definition!''}</p>
 </div>

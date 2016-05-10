@@ -23,7 +23,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -36,7 +36,7 @@ import com.opensymphony.xwork2.Preparable;
         @Namespace("/geospatial/row"),
         @Namespace("/sensory-data/row")
 })
-public class RowViewAction extends AuthenticationAware.Base implements Preparable {
+public class RowViewAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -4346591781165839553L;
     @Autowired

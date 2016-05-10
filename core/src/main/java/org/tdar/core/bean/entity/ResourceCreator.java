@@ -23,11 +23,11 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -53,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
-public class ResourceCreator extends Persistable.Sequence<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
+public class ResourceCreator extends AbstractSequenced<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
     private static final long serialVersionUID = 7641781600023145104L;
 

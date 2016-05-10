@@ -11,11 +11,10 @@ import org.tdar.core.bean.Persistable;
  * @author jimdevos
  * 
  */
-@SuppressWarnings("hiding")
-public interface Dedupable<Dedupable> extends Persistable, HasStatus {
+public interface Dedupable<K> extends Persistable, HasStatus {
 
     public boolean isDedupable();
 
-    public Set<Dedupable> getSynonyms();
+    public Set<K> getSynonyms();
 
 }

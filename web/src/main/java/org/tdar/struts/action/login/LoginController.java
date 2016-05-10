@@ -22,7 +22,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -46,7 +46,7 @@ import com.opensymphony.xwork2.Validateable;
 @Results({
         @Result(name = TdarActionSupport.AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
 @CacheControl
-public class LoginController extends AuthenticationAware.Base implements Validateable {
+public class LoginController extends AbstractAuthenticatableAction implements Validateable {
 
     private static final long serialVersionUID = -1219398494032484272L;
 

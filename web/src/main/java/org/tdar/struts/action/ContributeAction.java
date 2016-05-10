@@ -29,7 +29,7 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 @Component
 @Scope("prototype")
 @HttpsOnly
-public class ContributeAction extends AuthenticationAware.Base {
+public class ContributeAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -8040859305171503597L;
 

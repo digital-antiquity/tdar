@@ -1190,12 +1190,66 @@
             <column name="relation_type"  type="varchar(255)" />
         </addColumn>
     </changeSet>
+    <changeSet id="neolithic-14" author="abrin">
+        <dropColumn tableName="culture_keyword" columnName="relation" />
+        <dropColumn tableName="culture_keyword" columnName="relation_type" />
+        <dropColumn tableName="geographic_keyword" columnName="relation" />
+        <dropColumn tableName="geographic_keyword" columnName="relation_type" />
+        <dropColumn tableName="investigation_type" columnName="relation" />
+        <dropColumn tableName="investigation_type" columnName="relation_type" />
+        <dropColumn tableName="material_keyword" columnName="relation" />
+        <dropColumn tableName="material_keyword" columnName="relation_type" />
+        <dropColumn tableName="other_keyword" columnName="relation" />
+        <dropColumn tableName="other_keyword" columnName="relation_type" />
+        <dropColumn tableName="site_name_keyword" columnName="relation" />
+        <dropColumn tableName="site_name_keyword" columnName="relation_type" />
+        <dropColumn tableName="site_type_keyword" columnName="relation" />
+        <dropColumn tableName="site_type_keyword" columnName="relation_type" />
+        <dropColumn tableName="temporal_keyword" columnName="relation" />
+        <dropColumn tableName="temporal_keyword" columnName="relation_type" />
+
+        <createTable tableName="keyword_mapping">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="culture_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_culture_keyword_id" references="culture_keyword"  nullable="true"/>
+            </column>
+            <column name="geographic_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_geographic_keyword_id" references="geographic_keyword"  nullable="true"/>
+            </column>
+            <column name="investigation_type_id" type="bigint">
+                <constraints foreignKeyName="fk_investigation_type_id" references="investigation_type"  nullable="true"/>
+            </column>
+            <column name="material_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_material_keyword_id" references="material_keyword"  nullable="true"/>
+            </column>
+            <column name="other_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_other_keyword_id" references="other_keyword"  nullable="true"/>
+            </column>
+            <column name="site_name_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_site_name_keyword_id" references="site_name_keyword"  nullable="true"/>
+            </column>
+            <column name="site_type_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_site_type_keyword_id" references="site_type_keyword"  nullable="true"/>
+            </column>
+            <column name="temporal_keyword_id" type="bigint">
+                <constraints foreignKeyName="fk_temporal_keyword_id" references="temporal_keyword"  nullable="true"/>
+            </column>
+
+            <column name="relation" type="varchar(2048)" />
+            <column name="relation_type"  type="varchar(255)" />
+        
+        </createTable>
+    </changeSet>
 
     <changeSet id="neolithic-search-14" author="abrin">
         <modifyDataType tableName="collection" columnName="name" newDataType="varchar(500)"/>
     </changeSet>
+
     <changeSet id="neolithic-search-15" author="abrin">
 	    <dropColumn tableName="person" columnName="merge_creator_id"/>
 	    <dropColumn tableName="institution" columnName="merge_creator_id"/>
     </changeSet>
+
 </databaseChangeLog>

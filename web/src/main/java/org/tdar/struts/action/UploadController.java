@@ -39,7 +39,7 @@ import org.tdar.utils.json.JsonLookupFilter;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "500" })
 })
 @HttpForbiddenErrorResponseOnly
-public class UploadController extends AuthenticationAware.Base {
+public class UploadController extends AbstractAuthenticatableAction {
 
     @Autowired
     private transient PersonalFilestoreService filestoreService;

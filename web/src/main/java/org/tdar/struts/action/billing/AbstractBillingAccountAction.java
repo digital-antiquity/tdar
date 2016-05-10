@@ -6,14 +6,14 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 
 import com.opensymphony.xwork2.Preparable;
 
-public abstract class AbstractBillingAccountAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<BillingAccount> {
+public abstract class AbstractBillingAccountAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<BillingAccount> {
 
 
     public static final String VIEW_ID = "/billing/${id}";

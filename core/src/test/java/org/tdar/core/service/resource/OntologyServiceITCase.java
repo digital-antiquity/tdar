@@ -27,7 +27,6 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 
 /**
@@ -38,8 +37,6 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private OntologyService ontologyService;
-    @Autowired
-    private SerializationService serializationService;
 
     @Test
     public void testDuplicateNodeToSynonym() throws IOException {
