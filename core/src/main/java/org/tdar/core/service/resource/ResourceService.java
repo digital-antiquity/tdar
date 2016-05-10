@@ -76,7 +76,6 @@ import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.ScholarMetadataTransformer;
-import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;

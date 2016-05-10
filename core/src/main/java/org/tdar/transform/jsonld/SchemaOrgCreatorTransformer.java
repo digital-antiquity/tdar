@@ -13,7 +13,6 @@ import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 
