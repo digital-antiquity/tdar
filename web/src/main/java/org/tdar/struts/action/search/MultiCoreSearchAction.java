@@ -140,47 +140,6 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
         return SUCCESS;
     }
 
-    @Action(value = "advanced")
-    public String advanced() {
-        getLogger().trace("greetings from advanced search");
-        // process query paramter or legacy parameters, if present.
-        processBasicSearchParameters();
-        processLegacySearchParameters();
-        processWhitelabelSearch();
-        // if refining a search, make sure we inflate any deflated terms
-        for (SearchParameters sp : getGroups()) {
-            resourceSearchService.inflateSearchParameters(sp);
-            try {
-                sp.toQueryPartGroup(null);
-                getLogger().debug("inflating parameters for group {}", sp);
-            } catch (TdarRecoverableRuntimeException trex) {
-                addActionError(trex.getMessage());
-            }
-        }
-        // in the situation where we could not reconstitute the search object graph, wipe out the search terms and show the error messages.
-        if (hasActionErrors()) {
-            getGroups().clear();
-        }
-        getLogger().trace("advanced search done");
-        return SUCCESS;
-    }
-
-    private void processWhitelabelSearch() {
-        ResourceCollection rc = getGenericService().find(ResourceCollection.class, getCollectionId());
-        if (rc == null) {
-            return;
-        }
-
-        SearchParameters sp = new SearchParameters();
-        if (getGroups() != null) {
-            getGroups().clear();
-        }
-        getGroups().add(sp);
-        sp.getFieldTypes().addAll(Arrays.asList(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        sp.getCollections().addAll(Arrays.asList(rc, null));
-        sp.getAllFields().addAll(Arrays.asList(null, ""));
-    }
-
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
         ArrayList<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
         roles.addAll(ResourceCreatorRole.getAll());
