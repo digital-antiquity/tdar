@@ -805,11 +805,11 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * and preview data.
      */
     @Transactional(value = "tdarDataTx", readOnly = false)
-    public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider) {
+    public ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, String rawIntegration, TextProvider provider) {
         logger.debug("Context: {}", proxy);
         ModernIntegrationDataResult result = new ModernIntegrationDataResult(proxy);
         @SuppressWarnings("unused")
-        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, result);
+        ModernDataIntegrationWorkbook workbook = new ModernDataIntegrationWorkbook(provider, result, rawIntegration);
         createIntegrationTempTable(proxy, provider);
         populateTempInterationTable(proxy);
         applyOntologyMappings(proxy);
@@ -945,7 +945,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
                     DataTableColumn integrationColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
-                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value"));
+                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value",Arrays.asList(column.getName())));
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
 //                    dtc.setDisplayName(integrationColumn.getDisplayName());
