@@ -8,7 +8,9 @@ public enum RelationType implements Localizable {
     DCTERMS_PART_OF("http://purl.org/dc/terms/", "dc", "part of","partOf"),
     DCTERMS_REPLACES("http://purl.org/dc/terms/", "dc", "replaces", "replaces"),
     DCTERMS_IS_REPLACED_BY("http://purl.org/dc/terms/", "dc", "is replaced by", "isReplacedBy"),
-    DCTERMS_IS_VERSION_OF("http://purl.org/dc/terms/", "dc", "is version of", "isVersionOf");
+    DCTERMS_IS_VERSION_OF("http://purl.org/dc/terms/", "dc", "is version of", "isVersionOf"), 
+    HAS_VERSION("http://purl.org/dc/terms/", "dc", "has version", "hasVersion"),
+    HAS_PART("http://purl.org/dc/terms/", "dc", "has part", "hasPart");
 
     private String prefix;
     private String term;
