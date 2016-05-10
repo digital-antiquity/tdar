@@ -240,6 +240,10 @@
                                             <name>solr.data.dir</name>
                                             <value>target/solr-jetty/</value>
                                         </systemProperty>
+                                        <systemProperty>
+                                            <name>enableContextSwitchingConfig</name>
+                                            <value>true</value>
+                                        </systemProperty>
                                     </systemProperties>
                                 </configuration>
                             </execution>

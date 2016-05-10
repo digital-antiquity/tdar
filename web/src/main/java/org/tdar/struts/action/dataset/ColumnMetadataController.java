@@ -34,8 +34,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.CategoryVariableService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -55,7 +55,7 @@ import com.opensymphony.xwork2.Preparable;
         @Namespace("/sensory-data/columns")
 })
 @HttpsOnly
-public class ColumnMetadataController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Dataset> {
+public class ColumnMetadataController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<Dataset> {
 
     private static final long serialVersionUID = 657544410406621681L;
     public static final String COLUMNS = "columns";

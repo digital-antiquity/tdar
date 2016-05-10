@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AbstractPersistable;
 
 @Entity
 @Table(name = "institution_authorization")
@@ -22,7 +22,7 @@ import org.tdar.core.bean.Persistable;
  * @author abrin
  *
  */
-public class InstitutionManagementAuthorization extends Persistable.Base {
+public class InstitutionManagementAuthorization extends AbstractPersistable {
 
     private static final long serialVersionUID = -5841183738497500709L;
 

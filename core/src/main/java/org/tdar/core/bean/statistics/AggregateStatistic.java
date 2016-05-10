@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AbstractPersistable;
 
 /**
  * these are used to manage basic stats on tDAR...
@@ -26,7 +26,7 @@ import org.tdar.core.bean.Persistable;
  */
 @Entity
 @Table(name = "stats")
-public class AggregateStatistic extends Persistable.Base {
+public class AggregateStatistic extends AbstractPersistable {
 
     public enum StatisticType {
         NUM_USERS("# of Users"),

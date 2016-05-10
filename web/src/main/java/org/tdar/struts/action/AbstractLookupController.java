@@ -46,7 +46,7 @@ import org.tdar.utils.json.JsonLookupFilter;
  * @author Adam Brin
  * 
  */
-public abstract class AbstractLookupController<I extends Indexable> extends AuthenticationAware.Base implements FacetedResultHandler<I> {
+public abstract class AbstractLookupController<I extends Indexable> extends AbstractAuthenticatableAction implements FacetedResultHandler<I> {
 
     private static final long serialVersionUID = 2357805482356017885L;
 

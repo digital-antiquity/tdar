@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlRootElement
 @XmlType(name = "citation")
 @XmlTransient
-public abstract class Citation extends Persistable.Base implements HasResource<Resource> {
+public abstract class Citation extends AbstractPersistable implements HasResource<Resource> {
 
     private static final long serialVersionUID = 4174558394278154078L;
 

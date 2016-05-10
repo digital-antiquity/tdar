@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.utils.MathUtils;
 
 /**
@@ -25,7 +25,7 @@ import org.tdar.utils.MathUtils;
 @Table(name = "pos_account_usage_history")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.AccountHistory")
-public class AccountUsageHistory extends Base {
+public class AccountUsageHistory extends AbstractPersistable {
 
     private static final long serialVersionUID = 1276926972016955137L;
 

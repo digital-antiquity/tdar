@@ -14,8 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.HasResource;
-import org.tdar.core.bean.Persistable;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
@@ -36,7 +36,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "resource_id_keyid", columnList = "resource_id, resourceannotationkey_id, id") })
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.ResourceAnnotation")
 @Cacheable
-public class ResourceAnnotation extends Persistable.Base implements HasResource<Resource> {
+public class ResourceAnnotation extends AbstractPersistable implements HasResource<Resource> {
 
     private static final long serialVersionUID = 8517883471101372051L;
 

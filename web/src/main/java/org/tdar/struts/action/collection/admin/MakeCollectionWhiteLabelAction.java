@@ -11,7 +11,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.struts.action.AuthenticationAware.Base;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 @Namespace("/collection/admin")
-public class MakeCollectionWhiteLabelAction extends Base implements Preparable {
+public class MakeCollectionWhiteLabelAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 4671830242931274023L;
 

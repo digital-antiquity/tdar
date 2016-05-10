@@ -13,12 +13,12 @@ import javax.persistence.TemporalType;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 
 @Entity
 @Table(name = "email_queue")
-public class Email extends Persistable.Base {
+public class Email extends AbstractPersistable {
 
     private static final String SEPARATOR_CHARS = ";";
     private static final long serialVersionUID = -5791173542997998092L;

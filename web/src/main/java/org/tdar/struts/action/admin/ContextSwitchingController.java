@@ -13,12 +13,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 @Namespace("/admin/switchContext")
 @Component
 @Scope("prototype")
-public class ContextSwitchingController extends AuthenticationAware.Base {
+public class ContextSwitchingController extends AbstractAuthenticatableAction {
 
     private static final String CONTEXT_WARNING = "COULD NOT SWITCH CONTEXTS BECAUSE ENVIRONMENT VARIABLE WAS NOT SET PROPERLY -DenableContextSwitchingConfig=true";
     /**

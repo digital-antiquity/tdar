@@ -75,8 +75,9 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.transform.MetaTag;
-import org.tdar.transform.SchemaOrgMetadataTransformer;
 import org.tdar.transform.ScholarMetadataTransformer;
+import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
+import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
@@ -932,7 +933,7 @@ public class ResourceService {
     @Transactional(readOnly=true)
     public String getSchemaOrgJsonLD(Resource resource) {
         try {
-            SchemaOrgMetadataTransformer transformer = new SchemaOrgMetadataTransformer();
+            SchemaOrgResourceTransformer transformer = new SchemaOrgResourceTransformer();
             return transformer.convert(serializationService, resource);
         } catch (Exception e) {
             logger.error("error converting to json-ld", e);

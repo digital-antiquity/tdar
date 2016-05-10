@@ -179,7 +179,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         // evictCache();
 
         T controller = applicationContext.getBean(controllerClass);
-        if (controller instanceof AuthenticationAware.Base) {
+        if (controller instanceof AbstractAuthenticatableAction) {
             TdarActionSupport tas = (TdarActionSupport) controller;
             tas.setServletRequest(getServletRequest());
             tas.setServletResponse(getServletResponse());

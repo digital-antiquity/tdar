@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
@@ -24,7 +24,7 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @Namespace("/billing")
 @RequiresTdarUserGroup(TdarGroup.TDAR_BILLING_MANAGER)
 @HttpsOnly
-public class ListInvoiceAction extends AuthenticationAware.Base {
+public class ListInvoiceAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 5946241615531835007L;
     private static final String LIST_INVOICES = "listInvoices";

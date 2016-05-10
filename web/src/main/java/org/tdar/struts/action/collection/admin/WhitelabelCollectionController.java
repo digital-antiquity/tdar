@@ -13,6 +13,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
@@ -28,7 +29,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Namespace("/collection/admin")
 @HttpsOnly
-public class WhitelabelCollectionController extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<WhiteLabelCollection> {
+public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<WhiteLabelCollection> {
 
     @Autowired
     private transient AuthorizationService authorizationService;

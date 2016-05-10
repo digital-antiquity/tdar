@@ -28,7 +28,7 @@ import org.springframework.stereotype.Component;
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 
 })
-public class SitemapController extends AuthenticationAware.Base {
+public class SitemapController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 3087341894996134904L;
 

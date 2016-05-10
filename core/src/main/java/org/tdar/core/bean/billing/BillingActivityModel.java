@@ -13,11 +13,12 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 
 @Entity
 @Table(name = "pos_billing_model")
-public class BillingActivityModel extends org.tdar.core.bean.Persistable.Base {
+public class BillingActivityModel extends AbstractPersistable {
 
     /*
      * A 1:1 representation of a billing model and a set of activites. As a billing model changes, a new version should be published with new activities. At

@@ -44,7 +44,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
         @Result(name = "authenticated", type = TdarActionSupport.TDAR_REDIRECT, location = "/")
 })
 // FIXME: better name
-public class HomepageSupportingController extends AuthenticationAware.Base {
+public class HomepageSupportingController extends AbstractAuthenticatableAction {
     private static final long serialVersionUID = -9216882130992021384L;
 
     private Project featuredProject;

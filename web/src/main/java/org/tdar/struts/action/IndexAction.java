@@ -40,7 +40,7 @@ import com.rometools.rome.feed.synd.SyndEntry;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-public class IndexAction extends AuthenticationAware.Base {
+public class IndexAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -4095866074424122972L;
 

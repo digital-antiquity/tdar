@@ -66,6 +66,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private String keywordPath = "";
     private boolean redirectBadSlug;
 
+    private String schemaOrgJsonLD;
+
     public Keyword getKeyword() {
         return keyword;
     }
@@ -119,6 +121,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         if (!handleSlugRedirect(keyword, this)) {
             setRedirectBadSlug(true);
         } else {
+            setSchemaOrgJsonLD(genericKeywordService.getSchemaOrgJsonLD(getKeyword()));
             try {
                 prepareLuceneQuery();
             } catch (TdarActionException tdae) {
@@ -217,5 +220,18 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     public void setRedirectBadSlug(boolean redirectBadSlug) {
         this.redirectBadSlug = redirectBadSlug;
+    }
+    
+    @Override
+    public boolean isRightSidebar() {
+        return true;
+    }
+
+    public String getSchemaOrgJsonLD() {
+        return schemaOrgJsonLD;
+    }
+
+    public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
+        this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 }

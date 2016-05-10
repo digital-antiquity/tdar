@@ -18,7 +18,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Email.Status;
 import org.tdar.core.service.external.EmailService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
@@ -29,7 +29,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/admin")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class AdminEmailController extends AuthenticationAware.Base implements Preparable {
+public class AdminEmailController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 7908324276339775315L;
     private List<Email> emails = new ArrayList<>();

@@ -23,7 +23,7 @@ import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
@@ -35,7 +35,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/resource")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class ResourceAdminController extends AuthenticationAware.Base implements Preparable {
+public class ResourceAdminController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 	private static final long serialVersionUID = -2071449250711089300L;

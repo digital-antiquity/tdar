@@ -35,7 +35,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource")
 @Component
 @Scope("prototype")
-public class BookmarkResourceController extends AuthenticationAware.Base implements Preparable {
+public class BookmarkResourceController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -5396034976314292120L;
 

@@ -31,7 +31,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/email")
 @Component
 @Scope("prototype")
-public class EmailController extends AuthenticationAware.Base implements Preparable, ParameterAware {
+public class EmailController extends AbstractAuthenticatableAction implements Preparable, ParameterAware {
 
     private static final long serialVersionUID = 2598289601940169922L;
 

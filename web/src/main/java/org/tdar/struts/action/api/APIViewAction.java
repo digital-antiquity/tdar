@@ -15,7 +15,7 @@ import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -29,7 +29,7 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-public class APIViewAction extends AuthenticationAware.Base {
+public class APIViewAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 539604938603061219L;
 

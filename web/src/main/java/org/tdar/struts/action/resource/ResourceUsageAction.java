@@ -32,8 +32,8 @@ import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 
@@ -43,7 +43,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/resource/usage")
-public class ResourceUsageAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<Resource> {
+public class ResourceUsageAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = 97924349900255693L;
     private List<AggregateViewStatistic> usageStatsForResources = new ArrayList<>();

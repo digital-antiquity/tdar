@@ -15,7 +15,7 @@ import org.tdar.core.service.download.DownloadTransferObject;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
@@ -37,7 +37,7 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.FORBIDDEN, type = TdarActionSupport.HTTPHEADER, params = { "error", "403" })
 })
-public class AbstractDownloadController extends AuthenticationAware.Base implements Preparable {
+public class AbstractDownloadController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -1831798412944149018L;
     @Autowired

@@ -29,8 +29,8 @@ import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.WROProfile;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -50,7 +50,7 @@ import com.opensymphony.xwork2.Validateable;
 @Component
 @Scope("prototype")
 @HttpsOnly
-public class AngularIntegrationAction extends AuthenticationAware.Base implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
+public class AngularIntegrationAction extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>, Validateable {
 
     private static final long serialVersionUID = -2356381511354062946L;
 

@@ -13,9 +13,9 @@ import org.apache.commons.lang3.Range;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -37,7 +37,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.coverage.CoverageDate")
-public class CoverageDate extends Persistable.Base implements HasResource<Resource>, Validatable {
+public class CoverageDate extends AbstractPersistable implements HasResource<Resource>, Validatable {
 
     private static final long serialVersionUID = -5878760394443928287L;
 

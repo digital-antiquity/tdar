@@ -1,15 +1,19 @@
 package org.tdar.struts.action.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
-public abstract class AbstractKeywordController extends AuthenticationAware.Base implements Preparable {
+public abstract class AbstractKeywordController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -7469398370759336245L;
 
@@ -19,7 +23,9 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
     private Long id;
     private KeywordType keywordType;
     private Keyword keyword;
+    private List<ExternalKeywordMapping> mappings = new ArrayList<>();
 
+    
     public Keyword getKeyword() {
         return keyword;
     }
@@ -54,6 +60,14 @@ public abstract class AbstractKeywordController extends AuthenticationAware.Base
         }
 
         setKeyword(genericService.find(getKeywordType().getKeywordClass(), getId()));
+    }
+
+    public List<ExternalKeywordMapping> getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(List<ExternalKeywordMapping> mappings) {
+        this.mappings = mappings;
     }
 
 }
