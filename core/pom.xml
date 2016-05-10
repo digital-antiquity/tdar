@@ -9,7 +9,6 @@
     <name>tDAR (core)</name>
 
     <properties>
-        <spring.ldap.version>2.0.4.RELEASE</spring.ldap.version>
         <poi.version>3.14</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
@@ -286,36 +285,6 @@
             <artifactId>rome-modules</artifactId>
             <version>${rome.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <!-- Spring LDAP -->
-        <dependency>
-            <groupId>org.springframework.ldap</groupId>
-            <artifactId>spring-ldap-core</artifactId>
-            <version>${spring.ldap.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <dependency>
-            <groupId>org.springframework.ldap</groupId>
-            <artifactId>spring-ldap-core-tiger</artifactId>
-            <version>${spring.ldap.version}</version>
-            <!-- LICENSE: APACHE 2.0 -->
-        </dependency>
-        <!-- ANDS PID Client -->
-        <dependency>
-            <groupId>net.sourceforge.andspidclient</groupId>
-            <artifactId>ands-pid-client</artifactId>
-            <version>1.0.30</version>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jdom</artifactId>
-                    <groupId>org.jdom</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <!-- Junit -->
         <dependency>

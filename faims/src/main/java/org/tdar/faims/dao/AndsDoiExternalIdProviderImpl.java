@@ -1,4 +1,4 @@
-package org.tdar.core.dao.external.pid;
+package org.tdar.faims.dao;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.ConfigurationAssistant;
+import org.tdar.core.dao.external.pid.ExternalIDProvider;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.core.service.processes.daily.DoiProcess;
