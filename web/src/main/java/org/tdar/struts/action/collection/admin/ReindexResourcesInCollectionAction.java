@@ -40,7 +40,7 @@ public class ReindexResourcesInCollectionAction extends AbstractAuthenticatableA
 
     @Override
     public void prepare() throws Exception {
-        collection = resourceCollectionService.find(id);
+        setCollection(resourceCollectionService.find(id));
     }
 
     @Override
@@ -51,9 +51,9 @@ public class ReindexResourcesInCollectionAction extends AbstractAuthenticatableA
     })
     public String execute() throws Exception {
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(collection);
+            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getCollection());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(collection);
+            searchIndexService.indexAllResourcesInCollectionSubTree(getCollection());
         }
         return SUCCESS;
     }
@@ -72,6 +72,14 @@ public class ReindexResourcesInCollectionAction extends AbstractAuthenticatableA
 
     public void setAsync(boolean async) {
         this.async = async;
+    }
+
+    public ResourceCollection getCollection() {
+        return collection;
+    }
+
+    public void setCollection(ResourceCollection collection) {
+        this.collection = collection;
     }
 
 }
