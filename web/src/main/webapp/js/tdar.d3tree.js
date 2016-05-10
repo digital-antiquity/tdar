@@ -20,8 +20,6 @@ TDAR.d3tree = (function(console, $, ctx) {
         return [d.y, d.x];
     });
     var allNodes = [];
-    var panSpeed = 200;
-    var panBoundary = 20; // Within 20px from edges will pan when dragging.
 
     function _init() {
         root = JSON.parse($("#ontId").text());
@@ -76,8 +74,6 @@ TDAR.d3tree = (function(console, $, ctx) {
             }
             return false;
         })
-
-        d3.select(self.frameElement).style("height", "800px");
 
     }
 
@@ -296,38 +292,12 @@ TDAR.d3tree = (function(console, $, ctx) {
     }
 
 
-    function _pan(domNode, direction) {
-        var speed = panSpeed;
-        if (panTimer) {
-            clearTimeout(panTimer);
-            translateCoords = d3.transform(svg.attr("transform"));
-            if (direction == 'left' || direction == 'right') {
-                translateX = direction == 'left' ? translateCoords.translate[0] + speed : translateCoords.translate[0] - speed;
-                translateY = translateCoords.translate[1];
-            } else if (direction == 'up' || direction == 'down') {
-                translateX = translateCoords.translate[0];
-                translateY = direction == 'up' ? translateCoords.translate[1] + speed : translateCoords.translate[1] - speed;
-            }
-            scaleX = translateCoords.scale[0];
-            scaleY = translateCoords.scale[1];
-            scale = zoomListener.scale();
-            svg.transition().attr("transform", "translate(" + translateX + "," + translateY + ")scale(" + scale + ")");
-            d3.select(domNode).select('g.node').attr("transform", "translate(" + translateX + "," + translateY + ")");
-            zoomListener.scale(zoomListener.scale());
-            zoomListener.translate([translateX, translateY]);
-            panTimer = setTimeout(function() {
-                _pan(domNode, speed, direction);
-            }, 50);
-        }
-    }
-
     // Define the zoom function for the zoomable tree
 
-//http://bl.ocks.org/phil-pedruco/7051552
+    //http://bl.ocks.org/phil-pedruco/7051552
     function _zoom() {
         svg.attr("transform", "translate(" + d3.event.translate + ")");
     }
-
 
     // define the zoomListener which calls the zoom function on the "zoom" event constrained within the scaleExtents
     var zoomListener = d3.behavior.zoom().scaleExtent([1.3, 1.3]).on("zoom", _zoom);

@@ -1,3 +1,7 @@
+
+.d3tree svg {
+    border: 1px solid steelblue;
+}
 .d3tree .node {
 	cursor: pointer;
 }

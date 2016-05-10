@@ -54,8 +54,8 @@
     <form class="pull-right">
     <input type="search" id="search" placeholder="search"/>
     </form>
-    <div id="d3" class="d3tree" style="height:600px">
-    
+    <div id="d3" class="d3tree" style="min-height:600px">
+
     </div>
     <script>
     $(function() {
