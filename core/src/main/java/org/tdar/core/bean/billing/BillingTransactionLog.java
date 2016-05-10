@@ -14,8 +14,8 @@ import javax.validation.constraints.NotNull;
 //import net.sf.json.JsonConfig;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable.Base;
 
 /**
  * A JSON Object that represents the result of a financial transaction. Could be successful or failed.
@@ -25,7 +25,7 @@ import org.tdar.core.bean.Persistable.Base;
  */
 @Entity
 @Table(name = "pos_transaction_log")
-public class BillingTransactionLog extends Base {
+public class BillingTransactionLog extends AbstractPersistable {
 
     private static final long serialVersionUID = 2104177203134056911L;
 

@@ -19,7 +19,7 @@ import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.billing.InvoiceService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
@@ -32,7 +32,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Namespace("/cart")
 // @HttpsOnly
-public class CartExternalPaymentResponseAction extends AuthenticationAware.Base implements Preparable, ParameterAware {
+public class CartExternalPaymentResponseAction extends AbstractAuthenticatableAction implements Preparable, ParameterAware {
 
     private static final String STREAMHTTP = "streamhttp";
     private static final String STREAM = "stream";

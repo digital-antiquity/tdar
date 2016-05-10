@@ -8,13 +8,13 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.Invoice;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 @Component
 @Scope("prototype")
 @Namespace("/cart")
 @ParentPackage("default")
-public class ContinueInvoiceAction extends AuthenticationAware.Base {
+public class ContinueInvoiceAction extends AbstractAuthenticatableAction {
 
     private static final String SUCCESS_UNAUTH = "success-unauth";
     private static final long serialVersionUID = -5124643538589250147L;

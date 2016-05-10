@@ -10,7 +10,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.exception.TdarValidationException;
 
@@ -20,7 +20,7 @@ import org.tdar.core.exception.TdarValidationException;
  */
 @Entity
 @Table(name = "pos_item")
-public class BillingItem extends Base implements Validatable {
+public class BillingItem extends AbstractPersistable implements Validatable {
 
     private static final long serialVersionUID = -2775737509085985555L;
     @SuppressWarnings("unused")

@@ -30,7 +30,7 @@ import com.fasterxml.jackson.annotation.JsonView;
  */
 @Entity
 @Table(name = "personal_filestore_ticket")
-public class PersonalFilestoreTicket extends Persistable.Base {
+public class PersonalFilestoreTicket extends AbstractPersistable {
 
     private static final long serialVersionUID = 3712388159075958666L;
 

@@ -19,7 +19,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.Persistable.Sequence;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -235,7 +235,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
             return;
         }
         list.removeAll(Collections.singletonList(null));
-        Sequence.applySequence(list);
+        AbstractSequenced.applySequence(list);
     }
 
     public void loadBasicViewMetadata() {

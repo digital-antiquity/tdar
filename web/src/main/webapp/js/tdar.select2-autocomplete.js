@@ -15,7 +15,8 @@ TDAR.select2autocomplete = (function($, ctx) {
      */
     var _init = function() {
 
-    	_setDefaults();
+        /** NOTE!!! select2 can set defaults via the above arrays or via data-attributes we're using them to set the URL and a few other common settings **/
+        _setDefaults();
             $(".keyword-autocomplete").select2({
             	tags:true,
                 templateResult: _highlightKeyword,

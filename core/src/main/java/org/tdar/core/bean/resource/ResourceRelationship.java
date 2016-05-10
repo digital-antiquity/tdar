@@ -7,10 +7,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
-import org.tdar.core.bean.Persistable;
 import org.tdar.utils.MessageHelper;
 
 /**
@@ -24,7 +24,7 @@ import org.tdar.utils.MessageHelper;
 
 @Entity
 @Table(name = "resource_relationship")
-public class ResourceRelationship extends Persistable.Base {
+public class ResourceRelationship extends AbstractPersistable {
 
     private static final long serialVersionUID = 2240540556284744345L;
 

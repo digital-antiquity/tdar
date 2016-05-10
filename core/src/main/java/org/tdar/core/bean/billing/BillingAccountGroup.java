@@ -21,8 +21,8 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable.Base;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
@@ -36,7 +36,7 @@ import org.tdar.core.bean.resource.Status;
  */
 @Entity
 @Table(name = "pos_account_group")
-public class BillingAccountGroup extends Base implements Updatable {
+public class BillingAccountGroup extends AbstractPersistable implements Updatable {
 
     private static final long serialVersionUID = 3939132209828344622L;
 

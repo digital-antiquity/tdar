@@ -26,7 +26,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserLogin;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -44,7 +44,7 @@ import com.opensymphony.xwork2.Validateable;
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @Scope("prototype")
 @HttpForbiddenErrorResponseOnly
-public class ApiAuthenticationController extends AuthenticationAware.Base implements Validateable, Preparable, APIParameters {
+public class ApiAuthenticationController extends AbstractAuthenticatableAction implements Validateable, Preparable, APIParameters {
 
     private static final long serialVersionUID = -7766515866713996249L;
 

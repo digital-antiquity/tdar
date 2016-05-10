@@ -16,8 +16,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -41,7 +41,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
                 @Index(name = "bookmarked_resource_person_id_idx", columnList = "person_id"),
                 @Index(name = "bookmarked_resource_resource_id_idx", columnList = "resource_id")
         })
-public class BookmarkedResource extends Persistable.Base {
+public class BookmarkedResource extends AbstractPersistable {
 
     private static final long serialVersionUID = -5112227003063546552L;
 

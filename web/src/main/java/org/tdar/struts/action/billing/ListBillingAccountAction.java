@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
@@ -22,7 +22,7 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 @Namespace("/billing")
 @RequiresTdarUserGroup(TdarGroup.TDAR_BILLING_MANAGER)
 @HttpsOnly
-public class ListBillingAccountAction extends AuthenticationAware.Base {
+public class ListBillingAccountAction extends AbstractAuthenticatableAction {
 
     public static final String LIST = "list";
 

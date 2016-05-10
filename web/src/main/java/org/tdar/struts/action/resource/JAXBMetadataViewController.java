@@ -13,8 +13,8 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.AuthenticationAware;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
@@ -33,7 +33,7 @@ import edu.asu.lib.mods.ModsDocument;
 @Scope("prototype")
 @ParentPackage("default")
 @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "status", "400" })
-public class JAXBMetadataViewController extends AuthenticationAware.Base implements Preparable, ViewableAction<Resource>, PersistableLoadingAction<Resource> {
+public class JAXBMetadataViewController extends AbstractAuthenticatableAction implements Preparable, ViewableAction<Resource>, PersistableLoadingAction<Resource> {
 
     private static final long serialVersionUID = -7297306518597493712L;
     public static final String DC = "dc/{id}";

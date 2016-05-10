@@ -20,7 +20,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.DatasetService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
@@ -30,7 +30,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/dataset")
-public class TableXMLDownloadAction extends AuthenticationAware.Base implements Preparable {
+public class TableXMLDownloadAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -4731261436258813618L;
     @Autowired

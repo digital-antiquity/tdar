@@ -27,6 +27,8 @@
 
         <h3>Child Collections</h3>
         <@common.listCollections collections=collections showOnlyVisible=true />
+
+		<@list.displayWidget />
     </div>
 </#macro>
 
@@ -170,7 +172,7 @@
 
             <#nested />
             <@list.listResources resourcelist=results sortfield=sortField titleTag="h5" listTag="ul" itemTag="li" itemsPerRow=itemsPerRow
-                    orientation=resourceCollection.orientation    mapPosition="top" mapHeight=mapSize />
+                    orientation=orientation    mapPosition="top" mapHeight=mapSize />
         </div>
             <@search.basicPagination "Records" />
         <#else>
@@ -195,6 +197,20 @@
                 <b>Make Whitelabel</b>
                 <form action="/collection/admin/makeWhitelabel/${id?c}" method="POST">
                     <@s.submit cssClass="button btn tdar-button" id="makeWhiteLabelCollection" />
+                </form>
+			 
+			 </li>
+			 <li>
+                <b>Reindex collection contents</b>
+                <form action="/collection/admin/reindex/${id?c}" method="POST">
+                    <@s.submit cssClass="button btn tdar-button" id="reindexCollection" />
+                </form>
+			 
+			 </li>
+			 <li>
+                <b>Make all DRAFT Resources Active</b>
+                <form action="/collection/admin/makeActive/${id?c}" method="POST">
+                    <@s.submit cssClass="button btn tdar-button" id="makeActive" />
                 </form>
 			 
 			 </li>

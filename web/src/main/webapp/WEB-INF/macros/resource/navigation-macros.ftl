@@ -222,10 +222,10 @@ navigation freemarker macros
 	        <#if includeResourceId>
 	            <@s.param name="id" value="${_id?c}" />
 	        </#if>
-	        </@s.url></#compress>">
+	        </@s.url></#compress>" class="toolbar-${name}">
         </#if>
         <i class="tdar-icon-${action_}<#if state?has_content>-${state}</#if>"></i>
-        <#nested> ${label}<#if disabled></span><#else></a></#if>
+        <#nested>${label}<#if disabled></span><#else></a></#if>
     </li>
     </#macro>
 

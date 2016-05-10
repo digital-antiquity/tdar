@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
@@ -30,7 +31,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "resource_note", indexes = {
         @Index(name = "resid_noteid", columnList = "resource_id, id") })
-public class ResourceNote extends Persistable.Sequence<ResourceNote> implements HasResource<Resource> {
+public class ResourceNote extends AbstractSequenced<ResourceNote> implements HasResource<Resource> {
 
     private static final long serialVersionUID = -3161092447810925887L;
 

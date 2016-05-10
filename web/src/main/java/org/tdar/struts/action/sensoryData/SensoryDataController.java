@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
@@ -77,10 +78,10 @@ public class SensoryDataController extends AbstractInformationResourceController
     }
 
     private void saveCustomMetadata() {
-        Persistable.Sequence.applySequence(getSensoryDataImages());
+        AbstractSequenced.applySequence(getSensoryDataImages());
         resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataImages(),
                 getPersistable().getSensoryDataImages(), SensoryDataImage.class);
-        Persistable.Sequence.applySequence(getSensoryDataScans());
+        AbstractSequenced.applySequence(getSensoryDataScans());
         resourceService.saveHasResources(getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getSensoryDataScans(),
                 getPersistable().getSensoryDataScans(), SensoryDataScan.class);
 

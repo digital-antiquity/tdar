@@ -1,14 +1,12 @@
 package org.tdar.core.bean.keyword;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import javax.persistence.AssociationOverride;
+import javax.persistence.AssociationOverrides;
 import javax.persistence.Cacheable;
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
@@ -25,29 +23,17 @@ import org.hibernate.annotations.Check;
 @Check(constraints = "label <> ''")
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.keyword.SiteNameKeyword")
 @Cacheable
-public class SiteNameKeyword extends UncontrolledKeyword.Base<SiteNameKeyword> {
+@AssociationOverrides({
+    @AssociationOverride(name = "assertions",
+       joinColumns = @JoinColumn(name="site_name_keyword_id"))
+ })
+@XmlRootElement
+public class SiteNameKeyword extends AbstractKeyword<SiteNameKeyword> implements UncontrolledKeyword {
 
     private static final long serialVersionUID = 60750909588980398L;
 
-    @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
-    @JoinColumn(name = "merge_keyword_id")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
-    private Set<SiteNameKeyword> synonyms = new HashSet<SiteNameKeyword>();
-
-    @Override
-    public Set<SiteNameKeyword> getSynonyms() {
-        return synonyms;
-    }
-
-    public void setSynonyms(Set<SiteNameKeyword> synonyms) {
-        this.synonyms = synonyms;
-    }
 
     public String getSiteCode() {
-        return getLabel();
-    }
-
-    public String getSynonymFormattedName() {
         return getLabel();
     }
 

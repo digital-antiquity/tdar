@@ -23,7 +23,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Namespace("/")
 @ParentPackage("secured")
-public class UserAgreementController extends AuthenticationAware.Base implements Preparable {
+public class UserAgreementController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final String ACCEPT = "accept";
     private static final String DECLINE = "decline";

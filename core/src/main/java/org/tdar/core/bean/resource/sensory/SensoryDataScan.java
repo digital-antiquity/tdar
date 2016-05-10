@@ -13,6 +13,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.Persistable;
@@ -26,7 +27,7 @@ import org.tdar.core.bean.resource.SensoryData;
  */
 @Entity
 @Table(name = "sensory_data_scan")
-public class SensoryDataScan extends Persistable.Sequence<SensoryDataScan> implements HasResource<SensoryData> {
+public class SensoryDataScan extends AbstractSequenced<SensoryDataScan> implements HasResource<SensoryData> {
 
     private static final long serialVersionUID = -310445034386268598L;
 

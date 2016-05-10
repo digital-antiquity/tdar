@@ -55,7 +55,7 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" }),
         @Result(name = TdarActionSupport.DRAFT, location = "/WEB-INF/content/errors/resource-in-draft.ftl")
 })
-public abstract class AbstractPersistableViewableAction<P extends Persistable> extends AuthenticationAware.Base implements Preparable, ViewableAction<P>,
+public abstract class AbstractPersistableViewableAction<P extends Persistable> extends AbstractAuthenticatableAction implements Preparable, ViewableAction<P>,
         PersistableLoadingAction<P> {
 
     private static final long serialVersionUID = -5126488373034823160L;

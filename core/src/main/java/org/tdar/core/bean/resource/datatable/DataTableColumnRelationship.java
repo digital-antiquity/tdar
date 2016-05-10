@@ -7,7 +7,7 @@ import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -18,7 +18,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
  */
 @Entity
 @Table(name = "data_table_column_relationship")
-public class DataTableColumnRelationship extends Persistable.Base {
+public class DataTableColumnRelationship extends AbstractPersistable {
     // FIXME: should probably be called DataTableRelationship, since it represents a relationship between two tables, defined by a set of columns in one table
     // matching a set of columns in the other
     /**

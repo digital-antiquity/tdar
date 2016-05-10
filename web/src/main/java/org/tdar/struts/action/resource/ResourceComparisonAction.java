@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.AuthenticationAware;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
@@ -22,7 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Namespace("/resource")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-public class ResourceComparisonAction extends AuthenticationAware.Base implements Preparable {
+public class ResourceComparisonAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 1996434590439580868L;
     private List<Long> ids;

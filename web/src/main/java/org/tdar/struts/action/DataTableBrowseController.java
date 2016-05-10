@@ -24,7 +24,7 @@ import org.tdar.utils.PersistableUtils;
 @Component
 @Scope("prototype")
 @Namespace("/datatable")
-public class DataTableBrowseController extends AuthenticationAware.Base {
+public class DataTableBrowseController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -2570627983412022974L;
 

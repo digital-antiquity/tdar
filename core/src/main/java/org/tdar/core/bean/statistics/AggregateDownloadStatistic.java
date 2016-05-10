@@ -16,7 +16,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 import org.hibernate.annotations.Immutable;
-import org.tdar.core.bean.Persistable.Base;
+import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 
@@ -25,7 +25,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 @Table(name = "file_download_day_agg")
 @Immutable
 @XmlType(propOrder = { "name", "date", "count", "fid", "rid" })
-public class AggregateDownloadStatistic extends Base implements Serializable {
+public class AggregateDownloadStatistic extends AbstractPersistable implements Serializable {
 
     private static final long serialVersionUID = 1698960536676588440L;
 
