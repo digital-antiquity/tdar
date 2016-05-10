@@ -10,6 +10,7 @@ public class AdvancedSearchQueryObject implements Serializable {
 
     private static final long serialVersionUID = -2556511171217353615L;
 
+    private boolean multiCore = false;
     private ReservedSearchParameters reservedParams;
     private Operator operator = Operator.AND;
     private List<SearchParameters> searchParameters = new ArrayList<>();
@@ -93,6 +94,14 @@ public class AdvancedSearchQueryObject implements Serializable {
 
     public void setAllGeneralQueryFields(List<String> getAllGeneralQueryFields) {
         this.allGeneralQueryFields = getAllGeneralQueryFields;
+    }
+
+    public boolean isMultiCore() {
+        return multiCore;
+    }
+
+    public void setMultiCore(boolean multiCore) {
+        this.multiCore = multiCore;
     }
 
 }

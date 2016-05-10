@@ -16,7 +16,6 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
-import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.SimpleOrderedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,9 +27,11 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -159,8 +160,18 @@ public class SearchDao<I extends Indexable> {
 				}
 			}
 
-			@SuppressWarnings("unchecked")
-			Enum enum1 = Enum.valueOf(facetClass, name);
+			@SuppressWarnings("rawtypes")
+            Enum enum1 = null;
+	        if (facetClass.equals(ResourceType.class)) {
+			    for (CollectionType type : CollectionType.values()) {
+			        if (name.equals(type.name())) {
+			            enum1 = type;
+			        }
+			    }
+			}
+	        if (enum1 == null) {
+	            enum1 = Enum.valueOf(facetClass, name);
+			}
 			if (enum1 instanceof PluralLocalizable && c.getCount() > 1) {
 				label = ((PluralLocalizable) enum1).getPluralLocaleKey();
 			} else {
