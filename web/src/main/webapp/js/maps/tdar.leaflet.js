@@ -185,7 +185,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             
             if (rectangleSettings.fitToBounds) {
                 // Really frustrating race condition whereby map sometimes zoom's wrong, so we need to add a timeout to make this work
-                setTimeout(function() {map.fitBounds(rectangle.getBounds());map.redraw()},100);
+                setTimeout(function() {map.fitBounds(rectangle.getBounds());},1000);
             }
             _initialized = 2;
             return rectangle;
