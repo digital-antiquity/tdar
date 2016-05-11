@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.collections4.ListUtils;
-import org.apache.struts2.dispatcher.ServletRedirectResult;
+import org.apache.struts2.result.ServletRedirectResult;
 
 public class RedirectResult extends ServletRedirectResult {
 
