@@ -52,7 +52,7 @@
         <#if whitelabelCollection.featuredResourcesEnabled>
             <div class="viewpage-section">
                 <div class="row">
-                    <@view.featured resourceList=whitelabelCollection.featuredResources />
+                    <@view.featured colspan="9" resourceList=whitelabelCollection.featuredResources />
                 </div>
             </div>
         </#if>
