@@ -128,7 +128,7 @@ public class FaimsExportService {
         Long id = resource.getId();
         resource.getInvestigationTypes().clear();
         // we mess with IDs, so just in case
-        Resource r = resourceExportService.setupResourceForExport(resource);
+        Resource r = resourceExportService.setupResourceForReImport(resource);
         if (r instanceof InformationResource && projectId != null) {
             InformationResource informationResource = (InformationResource) r;
             informationResource.setProject(new Project(projectId, null));

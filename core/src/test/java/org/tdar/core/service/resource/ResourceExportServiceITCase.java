@@ -18,7 +18,24 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testSingleExport() throws Exception {
         Document doc = generateDocumentWithFileAndUser();
-        File export = exportService.export("test123.zip", Arrays.asList(doc));
+        File export = exportService.export("test123.zip", false, Arrays.asList(doc));
+        logger.debug("exported:{}", export);
+    }
+
+    @Test
+    @Rollback
+    public void testMultipleExport() throws Exception {
+        Document doc = generateDocumentWithFileAndUser();
+        Document doc2 = generateDocumentWithFileAndUser();
+        File export = exportService.export("test123.zip", false, Arrays.asList(doc,doc2));
+        logger.debug("exported:{}", export);
+    }
+
+    @Test
+    @Rollback
+    public void testSingleExportForReimport() throws Exception {
+        Document doc = generateDocumentWithFileAndUser();
+        File export = exportService.export("test123.zip", true, Arrays.asList(doc));
         logger.debug("exported:{}", export);
     }
 
