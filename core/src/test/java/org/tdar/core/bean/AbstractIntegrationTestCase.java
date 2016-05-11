@@ -295,6 +295,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         InformationResourceFile irFile = new InformationResourceFile();
         irFile.setInformationResource(ir);
         irFile.setLatestVersion(1);
+        irFile.setFilename(name);
         @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setVersion(1);
