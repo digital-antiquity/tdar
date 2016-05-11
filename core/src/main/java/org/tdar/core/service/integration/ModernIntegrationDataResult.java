@@ -123,8 +123,8 @@ public class ModernIntegrationDataResult implements Serializable {
             labels.add(dtc.getDisplayName());
 
             if (dtc.getName().contains(PostgresDatabase.INTEGRATION_SUFFIX)) {
-                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value"));
-                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value"));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value",Arrays.asList(dtc.getDisplayName())));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value",Arrays.asList(dtc.getDisplayName())));
             }
         }
         return labels;
