@@ -1,12 +1,15 @@
 TDAR.worldmap = (function(console, $, ctx) {
     "use strict";
 
-    var statesData;
     var hlayer;
     var geodata = {};
     var map;
     var $mapDiv;
     var OUTLINE = "#777777";
+    var stateLayer = undefined;
+    var overlay = false;
+    var allData = new Array();
+    var clickId;
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
 
@@ -17,6 +20,21 @@ TDAR.worldmap = (function(console, $, ctx) {
     }
 
     var c3colors = [];
+    var max = 0;
+
+    // Intialize the Geodata based on the JSON
+    function _initializeGeoData(mapdata) {
+        for (var i = 0; i < mapdata.length; i++) {
+            if (mapdata[i].resourceType == undefined) {
+                var val = mapdata[i].count;
+                geodata[mapdata[i].code] = val;
+                if (val > max) {
+                    max = val;
+                }
+            }
+        }
+    }
+
     /**
      * Look for embedded json in the specified container and return the parsed result. Embedded json should be tagged with a boolean attribute named
      * 'data-mapdata'. If no embedded json found, method returns null.
@@ -29,10 +47,16 @@ TDAR.worldmap = (function(console, $, ctx) {
         return JSON.parse(json);
     }
 
+    /**
+     * Default color range for the world map based on custom weighting function
+     */
     var _worldRangeColor = {
         colorProperty : _getColor,
     };
 
+    /**
+     * defaults for choropleth plugin
+     */
     var _defaultChoropleth = {
         valueProperty : function(feature) {
             if (geodata[feature.id]) {
@@ -58,6 +82,9 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
     }
 
+    /**
+     * Init the world map passing in the DIV id
+     */
     function _initWorldMap(mapId_) {
         if (mapId_ != undefined) {
             mapId = mapId_;
@@ -86,16 +113,8 @@ TDAR.worldmap = (function(console, $, ctx) {
             sleepOpacity : 1
         });
         _resetView();
-        var max = 0;
-        for (var i = 0; i < mapdata.length; i++) {
-            if (mapdata[i].resourceType == undefined) {
-                var val = mapdata[i].count;
-                geodata[mapdata[i].code] = val;
-                if (val > max) {
-                    max = val;
-                }
-            }
-        }
+
+        _initializeGeoData(mapdata);
         // load map data
         // FIXME: consider embedding data for faster rendering
         var jqxhr = $.getJSON(TDAR.uri("/js/maps/world.json"));
@@ -106,7 +125,15 @@ TDAR.worldmap = (function(console, $, ctx) {
             console.error("Failed to load world.json file. XHR result follows this line.", xhr);
         });
         map.on('click', _resetView);
+        var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
+        _setupLegend(map, grades, _getColor, max);
+        return map;
+    }
 
+    /**
+     * build out the legend based on the color function, grades, and the max size
+     */
+    function _setupLegend(map, grades, colorFunction, _max) {
         var legend = L.control({
             position : 'bottomright'
         });
@@ -116,22 +143,23 @@ TDAR.worldmap = (function(console, $, ctx) {
             var div = L.DomUtil.create('div', 'info');
             $(div).append("<div id='data'></div>");
             var legnd = L.DomUtil.create("div", " legend");
-            var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
 
             // loop through our density intervals and generate a label with a colored square for each interval
             legnd.innerHTML += " <span>0</span> ";
             for (var i = 0; i < grades.length; i++) {
-                legnd.innerHTML += '<i style="width:10px;height:10px;display:inline-block;background:' + _getColor(grades[i] + 1) + '">&nbsp;</i> ';
+                legnd.innerHTML += '<i style="width:10px;height:10px;display:inline-block;background:' + colorFunction(grades[i] + 1) + '">&nbsp;</i> ';
             }
-            legnd.innerHTML += " <span>" + TDAR.common.formatNumber(max) + "</span> ";
+            legnd.innerHTML += " <span>" + TDAR.common.formatNumber(_max) + "</span> ";
             $(div).append(legnd);
             return div;
         };
 
         legend.addTo(map);
-        return map;
     }
 
+    /**
+     * setup Leaflet.Choropleth
+     */
     function _setupMapLayer(data, map, isStateLayer) {
         var props = {};
         if (!isStateLayer) {
@@ -144,9 +172,9 @@ TDAR.worldmap = (function(console, $, ctx) {
         return layer;
     }
 
-    var stateLayer = undefined;
-    var overlay = false;
-
+    /**
+     * Load the state JSON file and choropleth
+     */
     function _loadStateData() {
         var usStyle = {
             strokeColor : "#ff7800",
@@ -160,9 +188,13 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     }
 
+    /**
+     * handle the Click event and load the local map if needed, alternately, and load the graph data
+     */
     function _clickWorldMapLayer(event) {
         var ly = event.target.feature.geometry.coordinates[0];
         console.log(event.target.feature);
+        clickId = event.target.feature.id;
         if (event.target.feature.id && event.target.feature.id.indexOf('USA') == -1) {
             if (stateLayer != undefined) {
                 map.removeLayer(stateLayer);
@@ -182,8 +214,9 @@ TDAR.worldmap = (function(console, $, ctx) {
         }
     }
 
-    var allData = new Array();
-
+    /**
+     * Draw the pie chart for the state or country
+     */
     function _drawDataGraph(name, id) {
         var $div = $("#mapgraphdata");
         // style='height:"+($mapDiv.height() - 50)+"px'
@@ -197,17 +230,21 @@ TDAR.worldmap = (function(console, $, ctx) {
         var filter = [];
         var data = [];
         var typeLabelMap = {};
+        // ID == Country/state id (USA / USAAZ)
         if (id != undefined) {
+            // find the set of data associated with this id
             filter = mapdata.filter(function(d) {
                 return d.code == id
             });
+
             filter.forEach(function(row) {
                 if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-                    console.log(row);
                     data.push([ row.label, row.count ]);
+                    typeLabelMap[row.label] = row.resourceType;
                 }
             });
         } else {
+            // initialization for "worldwide"
             if (allData.length == 0) {
                 var tmp = {};
                 mapdata.forEach(function(row) {
@@ -238,8 +275,13 @@ TDAR.worldmap = (function(console, $, ctx) {
                 type : 'pie',
                 onclick : function(d, element) {
                     var uri = "/search/results?resourceTypes=" + typeLabelMap[d.id];
-                    if (name != undefined) {
-                        uri += "&geographicKeywords=" + name + " (Country)";
+                    if (clickId != undefined && name != undefined) {
+                        uri += "&geographicKeywords=" + name;
+                        if (clickId.length == 3) {
+                            uri += " (Country)";
+                        } else {
+                            uri += " (State / Territory)";
+                        }
                     }
                     window.location.href = TDAR.c3graphsupport.getClickPath(uri);
                 }
@@ -265,6 +307,8 @@ TDAR.worldmap = (function(console, $, ctx) {
                 height : ($div.height() * 3 / 5)
             }
         };
+
+        // setup positioning based on mode
         if ($div.data("mode") == 'vertical') {
             obj.legend = {
                 position : 'bottom',
@@ -296,9 +340,13 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     }
 
+    /**
+     * Zoom out
+     */
     function _resetView() {
         map.setView([ 44.505, -0.09 ], 1);
         overlay = false;
+        clickId = undefined;
         if (hlayer != undefined) {
             hlayer.setStyle({
                 "fillOpacity" : 1
@@ -316,6 +364,9 @@ TDAR.worldmap = (function(console, $, ctx) {
         _drawDataGraph();
     }
 
+    /**
+     * handle mouse-over
+     */
     function _highlightFeature(e) {
         var layer = e.target;
 
@@ -348,10 +399,33 @@ TDAR.worldmap = (function(console, $, ctx) {
         $("#data").html("");
     }
 
+    /**
+     * Custom color assignent;
+     */
     function _getColor(d) {
         d = parseInt(d);
-        return d > 1000 ? '#800026' : d > 100 ? '#BD0026' : d > 20 ? '#E31A1C' : d > 10 ? '#FC4E2A' : d > 5 ? '#FD8D3C' : d > 2 ? '#FEB24C' : d > 1 ? '#FED976'
-                : '#FFF';
+        if (d > 1000) {
+            return '#800026';
+        }
+        if (d > 100) {
+            return '#BD0026';
+        }
+        if (d > 20) {
+            return '#E31A1C';
+        }
+        if (d > 10) {
+            return '#FC4E2A';
+        }
+        if (d > 5) {
+            return '#FD8D3C';
+        }
+        if (d > 2) {
+            return '#FEB24C';
+        }
+        if (d > 1) {
+            return '#FED976';
+        }
+        return '#FFF';
     }
 
     return {
