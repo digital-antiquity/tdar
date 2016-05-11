@@ -6,29 +6,6 @@
     ${json}
     </#noescape>
     </script>
-
-    <style>
-    div.orgChart div.hasChildren {
-        background-color: #${barColors[1]};
-    }
-    
-    div.orgChart div.node {
-        background-color: #${barColors[0]};
-    }
-    
-    div.orgChart div.node.level1 {
-        background-color: ${barColors[0]};
-    }
-    
-    div.orgChart div.node.level2 {
-        background-color: ${barColors[3]};
-    }
-    
-    div.orgChart div.node.level3 {
-        background-color: ${barColors[4]};
-    }
-        
-    </style>
     
     </#macro>
 
@@ -42,32 +19,27 @@
             </#list>
         </ul>
         </#if>
+
+	<form class="pull-right" onSubmit="return false;">
+	    <div class="btn-group">
+		    <input type="search" id="search" placeholder="search"/>
+			<span id="searchclear" class="remove">X</span>
+		</div>
+	</form>
     <h3>${resource.title}</h3>
-
-<#if orgchart!false>
-    <div id="ontologyViewer" class="" style="overflow:scroll;height:400px;">
-        <div id="ontologyViewerPan" style="width:100%;">
-
-        </div>
-    </div>
-    <#else>
-    <form class="pull-right">
-    <input type="search" id="search" placeholder="search"/>
-    </form>
     <div id="d3" class="d3tree" style="min-height:600px">
 
     </div>
     <script>
     $(function() {
-    $("#btnOntologyShowMore").click(function() {
-        $(".hidden-nodes").removeClass("hidden-nodes");
-        $("#divOntologyShowMore").hide();
-    });
-    TDAR.d3tree.init();    
-});
+	    $("#btnOntologyShowMore").click(function() {
+	        $(".hidden-nodes").removeClass("hidden-nodes");
+	        $("#divOntologyShowMore").hide();
+	    });
+	    TDAR.d3tree.init();    
+	});
     
     </script>
-</#if>
     
     <div id="divHints">
         <em>Click on a node to expand children</em>
