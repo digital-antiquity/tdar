@@ -6,6 +6,8 @@
 
 <@s.form name="emailReviewForm" action="changeEmailStatus" >
 <@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
+<@s.submit name="submit" />
+
 <h3>Emails to be Reviewed</h3>
 
 <table class="tableFormat table">
@@ -36,7 +38,6 @@
     </tr>
 </#list>
 </table>
-<@s.submit name="submit" />
 
 </@s.form>
 
