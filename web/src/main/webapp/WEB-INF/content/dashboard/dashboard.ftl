@@ -114,7 +114,7 @@
     <#if featuredResources?has_content  >
     <hr/>
     <div class="row">
-        <@view.featured span="span9" header="Featured and Recent Content"/>
+        <@view.featured colspan="9" header="Featured and Recent Content"/>
     </div>
     </#if>
     </#if>
