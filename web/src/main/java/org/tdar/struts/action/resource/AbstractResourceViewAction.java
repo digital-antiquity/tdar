@@ -395,11 +395,11 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     protected void loadCustomViewMetadata() throws TdarActionException {
         if (getResource() instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) getResource();
-            try {
-                setMappedData(resourceService.getMappedDataForInformationResource(informationResource));
-            } catch (Exception e) {
-                getLogger().error("could not attach additional dataset data to resource", e);
+            boolean fail = false;
+            if (getTdarConfiguration().isProductionEnvironment()) {
+                fail = true;
             }
+            setMappedData(resourceService.getMappedDataForInformationResource(informationResource, fail));
             setTransientViewableStatus(informationResource, getAuthenticatedUser());
         }
 

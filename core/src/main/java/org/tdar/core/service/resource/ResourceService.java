@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -277,8 +278,16 @@ public class ResourceService {
 
     
     @Transactional(readOnly=true)
-    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource) {
-        return datasetDao.getMappedDataForInformationResource(resource);
+    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource, boolean failOnMissing) {
+        try {
+            return datasetDao.getMappedDataForInformationResource(resource);
+        } catch (Throwable t) {
+            logger.error("could not attach additional dataset data to resource", t);
+            if (failOnMissing) {
+                throw t;
+            } 
+            return new HashMap<>();
+        }
     }
 
     /**
