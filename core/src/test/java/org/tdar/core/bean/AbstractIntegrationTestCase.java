@@ -288,10 +288,10 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
-    public <R extends InformationResource> InformationResourceFileVersion generateAndStoreVersion(Class<R> type, String name, File f, Filestore filestore)
+    public <R extends InformationResource> R generateAndStoreVersion(Class<R> type, String name, File f, Filestore filestore)
             throws InstantiationException,
             IllegalAccessException, IOException {
-        InformationResource ir = createAndSaveNewInformationResource(type, false);
+        R ir = createAndSaveNewInformationResource(type, false);
         InformationResourceFile irFile = new InformationResourceFile();
         irFile.setInformationResource(ir);
         irFile.setLatestVersion(1);
@@ -302,12 +302,14 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         version.setExtension(FilenameUtils.getExtension(name));
         version.setInformationResourceFile(irFile);
         version.setDateCreated(new Date());
+        version.setInformationResourceFile(irFile);
         version.setFileVersionType(VersionType.UPLOADED);
         irFile.getInformationResourceFileVersions().add(version);
+        ir.getInformationResourceFiles().add(irFile);
         genericService.save(irFile);
         genericService.save(version);
         filestore.store(FilestoreObjectType.RESOURCE, f, version);
-        return version;
+        return ir;
     }
 
     public Document generateDocumentWithFileAndUseDefaultUser() throws InstantiationException, IllegalAccessException {

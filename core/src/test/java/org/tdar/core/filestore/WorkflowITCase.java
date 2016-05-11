@@ -18,6 +18,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -62,8 +63,9 @@ public class WorkflowITCase extends AbstractIntegrationTestCase {
                         public Object doInTransaction(TransactionStatus status) {
 
                             try {
-                                InformationResourceFileVersion irfv = generateAndStoreVersion(Image.class, version.getName(), version, store);
+                                Image doc = generateAndStoreVersion(Image.class, version.getName(), version, store);
                                 // irversions.add(irfv);
+                                InformationResourceFileVersion irfv = doc.getLatestUploadedVersion();
                                 genericService.saveOrUpdate(irfv.getInformationResourceFile());
 
                                 InformationResource ir = irfv.getInformationResourceFile().getInformationResource();

@@ -105,7 +105,8 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         File f = new File(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
         Filestore store = TdarConfiguration.getInstance().getFilestore();
 
-        InformationResourceFileVersion originalVersion = generateAndStoreVersion(SensoryData.class, filename, f, store);
+        SensoryData doc = generateAndStoreVersion(SensoryData.class, filename, f, store);
+        InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.IMAGE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);

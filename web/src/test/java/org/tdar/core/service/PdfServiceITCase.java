@@ -60,10 +60,9 @@ public class PdfServiceITCase extends AbstractIntegrationWebTestCase {
         // THIS TEST WILL FAIL IF RUN IN ECLIPSE WITHOUT DOING A VERIFY FIRST (it needs access to includes)
         File f = new File(TestConstants.TEST_DOCUMENT_DIR, "1-01.PDF");
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
-        InformationResourceFileVersion originalVersion = generateAndStoreVersion(Document.class, "1-01.PDF", f, store);
-
+        Document document = generateAndStoreVersion(Document.class, "1-01.PDF", f, store);
+        InformationResourceFileVersion originalVersion = document.getLatestUploadedVersion();
         // setup document
-        Document document = (Document) originalVersion.getInformationResourceFile().getInformationResource();
         DocumentCitationFormatTestCase.setupDocumentWithAllFields(document, DocumentType.BOOK);
         for (ResourceCreator c : document.getResourceCreators()) {
             genericService.saveOrUpdate(c.getCreator());
