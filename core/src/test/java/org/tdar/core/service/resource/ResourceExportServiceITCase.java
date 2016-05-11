@@ -26,7 +26,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testMultipleExport() throws Exception {
         Document doc = generateDocumentWithFileAndUser();
-        Document doc2 = generateDocumentWithFileAndUser();
+        Document doc2 = generateDocumentWithFileAndUseDefaultUser();
         File export = exportService.export("test123.zip", false, Arrays.asList(doc,doc2));
         logger.debug("exported:{}", export);
     }
