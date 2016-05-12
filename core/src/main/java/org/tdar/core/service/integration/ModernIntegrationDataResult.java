@@ -2,6 +2,7 @@ package org.tdar.core.service.integration;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -123,8 +124,8 @@ public class ModernIntegrationDataResult implements Serializable {
             labels.add(dtc.getDisplayName());
 
             if (dtc.getName().contains(PostgresDatabase.INTEGRATION_SUFFIX)) {
-                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value"));
-                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value"));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value",Arrays.asList(dtc.getDisplayName())));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value",Arrays.asList(dtc.getDisplayName())));
             }
         }
         return labels;

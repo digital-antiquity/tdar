@@ -70,12 +70,15 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         dto.setAuthenticatedUser(getBillingUser());
         List<File> files = new ArrayList<>();
         File file = new File(TestConstants.TEST_DOCUMENT_DIR + "sample_pdf_formats/volume1-encrypted-test.pdf");
-        InformationResourceFileVersion version = generateAndStoreVersion(Document.class, file.getName(), file, filestore);
-        Document document = (Document) version.getInformationResourceFile().getInformationResource();
+        Document document = generateAndStoreVersion(Document.class, file.getName(), file, filestore);
+        InformationResourceFileVersion version = document.getLatestUploadedVersion();
         document.setTitle("test");
         document.setDescription("test");
         document.setDocumentType(DocumentType.BOOK);
         filestore.store(FilestoreObjectType.RESOURCE, file, version);
+        logger.debug("{}", document);
+        logger.debug("{}", version);
+        logger.debug("{}", version.getTransientFile());
         DownloadPdfFile downloadPdfFile = new DownloadPdfFile(document, version, pdfService, getAdminUser(), MessageHelper.getInstance(), null);
         downloadPdfFile.setFile(file);
         dto.getDownloads().add(downloadPdfFile);

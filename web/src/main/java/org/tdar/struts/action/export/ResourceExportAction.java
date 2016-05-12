@@ -22,7 +22,7 @@ public class ResourceExportAction extends AbstractResourceExportAction {
     })
     @PostOnly
     public String execute() {
-        resourceExportService.exportAsync(getExportProxy(), getAuthenticatedUser());
+        resourceExportService.exportAsync(getExportProxy(), false, getAuthenticatedUser());
         return SUCCESS;
     }
     

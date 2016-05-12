@@ -15,7 +15,6 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasResource;
-import org.tdar.core.bean.Persistable;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;

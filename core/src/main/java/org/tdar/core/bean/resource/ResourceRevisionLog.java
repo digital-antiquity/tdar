@@ -19,7 +19,6 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 

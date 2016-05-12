@@ -495,7 +495,7 @@ public class DataIntegrationService {
 
         validateIntegrationContext(context);
 
-        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, provider);
+        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, null, provider);
         storeResult(result);
         return result;
     }
@@ -579,7 +579,7 @@ public class DataIntegrationService {
         // }
         //
 
-        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, provider);
+        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(integrationContext, integration, provider);
         storeResult(result);
         return result;
     }

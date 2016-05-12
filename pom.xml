@@ -20,6 +20,7 @@
         <!-- tdar "core" files -->
         <module>core</module>
         <module>search</module>
+        <module>faims</module>
         <!-- the tdar webapp -->
         <module>web-base</module>
         <module>web</module>
