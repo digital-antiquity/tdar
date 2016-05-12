@@ -2,10 +2,15 @@ package org.tdar.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.Header;
+import org.apache.http.HeaderElement;
+import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
+import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -14,6 +19,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
@@ -72,9 +78,10 @@ public class APIClient {
 
     public ApiClientResponse uploadRecord(String docXml, Long tdarId, Long accountId, File... files) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_UPLOAD);
-
+        post.setHeader(new BasicHeader("Accept-Charset:","utf-8"));
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody(RECORD, docXml);
+        builder.setCharset(Charset.forName("UTF-8"));
         processIds(tdarId, accountId, builder);
 
         addFiles(builder, files);
