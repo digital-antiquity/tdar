@@ -58,8 +58,8 @@ import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 @HttpOnlyIfUnauthenticated
 public class MultiCoreSearchAction extends AbstractAdvancedSearchController implements FacetedResultHandler<Resource> {
 
+    private static final String SIMPLE_FTL = "simple.ftl";
     private static final long serialVersionUID = -7767557393006858614L;
-    private static final String ADVANCED_FTL = "basic.ftl";
     private static final String SEARCH_RSS = "/search/rss";
     private FacetWrapper facetWrapper = new FacetWrapper();
 
@@ -80,7 +80,7 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
 
     @Action(value = "multi", results = {
             @Result(name = SUCCESS, location = "multi.ftl"),
-            @Result(name = INPUT, location = ADVANCED_FTL) })
+            @Result(name = INPUT, location = SIMPLE_FTL) })
     public String search() throws TdarActionException {
         String result = SUCCESS;
         // FIME: for whatever reason this is not being processed by the SessionSecurityInterceptor and thus
@@ -132,7 +132,7 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
     }
 
     @Actions({
-            @Action(value = "basic", results = { @Result(name = SUCCESS, location = "basic.ftl") }),
+            @Action(value = "simple", results = { @Result(name = SUCCESS, location = SIMPLE_FTL) }),
     })
     @Override
     public String execute() {
