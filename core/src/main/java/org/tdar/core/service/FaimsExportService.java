@@ -89,7 +89,7 @@ public class FaimsExportService {
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
-
+            logger.debug("{} -- {}", id, resource.getTitle());
             String output = export(resource, projectIdMap.get(resource.getProjectId()));
             if (resource instanceof CodingSheet) {
                 // logger.debug(output);

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.Header;
@@ -83,7 +84,7 @@ public class APIClient {
         builder.addTextBody(RECORD, docXml);
         builder.setCharset(Charset.forName("UTF-8"));
         processIds(tdarId, accountId, builder);
-
+        logger.trace("uploading:{}", docXml);
         addFiles(builder, files);
 
         post.setEntity(builder.build());
@@ -99,6 +100,7 @@ public class APIClient {
             return;
         }
         
+        logger.debug("\tadding files: {}", Arrays.asList(files));
         for (File file : files) {
             builder.addPart(UPLOAD_FILE, new FileBody(file));
         }
