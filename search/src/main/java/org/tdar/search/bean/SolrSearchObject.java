@@ -37,306 +37,336 @@ import org.tdar.search.query.facet.FacetedResultHandler;
  */
 public class SolrSearchObject<I extends Indexable> {
 
-	private String sortParam = "";
-	private int resultSize;
-	private int startRecord;
-	private String coreName;
+    private String sortParam = "";
+    private int resultSize;
+    private int startRecord;
+    private String coreName;
 
-	private Long searchStartTime;
-	private Long hydrationStartTime;
-	private Long facetStartTime;
-	private Long endSearchTime;
-	
-	private QueryBuilder builder;
-	// solr documents returned
-	private SolrDocumentList documentList;
-	private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private Long searchStartTime;
+    private Long hydrationStartTime;
+    private Long facetStartTime;
+    private Long endSearchTime;
 
-	// final solr/lucene query string
-	private String queryString;
-	// fields to facet on
-	private List<String> facetFields = new ArrayList<>();
-	private List<String> filters = new ArrayList<>();
-	private Integer totalResults = 0;
-	// max # of facets
-	private Integer facetLimit;
-	// min # of items to show in a facet
-	private Integer facetMinCount;
+    private QueryBuilder builder;
+    // solr documents returned
+    private SolrDocumentList documentList;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-	// a list of the (persistable) ids returned by the query in the appropriate
-	// order
-	private List<Long> idList = new ArrayList<>();
-	// a map of the class (as string) and list of ids grouped, lists are in
-	// order. Theoretically
-	// this map should only ever have one key
-	private Map<String, List<Long>> searchByMap = new HashMap<>();
-	private StringBuilder facetText = new StringBuilder();
-	private ProjectionModel projection;
+    // final solr/lucene query string
+    private String queryString;
+    // fields to facet on
+    private List<String> facetFields = new ArrayList<>();
+    private List<String> pivotFields = new ArrayList<>();
+    private List<String> statsFields = new ArrayList<>();
+    private List<String> filters = new ArrayList<>();
+    private Integer totalResults = 0;
+    // max # of facets
+    private Integer facetLimit;
+    // min # of items to show in a facet
+    private Integer facetMinCount;
 
-	public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
-		this.builder = queryBuilder;
-		this.coreName = queryBuilder.getCoreName();
-		this.setMaxResults(handler.getRecordsPerPage());
-		this.setFirstResult(handler.getStartRecord());
-		this.projection = handler.getProjectionModel();
-		List<String> sort = new ArrayList<>();
-		if (handler.getSortField() != null) {
-			addSortField(handler.getSortField(), sort);
-		}
-		if (handler.getSecondarySortField() != null) {
-			addSortField(handler.getSecondarySortField(), sort);
-		}
-		if (CollectionUtils.isNotEmpty(sort)) {
-			setSortParam(StringUtils.join(sort, ","));
-		}
-		handleFacets(handler);
-	}
+    // a list of the (persistable) ids returned by the query in the appropriate
+    // order
+    private List<Long> idList = new ArrayList<>();
+    // a map of the class (as string) and list of ids grouped, lists are in
+    // order. Theoretically
+    // this map should only ever have one key
+    private Map<String, List<Long>> searchByMap = new HashMap<>();
+    private StringBuilder facetText = new StringBuilder();
+    private ProjectionModel projection;
 
-	private void handleFacets(SearchResultHandler<I> handler) {
-		if (handler instanceof FacetedResultHandler) {
-			FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
-			FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
-			if (wrap != null) {
-				for (String facet : wrap.getFacetFieldNames()) {
-					if (StringUtils.isNotBlank(facet)) {
-						if (facetText.length() > 0) {
-							facetText.append(", ");
-						}
-						String exclude = "";
-						String filter = wrap.getFilter(facet);
-						if (StringUtils.isNotBlank(filter)) {
-							filters.add(String.format("{!tag=%s}%s:(%s)", facet, facet, filter));
-							exclude = String.format(", domain:{excludeTags:%s}", facet);
-						}
-						facetText.append(String.format("%s:{field:%s, type:terms %s}", facet, facet, exclude));
-					}
-				}
-				if (facetText.length() > 0 ) {
-					facetText.insert(0, "{");
-					facetText.append("}");
-				}
-			}
-		}
-	}
+    public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
+        this.builder = queryBuilder;
+        this.coreName = queryBuilder.getCoreName();
+        this.setMaxResults(handler.getRecordsPerPage());
+        this.setFirstResult(handler.getStartRecord());
+        this.projection = handler.getProjectionModel();
+        List<String> sort = new ArrayList<>();
+        if (handler.getSortField() != null) {
+            addSortField(handler.getSortField(), sort);
+        }
+        if (handler.getSecondarySortField() != null) {
+            addSortField(handler.getSecondarySortField(), sort);
+        }
+        if (CollectionUtils.isNotEmpty(sort)) {
+            setSortParam(StringUtils.join(sort, ","));
+        }
+        handleFacets(handler);
+    }
 
-	private void addSortField(SortOption option, List<String> sort) {
-		String sortName = getSortFieldName(option);
-		logger.trace("{} - {}", option, sortName);
-		if (sortName != null) {
-			sort.add(sortName + " " + option.getSortOrder());
-		}
-	}
+    private void handleFacets(SearchResultHandler<I> handler) {
+        if (handler instanceof FacetedResultHandler) {
+            FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
+            FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
+            if (wrap != null) {
+                for (String facet : wrap.getFacetFieldNames()) {
+                    if (StringUtils.isNotBlank(facet)) {
+                        if (facetText.length() > 0) {
+                            facetText.append(", ");
+                        }
+                        String exclude = "";
+                        String filter = wrap.getFilter(facet);
+                        if (StringUtils.isNotBlank(filter)) {
+                            filters.add(String.format("{!tag=%s}%s:(%s)", facet, facet, filter));
+                            exclude = String.format(", domain:{excludeTags:%s}", facet);
+                        }
+                        facetText.append(String.format("%s:{field:%s, type:terms %s}", facet, facet, exclude));
+                    }
+                }
+                if (facetText.length() > 0) {
+                    facetText.insert(0, "{");
+                    facetText.append("}");
+                }
+            }
+        }
+    }
 
-	private String getSortFieldName(SortOption sortField) {
-		if (sortField == null) {
-			return null;
-		}
-		switch (sortField) {
-		case COLLECTION_TITLE:
-		case COLLECTION_TITLE_REVERSE:
-		case CREATOR_NAME:
-		case CREATOR_NAME_REVERSE:
-		case LABEL:
-		case LABEL_REVERSE:
-		case TITLE:
-		case TITLE_REVERSE:
-			return QueryFieldNames.NAME_SORT;
-		case DATE:
-		case DATE_REVERSE:
-			return QueryFieldNames.DATE;
-		case DATE_UPDATED:
-		case DATE_UPDATED_REVERSE:
-			return QueryFieldNames.DATE_UPDATED;
-		case FIRST_NAME:
-		case FIRST_NAME_REVERSE:
-			return QueryFieldNames.FIRST_NAME_SORT;
-		case ID:
-		case ID_REVERSE:
-			return QueryFieldNames.ID;
-		case LAST_NAME:
-		case LAST_NAME_REVERSE:
-			return QueryFieldNames.LAST_NAME_SORT;
-		case PROJECT:
-			return QueryFieldNames.PROJECT_TITLE_SORT;
-		case RELEVANCE:
-			return "score";
-		case RESOURCE_TYPE:
-		case RESOURCE_TYPE_REVERSE:
-			return QueryFieldNames.RESOURCE_TYPE_SORT;
-		default:
-			break;
-		}
-		return null;
-	}
+    private void addSortField(SortOption option, List<String> sort) {
+        String sortName = getSortFieldName(option);
+        logger.trace("{} - {}", option, sortName);
+        if (sortName != null) {
+            sort.add(sortName + " " + option.getSortOrder());
+        }
+    }
 
-	public void setFirstResult(int startRecord) {
-		this.startRecord = startRecord;
-	}
+    private String getSortFieldName(SortOption sortField) {
+        if (sortField == null) {
+            return null;
+        }
+        switch (sortField) {
+            case COLLECTION_TITLE:
+            case COLLECTION_TITLE_REVERSE:
+            case CREATOR_NAME:
+            case CREATOR_NAME_REVERSE:
+            case LABEL:
+            case LABEL_REVERSE:
+            case TITLE:
+            case TITLE_REVERSE:
+                return QueryFieldNames.NAME_SORT;
+            case DATE:
+            case DATE_REVERSE:
+                return QueryFieldNames.DATE;
+            case DATE_UPDATED:
+            case DATE_UPDATED_REVERSE:
+                return QueryFieldNames.DATE_UPDATED;
+            case FIRST_NAME:
+            case FIRST_NAME_REVERSE:
+                return QueryFieldNames.FIRST_NAME_SORT;
+            case ID:
+            case ID_REVERSE:
+                return QueryFieldNames.ID;
+            case LAST_NAME:
+            case LAST_NAME_REVERSE:
+                return QueryFieldNames.LAST_NAME_SORT;
+            case PROJECT:
+                return QueryFieldNames.PROJECT_TITLE_SORT;
+            case RELEVANCE:
+                return "score";
+            case RESOURCE_TYPE:
+            case RESOURCE_TYPE_REVERSE:
+                return QueryFieldNames.RESOURCE_TYPE_SORT;
+            default:
+                break;
+        }
+        return null;
+    }
 
-	public void setMaxResults(int recordsPerPage) {
-		this.resultSize = recordsPerPage;
-	}
+    public void setFirstResult(int startRecord) {
+        this.startRecord = startRecord;
+    }
 
-	public SolrParams getSolrParams() {
-		SolrQuery solrQuery = new SolrQuery();
-		setQueryString(builder.generateQueryString());
-		solrQuery.setParam("q", getQueryString());
-		solrQuery.setParam("start", Integer.toString(startRecord));
-		solrQuery.setParam("rows", Integer.toString(resultSize));
-		String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
-		solrQuery.setParam("_logtag", tag);
-		if (facetText.length() > 0) {
-			solrQuery.setParam("json.facet",facetText.toString());
-			solrQuery.setParam("facet", "on");
-//			solrQuery.setParam("facet.method", "enum");
-		}
-		if (CollectionUtils.isNotEmpty(filters)) {
-			solrQuery.setParam("fq",filters.toArray(new String[0]));
-		}
-		if (facetLimit != null) {
-			solrQuery.setFacetLimit(facetLimit);
-		}
-		if (facetMinCount != null) {
-			solrQuery.setFacetMinCount(facetMinCount);
-		}
+    public void setMaxResults(int recordsPerPage) {
+        this.resultSize = recordsPerPage;
+    }
 
-		// solrQuery.setFacetSort(sort)
+    public SolrParams getSolrParams() {
+        SolrQuery solrQuery = new SolrQuery();
+        setQueryString(builder.generateQueryString());
+        solrQuery.setParam("q", getQueryString());
+        solrQuery.setParam("start", Integer.toString(startRecord));
+        solrQuery.setParam("rows", Integer.toString(resultSize));
+        if (!CollectionUtils.isEmpty(statsFields)) {
+            solrQuery.setParam("stats", true);
+            solrQuery.setParam("stats.field", statsFields.toArray(new String[0]));
+        }
 
-		if (StringUtils.isNotBlank(sortParam)) {
-			solrQuery.setParam("sort", sortParam);
-		}
-		Set<String> fieldList = new HashSet<>(ProjectionModel.getDefaultProjections());
-		if (projection != null) {
-			fieldList.addAll(projection.getProjections());
-		}
-		solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
-		if (logger.isTraceEnabled()) {
-			logger.trace("{}", solrQuery);
-		}
-		return solrQuery;
-	}
+        if (!CollectionUtils.isEmpty(pivotFields)) {
+            solrQuery.setParam("stats", true);
+            solrQuery.setParam("stats.field", statsFields.toArray(new String[0]));
+        }
 
-	public List<Long> getIdList() {
-		return idList;
-	}
+        
+        String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
+        solrQuery.setParam("_logtag", tag);
+        if (facetText.length() > 0) {
+            solrQuery.setParam("json.facet", facetText.toString());
+            solrQuery.setParam("facet", "on");
+            // solrQuery.setParam("facet.method", "enum");
+        }
+        if (CollectionUtils.isNotEmpty(filters)) {
+            solrQuery.setParam("fq", filters.toArray(new String[0]));
+        }
+        if (facetLimit != null) {
+            solrQuery.setFacetLimit(facetLimit);
+        }
+        if (facetMinCount != null) {
+            solrQuery.setFacetMinCount(facetMinCount);
+        }
 
-	public String getSortParam() {
-		return sortParam;
-	}
+        // solrQuery.setFacetSort(sort)
 
-	public void setSortParam(String sortParam) {
-		this.sortParam = sortParam;
-	}
+        if (StringUtils.isNotBlank(sortParam)) {
+            solrQuery.setParam("sort", sortParam);
+        }
+        Set<String> fieldList = new HashSet<>(ProjectionModel.getDefaultProjections());
+        if (projection != null) {
+            fieldList.addAll(projection.getProjections());
+        }
+        solrQuery.setParam("fl", StringUtils.join(fieldList, ","));
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}", solrQuery);
+        }
+        return solrQuery;
+    }
 
-	public String getCoreName() {
-		return coreName;
-	}
+    public List<Long> getIdList() {
+        return idList;
+    }
 
-	public void setCoreName(String coreName) {
-		this.coreName = coreName;
-	}
+    public String getSortParam() {
+        return sortParam;
+    }
 
-	public void processResults(QueryResponse rsp) {
-		SolrDocumentList results = rsp.getResults();
-		this.setDocumentList(results);
-		if (logger.isTraceEnabled()) {
-			logger.trace("results:{}", results);
-		}
-		setTotalResults((int) results.getNumFound());
-		for (SolrDocument doc : results) {
-			Long id = (Long) doc.get(QueryFieldNames.ID);
-			String key = (String) doc.get(QueryFieldNames.CLASS);
-			if (searchByMap.get(key) == null) {
-				searchByMap.put(key, new ArrayList<>());
-			}
-			idList.add(id);
-			searchByMap.get(key).add(id);
-		}
-	}
+    public void setSortParam(String sortParam) {
+        this.sortParam = sortParam;
+    }
 
-	public String getQueryString() {
-		return queryString;
-	}
+    public String getCoreName() {
+        return coreName;
+    }
 
-	public void setQueryString(String queryString) {
-		this.queryString = queryString;
-	}
+    public void setCoreName(String coreName) {
+        this.coreName = coreName;
+    }
 
-	public SolrDocumentList getDocumentList() {
-		return documentList;
-	}
+    public void processResults(QueryResponse rsp) {
+        SolrDocumentList results = rsp.getResults();
+        this.setDocumentList(results);
+        if (logger.isTraceEnabled()) {
+            logger.trace("results:{}", results);
+        }
+        setTotalResults((int) results.getNumFound());
+        for (SolrDocument doc : results) {
+            Long id = (Long) doc.get(QueryFieldNames.ID);
+            String key = (String) doc.get(QueryFieldNames.CLASS);
+            if (searchByMap.get(key) == null) {
+                searchByMap.put(key, new ArrayList<>());
+            }
+            idList.add(id);
+            searchByMap.get(key).add(id);
+        }
+    }
 
-	public void setDocumentList(SolrDocumentList documentList) {
-		this.documentList = documentList;
-	}
+    public String getQueryString() {
+        return queryString;
+    }
 
-	public Integer getTotalResults() {
-		return totalResults;
-	}
+    public void setQueryString(String queryString) {
+        this.queryString = queryString;
+    }
 
-	public void setTotalResults(Integer totalResults) {
-		this.totalResults = totalResults;
-	}
+    public SolrDocumentList getDocumentList() {
+        return documentList;
+    }
 
-	public List<String> getFacetFields() {
-		return facetFields;
-	}
+    public void setDocumentList(SolrDocumentList documentList) {
+        this.documentList = documentList;
+    }
 
-	public void setFacetFields(List<String> facetFields) {
-		this.facetFields = facetFields;
-	}
+    public Integer getTotalResults() {
+        return totalResults;
+    }
 
-	public Integer getFacetMinCount() {
-		return facetMinCount;
-	}
+    public void setTotalResults(Integer totalResults) {
+        this.totalResults = totalResults;
+    }
 
-	public void setFacetMinCount(Integer facetMinCount) {
-		this.facetMinCount = facetMinCount;
-	}
+    public List<String> getFacetFields() {
+        return facetFields;
+    }
 
-	public Integer getFacetLimit() {
-		return facetLimit;
-	}
+    public void setFacetFields(List<String> facetFields) {
+        this.facetFields = facetFields;
+    }
 
-	public void setFacetLimit(Integer facetLimit) {
-		this.facetLimit = facetLimit;
-	}
+    public Integer getFacetMinCount() {
+        return facetMinCount;
+    }
 
-	public Map<String, List<Long>> getSearchByMap() {
-		return this.searchByMap;
-	}
+    public void setFacetMinCount(Integer facetMinCount) {
+        this.facetMinCount = facetMinCount;
+    }
 
-	public void markStartHydration() {
-		hydrationStartTime = System.currentTimeMillis();
-	}
+    public Integer getFacetLimit() {
+        return facetLimit;
+    }
 
-	public void markStartSearch() {
-		searchStartTime = System.currentTimeMillis();
-		
-	}
+    public void setFacetLimit(Integer facetLimit) {
+        this.facetLimit = facetLimit;
+    }
 
-	public void markEndSearch() {
-		endSearchTime = System.currentTimeMillis();
-	}
+    public Map<String, List<Long>> getSearchByMap() {
+        return this.searchByMap;
+    }
 
-	public void markStartFacetSearch() {
-		facetStartTime = System.currentTimeMillis();
-	}
+    public void markStartHydration() {
+        hydrationStartTime = System.currentTimeMillis();
+    }
 
-	public Long getLuceneTime() {
-		return hydrationStartTime - searchStartTime;
-	}
+    public void markStartSearch() {
+        searchStartTime = System.currentTimeMillis();
 
-	public Long getHydrationTime() {
-		return facetStartTime - hydrationStartTime;
-	}
+    }
 
-	public Long getFacetTime() {
-		return endSearchTime - facetStartTime;
-	}
-	
-	public Long getTotalSearchTime() {
-		return endSearchTime - searchStartTime;
-	}
+    public void markEndSearch() {
+        endSearchTime = System.currentTimeMillis();
+    }
 
+    public void markStartFacetSearch() {
+        facetStartTime = System.currentTimeMillis();
+    }
+
+    public Long getLuceneTime() {
+        return hydrationStartTime - searchStartTime;
+    }
+
+    public Long getHydrationTime() {
+        return facetStartTime - hydrationStartTime;
+    }
+
+    public Long getFacetTime() {
+        return endSearchTime - facetStartTime;
+    }
+
+    public Long getTotalSearchTime() {
+        return endSearchTime - searchStartTime;
+    }
+
+    public List<String> getPivotFields() {
+        return pivotFields;
+    }
+
+    public void setPivotFields(List<String> pivotFields) {
+        this.pivotFields = pivotFields;
+    }
+
+    public List<String> getStatsFields() {
+        return statsFields;
+    }
+
+    public void setStatsFields(List<String> statsFields) {
+        this.statsFields = statsFields;
+    }
+
+    
 }

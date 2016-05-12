@@ -133,4 +133,5 @@ public interface QueryFieldNames {
 	String SCORE = "score";
     String RESOURCE_ID = "resource.id";
 	String CORE = "_core";
+    String ACTIVE_GEOGRAPHIC_ISO = "geographic.ISO";
 }
