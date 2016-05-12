@@ -242,6 +242,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         normalizeAuthorizedUsers(incomingUsers);
         CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
         if (comparator.rightsDifferent()) {
+            
+            if (!authenticationAndAuthorizationService.canAdministerCollection(actor, resourceCollection)) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");                
+            }
+            
+            
             for (AuthorizedUser user : comparator.getAdditions()) {
                 addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), user, actor, resourceCollection, source);
             }

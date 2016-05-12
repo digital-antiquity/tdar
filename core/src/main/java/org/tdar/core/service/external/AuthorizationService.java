@@ -256,6 +256,30 @@ public class AuthorizationService implements Accessible {
         return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
     }
 
+    
+    /**
+     * Checks whether a @link Person has the rights to administer a @link ResourceCollection. First, checking whether the person's @link TdarGroup permissions grant
+     * them
+     * additional rights, for example if ADMIN; or if their @link ResourceCollection permissions include GeneralPermission.ADMINISTER_GROUP or greater
+     * 
+     * @param authenticatedUser
+     * @param persistable
+     * @return
+     */
+    @Transactional(readOnly = true)
+    public boolean canAdministerCollection(TdarUser authenticatedUser, ResourceCollection persistable) {
+        if (authenticatedUser == null) {
+            logger.trace("person is null");
+            return false;
+        }
+
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser) || authenticatedUser.equals(persistable.getOwner())) {
+            return true;
+        }
+
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
+    }
+
     /**
      * This method checks whether a person's group membership allows them to perform an associated right.
      * 
