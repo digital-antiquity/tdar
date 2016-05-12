@@ -77,6 +77,7 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.util.UrlUtils;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
