@@ -50,7 +50,7 @@ public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
         String string = new String( baos.toByteArray(), "utf8");
         logger.debug(string);
         zipfile.close();
-        assertTrue("xml contains id", string.contains("informationResourceId>"+doc.getId()));
+        assertTrue("xml contains id:" + doc.getId(), string.contains("id=\""+doc.getId()+"\""));
 
 
 
