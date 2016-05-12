@@ -21,6 +21,7 @@
     "svgxuse": "~1.1.16"
   },
   "dependencies-cdn" : {
+      "README":"local dependency management, not managed by bower (see layout-bootstrap.dec)",
       "jquery-validation": "~1.8.1",
       "jquery": "~1.11.3",
       "angular-js": "~1.5.5",

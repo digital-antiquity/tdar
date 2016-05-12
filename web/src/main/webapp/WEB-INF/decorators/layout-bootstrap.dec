@@ -7,9 +7,12 @@
 <#import "decorator-macros.ftl" as dec>
 <#import "whitelabel-decorator-macros.ftl" as wdec>
 
+<!-- README - UPDATE BOWER.JSON in lockstep -->
 <#global jquery_version="1.11.3">
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
+<#global jquery_validate_version="1.13.1" >
+<#global angular_version="1.5.5">
 
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
      This is a less-than ideal solution, but seems to be the best that we have. -->
@@ -246,8 +249,8 @@ ${head}
     </footer>
 
     <#if useCDN>
-        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
-        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/additional-methods.min.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/jquery.validate.min.js"></script>
+        <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/${jquery_validate_version}/additional-methods.min.js"></script>
         <script src="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
     <#else>
         <script src="${staticHost}/includes/jquery.validate-1.13.1/jquery.validate.js"></script>
