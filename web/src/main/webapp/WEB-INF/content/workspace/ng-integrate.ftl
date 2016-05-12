@@ -418,8 +418,7 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
-<!-- README - UPDATE BOWER.JSON in lockstep -->
-<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
 
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>
