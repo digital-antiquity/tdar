@@ -23,6 +23,8 @@ import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 
+import net.fortuna.ical4j.model.property.Geo;
+
 public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
 
     public String[] getDataImportDatabaseTables() {
@@ -49,11 +51,13 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         wc.setTargetDatabase(tdarDataImportDatabase);
         String name = "Occ_3l";
         String string = TestConstants.TEST_SHAPEFILE_DIR + name;
-        InformationResourceFileVersion originalFile = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
+        Geospatial doc = generateAndStoreVersion(Geospatial.class, name + ".shp", new File(string + ".shp"), store);
+        InformationResourceFileVersion originalFile = doc.getLatestUploadedVersion();
         wc.getOriginalFiles().add(originalFile);
 
         for (String ext : new String[] { ".dbf", ".sbn", ".sbx", ".shp.xml", ".shx", ".xml" }) {
-            wc.getOriginalFiles().add(generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store));
+            Geospatial doc2 = generateAndStoreVersion(Geospatial.class, name + ext, new File(string + ext), store);
+            wc.getOriginalFiles().add(doc2.getLatestUploadedVersion());
 
         }
 

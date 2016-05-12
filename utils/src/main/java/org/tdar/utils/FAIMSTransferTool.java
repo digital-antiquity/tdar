@@ -10,6 +10,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.InformationResource;
@@ -20,159 +23,59 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.FaimsExportService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
 
+@Component
+@EnableTransactionManagement
 public class FAIMSTransferTool {
 
-	private static String username;
+    private static String username;
 
-	private static String password;
+    private static String password;
 
-	@Autowired
-	SerializationService serializationService;
+    @Autowired
+    SerializationService serializationService;
 
-	@Autowired
-	GenericService genericService;
+    @Autowired
+    GenericService genericService;
 
-	@Autowired
-	ResourceExportService resourceExportService;
+    @Autowired
+    ResourceExportService resourceExportService;
 
-	protected static final Logger logger = LoggerFactory.getLogger(FAIMSTransferTool.class);
+    @Autowired
+    private FaimsExportService faimsExportService;
 
-	private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+    private Long  accountId = 216L;
 
-	public static void main(String[] args) throws IOException {
-		final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-		applicationContext.register(TdarAppConfiguration.class);
-		applicationContext.refresh();
-		applicationContext.start();
-		username = args[0];
-		password = args[1];
-		FAIMSTransferTool transfer = new FAIMSTransferTool();
-		applicationContext.getAutowireCapableBeanFactory().autowireBean(transfer);
-		try {
-			transfer.exportFAIMS();
-		} catch (Error exp) {
-			logger.error(exp.getMessage(), exp);
-			System.exit(9);
-		} finally {
-			applicationContext.close();
-		}
-		System.exit(0);
-	}
+    protected static final Logger logger = LoggerFactory.getLogger(FAIMSTransferTool.class);
 
-	public void exportFAIMS() {
-		genericService.markReadOnly();
-		APIClient client = new APIClient(CONFIG.getBaseSecureUrl());
-		try {
-			client.apiLogin(username, password);
-		} catch (Exception e) {
-			logger.error("error logging in", e);
-		}
-		boolean skip = false;
-		Map<Long, Long> projectIdMap = new HashMap<>();
-		for (Long id : genericService.findAllIds(Project.class)) {
-			Resource resource = genericService.find(Project.class, id);
-			if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
-				continue;
-			}
-			String output = export(resource, null);
-			if (skip) {
-				genericService.clearCurrentSession();
-				continue;
-			}
+    private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
-			try {
-				ApiClientResponse uploadRecord = client.uploadRecord(output, null, 8L);
-				projectIdMap.put(id, uploadRecord.getTdarId());
-				logger.debug("status: {}", uploadRecord.getStatusLine());
-				if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
-						&& uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
-					logger.warn(uploadRecord.getBody());
-				}
-			} catch (IOException e) {
-				logger.error("error uploading", e);
-			}
-			genericService.clearCurrentSession();
-		}
-		logger.debug("done projects");
-		for (Long id : genericService.findAllIds(InformationResource.class)) {
-			InformationResource resource = genericService.find(InformationResource.class, id);
-			if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
-				continue;
-			}
+    public static void main(String[] args) throws IOException {
+        final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.register(TdarAppConfiguration.class, FAIMSTransferTool.class);
+        applicationContext.refresh();
+        applicationContext.start();
+        username = "adam.brin@asu.edu";
+        password = "brin";
+        FAIMSTransferTool transfer = new FAIMSTransferTool();
+        applicationContext.getAutowireCapableBeanFactory().autowireBean(transfer);
+        try {
+            transfer.exportFAIMS();
+        } catch (Error exp) {
+            logger.error(exp.getMessage(), exp);
+            System.exit(9);
+        } finally {
+            applicationContext.close();
+        }
+        System.exit(0);
+    }
 
-			String output = export(resource, projectIdMap.get(resource.getProjectId()));
-			if (resource instanceof CodingSheet) {
-				logger.debug(output);
-			}
-			if (skip) {
-				genericService.clearCurrentSession();
-				continue;
-			}
-			try {
-				ApiClientResponse uploadRecord = client.uploadRecord(output, null, 8L);
-				projectIdMap.put(id, uploadRecord.getTdarId());
-				logger.debug("status: {}", uploadRecord.getStatusLine());
-				if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
-						&& uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
-					logger.warn(uploadRecord.getBody());
-				}
-			} catch (IOException e) {
-				logger.error("error uploading", e);
-			}
+    public void exportFAIMS() {
+        faimsExportService.export(username, password, accountId);
+    }
 
-			genericService.clearCurrentSession();
-		}
-	}
-
-	private String export(Resource resource, Long projectId) {
-		Long id = resource.getId();
-		resource.getInvestigationTypes().clear();
-		// we mess with IDs, so just in case
-		Resource r = resourceExportService.setupResourceForExport(resource);
-		if (r instanceof InformationResource && projectId != null) {
-			InformationResource informationResource = (InformationResource) r;
-			informationResource.setProject(new Project(projectId, null));
-			informationResource.setMappedDataKeyColumn(null);
-		}
-
-		if (resource instanceof Dataset) {
-			Dataset dataset = (Dataset) resource;
-			dataset.setDataTables(null);
-			dataset.setRelationships(null);
-		}
-
-		if (resource instanceof CodingSheet) {
-			CodingSheet codingSheet = (CodingSheet) resource;
-			codingSheet.setCodingRules(null);
-			codingSheet.setAssociatedDataTableColumns(null);
-			codingSheet.setDefaultOntology(null);
-		}
-
-		if (resource instanceof Ontology) {
-			((Ontology) resource).setOntologyNodes(null);
-		}
-		try {
-			String convertToXML = serializationService.convertToXML(r);
-			genericService.detachFromSession(resource);
-			r = null;
-			resource.setId(id);
-			File type = new File("target/export/" + resource.getResourceType().name());
-			FileUtils.forceMkdir(type);
-			File dir = new File(type, id.toString());
-			FileUtils.forceMkdir(dir);
-
-			File file = new File(dir, "record.xml");
-
-			FileUtils.writeStringToFile(file, convertToXML);
-			return convertToXML;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
-
-	}
 }

@@ -91,7 +91,7 @@ public interface TargetDatabase extends Database {
     int getMaxColumnNameLength();
 
     @Transactional(value = "tdarDataTx", readOnly = false)
-    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, TextProvider provider);
+    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, String rawIntegration, TextProvider provider);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,

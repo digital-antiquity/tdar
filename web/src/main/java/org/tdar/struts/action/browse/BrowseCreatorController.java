@@ -77,13 +77,9 @@ import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
-import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
-import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
-
-import freemarker.ext.dom.NodeModel;
 
 /**
  * $Id$

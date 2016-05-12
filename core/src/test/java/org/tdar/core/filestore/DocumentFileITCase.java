@@ -46,7 +46,8 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         File f = new File(TestConstants.TEST_DOCUMENT_DIR + "/sample_pdf_formats/", filename);
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
 
-        InformationResourceFileVersion originalVersion = generateAndStoreVersion(Document.class, filename, f, store);
+        Document doc = generateAndStoreVersion(Document.class, filename, f, store);
+        InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
@@ -64,7 +65,8 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
         File f = new File(TestConstants.TEST_DOCUMENT_DIR, filename);
         PairtreeFilestore store = new PairtreeFilestore(TestConstants.FILESTORE_PATH);
 
-        InformationResourceFileVersion originalVersion = generateAndStoreVersion(Document.class, filename, f, store);
+        Document doc = generateAndStoreVersion(Document.class, filename, f, store);
+        InformationResourceFileVersion originalVersion = doc.getLatestUploadedVersion();
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.DOCUMENT, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);

@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -27,8 +26,6 @@ import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.Pair;
-
-import com.opensymphony.xwork2.interceptor.annotations.After;
 
 /**
  * Created by jimdevos on 6/25/14.

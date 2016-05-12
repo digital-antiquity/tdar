@@ -168,7 +168,11 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
                 StringBuilder sb = new StringBuilder();
                 for (Property prop : feature.getValue()) {
                     DataTableColumn column = dataTable.getColumnByDisplayName(prop.getName().toString());
-                    String value = prop.getValue().toString();
+                    String value = null;
+                    if (prop.getValue() != null) {
+                        logger.debug("{} - {}", prop.getName(), prop.getValue().getClass());
+                        value = prop.getValue().toString();
+                    }
                     valueColumnMap.put(column, value);
                     sb.append(value).append(" ");
                     statisticsManager.updateStatistics(column, value, rowNum);

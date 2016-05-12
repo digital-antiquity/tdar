@@ -99,7 +99,6 @@ import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
-import com.thoughtworks.selenium.SeleniumException;
 
 public abstract class AbstractSeleniumWebITCase {
 

@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.SearchUtils;
@@ -16,7 +17,7 @@ public class DataValueDocumentConverter extends AbstractSolrDocumentConverter {
 
 	public static List<SolrInputDocument> convert(InformationResource ir, ResourceService resourceService) {
 		List<SolrInputDocument> docs = new ArrayList<>();
-		Map<DataTableColumn, String> data = resourceService.getMappedDataForInformationResource(ir);
+		Map<DataTableColumn, String> data = resourceService.getMappedDataForInformationResource(ir, TdarConfiguration.getInstance().isProductionEnvironment());
 		if (data != null) {
 			for (DataTableColumn key : data.keySet()) {
 				if (key == null) {

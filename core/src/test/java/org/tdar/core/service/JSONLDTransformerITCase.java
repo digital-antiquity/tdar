@@ -1,13 +1,11 @@
 package org.tdar.core.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.quartz.impl.jdbcjobstore.CUBRIDDelegate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,6 @@ import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
 import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
 import org.tdar.transform.jsonld.SchemaOrgKeywordConverter;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;

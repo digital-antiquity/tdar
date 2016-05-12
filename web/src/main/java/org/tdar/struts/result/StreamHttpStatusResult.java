@@ -2,7 +2,7 @@ package org.tdar.struts.result;
 
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.struts2.dispatcher.StreamResult;
+import org.apache.struts2.result.StreamResult;
 
 import com.opensymphony.xwork2.ActionInvocation;
 
