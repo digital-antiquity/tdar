@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.http.Consts;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
 import org.apache.http.HttpHeaders;
@@ -17,6 +18,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -62,8 +64,8 @@ public class APIClient {
     public ApiClientResponse apiLogout() throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_LOGOUT);
         CloseableHttpResponse execute = getHttpClient().execute(post);
-		ApiClientResponse response = new ApiClientResponse(execute);
-		execute.close();
+        ApiClientResponse response = new ApiClientResponse(execute);
+        execute.close();
         logger.debug("status {}", response.getStatusLine());
         return response;
 
@@ -79,10 +81,9 @@ public class APIClient {
 
     public ApiClientResponse uploadRecord(String docXml, Long tdarId, Long accountId, File... files) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_UPLOAD);
-        post.setHeader(new BasicHeader("Accept-Charset:","utf-8"));
+        // post.setHeader(new BasicHeader("Accept-Charset:","utf-8"));
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.addTextBody(RECORD, docXml);
-        builder.setCharset(Charset.forName("UTF-8"));
+        builder.addTextBody(RECORD, docXml, ContentType.create("application/xml", Consts.UTF_8));
         processIds(tdarId, accountId, builder);
         logger.trace("uploading:{}", docXml);
         addFiles(builder, files);
@@ -99,7 +100,7 @@ public class APIClient {
         if (files == null) {
             return;
         }
-        
+
         logger.debug("\tadding files: {}", Arrays.asList(files));
         for (File file : files) {
             builder.addPart(UPLOAD_FILE, new FileBody(file));
@@ -118,7 +119,7 @@ public class APIClient {
     public ApiClientResponse updateFiles(String text, Long tdarId, Long accountId, File... files) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_UPDATE_FILES);
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.addTextBody(RECORD, text);
+        builder.addTextBody(RECORD, text, ContentType.create("application/xml", Consts.UTF_8));
 
         processIds(tdarId, accountId, builder);
         addFiles(builder, files);
@@ -136,7 +137,7 @@ public class APIClient {
         ApiClientResponse resp = new ApiClientResponse(response);
         response.close();
         return resp;
-        
+
     }
 
 }

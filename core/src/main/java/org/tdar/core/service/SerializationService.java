@@ -416,7 +416,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         });
 
         // separate out so that we can throw the exception
-        Object toReturn = unmarshaller.unmarshal(new StringReader(StringUtils.join(lines, "\r\n")));// , new DefaultHandler());
+        Object toReturn = unmarshaller.unmarshal(reader);//new StringReader(StringUtils.join(lines, "\r\n")));// , new DefaultHandler());
 
         if (errors.size() > 0) {
             throw new JaxbParsingException(MessageHelper.getMessage("serializationService.could_not_parse"), errors);

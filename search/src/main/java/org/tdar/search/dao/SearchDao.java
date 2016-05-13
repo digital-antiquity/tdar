@@ -78,10 +78,14 @@ public class SearchDao<I extends Indexable> {
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
 		query.markStartSearch();
 		SolrParams solrParams = query.getSolrParams();
-		logger.debug(solrParams.toQueryString());
+		if (logger.isTraceEnabled()) {
+		    logger.trace(solrParams.toQueryString());
+		}
         QueryResponse rsp = template.query(query.getCoreName(), solrParams);
 		query.processResults(rsp);
-		logger.debug(rsp.toString());
+        if (logger.isTraceEnabled()) {
+            logger.trace(rsp.toString());
+        }
 		convertProjectedResultIntoObjects(resultHandler, query);
 		query.markStartFacetSearch();
 		processFacets(rsp, resultHandler, provider);
