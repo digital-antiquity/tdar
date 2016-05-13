@@ -65,9 +65,12 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
     /*
      * a JSON LD object can have multiple "graphs" each graph with a unique name.  This section is for a set of similar keywords
      */
+    @SuppressWarnings("unchecked")
     protected void addGraphSection(Set<? extends Keyword> keywords, String nodeName) {
         List<Map<String,Object>> all = new ArrayList<>();
-        logger.debug("adding keywords:{}", keywords);
+        if (logger.isTraceEnabled()) {
+            logger.trace("adding keywords:{}", keywords);
+        }
         keywords.forEach(kwd -> {
             Map<String,Object> js = new HashMap<>();
             js.put("tdar:name", kwd.getLabel());
@@ -78,7 +81,7 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
             });
             
             for (Keyword syn : (Set<Keyword>)kwd.getSynonyms()) {
-                js.put(RelationType.DCTERMS_REPLACES.getJsonKey(), syn.getDetailUrl());
+                js.put(RelationType.HAS_VERSION.getJsonKey(), syn.getDetailUrl());
             }
             
             all.add(js);

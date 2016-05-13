@@ -3,12 +3,15 @@ package org.tdar.transform.jsonld;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
@@ -50,7 +53,8 @@ public class SchemaOrgCreatorTransformer extends AbstractSchemaOrgMetadataTransf
         } else {
             add(jsonLd, "schema:logo", imageUrl);
         }
-        if (CollectionUtils.isNotEmpty(creator.getAddresses())) {
+
+        if (CollectionUtils.isNotEmpty(creator.getAddresses()) && (creator instanceof Institution || ((Person)creator).getPhonePublic())) {
             for (Address address : creator.getAddresses()) {
                 if (address.getType() == AddressType.MAILING) {
                     Map<String, Object> addLd = new HashMap<String, Object>();
@@ -68,6 +72,11 @@ public class SchemaOrgCreatorTransformer extends AbstractSchemaOrgMetadataTransf
                 }
             }
         }
+        
+        for (Creator syn : (Set<Creator>)creator.getSynonyms()) {
+            jsonLd.put(RelationType.HAS_VERSION.getJsonKey(), syn.getDetailUrl());
+        }
+
 
         addContextSection(jsonLd);
         

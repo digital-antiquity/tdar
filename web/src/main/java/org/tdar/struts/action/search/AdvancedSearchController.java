@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -57,6 +58,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -191,10 +193,17 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         getReservedSearchParameters().getLatitudeLongitudeBoxes().clear();
         getReservedSearchParameters().getLatitudeLongitudeBoxes().add(box);
     }
+    
+    
+    @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl") })
+    @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
+    public String map() {
+        searchBoxVisible = false;
+        return SUCCESS;
+    }
 
     @Actions({
             @Action(value = "basic", results = { @Result(name = SUCCESS, location = ADVANCED_FTL) }),
-            @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl") }),
             @Action(value = "collection", results = { @Result(name = SUCCESS, location = "collection.ftl") }),
             @Action(value = "person", results = { @Result(name = SUCCESS, location = "person.ftl") }),
             @Action(value = "institution", results = { @Result(name = SUCCESS, location = "institution.ftl") })

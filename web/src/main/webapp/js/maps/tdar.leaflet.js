@@ -179,9 +179,13 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             //console.log(minx, maxx, miny, maxy);
             var poly = [[maxy, maxx], [miny, minx]];
             var rectangle = L.rectangle(poly, rectangleSettings).addTo(map);
-            //console.log("fitToBounds:", rectangleSettings.fitToBounds);
+            console.log("fitToBounds:", rectangleSettings.fitToBounds);
+            console.log("fitToBounds (rec):", rectangle.getBounds());
+            console.log("fitToBounds (map):", map.getBounds());
+            
             if (rectangleSettings.fitToBounds) {
-                map.fitBounds(rectangle.getBounds());
+                // Really frustrating race condition whereby map sometimes zoom's wrong, so we need to add a timeout to make this work
+                setTimeout(function() {map.fitBounds(rectangle.getBounds());},1000);
             }
             _initialized = 2;
             return rectangle;

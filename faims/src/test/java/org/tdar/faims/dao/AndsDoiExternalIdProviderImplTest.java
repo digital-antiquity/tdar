@@ -1,11 +1,11 @@
-package org.tdar.core.dao.external.pid;
+package org.tdar.faims.dao;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+import org.tdar.faims.dao.AndsDoiExternalIdProviderImpl.IdentityFactory;
 import org.tdar.core.configuration.ConfigurationAssistant;
-import org.tdar.core.dao.external.pid.AndsDoiExternalIdProviderImpl.IdentityFactory;
 
 public class AndsDoiExternalIdProviderImplTest {
 

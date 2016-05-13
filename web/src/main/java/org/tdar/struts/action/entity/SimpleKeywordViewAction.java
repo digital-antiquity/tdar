@@ -11,14 +11,11 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 
 @Component

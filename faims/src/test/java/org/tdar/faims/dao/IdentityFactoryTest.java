@@ -1,10 +1,10 @@
-package org.tdar.core.dao.external.pid;
+package org.tdar.faims.dao;
 
 import static org.junit.Assert.assertTrue;
 
 import org.apache.commons.lang.StringUtils;
 import org.junit.Test;
-import org.tdar.core.dao.external.pid.AndsDoiExternalIdProviderImpl.IdentityFactory;
+import org.tdar.faims.dao.AndsDoiExternalIdProviderImpl.IdentityFactory;
 
 import au.csiro.doiclient.business.AndsDoiIdentity;
 

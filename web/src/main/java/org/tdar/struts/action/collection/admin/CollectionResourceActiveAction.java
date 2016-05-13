@@ -33,7 +33,7 @@ public class CollectionResourceActiveAction extends AbstractAuthenticatableActio
 
     @Override
     public void prepare() throws Exception {
-        collection = resourceCollectionService.find(id);
+        setCollection(resourceCollectionService.find(id));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class CollectionResourceActiveAction extends AbstractAuthenticatableActio
             @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
-        resourceCollectionService.makeResourcesInCollectionActive(collection, getAuthenticatedUser(), null);
+        resourceCollectionService.makeResourcesInCollectionActive(getCollection(), getAuthenticatedUser(), null);
         return SUCCESS;
     }
     
@@ -53,6 +53,14 @@ public class CollectionResourceActiveAction extends AbstractAuthenticatableActio
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public ResourceCollection getCollection() {
+        return collection;
+    }
+
+    public void setCollection(ResourceCollection collection) {
+        this.collection = collection;
     }
 
 }

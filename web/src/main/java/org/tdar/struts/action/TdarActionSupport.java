@@ -4,6 +4,7 @@ import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -956,4 +957,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     public boolean isSelenium() {
     	return getTdarConfiguration().isSelenium();
     }
+    
+    @Override
+    public Collection<String> getErrorMessages() {
+        return getActionErrors();
+    }
+
 }

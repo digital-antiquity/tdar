@@ -9,9 +9,9 @@ import javax.servlet.ServletRegistration;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.cxf.transport.servlet.CXFServlet;
-import org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter;
-import org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter;
-import org.apache.struts2.dispatcher.ng.listener.StrutsListener;
+import org.apache.struts2.dispatcher.filter.StrutsExecuteFilter;
+import org.apache.struts2.dispatcher.filter.StrutsPrepareFilter;
+import org.apache.struts2.dispatcher.listener.StrutsListener;
 import org.apache.struts2.sitemesh.FreemarkerDecoratorServlet;
 import org.ebaysf.web.cors.CORSFilter;
 import org.geotools.resources.image.ImageUtilities;

@@ -1,4 +1,4 @@
-package org.tdar.core.dao.external.auth;
+package org.tdar.faims.dao;
 
 import java.util.List;
 
@@ -10,6 +10,15 @@ import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.tdar.core.dao.external.auth.BaseAuthenticationProvider;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.exception.TdarRuntimeException;
+import org.tdar.utils.MessageHelper;
+import org.tdar.core.dao.external.auth.AuthenticationResult;
+import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.slf4j.Logger;
@@ -29,12 +38,6 @@ import org.springframework.ldap.filter.Filter;
 import org.springframework.ldap.filter.WhitespaceWildcardsFilter;
 import org.springframework.ldap.query.LdapQueryBuilder;
 import org.springframework.ldap.support.LdapUtils;
-import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
-import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.utils.MessageHelper;
 
 /**
  * $Id$

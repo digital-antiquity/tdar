@@ -1,5 +1,6 @@
 package org.tdar.struts.action.browse;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -224,6 +225,9 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     
     @Override
     public boolean isRightSidebar() {
+        if (CollectionUtils.isEmpty(keyword.getAssertions())) {
+            return false;
+        }
         return true;
     }
 

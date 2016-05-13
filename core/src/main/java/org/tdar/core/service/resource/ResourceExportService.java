@@ -39,10 +39,12 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
@@ -74,7 +76,7 @@ public class ResourceExportService {
     private SerializationService serializationService;
 
     @Transactional(readOnly = true)
-    public File export(ResourceExportProxy rep) throws Exception {
+    public File export(ResourceExportProxy rep, boolean forReImport) throws Exception {
         List<Resource> resources = new ArrayList<>();
         if (PersistableUtils.isNotNullOrTransient(rep.getAccount())) {
             resources.addAll(rep.getAccount().getResources());
@@ -85,11 +87,14 @@ public class ResourceExportService {
         if (CollectionUtils.isNotEmpty(rep.getResources())) {
             resources.addAll(rep.getResources());
         }
-        return export(rep.getFilename(), resources);
+        if (CollectionUtils.isEmpty(resources)) {
+            throw new TdarRecoverableRuntimeException("resourceExportService.nothing_selected");
+        }
+        return export(rep.getFilename(), forReImport, resources);
     }
 
     @Transactional(readOnly = true)
-    public File export(String filename, final List<Resource> resources) throws Exception {
+    public File export(String filename, boolean forReImport, final List<Resource> resources) throws Exception {
         File dir = new File(FileUtils.getTempDirectory(), EXPORT);
         dir.mkdir();
         File zipFile = new File(dir, filename);
@@ -101,7 +106,10 @@ public class ResourceExportService {
             if (r instanceof InformationResource) {
                 InformationResource ir = ((InformationResource) r);
                 if (((InformationResource) r).getProject() != Project.NULL) {
-                    Project p = setupResourceForExport(ir.getProject());
+                    Project p = ir.getProject();
+                    if (forReImport) {
+                        p = setupResourceForReImport(ir.getProject());
+                    }
                     File file = writeToFile(dir, p, PROJECT_XML);
                     writeToZip(zout, file, base + PROJECT_XML);
                 }
@@ -116,7 +124,10 @@ public class ResourceExportService {
                     }
                 }
             }
-            Resource r_ = setupResourceForExport(r);
+            Resource r_ = r;
+            if (forReImport) {
+                r_ = setupResourceForReImport(r);
+            }
             File file = writeToFile(dir, r_, RESOURCE_XML);
             writeToZip(zout, file, base + RESOURCE_XML);
         }
@@ -144,10 +155,8 @@ public class ResourceExportService {
         return file;
     }
 
-    @Deprecated()
-    // "not needed beyond FAIMS export tool"
     @Transactional(readOnly = true)
-    public <R extends Resource> R setupResourceForExport(final R resource) {
+    public <R extends Resource> R setupResourceForReImport(final R resource) {
         genericDao.markReadOnly(resource);
 
         Long id = resource.getId();
@@ -200,7 +209,12 @@ public class ResourceExportService {
                 if (irf.isDeleted()) {
                     continue;
                 }
-                proxies.add(new FileProxy(irf));
+                FileProxy fileProxy = new FileProxy(irf);
+                fileProxy.setFileId(null);
+                fileProxy.setAction(FileAction.ADD);
+                fileProxy.setOriginalFileVersionId(-1L);
+                proxies.add(fileProxy);
+                
             }
             ir.getInformationResourceFiles().clear();
             ir.setFileProxies(proxies);
@@ -254,7 +268,7 @@ public class ResourceExportService {
 
     @Async
     @Transactional(readOnly = false)
-    public void exportAsync(ResourceExportProxy resourceExportProxy, TdarUser authenticatedUser) {
+    public void exportAsync(ResourceExportProxy resourceExportProxy, boolean forReImport, TdarUser authenticatedUser) {
         try {
             if (PersistableUtils.isNotNullOrTransient(resourceExportProxy.getAccount())) {
                 resourceExportProxy.setAccount(genericDao.merge(resourceExportProxy.getAccount()));
@@ -270,7 +284,7 @@ public class ResourceExportService {
                 resourceExportProxy.setResources(resources);
             }
 
-            File file = export(resourceExportProxy);
+            File file = export(resourceExportProxy, forReImport);
             sendEmail(resourceExportProxy, authenticatedUser);
         } catch (Exception e) {
             logger.error("error in export", e);
@@ -286,7 +300,7 @@ public class ResourceExportService {
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("resources", resourceExportProxy);
         dataModel.put("file", resourceExportProxy.getFilename());
-        String url = String.format("%sexport/download?file=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
+        String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
         dataModel.put("url", url);
         dataModel.put("authenticatedUser", authenticatedUser);
         emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);

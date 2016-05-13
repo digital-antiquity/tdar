@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
@@ -76,7 +77,6 @@ import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.transform.MetaTag;
 import org.tdar.transform.ScholarMetadataTransformer;
-import org.tdar.transform.jsonld.AbstractSchemaOrgMetadataTransformer;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
@@ -278,8 +278,16 @@ public class ResourceService {
 
     
     @Transactional(readOnly=true)
-    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource) {
-        return datasetDao.getMappedDataForInformationResource(resource);
+    public Map<DataTableColumn, String> getMappedDataForInformationResource(InformationResource resource, boolean failOnMissing) {
+        try {
+            return datasetDao.getMappedDataForInformationResource(resource);
+        } catch (Throwable t) {
+            logger.error("could not attach additional dataset data to resource", t);
+            if (failOnMissing) {
+                throw t;
+            } 
+            return new HashMap<>();
+        }
     }
 
     /**

@@ -25,7 +25,6 @@ import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;

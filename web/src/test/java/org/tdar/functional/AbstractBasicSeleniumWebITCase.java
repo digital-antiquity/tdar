@@ -1,6 +1,5 @@
 package org.tdar.functional;
 
-import org.junit.After;
 import org.junit.Before;
 
 public class AbstractBasicSeleniumWebITCase extends AbstractSeleniumWebITCase {

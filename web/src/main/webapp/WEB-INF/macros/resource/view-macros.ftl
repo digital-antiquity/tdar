@@ -794,7 +794,8 @@ View freemarker macros
         </#if>
     </#macro>
 
-<#macro featured header="Featured Content" span="span12" resourceList=featuredResources>
+<#macro featured header="Featured Content" colspan="12" resourceList=featuredResources>
+<#local span = "span${colspan}">
 <div class="tdar-slider slider ${span}">
     <h3>${header}</h3>
 
