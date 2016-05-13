@@ -763,7 +763,7 @@ public class AuthorizationService implements Accessible {
         if (source instanceof Resource && canEditResource(actor, (Resource) source, GeneralPermissions.MODIFY_RECORD)) {
             return true;
         }
-        if (source instanceof ResourceCollection && !canAdministerCollection(actor, (ResourceCollection) source)) {
+        if (source instanceof ResourceCollection && canAdministerCollection(actor, (ResourceCollection) source)) {
             return true;
         }
         return false;
