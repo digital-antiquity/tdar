@@ -88,7 +88,7 @@ public class ResourceExportService {
             resources.addAll(rep.getResources());
         }
         if (CollectionUtils.isEmpty(resources)) {
-            throw new TdarRecoverableRuntimeException("nothing selected");
+            throw new TdarRecoverableRuntimeException("resourceExportService.nothing_selected");
         }
         return export(rep.getFilename(), forReImport, resources);
     }
