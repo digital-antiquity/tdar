@@ -75,7 +75,7 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
-    private boolean geoSearch = true;
+    private boolean geoSearch = false;
 
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
