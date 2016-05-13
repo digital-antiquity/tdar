@@ -15,6 +15,7 @@ import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
 import org.apache.solr.client.solrj.response.QueryResponse;
 import org.apache.solr.common.SolrDocument;
+import org.apache.solr.common.params.SolrParams;
 import org.apache.solr.common.util.SimpleOrderedMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,8 +77,11 @@ public class SearchDao<I extends Indexable> {
 	public SolrSearchObject<I> search(SolrSearchObject<I> query, LuceneSearchResultHandler<I> resultHandler,
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
 		query.markStartSearch();
-		QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
+		SolrParams solrParams = query.getSolrParams();
+		logger.debug(solrParams.toQueryString());
+        QueryResponse rsp = template.query(query.getCoreName(), solrParams);
 		query.processResults(rsp);
+		logger.debug(rsp.toString());
 		convertProjectedResultIntoObjects(resultHandler, query);
 		query.markStartFacetSearch();
 		processFacets(rsp, resultHandler, provider);

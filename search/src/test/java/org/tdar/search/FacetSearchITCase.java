@@ -23,6 +23,22 @@ import org.tdar.utils.MessageHelper;
 
 public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
+    
+    @Test
+    @Rollback
+    public void testFacetPivotStats() throws SolrServerException, IOException, ParseException {
+        SearchResult<Resource> result = new SearchResult<>();
+        FacetWrapper facetWrapper = new FacetWrapper();
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        result.setFacetWrapper(facetWrapper);
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
+        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        logger.debug("{}", result.getFacetWrapper().getFacetResults());
+        List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
+        
+    }
+    
+    
     @Test
     @Rollback
     public void testFacetByEnum() throws SolrServerException, IOException, ParseException {

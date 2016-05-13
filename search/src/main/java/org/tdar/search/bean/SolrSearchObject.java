@@ -1,6 +1,7 @@
 package org.tdar.search.bean;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -74,6 +75,7 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
+    private boolean geoSearch = true;
 
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
@@ -81,6 +83,10 @@ public class SolrSearchObject<I extends Indexable> {
         this.setMaxResults(handler.getRecordsPerPage());
         this.setFirstResult(handler.getStartRecord());
         this.projection = handler.getProjectionModel();
+        if (geoSearch ) {
+            this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+            this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+        }
         List<String> sort = new ArrayList<>();
         if (handler.getSortField() != null) {
             addSortField(handler.getSortField(), sort);
@@ -192,7 +198,7 @@ public class SolrSearchObject<I extends Indexable> {
 
         if (!CollectionUtils.isEmpty(pivotFields)) {
             solrQuery.setParam("stats", true);
-            solrQuery.setParam("stats.field", statsFields.toArray(new String[0]));
+            solrQuery.setParam("facet.pivot", StringUtils.join(pivotFields,","));
         }
 
         
