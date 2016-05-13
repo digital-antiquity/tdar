@@ -39,6 +39,7 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -204,7 +205,11 @@ public class ResourceExportService {
                 if (irf.isDeleted()) {
                     continue;
                 }
-                proxies.add(new FileProxy(irf));
+                FileProxy fileProxy = new FileProxy(irf);
+                fileProxy.setFileId(null);
+                fileProxy.setAction(FileAction.ADD);
+                proxies.add(fileProxy);
+                
             }
             ir.getInformationResourceFiles().clear();
             ir.setFileProxies(proxies);
