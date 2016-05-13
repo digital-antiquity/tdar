@@ -321,7 +321,7 @@ public class DownloadService {
                 logger.error("FILE NOT FOUND: {} [{}]", version, path, e1);
             }
         } else {
-            logger.warn("FileNotFound (FilestoreConfigured?):: {}");
+            logger.warn("FileNotFound (FilestoreConfigured?):: {} ",path);
         }
     }
 

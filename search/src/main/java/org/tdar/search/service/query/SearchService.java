@@ -115,7 +115,7 @@ import com.opensymphony.xwork2.TextProvider;
          }
          hydrateQueryParts(q);
          SolrSearchObject<I> ftq = constructSolrSearch(q, resultHandler, textProvider);
-         
+
          resultHandler.setTotalRecords(ftq.getTotalResults());
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();

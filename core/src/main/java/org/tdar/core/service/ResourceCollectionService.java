@@ -22,6 +22,7 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -112,7 +113,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param authenticatedUser
      * @return
      */
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, TdarUser authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         if (resource.getInternalResourceCollection() != null) {
@@ -242,6 +243,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         normalizeAuthorizedUsers(incomingUsers);
         CollectionRightsComparator comparator = new CollectionRightsComparator(getDao().getUsersFromDb(resourceCollection), incomingUsers);
         if (comparator.rightsDifferent()) {
+            logger.debug("{} - {} ({})", actor, source.getSubmitter(), resourceCollection.getOwner());
+
+            if (!authenticationAndAuthorizationService.canAdminiserUsersOn(source, actor)) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
+            }
+                
             for (AuthorizedUser user : comparator.getAdditions()) {
                 addUserToCollection(shouldSaveResource, resourceCollection.getAuthorizedUsers(), user, actor, resourceCollection, source);
             }
@@ -249,23 +256,23 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             resourceCollection.getAuthorizedUsers().removeAll(comparator.getDeletions());
 
             if (CollectionUtils.isNotEmpty(comparator.getChanges())) {
-            	Map<Long,AuthorizedUser> idMap2 = null;
-            	
+                Map<Long, AuthorizedUser> idMap2 = null;
+
                 Map<Long, AuthorizedUser> idMap = PersistableUtils.createIdMap(resourceCollection.getAuthorizedUsers());
                 for (AuthorizedUser user : comparator.getChanges()) {
                     AuthorizedUser actual = idMap.get(user.getId());
                     if (actual == null) {
-                    	// it's possible that the authorizedUserId was not passed back from the client
-                    	// if so, build a secondary map using the TdarUser (authorizedUser.user) id.
-                    	if (idMap2 == null) {
-                        	idMap2 = new HashMap<>();
-                        	for (AuthorizedUser au : resourceCollection.getAuthorizedUsers()) {
-                        		idMap2.put(au.getUser().getId(),au);
-                        	}
-                    	}
-                    	
-                    	actual = idMap2.get(user.getUser().getId());
-                    	logger.debug("actual was null, now: {}", actual);
+                        // it's possible that the authorizedUserId was not passed back from the client
+                        // if so, build a secondary map using the TdarUser (authorizedUser.user) id.
+                        if (idMap2 == null) {
+                            idMap2 = new HashMap<>();
+                            for (AuthorizedUser au : resourceCollection.getAuthorizedUsers()) {
+                                idMap2.put(au.getUser().getId(), au);
+                            }
+                        }
+
+                        actual = idMap2.get(user.getUser().getId());
+                        logger.debug("actual was null, now: {}", actual);
                     }
                     checkSelfEscalation(actor, user.getUser(), source, user.getGeneralPermission());
                     actual.setGeneralPermission(user.getGeneralPermission());
@@ -461,7 +468,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
                 String collectionName = "null collection";
-                if (collectionToAdd != null && StringUtils.isNotBlank(collectionToAdd.getName()) ) {
+                if (collectionToAdd != null && StringUtils.isNotBlank(collectionToAdd.getName())) {
                     collectionName = collectionToAdd.getName();
                 }
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.invalid", Arrays.asList(collectionName));
@@ -692,7 +699,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().addToInternalCollection(resource, user, permission);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
         Set<ResourceCollection> tempSet = new HashSet<>();
         for (ResourceCollection collection : resource.getSharedResourceCollections()) {
@@ -843,17 +850,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Long> findCollectionIdsWithTimeLimitedAccess() {
         return getDao().findCollectionIdsWithTimeLimitedAccess();
     }
 
     /**
-     * Return list of shared resources that match a specified name and are editable for a specified user.  This
+     * Return list of shared resources that match a specified name and are editable for a specified user. This
      * method does not evaluate inherited permissions.
      *
-     * @param user user that the method will use when filtering results by access rights
-     * @param name name that the method will use when filtering by exact name
+     * @param user
+     *            user that the method will use when filtering results by access rights
+     * @param name
+     *            name that the method will use when filtering by exact name
      * @return
      */
     public List<ResourceCollection> findCollectionsWithName(TdarUser user, String name) {
@@ -865,12 +874,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     /**
      * Convert a resource collection into a persisted white-label collection with all default values.
      * Note that this has the effect of detaching the input collection from the session.
+     * 
      * @param rc
      * @return
      */
     public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
-        if(rc.isWhiteLabelCollection()) {
-            return (WhiteLabelCollection)rc;
+        if (rc.isWhiteLabelCollection()) {
+            return (WhiteLabelCollection) rc;
         }
         return getDao().convertToWhitelabelCollection(rc);
     }
@@ -886,7 +896,4 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().convertToResourceCollection(wlc);
     }
 
-
 }
-
-

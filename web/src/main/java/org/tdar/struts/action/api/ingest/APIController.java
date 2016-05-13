@@ -20,7 +20,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
-import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.Coupon;
@@ -37,7 +36,6 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -80,8 +78,8 @@ public class APIController extends AbstractAuthenticatableAction {
     @Autowired
     private transient BillingAccountService accountService;
 
-    @Autowired
-    private SearchIndexService searchIndexService;
+//    @Autowired
+//    private SearchIndexService searchIndexService;
 
     private Resource importedRecord;
     private String message;
@@ -165,8 +163,6 @@ public class APIController extends AbstractAuthenticatableAction {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
 
-            reindex(loadedRecord);
-
             return SUCCESS;
         } catch (Exception e) {
             message = "";
@@ -200,19 +196,6 @@ public class APIController extends AbstractAuthenticatableAction {
 
     }
 
-    private void reindex(Resource loadedRecord) {
-        try {
-            List<Indexable> toReindex = new ArrayList<>();
-            toReindex.add(loadedRecord);
-            toReindex.addAll(loadedRecord.getResourceCollections());
-            toReindex.addAll(loadedRecord.getAllActiveKeywords());
-            loadedRecord.getResourceCreators().forEach(rc -> toReindex.add(rc.getCreator()));
-            searchIndexService.indexCollection(toReindex);
-        } catch (Exception e) {
-            getLogger().error("error reindexing", e);
-        }
-
-    }
 
     private void processIncomingFileProxies(List<FileProxy> fileProxies) {
         for (int i = 0; i < uploadFile.size(); i++) {
@@ -289,7 +272,6 @@ public class APIController extends AbstractAuthenticatableAction {
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
-            reindex(loadedRecord);
             return SUCCESS;
         } catch (Exception e) {
             message = "";

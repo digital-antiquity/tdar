@@ -188,7 +188,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         users2.addAll(Arrays.asList(new AuthorizedUser(testModify, GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testView,
                 GeneralPermissions.VIEW_ALL),
                 new AuthorizedUser(testAdmin, GeneralPermissions.ADMINISTER_GROUP)));
-        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, (TdarUser) testCollection.getOwner());
+        resourceCollectionService.saveAuthorizedUsersForResourceCollection(project_, testCollection, users, true, getBasicUser());
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());

@@ -89,8 +89,12 @@ public class ApiClientResponse {
                 id_ = document.getElementsByTagName("tdar:recordId").item(0).getTextContent();
             }
             logger.debug("ID:: {}", id_);
+            if (id_ != null) {
             Long id = Long.parseLong(id_);
-            return id;
+                return id;
+            } else {
+                return null;
+            }
         } catch (Exception e) {
             logger.error("cannot find tDAR Id", e);
         }
