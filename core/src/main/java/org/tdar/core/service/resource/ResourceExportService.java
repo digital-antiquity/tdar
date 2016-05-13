@@ -208,6 +208,7 @@ public class ResourceExportService {
                 FileProxy fileProxy = new FileProxy(irf);
                 fileProxy.setFileId(null);
                 fileProxy.setAction(FileAction.ADD);
+                fileProxy.setOriginalFileVersionId(-1L);
                 proxies.add(fileProxy);
                 
             }

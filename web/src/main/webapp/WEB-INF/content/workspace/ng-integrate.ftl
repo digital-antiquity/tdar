@@ -1,4 +1,6 @@
 <#setting url_escaping_charset="UTF-8">
+<#global angular_version="1.5.5">
+
 <head>
     <title>Dataset Integration: Edit</title>
 </head>

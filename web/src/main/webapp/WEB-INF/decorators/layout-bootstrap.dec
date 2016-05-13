@@ -12,7 +12,6 @@
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.13.1" >
-<#global angular_version="1.5.5">
 
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
      This is a less-than ideal solution, but seems to be the best that we have. -->
