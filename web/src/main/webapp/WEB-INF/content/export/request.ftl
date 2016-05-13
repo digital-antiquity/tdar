@@ -20,8 +20,8 @@
     <div id="parentIdContainer" class="control-group">
         <label class="control-label" for="collectionName">Collection</label>
         <div class="controls">
-            <input type="hidden" name="parentId" value="" id="hdnParentId" autocompleteparentelement="#parentIdContainer">
-            <input type="text" name="parentCollectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
+            <input type="hidden" name="collectionId" value="" id="hdnParentId" autocompleteparentelement="#parentIdContainer">
+            <input type="text" name="collectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
         </div>
     </div>
 </div>

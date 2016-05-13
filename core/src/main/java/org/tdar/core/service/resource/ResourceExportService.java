@@ -44,6 +44,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.filestore.Filestore;
@@ -85,6 +86,9 @@ public class ResourceExportService {
         }
         if (CollectionUtils.isNotEmpty(rep.getResources())) {
             resources.addAll(rep.getResources());
+        }
+        if (CollectionUtils.isEmpty(resources)) {
+            throw new TdarRecoverableRuntimeException("nothing selected");
         }
         return export(rep.getFilename(), forReImport, resources);
     }
@@ -296,7 +300,7 @@ public class ResourceExportService {
         Map<String, Object> dataModel = new HashMap<>();
         dataModel.put("resources", resourceExportProxy);
         dataModel.put("file", resourceExportProxy.getFilename());
-        String url = String.format("%sexport/download?file=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
+        String url = String.format("%s/export/download?filename=%s", TdarConfiguration.getInstance().getBaseSecureUrl(), resourceExportProxy.getFilename());
         dataModel.put("url", url);
         dataModel.put("authenticatedUser", authenticatedUser);
         emailService.queueWithFreemarkerTemplate("resource-export-email.ftl", dataModel, email);
