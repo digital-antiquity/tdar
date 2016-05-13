@@ -89,7 +89,21 @@ public class FaimsExportService {
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
-
+            List<File> files = new ArrayList<>();
+            logger.debug("{} -- {}", id, resource.getTitle());
+//            logger.debug("active Files: {}", resource.getActiveInformationResourceFiles());
+//            logger.debug("all Files: {}", resource.getInformationResourceFiles());
+            for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
+                InformationResourceFileVersion version = file.getLatestUploadedVersion();
+                logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
+                try {
+                    File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                    files.add(retrieveFile);
+                } catch (FileNotFoundException e) {
+                    logger.error("cannot find file: {}", e, e);
+                }
+            }
+//            logger.debug(" --> {}", files);
             String output = export(resource, projectIdMap.get(resource.getProjectId()));
             if (resource instanceof CodingSheet) {
                 // logger.debug(output);
@@ -97,16 +111,6 @@ public class FaimsExportService {
             if (skip) {
                 genericService.clearCurrentSession();
                 continue;
-            }
-            List<File> files = new ArrayList<>();
-            for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
-                InformationResourceFileVersion version = file.getLatestUploadedVersion();
-                try {
-                    File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
-                    files.add(retrieveFile);
-                } catch (FileNotFoundException e) {
-                    logger.error("cannot find file: {}", e, e);
-                }
             }
             try {
                 ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));

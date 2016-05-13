@@ -121,6 +121,7 @@
     <field name="activeSiteCodes_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeTemporalKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
     
+    <field name="geographic.ISO" type="strings" indexed="true" stored="true" multiValued="true" />
     <field name="activeCultureKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeInvestigationTypes_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeMaterialKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />

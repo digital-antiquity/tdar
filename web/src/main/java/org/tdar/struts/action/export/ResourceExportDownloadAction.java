@@ -20,7 +20,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/export")
-public class ResourceExportNotify extends TdarActionSupport implements Preparable {
+public class ResourceExportDownloadAction extends TdarActionSupport implements Preparable {
 
     private static final long serialVersionUID = -2267784497236541448L;
     private InputStream inputStream;

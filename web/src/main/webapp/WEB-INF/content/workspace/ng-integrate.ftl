@@ -1,4 +1,6 @@
 <#setting url_escaping_charset="UTF-8">
+<#global angular_version="1.5.5">
+
 <head>
     <title>Dataset Integration: Edit</title>
 </head>
@@ -418,7 +420,7 @@ ${allResourceCollectionsJson}
 <script type="application/json" id="allCategories">
 ${categoriesJson}
 </script>
-<script src='https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js'></script>
+<script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
 
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>

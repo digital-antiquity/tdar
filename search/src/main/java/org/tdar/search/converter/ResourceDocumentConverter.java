@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrInputDocument;
 import org.geotools.geometry.jts.JTS;
 import org.tdar.core.bean.SupportsResource;
@@ -147,6 +148,15 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         addKeyword(doc, QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, KeywordType.CULTURE_KEYWORD, resource.getActiveCultureKeywords());
         addKeyword(doc, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, KeywordType.GEOGRAPHIC_KEYWORD, resource.getIndexedGeographicKeywords());
+        Set<String> geoCodes = new HashSet<>();
+        resource.getIndexedGeographicKeywords().forEach(geo -> {
+                if (geo.isActive() || geo.isDuplicate()) {
+                    if (StringUtils.isNotBlank(geo.getCode())) {
+                        geoCodes.add(geo.getCode());
+                    }
+                }
+        });
+        doc.addField(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, geoCodes);
         addKeyword(doc, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, KeywordType.INVESTIGATION_TYPE, resource.getActiveInvestigationTypes());
         addKeyword(doc, QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, KeywordType.MATERIAL_TYPE, resource.getActiveMaterialKeywords());
         addKeyword(doc, QueryFieldNames.ACTIVE_OTHER_KEYWORDS, KeywordType.OTHER_KEYWORD, resource.getActiveOtherKeywords());
