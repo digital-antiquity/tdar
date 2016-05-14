@@ -402,6 +402,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
     void purgeCore(LookupSource src) {
         try {
+            // in most cases this is *:*, but for the shared core (Resources/Collections) it is limited by type
             template.deleteByQuery(src.getCoreName(), src.getDeleteQuery());
             commit(src.getCoreName());
         } catch (SolrServerException | IOException e) {
