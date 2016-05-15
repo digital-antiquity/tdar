@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 
@@ -24,9 +23,6 @@ public class CacheControlInterceptor implements Interceptor {
 
     private static final long serialVersionUID = 7971484508393773725L;
     protected final transient Logger logger = LoggerFactory.getLogger(getClass());
-
-    @Autowired
-    private transient ReflectionService reflectionService;
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {

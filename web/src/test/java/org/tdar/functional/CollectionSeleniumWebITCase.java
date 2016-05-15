@@ -85,6 +85,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 permissions);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCollectionRemoveElement() {
         TestConfiguration config = TestConfiguration.getInstance();

@@ -23,6 +23,7 @@ public class CloneResourceITCase extends AbstractDataIntegrationTestCase {
         return TestConstants.TEST_DATA_INTEGRATION_DIR;
     }
 
+    @SuppressWarnings({ "deprecation", "unused" })
     @Test
     @Rollback
     public void testDatasetClone() throws Exception {
@@ -36,6 +37,7 @@ public class CloneResourceITCase extends AbstractDataIntegrationTestCase {
     }
 
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testCodingSheet() throws Exception {

@@ -29,7 +29,6 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.ColumnType;
@@ -69,9 +68,6 @@ public class LegacyWorkspaceController extends AbstractAuthenticatableAction imp
 
     @Autowired
     private transient ResourceService resourceService;
-
-    @Autowired
-    private transient PersonalFilestoreService filestoreService;
 
     @Autowired
     private transient SerializationService serializationService;

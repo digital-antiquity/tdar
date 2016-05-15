@@ -32,6 +32,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
     Long datasetId = null;
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(false)
     public void testConfidentialityAfterEdit() throws Exception {

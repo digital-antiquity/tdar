@@ -617,7 +617,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue(String.format("expecting %s in results", resource), result.getResults().contains(resource));
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testBooleanSearch() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {

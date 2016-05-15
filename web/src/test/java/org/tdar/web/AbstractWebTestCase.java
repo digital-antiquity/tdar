@@ -151,6 +151,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         }
     };
 
+    @SuppressWarnings("unused")
     private HtmlElement documentElement;
     protected boolean skipHtmlValidation = false;
 
@@ -1386,6 +1387,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
 
     public void testRegister(Map<String, String> values, TERMS terms) {
 
+        @SuppressWarnings("unused")
         String username = values.get("registration.person.username");
         gotoPage("/");
         logger.trace(getPageText());

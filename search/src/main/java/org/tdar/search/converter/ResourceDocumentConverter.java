@@ -238,6 +238,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, rightsExtractor.getCollectionNames());
     }
 
+    @SuppressWarnings("unchecked")
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
         List<String> crids = new ArrayList<>();
         Map<ResourceCreatorRole, HashSet<Creator<? extends Creator<?>>>> map = new HashMap<>();

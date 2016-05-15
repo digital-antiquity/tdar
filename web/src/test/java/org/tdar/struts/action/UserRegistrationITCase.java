@@ -121,6 +121,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .iterator().next());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testExistingAuthorWithoutLogin() {
@@ -217,6 +218,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue("no errors expected", controller.getActionErrors().size() == 0);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testInvalidUsers() {
@@ -233,6 +235,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         }
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testValidUsers() {
@@ -252,6 +255,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         }
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testRegistrationEmailSent() {
@@ -501,6 +505,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertEquals("login should have been successful", TdarActionSupport.SUCCESS, loginResponse);
     }
     
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     // register new account with mixed-case username, and ensure that user can successfully login

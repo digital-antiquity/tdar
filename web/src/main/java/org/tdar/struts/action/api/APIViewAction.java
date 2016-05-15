@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ObfuscationService;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -33,8 +32,6 @@ public class APIViewAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = 539604938603061219L;
 
-    @Autowired
-    private transient SerializationService serializationService;
     @Autowired
     private transient ObfuscationService obfuscationService;
     @Autowired

@@ -122,6 +122,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         Assert.assertTrue("should have seen resource in bookmark list", seen);
     }
 
+    @SuppressWarnings("deprecation")
     public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
@@ -157,6 +158,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         return generateResourceCollection(name, description, type, visible, users, getUser(), resources, parentId);
     }
 
+    @SuppressWarnings("deprecation")
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class, owner);

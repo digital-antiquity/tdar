@@ -18,6 +18,7 @@ public class EmailControllerITCase extends AbstractResourceControllerITCase {
     @Autowired
     RecaptchaService recaptchaService;
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testSuccess() throws Exception {
         Document document = genericService.find(Document.class, Long.parseLong(TestConstants.TEST_DOCUMENT_ID));

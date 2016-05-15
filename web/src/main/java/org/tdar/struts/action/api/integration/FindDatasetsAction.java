@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
@@ -30,8 +29,6 @@ public class FindDatasetsAction extends AbstractIntegrationAction implements Pre
 
     @Autowired
     private transient DataTableService dataTableService;
-    @Autowired
-    private transient SerializationService serializationService;
 
     @Override
     public void prepare() {

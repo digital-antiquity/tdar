@@ -12,7 +12,6 @@ import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractDeleteAction;
-import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -20,7 +19,6 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/resource")
-@ManuallyProcessEvents
 public class ResourceDeleteAction extends AbstractDeleteAction<Resource> implements Preparable {
 
 	

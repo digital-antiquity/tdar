@@ -15,6 +15,7 @@ public class ResourceControllerITCase extends AbstractResourceControllerITCase {
     @Test
     @Rollback
     public <R extends Resource> void testFindProject() {
+        @SuppressWarnings("unchecked")
         R r = (R) projectService.find(1L);
         logger.info("Resource: {} ", r);
         assertNotNull(r);

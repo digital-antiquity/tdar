@@ -90,7 +90,7 @@ public class ExploreController extends AbstractLookupController {
     private transient GenericService genericService;
 
     @Autowired
-    private transient SearchService searchService;
+    private transient SearchService<Resource> searchService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -101,10 +101,10 @@ public class ExploreController extends AbstractLookupController {
     @Action(EXPLORE)
     public String explore() throws IOException {
         setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
-        setMaterialTypes(genericService.findAllWithCache(MaterialKeyword.class));
-        setInvestigationTypes(genericService.findAllWithCache(InvestigationType.class));
-        setCultureKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
-        setSiteTypeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
+        setMaterialTypes(genericService.findAll(MaterialKeyword.class));
+        setInvestigationTypes(genericService.findAll(InvestigationType.class));
+        setCultureKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
+        setSiteTypeKeywords(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
         setupTimelineData();
         setScholarData(informationResourceService.findResourceCountsByYear());
 
@@ -112,8 +112,7 @@ public class ExploreController extends AbstractLookupController {
         try {
             setMapJson(serializationService.convertToJson(isoGeographicCounts));
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            getLogger().error("issue serializing JSON", e);
         }
 
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());

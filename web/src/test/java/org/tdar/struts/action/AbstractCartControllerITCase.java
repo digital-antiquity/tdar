@@ -153,7 +153,8 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 	 * pending db transactions occur and to avoid loads from hibernate cache
 	 * instead of the db.
 	 */
-	protected void simulateNewSession() {
+	@SuppressWarnings("deprecation")
+    protected void simulateNewSession() {
 		genericService.synchronize();
 		genericService.clearCurrentSession();
 	}

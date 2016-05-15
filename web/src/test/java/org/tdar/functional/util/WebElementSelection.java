@@ -217,14 +217,6 @@ public class WebElementSelection implements Iterable<WebElement> {
         return sb.toString();
     }
 
-    private List<WebElement> findElements(By by) {
-        LinkedList<WebElement> children = new LinkedList<WebElement>();
-        for (WebElement elem : this) {
-            children.addAll(elem.findElements(by));
-        }
-        return children;
-    }
-
     /**
      * create a WebElementSelection of the combined results of applying findElements() to each element in the selection
      * 

@@ -35,7 +35,7 @@ import com.opensymphony.xwork2.Action;
 
 public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
-    private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
+//    private static final File ROOT_SRC = new File(TestConstants.TEST_ROOT_DIR);
 
     // don't need injection (yet)
     @Autowired
@@ -63,6 +63,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
 
 
     // get some files from the test dir and put them into an archive stream
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testDownloadPdf() throws Exception {

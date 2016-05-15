@@ -12,7 +12,6 @@ import org.tdar.URLConstants;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.billing.BillingAccountService;
-import org.tdar.core.service.billing.InvoiceService;
 
 import com.opensymphony.xwork2.interceptor.ValidationWorkflowAware;
 
@@ -37,9 +36,6 @@ public class CartReviewPurchaseAction extends AbstractCartController implements 
 
     // Or a user can specify a new account name
     private BillingAccount account = new BillingAccount();
-
-    @Autowired
-    private transient InvoiceService invoiceService;
 
     @Autowired
     private transient BillingAccountService accountService;

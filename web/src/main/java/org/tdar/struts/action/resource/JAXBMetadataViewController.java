@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -46,8 +45,6 @@ public class JAXBMetadataViewController extends AbstractAuthenticatableAction im
 
     @Autowired
     private transient AuthorizationService authorizationService;
-    @Autowired
-    private transient GenericService genericService;
 
     private Long id;
     private Resource resource;

@@ -163,6 +163,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/search/people?query=Kintigh");
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testLatLongSearch() throws InterruptedException {
 

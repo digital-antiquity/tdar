@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.service.ErrorTransferObject;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthenticationService.AuthenticationStatus;
 import org.tdar.core.service.external.AuthorizationService;
@@ -38,9 +37,6 @@ public class DownloadLoginController extends AbstractDownloadController implemen
 
     @Autowired
     private AuthorizationService authorizationService;
-
-    @Autowired
-    private GenericService genericService;
 
     @Action(value = "process-download-login",
             // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
@@ -89,7 +85,7 @@ public class DownloadLoginController extends AbstractDownloadController implemen
         ErrorTransferObject errors = getDownloadUserLogin().validate(authorizationService, getRecaptchaService(), getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
-        if (!isPostRequest() || errors.isNotEmpty()) {
+        if (errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getDownloadUserLogin().getLoginUsername());
         }
     }

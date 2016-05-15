@@ -83,6 +83,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testUploadShapefile() {
         gotoPage("/geospatial/add");
@@ -136,6 +137,7 @@ public class GISSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         return path;
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testUploadGeotiff() throws InterruptedException {
         gotoPage("/geospatial/add");

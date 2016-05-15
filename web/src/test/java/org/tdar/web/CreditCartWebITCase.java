@@ -130,7 +130,8 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 	 * 
 	 * @throws MalformedURLException
 	 */
-	@Test
+	@SuppressWarnings("unused")
+    @Test
 	public void testAddCartToSameAccount() throws MalformedURLException {
 		gotoPage(URLConstants.CART_ADD);
 		setInput("invoice.numberOfMb", "2000");

@@ -11,13 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
 import javax.xml.bind.ValidationEventHandler;
-import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -109,7 +107,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 	@Test
 	@Rollback
 	public void testCreate() throws Exception {
-		JaxbResultContainer login = setupValidLogin();
+		setupValidLogin();
 		String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/newDocument.xml"));
 		ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
 		logger.debug("status:{} ", response.getStatusLine());
@@ -120,7 +118,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 	@Test
 	@Rollback
 	public void testInvalid() throws Exception {
-		JaxbResultContainer login = setupValidLogin();
+		setupValidLogin();
 		String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/invalid.xml"));
 		ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
 		logger.debug("status:{} ", response.getStatusLine());
@@ -132,7 +130,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 	@Test
 	@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
 	public void testConfidential() throws Exception {
-		JaxbResultContainer login = setupValidLogin();
+		setupValidLogin();
 		String filesUed = getFilesUsed(true);
 		logger.debug("used: {}", filesUed);
 
@@ -150,7 +148,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
 	@Test
 	public void testReplaceFile() throws Exception {
-		JaxbResultContainer login = setupValidLogin();
+		setupValidLogin();
 
 		String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
 		ApiClientResponse response = apiClient.uploadRecord(text, null, null, new File(TestConstants.TEST_IMAGE));
@@ -190,7 +188,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 	@Test
 	@Rollback
 	public void testProjectWithCollection() throws Exception {
-		JaxbResultContainer login = setupValidLogin();
+		setupValidLogin();
 		String text = FileUtils
 				.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
 		ApiClientResponse response = apiClient.uploadRecord(text, null, null);
@@ -211,7 +209,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
 	public JaxbResultContainer parseResult(String xml) throws JAXBException, JaxbParsingException {
 		JAXBContext jc = JAXBContext.newInstance(JaxbResultContainer.class);
-		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+//		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
 		// Schema schema = sf.newSchema(generateSchema());
 
 		Unmarshaller unmarshaller = jc.createUnmarshaller();
