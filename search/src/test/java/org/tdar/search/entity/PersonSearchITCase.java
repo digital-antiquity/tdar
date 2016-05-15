@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -223,7 +224,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         Person person_ = setupPerson(null, " (     ", null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min);
         List<Person> people = result.getResults();
-        assertNotEmpty(people);
+        assertTrue(CollectionUtils.isEmpty(people));
     }
 
     @Test
