@@ -734,7 +734,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 			dc.setTicketId(ticketId);
 			dc.save();
 		} catch (TdarActionException e) {
-			assertEquals(StatusCode.BAD_REQUEST.getHttpStatusCode(), e.getStatusCode());
+		    logger.error("{}",e,e);
+			assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
 			seenException = true;
 		}
 		assertTrue(seenException);
