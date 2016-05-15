@@ -37,7 +37,7 @@ public class EqualityAndHashCodeITCase extends AbstractIntegrationTestCase {
         assertNotEquals(person, null);
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
         assertNotEquals(person, llb);
-        assertEquals(person, (Creator) person);
+        assertEquals(person, (Creator<?>) person);
         Institution institution = new Institution();
         institution.setId(10l);
         assertNotEquals(person, institution);

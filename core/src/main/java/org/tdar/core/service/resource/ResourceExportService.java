@@ -57,7 +57,7 @@ import com.google.common.base.Objects;
 @Service
 public class ResourceExportService {
 
-    private static final String ZIP = ".zip";
+    public static final String ZIP = ".zip";
     private static final String EXPORT = "export";
     private static final String RESOURCE_XML = "resource.xml";
     private static final String UPLOADED = "files/";
@@ -148,7 +148,7 @@ public class ResourceExportService {
     @Transactional(readOnly = true)
     private File writeToFile(File dir, Resource resource, String filename) throws Exception {
         String convertToXML = serializationService.convertToXML(resource);
-        File type = new File("target/export/" + resource.getResourceType().name());
+//        File type = new File("target/export/" + resource.getResourceType().name());
         File file = new File(dir, filename);
 
         FileUtils.writeStringToFile(file, convertToXML);
@@ -167,7 +167,7 @@ public class ResourceExportService {
         for (Keyword kwd : resource.getAllActiveKeywords()) {
             clearId(kwd);
             if (kwd instanceof HierarchicalKeyword) {
-                ((HierarchicalKeyword) kwd).setParent(null);
+                ((HierarchicalKeyword<?>) kwd).setParent(null);
             }
         }
 
@@ -253,7 +253,7 @@ public class ResourceExportService {
 
     }
 
-    private void nullifyCreator(Creator creator) {
+    private void nullifyCreator(Creator<?> creator) {
         if (creator == null) {
             return;
         }
@@ -284,7 +284,7 @@ public class ResourceExportService {
                 resourceExportProxy.setResources(resources);
             }
 
-            File file = export(resourceExportProxy, forReImport);
+            export(resourceExportProxy, forReImport);
             sendEmail(resourceExportProxy, authenticatedUser);
         } catch (Exception e) {
             logger.error("error in export", e);

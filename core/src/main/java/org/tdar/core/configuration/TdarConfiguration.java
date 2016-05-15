@@ -274,6 +274,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     // FIXME: change to use + encorpearate sitemap (TDAR-4703)
+    @SuppressWarnings("unused")
     private void initFilestorePath(String location) {
         if (personalFilestorePathInitialized) {
             return;

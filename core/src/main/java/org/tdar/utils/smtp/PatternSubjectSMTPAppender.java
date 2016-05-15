@@ -91,6 +91,7 @@ public final class PatternSubjectSMTPAppender extends AbstractAppender {
      *            they are propagated to the caller.
      * @return The SmtpAppender.
      */
+    @SuppressWarnings("unchecked")
     @PluginFactory
     public static PatternSubjectSMTPAppender createAppender(
             @PluginAttribute("name") final String name,

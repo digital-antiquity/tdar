@@ -28,6 +28,7 @@ public class PDFJBIG2TestCase {
 
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
+    @SuppressWarnings("unused")
     @Test
     @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
@@ -49,15 +50,7 @@ public class PDFJBIG2TestCase {
         while (ir.hasNext()) {
             ImageWriter w = ir.next();
             ImageWriteParam writerParams = w.getDefaultWriteParam();
-            ImageTypeSpecifier type;
-            // if (writerParams.getDestinationType() != null)
-            // {
-            type = writerParams.getDestinationType();
-            // }
-            // else
-            // {
-            // type = ImageTypeSpecifier.createFrom
-            // }
+            ImageTypeSpecifier type = writerParams.getDestinationType();
 
             log.debug("writer: {}", w);
             // if (w.getClass().getName().contains("CLibJPEGImageWriter")) {

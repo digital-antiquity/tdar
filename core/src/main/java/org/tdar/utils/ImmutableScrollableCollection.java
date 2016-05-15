@@ -144,6 +144,7 @@ public class ImmutableScrollableCollection<T> implements Collection<T>, Serializ
         iterator.scrollable.beforeFirst();
     }
 
+    @SuppressWarnings("hiding")
     @Override
     public <T> T[] toArray(T[] a) {
         logger.debug("toArray() called");

@@ -47,6 +47,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
     }
 
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testTitleSiteCodeMatching() throws SolrServerException, IOException, ParseException {
@@ -79,7 +80,6 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         }
         genericService.synchronize();
 //        searchIndexService.indexCollection(docs);
-        searchIndexService.flushToIndexes();
         SearchResult<Resource> result = doSearch("AZ U:9:1(ASM)");
         List<Resource> results = result.getResults();
         for (Resource r : result.getResults()) {
@@ -127,6 +127,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
     }
 
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testLookupByTitle() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {
@@ -321,6 +322,7 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         result.getResults().contains(project);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testTitleRelevancy() throws SolrServerException, IOException, ParseException {
@@ -361,8 +363,8 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
         }
         genericService.synchronize();
         searchIndexService.indexCollection(docs);
-        searchIndexService.flushToIndexes();
         SearchResult<Resource> result = doSearch(exact);
+        @SuppressWarnings("unused")
         List<Resource> results = result.getResults();
         for (Resource r : result.getResults()) {
             logger.debug("results: {}", r);

@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -47,7 +48,7 @@ public class AuthenticationAndAuthorizationServiceITCase extends AbstractIntegra
         list.add(Status.ACTIVE);
         list.add(Status.DRAFT);
         TdarUser user = getBillingUser();
-        logger.debug("groups: {} ", InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups());
+        logger.debug("groups: {} ", Arrays.asList(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups()));
         assertTrue(ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), TdarGroup.TDAR_BILLING_MANAGER));
 
         authenticationAndAuthorizationService.removeIfNotAllowed(list, Status.DRAFT, InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS, user);

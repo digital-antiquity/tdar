@@ -70,7 +70,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
             serializationService.handleFilestoreEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
-        for (Creator resource : genericService.findAll(Creator.class)) {
+        for (Creator<?> resource : genericService.findAll(Creator.class)) {
             serializationService.handleFilestoreEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
     }
@@ -179,8 +179,9 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertEquals(map.get(VersionType.UPLOADED).getFilename(), TestConstants.TEST_DOCUMENT_NAME);
 
         evictCache();
+        @SuppressWarnings("unused")
         ErrorTransferObject errors = informationResourceService.reprocessInformationResourceFiles(ir);
-
+        
         map = new HashMap<>();
         for (InformationResourceFileVersion irfv : irFile.getInformationResourceFileVersions()) {
             logger.debug("version: {}", irfv);
@@ -224,6 +225,7 @@ public class InformationResourceFileITCase extends AbstractIntegrationTestCase {
         assertTrue("should see exception", seen);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testFileStatus() throws Exception {

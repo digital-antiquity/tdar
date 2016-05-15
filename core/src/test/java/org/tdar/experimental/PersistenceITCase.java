@@ -31,6 +31,7 @@ public class PersistenceITCase extends AbstractIntegrationTestCase {
         assertThat(persistenceUtil, notNullValue());
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testEntityNotInitilized() {
         Project project = genericService.find(Project.class, PROJECT_ID);

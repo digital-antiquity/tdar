@@ -30,7 +30,7 @@ public class SensoryDataITCase extends AbstractIntegrationTestCase {
         sensoryData.markUpdated(submitter);
         sensoryData.setDate(1234);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            Creator copyrightHolder = submitter;
+            Creator<?> copyrightHolder = submitter;
             sensoryData.setCopyrightHolder(copyrightHolder);
         }
         // add some scans

@@ -265,6 +265,7 @@ public interface Filestore {
         }
 
         
+        @SuppressWarnings("unchecked")
         @Override
         public Collection<File> listXmlRecordFiles(FilestoreObjectType type, Long persistableId) {
         	File dir = getDirectory(type, persistableId);

@@ -290,6 +290,7 @@ public class PdfService {
      * @throws IOException
      */
     
+    @SuppressWarnings("unused")
     private void appendCoverPageLogo(PDDocument doc, PDPageContentStream content) throws FileNotFoundException, IOException {
         File coverPageLogo = null;
         if (coverPageLogo != null && coverPageLogo.exists()) {

@@ -103,9 +103,6 @@ public class RssService implements Serializable {
     }
 
     @Autowired
-    private transient UrlService urlService;
-
-    @Autowired
     private transient ObfuscationService obfuscationService;
 
     @Autowired
@@ -147,7 +144,6 @@ public class RssService implements Serializable {
      * @throws FeedException
      * @throws IOException
      */
-    @SuppressWarnings("unchecked")
     @Cacheable(value = Caches.RSS_FEED)
     public List<SyndEntry> parseFeed(URL url) throws FeedException, IOException {
         List<SyndEntry> result = new ArrayList<>();
@@ -178,7 +174,7 @@ public class RssService implements Serializable {
      * @throws IOException
      * @throws FeedException
      */
-    @SuppressWarnings({ "unused", "unchecked" })
+    @SuppressWarnings("unused")
     public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
             boolean includeEnclosures, TextProvider provider) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
@@ -204,7 +200,7 @@ public class RssService implements Serializable {
         feed.setDescription(handler.getSearchDescription());
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
         for (I resource_ : handler.getResults()) {
-            SyndEntry entry = createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
+            createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
         }
         feed.setEntries(entries);
         feed.setPublishedDate(new Date());

@@ -14,7 +14,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Geospatial;
-import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.workflow.workflows.Workflow;
@@ -29,6 +28,7 @@ import org.tdar.filestore.tasks.GisFileReaderTask;
  */
 public class ShapefileITCase extends AbstractIntegrationTestCase {
 
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

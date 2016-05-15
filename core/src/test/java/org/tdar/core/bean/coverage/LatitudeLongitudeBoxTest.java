@@ -56,6 +56,7 @@ public class LatitudeLongitudeBoxTest {
         return abs(lht - rht);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPoint() {
         Double lat = 45.954992d;
@@ -193,7 +194,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(minObfuscatedLongitude.equals(llb.getMinimumLongitude()));
     }
 
-    @SuppressWarnings({ "static-method" })
+    @SuppressWarnings({ "static-method", "deprecation" })
     @Test
     public void doesNotObfuscateAccordingToServiceIfIsOkToShowExactCoords() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);

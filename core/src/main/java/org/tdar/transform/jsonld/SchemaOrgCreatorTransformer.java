@@ -25,6 +25,7 @@ public class SchemaOrgCreatorTransformer extends AbstractSchemaOrgMetadataTransf
 
     private static final long serialVersionUID = -6030535358753854271L;
 
+    @SuppressWarnings({ "unchecked" })
     public String convert(SerializationService ss, Creator<?> creator, String imageUrl) throws IOException {
         Map<String, Object> jsonLd = new HashMap<String, Object>();
         if (creator == null) {
@@ -73,7 +74,7 @@ public class SchemaOrgCreatorTransformer extends AbstractSchemaOrgMetadataTransf
             }
         }
         
-        for (Creator syn : (Set<Creator>)creator.getSynonyms()) {
+        for (Creator<?> syn : (Set<Creator<?>>)creator.getSynonyms()) {
             jsonLd.put(RelationType.HAS_VERSION.getJsonKey(), syn.getDetailUrl());
         }
 

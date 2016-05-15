@@ -49,6 +49,7 @@ public class FilestoreTest {
             + File.separator;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
+    @SuppressWarnings("unused")
     private TdarConfiguration tdarConfig = TdarConfiguration.getInstance();
 
     @Before

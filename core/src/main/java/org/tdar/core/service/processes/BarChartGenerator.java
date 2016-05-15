@@ -1,7 +1,6 @@
 package org.tdar.core.service.processes;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -22,6 +21,7 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
+@SuppressWarnings({"restriction","rawtypes","unchecked"})
 public class BarChartGenerator extends Application {
 	final static String austria = "Austria";
 	final static String brazil = "Brazil";
@@ -29,7 +29,7 @@ public class BarChartGenerator extends Application {
 	final static String italy = "Italy";
 	final static String usa = "USA";
 
-	@Override
+    @Override
 	public void start(Stage stage) {
 		// http://docs.oracle.com/javafx/2/charts/css-styles.htm
 		stage.setTitle("Bar Chart Sample");
@@ -88,7 +88,7 @@ public class BarChartGenerator extends Application {
 		stage.show();
 		final SnapshotParameters snapshotParameters = new SnapshotParameters();
 
-		FileOutputStream baos = null;
+//		FileOutputStream baos = null;
 		try {
 			File file = new File("chart.png");
 			snapshotParameters.setFill(Color.TRANSPARENT);

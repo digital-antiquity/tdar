@@ -261,14 +261,14 @@ import com.opensymphony.xwork2.TextProvider;
              ResourceCreator rc = proxy.getResourceCreator();
              if ((rc != null) && proxy.isValid()) {
                  ArrayList<ResourceCreatorProxy> values = new ArrayList<>();
-                 Creator creator = rc.getCreator();
+                 Creator<?> creator = rc.getCreator();
                  if (PersistableUtils.isTransient(creator)) {
                      resolveCreator(maxToResolve, replacements, proxy, rc, values, creator);
                      if (replacements.get(proxy).isEmpty()) {
                          names.add(creator.toString());
                      }
                  } else {
-                     Creator find = genericService.find(Creator.class, creator.getId());
+                     Creator<?> find = genericService.find(Creator.class, creator.getId());
                      rc.setCreator(find);
                  }
              } else {
@@ -305,7 +305,7 @@ import com.opensymphony.xwork2.TextProvider;
       */
      @SuppressWarnings("unchecked")
      private void resolveCreator(int maxToResolve, Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements, ResourceCreatorProxy proxy,
-             ResourceCreator rc, ArrayList<ResourceCreatorProxy> values, Creator creator) throws ParseException, SolrServerException, IOException {
+             ResourceCreator rc, ArrayList<ResourceCreatorProxy> values, Creator<?> creator) throws ParseException, SolrServerException, IOException {
          QueryBuilder q;
          replacements.put(proxy, values);
          if (creator instanceof Institution) {
@@ -326,9 +326,9 @@ import com.opensymphony.xwork2.TextProvider;
          logger.trace(q.generateQueryString());
          LuceneSearchResultHandler<I> handler = new SearchResult<>(maxToResolve);
          searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
-         List<Creator> list = (List<Creator>)handler.getResults();
+         List<Creator<?>> list = (List<Creator<?>>)handler.getResults();
 		if (CollectionUtils.isNotEmpty(list)) {
-             for (Creator c : list) {
+             for (Creator<?> c : list) {
                  values.add(new ResourceCreatorProxy(c, rc.getRole()));
              }
          }

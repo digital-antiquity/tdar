@@ -131,7 +131,6 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         assertEquals("DESTRUCTION DEBRIS (IN SITU)", ruleMap.get("DS").getTerm());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testAccessConverterWithMultipleTables()

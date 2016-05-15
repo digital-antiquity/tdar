@@ -100,6 +100,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
     }
 
+    @SuppressWarnings("unchecked")
     public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setString("name", collection.getName());
@@ -112,6 +113,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     public List<ResourceCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setString("name", name);

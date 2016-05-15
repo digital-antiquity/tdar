@@ -188,7 +188,7 @@ public class BulkUploadService {
 
         // merge complex, shared & pre-persisted objects at the beginning (Project, ResourceCollections, Submitter); do this so that their child objects are
         // brought onto session and not causing conflicts or duplicated
-        Long projectId = prepareTemplateAndBringSharedObjectsOnSession(submitter, resourceTemplate);
+        prepareTemplateAndBringSharedObjectsOnSession(submitter, resourceTemplate);
 
         logger.debug("ticketID:" + ticketId);
         Activity activity = registerActivity(fileProxies, submitter);
@@ -272,21 +272,6 @@ public class BulkUploadService {
         }
 
         return null;
-    }
-
-    private void reindexProject(Long projectId, AsyncUpdateReceiver updateReciever) {
-        try {
-            if (PersistableUtils.isNotNullOrTransient(projectId)) {
-                logger.debug("REINDEX !!! ");
-                boolean exceptions = false;// searchIndexService.indexProject(projectId);
-                if (exceptions) {
-                    throw new TdarRecoverableRuntimeException("bulkUploadService.exceptionDuringIndexing");
-                }
-            }
-        } catch (Throwable t) {
-            logger.error("reindexing error happened", t);
-            updateReciever.addError(t);
-        }
     }
 
     /**

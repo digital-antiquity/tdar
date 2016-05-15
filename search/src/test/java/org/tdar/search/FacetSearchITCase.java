@@ -24,6 +24,7 @@ import org.tdar.utils.MessageHelper;
 public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
     
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testFacetPivotStats() throws SolrServerException, IOException, ParseException {

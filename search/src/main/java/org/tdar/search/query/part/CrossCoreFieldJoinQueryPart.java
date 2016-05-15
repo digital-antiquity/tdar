@@ -12,10 +12,11 @@ import com.opensymphony.xwork2.TextProvider;
  *
  * @param <T>
  */
-public class CrossCoreFieldJoinQueryPart<T extends QueryPart> implements QueryPart<T> {
+public class CrossCoreFieldJoinQueryPart<T extends QueryPart<?>> implements QueryPart<T> {
 
     //http://comments.gmane.org/gmane.comp.jakarta.lucene.solr.user/95646
     
+    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
     T part;
     private boolean descriptionVisible = false;

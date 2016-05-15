@@ -16,7 +16,7 @@ import org.springframework.transaction.support.ResourceHolderSupport;
  *
  * @param <T>
  */
-public class EventBusResourceHolder<T extends ObjectContainer> extends ResourceHolderSupport {
+public class EventBusResourceHolder<T extends ObjectContainer<?>> extends ResourceHolderSupport {
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private Map<String, T> pendingMessages = new HashMap<>();

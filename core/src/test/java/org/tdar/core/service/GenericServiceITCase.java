@@ -36,6 +36,7 @@ public class GenericServiceITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testFindAllWithCache() {

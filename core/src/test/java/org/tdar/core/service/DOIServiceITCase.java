@@ -47,6 +47,7 @@ public class DOIServiceITCase extends AbstractIntegrationTestCase {
         return doiProcess.getBatchResults();
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testDOIService() throws Exception {

@@ -83,17 +83,17 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 public class SerializationService implements TxMessageBus<LoggingObjectContainer>{
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
-	private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
-    private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
-    private static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
-    private static final String FOAF_XML = ".foaf.xml";
-    private static final String RDF_CREATOR_MEDIAN = "/rdf/creatorMedian";
-    private static final String RDF_CREATOR_MEAN = "/rdf/creatorMean";
-    private static final String RDF_COUNT = "/rdf/count";
-    private static final String INSTITUTION = "Institution";
-    private static final String XSD = ".xsd";
-    private static final String TDAR_SCHEMA = "tdar-schema";
-    private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
+	public static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
+    public static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
+    public static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
+    public static final String FOAF_XML = ".foaf.xml";
+    public static final String RDF_CREATOR_MEDIAN = "/rdf/creatorMedian";
+    public static final String RDF_CREATOR_MEAN = "/rdf/creatorMean";
+    public static final String RDF_COUNT = "/rdf/count";
+    public static final String INSTITUTION = "Institution";
+    public static final String XSD = ".xsd";
+    public static final String TDAR_SCHEMA = "tdar-schema";
+    public static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
 
     private boolean useTransactionalEvents = true;
 
@@ -115,6 +115,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
     
+    @SuppressWarnings("unchecked")
     @EventListener
     public void handleFilestoreEvent(TdarEvent event) {
         if (!(event.getRecord() instanceof XmlLoggable)) {
@@ -136,7 +137,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         }
         
 
-		Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
+		@SuppressWarnings("rawtypes")
+        Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
 		if (holder.isPresent() ) {
 			holder.get().addMessage(container);
 		} else {

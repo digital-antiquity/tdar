@@ -18,7 +18,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Creator;
@@ -46,9 +45,6 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
     private static final String TITLE = "title";
 
     private static final long serialVersionUID = 7426286742246468225L;
-
-    @Autowired
-    private transient UrlService urlService;
 
     // contentLength for excel download requests
     private Long contentLength;
@@ -140,7 +136,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                             projectName = ires.getProjectTitle();
 
                         }
-                        List<Creator> authors = new ArrayList<Creator>();
+                        List<Creator<?>> authors = new ArrayList<>();
 
                         for (ResourceCreator creator : r.getPrimaryCreators()) {
                             authors.add(creator.getCreator());
@@ -149,7 +145,7 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                         ArrayList<Object> data = new ArrayList<Object>(
                                 Arrays.asList(r.getId(), r.getResourceType(), r.getTitle(), dateCreated, authors,
                                         projectName, r.getShortenedDescription(), numFiles,
-                                        urlService.absoluteUrl(r), location));
+                                        UrlService.absoluteUrl(r), location));
 
                         if (isEditor()) {
                             data.add(r.getStatus());

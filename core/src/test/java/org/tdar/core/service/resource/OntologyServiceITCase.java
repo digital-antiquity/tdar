@@ -86,6 +86,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testSplitOntologyNodeSynonymIntoNode() throws IOException {
@@ -142,6 +143,7 @@ public class OntologyServiceITCase extends AbstractIntegrationTestCase {
     }
 
     
+    @SuppressWarnings({ "deprecation", "unused" })
     @Test
     @Rollback(true)
     public void testJoinOntologyNodeSynonymIntoNode() throws IOException {

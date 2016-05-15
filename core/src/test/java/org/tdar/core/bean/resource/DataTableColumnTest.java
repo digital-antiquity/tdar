@@ -14,6 +14,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 
 public class DataTableColumnTest {
 
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Test
@@ -53,6 +54,7 @@ public class DataTableColumnTest {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void integrationHidden() {
         DataTableColumn dtc = new DataTableColumn();

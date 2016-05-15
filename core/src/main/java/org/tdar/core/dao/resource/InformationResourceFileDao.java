@@ -16,7 +16,6 @@ import org.hibernate.criterion.CriteriaSpecification;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Dataset;
@@ -40,9 +39,6 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     public InformationResourceFileDao() {
         super(InformationResourceFile.class);
     }
-
-    @Autowired
-    private InformationResourceFileVersionDao informationResourceFileVersionDao;
 
     public InformationResourceFile findByFilestoreId(String filestoreId) {
         return findByProperty("filestoreId", filestoreId);

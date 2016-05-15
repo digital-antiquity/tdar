@@ -303,7 +303,6 @@ public class ReflectionService {
      * @throws NoSuchBeanDefinitionException
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void scanForPersistables() throws ClassNotFoundException {
         if (persistableLookup != null) {
             return;
@@ -324,6 +323,7 @@ public class ReflectionService {
 
     }
 
+    @SuppressWarnings("unused")
     private static final ClassLoader classLoader = Document.class.getClassLoader();
 
     /**
@@ -335,12 +335,6 @@ public class ReflectionService {
     public static <C> Set<Class<? extends C>> findClassesThatImplement(Class<C> cls) {
         Reflections reflection = new Reflections(ORG_TDAR);
        return  reflection.getSubTypesOf(cls);
-//        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-//        scanner.addIncludeFilter(new AssignableTypeFilter(cls));
-//        String basePackage = ORG_TDAR;
-//        scanner.setResourceLoader(new PathMatchingResourcePatternResolver(classLoader));
-//        Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
-//        return reflection.get;
     }
 
     private static Map<String, Boolean> annotationLookupCache = new ConcurrentHashMap<String, Boolean>();

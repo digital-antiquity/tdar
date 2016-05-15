@@ -49,6 +49,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         testBrowseController(getBasicUser());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testBrowsePersonHiddenWithout() throws InstantiationException, IllegalAccessException, ParseException, TdarActionException {
@@ -111,7 +112,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
     @Test
     @Rollback
     public void testNewCreatorHasNoResourceAssociations() throws ParseException, TdarActionException {
-        Creator creator = createAndSaveNewPerson("testNewPersonHasNoResourceAssociations@tdar.org", "");
+        Creator<?> creator = createAndSaveNewPerson("testNewPersonHasNoResourceAssociations@tdar.org", "");
         controller.setId(creator.getId());
         controller.browseCreators();
         assertEquals(0, controller.getResults().size());
@@ -130,7 +131,7 @@ public class BrowseControllerITCase extends AbstractSearchControllerITCase {
         return getBasicUser();
     }
 
-    private void testBrowseController(Creator creator) throws Exception {
+    private void testBrowseController(Creator<?> creator) throws Exception {
         Document doc = genericService.find(Document.class, setupDatedDocument());
         ResourceCreator rc = new ResourceCreator(creator, ResourceCreatorRole.AUTHOR);
         assertTrue(rc.isValidForResource(doc));

@@ -27,7 +27,6 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.resource.ProjectDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.utils.ImmutableScrollableCollection;
@@ -51,9 +50,6 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
-
-    @Autowired
-    private ObfuscationService obfuscationService;
 
     @Autowired
     private SerializationService serializationService;

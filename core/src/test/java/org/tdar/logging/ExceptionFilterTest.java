@@ -53,6 +53,7 @@ public class ExceptionFilterTest {
      * Some throwables don't have a canonical name.  If matching on classname, make sure filter treats it as a
      * mismatch.
      */
+    @SuppressWarnings("serial")
     @Test
     public void testAnonymousException() {
         Filter filter = createFilter("java.lang.RuntimeException",null,  null, null);
@@ -90,6 +91,7 @@ public class ExceptionFilterTest {
     /**
      * anonymous throwable should work fine when matching against getMessage()
      */
+    @SuppressWarnings("serial")
     @Test
     public void testAnonymousExceptionMessage() {
         Filter filter = createFilter("Something bad happened", Target.MESSAGE,  null, null);

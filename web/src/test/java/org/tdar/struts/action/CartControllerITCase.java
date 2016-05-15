@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +32,6 @@ import org.tdar.struts.action.cart.InvoiceController;
 
 import com.opensymphony.xwork2.Action;
 
-import junit.framework.Assert;
 
 public class CartControllerITCase extends AbstractCartControllerITCase {
 
@@ -72,8 +72,8 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         cac.api();
         String result = IOUtils.toString(cac.getResultJson());
         logger.debug(result);
-        Assert.assertFalse(result.contains("error"));
-        Assert.assertFalse(result.contains("serializer"));
+        assertFalse(result.contains("error"));
+        assertFalse(result.contains("serializer"));
         logger.debug(result);
     }
 
@@ -148,6 +148,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         setupAndTestBillingAddress(controller, null);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testCartPaymentInvalid() throws TdarActionException, IOException {

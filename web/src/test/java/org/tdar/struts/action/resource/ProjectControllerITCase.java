@@ -78,6 +78,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(projectAsJson.contains("key23123"));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     @Ignore
@@ -122,7 +123,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         Project project = controller.getProject();
         project = genericService.merge(project);
-        List<Creator> people = new ArrayList<Creator>();
+        List<Creator<?>> people = new ArrayList<>();
         for (ResourceCreator creator : project.getResourceCreators()) {
             logger.info("{}", creator);
             people.add(creator.getCreator());

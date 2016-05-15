@@ -2,8 +2,7 @@ package org.tdar.functional;
 
 import org.junit.Test;
 import org.openqa.selenium.By;
-
-import junit.framework.Assert;
+import static org.junit.Assert.assertTrue;
 
 public class StatistcsSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
@@ -16,7 +15,7 @@ public class StatistcsSeleniumWebITCase extends AbstractEditorSeleniumWebITCase 
     private void testStatsSection() {
         find(By.partialLinkText("USAGE")).click();
         waitForPageload();
-        Assert.assertTrue(getCurrentUrl().contains("usage"));
+        assertTrue(getCurrentUrl().contains("usage"));
         find(By.partialLinkText("Last Week")).click();
         waitForPageload();
         find(By.partialLinkText("Last Month")).click();
@@ -38,6 +37,6 @@ public class StatistcsSeleniumWebITCase extends AbstractEditorSeleniumWebITCase 
         find(By.partialLinkText("USAGE")).click();
         waitForPageload();
         logger.debug(getText());
-        Assert.assertTrue(getText().contains("2013"));
+        assertTrue(getText().contains("2013"));
     }
 }

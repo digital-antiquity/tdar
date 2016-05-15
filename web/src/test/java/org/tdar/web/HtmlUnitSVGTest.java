@@ -16,6 +16,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 public class HtmlUnitSVGTest {
 
     
+    @SuppressWarnings({ "resource", "unused" })
     @Test
     public void testSVG() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
         WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);

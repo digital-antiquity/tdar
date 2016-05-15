@@ -177,7 +177,7 @@ public class UrlService {
         return String.format("/unapi/%s/%s", type, r.getId());
     }
 
-    public static String creatorLogoUrl(Creator creator) {
+    public static String creatorLogoUrl(Creator<?> creator) {
         return String.format("%s/files/creator/sm/%s/logo", StringUtils.stripEnd(getBaseUrl(), "/"), creator.getId());
     }
 

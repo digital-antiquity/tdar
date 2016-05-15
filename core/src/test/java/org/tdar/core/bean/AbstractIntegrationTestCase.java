@@ -580,6 +580,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     }
 
+    @SuppressWarnings("deprecation")
     public void evictCache() {
         genericService.synchronize();
     }

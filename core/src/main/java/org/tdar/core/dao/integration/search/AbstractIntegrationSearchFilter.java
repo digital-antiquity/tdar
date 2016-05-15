@@ -90,6 +90,7 @@ public class AbstractIntegrationSearchFilter implements Serializable {
         return padding;
     }
 
+    @SuppressWarnings("unused")
     @Deprecated
     //"ignore, required for hibernate"
     private void setSubmitterId(Long id) {
@@ -108,6 +109,7 @@ public class AbstractIntegrationSearchFilter implements Serializable {
         this.title = title;
     }
 
+    @SuppressWarnings("unused")
     @Deprecated
     //"ignore, required for hibernate"
     private void setTitleLookup(String title) {

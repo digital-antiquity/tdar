@@ -58,9 +58,9 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
     private static final String USAF_TITLE_CASE = "US Air Force Archaeology and Cultural Resources Archive";
 
-    private static final String CONSTANTINOPLE = "Constantinople";
+    public static final String CONSTANTINOPLE = "Constantinople";
 
-    private static final String ISTANBUL = "Istanbul";
+    public static final String ISTANBUL = "Istanbul";
 
     @Autowired
     SearchIndexService searchIndexService;
@@ -391,7 +391,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     }
 
 
-    private void lookForCreatorNameInResult(String namePart, Creator creator_) {
+    private void lookForCreatorNameInResult(String namePart, Creator<?> creator_) {
         firstGroup().getResourceCreatorProxies().add(new ResourceCreatorProxy(new ResourceCreator(creator_, null)));
         doSearch();
         assertFalse("we should get back at least one hit", controller.getResults().isEmpty());
@@ -435,6 +435,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
 
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testSynonymPersonSearch() throws SolrServerException, IOException {
@@ -466,7 +467,6 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         genericService.synchronize();
         // flush, detach (important for test), setup
-        searchIndexService.flushToIndexes();
         searchIndexService.index(image);
         genericService.detachFromSession(person);
         genericService.detachFromSession(dup);

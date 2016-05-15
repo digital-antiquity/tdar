@@ -23,6 +23,7 @@ public class CreatorITCase extends AbstractIntegrationTestCase {
     private InstitutionDao institutionDao;
 
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testInstitutionMerge() {
@@ -37,6 +38,7 @@ public class CreatorITCase extends AbstractIntegrationTestCase {
     }
 
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testPersonMerge() {

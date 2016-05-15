@@ -223,6 +223,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         Person person_ = setupPerson(null, " (     ", null, null);
         SearchResult<Person> result = findPerson(person_, null, null, min);
         List<Person> people = result.getResults();
+        assertNotEmpty(people);
     }
 
     @Test
