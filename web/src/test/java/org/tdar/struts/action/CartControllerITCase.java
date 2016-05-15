@@ -59,8 +59,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
     @Test
     @Rollback
     public void testCartBasicValid() throws TdarActionException {
-        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
-        createAndTestInvoiceQuantity(controller, 10L, null);
+        createAndTestInvoiceQuantity(10L, null);
     }
 
     @Test
@@ -126,8 +125,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         // action errors are expected in this test
         setIgnoreActionErrors(true);
 
-        InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
-        Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
+        Long invoiceId = createAndTestInvoiceQuantity(10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
 
         // simulate struts workflow: prepare and validate the action but don't execute it
@@ -144,8 +142,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
     @Test
     @Rollback
     public void testCartBasicAddress() throws TdarActionException {
-        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
-        setupAndTestBillingAddress(controller, null);
+        setupAndTestBillingAddress(null);
     }
 
     @SuppressWarnings("deprecation")
