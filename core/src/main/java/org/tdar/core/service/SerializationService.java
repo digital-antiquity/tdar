@@ -258,7 +258,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws Exception
      */
     @Transactional(readOnly = true)
-    public Writer convertToXML(Object object, Writer writer) throws Exception {
+    public Writer convertToXML(Object object_, Writer writer) throws Exception {
+        Object object = object_;
         // get rid of proxies
         if (object == null) {
             return writer;
@@ -286,7 +287,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws IOException
      */
     @Transactional(readOnly = true)
-    public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
+    public void convertToJson(Object object_, Writer writer, Class<?> view, String callback) throws IOException {
+        Object object = object_;
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
         object = wrapObjectIfNeeded(object, callback);
@@ -366,7 +368,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws JAXBException
      */
     @Transactional(readOnly = true)
-    public Document convertToXML(Object object, Document document) throws JAXBException {
+    public Document convertToXML(Object object_, Document document) throws JAXBException {
+        Object object = object_;
         // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
         if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
             object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();

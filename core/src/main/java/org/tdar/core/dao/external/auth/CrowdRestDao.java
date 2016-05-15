@@ -120,7 +120,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#logout(javax.servlet.http.HttpServletRequest, javax.servlet.http.HttpServletResponse)
      */
     @Override
-    public void logout(HttpServletRequest request, HttpServletResponse response, String token, TdarUser user) {
+    public void logout(HttpServletRequest request, HttpServletResponse response, String token_, TdarUser user) {
+        String token = token_;
         try {
             httpAuthenticator.logout(request, response);
             if (StringUtils.isBlank(token)) {
@@ -210,7 +211,8 @@ public class CrowdRestDao extends BaseAuthenticationProvider {
      * @see org.tdar.core.service.external.AuthenticationProvider#addUser(org.tdar.core.bean.entity.Person, java.lang.String)
      */
     @Override
-    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups_) {
+        TdarGroup[] groups = groups_;
         String login = person.getUsername();
         User user = null;
         try {

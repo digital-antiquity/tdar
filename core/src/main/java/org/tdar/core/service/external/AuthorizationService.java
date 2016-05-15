@@ -650,7 +650,8 @@ public class AuthorizationService implements Accessible {
      *         list indicates success.
      */
     @Transactional(readOnly = true)
-    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer_) {
+        String referrer = referrer_;
         // String referrer = request.getHeader("referer");
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
         List<String> errors = new ArrayList<>();

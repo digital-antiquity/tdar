@@ -119,7 +119,8 @@ public class PdfService {
 
 
 
-    private String truncateDescription(String description) {
+    private String truncateDescription(String description_) {
+        String description = description_;
         if (StringUtils.isNotBlank(description) && description.length() > MAX_FILE_DESCRIPTION_LENGTH) {
             BreakIterator instance = BreakIterator.getWordInstance();
             instance.setText(description);
@@ -318,9 +319,10 @@ public class PdfService {
      * Format:
      * <B>Field</B>: Label
      */
-    public int writeLabelPairOnPage(PDPageContentStream content, String label, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom,
+    public int writeLabelPairOnPage(PDPageContentStream content, String label_, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom,
             boolean link, PDPage page)
             throws IOException {
+        String label = label_;
         if (StringUtils.isBlank(label)) {
             label = "";
         }
@@ -391,8 +393,9 @@ public class PdfService {
      * @return
      * @throws IOException
      */
-    public int writeOnPage(PDPageContentStream content, String utf8Text, PdfFontHelper fontHelper, boolean bold, int xFromLeft, int yFromBottom)
+    public int writeOnPage(PDPageContentStream content, String utf8Text, PdfFontHelper fontHelper, boolean bold, int xFromLeft, int yFromBottom_)
             throws IOException {
+        int yFromBottom = yFromBottom_;
         String text = transliterate(utf8Text);
         content.beginText();
         content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
@@ -418,13 +421,14 @@ public class PdfService {
      * @return
      * @throws IOException
      */
-    private int writeTextOnPage(PDPageContentStream content, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom) throws IOException {
+    private int writeTextOnPage(PDPageContentStream content, String utf8Text, PdfFontHelper fontHelper, int xFromLeft, int yFromBottom_) throws IOException {
         String text = transliterate(utf8Text);
 
         if (text.length() > fontHelper.getCharsPerLine()) {
             text = WordUtils.wrap(text, fontHelper.getCharsPerLine(), "\r\n", true);
         }
         text = text.trim();
+        int yFromBottom = yFromBottom_;
 
         for (String line : text.split("([\r|\n]+)")) {
             logger.trace(line);

@@ -106,22 +106,22 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 		String result = controller.execute();
 		assertEquals(Action.SUCCESS, result);
 		logger.debug("done initial");
-		controller = generateNewInitializedController(InvoiceController.class);
-		controller.prepare();
+		InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
+		controller_.prepare();
 		logger.debug("set code:{}", code);
 		if (StringUtils.isNotBlank(code)) {
 			controller.setCode(code);
 		}
-		controller.setInvoice(new Invoice());
-		controller.getInvoice().setNumberOfFiles(numberOfFiles);
-		controller.setServletRequest(getServletPostRequest());
-		String save = controller.processInvoice();
-		logger.debug("coupon:{}", controller.getInvoice().getCoupon());
+		controller_.setInvoice(new Invoice());
+		controller_.getInvoice().setNumberOfFiles(numberOfFiles);
+		controller_.setServletRequest(getServletPostRequest());
+		String save = controller_.processInvoice();
+		logger.debug("coupon:{}", controller_.getInvoice().getCoupon());
 		logger.debug("done process invoice");
 
 		assertEquals(Action.SUCCESS, save);
 		// assertEquals(CartController.SIMPLE, controller.getSaveSuccessPath());
-		return controller.getInvoice().getId();
+		return controller_.getInvoice().getId();
 	}
 
 	protected Invoice runSuccessfullTransaction(CartController controller) throws TdarActionException {

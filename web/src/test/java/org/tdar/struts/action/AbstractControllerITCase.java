@@ -100,7 +100,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         return invoice;
     }
 
-    public void bookmarkResource(Resource r, boolean ajax, TdarUser user) throws Exception {
+    public void bookmarkResource(Resource r_, boolean ajax, TdarUser user) throws Exception {
+        Resource r = r_;
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
@@ -123,7 +124,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     }
 
     @SuppressWarnings("deprecation")
-    public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
+    public void removeBookmark(Resource r, boolean ajax, TdarUser user_) throws Exception {
+        TdarUser user = user_;
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
         for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {

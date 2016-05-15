@@ -46,7 +46,8 @@ public class UrlService {
      * @param url
      * @return
      */
-    public static String reformatViewUrl(String url) {
+    public static String reformatViewUrl(String url_) {
+        String url = url_;
         if (url.matches("(.+)/view\\?id=([0-9]+)&?$")) {
             url = url.replaceFirst("(.+)/view\\?id=(\\d+)", "$1/$2");
         } else if (url.matches("(.+)/view\\?id=([0-9]+)&(.+)$")) {

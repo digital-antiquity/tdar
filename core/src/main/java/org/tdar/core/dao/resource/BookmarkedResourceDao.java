@@ -61,7 +61,8 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
     }
 
     @SuppressWarnings("unchecked")
-    public List<Resource> findBookmarkedResourcesByPerson(TdarUser person, List<Status> statuses) {
+    public List<Resource> findBookmarkedResourcesByPerson(TdarUser person, List<Status> statuses_) {
+        List<Status> statuses = statuses_;
         if (CollectionUtils.isEmpty(statuses)) {
             statuses = Arrays.asList(Status.ACTIVE, Status.DRAFT);
         }

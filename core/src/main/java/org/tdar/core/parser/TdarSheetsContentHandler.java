@@ -51,10 +51,10 @@ public class TdarSheetsContentHandler implements SheetContentsHandler {
 
     }
 
-    public int getColNum(String colName) {
+    public int getColNum(String _colName) {
 
         // remove any whitespace
-        colName = colName.trim();
+        String colName = _colName.trim();
         colName = colName.replaceAll("[0-9]+", "");
         StringBuffer buff = new StringBuffer(colName);
 

@@ -156,7 +156,8 @@ public class OwlApiHierarchyParser implements OntologyParser {
      */
 
     @SuppressWarnings("deprecation")
-    private int generateIntervalLabels(OWLClass owlClass, int index) {
+    private int generateIntervalLabels(OWLClass owlClass, int index_) {
+        int index = index_;
         Set<String> synonymLabels = new HashSet<String>();
         OntologyNode node = new OntologyNode();
         node.setOntology(ontology);

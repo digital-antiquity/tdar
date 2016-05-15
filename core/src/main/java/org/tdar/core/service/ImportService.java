@@ -217,7 +217,8 @@ public class ImportService {
      * @return
      * @throws APIException
      */
-    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created) throws APIException {
+    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created_) throws APIException {
+        boolean created = created_;
         if (PersistableUtils.isNotTransient(incomingResource)) {
             @SuppressWarnings("unchecked")
             R existing = (R) genericService.find(incomingResource.getClass(), incomingResource.getId());
@@ -523,7 +524,7 @@ public class ImportService {
         if (PersistableUtils.isNotNullOrTransient(property)) {
             Class<? extends Persistable> cls = property.getClass();
             Long id = property.getId();
-            property = null;
+//            property = null;
             P toReturn = (P) findById(cls, id);
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
