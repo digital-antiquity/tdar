@@ -52,6 +52,8 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
 @Cacheable
+@SuppressWarnings("rawtypes")
+//fixing generics issue -- suppression causes issues with AuthorityManagementService
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
 public class ResourceCreator extends AbstractSequenced<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 
@@ -65,7 +67,7 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
     @NotNull
     @BulkImportField(implementedSubclasses = { Person.class, Institution.class }, key = "RESOURCE_CREATOR", order = 1)
     @JsonView(JsonLookupFilter.class)
-    private Creator<?> creator;
+    private Creator creator;
 
     @Enumerated(EnumType.STRING)
     @BulkImportField(key = "CREATOR_ROLE", order = 200)
@@ -77,7 +79,7 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
 
     private transient boolean obfuscated;
 
-    public ResourceCreator(Creator<?> creator, ResourceCreatorRole role) {
+    public ResourceCreator(Creator creator, ResourceCreatorRole role) {
         setCreator(creator);
         setRole(role);
     }
@@ -86,11 +88,11 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
     }
 
     @XmlElementRef
-    public Creator<?> getCreator() {
+    public Creator getCreator() {
         return creator;
     }
 
-    public void setCreator(Creator<?> creator) {
+    public void setCreator(Creator creator) {
         this.creator = creator;
     }
 
@@ -162,7 +164,7 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
     }
 
     @Transient
-    public static final String getCreatorRoleIdentifier(Creator<?> creatorToFormat, ResourceCreatorRole creatorRole) {
+    public static final String getCreatorRoleIdentifier(Creator creatorToFormat, ResourceCreatorRole creatorRole) {
         String toReturn = "";
         if ((creatorToFormat != null) && (creatorToFormat.getCreatorType() != null)) {
             String code = creatorToFormat.getCreatorType().getCode();
