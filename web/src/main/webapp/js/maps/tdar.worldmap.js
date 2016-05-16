@@ -98,6 +98,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (c3_.length > 0) {
             c3colors = JSON.parse(c3_.html());
         }
+        
 
         map = L.map(mapId, {
             // config for leaflet.sleep
@@ -112,9 +113,11 @@ TDAR.worldmap = (function(console, $, ctx) {
             hoverToWake : true,
             sleepOpacity : 1
         });
+        var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
+        _initializeGeoData(mapdata);
+        _setupLegend(map, grades, _getColor, max);
         _resetView();
 
-        _initializeGeoData(mapdata);
         // load map data
         // FIXME: consider embedding data for faster rendering
         var jqxhr = $.getJSON(TDAR.uri("/js/maps/world.json"));
@@ -125,8 +128,6 @@ TDAR.worldmap = (function(console, $, ctx) {
             console.error("Failed to load world.json file. XHR result follows this line.", xhr);
         });
         map.on('click', _resetView);
-        var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
-        _setupLegend(map, grades, _getColor, max);
         return map;
     }
 
@@ -138,6 +139,17 @@ TDAR.worldmap = (function(console, $, ctx) {
             position : 'bottomright'
         });
 
+        var zoom = L.control({
+            position : 'topright'
+        });
+        zoom.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'mapGraphZoomOut');
+            div.id="mapGraphZoomOut";
+            $(div).append("<i class='icon-zoom-out'></i> Zoom Out");
+            return div;
+        };
+        zoom.addTo(map);
+        
         legend.onAdd = function(map) {
 
             var div = L.DomUtil.create('div', 'info');
@@ -193,22 +205,29 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     function _clickWorldMapLayer(event) {
         var ly = event.target.feature.geometry.coordinates[0];
+        var id = event.target.feature.id;
         console.log(event.target.feature);
-        clickId = event.target.feature.id;
-        if (event.target.feature.id && event.target.feature.id.indexOf('USA') == -1) {
+        var $zoomout = $("#mapGraphZoomOut");
+        if (id && id != 'RUS') {
+            $zoomout.show();
+        } else {
+            $zoomout.hide();
+        }
+        clickId = id;
+        if (id && id.indexOf('USA') == -1) {
             if (stateLayer != undefined) {
                 map.removeLayer(stateLayer);
                 stateLayer = undefined;
             }
         }
 
-        if (event.target.feature.id == 'USA' && stateLayer == undefined) {
+        if (id == 'USA' && stateLayer == undefined) {
             _loadStateData();
         }
 
-        _drawDataGraph(event.target.feature.properties.name, event.target.feature.id);
+        _drawDataGraph(event.target.feature.properties.name, id);
 
-        if (event.target.feature.id != 'RUS') {
+        if (id != 'RUS') {
             map.fitBounds(event.target.getBounds());
             overlay = true;
         }
@@ -219,11 +238,12 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     function _drawDataGraph(name, id) {
         var $div = $("#mapgraphdata");
+        var $header = $("#mapGraphHeader");
         // style='height:"+($mapDiv.height() - 50)+"px'
         if (name == undefined) {
-            $("#mapGraphHeader").html("Worldwide");
+            $header.html("Worldwide");
         } else {
-            $("#mapGraphHeader").html(name);
+            $header.html(name);
         }
 
         var mapdata = _getMapdata($mapDiv.parent());
@@ -346,6 +366,8 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _resetView() {
         map.setView([ 44.505, -0.09 ], 1);
         overlay = false;
+        var $zoomout = $("#mapGraphZoomOut");
+        $zoomout.hide();
         clickId = undefined;
         if (hlayer != undefined) {
             hlayer.setStyle({
