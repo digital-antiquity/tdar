@@ -57,31 +57,7 @@ public class FaimsExportService {
             logger.error("error logging in", e);
         }
         boolean skip = false;
-        Map<Long, Long> projectIdMap = new HashMap<>();
-        for (Long id : genericService.findAllIds(Project.class)) {
-            Resource resource = genericService.find(Project.class, id);
-            if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
-                continue;
-            }
-            String output = export(resource, null);
-            if (skip) {
-                genericService.clearCurrentSession();
-                continue;
-            }
-
-            try {
-                ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId);
-                projectIdMap.put(id, uploadRecord.getTdarId());
-                logger.debug("status: {}", uploadRecord.getStatusLine());
-                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
-                        && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
-                    logger.warn(uploadRecord.getBody());
-                }
-            } catch (IOException e) {
-                logger.error("error uploading", e);
-            }
-            genericService.clearCurrentSession();
-        }
+        Map<Long, Long> projectIdMap = uploadProjects(accountId, client, skip);
         logger.debug("done projects");
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
         for (Long id : genericService.findAllIds(InformationResource.class)) {
@@ -91,10 +67,14 @@ public class FaimsExportService {
             }
             List<File> files = new ArrayList<>();
             logger.debug("{} -- {}", id, resource.getTitle());
-//            logger.debug("active Files: {}", resource.getActiveInformationResourceFiles());
-//            logger.debug("all Files: {}", resource.getInformationResourceFiles());
             for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion version = file.getLatestUploadedVersion();
+                if (resource instanceof CodingSheet || resource instanceof Ontology) {
+                    if (file.getIndexableVersion() != null) {
+                        version = file.getIndexableVersion();
+                    }
+                }
+                
                 logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
                 try {
                     File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
@@ -126,6 +106,35 @@ public class FaimsExportService {
 
             genericService.clearCurrentSession();
         }
+    }
+
+    private Map<Long, Long> uploadProjects(Long accountId, APIClient client, boolean skip) {
+        Map<Long, Long> projectIdMap = new HashMap<>();
+        for (Long id : genericService.findAllIds(Project.class)) {
+            Resource resource = genericService.find(Project.class, id);
+            if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
+                continue;
+            }
+            String output = export(resource, null);
+            if (skip) {
+                genericService.clearCurrentSession();
+                continue;
+            }
+
+            try {
+                ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId);
+                projectIdMap.put(id, uploadRecord.getTdarId());
+                logger.debug("status: {}", uploadRecord.getStatusLine());
+                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+                        && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+                    logger.warn(uploadRecord.getBody());
+                }
+            } catch (IOException e) {
+                logger.error("error uploading", e);
+            }
+            genericService.clearCurrentSession();
+        }
+        return projectIdMap;
     }
 
     private String export(Resource resource, Long projectId) {
