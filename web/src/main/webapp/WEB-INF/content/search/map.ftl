@@ -60,28 +60,46 @@
         latLong += "&groups[0].latitudeLongitudeBoxes[0].maximumLatitude=";
         latLong += b.getNorth();
         latLong += "&";
+        var baseUrl = "/search/json?orientation=MAP&recordsPerPage=100&projectionModel=LUCENE_EXPERIMENTAL&latScaleUsed=true&" + latLong;
+        dynamicUpdateMap(baseUrl,0);    
+    }
+
+    function dynamicUpdateMap(baseUrl, startRecord_) {
+        var startRecord = startRecord_;
+        if (!startRecord) {
+            startRecord = 0;
+        }
         $.ajax({
         dataType: "json",
-        url: "/search/json?orientation=MAP&startRecord=0&recordsPerPage=500&projectionModel=LUCENE_EXPERIMENTAL&latScaleUsed=true&" + latLong,
+        url: baseUrl + "&startRecord="+startRecord,
         success: function(data) {
-
-            var layers = new Array();
-            $(data.features).each(function(key, data_) {
-                if (data_.geometry.type) {
-                    var title = data_.properties.title;
-                    var c = data_.geometry.coordinates;
-                    var marker = L.marker(new L.LatLng(c[1],c[0]), {title: title.trim()});
-                    marker.bindPopup(title + "<br><a href='" + data_.properties.detailUrl + "'>view</a>");
-                    layers.push(marker);
-                }
-            });
-            markers.clearLayers();
-            markers.addLayers(layers);
+            _update(data,startRecord);
+            var nextPage = data.properties.startRecord + data.properties.recordsPerPage;
+            if (data.properties && (nextPage) < data.properties.totalRecords) {
+                dynamicUpdateMap(baseUrl, nextPage);
+            }    
         }
         }).error(function() {});
     
     }
     
+    function _update(data,startRecord) {
+        var layers = new Array();
+        $(data.features).each(function(key, data_) {
+            if (data_.geometry.type) {
+                var title = data_.properties.title;
+                var c = data_.geometry.coordinates;
+                var marker = L.marker(new L.LatLng(c[1],c[0]), {title: title.trim()});
+                marker.bindPopup(title + "<br><a href='" + data_.properties.detailUrl + "'>view</a>");
+                layers.push(marker);
+            }
+        });
+        if (startRecord == 0) {
+            markers.clearLayers();
+        }
+        markers.addLayers(layers);
+
+    }
     
     
     </script>
