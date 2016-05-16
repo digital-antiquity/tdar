@@ -7,10 +7,11 @@
     // top-level controller for the integration viewmodel
     app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService', 'ValidationService',
         function($rootScope, $scope, integration, dataService, validationService){
-        var self = this,
-            _openModal,
-            _processAddedIntegrationColumns,
-            _isBusy =false;
+        var self = this;
+        var _openModal;
+        var _processAddedIntegrationColumns;
+        var _isReadOnly = $("#divIntegrationMain").data("read-only");
+        var _isBusy =false;
 
         // controller public fields
         self.integration = integration;
@@ -220,6 +221,9 @@
             // return (self.integration.getMappedDataTables()[id]);
         };
 
+        $scope.isReadOnly = function() {
+            return _isReadOnly;
+        }
         // FIXME: proper validation required
         $scope.isValid = function() {
 

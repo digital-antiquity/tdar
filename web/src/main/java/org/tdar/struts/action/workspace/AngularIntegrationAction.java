@@ -183,6 +183,10 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
         this.id = id;
     }
 
+    public boolean isEditable() {
+        return authorizationService.canViewWorkflow(workflow, getAuthenticatedUser());
+    }
+    
     @Override
     public boolean authorize() throws TdarActionException {
         return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
