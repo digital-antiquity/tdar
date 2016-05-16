@@ -37,6 +37,7 @@
                             </td>
                             <td>${workflow.dateCreated?string.short}</td>
                             <td>
+                                <a class="btn btn-mini" href="<@s.url value="/workspace/settings/edit?id=${workflow.id?c}"/>">settings</a>
                                 <a class="btn btn-mini" href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>
                             </td>   
                         </tr>

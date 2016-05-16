@@ -7,8 +7,6 @@ import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
@@ -28,10 +26,6 @@ import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.utils.json.JsonLookupFilter;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Created by jim on 12/8/14.

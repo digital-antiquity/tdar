@@ -17,8 +17,7 @@
         Note: you may have multiple accounts to simplify billing and allow different people to charge to different accounts within an organization.
     </div>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal tdarvalidate" enctype='multipart/form-data' action='save'
-                dynamicAttributes={"data-validate-method":"initBasicForm"}
-    >
+                dynamicAttributes={"data-validate-method":"initBasicForm"} >
         <@s.token name='struts.csrf.token' />
         <@edit.hiddenStartTime />
         <@common.jsErrorLog />

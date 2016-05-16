@@ -25,7 +25,8 @@ public class OaiPmhDao {
 	@Autowired
 	private GenericDao genericDao;
 
-	public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom,
+	@SuppressWarnings("unchecked")
+    public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom,
 			Date effectiveUntil, Long collectionId) {
 		String qn = "query.oai.collections";
 		if (recordType != null) {
