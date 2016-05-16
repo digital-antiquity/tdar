@@ -1,5 +1,6 @@
 package org.tdar.core.service.processes.daily;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -25,14 +26,17 @@ import org.tdar.core.service.resource.InformationResourceFileService;
 @Scope("prototype")
 public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 
-	private static final String SITE_ACRONYM = TdarConfiguration.getInstance().getSiteAcronym();
+    private static final String SITE_ACRONYM = TdarConfiguration.getInstance().getSiteAcronym();
+    private static final String TEMPLATE_ADMIN = "embargo/expiration-admin.ftl";
+    private static final String SUBJECT_ADMIN = SITE_ACRONYM + ": Admin Embargo Expiration Warning";
 	private static final String BASE_URL = TdarConfiguration.getInstance().getBaseUrl();
 	
 	private static final long serialVersionUID = 5134091457634096415L;
 
-	private static final String SUBJECT = SITE_ACRONYM + ": Embargo Expiration Warning";
 
+	private static final String TEMPLATE_WARNING = "embargo/expiration-warning.ftl";
 	private static final String SUBJECT_WARNING = SITE_ACRONYM + ": Embargo about to expire";
+	private static final String TEMPLATE_EXPIRED = "embargo/expiration.ftl";
 	private static final String SUBJECT_EXPIRED = SITE_ACRONYM + ": Embargo Expired";
 
 	@Autowired
@@ -59,35 +63,36 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 		    completed = true;
 			return;
 		}
-		logger.debug("expired: {} toExpire: {}", CollectionUtils.size(expired), CollectionUtils.size(toExpire));
+        logger.debug("expired: {} : {}", CollectionUtils.size(expired), expired);
+        logger.debug("expired: {} : {}", CollectionUtils.size(toExpire), toExpire);
 
-		if (CollectionUtils.isNotEmpty(toExpire)) {
-			Map<TdarUser, Set<InformationResourceFile>> toExpiredMap = createMap(toExpire);
-			sendExpirationNotices(toExpiredMap);
-		}
+        sendAdminEmail(expired, toExpire);
+        
+        sendExpirationNotices(toExpire);
 
 		if (CollectionUtils.isNotEmpty(expired)) {
 			Map<TdarUser, Set<InformationResourceFile>> expiredMap = createMap(expired);
 			expire(expiredMap);
 		}
 
-		Map<String, Object> map = new HashMap<String, Object>();
-		map.put("expired", expired);
-		map.put("toExpired", toExpire);
-		map.put("siteAcronym", SITE_ACRONYM);
-		map.put("baseUrl", BASE_URL);
-		Email email = new Email();
-		email.setSubject(SUBJECT);
-		email.setUserGenerated(false);
-		if (CollectionUtils.isNotEmpty(expired) || CollectionUtils.isNotEmpty(toExpire)) {
-			emailService.queueWithFreemarkerTemplate("embargo/expiration-admin.ftl", map, email);
-		}
 		completed = true;
 	}
 
-	private Map<TdarUser, Set<InformationResourceFile>> createMap(List<InformationResourceFile> expired) {
+    private void sendAdminEmail(List<InformationResourceFile> expired, List<InformationResourceFile> toExpire) {
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("expired", expired);
+        map.put("toExpire", toExpire);
+        map.put("siteAcronym", SITE_ACRONYM);
+        map.put("baseUrl", BASE_URL);
+        Email email = new Email();
+        email.setSubject(SUBJECT_ADMIN);
+        email.setUserGenerated(false);
+        emailService.queueWithFreemarkerTemplate(TEMPLATE_ADMIN, map, email);
+    }
+
+	private Map<TdarUser, Set<InformationResourceFile>> createMap(Collection<InformationResourceFile> toExpire) {
 		Map<TdarUser, Set<InformationResourceFile>> expiredMap = new HashMap<>();
-		for (InformationResourceFile file : expired) {
+		for (InformationResourceFile file : toExpire) {
             InformationResource r = file.getInformationResource();
 			TdarUser submitter = r.getSubmitter();
 			if (!expiredMap.containsKey(submitter)) {
@@ -108,11 +113,11 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 				file.setDateMadePublic(null);
 				genericDao.saveOrUpdate(file);
 			}
-			sendEmail(submitter, expired, true);
+			sendEmail(submitter, expired, SUBJECT_EXPIRED, TEMPLATE_EXPIRED);
 		}
 	}
 
-	private void sendEmail(TdarUser submitter, Set<InformationResourceFile> files, boolean isExpiration) {
+	private void sendEmail(TdarUser submitter, Set<InformationResourceFile> files, String subject, String template) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("files", files);
 		Email email = new Email();
@@ -122,19 +127,18 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 		email.setTo(submitter.getEmail());
 
 		email.setUserGenerated(false);
-		if (isExpiration) {
-			email.setSubject(SUBJECT_EXPIRED);
-			emailService.queueWithFreemarkerTemplate("embargo/expiration.ftl", map, email);
-		} else {
-			email.setSubject(SUBJECT_WARNING);
-			emailService.queueWithFreemarkerTemplate("embargo/expiration-warning.ftl", map, email);
-		}
+		email.setSubject(subject);
+		emailService.queueWithFreemarkerTemplate(template, map, email);
 	}
 
-	private void sendExpirationNotices(Map<TdarUser, Set<InformationResourceFile>> toExpiredMap) {
-		for (TdarUser submitter : toExpiredMap.keySet()) {
+	private void sendExpirationNotices(Collection<InformationResourceFile> toExpire) {
+        if (CollectionUtils.isEmpty(toExpire)) {
+            return;
+        }
+        Map<TdarUser, Set<InformationResourceFile>> toExpiredMap = createMap(toExpire);
+        for (TdarUser submitter : toExpiredMap.keySet()) {
 			Set<InformationResourceFile> expired = toExpiredMap.get(submitter);
-			sendEmail(submitter, expired, false);
+			sendEmail(submitter, expired, SUBJECT_WARNING, TEMPLATE_WARNING);
 		}
 	}
 
