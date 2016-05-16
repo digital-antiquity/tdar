@@ -74,6 +74,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
 
     protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
 
+    @SuppressWarnings("deprecation")
     protected void setConfiguration(FrameworkMethod method, String config) {
         TdarConfiguration.getInstance().setConfigurationFile(config);
         Class<?> testClass = getTestClass().getJavaClass();

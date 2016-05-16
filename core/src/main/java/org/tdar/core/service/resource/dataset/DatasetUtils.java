@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 public class DatasetUtils {
 
     private static final String NULL = "NULL";
+    @SuppressWarnings("unused")
     private static final Logger logger = LoggerFactory.getLogger(DatasetUtils.class);
 
     /*

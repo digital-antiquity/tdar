@@ -118,7 +118,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		assertTrue(potentialParents.contains(project));
 	}
 
-	@Test
+	@SuppressWarnings({ "deprecation", "unused" })
+    @Test
 	@Rollback
 	public void testDocumentEditRights() throws TdarActionException {
 		Document doc = new Document();
@@ -366,7 +367,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		assertTrue("a deletion note should have been added", seen);
 	}
 
-	private DocumentViewAction deleteResource(Long newId, String deletionReason) throws Exception {
+	@SuppressWarnings("deprecation")
+    private DocumentViewAction deleteResource(Long newId, String deletionReason) throws Exception {
 		DocumentViewAction rva = generateNewInitializedController(DocumentViewAction.class);
 		rva.setId(newId);
 		rva.prepare();
@@ -380,7 +382,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		Assert.assertEquals("expecting document IDs to match (save/reloaded)", newId, res.getId());
 		deleteAction.setDeletionReason(deletionReason);
 		deleteAction.setServletRequest(getServletPostRequest());
-		deleteAction.setDelete(deleteAction.DELETE);
+		deleteAction.setDelete(TdarActionSupport.DELETE);
 		String delete = deleteAction.delete();
 		assertEquals(TdarActionSupport.SUCCESS, delete);
 		logger.debug("status: {}", delete);
@@ -395,7 +397,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		return rva;
 	}
 
-	@Test
+	@SuppressWarnings("unused")
+    @Test
 	@Rollback()
 	public void testPersonResourceCreatorNew() throws Exception {
 		DocumentController controller = initControllerFields();
@@ -635,7 +638,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		return controller.getResource().getId();
 	}
 
-	@Test
+	@SuppressWarnings("unused")
+    @Test
 	@Rollback()
 	public void testResourceAdhocCollection() throws Exception {
 		String collectionname = "my collection";
@@ -730,7 +734,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 			dc.setTicketId(ticketId);
 			dc.save();
 		} catch (TdarActionException e) {
-			assertEquals(StatusCode.BAD_REQUEST.getHttpStatusCode(), e.getStatusCode());
+		    logger.error("{}",e,e);
+			assertEquals(StatusCode.FORBIDDEN.getHttpStatusCode(), e.getStatusCode());
 			seenException = true;
 		}
 		assertTrue(seenException);
@@ -739,7 +744,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
 	}
 
-	@Test
+	@SuppressWarnings("unused")
+    @Test
 	@Rollback
 	public void testDocumentReplaceWithInvalidfile() throws TdarActionException {
 		setIgnoreActionErrors(true);

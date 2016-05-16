@@ -30,6 +30,7 @@ import org.tdar.filestore.Filestore;
 public class DownloadServiceITCase extends AbstractIntegrationTestCase {
     private static final File ROOT_DEST = new File("target/test/download-service-it-case");
     private static final File ROOT_SRC = new File("src/test/resources");
+    @SuppressWarnings("unused")
     private Filestore filestore = TdarConfiguration.getInstance().getFilestore();
     // don't need injection (yet)
     @Autowired

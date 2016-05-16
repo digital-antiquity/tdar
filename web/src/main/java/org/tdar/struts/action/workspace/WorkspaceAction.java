@@ -21,11 +21,9 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.BookmarkedResourceService;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 /**
@@ -54,13 +52,7 @@ public class WorkspaceAction extends AbstractAuthenticatableAction {
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
-    private transient ResourceService resourceService;
-
-    @Autowired
     private transient IntegrationWorkflowService integrationWorkflowService;
-
-    @Autowired
-    private transient SerializationService serializationService;
 
     private List<Resource> bookmarkedResources;
     private Set<Ontology> sharedOntologies;

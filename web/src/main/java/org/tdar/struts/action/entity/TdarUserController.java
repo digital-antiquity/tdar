@@ -21,7 +21,6 @@ import org.tdar.core.service.EntityService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
@@ -59,8 +58,6 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
 
     @Autowired
     private transient EntityService entityService;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Action(value = MYPROFILE, results = {
             @Result(name = SUCCESS, location = "edit.ftl")

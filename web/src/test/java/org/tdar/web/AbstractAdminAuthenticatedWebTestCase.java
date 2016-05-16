@@ -91,6 +91,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         return users;
     }
 
+    @SuppressWarnings("deprecation")
     public Long setupDocumentWithProject(String resourceName, LatitudeLongitudeBox latLong, Status status, File file, FileAccessRestriction access) {
         String ticketId = getPersonalFilestoreTicketId();
         if (file != null) {

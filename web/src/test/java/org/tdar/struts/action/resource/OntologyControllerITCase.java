@@ -193,6 +193,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertEquals("Clavicle % Clavicle.clavicle", map.get("Clavicle___Clavicle.clavicle").getDisplayName());
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testOntologyWithSpaces() throws Exception {
@@ -202,6 +203,7 @@ public class OntologyControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(CollectionUtils.isNotEmpty(getActionErrors()));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testOntologyWithDegenerateTree() throws Exception {

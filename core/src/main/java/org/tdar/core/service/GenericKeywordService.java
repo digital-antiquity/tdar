@@ -135,7 +135,8 @@ public class GenericKeywordService {
      * @return
      */
     @Transactional(readOnly = false)
-    public <K extends Keyword> K findOrCreateByLabel(Class<K> cls, String label) {
+    public <K extends Keyword> K findOrCreateByLabel(Class<K> cls, String label_) {
+        String label = label_;
         if (StringUtils.isBlank(label)) {
             return null;
         }

@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.search.query.QueryFieldNames;
 
-public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
+public class GeneralCreatorQueryPart extends FieldQueryPart<Creator<?>> {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private boolean useProximity = true;
     protected static final float NAME_BOOST = 6f;
     protected static final float ANY_FIELD_BOOST = 2f;
 
-    public GeneralCreatorQueryPart(Creator creator) {
+    public GeneralCreatorQueryPart(Creator<?> creator) {
         setAllowInvalid(true);
         add(creator);
     }
@@ -26,13 +26,13 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
     @Override
     public String generateQueryString() {
         QueryPartGroup group = new QueryPartGroup(getOperator());
-        for (Creator value : getFieldValues()) {
+        for (Creator<?> value : getFieldValues()) {
             group.append(this.getQueryPart(value));
         }
         return group.generateQueryString();
     }
 
-    protected QueryPartGroup getQueryPart(Creator value) {
+    protected QueryPartGroup getQueryPart(Creator<?> value) {
         String cleanedQueryString = getCleanedQueryString(value.getProperName());
 
         QueryPartGroup primary = new QueryPartGroup(Operator.OR);
@@ -55,7 +55,6 @@ public class GeneralCreatorQueryPart extends FieldQueryPart<Creator> {
 
         if (cleanedQueryString.contains(" ")) {
             titlePart = new FieldQueryPart<String>(QueryFieldNames.NAME_PHRASE, cleanedQueryString);
-            // FIXME: magic words
             if (useProximity) {
                 titlePart.setProximity(3);
             }

@@ -15,7 +15,7 @@ public class LoggingStopWatch extends StopWatch {
         this(LoggingStopWatch.class, "StopWatch", 0, 0);
     }
 
-    public LoggingStopWatch(Class loggingContext, String stopWatchName, int splitTimeout, int stopTimeout) {
+    public LoggingStopWatch(Class<?> loggingContext, String stopWatchName, int splitTimeout, int stopTimeout) {
         this.logger = LoggerFactory.getLogger(loggingContext);
         this.name = stopWatchName;
         this.splitTimeout = splitTimeout;

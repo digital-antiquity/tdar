@@ -13,6 +13,7 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
         return ontologyIds;
     }
 
+    @SuppressWarnings("unused")
     @Deprecated()
     //"ignore, required for hibernate"
     private void setPaddedOntologyIds(List<Long> n) {
@@ -42,6 +43,7 @@ public class DatasetSearchFilter extends AbstractIntegrationSearchFilter {
         return !getOntologyIds().isEmpty();
     }
 
+    @SuppressWarnings("unused")
     @Deprecated
     //"ignore, required for hibernate"
     private void setHasOntologies(boolean b) {

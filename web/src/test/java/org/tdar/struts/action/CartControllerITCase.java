@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -31,7 +32,6 @@ import org.tdar.struts.action.cart.InvoiceController;
 
 import com.opensymphony.xwork2.Action;
 
-import junit.framework.Assert;
 
 public class CartControllerITCase extends AbstractCartControllerITCase {
 
@@ -59,8 +59,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
     @Test
     @Rollback
     public void testCartBasicValid() throws TdarActionException {
-        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
-        createAndTestInvoiceQuantity(controller, 10L, null);
+        createAndTestInvoiceQuantity(10L, null);
     }
 
     @Test
@@ -72,8 +71,8 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         cac.api();
         String result = IOUtils.toString(cac.getResultJson());
         logger.debug(result);
-        Assert.assertFalse(result.contains("error"));
-        Assert.assertFalse(result.contains("serializer"));
+        assertFalse(result.contains("error"));
+        assertFalse(result.contains("serializer"));
         logger.debug(result);
     }
 
@@ -126,8 +125,7 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         // action errors are expected in this test
         setIgnoreActionErrors(true);
 
-        InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
-        Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, null);
+        Long invoiceId = createAndTestInvoiceQuantity(10L, null);
         CartController controller = generateNewInitializedController(CartController.class);
 
         // simulate struts workflow: prepare and validate the action but don't execute it
@@ -144,10 +142,10 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
     @Test
     @Rollback
     public void testCartBasicAddress() throws TdarActionException {
-        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
-        setupAndTestBillingAddress(controller, null);
+        setupAndTestBillingAddress(null);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testCartPaymentInvalid() throws TdarActionException, IOException {

@@ -108,7 +108,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         logger.debug("page url is: {}", internalPage.getUrl());
 
         Long docid = extractTdarIdFromCurrentURL();
-        String viewUrl = internalPage.getUrl().getPath();
+        internalPage.getUrl().getPath();
         logout();
 
         login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());

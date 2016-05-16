@@ -36,6 +36,7 @@ public class IntegrationViewAction extends AbstractIntegrationAction implements 
     private Long id;
     private IntegrationWorkflowData data;
     private DataIntegrationWorkflow workflow;
+    @SuppressWarnings("unused")
     private String workflowJson;
     private int currentJsonVersion = 1;
 

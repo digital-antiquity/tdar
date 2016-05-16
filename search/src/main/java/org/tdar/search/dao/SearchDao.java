@@ -132,17 +132,17 @@ public class SearchDao<I extends Indexable> {
 	}
 
 	// http://yonik.com/multi-select-faceting/
-	private void handleJsonFacetingApi(QueryResponse rsp, SimpleOrderedMap facetMap, FacetWrapper wrapper) {
+	private void handleJsonFacetingApi(QueryResponse rsp, SimpleOrderedMap<?> facetMap, FacetWrapper wrapper) {
 		if (facetMap != null) {
 			for (String field : wrapper.getFacetFieldNames()) {
-				SimpleOrderedMap object = (SimpleOrderedMap) facetMap.get(field);
+				SimpleOrderedMap<?> object = (SimpleOrderedMap<?>) facetMap.get(field);
 				if (object == null || object.get("buckets") == null) {
 					continue;
 				}
-				List list = (List) object.get("buckets");
+				List<?> list = (List<?>) object.get("buckets");
 				FacetField fld = new FacetField(field);
 				for (Object obj : list) {
-					SimpleOrderedMap f = (SimpleOrderedMap) obj;
+					SimpleOrderedMap<?> f = (SimpleOrderedMap<?>) obj;
 					fld.add(f.get("val").toString(), ((Number) f.get("count")).longValue());
 
 				}
@@ -151,7 +151,8 @@ public class SearchDao<I extends Indexable> {
 		}
 	}
 
-	protected List<Facet> hydrateEnumFacets(TextProvider provider, FacetField field, Class facetClass) {
+	@SuppressWarnings("rawtypes")
+    protected List<Facet> hydrateEnumFacets(TextProvider provider, FacetField field, Class facetClass) {
 		List<Facet> facet = new ArrayList<>();
 		for (Count c : field.getValues()) {
 			String name = c.getName();
@@ -182,7 +183,8 @@ public class SearchDao<I extends Indexable> {
 		return facet;
 	}
 
-	protected List<Facet> hydratePersistableFacets(FacetField field, Class facetClass) {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    protected List<Facet> hydratePersistableFacets(FacetField field, Class facetClass) {
 		List<Long> ids = new ArrayList<>();
 		List<Facet> facet = new ArrayList<>();
 		for (Count c : field.getValues()) {
@@ -280,7 +282,8 @@ public class SearchDao<I extends Indexable> {
 	@Autowired
 	ProjectionTransformer<I> projectionTransformer;
 	
-	private void hydrateExperimental(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results, List<I> toReturn) {
+	@SuppressWarnings("unchecked")
+    private void hydrateExperimental(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results, List<I> toReturn) {
 		for (SolrDocument doc : results.getDocumentList()) {
 			Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
 			String cls_ = (String) doc.getFieldValue(QueryFieldNames.CLASS);
@@ -314,7 +317,8 @@ public class SearchDao<I extends Indexable> {
 				resultHandler.getAuthenticatedUser());
 	}
 
-	private List<I> processSerialSearch(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
+	@SuppressWarnings("unchecked")
+    private List<I> processSerialSearch(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
 		List<I> toReturn = new ArrayList<>();
 		for (SolrDocument doc : results.getDocumentList()) {
 			I obj = null;
@@ -341,10 +345,10 @@ public class SearchDao<I extends Indexable> {
 	 * in a static array (so we don't have to worry about initial order or
 	 * sorting), and return that.
 	 */
-	private List<I> processGroupSearch(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    private List<I> processGroupSearch(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results) {
 		Map<String, List<Long>> coalesce = results.getSearchByMap();
 		List<Long> idList = results.getIdList();
-		@SuppressWarnings("unchecked")
 		Object[] elements = new Object[idList.size()];
 		for (String cls : coalesce.keySet()) {
 			try {

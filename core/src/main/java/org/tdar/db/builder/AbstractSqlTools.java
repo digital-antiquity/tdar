@@ -14,7 +14,8 @@ public class AbstractSqlTools {
         return quote(term, true);
     }
 
-    public String quote(String term, boolean doubleQuote) {
+    public String quote(String term_, boolean doubleQuote) {
+        String term = term_;
         String chr = "\'";
         if (doubleQuote) {
             chr = "\"";

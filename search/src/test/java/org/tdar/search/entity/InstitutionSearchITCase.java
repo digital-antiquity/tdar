@@ -172,6 +172,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         Assert.assertEquals("expecting zero results", 0, results.size());
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testMultiWordInstitution() throws SolrServerException, IOException, ParseException {
@@ -186,6 +187,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         assertTrue(results.contains(insts.get(insts.size() - 1)));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testPrefixUppercase() throws SolrServerException, IOException, ParseException {
@@ -200,6 +202,7 @@ public class InstitutionSearchITCase extends AbstractWithIndexIntegrationTestCas
         }
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testPrefixLowercase() throws SolrServerException, IOException, ParseException {

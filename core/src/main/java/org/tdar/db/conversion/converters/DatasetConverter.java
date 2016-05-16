@@ -148,7 +148,8 @@ public interface DatasetConverter {
             return dataTable;
         }
 
-        private String extractAndIncrementIfDuplicate(String name, Collection<String> existingNames, int maxTableLength) {
+        private String extractAndIncrementIfDuplicate(String name_, Collection<String> existingNames, int maxTableLength) {
+            String name = name_;
             int add = 1;
 
             if ((name.length() + 1) > maxTableLength) {
@@ -164,7 +165,8 @@ public interface DatasetConverter {
             return name;
         }
 
-        public DataTableColumn createDataTableColumn(String name, DataTableColumnType type, DataTable dataTable) {
+        public DataTableColumn createDataTableColumn(String name_, DataTableColumnType type, DataTable dataTable) {
+            String name = name_;
             DataTableColumn dataTableColumn = new DataTableColumn();
             if (StringUtils.length(name) > 250) {
                 name = name.substring(0, 250);

@@ -50,6 +50,7 @@ public abstract class AbstractIntegrationWorkflowData {
      * @return
      * @throws IntegrationDeserializationException
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     protected <P extends Persistable> List<P> hydrate(GenericDao dao, List<? extends IntegrationDTO<P>> skeletons, Class<P> cls)
             throws IntegrationDeserializationException {
         Map<Long, ? extends Persistable> ids = PersistableUtils.createIdMap(skeletons);
@@ -84,6 +85,7 @@ public abstract class AbstractIntegrationWorkflowData {
      * @param key
      * @param provider
      */
+    @SuppressWarnings("rawtypes")
     public void validateForNulls(GenericDao service, List<? extends IntegrationDTO> entries, Map<String, List<String>> fieldErrors, String key,
             TextProvider provider) {
         if (CollectionUtils.isEmpty(entries)) {

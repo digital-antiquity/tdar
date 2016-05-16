@@ -100,7 +100,8 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         return invoice;
     }
 
-    public void bookmarkResource(Resource r, boolean ajax, TdarUser user) throws Exception {
+    public void bookmarkResource(Resource r_, boolean ajax, TdarUser user) throws Exception {
+        Resource r = r_;
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
         bookmarkController.setResourceId(r.getId());
@@ -122,7 +123,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         Assert.assertTrue("should have seen resource in bookmark list", seen);
     }
 
-    public void removeBookmark(Resource r, boolean ajax, TdarUser user) throws Exception {
+    @SuppressWarnings("deprecation")
+    public void removeBookmark(Resource r, boolean ajax, TdarUser user_) throws Exception {
+        TdarUser user = user_;
         BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
         for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
@@ -157,6 +160,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         return generateResourceCollection(name, description, type, visible, users, getUser(), resources, parentId);
     }
 
+    @SuppressWarnings("deprecation")
     public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class, owner);

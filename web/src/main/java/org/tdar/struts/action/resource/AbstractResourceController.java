@@ -736,7 +736,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public List<InvestigationType> getAllInvestigationTypes() {
         if (CollectionUtils.isEmpty(allInvestigationTypes)) {
-            allInvestigationTypes = genericService.findAllWithCache(InvestigationType.class);
+            allInvestigationTypes = genericService.findAll(InvestigationType.class);
             Collections.sort(allInvestigationTypes);
         }
         return allInvestigationTypes;
@@ -751,14 +751,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public KeywordNode<SiteTypeKeyword> getApprovedSiteTypeKeywords() {
         if (approvedSiteTypeKeywords == null) {
-            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
+            approvedSiteTypeKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
         }
         return approvedSiteTypeKeywords;
     }
 
     public KeywordNode<CultureKeyword> getApprovedCultureKeywords() {
         if (approvedCultureKeywords == null) {
-            approvedCultureKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
+            approvedCultureKeywords = KeywordNode.organizeKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
         }
         return approvedCultureKeywords;
     }
@@ -825,8 +825,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
-        // FIXME: move impl to service
-        // FIXME: change to SortedSet
         return ResourceCreatorRole.getAll();
     }
 

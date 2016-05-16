@@ -53,6 +53,7 @@ public class CodingSheetServiceITCase extends AbstractIntegrationTestCase {
         File content = new File(TestConstants.TEST_CODING_SHEET_DIR, "nonuniquecodes.csv");
         InformationResourceFile irFile = new InformationResourceFile();
         irFile.setId(100L);
+        @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename(content.getName());
         version.setInformationResourceFile(irFile);

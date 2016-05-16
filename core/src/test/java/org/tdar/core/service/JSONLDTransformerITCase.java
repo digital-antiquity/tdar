@@ -69,7 +69,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     public void testCreators() throws IOException, ClassNotFoundException {
         SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
 
-        for (Creator r : genericService.findAll(Creator.class)) {
+        for (Creator<?> r : genericService.findAll(Creator.class)) {
             logger.debug("//  {} - {}", r.getId(), r.getCreatorType());
             String json = transformer.convert(serializationService, r, null);
             logger.debug(json);

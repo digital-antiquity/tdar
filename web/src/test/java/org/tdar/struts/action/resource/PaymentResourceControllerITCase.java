@@ -57,6 +57,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         this.controller = controller;
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testSubmitterWithoutAccountRightsAndNoAccount() throws TdarActionException {
@@ -77,6 +78,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         logger.debug("accountId:{}", dc.getAccountId());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testSubmitterWithInheritedRights() throws Exception {
@@ -121,6 +123,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testSubmitterWithoutAccountRightsAndSeparateAccount() throws TdarActionException {
@@ -211,6 +214,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         assertTrue(CollectionUtils.isNotEmpty(controller.getActionErrors()));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback()
     public void testSecondarySaveWithoutValidAccount() throws Exception {

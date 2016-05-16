@@ -57,7 +57,7 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     private CreatorType type = CreatorType.PERSON;
     private Long id;
 
-    public ResourceCreatorProxy(Creator creator, ResourceCreatorRole role) {
+    public ResourceCreatorProxy(Creator<?> creator, ResourceCreatorRole role) {
         if (creator instanceof Person) {
             this.person = (Person) creator;
         } else {

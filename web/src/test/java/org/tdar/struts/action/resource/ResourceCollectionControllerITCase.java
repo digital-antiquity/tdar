@@ -88,6 +88,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         indexCount++;
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testDraftResourceIssue() throws Exception {
@@ -153,6 +154,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testPublicCollection() throws Exception {
@@ -193,6 +195,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testLimitedCollectionPermissions() throws Exception {
@@ -494,6 +497,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         return authuser;
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testBrowseControllerVisibleCollections() throws Exception {
@@ -519,7 +523,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         BrowseCollectionController controller_ = generateNewInitializedController(BrowseCollectionController.class);
         initAnonymousUser(controller_);
         Long fileId = testFile.getId();
-        searchIndexService.flushToIndexes();
         genericService.synchronize();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         testFile = null;
@@ -595,6 +598,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         evictCache();
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testHiddenParentVisibleChild() throws Exception {
@@ -608,7 +612,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         searchIndexService.index(collection1, collection2);
 //        logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
 //        logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
-        searchIndexService.flushToIndexes();
         genericService.synchronize();
         BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class, testPerson);
         browseController.setRecordsPerPage(Integer.MAX_VALUE);
@@ -653,7 +656,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 getAdminUser(), resources, null);
 
         evictCache();
-        searchIndexService.flushToIndexes();
 
         controller = generateNewInitializedController(CollectionController.class, getBasicUser());
         controller.prepare();
@@ -728,7 +730,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 Arrays.asList(draftDocument, activeDocument), null);
         collection.setOwner(getAdminUser());
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
-        searchIndexService.flushToIndexes();
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(collection.getId());
         vc.setSlug(collection.getSlug());
@@ -878,6 +879,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertEquals(1, dataset.getInternalResourceCollection().getAuthorizedUsers().size());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
@@ -899,7 +901,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Assert.assertEquals(Action.SUCCESS, result);
         Long rcid = rc.getId();
         String slug = rc.getSlug();
-        searchIndexService.flushToIndexes();
         // so, wait, is this resource actually in the collection?
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(rcid);
@@ -920,7 +921,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         resourceDeleteAction.setAsync(false);
         resourceDeleteAction.delete();
         genericService.synchronize();
-        searchIndexService.flushToIndexes();
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
         vc = generateNewInitializedController(CollectionViewAction.class, getUser());
         vc.setId(rcid);
@@ -952,7 +952,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Long rcid = collection.getId();
         String slug = collection.getSlug();
 
-        searchIndexService.flushToIndexes();
         searchIndexService.index(collection);
         searchIndexService.index(project);
         collection = null;
@@ -970,7 +969,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         projectController.setAsync(false);
         projectController.save();
         evictCache();
-        searchIndexService.flushToIndexes();
         searchIndexService.index(project2);
 
         logger.info("{}", project2.getResourceCollections());
@@ -1051,7 +1049,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.save();
         evictCache();
         genericService.synchronize();
-        searchIndexService.flushToIndexes();
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource
         vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);

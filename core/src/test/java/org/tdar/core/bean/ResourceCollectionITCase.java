@@ -66,6 +66,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     /**
      * Make sure that case in-sensitive queries return the same thing
      */
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testUniqueFind() {
@@ -82,6 +83,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         assertEquals(withName, test);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testFindInSaveForResource() {

@@ -33,7 +33,6 @@ import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
@@ -144,12 +143,7 @@ public class GenericDao {
         }
     }
 
-    @SuppressWarnings("unchecked")
     public Number countActive(Class<? extends HasStatus> persistentClass) {
-        Class cls = persistentClass;
-        if (persistentClass.isAssignableFrom(Creator.class)) {
-            cls = Creator.class;
-        }
         return (Number) getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName()))
                 .uniqueResult();
     }

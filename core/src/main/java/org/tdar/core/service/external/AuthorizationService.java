@@ -42,7 +42,6 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.dao.entity.InstitutionDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /*
@@ -651,7 +650,8 @@ public class AuthorizationService implements Accessible {
      *         list indicates success.
      */
     @Transactional(readOnly = true)
-    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer) {
+    public List<String> checkValidUnauthenticatedDownload(InformationResourceFileVersion informationResourceFileVersion, String apiKey, String referrer_) {
+        String referrer = referrer_;
         // String referrer = request.getHeader("referer");
         // this may be an issue: http://webmasters.stackexchange.com/questions/47405/how-can-i-pass-referrer-header-from-my-https-domain-to-http-domains
         List<String> errors = new ArrayList<>();

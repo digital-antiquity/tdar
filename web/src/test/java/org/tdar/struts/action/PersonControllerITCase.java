@@ -107,6 +107,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         });
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void addNullAddressToPerson() throws TdarActionException {
@@ -204,6 +205,7 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         genericService.delete(person_);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void editEmailAlreadyInUse() throws TdarActionException {

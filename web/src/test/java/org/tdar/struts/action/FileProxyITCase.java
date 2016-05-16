@@ -27,7 +27,6 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
-import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -263,7 +262,7 @@ public class FileProxyITCase extends AbstractResourceControllerITCase {
         document.setDescription("descr");
         document.setDate(1234);
         if (TdarConfiguration.getInstance().getCopyrightMandatory()) {
-            Creator copyrightHolder = genericService.find(Person.class, 1L);
+            Person copyrightHolder = genericService.find(Person.class, 1L);
             document.setCopyrightHolder(copyrightHolder);
         }
         return document;

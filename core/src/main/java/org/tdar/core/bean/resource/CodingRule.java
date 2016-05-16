@@ -172,7 +172,8 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
     }
 
     // strips leading zeros and trims whitespace from string.
-    private static String sanitize(String string) {
+    private static String sanitize(String string_) {
+        String string = string_;
         if (StringUtils.isEmpty(string)) {
             return null;
         }

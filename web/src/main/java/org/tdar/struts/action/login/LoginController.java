@@ -87,6 +87,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
     	// manually handle SSO TOken
         String token = authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
         getLogger().debug("token:{}", token);
+        @SuppressWarnings("unused")
         AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());
 
     	getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
@@ -201,7 +202,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
         ErrorTransferObject errors = userLogin.validate(authorizationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
-        if (!isPostRequest() || errors.isNotEmpty()) {
+        if (errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", userLogin.getLoginUsername());
         }
     }

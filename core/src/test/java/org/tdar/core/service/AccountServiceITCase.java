@@ -173,6 +173,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testAvaliableActivities() {

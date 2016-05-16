@@ -394,10 +394,10 @@ public class SearchParameters {
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
                 ResourceCollection.class, getOperator(), getCollections()));
-        queryPartGroup.append(new CreatorQueryPart<Creator>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
+        queryPartGroup.append(new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
-        queryPartGroup.append(new FieldQueryPart<Integer>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
+        queryPartGroup.append(new FieldQueryPart<>(QueryFieldNames.DATE_CREATED_DECADE, Operator.OR, getCreationDecades()));
 
         // explore: title starts with
         if (startingLetter != null) {

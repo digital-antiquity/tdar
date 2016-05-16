@@ -34,6 +34,7 @@ public class FacetWrapper implements Serializable {
         return facetMap;
     }
 
+    @SuppressWarnings("unchecked")
     public Collection<String> getFacetFieldNames() {
         if (facetMap.isEmpty()) {
             return Collections.emptyList();

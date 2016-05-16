@@ -126,7 +126,8 @@ public class MockAuthenticationProvider extends BaseAuthenticationProvider {
     }
 
     @Override
-    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups) {
+    public AuthenticationResult addUser(TdarUser person, String password, TdarGroup... groups_) {
+        TdarGroup[] groups = groups_;
         if (users.containsKey(person.getUsername().toLowerCase())) {
             return new AuthenticationResult(AuthenticationResultType.REMOTE_EXCEPTION);
         } else {

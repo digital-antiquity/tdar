@@ -19,6 +19,7 @@ public final class SiteCodeExtractor {
      * 
      * Treats entire field value as a single Keyword Token
      */
+    @SuppressWarnings("unused")
     private static final transient Logger logger = LoggerFactory.getLogger(SiteCodeExtractor.class);
 
     static final String SEP = "([\\s\\,\\:\\-]0*)";
@@ -31,6 +32,7 @@ public final class SiteCodeExtractor {
      static final Pattern sep_pattern = Pattern.compile(SEP);
 
 
+    @SuppressWarnings("unchecked")
     public static Set<String> extractSiteCodeTokens(String str) {
     	if (str == null) {
     		return Collections.emptySet();

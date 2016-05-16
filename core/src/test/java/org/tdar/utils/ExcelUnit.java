@@ -3,7 +3,6 @@ package org.tdar.utils;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormatter;
 import org.apache.poi.ss.usermodel.Cell;
@@ -15,6 +14,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 
 public class ExcelUnit {
 
@@ -149,9 +149,10 @@ public class ExcelUnit {
         Assert.assertEquals(formulaEvaluator.evaluate(cell).getStringValue(), obj);
     }
 
+    @SuppressWarnings("deprecation")
     public void assertCellEqualsNumeric(int row, int column, double obj) {
         Cell cell = getCell(row, column);
-        Assert.assertEquals(formulaEvaluator.evaluate(cell).getNumberValue(), obj);
+        assertEquals(formulaEvaluator.evaluate(cell).getNumberValue(), obj);
     }
 
     public void assertCellEqualsBoolean(int row, int column, boolean obj) {

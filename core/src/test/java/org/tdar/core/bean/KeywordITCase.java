@@ -96,6 +96,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         evictCache();
         setVerifyTransactionCallback(new TransactionCallback<CultureKeyword>() {
 
+            @SuppressWarnings("deprecation")
             @Override
             public CultureKeyword doInTransaction(TransactionStatus status) {
                 genericService.synchronize();
@@ -122,6 +123,7 @@ public class KeywordITCase extends AbstractIntegrationTestCase {
         authorityManagementService.findPluralDups(TemporalKeyword.class, getUser(), true);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void findByDupTest() {

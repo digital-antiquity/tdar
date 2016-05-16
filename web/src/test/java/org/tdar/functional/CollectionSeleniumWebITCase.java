@@ -85,6 +85,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 permissions);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCollectionRemoveElement() {
         TestConfiguration config = TestConfiguration.getInstance();
@@ -250,7 +251,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         return url;
     }
 
-    private void gotoEdit(String url) {
+    private void gotoEdit(String url_) {
+        String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         logger.debug(getCurrentUrl());
         gotoPage(url + "/edit");

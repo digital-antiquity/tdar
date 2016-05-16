@@ -44,6 +44,7 @@ public class CartLoginController extends AbstractCartController implements Valid
 
     private static final long serialVersionUID = 8641969120632289477L;
 
+    @SuppressWarnings("unused")
     @Autowired
     private RecaptchaService recaptchaService;
     @Autowired

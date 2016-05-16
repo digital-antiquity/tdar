@@ -285,7 +285,8 @@ public class InformationResourceFile extends AbstractSequenced<InformationResour
     }
 
     // FIXME: improve efficiency
-    public InformationResourceFileVersion getVersion(Integer versionNumber, VersionType... types) {
+    public InformationResourceFileVersion getVersion(Integer versionNumber_, VersionType... types) {
+        Integer versionNumber = versionNumber_;
         int currentVersionNumber = -1;
         Set<InformationResourceFileVersion> versions = getInformationResourceFileVersions();
         if ((versionNumber == null) || (versionNumber == -1)) {

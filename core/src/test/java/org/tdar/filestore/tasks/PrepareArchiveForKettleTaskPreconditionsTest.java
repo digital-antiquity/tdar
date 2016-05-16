@@ -89,7 +89,6 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         assertTrue(archive.isDoImportContent());
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void mustHaveValidControlFileDir() {
         archive.setProject(new Project(1L, "test"));
@@ -103,7 +102,6 @@ public class PrepareArchiveForKettleTaskPreconditionsTest {
         }
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     public void mustHaveAFileToWorkWith() {
 

@@ -114,7 +114,8 @@ public class ReflectionService {
      * @param name
      * @return
      */
-    public static String cleanupMethodName(String name) {
+    public static String cleanupMethodName(String name_) {
+        String name = name_;
         name = name.replaceAll("^(get|set)", "");
         name = name.substring(0, 1).toLowerCase() + name.substring(1);
         return name;
@@ -303,7 +304,6 @@ public class ReflectionService {
      * @throws NoSuchBeanDefinitionException
      * @throws ClassNotFoundException
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void scanForPersistables() throws ClassNotFoundException {
         if (persistableLookup != null) {
             return;
@@ -324,6 +324,7 @@ public class ReflectionService {
 
     }
 
+    @SuppressWarnings("unused")
     private static final ClassLoader classLoader = Document.class.getClassLoader();
 
     /**
@@ -335,12 +336,6 @@ public class ReflectionService {
     public static <C> Set<Class<? extends C>> findClassesThatImplement(Class<C> cls) {
         Reflections reflection = new Reflections(ORG_TDAR);
        return  reflection.getSubTypesOf(cls);
-//        ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-//        scanner.addIncludeFilter(new AssignableTypeFilter(cls));
-//        String basePackage = ORG_TDAR;
-//        scanner.setResourceLoader(new PathMatchingResourcePatternResolver(classLoader));
-//        Set<BeanDefinition> findCandidateComponents = scanner.findCandidateComponents(basePackage);
-//        return reflection.get;
     }
 
     private static Map<String, Boolean> annotationLookupCache = new ConcurrentHashMap<String, Boolean>();
@@ -457,10 +452,11 @@ public class ReflectionService {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls) {
+    public List<Pair<Field, Class<? extends Persistable>>> findAllPersistableFields(Class<?> cls_) {
         List<Field> declaredFields = new ArrayList<>();
         List<Pair<Field, Class<? extends Persistable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
+        Class<?> cls = cls_;
         while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             CollectionUtils.addAll(declaredFields, cls.getDeclaredFields());
             cls = cls.getSuperclass();
@@ -559,8 +555,9 @@ public class ReflectionService {
      * @return
      */
     private LinkedHashSet<CellMetadata> handleClassAnnotations(Class<?> class2, Stack<List<Class<?>>> stack, Class<BulkImportField> annotationToFind,
-            Class<?> runAs, Field runAsField, String prefix) {
+            Class<?> runAs, Field runAsField, String prefix_) {
         LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
+        String prefix = prefix_;
         for (Field field : class2.getDeclaredFields()) {
             BulkImportField annotation = field.getAnnotation(annotationToFind);
             if (prefix == null) {
@@ -633,11 +630,12 @@ public class ReflectionService {
                     throw new TdarRecoverableRuntimeException("reflectionService.not_valid_value", e, errorValueList);
                 }
             } else {
+                String value_ = value;
                 if (Integer.class.isAssignableFrom(propertyType)) {
                     try {
                         Double dbl = Double.valueOf(value);
                         if (dbl == Math.floor(dbl)) {
-                            value = new Integer((int) Math.floor(dbl)).toString();
+                            value_ = new Integer((int) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
                         throw new TdarRecoverableRuntimeException("reflectionService.expecting_integer", errorValueList);
@@ -647,7 +645,7 @@ public class ReflectionService {
                     try {
                         Double dbl = Double.valueOf(value);
                         if (dbl == Math.floor(dbl)) {
-                            value = new Long((long) Math.floor(dbl)).toString();
+                            value_ = new Long((long) Math.floor(dbl)).toString();
                         }
                     } catch (NumberFormatException nfe) {
                         throw new TdarRecoverableRuntimeException("reflectionService.expecting_big_integer", errorValueList);
@@ -656,11 +654,15 @@ public class ReflectionService {
                 if (Float.class.isAssignableFrom(propertyType)) {
                     try {
                         Float.parseFloat(value);
+                        Float flt = Float.valueOf(value);
+                        if (flt == Math.floor(flt)) {
+                            value_ = new Long((long) Math.floor(flt)).toString();
+                        }
                     } catch (NumberFormatException nfe) {
                         throw new TdarRecoverableRuntimeException("reflectionService.expecting_floating_point", errorValueList);
                     }
                 }
-                BeanUtils.setProperty(beanToProcess, name, value);
+                BeanUtils.setProperty(beanToProcess, name, value_);
             }
         } catch (Exception e1) {
             if (e1 instanceof TdarRecoverableRuntimeException) {
@@ -678,11 +680,12 @@ public class ReflectionService {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls) {
+    public List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls_) {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
         Class<?> actualClass = null;
+        Class<?> cls = cls_;
         while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             // find first implemented tDAR class (actual class);
             if (actualClass == null) {
@@ -735,10 +738,11 @@ public class ReflectionService {
         return result;
     }
 
-    public static List<Field> findAnnotatedFieldsOfClass(Class<?> cls, Class<? extends Annotation> annotationClass) {
+    public static List<Field> findAnnotatedFieldsOfClass(Class<?> cls_, Class<? extends Annotation> annotationClass) {
         List<Field> result = new ArrayList<>();
         // iterate up the package hierarchy
         Class<?> actualClass = null;
+        Class<?> cls = cls_;
         while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
             // find first implemented tDAR class (actual class);
             if (actualClass == null) {

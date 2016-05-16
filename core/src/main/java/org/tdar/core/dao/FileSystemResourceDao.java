@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.xml.xpath.XPathFactory;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +22,6 @@ public class FileSystemResourceDao {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final String TESTING_PATH_FOR_INCLUDES_DIRECTORY = "target/tdar-web/";
-    private XPathFactory xPathFactory = XPathFactory.newInstance();
 
 
     // helper to load the PDF Template for the cover page

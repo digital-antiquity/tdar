@@ -104,6 +104,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
 
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void exportResourceCollection() throws Exception {

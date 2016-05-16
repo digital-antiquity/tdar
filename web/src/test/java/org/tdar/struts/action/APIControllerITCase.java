@@ -178,6 +178,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void setupFakeRecord(Document fake) {
         addAuthorizedUser(fake, getUser(), GeneralPermissions.MODIFY_RECORD);
         // setup a fake record, with some new fields off the session
@@ -340,6 +341,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(StatusCode.CREATED, controller.getStatus());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testReplaceRecord() throws Exception {
@@ -379,7 +381,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         return docXml;
     }
 
-    @SuppressWarnings("null")
     @Test
     @Rollback(true)
     public void testInvalidFileType() throws Exception {
@@ -420,7 +421,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     public void testInvalidInvestigationType() throws Exception {
         APIController controller = generateNewInitializedController(APIController.class);
         Resource doc = findAResource(Document.class);
-        @SuppressWarnings("null")
         Long docid = doc.getId();
         genericService.markReadOnly(doc);
         InvestigationType bad = new InvestigationType();
@@ -445,6 +445,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         return null;
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testBadEnum() throws Exception {

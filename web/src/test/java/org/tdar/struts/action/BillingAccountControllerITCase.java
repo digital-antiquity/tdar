@@ -154,6 +154,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         // assertTrue(genericService.find(Account.class, accountId).getInvoices().contains(invoice));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testAddingInvoiceToNewAccount() throws TdarActionException {
@@ -211,6 +212,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
 
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testCreateCouponInvalid() throws TdarActionException {
@@ -232,6 +234,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
                 .contains(MessageHelper.getMessage("accountService.not_enough_space_or_files")));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testCreateCouponEmpty() throws TdarActionException {
@@ -250,6 +253,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testCreateCouponInvalidBoth() throws TdarActionException {
@@ -269,6 +273,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         assertTrue(controller.getActionErrors().contains(MessageHelper.getMessage("accountService.specify_either_space_or_files")));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testCreateCouponValid() throws TdarActionException {

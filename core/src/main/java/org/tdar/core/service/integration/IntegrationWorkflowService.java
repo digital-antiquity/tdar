@@ -30,7 +30,6 @@ import com.opensymphony.xwork2.TextProvider;
 @Service
 public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<DataIntegrationWorkflow, IntegrationWorkflowDao> {
 
-    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

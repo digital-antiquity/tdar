@@ -136,6 +136,7 @@ public class CsvConverterITCase extends AbstractIntegrationTestCase {
 
         tdarDataImportDatabase.selectAllFromTableInImportOrder(converter.getDataTableByName("csv_503_workbook1"),
                 new ResultSetExtractor<Object>() {
+                    @SuppressWarnings("deprecation")
                     @Override
                     public Object extractData(ResultSet rs)
                             throws SQLException, DataAccessException {

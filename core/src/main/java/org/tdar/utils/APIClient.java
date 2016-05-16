@@ -2,17 +2,12 @@ package org.tdar.utils;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.Consts;
-import org.apache.http.Header;
-import org.apache.http.HeaderElement;
-import org.apache.http.HttpHeaders;
 import org.apache.http.NameValuePair;
-import org.apache.http.ParseException;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -22,14 +17,13 @@ import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class APIClient {
 
+    private static final String UTF_8 = "UTF-8";
     private static final String ID = "id";
     private static final String ACCOUNT_ID = "accountId";
     private static final String RECORD = "record";
@@ -54,7 +48,7 @@ public class APIClient {
         List<NameValuePair> postNameValuePairs = new ArrayList<>();
         postNameValuePairs.add(new BasicNameValuePair(USER_LOGIN_LOGIN_USERNAME, username));
         postNameValuePairs.add(new BasicNameValuePair(USER_LOGIN_LOGIN_PASSWORD, password));
-        post.setEntity(new UrlEncodedFormEntity(postNameValuePairs, HTTP.UTF_8));
+        post.setEntity(new UrlEncodedFormEntity(postNameValuePairs, UTF_8));
         CloseableHttpResponse response = getHttpClient().execute(post);
         ApiClientResponse response_ = new ApiClientResponse(response);
         response.close();
@@ -130,6 +124,7 @@ public class APIClient {
         return resp;
     }
 
+    @SuppressWarnings("unused")
     public ApiClientResponse viewRecord(Long id) throws ClientProtocolException, IOException {
         HttpGet get = new HttpGet(String.format("%s/api/view?id=%s", baseUrl, id));
         CloseableHttpResponse execute = httpClient.execute(get);

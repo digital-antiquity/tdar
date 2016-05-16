@@ -91,6 +91,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
      * tests that a user with MODIFY_METADATA Permissions has limited rights -- specifically cannot modify collection assignments or authorized users
      * @throws Exception
      */
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testUserRemovingCollectionWithTheirRights() throws Exception {
