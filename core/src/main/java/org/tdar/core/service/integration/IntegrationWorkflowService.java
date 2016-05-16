@@ -14,6 +14,7 @@ import org.tdar.core.dao.integration.IntegrationWorkflowDao;
 import org.tdar.core.dao.resource.OntologyNodeDao;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.IntegrationWorkflowWrapper;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
@@ -34,6 +35,9 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
 
     @Autowired
     private transient SerializationService serializationService;
+
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient OntologyNodeDao ontologyNodeDao;
@@ -82,7 +86,7 @@ public class IntegrationWorkflowService extends ServiceInterface.TypedDaoBase<Da
 
     @Transactional(readOnly = true)
     public List<DataIntegrationWorkflow> getWorkflowsForUser(TdarUser authorizedUser) {
-        return getDao().getWorkflowsForUser(authorizedUser);
+        return getDao().getWorkflowsForUser(authorizedUser, authorizationService.isEditor(authorizedUser));
     }
 
     @Transactional(readOnly = false)

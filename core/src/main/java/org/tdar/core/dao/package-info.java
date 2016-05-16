@@ -508,7 +508,10 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow where submitter.id=:userId"),
+                query = "from DataIntegrationWorkflow where submitter.id=:userId or hidden is false"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN,
+                query = "from DataIntegrationWorkflow"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.AGREEMENT_COUNTS,
                 query = "select count(*), (select count(*) from TdarUser where contributor is true) from TdarUser user where status='ACTIVE'"),

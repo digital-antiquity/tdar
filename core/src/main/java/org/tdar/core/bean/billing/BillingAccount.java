@@ -57,7 +57,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Table(name = "pos_account")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.billing.Account")
-public class BillingAccount extends AbstractPersistable implements Updatable, HasStatus, Addressable {
+public class BillingAccount extends AbstractPersistable implements Updatable, HasStatus, Addressable, HasUsers {
 
     private static final long serialVersionUID = -1728904030701477101L;
 
@@ -358,10 +358,12 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.status = status;
     }
 
+    @Override
     public Set<TdarUser> getAuthorizedMembers() {
         return authorizedMembers;
     }
 
+    @Override
     public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
         this.authorizedMembers = authorizedMembers;
     }

@@ -24,6 +24,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -781,6 +782,15 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         return false;
+    }
+
+    @Transactional(readOnly=false)
+    public void updateAuthorizedMembers(HasUsers entity, List<TdarUser> members) {
+        logger.info("authorized members (was): {}", entity.getAuthorizedMembers());
+        entity.getAuthorizedMembers().clear();
+        entity.getAuthorizedMembers().addAll(members);
+        logger.info("authorized members ( is): {}", entity.getAuthorizedMembers());
+        institutionDao.saveOrUpdate(entity);
     }
 
 }
