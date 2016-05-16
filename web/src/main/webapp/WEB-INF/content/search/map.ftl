@@ -6,7 +6,7 @@
 <#--FIXME: this method for determining active tab won't work if (for example) controller returns INPUT for collection/institution/person search -->
 
 <head>
-    <title>Nap Search</title>
+    <title>Map Search</title>
     <style type="text/css">
     </style>
 
