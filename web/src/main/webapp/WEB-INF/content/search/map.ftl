@@ -42,6 +42,7 @@
         
         updateMap();
         markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
+
         map.addLayer(markers);
         map.on("dragend zoomend resize", updateMap);
     });
@@ -64,24 +65,18 @@
         url: "/search/json?orientation=MAP&startRecord=0&recordsPerPage=500&projectionModel=LUCENE_EXPERIMENTAL&latScaleUsed=true&" + latLong,
         success: function(data) {
 
-            var hasBounds = false;
             var layers = new Array();
             $(data.features).each(function(key, data_) {
                 if (data_.geometry.type) {
-                    layer.addData(data_);
                     var title = data_.properties.title;
                     var c = data_.geometry.coordinates;
-                    hasBounds = true;
-                    var marker = L.marker([c[1],c[0]]);
+                    var marker = L.marker(new L.LatLng(c[1],c[0]), {title: title.trim()});
                     marker.bindPopup(title + "<br><a href='" + data_.properties.detailUrl + "'>view</a>");
                     layers.push(marker);
                 }
             });
             markers.clearLayers();
             markers.addLayers(layers);
-            if (hasBounds) {
-//                map.fitBounds(markers.getBounds());
-            }
         }
         }).error(function() {});
     

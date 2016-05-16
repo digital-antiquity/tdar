@@ -117,13 +117,14 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         $(".leaflet-map-results").each(function() {
             var $el = $(this);
             var map = _initMap(this);
-            var markers = new L.MarkerClusterGroup();
+            var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
             var recDefaults = $.extend(_rectangleDefaults, {
                 fillOpacity: 0.08,
                 fitToBounds: true
             });
             _initFromDataAttr($el, map, recDefaults);
             var hasBounds = false;
+            var allPoints = new Array();
             $(".resource-list.MAP .listItem").each(function() {
                 var $t = $(this);
                 var title = $(".resourceLink", $t);
@@ -133,9 +134,12 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                     hasBounds = true;
                     var marker = L.marker(new L.LatLng(lat, lng), {title: title.text().trim()});
                     marker.bindPopup(title.html() + "<br><a href='" + title.attr('href') + "'>view</a>");
-                    markers.addLayer(marker);
+                    allPoints.push(marker);
+
                 }
             });
+            markers.clearLayers();
+            markers.addLayers(allPoints);
             if (hasBounds) {
                 _fitTo(map, markers);
             }
