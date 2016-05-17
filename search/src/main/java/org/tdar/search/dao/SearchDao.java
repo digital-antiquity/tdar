@@ -113,7 +113,10 @@ public class SearchDao<I extends Indexable> {
 		FacetedResultHandler facetHandler = (FacetedResultHandler) handler;
 		FacetWrapper wrapper = facetHandler.getFacetWrapper();
 		handleJsonFacetingApi(rsp, facetMap, wrapper);
-		wrapper.setFacetPivotJson(rsp.getResponse().findRecursive("facet_counts", "facet_pivot").toString());
+		Object pivot = rsp.getResponse().findRecursive("facet_counts", "facet_pivot");
+		if (pivot != null) {
+		    wrapper.setFacetPivotJson(pivot.toString());
+		}
 		Map<String, List<Facet>> facetResults = wrapper.getFacetResults();
 		for (FacetField field : rsp.getFacetFields()) {
 			String fieldName = field.getName();
