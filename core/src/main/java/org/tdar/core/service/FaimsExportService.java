@@ -23,6 +23,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.resource.ResourceExportService;
@@ -69,9 +70,18 @@ public class FaimsExportService {
             logger.debug("{} -- {}", id, resource.getTitle());
             for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion version = file.getLatestUploadedVersion();
-                if (resource instanceof CodingSheet || resource instanceof Ontology) {
+                if (resource instanceof CodingSheet) {
                     if (file.getIndexableVersion() != null) {
-                        version = file.getIndexableVersion();
+                        version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
+                        File transientFile = version.getTransientFile();
+                        if (resource instanceof CodingSheet) {
+                            File tmp = new File(CONFIG.getTempDirectory(),transientFile.getName().replace(".txt", ".csv"));
+                            version.setTransientFile(tmp);
+                        }
+//                        if (resource instanceof Ontology) {
+//                            
+//                            version.setTransientFile(tmp);
+//                        }
                     }
                 }
                 
