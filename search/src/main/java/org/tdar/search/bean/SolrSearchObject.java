@@ -75,7 +75,6 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
-    private boolean geoSearch = false;
 
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
@@ -83,10 +82,7 @@ public class SolrSearchObject<I extends Indexable> {
         this.setMaxResults(handler.getRecordsPerPage());
         this.setFirstResult(handler.getStartRecord());
         this.projection = handler.getProjectionModel();
-        if (geoSearch ) {
-            this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-            this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-        }
+
         List<String> sort = new ArrayList<>();
         if (handler.getSortField() != null) {
             addSortField(handler.getSortField(), sort);
@@ -122,6 +118,11 @@ public class SolrSearchObject<I extends Indexable> {
                 if (facetText.length() > 0) {
                     facetText.insert(0, "{");
                     facetText.append("}");
+                }
+
+                if (wrap.isMapFacet()) {
+                    this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+                    this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
                 }
             }
         }
