@@ -508,7 +508,7 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow where submitter.id=:userId or hidden is false"),
+                query = "from DataIntegrationWorkflow w left join w.authorizedMembers as m where w.submitter.id=:userId or w.hidden is false or m.id=:userId"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN,
                 query = "from DataIntegrationWorkflow"),

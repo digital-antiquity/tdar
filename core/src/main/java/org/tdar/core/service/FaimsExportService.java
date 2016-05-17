@@ -75,7 +75,7 @@ public class FaimsExportService {
                     }
                 }
                 
-                logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
+//                logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
                 try {
                     File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
                     files.add(retrieveFile);

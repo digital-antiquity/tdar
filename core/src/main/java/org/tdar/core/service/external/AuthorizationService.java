@@ -684,8 +684,8 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         
-        if (PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser) ) {
-            //|| authenticatedUser.equals(workflow.getAuthorizedMembers().contains(authenticatedUser)) {
+        if (PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser) ||
+                authenticatedUser.equals(workflow.getAuthorizedMembers().contains(authenticatedUser))) {
             return true;
         }
         return false;
@@ -694,9 +694,9 @@ public class AuthorizationService implements Accessible {
     @Transactional(readOnly = true)
     public boolean canViewWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
         
-//        if (!workflow.isHidden()) {
-//            return true;
-//        }
+        if (!workflow.isHidden()) {
+            return true;
+        }
         return canEditWorkflow(workflow, authenticatedUser);
 
     }
