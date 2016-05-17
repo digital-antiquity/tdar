@@ -192,7 +192,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         // if we fit to bounds...
         if ($el.data("fit-bounds")) {
             var map = $el.data("map");
-            map.fitBounds(markers.getBounds());
+            if (markers.getBounds().lat) {
+                map.fitBounds(markers.getBounds());
+            }
             // only zoom out on the first call
             if (startRecord == 0) {
                 $el.data("map");
