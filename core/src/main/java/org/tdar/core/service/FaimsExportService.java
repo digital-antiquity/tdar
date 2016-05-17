@@ -71,7 +71,7 @@ public class FaimsExportService {
             for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
                 InformationResourceFileVersion version = file.getLatestUploadedVersion();
                 if (resource instanceof CodingSheet) {
-                    if (file.getIndexableVersion() != null) {
+                    if (file.getCurrentVersion(VersionType.UPLOADED_TEXT) != null) {
                         version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
                         File transientFile = version.getTransientFile();
                         if (resource instanceof CodingSheet) {
