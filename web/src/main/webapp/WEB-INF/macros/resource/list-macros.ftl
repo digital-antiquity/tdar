@@ -75,6 +75,7 @@
 	                        data-real-lat-length="${box.absoluteLatLength?c}"
 	                        data-real-long-length="${box.absoluteLongLength?c}"
 	                    </#if>
+	                    </#if>
                     id="resource-${resource.id?c}">
 
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->
