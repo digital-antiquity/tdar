@@ -66,7 +66,6 @@ public class IndexAction extends AbstractAuthenticatableAction {
     private HomepageService homepageService;
     @Autowired
     private ResourceSearchService resourceSearchService;
-    
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
@@ -94,7 +93,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
             resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), result, this);
             setMapJson(result.getFacetWrapper().getFacetPivotJson());
         } catch (SolrServerException | IOException | ParseException e1) {
-            setMapJson(homepageService.getMapJson());
+//            setMapJson(homepageService.getMapJson());
             getLogger().error("issue generating map json");
         }
         

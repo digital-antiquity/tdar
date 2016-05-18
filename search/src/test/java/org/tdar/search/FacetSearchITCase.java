@@ -52,7 +52,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
         assertTrue("contains pivot (basic)", facetWrapper.getFacetPivotJson().contains("geographic.ISO,resourceType"));
-        assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains("field=geographic.ISO,value=USA,count=6,pivot=[{field=resourceType,value=PROJECT,count=5}, {field=resourceType,value=DOCUMENT,count=1}]}"));
+        assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains("{\"field\":\"geographic.ISO\",\"count\":6,\"pivot\":[{\"field\":\"resourceType\",\"count\":5,\"value\":\"PROJECT\"},{\"field\":\"resourceType\",\"count\":1,\"value\":\"DOCUMENT\"}],\"value\":\"USA\"}"));
     }
  
     
