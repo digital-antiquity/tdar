@@ -335,7 +335,7 @@ public class RssService implements Serializable {
                         latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
             }
             if (mode == GeoRssMode.POINT) {
-                geoRss.setPosition(new Position(latLong.getCenterLatitude(), latLong.getCenterLongitude()));
+                geoRss.setPosition(new Position(latLong.getObfuscatedCenterLatitude(), latLong.getObfuscatedCenterLongitude()));
             }
             entry.getModules().add(geoRss);
         }

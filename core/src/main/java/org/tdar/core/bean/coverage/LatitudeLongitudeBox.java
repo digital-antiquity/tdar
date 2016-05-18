@@ -116,12 +116,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return minimumLatitude;
     }
 
-    public Double getCenterLatitude() {
+    public Double getObfuscatedCenterLatitude() {
         return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
     }
 
-    public Double getCenterLongitude() {
+    public Double getObfuscatedCenterLongitude() {
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
+    }
+
+    @Deprecated
+    public Double getCenterLatitude() {
+        return (getMaximumLatitude() + getMinimumLatitude()) / 2.0;
+    }
+
+    @Deprecated
+    public Double getCenterLongitude() {
+        return (getMaximumLongitude() + getMinimumLongitude()) / 2.0;
     }
 
     /**
@@ -141,14 +151,14 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         if (!isOkayToShowExactLocation && isObfuscatedObjectDifferent()) {
             return null;
         }
-        return getCenterLatitude();
+        return getObfuscatedCenterLatitude();
     }
 
     public Double getCenterLongitudeIfNotObfuscated() {
         if (!isOkayToShowExactLocation && isObfuscatedObjectDifferent()) {
             return null;
         }
-        return getCenterLongitude();
+        return getObfuscatedCenterLongitude();
     }
 
     /**
@@ -455,8 +465,16 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         setMaximumLongitude(otherBox.maximumLongitude);
     }
 
-    public double getArea() {
-        return getAbsoluteLatLength() * getAbsoluteLongLength();
+    public double getObfuscatedArea() {
+        return getObfuscatedAbsoluteLatLength() * getObfsucatedAbsoluteLongLength();
+    }
+
+    public double getObfuscatedAbsoluteLatLength() {
+        return Math.abs(getMaxObfuscatedLatitude() - getMinObfuscatedLatitude());
+    }
+
+    public double getObfsucatedAbsoluteLongLength() {
+        return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
     }
 
     public double getAbsoluteLatLength() {
@@ -466,6 +484,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public double getAbsoluteLongLength() {
         return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
     }
+
+    public double getArea() {
+        return getObfuscatedAbsoluteLatLength() * getObfsucatedAbsoluteLongLength();
+    }
+
 
     /**
      * @return

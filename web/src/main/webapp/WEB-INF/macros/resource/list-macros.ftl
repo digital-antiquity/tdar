@@ -60,14 +60,21 @@
                     <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
                 <#-- printing item tag start / -->
                     <${itemTag_} class="listItem ${itemClass!''}"
-                    <#if orientation == 'MAP' && resource.latLongVisible >
+                    <#if orientation == 'MAP'>
                         <#local box = resource.firstActiveLatitudeLongitudeBox />
-                        data-lat="${box.centerLatitude?c}"
-                        data-long="${box.centerLongitude?c}"
-                        data-lat-length="${box.absoluteLatLength?c}"
-                        data-long-length="${box.absoluteLongLength?c}"
-                        data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
-                    </#if>
+                        data-scale="${box.scale?c}"
+	                    <#if resource.latLongVisible >
+	                        data-lat="${box.obfuscatedCenterLatitude?c}"
+	                        data-long="${box.obfuscatedCenterLongitude?c}"
+	                        data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
+	                        data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
+	                    </#if>
+	                    <#if editor >
+	                        data-real-lat="${box.centerLatitude?c}"
+	                        data-real-long="${box.centerLongitude?c}"
+	                        data-real-lat-length="${box.absoluteLatLength?c}"
+	                        data-real-long-length="${box.absoluteLongLength?c}"
+	                    </#if>
                     id="resource-${resource.id?c}">
 
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->

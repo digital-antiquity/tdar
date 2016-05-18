@@ -452,7 +452,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
         for (Object obj : rslts) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode,true));
             }
         }
         Map<String,Object> result = new HashMap<>();
