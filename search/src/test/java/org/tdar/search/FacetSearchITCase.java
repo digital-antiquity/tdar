@@ -23,7 +23,6 @@ import org.tdar.utils.MessageHelper;
 
 public class FacetSearchITCase extends AbstractResourceSearchITCase {
 
-    
     @Test
     @Rollback
     public void testFacetPivotStats() throws SolrServerException, IOException, ParseException {
@@ -33,29 +32,31 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
         result.setFacetWrapper(facetWrapper);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
-        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
-        assertTrue("contains pivot (basic)", facetWrapper.getFacetPivotJson().contains("geographic.ISO,resourceType"));
-        assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains("field=geographic.ISO,value=USA,count=6,pivot=[{field=resourceType,value=PROJECT,count=5}, {field=resourceType,value=DOCUMENT,count=1}]}"));
+        testContents(facetWrapper);
     }
-  
-    
+
     @Test
     @Rollback
     public void testHomepagePivotStats() throws SolrServerException, IOException, ParseException {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.setMapFacet(true);
-//        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        // facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
         result.setFacetWrapper(facetWrapper);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
-        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
-        assertTrue("contains pivot (basic)", facetWrapper.getFacetPivotJson().contains("geographic.ISO,resourceType"));
-        assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains("{\"field\":\"geographic.ISO\",\"count\":6,\"pivot\":[{\"field\":\"resourceType\",\"count\":5,\"value\":\"PROJECT\"},{\"field\":\"resourceType\",\"count\":1,\"value\":\"DOCUMENT\"}],\"value\":\"USA\"}"));
+        testContents(facetWrapper);
     }
- 
-    
+
+    private void testContents(FacetWrapper facetWrapper) {
+        assertTrue("contains pivot (basic)", facetWrapper.getFacetPivotJson().contains("geographic.ISO,resourceType"));
+        assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains(
+                "{\"field\":\"geographic.ISO\",\"count\":6,\"pivot\":[{\"field\":\"resourceType\",\"count\":5,\"value\":\"PROJECT\"},{\"field\":\"resourceType\",\"count\":1,\"value\":\"DOCUMENT\"}],\"value\":\"USA\"}"));
+    }
+
     @Test
     @Rollback
     public void testFacetByEnum() throws SolrServerException, IOException, ParseException {
@@ -64,7 +65,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
         result.setFacetWrapper(facetWrapper);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
-        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
         List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
         assertNotEmpty(list);
@@ -81,7 +82,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         assertTrue(seenDatasets);
         assertTrue(seenDocuments);
     }
-    
+
     @Test
     @Rollback
     public void testFacetByEnumWithLimit() throws SolrServerException, IOException, ParseException {
@@ -89,10 +90,10 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         FacetWrapper facetWrapper = new FacetWrapper();
         ArrayList<ResourceType> lst = new ArrayList<>();
         lst.add(ResourceType.DOCUMENT);
-        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class,lst);
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, lst);
         result.setFacetWrapper(facetWrapper);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
-        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
         List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
         assertNotEmpty(list);
@@ -119,7 +120,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         facetWrapper.facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
         result.setFacetWrapper(facetWrapper);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
-        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
         List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS);
         assertNotEmpty(list);
         boolean seenPuebloan = false;
@@ -134,7 +135,7 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         }
         assertTrue(seenHistoric);
         assertTrue(seenPuebloan);
-        
+
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
     }
 
