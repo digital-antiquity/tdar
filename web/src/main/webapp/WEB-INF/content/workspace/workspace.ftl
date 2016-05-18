@@ -18,7 +18,6 @@
 
     <div class="row">
         <div class="span8">
-            <#if (workflows?size > 0) >
             <#list workflows>
             <h3>Saved Integrations</h3>
             <table class="table table-bordered table-hover">
