@@ -24,13 +24,11 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     // Intialize the Geodata based on the JSON
     function _initializeGeoData(mapdata) {
-        for (var i = 0; i < mapdata.length; i++) {
-            if (mapdata[i].resourceType == undefined) {
-                var val = mapdata[i].count;
-                geodata[mapdata[i].code] = val;
-                if (val > max) {
-                    max = val;
-                }
+        var data = mapdata["geographic.ISO,resourceType"];
+        for (var i = 0; i < data.length; i++) {
+            geodata[data[i].value] = data[i].count;
+            if (data[i].value.length < 4) {
+                max += parseInt(data[i].count);
             }
         }
     }
@@ -248,32 +246,37 @@ TDAR.worldmap = (function(console, $, ctx) {
         var mapdata = _getMapdata($mapDiv.parent());
         var filter = [];
         var data = [];
-        var typeLabelMap = {};
+//        var typeLabelMap = {};
+        var data = mapdata["geographic.ISO,resourceType"];
         // ID == Country/state id (USA / USAAZ)
         if (id != undefined) {
             // find the set of data associated with this id
-            filter = mapdata.filter(function(d) {
-                return d.code == id
+            filter = data.filter(function(d) {
+                return d.value == id
             });
 
             filter.forEach(function(row) {
-                if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-                    data.push([ row.label, row.count ]);
-                    typeLabelMap[row.label] = row.resourceType;
-                }
+                row.pivot.forEach(function(pvalue) {
+                    if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
+                        data.push([ pvalue.value, pvalue.count ]);
+                    }
+                });
             });
         } else {
             // initialization for "worldwide"
             if (allData.length == 0) {
                 var tmp = {};
-                mapdata.forEach(function(row) {
-                    if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-                        typeLabelMap[row.label] = row.resourceType;
-                        var t = 0;
-                        if (parseInt(tmp[row.label])) {
-                            t = parseInt(tmp[row.label]);
-                        }
-                        tmp[row.label] = t + row.count;
+                data.forEach(function(row) {
+                    if (row.value.length == 3) {
+                        row.pivot.forEach(function(pvalue) {
+                            if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
+                                var t = 0;
+                                if (parseInt(tmp[pvalue.value])) {
+                                    t = parseInt(tmp[pvalue.value]);
+                                }
+                                tmp[pvalue.value] = t + parseInt(pvalue.count);
+                            }
+                        });
                     }
                 });
 
@@ -293,7 +296,7 @@ TDAR.worldmap = (function(console, $, ctx) {
                 columns : data,
                 type : 'pie',
                 onclick : function(d, element) {
-                    var uri = "/search/results?resourceTypes=" + typeLabelMap[d.id];
+                    var uri = "/search/results?resourceTypes=" + d.id;
                     if (clickId != undefined && name != undefined) {
                         uri += "&geographicKeywords=" + name;
                         if (clickId.length == 3) {

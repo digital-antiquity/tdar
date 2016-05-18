@@ -1,9 +1,12 @@
 package org.tdar.struts.action;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.lucene.queryparser.classic.ParseException;
+import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -21,6 +24,10 @@ import org.tdar.core.service.HomepageService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.RssService;
 import org.tdar.filestore.FilestoreObjectType;
+import org.tdar.search.bean.AdvancedSearchQueryObject;
+import org.tdar.search.query.SearchResult;
+import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
 
@@ -57,7 +64,9 @@ public class IndexAction extends AbstractAuthenticatableAction {
     
     @Autowired
     private HomepageService homepageService;
-
+    @Autowired
+    private ResourceSearchService resourceSearchService;
+    
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
@@ -76,9 +85,20 @@ public class IndexAction extends AbstractAuthenticatableAction {
     @SkipValidation
     @HttpOnlyIfUnauthenticated
     public String about() {
-
+        AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
+        SearchResult<Resource> result = new SearchResult<>();
+        result.setFacetWrapper(new FacetWrapper());
+        result.getFacetWrapper().setMapFacet(true);
+        result.setRecordsPerPage(0);
+        try {
+            resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), result, this);
+            setMapJson(result.getFacetWrapper().getFacetPivotJson());
+        } catch (SolrServerException | IOException | ParseException e1) {
+            setMapJson(homepageService.getMapJson());
+            getLogger().error("issue generating map json");
+        }
+        
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
-        setMapJson(homepageService.getMapJson());
         setHomepageResourceCountCache(homepageService.getResourceCountsJson());
         try {
             setFeaturedCollection(resourceCollectionService.getRandomFeaturedCollection());        
