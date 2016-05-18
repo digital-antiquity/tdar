@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Transient;
@@ -44,7 +45,8 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
     private Person person = new Person();
     private Institution institution = new Institution();
     private ResourceCreator resourceCreator = new ResourceCreator();
-
+    @SuppressWarnings("rawtypes")
+    private List<Creator> resolved;
     // Once we are able to resolve the resource creator type we will set that resourceCreator's role.
     // private ResourceCreatorRole personRole = ResourceCreatorRole.AUTHOR;
     // private ResourceCreatorRole institutionRole = ResourceCreatorRole.AUTHOR;
@@ -188,20 +190,20 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
 
     @Override
     public String toString() {
-    	String pstring = "null (-1)";
-    	if (person != null) {
-    		pstring = String.format("%s (%s)", person.getProperName(), person.getId());
-    	}
-    	String istring = "null (-1)";
-    	if (institution != null) {
-    		istring = String.format("%s (%s)", institution.getName(), institution.getId());
-    	}
-    	String rc = "null";
-    	if (resourceCreator != null) {
-    		rc = resourceCreator.toString();
-    	}
-        return String.format("[RCP %s  role:%s rc:%s  p:%s  i:%s]", 
-        		this.hashCode(), role, rc, pstring, istring);
+        String pstring = "null (-1)";
+        if (person != null) {
+            pstring = String.format("%s (%s)", person.getProperName(), person.getId());
+        }
+        String istring = "null (-1)";
+        if (institution != null) {
+            istring = String.format("%s (%s)", institution.getName(), institution.getId());
+        }
+        String rc = "null";
+        if (resourceCreator != null) {
+            rc = resourceCreator.toString();
+        }
+        return String.format("[RCP %s  role:%s rc:%s  p:%s  i:%s]",
+                this.hashCode(), role, rc, pstring, istring);
     }
 
     @Override
@@ -252,5 +254,15 @@ public class ResourceCreatorProxy implements Comparable<ResourceCreatorProxy> {
         }
 
         return false;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public List<Creator> getResolved() {
+        return resolved;
+    }
+
+    @SuppressWarnings("rawtypes")
+    public void setResolved(List<Creator> resolved) {
+        this.resolved = resolved;
     }
 }
