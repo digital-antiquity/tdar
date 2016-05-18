@@ -2,10 +2,10 @@ package org.tdar.search.query.facet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.util.StringUtils;
 import org.tdar.core.bean.resource.ResourceType;
@@ -36,9 +36,9 @@ public class FacetWrapper implements Serializable {
     }
 
     @SuppressWarnings("unchecked")
-    public Collection<String> getFacetFieldNames() {
+    public Set<String> getFacetFieldNames() {
         if (facetMap.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         return facetMap.keySet();
     };

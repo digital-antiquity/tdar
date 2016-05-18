@@ -101,7 +101,13 @@ public class SolrSearchObject<I extends Indexable> {
             FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
             FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
             if (wrap != null) {
-                for (String facet : wrap.getFacetFieldNames()) {
+                Set<String> facetFieldNames = new HashSet<>(wrap.getFacetFieldNames());
+                if (wrap.isMapFacet()) {
+                    this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+                    this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+                    facetFieldNames.add(QueryFieldNames.RESOURCE_TYPE);
+                }
+                for (String facet : facetFieldNames) {
                     if (StringUtils.isNotBlank(facet)) {
                         if (facetText.length() > 0) {
                             facetText.append(", ");
@@ -120,10 +126,6 @@ public class SolrSearchObject<I extends Indexable> {
                     facetText.append("}");
                 }
 
-                if (wrap.isMapFacet()) {
-                    this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-                    this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-                }
             }
         }
     }
@@ -205,7 +207,7 @@ public class SolrSearchObject<I extends Indexable> {
         
         String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
         solrQuery.setParam("_logtag", tag);
-        if (facetText.length() > 0) {
+        if (facetText.length() > 0 || !CollectionUtils.isEmpty(pivotFields)) {
             solrQuery.setParam("json.facet", facetText.toString());
             solrQuery.setParam("facet", "on");
             // solrQuery.setParam("facet.method", "enum");

@@ -37,9 +37,24 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         logger.debug("{}", result.getFacetWrapper().getFacetResults());
         assertTrue("contains pivot (basic)", facetWrapper.getFacetPivotJson().contains("geographic.ISO,resourceType"));
         assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains("field=geographic.ISO,value=USA,count=6,pivot=[{field=resourceType,value=PROJECT,count=5}, {field=resourceType,value=DOCUMENT,count=1}]}"));
-        
     }
+  
     
+    @Test
+    @Rollback
+    public void testHomepagePivotStats() throws SolrServerException, IOException, ParseException {
+        SearchResult<Resource> result = new SearchResult<>();
+        FacetWrapper facetWrapper = new FacetWrapper();
+        facetWrapper.setMapFacet(true);
+//        facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        result.setFacetWrapper(facetWrapper);
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
+        resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        logger.debug("{}", result.getFacetWrapper().getFacetResults());
+        assertTrue("contains pivot (basic)", facetWrapper.getFacetPivotJson().contains("geographic.ISO,resourceType"));
+        assertTrue("contains pivot (USA)", facetWrapper.getFacetPivotJson().contains("field=geographic.ISO,value=USA,count=6,pivot=[{field=resourceType,value=PROJECT,count=5}, {field=resourceType,value=DOCUMENT,count=1}]}"));
+    }
+ 
     
     @Test
     @Rollback
