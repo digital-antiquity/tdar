@@ -121,7 +121,7 @@ public class SearchDao<I extends Indexable> {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
             String writeValueAsString = mapper.writeValueAsString(map);
-            logger.debug(writeValueAsString);
+            logger.trace(writeValueAsString);
             wrapper.setFacetPivotJson(writeValueAsString);
         } catch (JsonProcessingException e) {
             logger.error("{}",e,e);
