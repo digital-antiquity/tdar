@@ -49,6 +49,7 @@ public class ExcelConverter extends DatasetConverter.Base {
     private Workbook workbook;
     // private DataFormatter formatter = new HSSFDataFormatter();
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private boolean xssfEnabled = false;
 
     @Override
     public String getDatabasePrefix() {
@@ -78,8 +79,9 @@ public class ExcelConverter extends DatasetConverter.Base {
         }
         try {
 
-            if (StringUtils.endsWithIgnoreCase(excelFile.getName(), "xlsx")) {
+            if (xssfEnabled && StringUtils.endsWithIgnoreCase(excelFile.getName(), "xlsx")) {
                 workbook = new SXSSFWorkbook(new XSSFWorkbook(excelFile), 100);
+                logger.debug("# sheets {}", workbook.getNumberOfSheets());
             } else {
                 // helper.processSheet(null, 25);
                 workbook = WorkbookFactory.create(new FileInputStream(excelFile));
