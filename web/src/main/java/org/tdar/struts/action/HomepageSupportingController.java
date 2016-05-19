@@ -1,12 +1,9 @@
 package org.tdar.struts.action;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.lucene.queryparser.classic.ParseException;
-import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -21,15 +18,12 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.service.HomepageService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.search.bean.AdvancedSearchQueryObject;
-import org.tdar.search.query.SearchResult;
-import org.tdar.search.query.facet.FacetWrapper;
-import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.HomepageDetails;
+import org.tdar.web.service.HomepageService;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
@@ -62,9 +56,6 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
 
     private String sitemapFile = "sitemap_index.xml";
     @Autowired
-    private ResourceSearchService resourceSearchService;
-
-    @Autowired
     private ResourceCollectionService resourceCollectionService;
 
     @Autowired
@@ -73,6 +64,8 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     private List<SyndEntry> rssEntries;
 
     private String mapJson;
+
+    private String resourceTypeLocaleJson;
 
     @HttpOnlyIfUnauthenticated
     @Actions({
@@ -129,18 +122,10 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     @SkipValidation
     public String worldMap() {
-        AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
-        SearchResult<Resource> result = new SearchResult<>();
-        result.setFacetWrapper(new FacetWrapper());
-        result.getFacetWrapper().setMapFacet(true);
-        result.setRecordsPerPage(0);
-        try {
-            resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, getAuthenticatedUser(), result, this);
-            setMapJson(result.getFacetWrapper().getFacetPivotJson());
-        } catch (SolrServerException | IOException | ParseException e1) {
-//            setMapJson(homepageService.getMapJson());
-            getLogger().error("issue generating map json");
-        }
+        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
+        setResourceTypeLocaleJson(worldmap.getLocalesJson());
+        setMapJson(worldmap.getMapJson());
 
         return SUCCESS;
     }
@@ -164,7 +149,9 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
             params = { "contentType", "text/html" }) })
     @SkipValidation
     public String resourceStats() {
-        setHomepageResourceCountCache(homepageService.getResourceCountsJson());
+        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
+        setResourceTypeLocaleJson(worldmap.getLocalesJson());
         return SUCCESS;
     }
 
@@ -238,5 +225,13 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
 
     public boolean isHomepage() {
         return false;
+    }
+
+    public String getResourceTypeLocaleJson() {
+        return resourceTypeLocaleJson;
+    }
+
+    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
+        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
     }
 }
