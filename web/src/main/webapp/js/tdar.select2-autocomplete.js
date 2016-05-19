@@ -2,13 +2,18 @@ TDAR.select2autocomplete = (function ($, ctx) {
     "use strict";
 
 
-    var _setDefaults = function () {
-        $.fn.select2.defaults.set("tokenSeparators", [";", "|"]);
-        $.fn.select2.defaults.set("minimumInputLength", 3);
-        $.fn.select2.defaults.set("ajax--delay", 250);
-        $.fn.select2.defaults.set("ajax--cache", true);
-        $.fn.select2.defaults.set("ajax--dataType", "jsonp");
-    }
+    var _getDefaults = function () {
+        return  {
+            tokenSeparators: [";", "|"],
+            minimumInputLength: 3,
+            ajax: {
+                delay: 250,
+                cache: true,
+                dataType: "jsonp"
+            }
+        };
+    };
+
 
     /**
      * if there's a data attribute to associate with valdiateMethod, then see if it's a function. if it's not a function, then call validate() plain.
@@ -16,8 +21,7 @@ TDAR.select2autocomplete = (function ($, ctx) {
     var _init = function () {
 
         /** NOTE!!! select2 can set defaults via the above arrays or via data-attributes we're using them to set the URL and a few other common settings **/
-        _setDefaults();
-        $(".keyword-autocomplete").select2({
+        $(".keyword-autocomplete").select2($.extend(true, _getDefaults(), {
             tags: true,
             templateResult: _highlightKeyword,
             templateSelection: _highlightKeyword,
@@ -53,9 +57,9 @@ TDAR.select2autocomplete = (function ($, ctx) {
                 },
             },
             // hide input too short
-        });
+        }));
 
-        $(".resource-autocomplete").select2({
+        $(".resource-autocomplete").select2($.extend(true, _getDefaults(), {
             templateResult: _highlightResource,
             templateSelection: _highlightResource,
             ajax: {
@@ -89,7 +93,7 @@ TDAR.select2autocomplete = (function ($, ctx) {
                 },
             },
 
-        });
+        }));
 
 
         $(".losenge").click(function (e) {
@@ -125,8 +129,8 @@ TDAR.select2autocomplete = (function ($, ctx) {
     }
 
     return {
-        "init": _init,
-    }
+        "init": _init
+    };
 })(jQuery, window);
 
 //FIXME: inline onload binding complicates testing and makes it harder to discover the total number of initializers (and their sequence)
