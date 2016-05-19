@@ -26,10 +26,12 @@ TDAR.worldmap = (function(console, $, ctx) {
     // Intialize the Geodata based on the JSON
     function _initializeGeoData(mapdata) {
         var data = mapdata["geographic.ISO,resourceType"];
-        for (var i = 0; i < data.length; i++) {
-            geodata[data[i].value] = data[i].count;
-            if (data[i].value.length < 4) {
-                max += parseInt(data[i].count);
+        if (data && data.length > 0) {
+            for (var i = 0; i < data.length; i++) {
+                geodata[data[i].value] = data[i].count;
+                if (data[i].value.length < 4) {
+                    max += parseInt(data[i].count);
+                }
             }
         }
     }
@@ -279,33 +281,34 @@ TDAR.worldmap = (function(console, $, ctx) {
             // initialization for "worldwide"
             if (allData.length == 0) {
                 var tmp = {};
-                data.forEach(function(row) {
-                    // for every state
-                    if (row.value.length == 3) {
-                        row.pivot.forEach(function(pvalue) {
-                            // for every pivot value
-                            if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
-                                var t = 0;
-                                if (parseInt(tmp[pvalue.value])) {
-                                    t = parseInt(tmp[pvalue.value]);
+                if (data && data.length > 0) {
+                    data.forEach(function(row) {
+                        // for every state
+                        if (row.value.length == 3) {
+                            row.pivot.forEach(function(pvalue) {
+                                // for every pivot value
+                                if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
+                                    var t = 0;
+                                    if (parseInt(tmp[pvalue.value])) {
+                                        t = parseInt(tmp[pvalue.value]);
+                                    }
+                                    tmp[pvalue.value] = t + parseInt(pvalue.count);
                                 }
-                                tmp[pvalue.value] = t + parseInt(pvalue.count);
-                            }
-                        });
-                    }
-                });
-
-                for ( var type in tmp) {
-                    if (tmp.hasOwnProperty(type)) {
-                        var val = tmp[type];
-                        var label = locales[type + _PLURAL];
-                        if (val == 1) {
-                            label = locales[type];
+                            });
                         }
-                        allData.push([ label, val ]);
+                    });
+    
+                    for ( var type in tmp) {
+                        if (tmp.hasOwnProperty(type)) {
+                            var val = tmp[type];
+                            var label = locales[type + _PLURAL];
+                            if (val == 1) {
+                                label = locales[type];
+                            }
+                            allData.push([ label, val ]);
+                        }
                     }
                 }
-                ;
             }
             data = allData;
         }
