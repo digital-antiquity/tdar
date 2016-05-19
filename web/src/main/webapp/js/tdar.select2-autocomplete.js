@@ -72,7 +72,9 @@ TDAR.select2autocomplete = (function ($, ctx) {
 
                 processResults: function (data, params) {
                     console.log(data);
-                    if (data && data.resources && data.resources.length > 0) {
+                    if (data && data.resources) {
+                        data.resources.unshift({id:"-1",title:"No parent project"});
+                        data.resources.unshift({id:"", title:"" });
                         for (var item in data.resources) {
                             data.resources[item].text = data.resources[item].title;
                         }
@@ -118,8 +120,13 @@ TDAR.select2autocomplete = (function ($, ctx) {
         if (resource.text) {
             resource.title = resource.text;
         }
-        return $("<span data-id='" + resource.id + "' style='z-index:1000' >" + resource.title + "(" + resource.id + ")</span>");
+        var $elem = $('<span data-id="' + resource.id + '" style="z-index:1000;"><span>' + resource.title + ' </span></span>')
+        if(resource.id > 0) {
+            $elem.append('<span> (tDAR ID #' + resource.id + ')');
+        }
+        return $elem;
     };
+
     var _highlightKeyword = function (keyword) {
         var label = keyword.text;
         if (!keyword.id || !keyword.text) {

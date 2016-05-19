@@ -276,12 +276,23 @@
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
             <#if select2Enabled>
-	            <select name="projectId" class="resource-autocomplete" tabindex="-1" aria-hidden="true" style="width:100%"
-	            	data-ajax--url="/lookup/resource?term=Ith&resourceTypes=PROJECT&useSubmitterContext=true" data-minimum-input-length="0">
-	            	<#if resource.project?has_content>
-	            		<option value="${resource.project.id?c}">${resource.project.title}</option>
-	            	</#if>
-	            </select>
+                <div class="control-group">
+                    <label class="control-label">Project</label>
+                    <div class="controls">
+                        <select name="projectId" class="resource-autocomplete" tabindex="-1" aria-hidden="true" style="width:100%"
+                                data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
+                                data-allow-clear="true"
+                                data-placeholder="Search for a project..."
+                                data-minimum-input-length="0">
+                            <option value=""></option>
+                            <option value="-1">No parent project</option>
+                            <#if resource.project?has_content && resource.project.id &gt; -1>
+                                <option value="${resource.project.id?c}">${resource.project.title}</option>
+                            </#if>
+                        </select>
+                    </div>
+                </div>
+
             <#else>
                 <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
                 labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'
