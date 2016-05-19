@@ -447,12 +447,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     }
 
     @Transactional(readOnly = true)
-    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, Class<?> filter, String callback)
+    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, boolean webObfuscation, Class<?> filter, String callback)
             throws IOException {
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
         for (Object obj : rslts) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode,true));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode, webObfuscation));
             }
         }
         Map<String,Object> result = new HashMap<>();

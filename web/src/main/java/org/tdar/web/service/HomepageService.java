@@ -97,12 +97,14 @@ public class HomepageService {
             details.setMapJson(result.getFacetWrapper().getFacetPivotJson());
 
             List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
-            for (Facet f : list) {
-                Map<String, Object> rtype = new HashMap<>();
-                rtype.put("count", f.getCount());
-                rtype.put("key", f.getRaw());
-                rtype.put("label", locales.get(f.getRaw() + _PLURAL));
-                rtypes.add(rtype);
+            if (list != null) {
+                for (Facet f : list) {
+                    Map<String, Object> rtype = new HashMap<>();
+                    rtype.put("count", f.getCount());
+                    rtype.put("key", f.getRaw());
+                    rtype.put("label", locales.get(f.getRaw() + _PLURAL));
+                    rtypes.add(rtype);
+                }
             }
         } catch (SolrServerException | IOException | ParseException e1) {
             logger.error("issue generating map json", e1);

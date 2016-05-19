@@ -60,7 +60,8 @@
                     <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
                 <#-- printing item tag start / -->
                     <${itemTag_} class="listItem ${itemClass!''}"
-                    <#if orientation == 'MAP'>
+                    <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
+                    
                         <#local box = resource.firstActiveLatitudeLongitudeBox />
                         data-scale="${box.scale?c}"
 	                    <#if resource.latLongVisible >
@@ -130,7 +131,7 @@
 		</#if>
 		<div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
 		<#if id?has_content && namespace=="/collection">
-		data-infinite-url="/search/json?recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
+		data-infinite-url="/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
 		</#if>
 		data-fit-bounds="true"
         <#assign map_ = "" />
