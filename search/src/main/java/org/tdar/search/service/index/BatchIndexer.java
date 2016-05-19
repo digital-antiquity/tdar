@@ -55,7 +55,8 @@ public class BatchIndexer implements Serializable {
      */
     @SuppressWarnings("deprecation")
     @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> sources, Person person) {
+    public void indexAll(AsyncUpdateReceiver updateReceiver_, List<LookupSource> sources, Person person) {
+        AsyncUpdateReceiver updateReceiver = updateReceiver_;
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
         }

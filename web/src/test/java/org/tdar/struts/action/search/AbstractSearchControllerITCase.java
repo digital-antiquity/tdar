@@ -160,10 +160,12 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         return list;
     }
 
+    @SuppressWarnings("rawtypes")
     public static void doSearch(AbstractLookupController controller, LookupSource resource) {
         doSearch(controller, resource, false);
     }
 
+    @SuppressWarnings("rawtypes")
     public static void doSearch(AbstractLookupController controller, LookupSource resource, Boolean b) {
         Exception e = null;
         String msg = null;

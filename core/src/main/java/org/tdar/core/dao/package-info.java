@@ -476,10 +476,10 @@
 
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGO_EXIPRED,
-                query = "from InformationResourceFile where date_made_public <= :dateStart and restriction like 'EMBARGO%'"),
+                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic <= :dateStart and irf_.restriction like 'EMBARGO%' )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FILE_EMBARGOING_TOMORROW,
-                query = "from InformationResourceFile where date_made_public <= :dateStart  and date_made_public >=:dateEnd and restriction like 'EMBARGO%'"),
+                query = "from InformationResourceFile irf where irf.id in (select irf_.id from InformationResource r join r.informationResourceFiles as irf_ where r.status in ('ACTIVE','DRAFT') and irf_.dateMadePublic <= :dateStart and irf_.dateMadePublic >=:dateEnd  and irf_.restriction like 'EMBARGO%' )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INTEGRATION_DATA_TABLE,
                 query = "select distinct dt, ds.title " + org.tdar.core.dao.TdarNamedQueries.INTEGRATION_DATA_TABLE_SUFFIX
@@ -508,7 +508,10 @@
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.WORKFLOWS_BY_USER,
-                query = "from DataIntegrationWorkflow where submitter.id=:userId"),
+                query = "from DataIntegrationWorkflow w where submitter.id=:userId or w.hidden is false or exists (select authmem.id from w.authorizedMembers as authmem where authmem.id = :userId)"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN,
+                query = "from DataIntegrationWorkflow"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.AGREEMENT_COUNTS,
                 query = "select count(*), (select count(*) from TdarUser where contributor is true) from TdarUser user where status='ACTIVE'"),

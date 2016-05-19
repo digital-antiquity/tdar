@@ -58,7 +58,6 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     @Test
     public void testGetProjects() {
         Assert.assertNotNull(sessionFactory);
-        @SuppressWarnings({ "unchecked", "rawtypes" })
         Query query = getCurrentSession().createQuery("from Resource where id = :id");
         query.setLong("id", 1L);
         List<Resource> list = query.list();
@@ -178,6 +177,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @SuppressWarnings({ "unchecked", "unused" })
     @Test
     public void testQuerySparseEmptyProjects() {
         String hql1 = "select new Project(project.id, project.title) from Project project where (submitter.id=:submitter) and id not in (select resource.project.id from InformationResource resource where resource.status='ACTIVE' and resource.project.id is not null) and (status='ACTIVE' or status='DRAFT')";

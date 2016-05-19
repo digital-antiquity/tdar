@@ -274,6 +274,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     // FIXME: change to use + encorpearate sitemap (TDAR-4703)
+    @SuppressWarnings("unused")
     private void initFilestorePath(String location) {
         if (personalFilestorePathInitialized) {
             return;
@@ -959,5 +960,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public boolean isSelect2Enabled() {
         return assistant.getBooleanProperty("select2.enabled", false);
+    }
+
+    public boolean shouldShowExactLocationToThoseWhoCanEdit() {
+        return assistant.getBooleanProperty("show.exact.location.to.editable", false);
     }
 }

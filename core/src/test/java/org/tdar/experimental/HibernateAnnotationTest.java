@@ -22,6 +22,7 @@ public class HibernateAnnotationTest {
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
 
     private class ClassToAnnotationMap extends HashMap<Class<?>, Annotation> {
+        private static final long serialVersionUID = -5631158018129441508L;
     };
 
     @Test

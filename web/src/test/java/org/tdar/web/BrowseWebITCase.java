@@ -117,6 +117,7 @@ public class BrowseWebITCase extends AbstractAnonymousWebTestCase {
         assertEquals(HttpStatus.SC_INTERNAL_SERVER_ERROR, statusCode);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testViewDeletedResource() {
         int deletedOntologyId = 3479; // FIXME: make this test less brittle by creating a deleted resource.

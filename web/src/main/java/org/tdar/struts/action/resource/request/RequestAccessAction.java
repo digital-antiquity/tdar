@@ -48,6 +48,7 @@ import com.opensymphony.xwork2.Preparable;
 public class RequestAccessAction extends AbstractAuthenticatableAction
         implements Preparable, PersistableLoadingAction<Resource> {
 
+    @SuppressWarnings("unused")
     @Autowired
     private transient RecaptchaService recaptchaService;
     private AntiSpamHelper h = new AntiSpamHelper();

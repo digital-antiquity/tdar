@@ -24,7 +24,6 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.payment.PaymentMethod;
-import org.tdar.core.dao.external.payment.nelnet.PaymentTransactionProcessor;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
@@ -57,8 +56,6 @@ public class InvoiceController extends AbstractCartController {
     private PricingType pricingType = null;
     private Long accountId;
 
-    @Autowired
-    private transient PaymentTransactionProcessor paymentTransactionProcessor;
 
     @Autowired
     private transient InvoiceService invoiceService;
@@ -266,7 +263,7 @@ public class InvoiceController extends AbstractCartController {
         if (isBillingManager() && CollectionUtils.isNotEmpty(extraBillingItems)) {
             return;
         }
-        if (isPostRequest() && mb == 0L && files == 0L) {
+        if (mb == 0L && files == 0L) {
             if (StringUtils.isBlank(getCode())) {
                 addActionError(getText("cartController.specify_mb_or_files"));
             }

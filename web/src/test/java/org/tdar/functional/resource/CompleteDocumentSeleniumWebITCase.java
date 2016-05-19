@@ -239,6 +239,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         assertTrue("page text should contain: " + UNIVERSITY_OF_TEST, StringUtils.containsIgnoreCase(text, UNIVERSITY_OF_TEST));
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCreateDocumentEditSavehasResource() {
         gotoPage("/document/add");

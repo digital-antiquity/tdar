@@ -5,7 +5,7 @@ import org.junit.Test;
 public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCase {
 
     private static final String UNIVERSITY_OF_TEST = "University of TEST";
-    private static final String ENTITY_VIEW = "/browse/creators/";
+    public static final String ENTITY_VIEW = "/browse/creators/";
     private static final String ENTITY_PERSON_EDIT = "/entity/person/%s/edit";
     private static final String ENTITY_USER_EDIT = "/entity/user/%s/edit";
     private static final String ENTITY_INSTITUTION_EDIT = "/entity/institution/%s/edit";

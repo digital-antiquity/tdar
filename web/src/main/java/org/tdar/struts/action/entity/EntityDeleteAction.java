@@ -18,7 +18,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/entity")
-public class EntityDeleteAction extends AbstractDeleteAction<Creator> implements Preparable {
+public class EntityDeleteAction extends AbstractDeleteAction<Creator<?>> implements Preparable {
 
     private static final long serialVersionUID = -6793209214179204672L;
     @Autowired
@@ -27,12 +27,12 @@ public class EntityDeleteAction extends AbstractDeleteAction<Creator> implements
     private transient AuthorizationService authorizationService;
 
     @Override
-    protected Creator loadPersistable() {
+    protected Creator<?> loadPersistable() {
         return entityService.find(getId());
     }
 
     @Override
-    protected void delete(Creator collection) {
+    protected void delete(Creator<?> collection) {
         entityService.deleteForController(collection, getDeletionReason(), getAuthenticatedUser());
     }
 

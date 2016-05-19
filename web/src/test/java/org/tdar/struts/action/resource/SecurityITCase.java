@@ -32,6 +32,7 @@ import com.opensymphony.xwork2.Action;
  * @author Adam Brin
  * 
  */
+@SuppressWarnings("deprecation")
 public class SecurityITCase extends AbstractResourceControllerITCase {
 
     @Autowired

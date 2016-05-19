@@ -73,6 +73,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertEquals(33, StringUtils.countMatches(getPageCode(), "Filename \\\"Color Plate"));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUpload() throws MalformedURLException {
@@ -105,6 +106,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTrue(getPageCode().contains(TestConstants.TEST_DOCUMENT_NAME));
     }
 
+    @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithConfidentialSelfSimple() throws MalformedURLException {
@@ -117,7 +119,6 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             selectAnyAccount();
             // setInput("invoice.paymentMethod", "CREDIT_CARD");
             accountId = testAccountPollingResponse("11000", TransactionStatus.TRANSACTION_SUCCESSFUL).get(ACCOUNT_ID);
-            ;
         }
 
         Map<String, String> extra = new HashMap<String, String>();
@@ -137,6 +138,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
 	}
 
+    @SuppressWarnings("unused")
     @Test
     // @Ignore("dup")
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
@@ -150,6 +152,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         testBulkUploadController("dataset_manifest.xlsx", Arrays.asList(file), extra, true);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
     public void testValidBulkUploadWithConfidentialSelf() throws MalformedURLException {

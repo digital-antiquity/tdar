@@ -45,7 +45,8 @@ public class FixmeTestCase {
 	Map<String, List<String>> matchingMap = new HashMap<>();
 
 	// was LocalizationTestCase
-	@Test
+	@SuppressWarnings("unused")
+    @Test
 	public void testFreemarkerLocaleEntriesHaveValues() throws IOException, ClassNotFoundException {
 		Pattern pattern = Pattern.compile(("^.+(\\.?localText|s\\.text)(\\s*(name=)?)\"([^\"]+)\".+"));
 		Iterator<File> iterateFiles = FileUtils.iterateFiles(new File("src/main"), new String[] { "ftl", "dec" }, true);

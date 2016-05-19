@@ -21,7 +21,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     private static final float TITLE_SORT_BOOST = 4f;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final float TITLE_BOOST = 6f;
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
+    public static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
     private final String title;
 

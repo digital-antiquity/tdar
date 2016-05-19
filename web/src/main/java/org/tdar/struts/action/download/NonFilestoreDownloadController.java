@@ -12,14 +12,11 @@ import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.download.DownloadService;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.TdarActionException;
@@ -59,11 +56,6 @@ public class NonFilestoreDownloadController extends TdarActionSupport implements
     private InputStream stream;
     private Long id;
     private VersionType version;
-
-    @Autowired
-    private transient DownloadService downloadService;
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Action("/creator/{versionString}/{id}/logo")
     public String creator() throws IOException {

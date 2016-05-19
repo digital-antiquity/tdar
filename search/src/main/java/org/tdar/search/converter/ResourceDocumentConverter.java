@@ -47,6 +47,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
+    @SuppressWarnings("unused")
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
 
     public static SolrInputDocument convert(Resource resource) {
@@ -185,12 +186,12 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
 
             if (sup instanceof Ontology) {
-                Ontology ont = (Ontology) sup;
+//                Ontology ont = (Ontology) sup;
                 // ontology nodes?
             }
 
             if (sup instanceof CodingSheet) {
-                CodingSheet sheet = (CodingSheet) sup;
+//                CodingSheet sheet = (CodingSheet) sup;
                 // coding rules?
             }
         }
@@ -239,9 +240,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.RESOURCE_COLLECTION_NAME, rightsExtractor.getCollectionNames());
     }
 
+    @SuppressWarnings("unchecked")
     private static void indexCreatorInformation(SolrInputDocument doc, Resource resource) {
         List<String> crids = new ArrayList<>();
-        Map<ResourceCreatorRole, HashSet<Creator<? extends Creator>>> map = new HashMap<>();
+        Map<ResourceCreatorRole, HashSet<Creator<? extends Creator<?>>>> map = new HashMap<>();
         for (ResourceCreatorRole r : ResourceCreatorRole.values()) {
             map.put(r, new HashSet<>());
         }
@@ -264,14 +266,14 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
 
         for (ResourceCreatorRole role_ : map.keySet()) {
-            Set<Creator<? extends Creator>> creators = map.get(role_);
+            Set<Creator<? extends Creator<?>>> creators = map.get(role_);
             creators.removeAll(Collections.singleton(null));
             if (CollectionUtils.isEmpty(creators)) {
                 continue;
             }
             roles.add(role_.name());
             Set<Long> typeIds = new HashSet<>();
-            for (Creator creator : creators) {
+            for (Creator<?> creator : creators) {
                 if (creator == null) {
                     continue;
                 }

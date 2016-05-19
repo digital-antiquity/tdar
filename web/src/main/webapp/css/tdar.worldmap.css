@@ -72,3 +72,8 @@ div.mapcontainer img {
 .mapcontainer #data {
     font-weight:bold;
 }
+
+#mapGraphZoomOut,#mapGraphZoomOut * {
+     cursor: hand;
+     cursor: pointer;
+}

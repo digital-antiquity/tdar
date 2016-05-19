@@ -103,6 +103,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         genericService.save(wlc);
     }
 
+    @SuppressWarnings("unused")
     private WhiteLabelCollection createAndSaveWhiteLabelCollection() {
         WhiteLabelCollection rc = new WhiteLabelCollection();
         rc.setName("default white label collection");

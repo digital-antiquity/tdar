@@ -43,8 +43,6 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
     public static final String DOI_KEY = "DOI";
 
     @Autowired
-    private transient UrlService urlService;
-    @Autowired
     private transient DatasetDao datasetDao;
     @Autowired
     private transient EmailService emailService;
@@ -99,7 +97,7 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
         logger.trace("processing: {}", resource);
         if (resource.getStatus() == Status.ACTIVE) {
             if (StringUtils.isEmpty(resource.getExternalId())) {
-                Map<String, String> createdIds = provider.create(resource, urlService.absoluteUrl(resource));
+                Map<String, String> createdIds = provider.create(resource, UrlService.absoluteUrl(resource));
                 String externalId = createdIds.get(DOI_KEY);
                 if (StringUtils.isNotBlank(externalId)) {
                     resource.setExternalId(externalId);
@@ -109,13 +107,13 @@ public class DoiProcess extends AbstractScheduledBatchProcess<Resource> {
                     batchResults.get(ERRORS).add(new Pair<>(resource.getId(), resource.getExternalId()));
                 }
             } else {
-                provider.modify(resource, urlService.absoluteUrl(resource), resource.getExternalId());
+                provider.modify(resource, UrlService.absoluteUrl(resource), resource.getExternalId());
                 batchResults.get(UPDATED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             }
             logger.debug("setting external id {} for {} ", resource.getExternalId(), resource.getId());
         } else {
             if (StringUtils.isNotEmpty(resource.getExternalId())) {
-                provider.delete(resource, urlService.absoluteUrl(resource), resource.getExternalId());
+                provider.delete(resource, UrlService.absoluteUrl(resource), resource.getExternalId());
                 batchResults.get(DELETED).add(new Pair<>(resource.getId(), resource.getExternalId()));
             }
         }

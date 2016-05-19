@@ -128,9 +128,6 @@ public class ApiAuthenticationController extends AbstractAuthenticatableAction i
         ErrorTransferObject errors = getUserLogin().validate(authorizationService, recaptchaService, getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
-        if (!isPostRequest()) {
-            getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
-        }
         if (errors.isNotEmpty()) {
             getLogger().debug("errors: {}", errors);
         }

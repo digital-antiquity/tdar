@@ -111,6 +111,9 @@
 					<!-- Welcome to Maven World, where 'no' means 'yes' and 'yes' means 
 						'no'! More info: https://jira.codehaus.org/browse/MCOMPILER-205 http://jira.codehaus.org/browse/MCOMPILER-209 -->
 					<useIncrementalCompilation>false</useIncrementalCompilation>
+					 <compilerArgs>
+                <arg>-Xlint:all</arg>
+                </compilerArgs>
 				</configuration>
 			</plugin>
 

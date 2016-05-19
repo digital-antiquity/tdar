@@ -10,8 +10,6 @@ import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.struts.action.browse.BrowseKeywordController;
 
-import junit.framework.Assert;
-
 public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
 
     @Test
@@ -35,15 +33,16 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
             logger.error("ex", e);
         }
         if (expectNotFound) {
-            Assert.assertTrue(e != null);
-            Assert.assertTrue(e instanceof TdarActionException);
-            Assert.assertTrue(e.getMessage().equals("not found"));
+            assertTrue(e != null);
+            assertTrue(e instanceof TdarActionException);
+            assertTrue(e.getMessage().equals("not found"));
         } else {
             assertEquals(null, e);
         }
         return bkc;
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testKeywordActionInvalidId() {
         BrowseKeywordController bkc = setupController(1000L, KeywordType.CULTURE_KEYWORD, null, true);
@@ -55,8 +54,8 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         InvestigationType it = setupTestInvestigationType();
         String slug = "test-type";
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
-        // String result = bkc.view();
-        // assertEquals(TdarActionSupport.NOT_FOUND, result);
+         String result = bkc.view();
+         assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test
@@ -69,8 +68,8 @@ public class KeywordActionITCase extends AbstractDataIntegrationTestCase {
         it.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(it);
         BrowseKeywordController bkc = setupController(it.getId(), KeywordType.INVESTIGATION_TYPE, slug, true);
-        // String result = bkc.view();
-        // assertEquals(TdarActionSupport.NOT_FOUND, result);
+         String result = bkc.view();
+         assertEquals(TdarActionSupport.NOT_FOUND, result);
     }
 
     @Test

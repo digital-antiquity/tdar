@@ -42,7 +42,6 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceFileService;
@@ -91,9 +90,6 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private transient InformationResourceFileService informationResourceFileService;
 
     private boolean hasDeletedFiles = false;
-
-    @Autowired
-    private SerializationService serializationService;
 
     @Autowired
     private BookmarkedResourceService bookmarkedResourceService;

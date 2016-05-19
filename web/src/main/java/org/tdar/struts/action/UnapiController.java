@@ -45,9 +45,6 @@ public class UnapiController extends TdarActionSupport {
     @Autowired
     private transient ResourceService resourceService;
 
-    @Autowired
-    private transient UrlService urlService;
-
     private String formatUrl;
     private Long id;
     private String format;

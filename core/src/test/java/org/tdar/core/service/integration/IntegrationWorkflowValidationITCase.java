@@ -20,8 +20,6 @@ import org.tdar.utils.MessageHelper;
 
 public class IntegrationWorkflowValidationITCase extends AbstractIntegrationTestCase {
 
-    @Autowired
-    private IntegrationWorkflowService service;
 
     @Autowired
     private GenericDao genericDao;

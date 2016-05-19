@@ -43,7 +43,8 @@ public class RangeQueryPart<C> extends FieldQueryPart<Range<C>> {
         }
     }
 
-    public RangeQueryPart(String field, String descriptionLabel, @SuppressWarnings("unchecked") Range<C>... values) {
+    @SafeVarargs
+    public RangeQueryPart(String field, String descriptionLabel, Range<C>... values) {
         super(field, values);
         this.descriptionLabel = descriptionLabel;
     }

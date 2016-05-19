@@ -60,14 +60,23 @@
                     <@_printListHeaders sortfield first resource headerTag orientation listTag_ />
                 <#-- printing item tag start / -->
                     <${itemTag_} class="listItem ${itemClass!''}"
-                    <#if orientation == 'MAP' && resource.latLongVisible >
+                    <#if orientation == 'MAP' && resource.firstActiveLatitudeLongitudeBox?has_content>
+                    
                         <#local box = resource.firstActiveLatitudeLongitudeBox />
-                        data-lat="${box.centerLatitude?c}"
-                        data-long="${box.centerLongitude?c}"
-                        data-lat-length="${box.absoluteLatLength?c}"
-                        data-long-length="${box.absoluteLongLength?c}"
-                        data-scale="${resource.firstActiveLatitudeLongitudeBox.scale?c}"
-                    </#if>
+                        data-scale="${box.scale?c}"
+	                    <#if resource.latLongVisible >
+	                        data-lat="${box.obfuscatedCenterLatitude?c}"
+	                        data-long="${box.obfuscatedCenterLongitude?c}"
+	                        data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
+	                        data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
+	                    </#if>
+	                    <#if editor >
+	                        data-real-lat="${box.centerLatitude?c}"
+	                        data-real-long="${box.centerLongitude?c}"
+	                        data-real-lat-length="${box.absoluteLatLength?c}"
+	                        data-real-long-length="${box.absoluteLongLength?c}"
+	                    </#if>
+	                    </#if>
                     id="resource-${resource.id?c}">
 
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->
@@ -119,8 +128,12 @@
 
         <#if ((rightSidebar!false) || (leftSidebar!false)) >
 			<#local spans = spans - 3 />
-		</#if>	
+		</#if>
 		<div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+		<#if id?has_content && namespace=="/collection">
+		data-infinite-url="/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
+		</#if>
+		data-fit-bounds="true"
         <#assign map_ = "" />
         <#if map?has_content>
             <#assign map_ = map />

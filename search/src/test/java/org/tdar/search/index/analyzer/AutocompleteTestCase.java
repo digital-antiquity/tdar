@@ -39,5 +39,6 @@ public class AutocompleteTestCase {
         while (tokenFilter.incrementToken()) {
             logger.debug("{}", tokenFilter.getAttribute(CharTermAttribute.class));
         }
+        ka.close();
     }
 }

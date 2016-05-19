@@ -197,6 +197,7 @@ public class PersonITCase extends AbstractIntegrationTestCase {
         assertNotNull("should have a date created", person.getDateCreated());
     }
 
+    @SuppressWarnings("unused")
     @Test(expected = org.hibernate.NonUniqueObjectException.class)
     @Rollback
     public void testPersonBecomesWritable() {

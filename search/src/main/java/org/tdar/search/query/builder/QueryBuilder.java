@@ -22,7 +22,9 @@ import com.opensymphony.xwork2.TextProvider;
  * 
  */
 public abstract class QueryBuilder extends QueryPartGroup {
+
     // private static final String _AUTO = "_auto";
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private Operator operator = Operator.AND;
     private String type;

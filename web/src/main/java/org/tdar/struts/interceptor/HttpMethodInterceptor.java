@@ -20,7 +20,6 @@ public class HttpMethodInterceptor implements Interceptor {
 
     @Override
     public String intercept(ActionInvocation invocation) throws Exception {
-        HttpServletRequest request = ServletActionContext.getRequest();
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, PostOnly.class)) {
             return doPostIntercept(invocation);
         } else {

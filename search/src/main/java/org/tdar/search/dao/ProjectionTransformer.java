@@ -34,7 +34,8 @@ public class ProjectionTransformer<I extends Indexable> {
 	@Autowired
 	private DatasetDao datasetDao;
 	
-	public I transformResource(SearchResultHandler<I> resultHandler, SolrDocument doc, I r, ObfuscationService obfuscationService) {
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+    public I transformResource(SearchResultHandler<I> resultHandler, SolrDocument doc, I r, ObfuscationService obfuscationService) {
 		Resource r_ = (Resource) r;
 		// set basic fields
 		r_.setStatus(Status.valueOf((String) doc.getFieldValue(QueryFieldNames.STATUS)));

@@ -61,6 +61,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     public static final String DRAFT = "draft";
     protected long epochTimeUpdated = 0L;
 
+    @SuppressWarnings("unused")
     @Autowired
     private transient RecaptchaService recaptchaService;
 
@@ -161,47 +162,40 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     @PostOnly
     @HttpsOnly
     public String save() throws TdarActionException {
-        // checkSession();
-        // genericService.setCacheModeForCurrentSession(CacheMode.REFRESH);
         String actionReturnStatus = SUCCESS;
         logAction("SAVING");
         long currentTimeMillis = System.currentTimeMillis();
         boolean isNew = false;
         try {
-            if (isPostRequest()) {
-                if (isNullOrNew()) {
-                    isNew = true;
-                }
-                preSaveCallback();
-                determineAndUpdateStatus();
+            if (isNullOrNew()) {
+                isNew = true;
+            }
+            preSaveCallback();
+            determineAndUpdateStatus();
 
-                if (persistable instanceof Updatable) {
-                    ((Updatable) persistable).markUpdated(getAuthenticatedUser());
-                }
+            if (persistable instanceof Updatable) {
+                ((Updatable) persistable).markUpdated(getAuthenticatedUser());
+            }
 
-                actionReturnStatus = save(persistable);
+            actionReturnStatus = save(persistable);
 
-                try {
-                    postSaveCallback(actionReturnStatus);
-                } catch (TdarRecoverableRuntimeException tex) {
-                    addActionErrorWithException(tex.getMessage(), tex);
-                }
+            try {
+                postSaveCallback(actionReturnStatus);
+            } catch (TdarRecoverableRuntimeException tex) {
+                addActionErrorWithException(tex.getMessage(), tex);
+            }
 
-                // should there not be "one" save at all? I think this should be here
-                if (shouldSaveResource()) {
-                    getGenericService().saveOrUpdate(persistable);
-                }
+            // should there not be "one" save at all? I think this should be here
+            if (shouldSaveResource()) {
+                getGenericService().saveOrUpdate(persistable);
+            }
 
-//                SessionProxy.getInstance().registerSessionClose(getGenericService().getCurrentSessionHashCode());
-                indexPersistable();
-                // who cares what the save implementation says. if there's errors return INPUT
-                if (!getActionErrors().isEmpty()) {
-                    getLogger().debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
-                    // FIXME: if INPUT -- should I just "return"?
-                    actionReturnStatus = INPUT;
-                }
-            } else {
-                throw new TdarActionException(StatusCode.BAD_REQUEST, getText("abstractPersistableController.bad_request"));
+            indexPersistable();
+            // who cares what the save implementation says. if there's errors return INPUT
+            if (!getActionErrors().isEmpty()) {
+                getLogger().debug("Action errors found {}; Replacing return status of {} with {}", getActionErrors(), actionReturnStatus, INPUT);
+                // FIXME: if INPUT -- should I just "return"?
+                actionReturnStatus = INPUT;
             }
         } catch (TdarActionException exception) {
             throw exception;

@@ -23,13 +23,14 @@ public class ContentQueryPart extends FieldQueryPart<String> {
     }
 
     @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public String generateQueryString() {
         QueryPartGroup subq = new QueryPartGroup(Operator.AND);
         FieldQueryPart<String> content = new FieldQueryPart<String>(QueryFieldNames.CONTENT, getFieldValues());
         content.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         subq.append(content);
         subq.append(new FieldQueryPart<FileAccessRestriction>(QueryFieldNames.RESOURCE_ACCESS_TYPE, FileAccessRestriction.PUBLIC));
-        CrossCoreFieldJoinQueryPart join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_ID, subq, LookupSource.CONTENTS.getCoreName());
+        CrossCoreFieldJoinQueryPart<?> join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_ID, subq, LookupSource.CONTENTS.getCoreName());
         return join.generateQueryString();
     }
 }

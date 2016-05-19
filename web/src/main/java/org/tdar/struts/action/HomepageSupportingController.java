@@ -18,11 +18,12 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.service.HomepageService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.HomepageDetails;
+import org.tdar.web.service.HomepageService;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
@@ -54,7 +55,6 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     private ResourceCollection featuredCollection;
 
     private String sitemapFile = "sitemap_index.xml";
-
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
@@ -64,6 +64,8 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     private List<SyndEntry> rssEntries;
 
     private String mapJson;
+
+    private String resourceTypeLocaleJson;
 
     @HttpOnlyIfUnauthenticated
     @Actions({
@@ -120,7 +122,11 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     @SkipValidation
     public String worldMap() {
-        mapJson = homepageService.getMapJson();
+        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
+        setResourceTypeLocaleJson(worldmap.getLocalesJson());
+        setMapJson(worldmap.getMapJson());
+
         return SUCCESS;
     }
 
@@ -143,7 +149,9 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
             params = { "contentType", "text/html" }) })
     @SkipValidation
     public String resourceStats() {
-        setHomepageResourceCountCache(homepageService.getResourceCountsJson());
+        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
+        setResourceTypeLocaleJson(worldmap.getLocalesJson());
         return SUCCESS;
     }
 
@@ -217,5 +225,13 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
 
     public boolean isHomepage() {
         return false;
+    }
+
+    public String getResourceTypeLocaleJson() {
+        return resourceTypeLocaleJson;
+    }
+
+    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
+        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
     }
 }

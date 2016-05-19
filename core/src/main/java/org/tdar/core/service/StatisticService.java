@@ -20,7 +20,6 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.dao.AggregateStatisticsDao;
-import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.StatisticDao;
 import org.tdar.core.dao.StatsResultObject;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -42,9 +41,6 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
 
     @Autowired
     private ResourceCollectionDao resourceCollectionDao;
-
-    @Autowired
-    private BillingAccountDao accountDao;
 
     @Autowired
     private AggregateStatisticsDao aggregateStatisticsDao;

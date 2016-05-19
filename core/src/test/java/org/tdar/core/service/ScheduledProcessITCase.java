@@ -37,7 +37,6 @@ import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
-import org.tdar.core.service.processes.upgradeTasks.LegacyObfuscateLatLongProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 
 /**
@@ -59,9 +58,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private SalesforceSyncProcess salesforce;
-
-    @Autowired
-    private LegacyObfuscateLatLongProcess llbprocess;
 
     private class MockScheduledProcess extends AbstractScheduledBatchProcess<Dataset> {
 
@@ -247,15 +243,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         assertEquals("id queue should be empty", 0, mock.getBatchIdQueue().size());
         assertSame("number of runs should be 1 now", 1, numberOfRuns);
 
-    }
-
-    @Test
-    @Rollback()
-    public void testLLB() {
-        while (!llbprocess.isCompleted()) {
-            llbprocess.execute();
-            logger.debug("::{} -- {}", llbprocess.getLastId(), llbprocess.isCompleted());
-        }
     }
 
     

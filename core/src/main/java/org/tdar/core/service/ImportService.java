@@ -168,7 +168,7 @@ public class ImportService {
     public <R extends InformationResource> R processFileProxies(R incoming_, Collection<FileProxy> proxies, TdarUser authorizedUser) throws APIException,
             IOException {
         for (InformationResourceFile file : incoming_.getInformationResourceFiles()) {
-            InformationResourceFile file2 = genericService.markWritableOnExistingSession(file);
+            genericService.markWritableOnExistingSession(file);
         }
         processFiles(authorizedUser, proxies, incoming_);
         incoming_.markUpdated(authorizedUser);
@@ -217,7 +217,8 @@ public class ImportService {
      * @return
      * @throws APIException
      */
-    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created) throws APIException {
+    private <R extends Resource> boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, R incomingResource, boolean created_) throws APIException {
+        boolean created = created_;
         if (PersistableUtils.isNotTransient(incomingResource)) {
             @SuppressWarnings("unchecked")
             R existing = (R) genericService.find(incomingResource.getClass(), incomingResource.getId());
@@ -285,7 +286,7 @@ public class ImportService {
                     }
                     Persistable result = processIncoming(p, incomingResource, authorizedUser);
                     if (result instanceof Sequenceable) {
-                        ((Sequenceable) result).setSequenceNumber(count);
+                        ((Sequenceable<?>) result).setSequenceNumber(count);
                     }
                     count++;
                     toAdd.add(result);
@@ -523,7 +524,7 @@ public class ImportService {
         if (PersistableUtils.isNotNullOrTransient(property)) {
             Class<? extends Persistable> cls = property.getClass();
             Long id = property.getId();
-            property = null;
+//            property = null;
             P toReturn = (P) findById(cls, id);
             if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
                 ResourceCollection collection = (ResourceCollection) toReturn;
@@ -570,7 +571,7 @@ public class ImportService {
         }
 
         if (property instanceof Creator) {
-            Creator creator = (Creator) property;
+            Creator<?> creator = (Creator<?>) property;
             toReturn = (P) entityService.findOrSaveCreator(creator);
             logger.debug("findOrSaveCreator:{}", creator);
         }
@@ -595,7 +596,7 @@ public class ImportService {
             if (!((Validatable) property).isValidForController()) {
                 if (property instanceof Project) {
                     toReturn = (P) Project.NULL;
-                } else if ((property instanceof Creator) && ((Creator) property).hasNoPersistableValues()) {
+                } else if ((property instanceof Creator) && ((Creator<?>) property).hasNoPersistableValues()) {
                     toReturn = null;
                 } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property).isInternal()) {
                     toReturn = property;

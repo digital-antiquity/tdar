@@ -76,7 +76,8 @@ public class SheetEvaluator {
         evaluate(sheet, DEFAULT_ROWS_TO_EVALUATE);
     }
 
-    public void evaluate(Sheet sheet, int endRow) {
+    public void evaluate(Sheet sheet, int endRow_) {
+        int endRow = endRow_;
         logger.trace("evaluating sheet {}", sheet.getSheetName());
         if (headerRowIndex != -1) {
             reset();

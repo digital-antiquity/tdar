@@ -13,7 +13,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.CollectionSearchService;
@@ -33,9 +32,6 @@ import org.tdar.utils.json.JsonLookupFilter;
 public class CollectionLookupAction extends AbstractLookupController<ResourceCollection> {
 
     private static final long serialVersionUID = -1785355137646480452L;
-
-    @Autowired
-    private transient AuthorizationService authorizationService;
 
     @Autowired
     private transient CollectionSearchService collectionSearchService;

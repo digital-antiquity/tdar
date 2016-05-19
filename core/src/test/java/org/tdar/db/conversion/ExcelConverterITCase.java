@@ -36,6 +36,7 @@ import org.tdar.junit.RunWithTdarConfiguration;
 @RunWith(MultipleTdarConfigurationRunner.class)
 public class ExcelConverterITCase extends AbstractIntegrationTestCase {
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDARDATA_SMALL_BATCH })
@@ -46,7 +47,7 @@ public class ExcelConverterITCase extends AbstractIntegrationTestCase {
         Set<DataTable> dataTables = converter.getDataTables();
         assertEquals(1, dataTables.size());
         DataTable table = dataTables.iterator().next();
-        List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
+//        List<DataTableColumn> dataTableColumns = table.getDataTableColumns();
 
         Integer total = tdarDataImportDatabase.selectAllFromTable(table, new ResultSetExtractor<Integer>() {
 

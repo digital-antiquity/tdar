@@ -283,9 +283,9 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
             return;
         }
 
-        if (process instanceof AbstractPersistableScheduledProcess) {
+        if (process instanceof AbstractPersistableScheduledProcess<?>) {
             logger.info("beginning {} startId: {}", process.getDisplayName(),
-                    ((AbstractPersistableScheduledProcess) process).getLastId());
+                    ((AbstractPersistableScheduledProcess<?>) process).getLastId());
         } else {
             logger.info("beginning {}", process.getDisplayName());
 

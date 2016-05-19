@@ -285,8 +285,8 @@ public class BulkManifestProxy implements Serializable {
      * @return
      */
     private ResourceCreatorProxy buildResourceCreator(boolean resourceCreatorAssignableFrom, boolean creatorAssignableFrom, Resource resourceToProcess,
-            ResourceCreatorProxy creatorProxy, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
-
+            ResourceCreatorProxy creatorProxy_, Class<?> mappedClass, CellMetadata cellMetadata, String value) {
+        ResourceCreatorProxy creatorProxy = creatorProxy_;
         logger.trace(String.format("%s - %s - %s", mappedClass, cellMetadata.getPropertyName(), value));
 
         if (creatorProxy.getSeenImportFieldNames().contains(cellMetadata.getPropertyName())) {

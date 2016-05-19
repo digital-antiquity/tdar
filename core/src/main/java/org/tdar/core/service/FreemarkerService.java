@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import org.tdar.core.dao.FileSystemResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 
 import freemarker.template.Configuration;
@@ -27,9 +26,6 @@ public class FreemarkerService {
     @Autowired
     private Configuration freemarkerConfiguration;
 
-    @Autowired
-    private FileSystemResourceDao fileDao;
-
     /**
      * Given a template name and an object model, render the FTL to the string.
      * 
@@ -38,7 +34,7 @@ public class FreemarkerService {
      * @return
      * @throws IOException
      */
-    public String render(String templateName, Map dataModel) throws IOException {
+    public String render(String templateName, Map<?,?> dataModel) throws IOException {
         try {
             return FreeMarkerTemplateUtils.processTemplateIntoString(freemarkerConfiguration.getTemplate(templateName), dataModel);
         } catch (Exception e) {

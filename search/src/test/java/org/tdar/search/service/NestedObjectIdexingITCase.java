@@ -39,6 +39,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     public void reindex() {
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     @Ignore("not really a test, but trying to use to bind save of collections...")
@@ -62,6 +63,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
 
     }
     
+    @SuppressWarnings({ "deprecation", "unchecked" })
     @Test
     @Ignore
     @Rollback(true)

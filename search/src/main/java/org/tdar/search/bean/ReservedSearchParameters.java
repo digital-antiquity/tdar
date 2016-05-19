@@ -36,7 +36,8 @@ public class ReservedSearchParameters extends SearchParameters {
     }
 
     @Override
-    public QueryPartGroup toQueryPartGroup(TextProvider support) {
+    public QueryPartGroup toQueryPartGroup(TextProvider support_) {
+        TextProvider support = support_;
         if (support == null) {
             support = MessageHelper.getInstance();
         }

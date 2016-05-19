@@ -347,6 +347,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         return true;
     }
 
+    @SuppressWarnings("incomplete-switch")
     @Override
     public boolean isValid() {
         List<Object> keys = new ArrayList<>();

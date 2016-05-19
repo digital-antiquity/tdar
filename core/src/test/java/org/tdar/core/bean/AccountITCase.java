@@ -38,6 +38,7 @@ import org.tdar.core.bean.resource.file.FileStatus;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.dao.AccountAdditionStatus;
+import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.ResourceEvaluator;
 import org.tdar.core.dao.external.payment.PaymentMethod;
 import org.tdar.core.dao.resource.DatasetDao;
@@ -49,6 +50,9 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     BillingAccountService accountService;
+
+    @Autowired
+    BillingAccountDao accountDao;
 
     @Autowired
     DatasetDao datasetDao;
@@ -162,7 +166,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         logger.info("{}", re);
         List<Resource> resources = new ArrayList<Resource>();
         resources.add(resource);
-        accountService.updateQuotas(account, re, resources);
+        accountDao.updateQuotas(account, re, resources);
         account.getResources().add(resource);
         assertTrue(account.getResources().contains(resource));
         assertEquals(spaceUsedInBytes.longValue() + re.getSpaceUsedInBytes(), account.getSpaceUsedInBytes().longValue());
@@ -290,6 +294,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testIncrementalChangeEvaluation() throws InstantiationException, IllegalAccessException, IOException {

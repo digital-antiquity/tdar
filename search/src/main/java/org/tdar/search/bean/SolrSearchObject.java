@@ -75,7 +75,6 @@ public class SolrSearchObject<I extends Indexable> {
     private Map<String, List<Long>> searchByMap = new HashMap<>();
     private StringBuilder facetText = new StringBuilder();
     private ProjectionModel projection;
-    private boolean geoSearch = false;
 
     public SolrSearchObject(QueryBuilder queryBuilder, LuceneSearchResultHandler<I> handler) {
         this.builder = queryBuilder;
@@ -83,10 +82,7 @@ public class SolrSearchObject<I extends Indexable> {
         this.setMaxResults(handler.getRecordsPerPage());
         this.setFirstResult(handler.getStartRecord());
         this.projection = handler.getProjectionModel();
-        if (geoSearch ) {
-            this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-            this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
-        }
+
         List<String> sort = new ArrayList<>();
         if (handler.getSortField() != null) {
             addSortField(handler.getSortField(), sort);
@@ -105,7 +101,13 @@ public class SolrSearchObject<I extends Indexable> {
             FacetedResultHandler<I> facetedResultHandler = (FacetedResultHandler<I>) handler;
             FacetWrapper wrap = facetedResultHandler.getFacetWrapper();
             if (wrap != null) {
-                for (String facet : wrap.getFacetFieldNames()) {
+                Set<String> facetFieldNames = new HashSet<>(wrap.getFacetFieldNames());
+                if (wrap.isMapFacet()) {
+                    this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+                    this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+                    facetFieldNames.add(QueryFieldNames.RESOURCE_TYPE);
+                }
+                for (String facet : facetFieldNames) {
                     if (StringUtils.isNotBlank(facet)) {
                         if (facetText.length() > 0) {
                             facetText.append(", ");
@@ -123,6 +125,7 @@ public class SolrSearchObject<I extends Indexable> {
                     facetText.insert(0, "{");
                     facetText.append("}");
                 }
+
             }
         }
     }
@@ -204,7 +207,7 @@ public class SolrSearchObject<I extends Indexable> {
         
         String tag = String.format("p:%s u:%s", MDC.get(LoggingConstants.TAG_PATH), MDC.get(LoggingConstants.TAG_AGENT));
         solrQuery.setParam("_logtag", tag);
-        if (facetText.length() > 0) {
+        if (facetText.length() > 0 || !CollectionUtils.isEmpty(pivotFields)) {
             solrQuery.setParam("json.facet", facetText.toString());
             solrQuery.setParam("facet", "on");
             // solrQuery.setParam("facet.method", "enum");

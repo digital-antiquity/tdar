@@ -18,7 +18,6 @@ import org.tdar.core.service.external.session.SessionDataAware;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
-import org.tdar.struts.interceptor.annotation.ManuallyProcessEvents;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -68,7 +67,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
 
         HttpServletResponse response = ServletActionContext.getResponse();
         SessionType mark = SessionType.READ_ONLY;
-        registerHibernateEventListener(invocation);
         if (ReflectionService.methodOrActionContainsAnnotation(invocation, WriteableSession.class)) {
             genericService.markWritable();
             mark = SessionType.WRITEABLE;
@@ -98,17 +96,6 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
                 logger.warn("ClientAbortException:{}", e, e);
             }
             throw e;
-        }
-    }
-
-    private void registerHibernateEventListener(ActionInvocation invocation) {
-        boolean managed = true;
-        try {
-            if (ReflectionService.methodOrActionContainsAnnotation(invocation, ManuallyProcessEvents.class)) {
-                managed = false;
-            }
-        } catch (SecurityException | NoSuchMethodException e) {
-            logger.error("issue registering manually processed events", e);
         }
     }
 

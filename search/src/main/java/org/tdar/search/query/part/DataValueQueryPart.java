@@ -32,6 +32,7 @@ public class DataValueQueryPart extends FieldQueryPart<String> {
         FieldQueryPart<String> content2 = new FieldQueryPart<String>(QueryFieldNames.VALUE_PHRASE, getFieldValues());
         content2.setPhraseFormatters(PhraseFormatter.ESCAPED_EMBEDDED);
         subq.append(content2);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         CrossCoreFieldJoinQueryPart join = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.ID, subq, LookupSource.DATA.getCoreName());
         return join.generateQueryString();
     }

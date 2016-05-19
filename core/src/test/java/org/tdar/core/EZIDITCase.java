@@ -103,7 +103,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
         try {
             Resource r = resourceService.find(TestConstants.DOCUMENT_INHERITING_CULTURE_ID);
             ezidDao.connect();
-            String absoluteUrl = urlService.absoluteUrl(r);
+            String absoluteUrl = UrlService.absoluteUrl(r);
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
             assertEquals(2, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();
@@ -144,7 +144,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
             Resource r = genericService.findRandom(Image.class, 1).get(0);
             r.setStatus(Status.ACTIVE);
             ezidDao.connect();
-            String absoluteUrl = urlService.absoluteUrl(r);
+            String absoluteUrl = UrlService.absoluteUrl(r);
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
             assertEquals(2, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();
@@ -173,7 +173,7 @@ public class EZIDITCase extends AbstractIntegrationTestCase {
             r.setStatus(Status.ACTIVE);
             genericService.saveOrUpdate(r);
             ezidDao.connect();
-            String absoluteUrl = urlService.absoluteUrl(r);
+            String absoluteUrl = UrlService.absoluteUrl(r);
             Map<String, String> createdIDs = ezidDao.create(r, absoluteUrl);
             assertEquals(2, createdIDs.size());
             String doi = createdIDs.get("DOI").trim();

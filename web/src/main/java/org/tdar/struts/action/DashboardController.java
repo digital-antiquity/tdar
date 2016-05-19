@@ -88,7 +88,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 	@Autowired
 	private transient BillingAccountService accountService;
 	@Autowired
-	private transient SearchService searchService;
+	private transient SearchService<?> searchService;
 	@Autowired
 	private transient EntityService entityService;
 	@Autowired

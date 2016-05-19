@@ -31,6 +31,7 @@ import com.opensymphony.xwork2.TextProvider;
 @Transactional
 public class KeywordSearchService<I extends Keyword> extends AbstractSearchService {
 
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

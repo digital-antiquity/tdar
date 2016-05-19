@@ -50,7 +50,7 @@ public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<
     private QueryPartGroup generateGroupForCreator(Creator creator) {
         QueryPartGroup parent = new QueryPartGroup(Operator.OR);
         // FIND ME ALL Resources that are related to this creator, but are not the submitter.
-        parent.append(new FieldQueryPart(QueryFieldNames.RESOURCE_OWNER,creator.getId()));
+        parent.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_OWNER,creator.getId()));
         List<String> terms = new ArrayList<String>();
         logger.debug("roles:{}", roles);
         logger.debug("type:{}", creator.getCreatorType());

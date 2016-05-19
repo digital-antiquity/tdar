@@ -42,6 +42,7 @@ public class LuceneExcelExportControllerITCase extends AbstractSearchControllerI
 
     private TdarUser currentUser = null;
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testExcelExport() throws InstantiationException, IllegalAccessException, ParseException, FileNotFoundException, IOException,

@@ -23,8 +23,6 @@ import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.filestore.WorkflowContext;
 import org.tdar.filestore.tasks.ConvertDatasetTask;
 
-import net.fortuna.ical4j.model.property.Geo;
-
 public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
 
     public String[] getDataImportDatabaseTables() {

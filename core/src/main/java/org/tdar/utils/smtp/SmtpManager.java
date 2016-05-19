@@ -287,6 +287,7 @@ public class SmtpManager extends AbstractManager {
         private final String password;
         private final boolean isDebug;
         private final int numElements;
+        @SuppressWarnings("unused")
         private List<String> ignoreExceptionClasses;
 
         public FactoryData(final String to, final String cc, final String bcc, final String from, final String replyTo,

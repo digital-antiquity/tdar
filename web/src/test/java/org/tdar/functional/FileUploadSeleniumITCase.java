@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-@SuppressWarnings("unused")
 public class FileUploadSeleniumITCase extends AbstractBasicSeleniumWebITCase {
 
     private Logger logger = LoggerFactory.getLogger(getClass());

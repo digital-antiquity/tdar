@@ -85,7 +85,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             ScrollableResults activeCreators = genericService.findAllActiveScrollable(Creator.class);
             int totalCreator = 0;
             while (activeCreators.next()) {
-                Creator creator = (Creator) activeCreators.get(0);
+                Creator<?> creator = (Creator<?>) activeCreators.get(0);
                 if (!creator.isBrowsePageVisible()) {
                     continue;
                 }

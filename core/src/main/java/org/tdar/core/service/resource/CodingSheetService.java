@@ -201,7 +201,8 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
      * these nodes and relationships when re-parsing or modifying a @link CodingSheet because the CodingRules may have changed
      */
     @Transactional
-    public void reconcileOntologyReferencesOnRulesAndDataTableColumns(CodingSheet codingSheet, Ontology ontology) {
+    public void reconcileOntologyReferencesOnRulesAndDataTableColumns(CodingSheet codingSheet, Ontology ontology_) {
+        Ontology ontology = ontology_;
         if ((ontology == null) && (codingSheet.getDefaultOntology() == null)) {
             return;
         }

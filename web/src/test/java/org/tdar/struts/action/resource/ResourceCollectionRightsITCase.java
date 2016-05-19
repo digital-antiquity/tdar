@@ -272,6 +272,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
                 authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
     }
 
+    @SuppressWarnings("unused")
     private Long setupResource(TdarUser testPerson, List<AuthorizedUser> users) throws Exception {
         String name = "test collection";
         String description = "test description";
@@ -456,6 +457,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertWeFailedToSave(cc);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     @Rollback
     public void testRightsEscalationUserUpsParent() throws Exception {
@@ -501,6 +503,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     }
 
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     @Ignore("duplicated by web test; fails because of transactional issue that I belive is related to the test setup, web test passes")
@@ -559,6 +562,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         genericService.delete(genericService.find(ResourceCollection.class, rcid));
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testResourceCollectionRightsRevokingHier() throws TdarActionException {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
@@ -617,6 +621,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertTrue(seen);
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testResourceCollectionRightsRevokingHierOwnerFails() throws TdarActionException {
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");

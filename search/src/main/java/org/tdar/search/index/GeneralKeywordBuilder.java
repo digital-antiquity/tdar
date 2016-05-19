@@ -53,6 +53,7 @@ public class GeneralKeywordBuilder implements Serializable {
         return sb.toString();
     }
 
+    @SuppressWarnings("unchecked")
     public void indexResource(Resource r, StringBuilder sb) {
 //        logger.trace("get keyword contents: {}", r.getId());
         sb.append(r.getTitle()).append(" ").append(r.getDescription()).append(" ").append(" ");

@@ -35,8 +35,8 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
     ObfuscationService obfuscationService;
 
     private List<Long> authorizedUserIds = new ArrayList<Long>();
-    private Long collectionId = null;
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(false)
     public void testObfuscationService() {
@@ -47,7 +47,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
 
         // setup a fake user on the resource collection (just in case)
         ResourceCollection internalResourceCollection = project.getInternalResourceCollection();
-        collectionId = internalResourceCollection.getId();
+        Long collectionId = internalResourceCollection.getId();
 
         for (AuthorizedUser user : internalResourceCollection.getAuthorizedUsers()) {
             logger.debug("{}", user);

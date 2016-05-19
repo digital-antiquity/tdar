@@ -385,6 +385,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue(count > 0);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testResourceUpdated() throws java.text.ParseException, ParseException, SolrServerException, IOException {
@@ -402,7 +403,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         documentAfter.setDateUpdated(format.parse("2010-07-23"));
         genericService.saveOrUpdate(documentAfter);
         genericService.synchronize();
-        
+
         SearchParameters params = new SearchParameters();
         params.getUpdatedDates().add(new DateRange(format.parse("2010-03-05"), format.parse("2010-07-22")));
         SearchResult<Resource> result = doSearch(null,null, params, null, SortOption.DATE_UPDATED);
@@ -420,6 +421,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
      * @throws SolrServerException 
      * @throws ParseException 
      */
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testTimezoneEdgeCase() throws ParseException, SolrServerException, IOException {
@@ -433,7 +435,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         searchIndexService.index(doc);
 
         // converstion from MST to UTC date advances registration date by one day.
-        
         DateRange dateRange = new DateRange();
         dateRange.setStart(searchDateTime.toDate());
         dateRange.setEnd(searchDateTime.plusDays(1).toDate());
@@ -634,7 +635,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(doc2);
         evictCache();
         searchIndexService.index(doc1, doc2);
-        
+
         SearchParameters params = new SearchParameters();
         params.setAllFields(Arrays.asList(ISTANBUL, CONSTANTINOPLE));
         params.setOperator(Operator.OR);
@@ -677,6 +678,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertFalse(result.getResults().contains(after));
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testLegacyKeywordSearch() throws Exception {
@@ -693,7 +695,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         genericService.saveOrUpdate(doc);
         genericService.synchronize();
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
-        
+
         SearchParameters sp = new SearchParameters();
         sp.getUncontrolledCultureKeywords().add(cultureKeywords.iterator().next().getLabel());
         SearchResult<Resource> result = doSearch(null, null, sp, null);
@@ -725,6 +727,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue("search description should have gooder english than it currently does", occurances <= 2);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
@@ -776,7 +779,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // assertEquals(coll.getId(), sp.getCollections().get(1).getId());
     }
 
-    @SuppressWarnings("deprecation")
+    @SuppressWarnings({  "unused" })
     @Test
     @Rollback()
     // sparse collections like projects and collections should get partially hydrated when rendering the "refine" page
@@ -803,6 +806,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
 
 
+    @SuppressWarnings("unused")
     @Test
     // if user gets to the results page via clicking on persons name from resource view page, querystring only contains person.id field. So before
     // rendering the 'refine your search' version of the search form the controller must inflate query components.
@@ -819,6 +823,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertEquals("sparse project should have been inflated", persisted.getTitle(), sp.getProjects().get(0).getTitle());
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testRefineSearchWithSparseCollection() throws ParseException, SolrServerException, IOException {
@@ -842,7 +847,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         assertTrue("expecting resource's project in results", result.getResults().contains(informationResource.getProject()));
     }
 
-    private Resource constructActiveResourceWithCreator(Creator creator, ResourceCreatorRole role) {
+    private Resource constructActiveResourceWithCreator(Creator<?> creator, ResourceCreatorRole role) {
         try {
             Document doc = createAndSaveNewInformationResource(Document.class);
             ResourceCreator resourceCreator = new ResourceCreator(creator, role);
@@ -1424,7 +1429,6 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         return params;
     }
 
-    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testLookupResourceWithDateRegisteredRange() throws InstantiationException, IllegalAccessException, SolrServerException, IOException, ParseException {

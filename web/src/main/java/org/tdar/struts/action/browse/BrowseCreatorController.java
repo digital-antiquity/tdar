@@ -56,7 +56,6 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.FileSystemResourceService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
@@ -157,9 +156,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
 
     @Autowired
     private transient ResourceSearchService resourceSearchService;
-
-    @Autowired
-    private transient FileSystemResourceService fileSystemResourceService;
 
     @Autowired
     private transient ResourceService resourceService;
@@ -283,6 +279,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return SUCCESS;
     }
 
+    @SuppressWarnings("unchecked")
     private void prepareLuceneQuery() throws TdarActionException {
         setMode("browseCreators");
         setSortField(SortOption.RESOURCE_TYPE);

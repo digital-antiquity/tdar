@@ -330,8 +330,9 @@ public class ResourceService {
      * @param cls type of the collection elements.
      */
     public <H extends HasResource<R>, R extends Resource> void saveHasResources(R resource, boolean shouldSave, ErrorHandling validateMethod,
-            Collection<H> incoming_,
+            Collection<H> incoming__,
             Set<H> current, Class<H> cls) {
+        Collection<H> incoming_ = incoming__;
         if (CollectionUtils.isEmpty(incoming_) && CollectionUtils.isEmpty(current)) {
             // skip a complete no-op
             return;
@@ -832,7 +833,8 @@ public class ResourceService {
     }
 
     @Transactional(readOnly = false)
-    public void deleteForController(Resource resource, String reason, TdarUser authUser) {
+    public void deleteForController(Resource resource, String reason_, TdarUser authUser) {
+        String reason = reason_;
         if (StringUtils.isNotEmpty(reason)) {
             ResourceNote note = new ResourceNote(ResourceNoteType.ADMIN, reason);
             resource.getResourceNotes().add(note);

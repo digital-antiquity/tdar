@@ -11,15 +11,16 @@ import java.util.List;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
-import org.apache.http.conn.ssl.SSLContextBuilder;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.ssl.SSLContextBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,25 @@ public class SimpleHttpUtils {
      * @throws java.lang.RuntimeException
      */
     public static CloseableHttpClient createClient() {
-        CloseableHttpClient client = null;
         try {
-            client = createClientChecked();
+            return  SimpleHttpUtils.createClientChecked(null);
         } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException("failed to create http client", e);
         }
-        return client;
+    }
+
+    /**
+     * Return httpclient that trusts self-signed certs. Wraps any checked exceptions in a runtime exception.
+     *
+     * @return
+     * @throws java.lang.RuntimeException
+     */
+    public static CloseableHttpClient createClient(Integer timeoutInSeconds) {
+        try {
+            return  SimpleHttpUtils.createClientChecked(timeoutInSeconds);
+        } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+            throw new RuntimeException("failed to create http client", e);
+        }
     }
 
     /**
@@ -90,11 +103,16 @@ public class SimpleHttpUtils {
         return new BasicNameValuePair(key, val);
     }
 
-    private static CloseableHttpClient createClientChecked() throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    private static CloseableHttpClient createClientChecked(Integer timeoutInSeconds) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         SSLContextBuilder builder = new SSLContextBuilder();
         builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
-        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).build();
+        RequestConfig requestConfig= RequestConfig.DEFAULT;
+        if (timeoutInSeconds != null) {
+            int timeoutInMs = timeoutInSeconds * 1000;
+            requestConfig = RequestConfig.custom().setConnectTimeout(timeoutInMs).setConnectionRequestTimeout(timeoutInMs).setSocketTimeout(timeoutInMs).build();
+        }
+        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultRequestConfig(requestConfig).build();
         return httpclient;
     }
 

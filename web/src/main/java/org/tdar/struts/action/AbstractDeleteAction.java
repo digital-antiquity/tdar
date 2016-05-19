@@ -44,7 +44,6 @@ public abstract class AbstractDeleteAction<P extends Persistable & Addressable> 
     @Autowired
     private transient AuthorizationService authorizationService;
 
-    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     private DeleteIssue deleteIssue;

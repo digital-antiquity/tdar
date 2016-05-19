@@ -186,7 +186,6 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
     }
 
 
-    @SuppressWarnings("deprecation")
     protected Project sparseProject(Long id) {
         Project project = new Project(id, "sparse");
         return project;

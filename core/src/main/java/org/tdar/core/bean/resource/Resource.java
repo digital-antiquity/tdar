@@ -56,7 +56,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
@@ -400,9 +399,9 @@ public class Resource implements Persistable,
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 
     @OneToMany()
-    @JoinColumn(name = "resource_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT))
+    @JoinColumn(name = "resource_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT),nullable=true)
     // see https://hibernate.atlassian.net/browse/HHH-8805 can be removed with Hibernate 5,
-    @ForeignKey(name = "none")
+//    @ForeignKey(name = "none")
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<ResourceRevisionLog> resourceRevisionLog = new HashSet<ResourceRevisionLog>();

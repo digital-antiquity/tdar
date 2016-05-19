@@ -52,7 +52,9 @@ public class DatasetImportService {
      * either added or dropped respectively.
      */
     @Transactional(noRollbackFor = TdarRecoverableRuntimeException.class)
-    public void reconcileDataset(InformationResourceFile datasetFile, Dataset dataset, Dataset transientDatasetToPersist) {
+    public void reconcileDataset(InformationResourceFile datasetFile, Dataset dataset_, Dataset transientDatasetToPersist_) {
+        Dataset transientDatasetToPersist = transientDatasetToPersist_;
+        Dataset dataset = dataset_;
         // helper Map to manage existing tables - all remaining entries in this existingTablesMap will be purged at the end of this process
         // take the dataset off the session at the last moment, and then bring it back on
 

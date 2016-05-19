@@ -37,7 +37,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.service.download.DownloadService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.model.PostgresDatabase;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
@@ -69,8 +68,6 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
 
     @Autowired
     private DataTableService dataTableService;
-    @Autowired
-    private DownloadService downloadService;
 
     @Before
     public void setUp() {
@@ -201,6 +198,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
                     if (e instanceof TdarActionException) {
                         TdarActionException exception = (TdarActionException) e;
                         setIgnoreActionErrors(true);
+                        logger.error("{}",exception);
                         // assertNotSame("DatasetController." + method.getName() + "() should not return SUCCESS", com.opensymphony.xwork2.Action.SUCCESS,
                         // exception.getResultName());
                     }
@@ -217,6 +215,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
         dataset = setupAndLoadResource(ALEXANDRIA_EXCEL_FILENAME, Dataset.class, dataset.getId());
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(value = false)
     /**

@@ -21,7 +21,6 @@ import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.SensoryData;
@@ -54,6 +53,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         assertNotEmpty(findAllContributorIds);
     }
     
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback(true)
     public void testBasicStats() {
@@ -98,7 +98,7 @@ public class StatisticsITCase extends AbstractIntegrationTestCase {
         createAndSaveNewInformationResource(Ontology.class);
         createAndSaveNewInformationResource(Geospatial.class);
         createAndSaveNewInformationResource(SensoryData.class, createAndSaveNewPerson());
-        InformationResource generateInformationResourceWithFile = generateDocumentWithFileAndUseDefaultUser();
+        generateDocumentWithFileAndUseDefaultUser();
         processingTask.execute();
         genericService.synchronize();
 

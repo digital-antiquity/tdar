@@ -38,7 +38,8 @@ public class UserRegistration extends UserAuthData {
         return "registration.";
     }
 
-    public UserRegistration(AntiSpamHelper h) {
+    public UserRegistration(AntiSpamHelper h_) {
+        AntiSpamHelper h = h_;
         if (h == null) {
             h = new AntiSpamHelper();
         }

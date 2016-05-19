@@ -83,17 +83,17 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
 public class SerializationService implements TxMessageBus<LoggingObjectContainer>{
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
-	private static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
-    private static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
-    private static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
-    private static final String FOAF_XML = ".foaf.xml";
-    private static final String RDF_CREATOR_MEDIAN = "/rdf/creatorMedian";
-    private static final String RDF_CREATOR_MEAN = "/rdf/creatorMean";
-    private static final String RDF_COUNT = "/rdf/count";
-    private static final String INSTITUTION = "Institution";
-    private static final String XSD = ".xsd";
-    private static final String TDAR_SCHEMA = "tdar-schema";
-    private static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
+	public static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
+    public static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
+    public static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
+    public static final String FOAF_XML = ".foaf.xml";
+    public static final String RDF_CREATOR_MEDIAN = "/rdf/creatorMedian";
+    public static final String RDF_CREATOR_MEAN = "/rdf/creatorMean";
+    public static final String RDF_COUNT = "/rdf/count";
+    public static final String INSTITUTION = "Institution";
+    public static final String XSD = ".xsd";
+    public static final String TDAR_SCHEMA = "tdar-schema";
+    public static final String S_BROWSE_CREATORS_S_RDF = "%s/browse/creators/%s/rdf";
 
     private boolean useTransactionalEvents = true;
 
@@ -115,6 +115,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
     
+    @SuppressWarnings("unchecked")
     @EventListener
     public void handleFilestoreEvent(TdarEvent event) {
         if (!(event.getRecord() instanceof XmlLoggable)) {
@@ -136,7 +137,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         }
         
 
-		Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
+		@SuppressWarnings("rawtypes")
+        Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
 		if (holder.isPresent() ) {
 			holder.get().addMessage(container);
 		} else {
@@ -149,7 +151,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     
 
 	private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
-		File temp =  new File(CONFIG.getTempDirectory(),String.format("%s-%s.xml", recordId, System.nanoTime()));
+        File tempDirectory = CONFIG.getTempDirectory();
+        File dir = new File(tempDirectory,"index");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+		File temp =  new File(dir,String.format("%s-%s.xml", recordId, System.nanoTime()));
 		temp.deleteOnExit();
 		if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
 		    XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
@@ -256,7 +263,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws Exception
      */
     @Transactional(readOnly = true)
-    public Writer convertToXML(Object object, Writer writer) throws Exception {
+    public Writer convertToXML(Object object_, Writer writer) throws Exception {
+        Object object = object_;
         // get rid of proxies
         if (object == null) {
             return writer;
@@ -284,7 +292,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws IOException
      */
     @Transactional(readOnly = true)
-    public void convertToJson(Object object, Writer writer, Class<?> view, String callback) throws IOException {
+    public void convertToJson(Object object_, Writer writer, Class<?> view, String callback) throws IOException {
+        Object object = object_;
         ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
         ObjectWriter objectWriter = JacksonUtils.initializeObjectWriter(mapper, view);
         object = wrapObjectIfNeeded(object, callback);
@@ -364,7 +373,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws JAXBException
      */
     @Transactional(readOnly = true)
-    public Document convertToXML(Object object, Document document) throws JAXBException {
+    public Document convertToXML(Object object_, Document document) throws JAXBException {
+        Object object = object_;
         // http://marlonpatrick.info/blog/2012/07/12/jaxb-plus-hibernate-plus-javassist/
         if (HibernateProxy.class.isAssignableFrom(object.getClass())) {
             object = ((HibernateProxy) object).getHibernateLazyInitializer().getImplementation();
@@ -437,12 +447,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     }
 
     @Transactional(readOnly = true)
-    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, Class<?> filter, String callback)
+    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, boolean webObfuscation, Class<?> filter, String callback)
             throws IOException {
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
         for (Object obj : rslts) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode, webObfuscation));
             }
         }
         Map<String,Object> result = new HashMap<>();
