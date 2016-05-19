@@ -1,26 +1,51 @@
 /* global jasmine,  describe, it, expect, setFixtures, beforeEach, afterEach */
 describe("worldmap tests (tdar.worldmap.js)", function() {
-    var mapdata = [
-        {
-            code: "ABW",
-            resourceType: "DOCUMENT",
-            count: 1,
-            id: 2719
-        },
-        {
-            code: "AIA",
-            resourceType: "DOCUMENT",
-            count: 1,
-            id: 1105
-        },
-        {
-            code: "ANT",
-            resourceType: "DOCUMENT",
-            count: 1,
-            id: 2698
+    var mapdata = {
+            "geographic.ISO,resourceType": [
+                {
+                    "field": "geographic.ISO",
+                    "count": 1,
+                    "pivot": [
+                        {
+                            "field": "resourceType",
+                            "count": 1,
+                            "value": "DOCUMENT"
+                        }
+                    ],
+                    "value": "ABW"
+                },
+                {
+                    "field": "geographic.ISO",
+                    "count": 3,
+                    "pivot": [
+                        {
+                            "field": "resourceType",
+                            "count": 1,
+                            "value": "DOCUMENT"
+                        }
+                    ],
+                    "value": "AIA"
+                },
+                {
+                    "field": "geographic.ISO",
+                    "count": 1,
+                    "pivot": [
+                        {
+                            "field": "resourceType",
+                            "count": 1,
+                            "value": "DOCUMENT"
+                        }
+                    ],
+                    "value": "ANT"
+                }
+            ]
         }
-    ];
-
+    
+    var locales = {
+            "DOCUMENT": "Document",
+            "DOCUMENT_PLURAL" : "Documents"
+    }
+    
     beforeEach(function() {
         //jasmine.Ajax.install();
     });
@@ -40,8 +65,10 @@ describe("worldmap tests (tdar.worldmap.js)", function() {
         var $mapcontainer = $j('<div id="mapcontainer"></div>');
         var $script = $j('<script type="application/json" data-mapdata></script>');
         $script.html(JSON.stringify(mapdata));
+        var $script2 = $j('<script type="application/json" data-locales></script>');
+        $script2.html(JSON.stringify(locales));
         var $mapdiv = $j('<div id="worldmap"></div>');
-        $mapcontainer.append($script).append($mapdiv);
+        $mapcontainer.append($script).append($script2).append($mapdiv);
         setFixtures($mapcontainer);
     };
 

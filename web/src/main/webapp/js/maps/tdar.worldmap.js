@@ -1,6 +1,6 @@
 TDAR.worldmap = (function(console, $, ctx) {
     "use strict";
-
+    var _PLURAL = "_PLURAL";
     var hlayer;
     var geodata = {};
     var map;
@@ -10,6 +10,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     var overlay = false;
     var allData = new Array();
     var clickId;
+    var locales;
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
 
@@ -24,13 +25,11 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     // Intialize the Geodata based on the JSON
     function _initializeGeoData(mapdata) {
-        for (var i = 0; i < mapdata.length; i++) {
-            if (mapdata[i].resourceType == undefined) {
-                var val = mapdata[i].count;
-                geodata[mapdata[i].code] = val;
-                if (val > max) {
-                    max = val;
-                }
+        var data = mapdata["geographic.ISO,resourceType"];
+        for (var i = 0; i < data.length; i++) {
+            geodata[data[i].value] = data[i].count;
+            if (data[i].value.length < 4) {
+                max += parseInt(data[i].count);
             }
         }
     }
@@ -47,6 +46,11 @@ TDAR.worldmap = (function(console, $, ctx) {
         return JSON.parse(json);
     }
 
+    function _getLocaleData(containerElem) {
+        var json = $(containerElem).find('script[data-locales]').text() || 'null';
+        return JSON.parse(json);
+    }
+
     /**
      * Default color range for the world map based on custom weighting function
      */
@@ -59,14 +63,13 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     var _defaultChoropleth = {
         valueProperty : function(feature) {
-            if (geodata[feature.id]) {
+            if (feature && geodata[feature.id]) {
                 return geodata[feature.id];
             } else {
                 return 0;
             }
         },
-        colors : [ "#fff", "#FED976", "#FEB24C", "#FD8D3C", "#FC4E2A", "#E31A1C", "#BD0026", "#800026" ],
-        steps : 8,
+        scale : [ "#fff", "#4B514D"],
         mode : 'q',
         style : {
             color : '#ccc',
@@ -93,11 +96,13 @@ TDAR.worldmap = (function(console, $, ctx) {
             return;
         }
         $mapDiv = $("#" + mapId);
-        var mapdata = _getMapdata($mapDiv.parent());
+        var $parent = $mapDiv.parent();
+        var mapdata = _getMapdata($parent);
         var c3_ = $("#c3colors");
         if (c3_.length > 0) {
             c3colors = JSON.parse(c3_.html());
         }
+        
 
         map = L.map(mapId, {
             // config for leaflet.sleep
@@ -112,9 +117,12 @@ TDAR.worldmap = (function(console, $, ctx) {
             hoverToWake : true,
             sleepOpacity : 1
         });
+        var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
+        _initializeGeoData(mapdata);
+        locales = _getLocaleData($parent);
+        _setupLegend(map, grades, _getColor, max);
         _resetView();
 
-        _initializeGeoData(mapdata);
         // load map data
         // FIXME: consider embedding data for faster rendering
         var jqxhr = $.getJSON(TDAR.uri("/js/maps/world.json"));
@@ -125,8 +133,6 @@ TDAR.worldmap = (function(console, $, ctx) {
             console.error("Failed to load world.json file. XHR result follows this line.", xhr);
         });
         map.on('click', _resetView);
-        var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
-        _setupLegend(map, grades, _getColor, max);
         return map;
     }
 
@@ -138,6 +144,17 @@ TDAR.worldmap = (function(console, $, ctx) {
             position : 'bottomright'
         });
 
+        var zoom = L.control({
+            position : 'topright'
+        });
+        zoom.onAdd = function(map) {
+            var div = L.DomUtil.create('div', 'mapGraphZoomOut');
+            div.id="mapGraphZoomOut";
+            $(div).append("<i class='icon-zoom-out'></i> Zoom Out");
+            return div;
+        };
+        zoom.addTo(map);
+        
         legend.onAdd = function(map) {
 
             var div = L.DomUtil.create('div', 'info');
@@ -193,22 +210,29 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     function _clickWorldMapLayer(event) {
         var ly = event.target.feature.geometry.coordinates[0];
+        var id = event.target.feature.id;
         console.log(event.target.feature);
-        clickId = event.target.feature.id;
-        if (event.target.feature.id && event.target.feature.id.indexOf('USA') == -1) {
+        var $zoomout = $("#mapGraphZoomOut");
+        if (id && id != 'RUS') {
+            $zoomout.show();
+        } else {
+            $zoomout.hide();
+        }
+        clickId = id;
+        if (id && id.indexOf('USA') == -1) {
             if (stateLayer != undefined) {
                 map.removeLayer(stateLayer);
                 stateLayer = undefined;
             }
         }
 
-        if (event.target.feature.id == 'USA' && stateLayer == undefined) {
+        if (id == 'USA' && stateLayer == undefined) {
             _loadStateData();
         }
 
-        _drawDataGraph(event.target.feature.properties.name, event.target.feature.id);
+        _drawDataGraph(event.target.feature.properties.name, id);
 
-        if (event.target.feature.id != 'RUS') {
+        if (id != 'RUS') {
             map.fitBounds(event.target.getBounds());
             overlay = true;
         }
@@ -219,48 +243,66 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     function _drawDataGraph(name, id) {
         var $div = $("#mapgraphdata");
+        var $header = $("#mapGraphHeader");
         // style='height:"+($mapDiv.height() - 50)+"px'
         if (name == undefined) {
-            $("#mapGraphHeader").html("Worldwide");
+            $header.html("Worldwide");
         } else {
-            $("#mapGraphHeader").html(name);
+            $header.html(name);
         }
 
         var mapdata = _getMapdata($mapDiv.parent());
         var filter = [];
         var data = [];
-        var typeLabelMap = {};
+//        var typeLabelMap = {};
+        var data = mapdata["geographic.ISO,resourceType"];
         // ID == Country/state id (USA / USAAZ)
         if (id != undefined) {
             // find the set of data associated with this id
-            filter = mapdata.filter(function(d) {
-                return d.code == id
+            filter = data.filter(function(d) {
+                return d.value == id
             });
 
+            // go through the results and get the pivot values from the SOLR json
             filter.forEach(function(row) {
-                if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-                    data.push([ row.label, row.count ]);
-                    typeLabelMap[row.label] = row.resourceType;
-                }
+                row.pivot.forEach(function(pvalue) {
+                    if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
+                        var label = locales[pvalue.value + _PLURAL];
+                        if (parseInt(pvalue.count) == 1) {
+                            label = locales[pvalue.value];
+                        }
+                        data.push([label, pvalue.count ]);
+                    }
+                });
             });
         } else {
             // initialization for "worldwide"
             if (allData.length == 0) {
                 var tmp = {};
-                mapdata.forEach(function(row) {
-                    if (parseInt(row.count) && row.count > 0 && row.resourceType != undefined) {
-                        typeLabelMap[row.label] = row.resourceType;
-                        var t = 0;
-                        if (parseInt(tmp[row.label])) {
-                            t = parseInt(tmp[row.label]);
-                        }
-                        tmp[row.label] = t + row.count;
+                data.forEach(function(row) {
+                    // for every state
+                    if (row.value.length == 3) {
+                        row.pivot.forEach(function(pvalue) {
+                            // for every pivot value
+                            if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
+                                var t = 0;
+                                if (parseInt(tmp[pvalue.value])) {
+                                    t = parseInt(tmp[pvalue.value]);
+                                }
+                                tmp[pvalue.value] = t + parseInt(pvalue.count);
+                            }
+                        });
                     }
                 });
 
                 for ( var type in tmp) {
                     if (tmp.hasOwnProperty(type)) {
-                        allData.push([ type, tmp[type] ]);
+                        var val = tmp[type];
+                        var label = locales[type + _PLURAL];
+                        if (val == 1) {
+                            label = locales[type];
+                        }
+                        allData.push([ label, val ]);
                     }
                 }
                 ;
@@ -274,7 +316,16 @@ TDAR.worldmap = (function(console, $, ctx) {
                 columns : data,
                 type : 'pie',
                 onclick : function(d, element) {
-                    var uri = "/search/results?resourceTypes=" + typeLabelMap[d.id];
+                    var key = "";
+                    for (var i in locales) {
+                        if (d.id === locales[i]) {
+                            key = i;
+                        }
+                    }
+                    if (key.indexOf(_PLURAL) > 0) {
+                        key = key.substring(0,key.length - _PLURAL.length);
+                    }
+                    var uri = "/search/results?resourceTypes=" + key;
                     if (clickId != undefined && name != undefined) {
                         uri += "&geographicKeywords=" + name;
                         if (clickId.length == 3) {
@@ -346,6 +397,8 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _resetView() {
         map.setView([ 44.505, -0.09 ], 1);
         overlay = false;
+        var $zoomout = $("#mapGraphZoomOut");
+        $zoomout.hide();
         clickId = undefined;
         if (hlayer != undefined) {
             hlayer.setStyle({

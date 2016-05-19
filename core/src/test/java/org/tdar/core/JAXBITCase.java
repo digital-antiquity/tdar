@@ -191,7 +191,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         List<Resource> list = new ArrayList<>();
         list.add(document);
         list.add(project);
-        String result = serializationService.createGeoJsonFromResourceList(list , "http://www.test.com", map, null, JsonLookupFilter.class, null);
+        String result = serializationService.createGeoJsonFromResourceList(list , "http://www.test.com", map, null, false, JsonLookupFilter.class, null);
         logger.info(result);
         assertFalse(result.contains("\"activeMaterialKeywords\":null"));
         assertFalse(result.contains("minLatitude"));

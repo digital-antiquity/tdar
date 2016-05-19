@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
@@ -23,8 +24,9 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @SuppressWarnings("unchecked")
+    private List<ResourceCreator> userInput = new ArrayList<>();
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
         // set default of "or"
         setOperator(Operator.OR);
@@ -36,11 +38,16 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
                 ResourceCreatorProxy proxy = proxyList.get(i);
                 ResourceCreator rc = proxy.getResourceCreator();
                 if (proxy.isValid()) {
-                    List<Creator<?>> creators = new ArrayList<>();
+                    List<Creator> creators = new ArrayList<>();
                     if (rc.getCreator() instanceof Dedupable<?>) {
                         creators.addAll(((Dedupable<Creator<?>>) rc.getCreator()).getSynonyms());
                     }
-                    creators.add(rc.getCreator());
+                    if (CollectionUtils.isEmpty(proxy.getResolved())) {
+                        creators.add(rc.getCreator());
+                    } else {
+                        creators.addAll(proxy.getResolved());
+                    }
+                    userInput.add(rc);
                     logger.debug("{}", creators);
                     for (Creator<?> creator_ : creators) {
                         if (PersistableUtils.isTransient(creator_)) {
@@ -109,8 +116,9 @@ public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQ
     @Override
     public String getDescription(TextProvider provider) {
         StringBuilder names = new StringBuilder();
-        for (int i = 0; i < getFieldValues().size(); i++) {
-            Creator<?> creator = getFieldValues().get(i);
+        for (int i = 0; i < userInput.size(); i++) {
+            ResourceCreator rc = userInput.get(i);
+            Creator<?> creator = rc.getCreator();
             ResourceCreatorRole role = getRoles().get(i);
             if ((creator != null) && !creator.hasNoPersistableValues()) {
                 if (names.length() > 0) {

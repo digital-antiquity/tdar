@@ -42,8 +42,11 @@ import org.tdar.search.query.SearchResultHandler;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
+import org.tdar.search.util.SolrMapConverter;
 import org.tdar.utils.PersistableUtils;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.opensymphony.xwork2.TextProvider;
 
 @Component
@@ -115,7 +118,16 @@ public class SearchDao<I extends Indexable> {
 		FacetedResultHandler facetHandler = (FacetedResultHandler) handler;
 		FacetWrapper wrapper = facetHandler.getFacetWrapper();
 		handleJsonFacetingApi(rsp, facetMap, wrapper);
-
+		SimpleOrderedMap pivot = (SimpleOrderedMap)rsp.getResponse().findRecursive("facet_counts", "facet_pivot");
+		Object map = SolrMapConverter.toMap(pivot);
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+            String writeValueAsString = mapper.writeValueAsString(map);
+            logger.trace(writeValueAsString);
+            wrapper.setFacetPivotJson(writeValueAsString);
+        } catch (JsonProcessingException e) {
+            logger.error("{}",e,e);
+        }
 		Map<String, List<Facet>> facetResults = wrapper.getFacetResults();
 		for (FacetField field : rsp.getFacetFields()) {
 			String fieldName = field.getName();

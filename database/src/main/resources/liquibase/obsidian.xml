@@ -7,9 +7,27 @@
 
     <!-- http://www.liquibase.org/documentation/changes/index.html -->
 
-    <changeSet id="obsidian-1" author="abrin">
+    <changeSet id="obsidian-1" author="abrin" failOnError="false">
         <dropColumn tableName="institution" columnName="merge_creator_id" />
         <dropColumn tableName="person" columnName="merge_creator_id" />
     </changeSet>
-    
+
+    <changeSet id="obsidian-2" author="abrin">
+        <addPrimaryKey tableName="data_integration_workflow" columnNames="id"/>
+        <createTable tableName="data_integration_users">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_integration_authorization__tdar_user_id" />
+            </column>
+            <column name="integration_id" type="bigint">
+                <constraints nullable="false"
+                    references="data_integration_workflow"
+                    foreignKeyName="fk_integration_authorization___id" />
+            </column>
+        </createTable>
+        <addColumn tableName="data_integration_workflow">
+            <column name="hidden" defaultValueBoolean="false" type="boolean"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

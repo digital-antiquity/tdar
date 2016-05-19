@@ -35,7 +35,7 @@ public class APIClient {
     private static final String API_LOGIN = "/api/login";
     private static final String UPLOAD_FILE = "uploadFile";
     private String baseUrl;
-    private CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
+    private CloseableHttpClient httpClient = SimpleHttpUtils.createClient(3500);
 
     public APIClient(String baseSecureUrl) {
         this.baseUrl = baseSecureUrl;

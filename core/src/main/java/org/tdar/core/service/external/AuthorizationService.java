@@ -24,6 +24,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -675,13 +676,27 @@ public class AuthorizationService implements Accessible {
 
     @Transactional(readOnly = true)
     public boolean canEditWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
-        return (isAdministrator(authenticatedUser) ||
-                PersistableUtils.isNullOrTransient(workflow) || PersistableUtils.isNotNullOrTransient(workflow)
-                        && PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser));
+        if (PersistableUtils.isNullOrTransient(workflow)) {
+            return true;
+        }
+        
+        if (isAdministrator(authenticatedUser)) {
+            return true;
+        }
+        
+        if (PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser) ||
+                authenticatedUser.equals(workflow.getAuthorizedMembers().contains(authenticatedUser))) {
+            return true;
+        }
+        return false;
     }
 
     @Transactional(readOnly = true)
     public boolean canViewWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
+        
+        if (!workflow.isHidden()) {
+            return true;
+        }
         return canEditWorkflow(workflow, authenticatedUser);
 
     }
@@ -767,6 +782,15 @@ public class AuthorizationService implements Accessible {
             return true;
         }
         return false;
+    }
+
+    @Transactional(readOnly=false)
+    public void updateAuthorizedMembers(HasUsers entity, List<TdarUser> members) {
+        logger.info("authorized members (was): {}", entity.getAuthorizedMembers());
+        entity.getAuthorizedMembers().clear();
+        entity.getAuthorizedMembers().addAll(members);
+        logger.info("authorized members ( is): {}", entity.getAuthorizedMembers());
+        institutionDao.saveOrUpdate(entity);
     }
 
 }

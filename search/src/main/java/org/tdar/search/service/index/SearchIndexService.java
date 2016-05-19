@@ -133,7 +133,12 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         SolrInputDocument doc = createDocument(record);
         //
         String recordId = generateId(record);
-        File temp = new File(CONFIG.getTempDirectory(), String.format("%s-%s.xml", recordId, System.nanoTime()));
+        File tempDirectory = CONFIG.getTempDirectory();
+        File dir = new File(tempDirectory,"index");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        File temp = new File(dir, String.format("%s-%s.xml", recordId, System.nanoTime()));
         temp.deleteOnExit();
 
         SerializationUtils.serialize(doc, new FileOutputStream(temp));

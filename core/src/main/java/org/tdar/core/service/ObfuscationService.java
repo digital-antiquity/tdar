@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.external.AuthorizationService;
 
@@ -51,7 +53,8 @@ public class ObfuscationService {
     }
 
     /**
-     * Due to Autowiring complexity, we expose the @link AuthenticationAndAuthorizationService here so we don't have autowiring issues in services like the @link
+     * Due to Autowiring complexity, we expose the @link AuthenticationAndAuthorizationService here so we don't have autowiring issues in services like
+     * the @link
      * SearchService
      * 
      * @return
@@ -80,10 +83,6 @@ public class ObfuscationService {
             return;
         }
 
-        // if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource)target)) {
-        // return;
-        // }
-
         if (authService.isEditor(user)) {
             // logger.debug("user is editor: {} ({}}", target, user);
             return;
@@ -93,6 +92,12 @@ public class ObfuscationService {
         if ((target instanceof Person) && Objects.equals(user, target)) {
             logger.trace("not obfuscating person: {}", user);
             return;
+        }
+
+        if (TdarConfiguration.getInstance().shouldShowExactLocationToThoseWhoCanEdit()) {
+            if (target instanceof Resource && authService.canViewConfidentialInformation(user, (Resource) target)) {
+                return;
+            }
         }
 
         genericDao.markReadOnly(target);

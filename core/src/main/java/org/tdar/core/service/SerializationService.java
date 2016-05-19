@@ -151,7 +151,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     
 
 	private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
-		File temp =  new File(CONFIG.getTempDirectory(),String.format("%s-%s.xml", recordId, System.nanoTime()));
+        File tempDirectory = CONFIG.getTempDirectory();
+        File dir = new File(tempDirectory,"index");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+		File temp =  new File(dir,String.format("%s-%s.xml", recordId, System.nanoTime()));
 		temp.deleteOnExit();
 		if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
 		    XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
@@ -442,12 +447,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     }
 
     @Transactional(readOnly = true)
-    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, Class<?> filter, String callback)
+    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, boolean webObfuscation, Class<?> filter, String callback)
             throws IOException {
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
         for (Object obj : rslts) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode, webObfuscation));
             }
         }
         Map<String,Object> result = new HashMap<>();

@@ -37,6 +37,8 @@ import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.web.service.HomepageDetails;
+import org.tdar.web.service.HomepageService;
 
 /**
  * $Id$
@@ -76,12 +78,14 @@ public class ExploreController extends AbstractLookupController {
     private String homepageResourceCountCache;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
-
+    private String resourceTypeLocaleJson;
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     @Autowired
     private transient SerializationService serializationService;
+    @Autowired
+    private transient HomepageService homepageService;
     
     @Autowired
     private transient GenericKeywordService genericKeywordService;
@@ -100,6 +104,11 @@ public class ExploreController extends AbstractLookupController {
 
     @Action(EXPLORE)
     public String explore() throws IOException {
+        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
+        setResourceTypeLocaleJson(worldmap.getLocalesJson());
+        setMapJson(worldmap.getMapJson());
+
         setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
         setMaterialTypes(genericService.findAll(MaterialKeyword.class));
         setInvestigationTypes(genericService.findAll(InvestigationType.class));
@@ -270,6 +279,14 @@ public class ExploreController extends AbstractLookupController {
 
     public void setMapJson(String mapJson) {
         this.mapJson = mapJson;
+    }
+
+    public String getResourceTypeLocaleJson() {
+        return resourceTypeLocaleJson;
+    }
+
+    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
+        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
     }
 
 }
