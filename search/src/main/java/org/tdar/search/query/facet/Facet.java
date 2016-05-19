@@ -10,14 +10,14 @@ public class Facet implements Serializable {
 	private Long count = 0L;
 	private String raw;
 	private String detailUrl;
-	private Class className;
+	private Class<?> className;
 
     public Object getCount;
 
 	public Facet() {
 	}
 
-	public Facet(String raw, String label, Long value, Class facetClass) {
+	public Facet(String raw, String label, Long value, Class<?> facetClass) {
 		this.setRaw(raw);
 		this.label = label;
 		if (value!= null) {
@@ -56,7 +56,7 @@ public class Facet implements Serializable {
 	}
 
 
-	public Class getClassName() {
+	public Class<?> getClassName() {
 		return className;
 	}
 
@@ -67,7 +67,7 @@ public class Facet implements Serializable {
 		return className.getSimpleName();
 	}
 	
-	public void setClassName(Class className) {
+	public void setClassName(Class<?> className) {
 		this.className = className;
 	}
 

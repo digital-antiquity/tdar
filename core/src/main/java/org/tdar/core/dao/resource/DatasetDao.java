@@ -346,6 +346,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             ResourceType resourceType = ResourceType.valueOf((String) scroll.get(3));
             String fileDescription = (String) scroll.get(4);
             Number imageId = (Number) scroll.get(5);
+            @SuppressWarnings("deprecation")
             Resource res = new Resource(id.longValue(), title, resourceType);
             markReadOnly(res);
             String resourceUrl = UrlService.absoluteUrl(res);

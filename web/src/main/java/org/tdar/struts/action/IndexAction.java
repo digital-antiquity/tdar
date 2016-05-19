@@ -17,12 +17,13 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.service.HomepageService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.RssService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.HomepageDetails;
+import org.tdar.web.service.HomepageService;
 
 import com.rometools.rome.feed.synd.SyndEntry;
 
@@ -54,21 +55,19 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     @Autowired
     private RssService rssService;
-    
+
     @Autowired
     private HomepageService homepageService;
-
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
     private List<SyndEntry> rssEntries;
 
     private String mapJson;
-
+    private String resourceTypeLocaleJson;
     private String homepageResourceCountCache;
 
-
-    @Actions(value={
+    @Actions(value = {
             @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") }),
             @Action(value = "about", results = { @Result(name = SUCCESS, location = "about.ftl") }),
 
@@ -76,14 +75,16 @@ public class IndexAction extends AbstractAuthenticatableAction {
     @SkipValidation
     @HttpOnlyIfUnauthenticated
     public String about() {
-
+        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
+        setResourceTypeLocaleJson(worldmap.getLocalesJson());
+        setMapJson(worldmap.getMapJson());
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
-        setMapJson(homepageService.getMapJson());
-        setHomepageResourceCountCache(homepageService.getResourceCountsJson());
+//        setHomepageResourceCountCache(homepageService.getResourceCountsJson());
         try {
-            setFeaturedCollection(resourceCollectionService.getRandomFeaturedCollection());        
+            setFeaturedCollection(resourceCollectionService.getRandomFeaturedCollection());
         } catch (Exception e) {
-            getLogger().error("exception in setting up homepage: {}", e,e);
+            getLogger().error("exception in setting up homepage: {}", e, e);
         }
         try {
             setRssEntries(rssService.parseFeed(new URL(getTdarConfiguration().getNewsRssFeed())));
@@ -92,7 +93,6 @@ public class IndexAction extends AbstractAuthenticatableAction {
         }
         return SUCCESS;
     }
-
 
     public Project getFeaturedProject() {
         return featuredProject;
@@ -153,23 +153,29 @@ public class IndexAction extends AbstractAuthenticatableAction {
     public boolean isNavSearchBoxVisible() {
         return false;
     }
-    
+
     public boolean isHomepage() {
         return true;
     }
-
 
     public String getMapJson() {
         return mapJson;
     }
 
-
     public void setMapJson(String mapJson) {
         this.mapJson = mapJson;
     }
-    
+
     @Override
     public boolean isSubnavEnabled() {
         return false;
+    }
+
+    public String getResourceTypeLocaleJson() {
+        return resourceTypeLocaleJson;
+    }
+
+    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
+        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
     }
 }

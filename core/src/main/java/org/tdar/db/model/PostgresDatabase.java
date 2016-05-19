@@ -204,7 +204,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         return exception.getSQLState().equals(getSqlDropStateError());
     }
 
-    @SuppressWarnings("all")
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @Transactional(value = "tdarDataTx", readOnly = true)
     public List query(String sql, RowMapper rowMapper) {
         return jdbcTemplate.query(sql, rowMapper);
@@ -430,7 +430,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
      * bean.resource.DataTableColumnType, int)
      */
     @Override
-    public String toImplementedTypeDeclaration(DataTableColumnType dataType, int length) {
+    public String toImplementedTypeDeclaration(DataTableColumnType dataType, int length_) {
+        int length = length_;
         String str = getDefaultTypeDeclaration();
 
         // enforcing a minimum width on all column lengths (TDAR-1105)

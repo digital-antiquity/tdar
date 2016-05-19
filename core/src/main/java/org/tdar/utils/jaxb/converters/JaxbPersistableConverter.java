@@ -20,7 +20,8 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
     ReflectionService reflectionService;
 
     @Override
-    public String marshal(Persistable d) throws Exception {
+    public String marshal(Persistable d_) throws Exception {
+        Persistable d = d_;
         if (d == null) {
             return NULL_REF;
         }

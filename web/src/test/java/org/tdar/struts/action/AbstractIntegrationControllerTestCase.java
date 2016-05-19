@@ -15,7 +15,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.StrutsStatics;
-import org.custommonkey.xmlunit.jaxp13.Validator;
 import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Assert;
@@ -30,8 +29,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -39,14 +36,12 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.ResourceCollectionService;
-import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -87,8 +82,8 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     protected HttpServletResponse httpServletResponse = new MockHttpServletResponse();
 
     protected PlatformTransactionManager transactionManager;
-    private TransactionCallback verifyTransactionCallback;
-    private TransactionTemplate transactionTemplate;
+//    private TransactionCallback verifyTransactionCallback;
+//    private TransactionTemplate transactionTemplate;
 
     @Autowired
     protected SessionFactory sessionFactory;
@@ -123,11 +118,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
     @Autowired
     protected AuthenticationService authenticationService;
     @Autowired
-    private SerializationService serializationService;
-    @Autowired
     protected ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private AuthorizedUserDao authorizedUserDao;
 
     @Autowired
     public SendEmailProcess sendEmailProcess;
@@ -351,7 +342,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
     private TdarUser sessionUser;
 
-    private static Validator v;
+//    private static Validator v;
 
     /**
      * @return

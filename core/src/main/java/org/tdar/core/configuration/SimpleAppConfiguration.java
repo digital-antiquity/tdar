@@ -86,7 +86,7 @@ public abstract class SimpleAppConfiguration implements Serializable {
 
     @Autowired
     protected Environment env;
-    private SessionFactory buildSessionFactory;
+//    private SessionFactory buildSessionFactory;
 
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {

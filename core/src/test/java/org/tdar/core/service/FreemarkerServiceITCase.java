@@ -11,15 +11,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.service.processes.daily.RebuildHomepageCache;
 
 public class FreemarkerServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     private FreemarkerService freemarkerService;
 
-    @Autowired
-    private RebuildHomepageCache homepageCache;
+//    @Autowired
+//    private RebuildHomepageCache homepageCache;
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 

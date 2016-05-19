@@ -150,7 +150,6 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     private void searchCollectionsToo() throws SolrServerException, IOException {
 
         try {
@@ -288,15 +287,15 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     }
 
     public List<InvestigationType> getAllInvestigationTypes() {
-        return genericService.findAllWithCache(InvestigationType.class);
+        return genericService.findAll(InvestigationType.class);
     }
 
     public KeywordNode<CultureKeyword> getAllApprovedCultureKeywords() {
-        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(CultureKeyword.class));
+        return KeywordNode.organizeKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
     }
 
     public KeywordNode<SiteTypeKeyword> getAllApprovedSiteTypeKeywords() {
-        return KeywordNode.organizeKeywords(genericKeywordService.findAllApprovedWithCache(SiteTypeKeyword.class));
+        return KeywordNode.organizeKeywords(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
     }
 
     List<MaterialKeyword> allMaterialKeywords;
@@ -307,7 +306,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     public List<MaterialKeyword> getAllMaterialKeywords() {
 
         if (CollectionUtils.isEmpty(allMaterialKeywords)) {
-            allMaterialKeywords = genericKeywordService.findAllApprovedWithCache(MaterialKeyword.class);
+            allMaterialKeywords = genericKeywordService.findAllApproved(MaterialKeyword.class);
             Collections.sort(allMaterialKeywords);
         }
         return allMaterialKeywords;

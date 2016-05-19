@@ -14,6 +14,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
  *
  * @param <T>
  */
+@SuppressWarnings("rawtypes")
 public class MessageBusResourceSynchronization<T extends ObjectContainer>
 		extends ResourceHolderSynchronization<EventBusResourceHolder, TxMessageBus> {
 	private final TxMessageBus messageBus;
@@ -37,7 +38,8 @@ public class MessageBusResourceSynchronization<T extends ObjectContainer>
 	/**
 	 * if successful, then we commit the events, otherwise, discard
 	 */
-	@Override
+	@SuppressWarnings("unchecked")
+    @Override
 	public void afterCompletion(int status) {
 		logger.trace("completion: {}", status);
 		if (status == TransactionSynchronization.STATUS_COMMITTED) {

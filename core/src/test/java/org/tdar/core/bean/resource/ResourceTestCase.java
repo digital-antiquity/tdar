@@ -153,7 +153,6 @@ public class ResourceTestCase {
     }
 
     @Test
-    @SuppressWarnings("deprecation")
     public void testCoreProjectTitle() {
         Project app = new Project(-5L, "The Alan Parsons Project"); // What goes up, must come down. An insightful lyric, as ever...
         Project cure = new Project(-6L, "The Cure"); // last seen falling off a cliff?

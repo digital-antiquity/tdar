@@ -15,6 +15,7 @@ public class OpenUrlFormatter {
     private static final String AMP = "&amp;";
     private final static transient Logger logger = LoggerFactory.getLogger(OpenUrlFormatter.class);
 
+    @SuppressWarnings("deprecation")
     public static String toOpenURL(Resource resource) {
         StringBuilder sb = new StringBuilder();
         try {

@@ -200,7 +200,7 @@
                             </systemProperties>
                             <webDefaultXml>${basedir}/src/main/resources/jetty/webdefault.xml</webDefaultXml>
                             <scanIntervalSeconds>0</scanIntervalSeconds>
-                            <stopKey>tdar</stopKey>
+                            <stopKey>tdarstop</stopKey>
                             <webApp>
                                 <baseResource
                                     implementation="org.eclipse.jetty.util.resource.ResourceCollection">
@@ -219,6 +219,8 @@
                                 <configuration>
                                     <scanIntervalSeconds>0</scanIntervalSeconds>
                                     <daemon>true</daemon>
+                                    <stopKey>tdarstop</stopKey>
+                                    <stopPort>${jetty.stop.port}</stopPort>
                                     <systemProperties>
                                         <systemProperty>
                                             <name>jetty.ssl.port</name>

@@ -45,7 +45,6 @@ import org.tdar.core.dao.TdarNamedQueries;
 @Component
 public class PersonDao extends Dao.HibernateBase<Person> {
 
-    private static final String RESOURCE_IDS = "resourceIds";
     private static final Long TDAR_USER_PRIOR_TO_ASKING_AFFILIATION = 5215L;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -62,6 +61,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return query.list();
     }
 
+    @SuppressWarnings("unchecked")
     public List<Person> findSimilarPeople(TdarUser user) {
         List<Person> people = new ArrayList<>();
         String initial = user.getFirstName().substring(0, 1).toUpperCase();
@@ -117,7 +117,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return new HashSet<Person>(criteria.list());
     }
 
-    public Person findAuthorityFromDuplicate(Creator dup) {
+    public Person findAuthorityFromDuplicate(Creator<?> dup) {
         Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         @SuppressWarnings("unchecked")
         List<BigInteger> result = query.list();
@@ -247,7 +247,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return roles;
     }
 
-    public Long getCreatorViewCount(Creator creator) {
+    public Long getCreatorViewCount(Creator<?> creator) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
         query.setParameter("id", creator.getId());
         Number result = (Number) query.uniqueResult();

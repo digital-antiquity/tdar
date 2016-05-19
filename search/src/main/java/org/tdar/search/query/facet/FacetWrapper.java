@@ -2,10 +2,10 @@ package org.tdar.search.query.facet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.hadoop.util.StringUtils;
 import org.tdar.core.bean.resource.ResourceType;
@@ -19,7 +19,8 @@ public class FacetWrapper implements Serializable {
     private Map<String, Class<?>> facetMap = new HashMap<>();
     private Map<String, List<Facet>> facetResults = new HashMap<>();
     private Map<String, String> filters = new HashMap<>();
-
+    private String facetPivotJson = null;
+    private boolean mapFacet = false;
     public void facetBy(String facetField, Class<?> facetClass) {
         facetMap.put(facetField, facetClass);
     }
@@ -34,9 +35,10 @@ public class FacetWrapper implements Serializable {
         return facetMap;
     }
 
-    public Collection<String> getFacetFieldNames() {
+    @SuppressWarnings("unchecked")
+    public Set<String> getFacetFieldNames() {
         if (facetMap.isEmpty()) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
         return facetMap.keySet();
     };
@@ -57,6 +59,22 @@ public class FacetWrapper implements Serializable {
 		return filters.get(facet);
 		
 	}
+
+    public boolean isMapFacet() {
+        return mapFacet;
+    }
+
+    public void setMapFacet(boolean mapFacet) {
+        this.mapFacet = mapFacet;
+    }
+
+    public String getFacetPivotJson() {
+        return facetPivotJson;
+    }
+
+    public void setFacetPivotJson(String facetPivotJson) {
+        this.facetPivotJson = facetPivotJson;
+    }
 
 
 }

@@ -56,6 +56,7 @@ public class LatitudeLongitudeBoxTest {
         return abs(lht - rht);
     }
 
+    @SuppressWarnings("deprecation")
     @Test
     public void testPoint() {
         Double lat = 45.954992d;
@@ -193,7 +194,7 @@ public class LatitudeLongitudeBoxTest {
         assertTrue(minObfuscatedLongitude.equals(llb.getMinimumLongitude()));
     }
 
-    @SuppressWarnings({ "static-method" })
+    @SuppressWarnings({ "static-method", "deprecation" })
     @Test
     public void doesNotObfuscateAccordingToServiceIfIsOkToShowExactCoords() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
@@ -254,8 +255,8 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void doesObfuscatedCenterIfBoxLessThanOneMileByDefault() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
-        assertFalse(Double.valueOf(0.0).equals(llb.getCenterLatitude()));
-        assertFalse(Double.valueOf(0.0).equals(llb.getCenterLongitude()));
+        assertFalse(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLatitude()));
+        assertFalse(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLongitude()));
     }
 
     @SuppressWarnings("static-method")
@@ -263,8 +264,8 @@ public class LatitudeLongitudeBoxTest {
     public void doesNoObfuscatedCenterIfOkToShowExactLocation() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, 0.0, 0.0);
         llb.setOkayToShowExactLocation(true);
-        assertTrue(Double.valueOf(0.0).equals(llb.getCenterLatitude()));
-        assertTrue(Double.valueOf(0.0).equals(llb.getCenterLongitude()));
+        assertTrue(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLatitude()));
+        assertTrue(Double.valueOf(0.0).equals(llb.getObfuscatedCenterLongitude()));
     }
 
     @SuppressWarnings({ "static-method" })
@@ -272,8 +273,8 @@ public class LatitudeLongitudeBoxTest {
     public void doesNotObfuscateCenterIfBoxGreaterThanOneMile() {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
-        assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitude()));
-        assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitude()));
+        assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLatitude()));
+        assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLongitude()));
     }
 
     @SuppressWarnings({ "static-method" })
@@ -282,8 +283,8 @@ public class LatitudeLongitudeBoxTest {
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox(0.0, 0.0, ONE_MILE_IN_DEGREE_MINUTES + 0.00002,
                 ONE_MILE_IN_DEGREE_MINUTES + 0.00002);
         llb.setOkayToShowExactLocation(false);
-        assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLatitude()));
-        assertTrue(Double.valueOf(0.00737).equals(llb.getCenterLongitude()));
+        assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLatitude()));
+        assertTrue(Double.valueOf(0.00737).equals(llb.getObfuscatedCenterLongitude()));
     }
 
     @SuppressWarnings({ "static-method", "deprecation" })

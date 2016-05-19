@@ -111,6 +111,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @EventListener
     public void handleIndexingEvent(TdarEvent event) throws Exception {
         if (!(event.getRecord() instanceof Indexable)) {
@@ -132,7 +133,12 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         SolrInputDocument doc = createDocument(record);
         //
         String recordId = generateId(record);
-        File temp = new File(CONFIG.getTempDirectory(), String.format("%s-%s.xml", recordId, System.nanoTime()));
+        File tempDirectory = CONFIG.getTempDirectory();
+        File dir = new File(tempDirectory,"index");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        File temp = new File(dir, String.format("%s-%s.xml", recordId, System.nanoTime()));
         temp.deleteOnExit();
 
         SerializationUtils.serialize(doc, new FileOutputStream(temp));
@@ -348,26 +354,6 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         logger.trace("response: {}", commit.getResponseHeader());
     }
 
-    // private void processBatch(List<SolrInputDocument> docs) throws
-    // SolrServerException, IOException {
-    // UpdateRequest req = new UpdateRequest();
-    // req.setAction( UpdateRequest.ACTION.COMMIT, false, false );
-    // req.add( docs );
-    // UpdateResponse rsp = req.process( template );
-    // logger.error("resp: {}", rsp);
-    // }
-
-    /**
-     * Similar to @link GenericService.synchronize() forces all pending indexing
-     * actions to be written.
-     * 
-     * Should only be used in tests...
-     * 
-     */
-    @Deprecated
-    public void flushToIndexes() {
-        // getFullTextSession().flushToIndexes();
-    }
 
     /**
      * Index/Reindex everything. Requested by the @link Person

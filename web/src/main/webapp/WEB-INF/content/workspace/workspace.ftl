@@ -18,7 +18,7 @@
 
     <div class="row">
         <div class="span8">
-            <#if (workflows?size > 0) >
+            <#list workflows>
             <h3>Saved Integrations</h3>
             <table class="table table-bordered table-hover">
                 <thead>
@@ -29,7 +29,8 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <#list workflows as workflow>
+                	<#items as workflow>
+                		<#if (workflow.id)?has_content>
                         <tr>
                             <td style="width:60%">
                                 <a href="<@s.url value="/workspace/integrate/${workflow.id?c}"/>">${workflow.title!"untitled"} </a>
@@ -37,16 +38,18 @@
                             </td>
                             <td>${workflow.dateCreated?string.short}</td>
                             <td>
+                                <a class="btn btn-mini" href="<@s.url value="/workspace/settings/edit?id=${workflow.id?c}"/>">settings</a>
                                 <a class="btn btn-mini" href="<@s.url value="/workspace/delete?id=${workflow.id?c}"/>">delete</a>
                             </td>   
                         </tr>
-                    </#list>
+                        </#if>
+                     </#items>
                 </tbody>
             </table>
 
             <#else>
                 <@learn />
-            </#if>
+            </#list>
         </div>
         <div class="span4">
         <#if workflows?size != 0>

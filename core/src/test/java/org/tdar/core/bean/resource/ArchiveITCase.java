@@ -30,6 +30,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         return result;
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void replicateFaultyArchiveIssue() throws Exception {
@@ -68,6 +69,7 @@ public class ArchiveITCase extends AbstractIntegrationTestCase {
         // I'll have to play with @AfterTransaction, and make the test properly transactional...
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback(true)
     public void testReprocessFaultyArchive() throws Exception {

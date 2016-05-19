@@ -861,6 +861,7 @@ public abstract class AbstractSeleniumWebITCase {
      *            name attribute of the element to find.
      * @return The element with the specified name attribute, or null if this method could neither find the element or implicitly create it.
      */
+    @SuppressWarnings("unused")
     public WebElement findOrCreateIndexedField(String fieldName) {
         WebElement result = null;
         WebElementSelection elem = find(By.name(fieldName));
@@ -1036,16 +1037,12 @@ public abstract class AbstractSeleniumWebITCase {
         }
     }
 
-    @Deprecated
-    // FIXME: api cleanup: hamcrest assertions would work better here
     protected boolean sourceContains(String substring) {
-        return getSource().contains(substring);
+        return StringUtils.contains(getSource(), substring);
     }
 
-    // FIXME: api clianup: hamcrest assertions would work better here
-    @Deprecated
     protected boolean textContains(String substring) {
-        return getText().toLowerCase().contains(substring.toLowerCase());
+        return StringUtils.containsIgnoreCase( getSource() ,substring);
     }
 
     public void reindexOnce() {

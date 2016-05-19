@@ -152,7 +152,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     @WriteableSession
     @DoNotObfuscate(reason = "getPerson() may have not been set on the session before sent to obfuscator, so don't want to wipe email")
     public String create() {
-        if (registration == null || registration.getPerson() == null || !isPostRequest()) {
+        if (registration == null || registration.getPerson() == null) {
             return INPUT;
         }
         try {

@@ -26,7 +26,7 @@ public class SearchResult<I extends Indexable> implements FacetedResultHandler<I
     private TdarUser authenticatedUser;
     private String searchTitle;
     private String searchDescription;
-    private FacetWrapper facetWrapper;
+    private FacetWrapper facetWrapper = new FacetWrapper();
     private ProjectionModel projectionModel = ProjectionModel.HIBERNATE_DEFAULT;    
 
     public SearchResult() {}

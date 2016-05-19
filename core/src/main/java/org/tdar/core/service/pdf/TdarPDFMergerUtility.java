@@ -276,6 +276,7 @@ public class TdarPDFMergerUtility
      * @throws IOException If there is an error accessing data from either
      * document.
      */
+    @SuppressWarnings({ "unchecked", "unused" })
     public void appendDocument(PDDocument destination, PDDocument source) 
             throws IOException
     {
@@ -562,6 +563,7 @@ public class TdarPDFMergerUtility
      * @param srcAcroForm the source form
      * @throws IOException If an error occurs while adding the field.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void mergeAcroForm(PDFCloneUtility cloner, PDAcroForm destAcroForm, PDAcroForm srcAcroForm)
             throws IOException
     {

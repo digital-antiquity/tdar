@@ -70,7 +70,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 	private String query = "";
 
 	private List<SearchParameters> groups = new ArrayList<SearchParameters>();
-	private Operator topLevelOperator = Operator.AND;
+//	private Operator topLevelOperator = Operator.AND;
 
 	private List<SortOption> sortOptions = SortOption.getOptionsForContext(Resource.class);
 

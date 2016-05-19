@@ -79,7 +79,7 @@ public class RequestAccessLoginController extends AbstractRequestAccessControlle
         ErrorTransferObject errors = getUserLogin().validate(authorizationService, getRecaptchaService(), getServletRequest().getRemoteHost());
         processErrorObject(errors);
 
-        if (!isPostRequest() || errors.isNotEmpty()) {
+        if (errors.isNotEmpty()) {
             getLogger().warn("Returning INPUT because login requested via GET request for user:{}", getUserLogin().getLoginUsername());
         }
     }

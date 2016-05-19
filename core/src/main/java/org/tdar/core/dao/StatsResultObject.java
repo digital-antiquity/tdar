@@ -25,6 +25,7 @@ public class StatsResultObject implements Serializable {
     private List<String> rowLabels = new ArrayList<>();
     private List<ResourceStatWrapper> rowData = new ArrayList<>();
     private long[] totals;
+    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public void addRowData(ResourceStatWrapper row) {

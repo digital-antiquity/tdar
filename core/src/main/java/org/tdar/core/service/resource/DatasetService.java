@@ -555,7 +555,8 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      * @param existingColumn
      * @return
      */
-    private DataTableColumn checkForMissingColumn(DataTable dataTable, DataTableColumn incomingColumn, DataTableColumn existingColumn) {
+    private DataTableColumn checkForMissingColumn(DataTable dataTable, DataTableColumn incomingColumn, DataTableColumn existingColumn_) {
+        DataTableColumn existingColumn = existingColumn_;
         if (existingColumn == null) {
             existingColumn = dataTable.getColumnByName(incomingColumn.getName());
             if (existingColumn == null) {

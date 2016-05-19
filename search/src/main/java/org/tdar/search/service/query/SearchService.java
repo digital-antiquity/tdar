@@ -253,22 +253,22 @@ import com.opensymphony.xwork2.TextProvider;
          }
          Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements = new HashMap<>();
          List<ResourceCreatorProxy> proxies = group.getResourceCreatorProxies();
-         List<String> names = new ArrayList<>();
+         List<String> unresolvedNames = new ArrayList<>();
          for (ResourceCreatorProxy proxy : proxies) {
              if (proxy == null) {
                  continue;
              }
              ResourceCreator rc = proxy.getResourceCreator();
              if ((rc != null) && proxy.isValid()) {
-                 ArrayList<ResourceCreatorProxy> values = new ArrayList<>();
-                 Creator creator = rc.getCreator();
+                 Creator<?> creator = rc.getCreator();
                  if (PersistableUtils.isTransient(creator)) {
-                     resolveCreator(maxToResolve, replacements, proxy, rc, values, creator);
-                     if (replacements.get(proxy).isEmpty()) {
-                         names.add(creator.toString());
+                     resolveCreator(maxToResolve, proxy, rc, creator);
+                     logger.debug("resolved: {}", proxy.getResolved());
+                     if (proxy.getResolved().isEmpty()) {
+                         unresolvedNames.add(creator.toString());
                      }
                  } else {
-                     Creator find = genericService.find(Creator.class, creator.getId());
+                     Creator<?> find = genericService.find(Creator.class, creator.getId());
                      rc.setCreator(find);
                  }
              } else {
@@ -276,15 +276,8 @@ import com.opensymphony.xwork2.TextProvider;
              }
              logger.debug("{} -- {}", rc.getCreator(), rc.getCreator().getSynonyms());
          }
-         for (ResourceCreatorProxy toReplace : replacements.keySet()) {
-             proxies.remove(toReplace);
-             List<ResourceCreatorProxy> values = replacements.get(toReplace);
-             if (CollectionUtils.isNotEmpty(values)) {
-                 proxies.addAll(values);
-             }
-         }
-         if (!CollectionUtils.isEmpty(names)) {
-             throw new SearchException(MessageHelper.getMessage("searchService.cannot_resolve_creator",Arrays.asList(names)));
+         if (!CollectionUtils.isEmpty(unresolvedNames)) {
+             throw new SearchException(MessageHelper.getMessage("searchService.cannot_resolve_creator",Arrays.asList(unresolvedNames)));
          }
          logger.trace("result: {} ", proxies);
      }
@@ -303,11 +296,10 @@ import com.opensymphony.xwork2.TextProvider;
      * @throws IOException 
      * @throws SolrServerException 
       */
-     @SuppressWarnings("unchecked")
-     private void resolveCreator(int maxToResolve, Map<ResourceCreatorProxy, List<ResourceCreatorProxy>> replacements, ResourceCreatorProxy proxy,
-             ResourceCreator rc, ArrayList<ResourceCreatorProxy> values, Creator creator) throws ParseException, SolrServerException, IOException {
+     @SuppressWarnings({ "unchecked", "rawtypes" })
+     private void resolveCreator(int maxToResolve, ResourceCreatorProxy proxy,
+             ResourceCreator rc, Creator creator) throws ParseException, SolrServerException, IOException {
          QueryBuilder q;
-         replacements.put(proxy, values);
          if (creator instanceof Institution) {
              q = new InstitutionQueryBuilder();
              InstitutionAutocompleteQueryPart iqp = new InstitutionAutocompleteQueryPart();
@@ -327,11 +319,7 @@ import com.opensymphony.xwork2.TextProvider;
          LuceneSearchResultHandler<I> handler = new SearchResult<>(maxToResolve);
          searchDao.search(new SolrSearchObject<I>(q, handler), handler , MessageHelper.getInstance());
          List<Creator> list = (List<Creator>)handler.getResults();
-		if (CollectionUtils.isNotEmpty(list)) {
-             for (Creator c : list) {
-                 values.add(new ResourceCreatorProxy(c, rc.getRole()));
-             }
-         }
+         proxy.setResolved(list);
      }
 
      /**

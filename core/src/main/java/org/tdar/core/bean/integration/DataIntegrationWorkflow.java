@@ -1,12 +1,17 @@
 package org.tdar.core.bean.integration;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -18,6 +23,7 @@ import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Updatable;
+import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 
@@ -26,7 +32,7 @@ import org.tdar.core.bean.resource.Addressable;
  */
 @Entity
 @Table(name = "data_integration_workflow")
-public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable {
+public class DataIntegrationWorkflow extends AbstractPersistable implements HasSubmitter, Updatable, Addressable, HasUsers {
 
     private static final long serialVersionUID = -3687383363452908687L;
 
@@ -35,6 +41,9 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
 
     @Column(length = FieldLength.FIELD_LENGTH_2048)
     private String description;
+    
+    @Column(name="hidden", nullable=false)
+    private boolean hidden  = true;
 
     @Column(name = "json_data")
     @Lob
@@ -58,6 +67,11 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @JoinColumn(nullable = false, name = "user_id")
     @NotNull
     private TdarUser submitter;
+
+    @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, fetch = FetchType.LAZY)
+    @JoinTable(name = "data_integration_users", joinColumns = { @JoinColumn(nullable = false, name = "integration_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "user_id") })
+    private Set<TdarUser> authorizedMembers = new HashSet<>();
 
     public String getTitle() {
         return title;
@@ -134,6 +148,24 @@ public class DataIntegrationWorkflow extends AbstractPersistable implements HasS
     @Override
     public String getDetailUrl() {
         return String.format("/%s/%s", getUrlNamespace(), getId());
+    }
+
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
+    @Override
+    public Set<TdarUser> getAuthorizedMembers() {
+        return authorizedMembers;
+    }
+
+    @Override
+    public void setAuthorizedMembers(Set<TdarUser> authorizedMembers) {
+        this.authorizedMembers = authorizedMembers;
     }
 
 }

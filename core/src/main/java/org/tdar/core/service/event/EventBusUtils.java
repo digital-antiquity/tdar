@@ -17,7 +17,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
  *
  */
 public class EventBusUtils {
-	private static final Logger logger = LoggerFactory.getLogger(EventBusUtils.class);
+	@SuppressWarnings("unused")
+    private static final Logger logger = LoggerFactory.getLogger(EventBusUtils.class);
 
 	/**
 	 * Gets an Event Queue or processes the event depending on whether there's a
@@ -26,7 +27,8 @@ public class EventBusUtils {
 	 * @param messageBus
 	 * @return
 	 */
-	public static Optional<EventBusResourceHolder> getTransactionalResourceHolder(TxMessageBus messageBus) {
+	@SuppressWarnings("rawtypes")
+    public static Optional<EventBusResourceHolder> getTransactionalResourceHolder(TxMessageBus messageBus) {
 
 		// if there's no transaction, return
 		if (!TransactionSynchronizationManager.isActualTransactionActive()) {

@@ -129,7 +129,8 @@ public class PairtreeFilestore extends BaseFilestore {
         }
     }
 
-    private File rotateFileIfNeeded(StorageMethod rotate, File outFile) {
+    private File rotateFileIfNeeded(StorageMethod rotate, File outFile_) {
+        File outFile = outFile_;
         if (outFile.exists() && (rotate.getRotations() > 0)) {
             rotate(outFile, rotate);
         }

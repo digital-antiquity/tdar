@@ -106,7 +106,8 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
 		freemarker.addMapping("*.dec");
 	}
 
-	private void configureCxfForTag(ServletContext container) {
+	@SuppressWarnings("unused")
+    private void configureCxfForTag(ServletContext container) {
 		ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
 		cxf.setLoadOnStartup(1);
 		cxf.addMapping("/services/*");

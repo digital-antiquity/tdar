@@ -76,6 +76,7 @@ public class DatasetSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
+    @SuppressWarnings("unused")
     @Test
     public void testCreateDatasetEditSavehasResource() {
         gotoPage("/dataset/add");

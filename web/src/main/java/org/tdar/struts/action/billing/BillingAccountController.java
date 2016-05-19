@@ -108,10 +108,8 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             getGenericService().saveOrUpdate(getAccount());
             updateQuotas();
         }
-        getAccount().getAuthorizedMembers().clear();
-        getAccount().getAuthorizedMembers().addAll(getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class));
-
-        getLogger().info("authorized members: {}", getAccount().getAuthorizedMembers());
+        List<TdarUser> members = getGenericService().loadFromSparseEntities(getAuthorizedMembers(), TdarUser.class);
+        authorizationService.updateAuthorizedMembers(getAccount(),members);
         return SUCCESS;
     }
 

@@ -21,6 +21,7 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
     @Autowired
     SerializationService serializationService;
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testClone() throws Exception {
@@ -42,6 +43,7 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
     }
     
 
+    @SuppressWarnings("deprecation")
     @Test
     @Rollback
     public void testCloneInternalCollection() throws Exception {

@@ -116,12 +116,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return minimumLatitude;
     }
 
-    public Double getCenterLatitude() {
+    public Double getObfuscatedCenterLatitude() {
         return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
     }
 
-    public Double getCenterLongitude() {
+    public Double getObfuscatedCenterLongitude() {
         return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
+    }
+
+    @Deprecated
+    public Double getCenterLatitude() {
+        return (getMaximumLatitude() + getMinimumLatitude()) / 2.0;
+    }
+
+    @Deprecated
+    public Double getCenterLongitude() {
+        return (getMaximumLongitude() + getMinimumLongitude()) / 2.0;
     }
 
     /**
@@ -141,14 +151,14 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         if (!isOkayToShowExactLocation && isObfuscatedObjectDifferent()) {
             return null;
         }
-        return getCenterLatitude();
+        return getObfuscatedCenterLatitude();
     }
 
     public Double getCenterLongitudeIfNotObfuscated() {
         if (!isOkayToShowExactLocation && isObfuscatedObjectDifferent()) {
             return null;
         }
-        return getCenterLongitude();
+        return getObfuscatedCenterLongitude();
     }
 
     /**
@@ -433,7 +443,8 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
-    private boolean isValidLongitudeSpan(double min, double max) {
+    private boolean isValidLongitudeSpan(double min, double max_) {
+        double max = max_;
         if (max < 0 && min > 0) {
             // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
@@ -454,8 +465,16 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         setMaximumLongitude(otherBox.maximumLongitude);
     }
 
-    public double getArea() {
-        return getAbsoluteLatLength() * getAbsoluteLongLength();
+    public double getObfuscatedArea() {
+        return getObfuscatedAbsoluteLatLength() * getObfuscatedAbsoluteLongLength();
+    }
+
+    public double getObfuscatedAbsoluteLatLength() {
+        return Math.abs(getMaxObfuscatedLatitude() - getMinObfuscatedLatitude());
+    }
+
+    public double getObfuscatedAbsoluteLongLength() {
+        return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
     }
 
     public double getAbsoluteLatLength() {
@@ -465,6 +484,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public double getAbsoluteLongLength() {
         return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
     }
+
+    public double getArea() {
+        return getObfuscatedAbsoluteLatLength() * getObfuscatedAbsoluteLongLength();
+    }
+
 
     /**
      * @return

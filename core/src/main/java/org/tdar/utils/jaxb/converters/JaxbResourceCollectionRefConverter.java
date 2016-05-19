@@ -24,6 +24,7 @@ import org.tdar.utils.PersistableUtils;
  */
 @Component
 public class JaxbResourceCollectionRefConverter extends javax.xml.bind.annotation.adapters.XmlAdapter<Persistable, ResourceCollection> {
+    @SuppressWarnings("unused")
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

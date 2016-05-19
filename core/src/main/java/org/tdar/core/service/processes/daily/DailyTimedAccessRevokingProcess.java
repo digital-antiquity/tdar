@@ -30,6 +30,7 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
 
     private static final long serialVersionUID = 7534566757094920406L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
+    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired

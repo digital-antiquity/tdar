@@ -281,7 +281,6 @@ public class GeoSearchDao {
     /*
      * reverse lookup to get a bounding box for a FIPS code or set of fips codes.
      */
-    @Deprecated
     public LatitudeLongitudeBox extractLatLongFromFipsCode(String... fipsCodes) {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         StringBuffer suffix = new StringBuffer();

@@ -35,7 +35,7 @@ import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
-import org.tdar.core.bean.entity.Creator;
+import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -213,6 +213,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.getSourceCollections().add(createSourceCollection("sc three"));
     }
 
+    @SuppressWarnings("unused")
     private void assertSourceAndComparitiveCollections(Resource resource) {
         assertTrue(resource.getRelatedComparativeCollections().size() == 3);
         assertTrue(resource.getSourceCollections().size() == 3);
@@ -303,6 +304,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(new Integer(2222), ((InformationResource) resourceService.find(details.get(1).getFirst())).getDate());
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testBadBulkUploadNewFormat() throws Exception {
@@ -409,6 +411,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         return setupBasicBulkUploadTest(manifestName, successAsync, uploadFiles);
     }
 
+    @SuppressWarnings({ "unused" })
     @Test
     @Rollback
     public void testCloneInformationResourceWithNotes() throws Exception {
@@ -543,7 +546,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })
     public void testCloneImageWithCopyrightEnabled() {
         Image expected = new Image();
-        Creator copyrightHolder = entityService.find(getAdminUserId());
+        Person copyrightHolder = entityService.find(getAdminUserId());
         expected.setCopyrightHolder(copyrightHolder);
         Image image = resourceService.createResourceFrom(expected, expected.getClass());
         assertTrue(copyrightHolder.equals(image.getCopyrightHolder()));

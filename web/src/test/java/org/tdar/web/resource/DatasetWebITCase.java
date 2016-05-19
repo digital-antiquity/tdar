@@ -200,6 +200,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentIgnoreCase(RESTRICTED_ACCESS_TEXT);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testConfidentialDatatableView() {
@@ -233,6 +234,7 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         return substring;
 	}
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.FAIMS })

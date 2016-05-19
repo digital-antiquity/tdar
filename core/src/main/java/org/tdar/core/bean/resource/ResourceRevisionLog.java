@@ -12,7 +12,6 @@ import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.ForeignKey;
 import org.hibernate.annotations.NotFound;
 import org.hibernate.annotations.NotFoundAction;
 import org.hibernate.annotations.Type;
@@ -47,7 +46,7 @@ public class ResourceRevisionLog extends AbstractPersistable {
 
     @ManyToOne(optional = true)
     @NotFound(action = NotFoundAction.IGNORE)
-    @ForeignKey(name = "none")
+//    @ForeignKey(name = "none")
     private Resource resource;
 
     @Temporal(TemporalType.TIMESTAMP)

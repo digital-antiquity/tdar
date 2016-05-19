@@ -200,6 +200,7 @@
                 </form>
 			 
 			 </li>
+            </#if>
 			 <li>
                 <b>Reindex collection contents</b>
                 <form action="/collection/admin/reindex/${id?c}" method="POST">
@@ -214,7 +215,6 @@
                 </form>
 			 
 			 </li>
-                </#if>
          </ul>
             </div>
             </div>

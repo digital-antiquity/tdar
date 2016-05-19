@@ -54,9 +54,8 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 	}
 
 	protected CartController setupPaymentTests(String coupon) throws TdarActionException {
-		InvoiceController controller_ = generateNewInitializedController(InvoiceController.class);
 //		controller_.setCode(coupon);
-		Long invoiceId = setupAndTestBillingAddress(controller_,coupon);
+		Long invoiceId = setupAndTestBillingAddress(coupon);
 		CartController controller = generateNewInitializedController(CartController.class);
 		controller.getSessionData().setInvoiceId(invoiceId);
 		controller.prepare();
@@ -69,7 +68,7 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 	// collect address info?, does our payment processor send it to us, or is
 	// this
 	// feature not used?
-	protected Long setupAndTestBillingAddress(InvoiceController controller_, String code) throws TdarActionException {
+	protected Long setupAndTestBillingAddress(String code) throws TdarActionException {
 		Address address = new Address(AddressType.BILLING, "street", "Tempe", "arizona", "q234", "united states");
 		Address address2 = new Address(AddressType.MAILING, "2street", "notsurewhere", "california", "q234",
 				"united states");
@@ -78,7 +77,7 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 		user.getAddresses().add(address2);
 		genericService.saveOrUpdate(user);
 		evictCache();
-		Long invoiceId = createAndTestInvoiceQuantity(controller_, 10L, code);
+		Long invoiceId = createAndTestInvoiceQuantity(10L, code);
 		CartController controller = generateNewInitializedController(CartController.class);
 		controller.getSessionData().setInvoiceId(invoiceId);
 		controller.prepare();
@@ -99,8 +98,9 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 		return invoiceId;
 	}
 
-	protected Long createAndTestInvoiceQuantity(InvoiceController controller, Long numberOfFiles, String code)
+	protected Long createAndTestInvoiceQuantity(Long numberOfFiles, String code)
 			throws TdarActionException {
+        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
 		logger.debug("setup");
 		controller.prepare();
 		String result = controller.execute();
@@ -153,7 +153,8 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
 	 * pending db transactions occur and to avoid loads from hibernate cache
 	 * instead of the db.
 	 */
-	protected void simulateNewSession() {
+	@SuppressWarnings("deprecation")
+    protected void simulateNewSession() {
 		genericService.synchronize();
 		genericService.clearCurrentSession();
 	}
@@ -236,8 +237,7 @@ public abstract class AbstractCartControllerITCase extends AbstractResourceContr
         BillingAccount account = setupAccountWithInvoiceTenOfEach(accountService.getLatestActivityModel(), getAdminUser());
         Invoice invoice_ = account.getInvoices().iterator().next();
         String code = createCouponForAccount(numFilesForCoupon, 0L, account, invoice_,getAdminUser());
-        InvoiceController controller = generateNewInitializedController(InvoiceController.class);
-        Long invoiceId = createAndTestInvoiceQuantity(controller, numberOfFilesForInvoice, code);
+        Long invoiceId = createAndTestInvoiceQuantity(numberOfFilesForInvoice, code);
         Invoice invoice = genericService.find(Invoice.class, invoiceId);
         invoice.markFinal();
         return invoice;

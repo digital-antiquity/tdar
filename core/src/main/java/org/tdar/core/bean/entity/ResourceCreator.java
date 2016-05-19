@@ -52,6 +52,8 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "rescreator_resid", columnList = "resource_id")
 })
 @Cacheable
+@SuppressWarnings("rawtypes")
+//fixing generics issue -- suppression causes issues with AuthorityManagementService
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.ResourceCreator")
 public class ResourceCreator extends AbstractSequenced<ResourceCreator> implements HasResource<Resource>, Obfuscatable {
 

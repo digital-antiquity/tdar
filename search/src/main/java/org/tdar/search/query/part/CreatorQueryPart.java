@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.slf4j.Logger;
@@ -19,12 +20,13 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
-public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQueryPart<C> {
+public class CreatorQueryPart<C extends Creator<?>> extends AbstractHydrateableQueryPart<C> {
 
     private List<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    @SuppressWarnings("unchecked")
+    private List<ResourceCreator> userInput = new ArrayList<>();
+    
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public CreatorQueryPart(String fieldName, Class<C> creatorClass, C creator, List<ResourceCreatorProxy> proxyList) {
         // set default of "or"
         setOperator(Operator.OR);
@@ -36,13 +38,18 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
                 ResourceCreatorProxy proxy = proxyList.get(i);
                 ResourceCreator rc = proxy.getResourceCreator();
                 if (proxy.isValid()) {
-                    List<Creator> creators = new ArrayList<Creator>();
+                    List<Creator> creators = new ArrayList<>();
                     if (rc.getCreator() instanceof Dedupable<?>) {
-                        creators.addAll(((Dedupable<Creator>) rc.getCreator()).getSynonyms());
+                        creators.addAll(((Dedupable<Creator<?>>) rc.getCreator()).getSynonyms());
                     }
-                    creators.add(rc.getCreator());
+                    if (CollectionUtils.isEmpty(proxy.getResolved())) {
+                        creators.add(rc.getCreator());
+                    } else {
+                        creators.addAll(proxy.getResolved());
+                    }
+                    userInput.add(rc);
                     logger.debug("{}", creators);
-                    for (Creator creator_ : creators) {
+                    for (Creator<?> creator_ : creators) {
                         if (PersistableUtils.isTransient(creator_)) {
                             // user entered a complete-ish creator record but autocomplete callback did fire successfully
                             throw new TdarRecoverableRuntimeException("creatorQueryPart.use_autocomplete", Arrays.asList(creator_.toString()));
@@ -78,7 +85,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
             if (QueryFieldNames.CREATOR_ROLE_IDENTIFIER.equals(getFieldName())) {
                 FieldQueryPart<String> projectChildren = new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, terms);
                 projectChildren.setOperator(Operator.OR);
-                group.append(new FieldJoinQueryPart(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, projectChildren));
+                group.append(new FieldJoinQueryPart<>(QueryFieldNames.PROJECT_ID, QueryFieldNames.ID, projectChildren));
                 group.setOperator(Operator.OR);
             }
 
@@ -88,7 +95,7 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
 
     @Override
     protected String formatValueAsStringForQuery(int index) {
-        Creator c = getFieldValues().get(index);
+        Creator<?> c = getFieldValues().get(index);
         ResourceCreatorRole r = roles.get(index);
         logger.trace("{} {} ", c, r);
         if (r == null) {
@@ -109,8 +116,9 @@ public class CreatorQueryPart<C extends Creator> extends AbstractHydrateableQuer
     @Override
     public String getDescription(TextProvider provider) {
         StringBuilder names = new StringBuilder();
-        for (int i = 0; i < getFieldValues().size(); i++) {
-            Creator creator = getFieldValues().get(i);
+        for (int i = 0; i < userInput.size(); i++) {
+            ResourceCreator rc = userInput.get(i);
+            Creator<?> creator = rc.getCreator();
             ResourceCreatorRole role = getRoles().get(i);
             if ((creator != null) && !creator.hasNoPersistableValues()) {
                 if (names.length() > 0) {

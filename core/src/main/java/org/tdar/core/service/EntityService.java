@@ -220,7 +220,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      */
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = false)
-    public <C extends Creator> C findOrSaveCreator(C transientCreator) {
+    public <C extends Creator<?>> C findOrSaveCreator(C transientCreator) {
         C creatorToReturn = null;
 
         if (transientCreator instanceof Person) {
@@ -417,7 +417,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public Creator findAuthorityFromDuplicate(Creator dup) {
+    public Creator<?> findAuthorityFromDuplicate(Creator<?> dup) {
         if (PersistableUtils.isNullOrTransient(dup) || !dup.isDuplicate()) {
             return null;
         }
@@ -454,7 +454,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @return
      */
     @Transactional(readOnly = true)
-    public Long getCreatorViewCount(Creator creator) {
+    public Long getCreatorViewCount(Creator<?> creator) {
         if (PersistableUtils.isNullOrTransient(creator)) {
             return 0L;
         }
@@ -463,7 +463,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = true)
     public void findResourceCreator(ResourceCreator creator) {
-        Creator incomingCreator = creator.getCreator();
+        Creator<?> incomingCreator = creator.getCreator();
         if (incomingCreator instanceof Person) {
             incomingCreator = findPerson((Person) incomingCreator);
         }
@@ -479,14 +479,14 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     @Transactional(readOnly = false)
-    public void deleteForController(Creator creator, String deletionReason, TdarUser authenticatedUser) {
+    public void deleteForController(Creator<?> creator, String deletionReason, TdarUser authenticatedUser) {
     	creator.setStatus(Status.DELETED);
     	getDao().saveOrUpdate(creator);
         publisher.publishEvent(new TdarEvent(creator, EventType.CREATE_OR_UPDATE));
     }
 
     @Transactional(readOnly = true)
-    public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator persistable) {
+    public DeleteIssue getDeletionIssues(TextProvider textProvider, Creator<?> persistable) {
         return null;
     }
 
@@ -543,7 +543,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().getAffiliationCounts(true);
     }
 
-    public String createSchemaOrgJson(Creator creator, String logoUrl) throws IOException {
+    public String createSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException {
         SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
         return transformer.convert(serializationService, creator, logoUrl);
     }

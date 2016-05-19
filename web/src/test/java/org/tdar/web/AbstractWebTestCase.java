@@ -151,6 +151,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         }
     };
 
+    @SuppressWarnings("unused")
     private HtmlElement documentElement;
     protected boolean skipHtmlValidation = false;
 
@@ -184,7 +185,8 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         return null;
     }
 
-    public String pathToUrl(String localPath) {
+    public String pathToUrl(String localPath_) {
+        String localPath = localPath_;
         String prefix = getBaseUrl();
         try {
             URL current = internalPage.getUrl();
@@ -1299,7 +1301,8 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
     /*
      * add new account, add another, make sure account names are all ok
      */
-    protected String addInvoiceToNewAccount(String invoiceId, String accountId, String accountName) {
+    protected String addInvoiceToNewAccount(String invoiceId, String accountId, String _accountName) {
+        String accountName = _accountName;
         if (accountName == null) {
             accountName = MY_TEST_ACCOUNT;
         }
@@ -1345,10 +1348,10 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         return internalPage.getWebResponse().getStatusCode();
     }
 
-    public void completeLoginForm(String user, String pass, boolean expectingErrors) {
+    public void completeLoginForm(String user_, String pass_, boolean expectingErrors) {
         setMainForm("loginForm");
-        user = CONFIG.getUsername(user);
-        pass = CONFIG.getPassword(pass);
+        String user = CONFIG.getUsername(user_);
+        String pass = CONFIG.getPassword(pass_);
         // logger.info(user + ":" + pass);
         setInput("userLogin.loginUsername", user);
         setInput("userLogin.loginPassword", pass);
@@ -1386,6 +1389,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
 
     public void testRegister(Map<String, String> values, TERMS terms) {
 
+        @SuppressWarnings("unused")
         String username = values.get("registration.person.username");
         gotoPage("/");
         logger.trace(getPageText());

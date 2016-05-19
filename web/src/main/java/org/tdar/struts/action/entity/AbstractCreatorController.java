@@ -19,7 +19,7 @@ import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractCreatorController<T extends Creator> extends AbstractPersistableController<T> {
+public abstract class AbstractCreatorController<T extends Creator<?>> extends AbstractPersistableController<T> {
 
     public static final String ADDRESS_IS_NOT_VALID = "address is not valid";
 
@@ -120,7 +120,7 @@ public abstract class AbstractCreatorController<T extends Creator> extends Abstr
         return Arrays.asList(AddressType.values());
     }
 
-    public Creator getCreator() {
+    public Creator<?> getCreator() {
         return getPersistable();
     }
 

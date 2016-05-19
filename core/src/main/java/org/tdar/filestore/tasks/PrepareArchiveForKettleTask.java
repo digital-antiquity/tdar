@@ -48,7 +48,6 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
 
     private static final String NEW_TARBALL_TEMPLATE_KEY = "new_tarball";
     // in time the template/templates can be moved to a file
-    @SuppressWarnings("el-syntax")
     private static final String XML_TEMPLATE_NEW_TARBALL = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" + lineSeparator() +
             "<run_settings>" + lineSeparator() +
             "    <file_name>${" + FILE_NAME + "}</file_name>" + lineSeparator() +
@@ -79,6 +78,7 @@ public class PrepareArchiveForKettleTask extends AbstractTask {
     private static Template loadFreemarkerTemplate() throws IOException {
         StringTemplateLoader loader = new StringTemplateLoader();
         loader.putTemplate(NEW_TARBALL_TEMPLATE_KEY, XML_TEMPLATE_NEW_TARBALL);
+        @SuppressWarnings("deprecation")
         Configuration configuration = new Configuration();
         configuration.setTemplateLoader(loader);
         return configuration.getTemplate(NEW_TARBALL_TEMPLATE_KEY);

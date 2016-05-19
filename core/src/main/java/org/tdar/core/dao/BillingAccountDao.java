@@ -56,7 +56,8 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     @SuppressWarnings("unchecked")
-    public List<BillingAccount> findAccountsForUser(Person user, Status... statuses) {
+    public List<BillingAccount> findAccountsForUser(Person user, Status... statuses_) {
+        Status[] statuses = statuses_;
         if (ArrayUtils.isEmpty(statuses)) {
             statuses = new Status[] { Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE };
         }
@@ -258,7 +259,8 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
      * @param resourcesToEvaluate
      * @return
      */
-    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate) {
+    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate_) {
+        Collection<Resource> resourcesToEvaluate = resourcesToEvaluate_;
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
 
@@ -402,7 +404,8 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
      * @param status
      * @return
      */
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status) {
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status_) {
+        AccountAdditionStatus status = status_;
         markResourcesAsFlagged(helper.getFlagged());
         unMarkResourcesAsFlagged(helper.getUnflagged());
         logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged().size());

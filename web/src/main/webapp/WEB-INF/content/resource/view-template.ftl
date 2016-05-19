@@ -445,18 +445,25 @@
 
     <div class="row">
         <div id='large-map' style="height:300px" class="leaflet-map span9" 
-        data-maxy="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" 
-        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
-        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
-        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"></div>
+	        data-maxy="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" 
+	        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
+	        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
+	        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"
+        <#if userAbleToViewUnobfuscatedMap && resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent>
+	        data-real-maxy="${resource.firstActiveLatitudeLongitudeBox.maximumLatitude}" 
+	        data-real-minx="${resource.firstActiveLatitudeLongitudeBox.minimumLongitude}"
+	        data-real-maxx="${resource.firstActiveLatitudeLongitudeBox.maximumLongitude}"
+	        data-real-miny="${resource.firstActiveLatitudeLongitudeBox.minimumLatitude}"
+        </#if>
+        ></div>
     </div>
+    <#--
     <div id="divCoordContainer" style="display:none">
         <input type="hidden" class="ne-lat" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy"/>
         <input type="hidden" class="sw-lng" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx"/>
         <input type="hidden" class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx"/>
         <input type="hidden" class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}" id="miny"/>
     </div>
-        <#--
         <#elseif ableToViewConfidentialFiles && geoJson??>
             <div class="row">
             <div id='large-map' style="height:300px" class="leaflet-map span9"></div>

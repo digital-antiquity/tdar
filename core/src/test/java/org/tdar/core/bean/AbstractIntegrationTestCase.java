@@ -254,7 +254,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return createAndSaveNewPerson(null, "");
     }
 
-    public TdarUser createAndSaveNewPerson(String email, String suffix) {
+    public TdarUser createAndSaveNewPerson(String email_, String suffix) {
+        String email = email_;
         if (StringUtils.isBlank(email)) {
             email = TestConstants.DEFAULT_EMAIL;
         }
@@ -580,6 +581,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     }
 
+    @SuppressWarnings("deprecation")
     public void evictCache() {
         genericService.synchronize();
     }

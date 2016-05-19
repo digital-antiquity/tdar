@@ -98,7 +98,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         assertTrue("country search found item not in US", found);
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     @Rollback(true)
     @Ignore("FIXME: indexing")
@@ -226,7 +225,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
         Set<GeographicKeyword> extractAllGeographicInfo = geoSearchService.extractAllGeographicInfo(latLong);
         boolean found = false;
         boolean found2 = false;
-        boolean found3 = false;
         // logger.info("{}",extractAllGeographicInfo);
         for (GeographicKeyword kwd : extractAllGeographicInfo) {
             if (kwd.getLevel() == Level.COUNTRY) {

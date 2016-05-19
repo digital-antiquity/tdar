@@ -67,6 +67,7 @@ public class MultipleTdarConfigurationRunner extends SpringJUnit4ClassRunner {
         setConfiguration(method, currentConfig);
     }
 
+    @SuppressWarnings("deprecation")
     protected void setConfiguration(final FrameworkMethod method, String config) {
         TdarConfiguration.getInstance().setConfigurationFile(config);
     }

@@ -391,6 +391,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         assertTrue(found);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testCodingSheetMapping() throws Exception {
@@ -398,6 +399,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         Dataset dataset = setupDatasetWithCodingSheet(codingSheet);
     }
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testCodingSheetMappingReplace2() throws Exception {
@@ -528,6 +530,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
     }
 
 
+    @SuppressWarnings("unused")
     @Test
     @Rollback
     public void testgeneratedCodingSheet() throws Exception {

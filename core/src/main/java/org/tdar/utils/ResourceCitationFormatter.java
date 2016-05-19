@@ -133,7 +133,8 @@ public class ResourceCitationFormatter implements Serializable {
         return sb.toString();
     }
 
-    private StringBuilder appendDate(StringBuilder sb, InformationResource doc) {
+    private StringBuilder appendDate(StringBuilder sb_, InformationResource doc) {
+        StringBuilder sb = sb_;
         if ((doc.getDate() != null) && (doc.getDate() != -1)) {
             if (sb.length() > 0 && sb.substring(sb.length() - 1).equals(".")) {
                 sb = new StringBuilder(sb.substring(0, sb.length() -1));

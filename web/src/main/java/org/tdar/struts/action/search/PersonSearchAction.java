@@ -35,7 +35,7 @@ public class PersonSearchAction extends AbstractLookupController<Person> {
     private String query;
 
     @Autowired
-    private CreatorSearchService creatorSearchService;
+    private CreatorSearchService<Person> creatorSearchService;
     
     @Action(value = "people", results = {
             @Result(name = SUCCESS, location = "people.ftl"),

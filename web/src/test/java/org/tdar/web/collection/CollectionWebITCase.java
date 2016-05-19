@@ -251,6 +251,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
     
 
+    @SuppressWarnings("unused")
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights

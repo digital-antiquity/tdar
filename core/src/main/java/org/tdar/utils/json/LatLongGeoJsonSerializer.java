@@ -56,8 +56,8 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
         jgen.writeStringField("detailUrl", UrlService.absoluteUrl(value.getResource()));
         if (value.getResource() instanceof InformationResource && value.getResource().isHasBrowsableImages()) {
             InformationResource ir = ((InformationResource) value.getResource());
-            InformationResourceFileVersion t = null;
             for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
+                InformationResourceFileVersion t = irf.getLatestThumbnail();
                 if (t != null) {
                     jgen.writeStringField("thumbnailUrl", UrlService.thumbnailUrl(t));
                     break;

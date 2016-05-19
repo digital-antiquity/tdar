@@ -28,7 +28,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
-import org.tdar.core.service.AuthorityManagementService;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ScheduledProcessService;
@@ -74,9 +73,6 @@ public class AdminController extends AbstractAuthenticatableAction {
 
     @Autowired
     private transient EntityService entityService;
-
-    @Autowired
-    private transient AuthorityManagementService authorityManagementService;
 
     private List<ResourceRevisionLog> resourceRevisionLogs;
 

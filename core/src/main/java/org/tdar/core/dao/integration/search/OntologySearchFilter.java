@@ -18,6 +18,7 @@ public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
         this.categoryVariableId = categoryVariableId;
     }
 
+    @SuppressWarnings("unused")
     @Deprecated
     //"ignore, required for hibernate"
     private void setHasDatasets(boolean b) {
@@ -32,6 +33,7 @@ public class OntologySearchFilter extends AbstractIntegrationSearchFilter {
         return dataTableIds;
     }
 
+    @SuppressWarnings("unused")
     @Deprecated
     //"ignore, required for hibernate"
     private void setPaddedDataTableIds(List<Long> id) {
