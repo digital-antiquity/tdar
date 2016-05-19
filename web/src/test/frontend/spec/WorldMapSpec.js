@@ -40,6 +40,12 @@ describe("worldmap tests (tdar.worldmap.js)", function() {
                 }
             ]
         }
+    
+    var locales = {
+            "DOCUMENT": "Document",
+            "DOCUMENT_PLURAL" : "Documents"
+    }
+    
     beforeEach(function() {
         //jasmine.Ajax.install();
     });
@@ -59,8 +65,10 @@ describe("worldmap tests (tdar.worldmap.js)", function() {
         var $mapcontainer = $j('<div id="mapcontainer"></div>');
         var $script = $j('<script type="application/json" data-mapdata></script>');
         $script.html(JSON.stringify(mapdata));
+        var $script2 = $j('<script type="application/json" data-locales></script>');
+        $script2.html(JSON.stringify(locales));
         var $mapdiv = $j('<div id="worldmap"></div>');
-        $mapcontainer.append($script).append($mapdiv);
+        $mapcontainer.append($script).append($script2).append($mapdiv);
         setFixtures($mapcontainer);
     };
 

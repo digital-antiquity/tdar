@@ -193,6 +193,9 @@ Common macros used in multiple contexts
         <script type="application/json" data-mapdata>
 			<#noescape>${mapJson}</#noescape>
         </script>
+        <script type="application/json" data-locales>
+			<#noescape>${resourceTypeLocaleJson}</#noescape>
+        </script>
 
              <div id="worldmap" style="height:350px" data-max="">
              </div>

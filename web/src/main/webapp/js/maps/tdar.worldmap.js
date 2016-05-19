@@ -1,6 +1,6 @@
 TDAR.worldmap = (function(console, $, ctx) {
     "use strict";
-
+    var _PLURAL = "_PLURAL";
     var hlayer;
     var geodata = {};
     var map;
@@ -10,6 +10,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     var overlay = false;
     var allData = new Array();
     var clickId;
+    var locales;
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
 
@@ -42,6 +43,11 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     function _getMapdata(containerElem) {
         var json = $(containerElem).find('script[data-mapdata]').text() || 'null';
+        return JSON.parse(json);
+    }
+
+    function _getLocaleData(containerElem) {
+        var json = $(containerElem).find('script[data-locales]').text() || 'null';
         return JSON.parse(json);
     }
 
@@ -90,7 +96,8 @@ TDAR.worldmap = (function(console, $, ctx) {
             return;
         }
         $mapDiv = $("#" + mapId);
-        var mapdata = _getMapdata($mapDiv.parent());
+        var $parent = $mapDiv.parent();
+        var mapdata = _getMapdata($parent);
         var c3_ = $("#c3colors");
         if (c3_.length > 0) {
             c3colors = JSON.parse(c3_.html());
@@ -112,6 +119,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         });
         var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
         _initializeGeoData(mapdata);
+        locales = _getLocaleData($parent);
         _setupLegend(map, grades, _getColor, max);
         _resetView();
 
@@ -255,10 +263,15 @@ TDAR.worldmap = (function(console, $, ctx) {
                 return d.value == id
             });
 
+            // go through the results and get the pivot values from the SOLR json
             filter.forEach(function(row) {
                 row.pivot.forEach(function(pvalue) {
                     if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
-                        data.push([ pvalue.value, pvalue.count ]);
+                        var label = locales[pvalue.value + _PLURAL];
+                        if (parseInt(pvalue.count) == 1) {
+                            label = locales[pvalue.value];
+                        }
+                        data.push([label, pvalue.count ]);
                     }
                 });
             });
@@ -267,8 +280,10 @@ TDAR.worldmap = (function(console, $, ctx) {
             if (allData.length == 0) {
                 var tmp = {};
                 data.forEach(function(row) {
+                    // for every state
                     if (row.value.length == 3) {
                         row.pivot.forEach(function(pvalue) {
+                            // for every pivot value
                             if (parseInt(pvalue.count) && pvalue.count > 0 && pvalue.field == "resourceType") {
                                 var t = 0;
                                 if (parseInt(tmp[pvalue.value])) {
@@ -282,7 +297,12 @@ TDAR.worldmap = (function(console, $, ctx) {
 
                 for ( var type in tmp) {
                     if (tmp.hasOwnProperty(type)) {
-                        allData.push([ type, tmp[type] ]);
+                        var val = tmp[type];
+                        var label = locales[type + _PLURAL];
+                        if (val == 1) {
+                            label = locales[type];
+                        }
+                        allData.push([ label, val ]);
                     }
                 }
                 ;
@@ -296,7 +316,16 @@ TDAR.worldmap = (function(console, $, ctx) {
                 columns : data,
                 type : 'pie',
                 onclick : function(d, element) {
-                    var uri = "/search/results?resourceTypes=" + d.id;
+                    var key = "";
+                    for (var i in locales) {
+                        if (d.id === locales[i]) {
+                            key = i;
+                        }
+                    }
+                    if (key.indexOf(_PLURAL) > 0) {
+                        key = key.substring(0,key.length - _PLURAL.length);
+                    }
+                    var uri = "/search/results?resourceTypes=" + key;
                     if (clickId != undefined && name != undefined) {
                         uri += "&geographicKeywords=" + name;
                         if (clickId.length == 3) {
