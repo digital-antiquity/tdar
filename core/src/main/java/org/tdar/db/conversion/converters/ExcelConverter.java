@@ -16,6 +16,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -47,6 +49,7 @@ public class ExcelConverter extends DatasetConverter.Base {
     private Workbook workbook;
     // private DataFormatter formatter = new HSSFDataFormatter();
     private final Logger logger = LoggerFactory.getLogger(getClass());
+    private boolean xssfEnabled = false;
 
     @Override
     public String getDatabasePrefix() {
@@ -75,10 +78,14 @@ public class ExcelConverter extends DatasetConverter.Base {
             return;
         }
         try {
-            // XSSFReaderHelper helper = new XSSFReaderHelper();
-            // helper.openFile(excelFile);
-            // helper.processSheet(null, 25);
-            workbook = WorkbookFactory.create(new FileInputStream(excelFile));
+
+            if (xssfEnabled && StringUtils.endsWithIgnoreCase(excelFile.getName(), "xlsx")) {
+                workbook = new SXSSFWorkbook(new XSSFWorkbook(excelFile), 100);
+                logger.debug("# sheets {}", workbook.getNumberOfSheets());
+            } else {
+                // helper.processSheet(null, 25);
+                workbook = WorkbookFactory.create(new FileInputStream(excelFile));
+            }
         } catch (NullPointerException npe) {
             logger.error("{}", npe);
         } catch (InvalidFormatException exception) {

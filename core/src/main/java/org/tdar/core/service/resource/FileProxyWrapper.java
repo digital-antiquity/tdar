@@ -129,7 +129,9 @@ public class FileProxyWrapper {
         InformationResourceFile irFile = proxy.getInformationResourceFile();
         incrementVersionNumber(irFile);
         // genericDao.saveOrUpdate(resource);
-        datasetDao.saveOrUpdate(informationResource);
+        if (informationResource.isTransient()) {
+            datasetDao.saveOrUpdate(informationResource);
+        }
         irFile.setInformationResource(informationResource);
         proxy.setInformationResourceFileVersion(createVersionMetadataAndStore(proxy));
         setInformationResourceFileMetadata(proxy);
