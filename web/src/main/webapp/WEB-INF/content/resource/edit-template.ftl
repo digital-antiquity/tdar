@@ -279,7 +279,8 @@
                 <div class="control-group">
                     <label class="control-label">Project</label>
                     <div class="controls">
-                        <select name="projectId" class="resource-autocomplete" tabindex="-1" aria-hidden="true" style="width:100%"
+                        <div class="">
+                        <select name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
                                 data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
                                 data-allow-clear="true"
                                 data-placeholder="Search for a project..."
@@ -287,10 +288,12 @@
                             <option value=""></option>
                             <option value="-1">No parent project</option>
                             <#if resource.project?has_content && resource.project.id &gt; -1>
-                                <option value="${resource.project.id?c}">${resource.project.title}</option>
+                                <option selected="selected" value="${resource.project.id?c}">${resource.project.title}</option>
                             </#if>
                         </select>
                     </div>
+
+                        </div>
                 </div>
 
             <#else>

@@ -5,7 +5,7 @@ TDAR.select2autocomplete = (function ($, ctx) {
     var _getDefaults = function () {
         return  {
             tokenSeparators: [";", "|"],
-            minimumInputLength: 3,
+            minimumInputLength: 0,
             ajax: {
                 delay: 250,
                 cache: true,

@@ -62,19 +62,21 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <#macro keywordRows label keywordList keywordField className showDelete=true addAnother="add another keyword">
     
 		<#if useSelect2>
-                    <@select2 label keywordList keywordField className />
-			<#return />
+                <@select2 label keywordList keywordField className />
+        <#else>
+            <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
+                <label class="control-label">${label}</label>
+                <#list keywordList as keyword>
+                    <@_keywordRow keywordField keyword_index showDelete />
+                <#else>
+                    <@_keywordRow keywordField />
+                </#list>
+            </div>
 		</#if>
+
     
-    <div class="control-group repeatLastRow" id="${keywordField}Repeatable" data-add-another="${addAnother}">
-        <label class="control-label">${label}</label>
-        <#list keywordList as keyword>
-                <@_keywordRow keywordField keyword_index showDelete />
-			<#else>
-	            <@_keywordRow keywordField />
-            </#list>
-    </div>
     </#macro>
+
     <#macro _keywordRow keywordField keyword_index=0 showDelete=true>
     <div class="controls controls-row" id='${keywordField}Row_${keyword_index}_'>
         <div class="span7">
@@ -87,14 +89,20 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     </#macro>
 
     <#macro select2 title array prefix type>
-    <h5>${title}</h5>
-    <select class="keyword-autocomplete form-control select2-hidden-accessible" multiple="" tabindex="-1" aria-hidden="true" style="width:100%"
-        name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type}&" id="${prefix}Repeatable">
-        <#list array![] as term>
-        	<#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
-        </#list>
-    </select>
-    <p class="note">use a ; or | to separate multiple keywords when entering them, or simply use the autocomplete</p>
+    <div class="control-group">
+        <label class="control-label">${title}</label>
+        <div class="controls">
+            <select class="keyword-autocomplete form-control select2-hidden-accessible input-xxlarge" multiple="multiple" tabindex="-1" aria-hidden="true"
+                name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type?url}" id="${prefix}Repeatable" style="width:100%">
+                <#list array![] as term>
+                    <#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
+                </#list>
+            </select>
+            <span class="help-block">Use  <kbd>&semi;</kbd> or <kbd>|</kbd> to separate multiple keywords when entering them, or
+                simply use the autocomplete</span>
+        </div>
+    </div>
+
     </#macro>
 
 
