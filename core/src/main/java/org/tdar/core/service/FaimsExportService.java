@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.compress.utils.IOUtils;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,60 +61,22 @@ public class FaimsExportService {
         boolean skip = false;
         Map<Long, Long> projectIdMap = uploadProjects(accountId, client, skip);
         logger.debug("done projects");
-        Filestore filestore = TdarConfiguration.getInstance().getFilestore();
-        for (Long id : genericService.findAllIds(InformationResource.class)) {
-            InformationResource resource = genericService.find(InformationResource.class, id);
-            if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
-                continue;
-            }
-            List<File> files = new ArrayList<>();
-            logger.debug("{} -- {}", id, resource.getTitle());
-            for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
-                InformationResourceFileVersion version = file.getLatestUploadedVersion();
-                if (resource instanceof CodingSheet) {
-                    if (file.getCurrentVersion(VersionType.UPLOADED_TEXT) != null) {
-                        version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
-                        File transientFile = version.getTransientFile();
-                        if (resource instanceof CodingSheet) {
-                            File tmp = new File(CONFIG.getTempDirectory(),transientFile.getName().replace(".txt", ".csv"));
-                            version.setTransientFile(tmp);
-                        }
-//                        if (resource instanceof Ontology) {
-//                            
-//                            version.setTransientFile(tmp);
-//                        }
-                    }
-                }
-                
-//                logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
-                try {
-                    File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
-                    files.add(retrieveFile);
-                } catch (FileNotFoundException e) {
-                    logger.error("cannot find file: {}", e, e);
-                }
-            }
-//            logger.debug(" --> {}", files);
-            String output = export(resource, projectIdMap.get(resource.getProjectId()));
-            if (resource instanceof CodingSheet) {
-                // logger.debug(output);
-            }
-            if (skip) {
-                genericService.clearCurrentSession();
-                continue;
-            }
+        final File out = new File("project-map.txt");
+        projectIdMap.entrySet().forEach(e -> {
             try {
-                ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
-                projectIdMap.put(id, uploadRecord.getTdarId());
-                logger.debug("status: {}", uploadRecord.getStatusLine());
-                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
-                        && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
-                    logger.warn(uploadRecord.getBody());
-                }
-            } catch (IOException e) {
-                logger.error("error uploading", e);
+                FileUtils.writeStringToFile(out, String.format("%s\t%s\n", e.getKey(), e.getValue()));
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
             }
+        });
 
+        for (Long id : genericService.findAllIds(InformationResource.class)) {
+            try {
+            processResource(id, projectIdMap, skip, client, accountId);
+            } catch (Throwable t) {
+                logger.error("error processing FAIMS resource: {}", t,t);
+            }
             genericService.clearCurrentSession();
             try {
                 Thread.sleep(30000);
@@ -122,6 +85,67 @@ public class FaimsExportService {
                 e.printStackTrace();
             }
         }
+    }
+
+    private void processResource(Long id, Map<Long, Long> projectIdMap, boolean skip, APIClient client, Long accountId) {
+        Filestore filestore = TdarConfiguration.getInstance().getFilestore();
+
+        InformationResource resource = genericService.find(InformationResource.class, id);
+        if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
+            return;
+        }
+        List<File> files = new ArrayList<>();
+        logger.debug("{} -- {}", id, resource.getTitle());
+        for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
+            InformationResourceFileVersion version = file.getLatestUploadedVersion();
+            if (resource instanceof CodingSheet) {
+                if (file.getCurrentVersion(VersionType.UPLOADED_TEXT) != null) {
+                    version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
+                    if (resource instanceof CodingSheet) {
+                        try {
+                            File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                            File tmp = new File(CONFIG.getTempDirectory(), retrieveFile.getName().replace(".txt", ".csv"));
+                            version.setTransientFile(tmp);
+                        } catch (FileNotFoundException e1) {
+                            logger.error("exception renaming file:", e1);
+                        }
+                    }
+                    // if (resource instanceof Ontology) {
+                    //
+                    // version.setTransientFile(tmp);
+                    // }
+                }
+            }
+
+            // logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
+            try {
+                File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                files.add(retrieveFile);
+            } catch (FileNotFoundException e) {
+                logger.error("cannot find file: {}", e, e);
+            }
+        }
+        // logger.debug(" --> {}", files);
+        String output = export(resource, projectIdMap.get(resource.getProjectId()));
+        if (resource instanceof CodingSheet) {
+            // logger.debug(output);
+        }
+        if (skip) {
+            genericService.clearCurrentSession();
+            return;
+        }
+        try {
+            ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
+            projectIdMap.put(id, uploadRecord.getTdarId());
+            logger.debug("status: {}", uploadRecord.getStatusLine());
+            if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+                    && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+                logger.warn(uploadRecord.getBody());
+            }
+        } catch (IOException e) {
+            logger.error("error uploading", e);
+        }
+
     }
 
     private Map<Long, Long> uploadProjects(Long accountId, APIClient client, boolean skip) {
