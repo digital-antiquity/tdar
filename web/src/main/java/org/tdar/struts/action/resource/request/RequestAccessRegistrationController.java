@@ -1,6 +1,7 @@
 package org.tdar.struts.action.resource.request;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -38,7 +39,7 @@ public class RequestAccessRegistrationController extends AbstractRequestAccessCo
     private AuthenticationService authenticationService;
 
     @Action(value = "process-request-registration",
-            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
             results = {
                     @Result(name = INPUT, location = "request-access-unauthenticated.ftl"),
                     @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SUCCESS_REDIRECT_REQUEST_ACCESS)})

@@ -121,6 +121,18 @@
                 </interceptor-ref>
             </interceptor-stack>
 
+            <interceptor-stack name="registrationStack">
+                <!-- default stack for tDAR - not writable, does not have 
+                    params-prepare-params -->
+                <interceptor-ref name="tdarDefaultStack" />
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
 
             <interceptor-stack name="unauthenticatedStack">
                 <!-- default stack for tDAR - not writable, does not have 
