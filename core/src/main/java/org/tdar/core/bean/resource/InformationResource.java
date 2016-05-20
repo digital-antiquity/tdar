@@ -211,6 +211,10 @@ public abstract class InformationResource extends Resource {
     public static final String CULTURE_INHERITANCE_TOGGLE = "inheriting_cultural_information";
     public static final String TEMPORAL_INHERITANCE_TOGGLE = "inheriting_temporal_information";
 
+    private transient List<FileProxy> fileProxies = new ArrayList<>();
+    @Transient
+    private transient ResourceAccessType transientAccessType;
+
     // downward inheritance sections
     @Column(name = INVESTIGATION_TYPE_INHERITANCE_TOGGLE, nullable = false, columnDefinition = "boolean default FALSE")
     private boolean inheritingInvestigationInformation = false;
@@ -513,6 +517,9 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     public ResourceAccessType getResourceAccessType() {
+        if (transientAccessType != null) {
+            return transientAccessType;
+        }
         int totalFiles = getNonDeletedFiles().size();
         int publicFiles = getPublicFiles().size();
         if (totalFiles > 0) {
@@ -754,7 +761,6 @@ public abstract class InformationResource extends Resource {
     public List<InformationResourceFile> getConfidentialFiles() {
         return getFilesWithRestrictions(true);
     }
-
 
     @Transient
     @XmlTransient
@@ -1023,8 +1029,6 @@ public abstract class InformationResource extends Resource {
         this.doi = doi;
     }
 
-    private transient List<FileProxy> fileProxies = new ArrayList<>();
-
     @XmlElementWrapper(name = "fileProxies")
     @XmlElement(name = "fileProxy")
     public List<FileProxy> getFileProxies() {
@@ -1033,5 +1037,15 @@ public abstract class InformationResource extends Resource {
 
     public void setFileProxies(List<FileProxy> fileProxies) {
         this.fileProxies = fileProxies;
+    }
+
+    @XmlTransient
+    @JsonIgnore
+    public ResourceAccessType getTransientAccessType() {
+        return transientAccessType;
+    }
+
+    public void setTransientAccessType(ResourceAccessType transientAccessType) {
+        this.transientAccessType = transientAccessType;
     }
 }

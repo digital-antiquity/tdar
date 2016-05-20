@@ -16,7 +16,7 @@ public enum ProjectionModel {
 					QueryFieldNames.NAME_SORT, QueryFieldNames.SUBMITTER_ID, QueryFieldNames.PROJECT_TITLE,
 					QueryFieldNames.RESOURCE_COLLECTION_IDS,
 					QueryFieldNames.DESCRIPTION, QueryFieldNames.DATE, QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS,
-					QueryFieldNames.FILE_IDS, QueryFieldNames.STATUS, QueryFieldNames.RESOURCE_TYPE);
+					QueryFieldNames.FILE_IDS, QueryFieldNames.STATUS, QueryFieldNames.RESOURCE_TYPE, QueryFieldNames.RESOURCE_ACCESS_TYPE);
 		}
 		return projections;
 	}
