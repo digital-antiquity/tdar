@@ -68,6 +68,14 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Ignore
+    @Rollback
+    public void testGEoTIFF() throws Exception {
+        InformationResourceFile informationResourceFile = testFileProcessing(new File("/Users/abrin/udig-workspace/Map.tif"), true);
+        assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
+    }
+
+    @Test
     @Rollback
     public void testGPSImageStatus() throws Exception {
         String filename = "gps_photo.jpg";
@@ -100,18 +108,17 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     // assertEquals(FileStatus.PROCESSING_ERROR, informationResourceFile.getStatus());
     // }
 
-    private InformationResourceFile testFileProcessing(String filename, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
+    private InformationResourceFile testFileProcessing(File f, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
             Exception {
-        File f = new File(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
         Filestore store = TdarConfiguration.getInstance().getFilestore();
 
-        InformationResourceFileVersion originalVersion = generateAndStoreVersion(SensoryData.class, filename, f, store);
+        InformationResourceFileVersion originalVersion = generateAndStoreVersion(SensoryData.class, f.getName(), f, store);
         FileType fileType = fileAnalyzer.analyzeFile(originalVersion);
         assertEquals(FileType.IMAGE, fileType);
         Workflow workflow = fileAnalyzer.getWorkflow(originalVersion);
         assertEquals(ImageWorkflow.class, workflow.getClass());
         boolean result = messageService.sendFileProcessingRequest(workflow, originalVersion);
-        FileProxy proxy = new FileProxy(filename, f, VersionType.UPLOADED);
+        FileProxy proxy = new FileProxy(f.getName(), f, VersionType.UPLOADED);
         proxy.setInformationResourceFileVersion(originalVersion);
         proxy.setInformationResourceFile(originalVersion.getInformationResourceFile());
         WorkflowResult workflowResult = new WorkflowResult(Arrays.asList(proxy));
@@ -122,5 +129,11 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
         informationResourceFile = genericService.find(InformationResourceFile.class, informationResourceFile.getId());
         assertEquals(successful, result);
         return informationResourceFile;
+    }
+
+    private InformationResourceFile testFileProcessing(String filename, boolean successful) throws InstantiationException, IllegalAccessException, IOException,
+            Exception {
+        File f = new File(TestConstants.TEST_IMAGE_DIR + "/sample_image_formats/", filename);
+        return testFileProcessing(f, successful);
     }
 }
