@@ -97,6 +97,13 @@ TDAR.select2autocomplete = (function ($, ctx) {
 
         }));
 
+        // Register clear button for resource autocompletes
+        $('.btn-clear-select').on("click", function() {
+            var $elem = $(this);
+            //clear any inputs that share the same parent as the select2 component
+            $elem.parent().find(".resource-autocomplete").val(null).trigger("change");
+        });
+
 
         $(".losenge").click(function (e) {
             e.stopPropagation();
