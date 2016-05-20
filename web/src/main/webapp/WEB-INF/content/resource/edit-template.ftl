@@ -275,7 +275,7 @@
             <h4>Choose a Project</h4>
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-            <#if select2Enabled>
+            <#if select2SingleEnabled>
                 <div class="control-group">
                     <label class="control-label">Project</label>
                     <div class="controls">

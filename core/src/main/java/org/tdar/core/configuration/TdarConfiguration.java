@@ -962,6 +962,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("select2.enabled", false);
     }
 
+    public boolean isSelect2SingleEnabled() {
+        return assistant.getBooleanProperty("select2.single.enabled", false);
+    }
+
     public boolean shouldShowExactLocationToThoseWhoCanEdit() {
         return assistant.getBooleanProperty("show.exact.location.to.editable", false);
     }

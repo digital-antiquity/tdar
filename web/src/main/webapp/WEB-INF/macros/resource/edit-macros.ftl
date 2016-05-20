@@ -98,8 +98,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                     <#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
                 </#list>
             </select>
-            <span class="help-block">Use  <kbd>&semi;</kbd> or <kbd>|</kbd> to separate multiple keywords when entering them, or
-                simply use the autocomplete</span>
+            <span class="help-block">Use  <kbd>&semi;</kbd> or <kbd>|</kbd> to separate multiple keywords.</span>
         </div>
     </div>
 
