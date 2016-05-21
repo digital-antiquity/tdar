@@ -1,7 +1,6 @@
 package org.tdar.struts.action.download;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -35,7 +34,7 @@ public class DownloadRegistrationController extends AbstractDownloadController i
     private AuthenticationService authenticationService;
 
     @Action(value = "process-download-registration",
-            interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
+            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
             results = {
                     @Result(name = INPUT, location = "../filestore/download-unauthenticated.ftl"),
                     @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SUCCESS_REDIRECT_DOWNLOAD),

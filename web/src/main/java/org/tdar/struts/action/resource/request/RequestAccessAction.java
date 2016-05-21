@@ -7,7 +7,6 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -105,14 +104,12 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
 
     }
 
-    @Action(value = "{id}",
-            interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
-            results = { @Result(name = SUCCESS, location = "request-access.ftl"),
-                    @Result(name = SUCCESS_UNAUTH, location = "request-access-unauthenticated.ftl"),
-                    @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl", params = {
-                            "status", "500" }),
-                    @Result(name = INPUT, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl", params = {
-                            "status", "500" }) })
+    @Action(value = "{id}", results = { @Result(name = SUCCESS, location = "request-access.ftl"),
+            @Result(name = SUCCESS_UNAUTH, location = "request-access-unauthenticated.ftl"),
+            @Result(name = ERROR, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl", params = {
+                    "status", "500" }),
+            @Result(name = INPUT, type = TdarActionSupport.FREEMARKERHTTP, location = "/WEB-INF/content/errors/error.ftl", params = {
+                    "status", "500" }) })
     @HttpsOnly
     @SkipValidation
     @Override
