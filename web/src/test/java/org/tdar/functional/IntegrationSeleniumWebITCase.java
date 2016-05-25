@@ -108,15 +108,18 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         takeScreenshot();
         find(linkText("Add Integration Column")).click();
         find(linkText("Fauna Taxon Ontology")).click();
-        // wait for tab visible
-        waitFor(id("tabtab1")).isDisplayed();
-        // wait for tab contents is visible
-        waitFor(id("tab1")).isDisplayed();
-        find(ByLabelText.byLabelText("Aves")).click();// this is really slow, so do it once
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(id("cbont_64870"), true).apply(getDriver()).booleanValue());
+
+        // wait until integration column becomes visible
+        waitFor(visibilityOfElementLocated(id("tab1")));
+
+        // check the filter checkbox labeled "Aves"
+        find(ByLabelText.byLabelText("Aves")).click();
+
+        // make sure that the thing we checked is checked
+        assertThat("Aves filter should be checked", find(id("cbont_64870")).isSelected(), is(true));
 
         find(rabbit).click();
-        assertTrue(ExpectedConditions.elementSelectionStateToBe(rabbit, true).apply(getDriver()).booleanValue());
+        assertThat("rabbit filter should be checked", find(rabbit).isSelected(), is(true));
         find(sheep).click();
         waitFor(elementToBeClickable(saveButton));
 
