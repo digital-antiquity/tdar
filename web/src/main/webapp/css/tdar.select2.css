@@ -1,76 +1,11 @@
-/*.select2-container {
-	margin: 0;
+
+/* workaround for display issue when pasting multiple tokens. For more info: https://github.com/select2/select2/issues/4333 */
+.select2-search--inline:first-child {
+    width: 100%;
 }
 
-.add-on {
-	float: left;
+.select2-container li.select2-search--inline input {
+    width: 100% !important;
+    height: 100%;
+    margin-top: 0px;
 }
-*/
-
-/** REMOVE THE SPACER ABOVE THE SEARCH BOX IN TH AUTOCOMPLETE 
-
-// https://codepen.io/misotolar/pen/RrvZyR
-
-one issue it's bootstrap 4.0...
-**/
-/*
-
-.form-group {
-  padding: 25px;
-}
-
-.form-group.above {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-}
-
-
-.select2-container--open .select2-selection {
-    box-shadow: none!important;
-}
-
-.select2-container--open .select2-selection .select2-selection__arrow {
-    z-index: 9999; 
-}
-
-.select2-dropdown {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
-  
-  border-color: #66afe9;
-  
-  border-top-width: 1px!important;
-  border-top-style: solid!important;
-  border-top-left-radius: 4px!important;
-  border-top-right-radius: 4px!important;
-  
-  margin-top: -34px!important;
-}
-
-.select2-dropdown .select2-search {
-    padding: 0;
-}
-
-.select2-dropdown .select2-search .select2-search__field {
-  border-top: 0;
-  border-left: 0;
-  border-right: 0;
-  border-radius: 0;
-  
-  padding: 6px 12px;
-  
-  height: 33px;
-}
-
-.select2-dropdown.select2-dropdown--above {
-  border-bottom: 1px solid #66afe9;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
-  margin-top: 34px!important;
-}
-
-.select2-dropdown.select2-dropdown--above .select2-search .select2-search__field {
-  border-top: 1px solid #66afe9;
-  border-bottom: 0;
-}
-*/
