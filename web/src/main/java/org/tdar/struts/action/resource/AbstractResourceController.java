@@ -255,7 +255,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Action(value = SAVE,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SAVE_SUCCESS_PATH),
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
             })
