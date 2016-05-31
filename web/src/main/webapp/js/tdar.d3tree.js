@@ -279,8 +279,14 @@ TDAR.d3tree = (function(console, $, ctx) {
         });
     }
 
+
+
     function _clearSearch() {
+        // unhighlight nodes and paths by removing the 'found' and 'foundLink' class
         $("path[class='foundLink']").attr("class", "link");
+        d3.selectAll("circle[class='found']").classed("found", false);
+
+        //untag nodes previously marked as "found"
         allNodes.forEach(function(n) {
             n.class = "";
         });
@@ -303,6 +309,8 @@ TDAR.d3tree = (function(console, $, ctx) {
     var zoomListener = d3.behavior.zoom().scaleExtent([ 1.3, 1.3 ]).on("zoom", _zoom);
 
     return {
-        init : _init
-    }
+        "init" : _init,
+        "clearSearch": _clearSearch,
+        "allNodes": allNodes
+    };
 })(console, jQuery, window);
