@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorInterval="30">
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n" />
+        </Console>
+        <!-- make sure to replace FILL.IN.THE.BLANK@example.com with valid email addresses (example.com is not routable per http://www.faqs.org/rfcs/rfc2606.html) -->
+        <PatternSMTP name="Mail" to="FILL.IN.THE.BLANK@example.com" from="FILL.IN.THE.BLANK@example.com" smtpHost="localhost" bufferSize="100"
+                     ignoreExceptionClasses="org.apache.catalina.connector.ClientAbortException">
+            <Filters>
+                <!-- deny anything lower than ERROR -->
+                <ThresholdFilter level="ERROR" onMatch="NEUTRAL" onMismatch="DENY"/>
+
+                <!-- deny if exceeding 10 events in 1 minute -->
+                <BurstFilter level="ERROR" rate="0.017" maxBurst="10" onMatch="NEUTRAL" onMismatch="DENY" />
+
+                <!-- deny  if message contains ClientAbortException -->
+                <!--<RegexFilter regex=".*u:Y\+7yllkx.*Invalid referrer.*" onMatch="DENY" onMismatch="NEUTRAL" />-->
+                <ExceptionFilter pattern="org.apache.catalina.connector.ClientAbortException" target="CLASSNAME" onMatch="DENY" onMismatch="NEUTRAL" />
+                <ExceptionFilter pattern="Broken pipe" target="MESSAGE" onMatch="DENY" onMismatch="NEUTRAL" />
+                <RegexFilter regex=".*javascript errors.*ga.js.*" onMatch="DENY" onMismatch="NEUTRAL" />
+            </Filters>
+            <PatternLayout>
+                <pattern>%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n</pattern>
+            </PatternLayout>
+        </PatternSMTP>
+        <Routing name="File">
+            <Routes pattern="$${sd:type}">
+                <Route>
+                    <RollingFile name="Rolling-${sd:type}" fileName="logs/tdar.log"
+                                 filePattern="logs/tdar.%d{yyyy-MM-dd}.log.gz">
+                        <PatternLayout>
+                            <pattern>%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n</pattern>
+                        </PatternLayout>
+                        <TimeBasedTriggeringPolicy modulate="true"/>
+                    </RollingFile>
+                </Route>
+            </Routes>
+        </Routing>
+    </Appenders>
+    <Loggers>
+        <Root level="error">
+            <AppenderRef ref="File" />
+            <AppenderRef ref="Mail" />
+        </Root>
+        <Logger name="org.hibernate.util.JDBCExceptionReporter" level="debug" />
+        <Logger name="org.liquibase" level="error" />
+        <Logger name="org.tdar" level="DEBUG" />
+        <Logger name="uk.org" level="debug" />
+
+        <!--exclude common but less-important errors from the email appender -->
+        <Logger name="org.apache.pdfbox.filter.JBIG2Filter" level="error" additivity="false">
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="Mail" level="fatal" />
+        </Logger>
+        <Logger name="org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap" level="error" additivity="false">
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="Mail" level="fatal" />
+        </Logger>
+    </Loggers>
+</Configuration>
+

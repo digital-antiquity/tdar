@@ -1,0 +1,3534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+	<changeSet author="abrin (generated)" id="1414186574258-3">
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="1"/>
+			<column name="name" value="Architecture"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Architecture"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="25"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="1"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="26"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="1"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="27"/>
+			<column name="name" value="Style/Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="1"/>
+			<column name="label" value="Style Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="28"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="29"/>
+			<column name="name" value="Design"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Design"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="30"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="31"/>
+			<column name="name" value="Function"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Function"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="32"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="33"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="34"/>
+			<column name="name" value="Technique"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Technique"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="35"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="36"/>
+			<column name="name" value="Composition"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Composition"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="37"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="38"/>
+			<column name="name" value="Design/Decorative Element"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Design Decorative Element"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="39"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="40"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="41"/>
+			<column name="name" value="Paint"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Paint"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="42"/>
+			<column name="name" value="Part"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Part"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="43"/>
+			<column name="name" value="Paste"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Paste"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="44"/>
+			<column name="name" value="Residue"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Residue"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="45"/>
+			<column name="name" value="Surface Treatment"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Surface Treatment"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="46"/>
+			<column name="name" value="Temper/Inclusions"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Temper Inclusions"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="47"/>
+			<column name="name" value="Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="48"/>
+			<column name="name" value="Variety/Subtype"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Variety Subtype"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="49"/>
+			<column name="name" value="Ware"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Ware"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="50"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="51"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="52"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="53"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="54"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="55"/>
+			<column name="name" value="Retouch"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Retouch"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="56"/>
+			<column name="name" value="Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="57"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="58"/>
+			<column name="name" value="Method"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="5"/>
+			<column name="label" value="Method"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="59"/>
+			<column name="name" value="Date"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="5"/>
+			<column name="label" value="Date"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="60"/>
+			<column name="name" value="Error"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="5"/>
+			<column name="label" value="Error"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="61"/>
+			<column name="name" value="Age"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Age"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="62"/>
+			<column name="name" value="Anterior/Posterior"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Anterior Posterior"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="63"/>
+			<column name="name" value="Bone Artifact Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Bone Artifact Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="64"/>
+			<column name="name" value="Breakage"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Breakage"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="65"/>
+			<column name="name" value="Burning "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Burning "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="66"/>
+			<column name="name" value="Butchering"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Butchering"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="67"/>
+			<column name="name" value="Completeness"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Completeness"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="68"/>
+			<column name="name" value="Condition"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Condition"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="69"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="70"/>
+			<column name="name" value="Cultural Modification"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Cultural Modification"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="71"/>
+			<column name="name" value="Digestion"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Digestion"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="72"/>
+			<column name="name" value="Dorsal/Ventral"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Dorsal Ventral"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="73"/>
+			<column name="name" value="Element"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Element"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="74"/>
+			<column name="name" value="Erosion"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Erosion"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="75"/>
+			<column name="name" value="Fusion"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Fusion"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="76"/>
+			<column name="name" value="Gnawing/Animal Modification"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Gnawing Animal Modification"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="77"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="78"/>
+			<column name="name" value="Modification"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Modification"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="79"/>
+			<column name="name" value="Natural Modification"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Natural Modification"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="80"/>
+			<column name="name" value="Pathologies"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Pathologies"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="81"/>
+			<column name="name" value="Portion/Proximal/Distal"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Portion Proximal Distal"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="82"/>
+			<column name="name" value="Sex"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Sex"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="83"/>
+			<column name="name" value="Side"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Side"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="84"/>
+			<column name="name" value="Spiral Fracture"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Spiral Fracture"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="85"/>
+			<column name="name" value="Taxon"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Taxon"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="86"/>
+			<column name="name" value="Weathering"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Weathering"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="87"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="88"/>
+			<column name="name" value="Zone"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Zone"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="89"/>
+			<column name="name" value="Zone Scheme"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Zone Scheme"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="90"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="7"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="91"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="7"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="92"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="7"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="93"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="7"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="94"/>
+			<column name="name" value="Style/Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="7"/>
+			<column name="label" value="Style Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="95"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="96"/>
+			<column name="name" value="Date"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Date"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="97"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="98"/>
+			<column name="name" value="Maker/Manufacturer"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Maker Manufacturer"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="99"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="100"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="101"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="102"/>
+			<column name="name" value="Completeness"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Completeness"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="103"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="104"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="105"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="106"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="107"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="108"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="109"/>
+			<column name="name" value="Date"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Date"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="110"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="111"/>
+			<column name="name" value="Maker/Manufacturer"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Maker Manufacturer"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="112"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="113"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="114"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="115"/>
+			<column name="name" value="Body Position/Flexure"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Body Position Flexure"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="116"/>
+			<column name="name" value="Body Posture"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Body Posture"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="117"/>
+			<column name="name" value="Body Preparation"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Body Preparation"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="118"/>
+			<column name="name" value="Burial Accompaniment"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Burial Accompaniment"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="119"/>
+			<column name="name" value="Burial Container "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Burial Container "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="120"/>
+			<column name="name" value="Burial Facility"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Burial Facility"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="121"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="122"/>
+			<column name="name" value="Disturbance"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Disturbance"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="123"/>
+			<column name="name" value="Facing"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Facing"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="124"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="125"/>
+			<column name="name" value="Orientation/Alignment "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Orientation Alignment "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="126"/>
+			<column name="name" value="Preservation"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Preservation"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="127"/>
+			<column name="name" value="Type of Interment"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Type of Interment"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="128"/>
+			<column name="name" value="Buccal/Lingual/Occlusal"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Buccal Lingual Occlusal"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="129"/>
+			<column name="name" value="Chemical Assay"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Chemical Assay"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="130"/>
+			<column name="name" value="Count   "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Count   "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="131"/>
+			<column name="name" value="Cultural Modification"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Cultural Modification"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="132"/>
+			<column name="name" value="Dental Pathologies"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Dental Pathologies"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="133"/>
+			<column name="name" value="Dental Wear"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Dental Wear"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="134"/>
+			<column name="name" value="Enamel Defects"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Enamel Defects"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="135"/>
+			<column name="name" value="Maxillary/Mandibular"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Maxillary Mandibular"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="136"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="137"/>
+			<column name="name" value="Permanent/Deciduous"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Permanent Deciduous"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="138"/>
+			<column name="name" value="Tooth (element)"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Tooth (element)"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="139"/>
+			<column name="name" value="Age"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Age"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="140"/>
+			<column name="name" value="Age Criteria"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Age Criteria"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="141"/>
+			<column name="name" value="Articulation"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Articulation"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="142"/>
+			<column name="name" value="Bone Segment (proximal/distal)"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Bone Segment (proximal distal)"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="143"/>
+			<column name="name" value="Chemical Assay"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Chemical Assay"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="144"/>
+			<column name="name" value="Completeness"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Completeness"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="145"/>
+			<column name="name" value="Condition"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Condition"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="146"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="147"/>
+			<column name="name" value="Cranial Deformation"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Cranial Deformation"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="148"/>
+			<column name="name" value="Crematory Burning"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Crematory Burning"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="149"/>
+			<column name="name" value="Cultural Modification "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Cultural Modification "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="150"/>
+			<column name="name" value="Diet"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Diet"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="151"/>
+			<column name="name" value="Distrubance"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Distrubance"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="152"/>
+			<column name="name" value="Disturbance sources"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Disturbance sources"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="153"/>
+			<column name="name" value="Element"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Element"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="154"/>
+			<column name="name" value="Epiphyseal Union"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Epiphyseal Union"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="155"/>
+			<column name="name" value="Fracture/Breakage"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Fracture Breakage"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="156"/>
+			<column name="name" value="Health "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Health "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="157"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="158"/>
+			<column name="name" value="Nonmetric Trait"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Nonmetric Trait"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="159"/>
+			<column name="name" value="Pathologies/Trauma"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Pathologies Trauma"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="160"/>
+			<column name="name" value="Preservation"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Preservation"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="161"/>
+			<column name="name" value="Sex"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Sex"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="162"/>
+			<column name="name" value="Sex criteria"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Sex criteria"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="163"/>
+			<column name="name" value="Side"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Side"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="164"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="165"/>
+			<column name="name" value="Code"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="14"/>
+			<column name="label" value="Code"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="166"/>
+			<column name="name" value="Description"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="14"/>
+			<column name="label" value="Description"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="167"/>
+			<column name="name" value="Label"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="14"/>
+			<column name="label" value="Label"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="168"/>
+			<column name="name" value="Notes"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="14"/>
+			<column name="label" value="Notes"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="169"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="15"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="170"/>
+			<column name="name" value="Taxon"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="15"/>
+			<column name="label" value="Taxon"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="171"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="172"/>
+			<column name="name" value="Date"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Date"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="173"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="174"/>
+			<column name="name" value="Maker/Manufacturer"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Maker Manufacturer"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="175"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="176"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="177"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="178"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="17"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="179"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="17"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="180"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="17"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="181"/>
+			<column name="name" value="Mineral Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="17"/>
+			<column name="label" value="Mineral Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="182"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="17"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="183"/>
+			<column name="name" value="Direction"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="Direction"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="184"/>
+			<column name="name" value="Film Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="Film Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="185"/>
+			<column name="name" value="Frame"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="Frame"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="186"/>
+			<column name="name" value="ID"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="ID"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="187"/>
+			<column name="name" value="Roll"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="Roll"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="188"/>
+			<column name="name" value="Subject"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="Subject"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="189"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="19"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="190"/>
+			<column name="name" value="Taxon"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="19"/>
+			<column name="label" value="Taxon"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="191"/>
+			<column name="name" value="Context"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Context"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="192"/>
+			<column name="name" value="Date"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Date"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="193"/>
+			<column name="name" value="Depth"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Depth"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="194"/>
+			<column name="name" value="East"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="East"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="195"/>
+			<column name="name" value="Excavation Method"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Excavation Method"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="196"/>
+			<column name="name" value="Feature ID/Number"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Feature ID Number"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="197"/>
+			<column name="name" value="Feature Type"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Feature Type"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="198"/>
+			<column name="name" value="Horizontal Location"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Horizontal Location"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="199"/>
+			<column name="name" value="Inclusions"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Inclusions"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="200"/>
+			<column name="name" value="Item/Slash "/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Item Slash "/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="201"/>
+			<column name="name" value="Level"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Level"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="202"/>
+			<column name="name" value="Locus"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Locus"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="203"/>
+			<column name="name" value="Lot"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Lot"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="204"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="205"/>
+			<column name="name" value="North"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="North"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="206"/>
+			<column name="name" value="Project"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Project"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="207"/>
+			<column name="name" value="Recovery Method"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Recovery Method"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="208"/>
+			<column name="name" value="Sampling"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Sampling"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="209"/>
+			<column name="name" value="Screening"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Screening"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="210"/>
+			<column name="name" value="Site"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Site"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="211"/>
+			<column name="name" value="Soil Color"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Soil Color"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="212"/>
+			<column name="name" value="Stratum"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Stratum"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="213"/>
+			<column name="name" value="Unit"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Unit"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="214"/>
+			<column name="name" value="Vertical Position"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Vertical Position"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="215"/>
+			<column name="name" value="Volume"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Volume"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="216"/>
+			<column name="name" value="Exposure"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="21"/>
+			<column name="label" value="Exposure"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="217"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="21"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="218"/>
+			<column name="name" value="Style"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="21"/>
+			<column name="label" value="Style"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="219"/>
+			<column name="name" value="Technology"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="21"/>
+			<column name="label" value="Technology"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="220"/>
+			<column name="name" value="Completeness"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Completeness"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="221"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="222"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="223"/>
+			<column name="name" value="Modification"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Modification"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="224"/>
+			<column name="name" value="Taxon"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Taxon"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="225"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="226"/>
+			<column name="name" value="Box Number"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="23"/>
+			<column name="label" value="Box Number"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="227"/>
+			<column name="name" value="Location"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="23"/>
+			<column name="label" value="Location"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="228"/>
+			<column name="name" value="Count"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Count"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="229"/>
+			<column name="name" value="Design"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Design"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="230"/>
+			<column name="name" value="Form"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Form"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="231"/>
+			<column name="name" value="Function"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Function"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="232"/>
+			<column name="name" value="Material"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Material"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="233"/>
+			<column name="name" value="Measurement"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Measurement"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="234"/>
+			<column name="name" value="Technique"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Technique"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="235"/>
+			<column name="name" value="Weight"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Weight"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="236"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="1"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="237"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="2"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="238"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="3"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="239"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="240"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="5"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="241"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="6"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="242"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="7"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="243"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="244"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="9"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="245"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="10"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="246"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="11"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="247"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="12"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="248"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="249"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="14"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="250"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="15"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="251"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="16"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="252"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="17"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="253"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="18"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="254"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="19"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="255"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="20"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="256"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="21"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="257"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="22"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="258"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="23"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="259"/>
+			<column name="name" value="Other"/>
+			<column name="type" value="SUBCATEGORY"/>
+			<column name="parent_id" valueNumeric="24"/>
+			<column name="label" value="Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="2"/>
+			<column name="name" value="Basketry"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Basketry"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="4"/>
+			<column name="name" value="Chipped Stone"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Chipped Stone"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="5"/>
+			<column name="name" value="Dating Sample"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Dating Sample"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="6"/>
+			<column name="name" value="Fauna"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Fauna"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="7"/>
+			<column name="name" value="Figurine"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Figurine"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="8"/>
+			<column name="name" value="Glass"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Glass"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="9"/>
+			<column name="name" value="Ground Stone"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Ground Stone"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="10"/>
+			<column name="name" value="Historic Other"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Historic Other"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="11"/>
+			<column name="name" value="Human Burial"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Human Burial"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="12"/>
+			<column name="name" value="Human Dental"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Human Dental"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="13"/>
+			<column name="name" value="Human Skeletal"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Human Skeletal"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="14"/>
+			<column name="name" value="Lookup"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Lookup"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="15"/>
+			<column name="name" value="Macrobotanical"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Macrobotanical"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="16"/>
+			<column name="name" value="Metal"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Metal"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="17"/>
+			<column name="name" value="Mineral"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Mineral"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="18"/>
+			<column name="name" value="Photograph"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Photograph"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="19"/>
+			<column name="name" value="Pollen"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Pollen"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="20"/>
+			<column name="name" value="Provenience and Context"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Provenience and Context"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="21"/>
+			<column name="name" value="Rock Art"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Rock Art"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="22"/>
+			<column name="name" value="Shell"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Shell"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="23"/>
+			<column name="name" value="Storage"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Storage"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="24"/>
+			<column name="name" value="Textile"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Textile"/>
+		</insert>
+		<insert tableName="category_variable">
+			<column name="id" valueNumeric="3"/>
+			<column name="name" value="Ceramic"/>
+			<column name="type" value="CATEGORY"/>
+			<column name="label" value="Ceramic"/>
+		</insert>
+	</changeSet>
+	<changeSet author="abrin (generated)" id="1414186574258-4">
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="73"/>
+			<column name="synonyms" value="Elements"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="85"/>
+			<column name="synonyms" value="Species"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="83"/>
+			<column name="synonyms" value="Symmetry"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="69"/>
+			<column name="synonyms" value="Quantity"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="69"/>
+			<column name="synonyms" value="Number"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="67"/>
+			<column name="synonyms" value="Amount Present"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="64"/>
+			<column name="synonyms" value="Fragmentation"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="198"/>
+			<column name="synonyms" value="Room"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="198"/>
+			<column name="synonyms" value="Operation"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="200"/>
+			<column name="synonyms" value="Slash No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="198"/>
+			<column name="synonyms" value="Feature No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="198"/>
+			<column name="synonyms" value="FN"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="198"/>
+			<column name="synonyms" value="Cluster"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Lot No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Spec"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Spec No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Log"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Log No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Bag"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Bag No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Case"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="203"/>
+			<column name="synonyms" value="Case No"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="192"/>
+			<column name="synonyms" value="Time"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="192"/>
+			<column name="synonyms" value="Age"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="191"/>
+			<column name="synonyms" value="Courtyard"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="191"/>
+			<column name="synonyms" value="Feat# Cat#"/>
+		</insert>
+		<insert tableName="category_variable_synonyms">
+			<column name="categoryvariable_id" valueNumeric="207"/>
+			<column name="synonyms" value="Recovery Method"/>
+		</insert>
+	</changeSet>
+	<changeSet author="abrin (generated)" id="1414186574258-27">
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="1"/>
+			<column name="definition" value="A study that involves the synthesis of the archaeological history of investigation and culture history of a location or area."/>
+			<column name="label" value="Archaeological Overview"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="3"/>
+			<column name="definition" value="A study that involves research and analysis of archaeological resources held in a museum, historical society or other repository."/>
+			<column name="label" value="Collections Research"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="4"/>
+			<column name="definition" value="An activity that involves discussions and meetings with communities, stakeholders, and other interested parties for the purpose of describing proposed archaeological activities and eliciting their comments, perspectives and feedback."/>
+			<column name="label" value="Consultation"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="7"/>
+			<column name="definition" value="An activity employed to gather a general impression of the nature and distribution of archaeological or cultural resources in an area. Relatively little field work is conducted in relation to the size of the research area."/>
+			<column name="label" value="Reconnaissance / Survey"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="9"/>
+			<column name="definition" value="Activities undertaken to plan and schedule future archaeological research."/>
+			<column name="label" value="Research Design / Data Recovery Plan"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="11"/>
+			<column name="definition" value="An activity that involves the rehabilitation of eroding, slumping, subsiding or otherwise deteriorating archaeological resources, including structures and building materials."/>
+			<column name="label" value="Site Stabilization"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="8"/>
+			<column name="definition" value="An activity involving the review of records, files, and other information about the sites recorded in a particular area.  Typically, such studies involve checking the site files and other archives in an agency's database, or SHPO's office, or State Archaeologist's office."/>
+			<column name="label" value="Records Search / Inventory Checking"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="6"/>
+			<column name="definition" value="A non-field study of archaeological theory, method or technique. These investigations may also include broadly synthetic regional studies."/>
+			<column name="label" value="Methodology, Theory, or Synthesis"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="13"/>
+			<column name="definition" value="These are studies that examine aspects of the present or past natural environment to provide a context, often off-site,  for interpreting archaeological resources.  Sometimes reported in stand-alone volumes representing significant research, such investigations may include geomorphological, paleontological, or palynological work."/>
+			<column name="label" value="Environment Research"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="14"/>
+			<column name="definition" value="This is research that focuses on the systematic description and analysis of cultural systems or lifeways.  These studies of contemporary people and cultures rely heavily on participant observation as well as interviews, oral histories, and review of relevant documents.  Ethnoarchaeological studies are a subset of this kind of research that investigate correlations between traditional contemporary cultures and patterns in the archaeological record.    "/>
+			<column name="label" value="Ethnographic Research"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="15"/>
+			<column name="definition" value="These are studies of biological aspects of human individuals, groups, or cultural systems, including a broad range of topics describing and analyzing human physiology, osteology, diet, disease, and origins research. "/>
+			<column name="label" value="Bioarchaeological Research"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="16"/>
+			<column name="definition" value="Descriptive and analytical research that documents, describes, and/or interprets detailed data on historic structures in an area, including images and floor plans. "/>
+			<column name="label" value="Architectural Documentation"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="17"/>
+			<column name="definition" value="This kind of research includes systematic description and analysis of changes in cultural systems through time, using historical documents and oral and traditional histories.  Ethnohistoric studies typically deal with time periods of initial or early contact between different cultural systems, for example, European explorers or early colonists and indigenous cultures. "/>
+			<column name="label" value="Ethnohistoric Research"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="18"/>
+			<column name="definition" value="These are investigations of the past using written records and other documents.  Evidence from the records are compared, judged for veracity, placed in chronological or topical sequence, and interpreted in light of preceding, contemporary, and subsequent events."/>
+			<column name="label" value="Historic Background Research"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="19"/>
+			<column name="definition" value="Visits to a site to record archaeological resources and their conditions and recover finds that may have come to light since a previous visit.  Also refers to regular or systematic monitoring and recording of the condition of a site, checking for signs of vandalism, other human intervention, and natural processes that may have damaged the resource."/>
+			<column name="label" value="Site Stewardship Monitoring"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="20"/>
+			<column name="definition" value="Observations and investigations conducted during any ground disturbing operation carried out for non-archaeological reasons (e.g. construction, land-leveling, wild land fire-fighting, etc.) that may reveal and/or damage archaeological deposits."/>
+			<column name="label" value="Ground Disturbance Monitoring"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="12"/>
+			<column name="definition" value="This is an investigation employed to systematically gather data on the general presence or absence of archaeological resources, to define resource types, or to estimate the distribution of resources in an area. These studies may provide a general understanding of the resources in an area. This includes the description, analysis, and specialized studies of artifacts and samples recovered during survey. "/>
+			<column name="label" value="Systematic Survey"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="10"/>
+			<column name="definition" value="These investigations include fieldwork undertaken to identify the archaeological resources in a given area and to collect information sufficient to evaluate the resource(s) and develop treatment recommendations. Such investigations typically determine the number, location, distribution and condition of archaeological resources. This includes the description, analysis, and specialized studies of artifacts and samples recovered during site testing. "/>
+			<column name="label" value="Site Evaluation / Testing"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="5"/>
+			<column name="definition" value="These investigations include substantial field investigation of an archaeological site (or sites) involving the removal, and systematic recording of, archaeological matrix. These activities often mitigate the adverse effects of a public undertaking. This includes the description, analysis, and specialized studies of artifacts and samples recovered during excavations."/>
+			<column name="label" value="Data Recovery / Excavation"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="investigation_type">
+			<column name="id" valueNumeric="2"/>
+			<column name="definition" value="These investigations include field and/or document and records reviews to gather data on the presence and type of historic structures and provide a general understanding of architectural and cultural resources in an area. "/>
+			<column name="label" value="Architectural Survey"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+	</changeSet>
+	<changeSet author="abrin (generated)" id="1414186574258-29">
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="1"/>
+			<column name="definition" value="Historic or prehistoric artifacts made from pottery or fired clay"/>
+			<column name="label" value="Ceramic"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="2"/>
+			<column name="definition" value="Lithic artifacts such as tools, flakes, shatter, or debitage"/>
+			<column name="label" value="Chipped Stone"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="3"/>
+			<column name="definition" value="Material collected for use with dating techniques such as radiocarbon, dendrochronology or archaeomagnetism"/>
+			<column name="label" value="Dating Sample"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="4"/>
+			<column name="definition" value="Animal bone remains"/>
+			<column name="label" value="Fauna"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="5"/>
+			<column name="definition" value="Rocks showing evidence of intense heating or burning, carbon staining, or other indications of changes due to heat."/>
+			<column name="label" value="Fire Cracked Rock"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="6"/>
+			<column name="definition" value="Historic or prehistoric artifacts made from glass"/>
+			<column name="label" value="Glass"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="7"/>
+			<column name="definition" value="Lithic artifact formed or finished by polishing the body or edges with an abrasive"/>
+			<column name="label" value="Ground Stone"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="8"/>
+			<column name="definition" value="Materials used for construction (e.g., brick, wood, adobe)"/>
+			<column name="label" value="Building Materials"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="9"/>
+			<column name="definition" value="The remains of any part of a human"/>
+			<column name="label" value="Human Remains"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="10"/>
+			<column name="definition" value="Plant remains such as fruit, seeds, buds, or other plant parts."/>
+			<column name="label" value="Macrobotanical"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="11"/>
+			<column name="definition" value="Any prehistoric or historic artifact made of metal (e.g., iron, copper, gold, silver, etc.)"/>
+			<column name="label" value="Metal"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="12"/>
+			<column name="definition" value="Natural inorganic substance possessing a definite chemical composition in a crystalline form."/>
+			<column name="label" value="Mineral"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="13"/>
+			<column name="definition" value="Use for any microscopic plant remains"/>
+			<column name="label" value="Pollen"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="14"/>
+			<column name="definition" value="Modified or unmodified objects made from mollusc shell."/>
+			<column name="label" value="Shell"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="material_keyword">
+			<column name="id" valueNumeric="15"/>
+			<column name="definition" value="Modified or unmodified objects made from the roots, trunk, or branches of trees or shrubs."/>
+			<column name="label" value="Wood"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+	</changeSet>
+	<changeSet author="abrin (generated)" id="1414186574258-11">
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="3"/>
+			<column name="label" value="Pre-Clovis"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="4"/>
+			<column name="label" value="PaleoIndian"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="8"/>
+			<column name="label" value="Archaic"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="12"/>
+			<column name="label" value="Hopewell"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="13"/>
+			<column name="label" value="Woodland"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="17"/>
+			<column name="label" value="Plains Village"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="18"/>
+			<column name="label" value="Mississippian"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="19"/>
+			<column name="label" value="Ancestral Puebloan"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="8"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="21"/>
+			<column name="label" value="Hohokam"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="9"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="23"/>
+			<column name="label" value="Patayan"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="11"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="24"/>
+			<column name="label" value="Fremont"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="12"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="25"/>
+			<column name="label" value="Historic"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="34"/>
+			<column name="label" value="Mogollon"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="10"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="5"/>
+			<column name="label" value="Clovis"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="6"/>
+			<column name="label" value="Folsom"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="7"/>
+			<column name="label" value="Dalton"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="4"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="9"/>
+			<column name="label" value="Early Archaic"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="10"/>
+			<column name="label" value="Middle Archaic"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="11"/>
+			<column name="label" value="Late Archaic"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="8"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="14"/>
+			<column name="label" value="Early Woodland"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="15"/>
+			<column name="label" value="Middle Woodland"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="16"/>
+			<column name="label" value="Late Woodland"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="13"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="26"/>
+			<column name="label" value="African American"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="25"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="27"/>
+			<column name="label" value="Chinese American"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="25"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="28"/>
+			<column name="label" value="Euroamerican"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="25"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="29"/>
+			<column name="label" value="Japanese American"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="25"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="30"/>
+			<column name="label" value="Native American"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="25"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="culture_keyword">
+			<column name="id" valueNumeric="31"/>
+			<column name="label" value="Spanish"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="13.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="25"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+	</changeSet>
+	<changeSet author="abrin (generated)" id="1414186574258-63">
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="251"/>
+			<column name="definition" value="The locations and/or archaeological remains of a building or buildings used for human habitation. Use more specific term(s) if possible."/>
+			<column name="label" value="Domestic Structure or Architectural Complex"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="272"/>
+			<column name="definition" value="The locations and/or archaeological remains of features or sites related to resource extraction, commerce, industry, or transportation. Use more specific term(s) if possible."/>
+			<column name="label" value="Resource Extraction/Production/Transportation Structure or Features"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="301"/>
+			<column name="definition" value="The archaeological features or locations used for human burial or funerary activities. Use more specific term(s) if possible."/>
+			<column name="label" value="Funerary and Burial Structures or Features"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="309"/>
+			<column name="definition" value="The locations and/or archaeological remains of a building or buildings used for purposes other than human habitation. Use more specific term(s) if possible."/>
+			<column name="label" value="Non-Domestic Structures"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="339"/>
+			<column name="definition" value="A localized area containing evidence of human activity. Use more specific term(s) if possible."/>
+			<column name="label" value="Archaeological Feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="361"/>
+			<column name="definition" value="Designs, whether carved, scraped, pecked or painted, applied to free-standing stones, cave walls, or the earth’s surface. Use more specific term(s) if possible."/>
+			<column name="label" value="Rock Art"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="365"/>
+			<column name="definition" value="The locations and/or archaeological remains of ships, boats, or other vessels, or the facilities related to shipping or sailing."/>
+			<column name="label" value="Water-related"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="252"/>
+			<column name="definition" value="Locations, or the remains of multiple structures or features, that were inhabited by humans in the past. Use more specific term(s) if possible."/>
+			<column name="label" value="Settlements"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="251"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="253"/>
+			<column name="definition" value="A relatively small, short-term human habitation occupied by a relatively small group."/>
+			<column name="label" value="Encampment"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.1.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="252"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="254"/>
+			<column name="definition" value="Relatively small, self-contained groups of dwellings and associated structures providing shelter and a home base for its human inhabitants.  Typically occupied for a number of years or decades, and in some cased for centuries."/>
+			<column name="label" value="Hamlet / village"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.1.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="252"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="255"/>
+			<column name="definition" value="Larger settlements with more dwellings and a wide variety of other kinds of structures.  These settlements typically have internally organized infrastructure of streets or walkways and water and waste-disposal systems. Typically occupied for decades or centuries."/>
+			<column name="label" value="Town / city"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.1.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="252"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="256"/>
+			<column name="definition" value="Locations, or the remains of buildings that were inhabited by humans in the past. Use more specific term(s) if possible."/>
+			<column name="label" value="Domestic Structures"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="251"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="257"/>
+			<column name="definition" value="A temporary structure, made out of brush, with a roof and walls, built to provide shelter for occupants or contents (e.g., wikieup, ki)."/>
+			<column name="label" value="Brush structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="258"/>
+			<column name="definition" value="Natural hollow or opening beneath earth's surface, with an aperture to the surface, showing evidence of human use. Caves may or may not have been modified for or by human use. A cave differs from a rockshelter in depth, penetration, and the constriction of the opening."/>
+			<column name="label" value="Cave"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="259"/>
+			<column name="definition" value="A relatively small dwelling occupied by a single nuclear or extended family. May appear archaeologically as a stone foundation or pattern of post molds."/>
+			<column name="label" value="House"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="260"/>
+			<column name="definition" value="A slightly raised, mounded area of earth or rock built to provide a platform for a single domestic structure."/>
+			<column name="label" value="House mound"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="261"/>
+			<column name="definition" value="The remains of a small surface structure constructed of brush (wattle) and mud (daub)."/>
+			<column name="label" value="Wattle &amp; daub (jacal) structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="262"/>
+			<column name="definition" value="A long, relatively narrow multi-family dwelling, best known as a typical village dwelling used by Iroquois Confederacy tribes."/>
+			<column name="label" value="Long house"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="263"/>
+			<column name="definition" value="Semi-subterranean habitation that may have an oval, round or rectangular shape. Typically with a dome-like covering constructed using a wood frame covered by branches, reeds, other vegetation and earth."/>
+			<column name="label" value="Pit house / earth lodge"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="264"/>
+			<column name="definition" value="Remains of a contiguous, multi-room habitation structure. Typically constructed of stone, mud brick or adobe. Usually manifests archaeologically as a surface mound of construction debris, sometimes with visible wall alignments."/>
+			<column name="label" value="Room block / compound / pueblo"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.8"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="265"/>
+			<column name="definition" value="Overhang, indentation, or alcove formed naturally by rock fall or in a rock face; generally not of great depth. Rockshelters may or may not be modified with structural elements for human use."/>
+			<column name="label" value="Rock shelter"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.9"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="266"/>
+			<column name="definition" value="All temporary shelters (e.g. lean-tos, windbreaks, brush enclosures, sun shades etc.)."/>
+			<column name="label" value="Shade structure / ramada"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.10"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="267"/>
+			<column name="definition" value="Circular pattern (sometimes outlined with rocks) left when a tipi or tent is dismantled."/>
+			<column name="label" value="Tent ring / tipi ring"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.11"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="268"/>
+			<column name="definition" value="A relatively high (over 1 meter), flat-topped mound, frequently constructed in several stages on which one or more structures were placed. Platform mounds are constructed using soil, shell, or refuse. They may incorporate earlier, filled-in structures in their substructure."/>
+			<column name="label" value="Platform mound"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.12"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="269"/>
+			<column name="definition" value="A low mounded area of shell built to provide a platform for one or more domestic structures."/>
+			<column name="label" value="Shell mound"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.13"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="270"/>
+			<column name="definition" value="Relatively small dwellings, typically circular or rectangular and about 3 meters tall, made of wooden frames with bases dug into the soil and covered with woven mats or sheets of birchbark. The frames could be shaped like a dome, a cone, or a rectangle with an arched roof."/>
+			<column name="label" value="Wigwam / wetu"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.14"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="271"/>
+			<column name="definition" value="Relatively large, rectangular dwellings made of long, flat planks of cedar wood lashed to a substantial wooden frame. Typical of permanent villages of Indian tribes living in the American Northwest during the historic contact period and earlier."/>
+			<column name="label" value="Plank house"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="1.2.15"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="256"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="273"/>
+			<column name="definition" value="Locations, or the remains of features or facilities, that were used for  horticulture, agriculture, or animal husbandry. Use more specific term(s) if possible."/>
+			<column name="label" value="Agricultural or Herding"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="320"/>
+			<column name="definition" value="Specified area containing evidence that is associated with historic governmental activity."/>
+			<column name="label" value="Historic governmental structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.5.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="318"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="274"/>
+			<column name="definition" value="An area of land, often enclosed, used for cultivation. Fields are not necessarily formally bounded, and may be identifiable based on diagnostic features such as boundary markers or raised beds."/>
+			<column name="label" value="Agricultural field or field feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="273"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="275"/>
+			<column name="definition" value="Ditch or interrelated group of ditches, acequias, head gates, and drains that constitute an irrigation system for individual watering and irrigation features."/>
+			<column name="label" value="Canal or canal feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="273"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="276"/>
+			<column name="definition" value="An enclosure for confining livestock. May be constructed of any material and incorporate natural features or vegetation as part of the enclosure."/>
+			<column name="label" value="Corral"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="273"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="277"/>
+			<column name="definition" value="Natural or artificial lake in which water can be stored for future use."/>
+			<column name="label" value="Reservoir"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="273"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="278"/>
+			<column name="definition" value="An artificially created, more or less level area cut into the side of a hill. The edge may be bordered by stone or other material to prevent erosion."/>
+			<column name="label" value="Terrace"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="273"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="279"/>
+			<column name="definition" value="A device which controls the flow of water, particularly run-off. Includes check dams, flumes, gabions, head gates, drop structures, and riprap."/>
+			<column name="label" value="Water control feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.1.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="273"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="280"/>
+			<column name="definition" value="Locations, or the remains of features or facilities, that were used for commercial or industrial purposes. Use more specific term(s) if possible."/>
+			<column name="label" value="Commercial or Industrial Structures"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="281"/>
+			<column name="definition" value="A relative large structure in which goods were manufactured or prepared for commercial distribution."/>
+			<column name="label" value="Factory / workshop"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.2.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="280"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="282"/>
+			<column name="definition" value="A relatively small facility (one or a few rooms) for processing grain, wood, or other materials."/>
+			<column name="label" value="Mill"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.2.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="280"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="283"/>
+			<column name="definition" value="A mill for processing grain, typically powered by water or wind."/>
+			<column name="label" value="Grist mill"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.2.2.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="282"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="284"/>
+			<column name="definition" value="A mill for processing timber or wood."/>
+			<column name="label" value="Saw mill"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.2.2.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="282"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="285"/>
+			<column name="definition" value="A structure designed for catching fish. Sometimes constructed as a fence or enclosure of wooden stakes or stones, placed in a river, lake, wetland or tidal estuary."/>
+			<column name="label" value="Fish trap / weir"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="286"/>
+			<column name="definition" value="Locations, or the remains of features or facilities, that were used for hunting or trapping animals. Use more specific term(s) if possible."/>
+			<column name="label" value="Hunting / Trapping"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="287"/>
+			<column name="definition" value="Concentration of faunal remains resulting from human hunting activity."/>
+			<column name="label" value="Butchering / kill site"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.4.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="286"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="288"/>
+			<column name="definition" value="Small, unroofed structure expediently constructed out of natural rock and/or wood as camouflage."/>
+			<column name="label" value="Hunting blind"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.4.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="286"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="289"/>
+			<column name="definition" value="A cliff or other natural drop off where large game can be stampeded over the edge."/>
+			<column name="label" value="Large game jump"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.4.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="286"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="290"/>
+			<column name="definition" value="Locations used for the extraction of metals, ores, minerals, or other materials."/>
+			<column name="label" value="Mine"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="291"/>
+			<column name="definition" value="An excavation made in the earth for the purpose of digging out metallic ores, coal, salt, precious stones or other resources. Includes portals, adits, vent shafts, prospects, and haulage tunnels."/>
+			<column name="label" value="Mine tunnels"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.5.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="290"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="292"/>
+			<column name="definition" value="The remains of facilities or equipment, usually above ground, used for processing or storing mined materials."/>
+			<column name="label" value="Mine-related structures"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.5.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="290"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="293"/>
+			<column name="definition" value="Outcrops of lithic material that have been mined or otherwise utilized to obtain lithic raw materials."/>
+			<column name="label" value="Quarry"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="294"/>
+			<column name="definition" value="The archaeological remains of identifiable paths or routes between two or more locations. Use more specific term(s) if possible."/>
+			<column name="label" value="Road, Trail, and Related Structures or Features"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="272"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="295"/>
+			<column name="definition" value="A structure with one or more intervals under it to span a river or other space."/>
+			<column name="label" value="Bridge"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="294"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="296"/>
+			<column name="definition" value="A road or pathway constructed from packed earth, stone, or shell, usually across a wetland or small water body."/>
+			<column name="label" value="Causeway"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="294"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="297"/>
+			<column name="definition" value="Identifiable, linear archaeological remains of unknown function."/>
+			<column name="label" value="Linear feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="294"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="298"/>
+			<column name="definition" value="Segment(s) of railroad tracks or railroad bed."/>
+			<column name="label" value="Railroad"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="294"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="299"/>
+			<column name="definition" value="A prepared, formal way used for the passage of humans, animals, and/or vehicles. These include examples such as Chacoan roads."/>
+			<column name="label" value="Road"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="294"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="300"/>
+			<column name="definition" value="An informal foot path used for the passage of humans, animals, and/or vehicles, defined and worn by use without formal construction or maintenance."/>
+			<column name="label" value="Trail"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="2.7.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="294"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="302"/>
+			<column name="definition" value="A formal location for burying the dead."/>
+			<column name="label" value="Cemetery"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="303"/>
+			<column name="definition" value="An artificial mound constructed using earth, shell, or stone for the purpose of holding one or more burials. Frequently containing several episodes of construction and burials from different periods of time."/>
+			<column name="label" value="Burial mound"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="304"/>
+			<column name="definition" value="A structure in which recently deceased human bodies were placed so that the flesh and other soft tissue would decompose prior to final interment of the remains."/>
+			<column name="label" value="Charnel house"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="305"/>
+			<column name="definition" value="A location containing a human burial, spatially removed from other archaeological evidence."/>
+			<column name="label" value="Isolated burial"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="306"/>
+			<column name="definition" value="A secondary burial of multiple individuals."/>
+			<column name="label" value="Ossuary"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="307"/>
+			<column name="definition" value="An unmarked human interment in a subterranean pit."/>
+			<column name="label" value="Burial pit"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="308"/>
+			<column name="definition" value="A prepared, architecturally distinctive structure, normally sub-surface, often containing multiple interments.  Use for features such as shaft tombs."/>
+			<column name="label" value="Tomb"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="3.7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="301"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="310"/>
+			<column name="definition" value="An unroofed structure associated with the playing of the Mesoamerican ball game, found in the American southwest and parts of Mesoamerica."/>
+			<column name="label" value="Ball Court"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="311"/>
+			<column name="definition" value="Buildings, or the archaeological remains of features or facilities, that were used for religious purposes. Use more specific term(s) if possible."/>
+			<column name="label" value="Church / religious structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="312"/>
+			<column name="definition" value="Remains of a prehistoric building or location designed for public religious services."/>
+			<column name="label" value="Ancient church / religious structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.2.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="311"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="313"/>
+			<column name="definition" value="Remains of a historic building or location designed for public religious services."/>
+			<column name="label" value="Historic church / religious structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.2.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="311"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="314"/>
+			<column name="definition" value="Locations, or the remains of buildings that were associated with communal or public activities."/>
+			<column name="label" value="Communal / public structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="315"/>
+			<column name="definition" value="Specified area containing evidence that is associated with prehistoric communal or public activity."/>
+			<column name="label" value="Ancient communal / public structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.3.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="314"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="316"/>
+			<column name="definition" value="Specified area containing evidence that is associated with historic communal or public activity."/>
+			<column name="label" value="Historic communal / public structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.3.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="314"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="317"/>
+			<column name="definition" value="A multi-story building with massive masonry or adobe walls, found in the Chacoan and Hohokam regions of the American southwest."/>
+			<column name="label" value="Great House / Big House"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="318"/>
+			<column name="definition" value="Locations, or the remains of buildings that were associated with governmental activities."/>
+			<column name="label" value="Governmental structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="319"/>
+			<column name="definition" value="Specified area containing evidence that is associated with prehistoric governmental activity."/>
+			<column name="label" value="Ancient governmental structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.5.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="318"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="321"/>
+			<column name="definition" value="Circular or rectangular ceremonial structure. May be subterranean or part of a surface room block."/>
+			<column name="label" value="Kiva / Great Kiva"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="322"/>
+			<column name="definition" value="Military-related structure constructed for various purposes (personnel barracks, testing, aircraft storage or landing, etc.)."/>
+			<column name="label" value="Military structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="323"/>
+			<column name="definition" value="An above ground construction of earth, shell or other material, undifferentiated as to function."/>
+			<column name="label" value="Mound / Earthwork"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.8"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="324"/>
+			<column name="definition" value="An above ground prepared surface on which a non-residential structure is built."/>
+			<column name="label" value="Building substructure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.8.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="323"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="325"/>
+			<column name="definition" value="A non-residential cultural construction made from earth, shell or other materials, often formed to enclose or demarcate an area, or, in the case of causeways, to link areas. Examples include shell rings."/>
+			<column name="label" value="Ancient earthwork"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.8.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="323"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="326"/>
+			<column name="definition" value="A defensive construction made from earth, shell or other materials."/>
+			<column name="label" value="Military earthwork"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.8.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="323"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="327"/>
+			<column name="definition" value="An above ground construction of earth, shell or other material, built in the shape of geometric, animal or other symbolic forms. Prominent examples include Effigy Mounds National Monument and Serpent Mound."/>
+			<column name="label" value="Geometric / effigy / zoomorphic mound"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.8.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="323"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="328"/>
+			<column name="definition" value="A large, circular area defined by a perimeter of mounded shell (often several meters in height), for example, Archaic Period shell ring sites in the American southeast."/>
+			<column name="label" value="Shell ring"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.8.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="323"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="329"/>
+			<column name="definition" value="A large and/or ornate building, normally associated with a high ranking family or individual."/>
+			<column name="label" value="Palace"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.9"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="330"/>
+			<column name="definition" value="An enclosure, constructed of timbers or posts driven into ground, or otherwise walled."/>
+			<column name="label" value="Palisade"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.10"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="331"/>
+			<column name="definition" value="An area which may be partially or completely enclosed by structural remains (standing or collapsed), used for community activities.  May contain temporary structures (e.g. sun shades or ramadas) as well as special activity areas (e.g. milling bins, hearths)."/>
+			<column name="label" value="Plaza"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.11"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="332"/>
+			<column name="definition" value="A massive structure, typically with triangular outer surfaces that converge at the top. Often flat-topped to accommodate public gatherings and/or buildings."/>
+			<column name="label" value="Pyramid"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.12"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="333"/>
+			<column name="definition" value="A series of steps allowing access to a different level. Use for toe/hand holds, stairs, ladders, etc."/>
+			<column name="label" value="Stairway"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.13"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="334"/>
+			<column name="definition" value="Architectural remnant of a building of unknown form or function."/>
+			<column name="label" value="Structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.14"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="335"/>
+			<column name="definition" value="Architectural remnant of a prehistoric building of unknown form or function. Use more specific term if possible."/>
+			<column name="label" value="Ancient structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.14.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="310"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="336"/>
+			<column name="definition" value="Architectural remnant of a historic building of unknown form or function. Use more specific term if possible."/>
+			<column name="label" value="Historic structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.14.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="310"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="337"/>
+			<column name="definition" value="Small enclosure or hut used for steam baths, usually ephemeral in construction. Often with fire-cracked rock and/or hearths in association."/>
+			<column name="label" value="Sweat house / sweat lodge"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.15"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="338"/>
+			<column name="definition" value="Monumental architecture constructed from stone or other materials, and used for religious and/or political purposes."/>
+			<column name="label" value="Temple"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="4.16"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="309"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="340"/>
+			<column name="definition" value="Prehistoric lithic and/or ceramic scatters with no features."/>
+			<column name="label" value="Artifact Scatter"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="341"/>
+			<column name="definition" value="Mound or stack of rocks used to mark significant locations (e.g., boundaries or claims)."/>
+			<column name="label" value="Cairn"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="342"/>
+			<column name="definition" value="A structure that creates a boundary, barrier, or enclosure. Construction materials can vary widely and may include unmodified natural materials (such as brush)."/>
+			<column name="label" value="Fence"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="343"/>
+			<column name="definition" value="Discolored area of soil, often including charcoal, ash deposits or fire cracked rock, exhibiting evidence of use in association with fire.  May be bounded (e.g., rock ring) or ill-defined."/>
+			<column name="label" value="Hearth"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="344"/>
+			<column name="definition" value="A find spot containing a single artifact."/>
+			<column name="label" value="Isolated artifact"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.5"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="345"/>
+			<column name="definition" value="A find spot containing a single cultural feature."/>
+			<column name="label" value="Isolated feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.6"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="346"/>
+			<column name="definition" value="Oven used to bake food, fire pottery, or thermally alter other materials (e.g., bricks, lithic materials)."/>
+			<column name="label" value="Kiln"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.7"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="347"/>
+			<column name="definition" value="An archaeological refuse deposit containing the broken or discarded remains of human activities. Use more specific term(s) if possible."/>
+			<column name="label" value="Midden"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.8"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="348"/>
+			<column name="definition" value="A large, dense concentrations, often mounded, of fire cracked rock (FCR), usually associated with large scale plant processing. Although other cultural materials may be present in the midden, FCR is usually predominant."/>
+			<column name="label" value="Burned rock midden"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.8.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="347"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="349"/>
+			<column name="definition" value="A surficial archaeological deposit containing discarded artifacts and other cultural materials. Midden deposits normally contain ashy or charcoal-stained sediments, and domestic-related items such as sherds, lithic debitage, and bone."/>
+			<column name="label" value="Sheet midden"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.8.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="347"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="350"/>
+			<column name="definition" value="An archaeological deposit composed primarily of discarded mollusk shells."/>
+			<column name="label" value="Shell midden"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.8.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="347"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="351"/>
+			<column name="definition" value="A substantial concentration of refuse, built up as a result of multiple episodes of deposition."/>
+			<column name="label" value="Trash midden"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.8.4"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="347"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="352"/>
+			<column name="definition" value="A facility made or used for grinding or processing plant materials. Use more specific term(s) if possible."/>
+			<column name="label" value="Milling feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.9"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="353"/>
+			<column name="definition" value="A pecked or ground concavity in a large boulder or outcrop, including both bedrock mortar and bedrock metate."/>
+			<column name="label" value="Bedrock grinding feature"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.9.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="352"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="354"/>
+			<column name="definition" value="An enclosed container used for milling plant material. May be above ground or partially or completely underground."/>
+			<column name="label" value="Milling Bin"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.9.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="352"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="355"/>
+			<column name="definition" value="A discrete excavation directly attributable to human activity. Use more specific term(s) if possible."/>
+			<column name="label" value="Pit"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.10"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="356"/>
+			<column name="definition" value="A discrete excavation directly attributable to human activity that was used for the disposal of discarded artifacts, ecofacts and other cultural materials."/>
+			<column name="label" value="Refuse pit"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.10.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="340"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="357"/>
+			<column name="definition" value="An enclosed space used to heat objects placed within its bounds. Includes earth ovens, oven pits, mud ovens, and bread ovens."/>
+			<column name="label" value="Roasting pit / oven / horno"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.10.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="340"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="358"/>
+			<column name="definition" value="A discrete excavation directly attributable to human activity used for storing artifacts, ecofacts and other cultural materials."/>
+			<column name="label" value="Storage pit"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.10.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="340"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="359"/>
+			<column name="definition" value="One or more upright posts, remains of posts, or sockets usually associated with a larger feature or structure such as a building, fence, corral, stockade, pen, etc."/>
+			<column name="label" value="Post hole / post mold"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.11"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="360"/>
+			<column name="definition" value="Group of rocks which appear to have some cultural association. Use for possible walls, wall-like phenomena, human produced architectural oddities, rock piles, etc."/>
+			<column name="label" value="Rock alignment"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="5.12"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="339"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="362"/>
+			<column name="definition" value="Designs created on the ground surface by arranging rocks or other materials, or by scraping or altering the earth surface. Usually on a large scale."/>
+			<column name="label" value="Intaglio / geoglyph"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="6.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="361"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="363"/>
+			<column name="definition" value="Design scratched, pecked, or scraped into a rock surface."/>
+			<column name="label" value="Petroglyph"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="6.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="361"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="364"/>
+			<column name="definition" value="Design drawn in pigment upon an unprepared or ground rock surface."/>
+			<column name="label" value="Pictograph"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="6.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="361"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="366"/>
+			<column name="definition" value="The remains of facilities or equipment related to boats, ships, or shipping. Use for dock, wharf etc."/>
+			<column name="label" value="Shipping-related structure"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="7.1"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="365"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="367"/>
+			<column name="definition" value="The remains of a ship, boat or other vessel."/>
+			<column name="label" value="Shipwreck"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="7.2"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="365"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+		<insert tableName="site_type_keyword">
+			<column name="id" valueNumeric="368"/>
+			<column name="definition" value="The underwater remains of an aircraft."/>
+			<column name="label" value="Submerged aircraft"/>
+			<column name="approved" valueBoolean="true"/>
+			<column name="index" value="7.3"/>
+			<column name="selectable" valueBoolean="true"/>
+			<column name="parent_id" valueNumeric="365"/>
+			<column name="status" value="ACTIVE"/>
+		</insert>
+	</changeSet>
+</databaseChangeLog>
