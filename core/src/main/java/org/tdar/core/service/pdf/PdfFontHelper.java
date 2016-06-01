@@ -1,8 +1,8 @@
 package org.tdar.core.service.pdf;
 
-import org.apache.pdfbox.encoding.Encoding;
-import org.apache.pdfbox.encoding.PdfDocEncoding;
 import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.pdmodel.font.encoding.Encoding;
+import org.apache.pdfbox.pdmodel.font.encoding.StandardEncoding;
 
 /**
  * An enum for managing PDF Fonts; each entry tracks a different font style for us.
@@ -12,10 +12,10 @@ import org.apache.pdfbox.pdmodel.font.PDType1Font;
  */
 public enum PdfFontHelper {
     // confirm correct encoding http://stackoverflow.com/questions/1713751/using-java-pdfbox-library-to-write-russian-pdf
-    HELVETICA_EIGHT_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 8, 100),
-    HELVETICA_TEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 10, 90),
-    HELVETICA_TWELVE_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 12, 75),
-    HELVETICA_SIXTEEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, new PdfDocEncoding(), 16, 55);
+    HELVETICA_EIGHT_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, StandardEncoding.INSTANCE, 8, 100),
+    HELVETICA_TEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, StandardEncoding.INSTANCE, 10, 90),
+    HELVETICA_TWELVE_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, StandardEncoding.INSTANCE, 12, 75),
+    HELVETICA_SIXTEEN_POINT(PDType1Font.HELVETICA, PDType1Font.HELVETICA_BOLD, PDType1Font.HELVETICA_OBLIQUE, StandardEncoding.INSTANCE, 16, 55);
 
     private int fontSize;
     private int lineHeight;

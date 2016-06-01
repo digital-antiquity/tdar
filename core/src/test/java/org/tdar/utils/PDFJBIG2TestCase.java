@@ -16,25 +16,24 @@ import javax.imageio.ImageWriteParam;
 import javax.imageio.ImageWriter;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFImageWriter;
-import org.junit.Ignore;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
 
-@Ignore
 public class PDFJBIG2TestCase {
 
     private final transient Logger log = LoggerFactory.getLogger(getClass());
 
     @SuppressWarnings("unused")
     @Test
-    @Ignore("test for PDFBox issue, not tDAR issue")
+//    @Ignore("test for PDFBox issue, not tDAR issue")
     public void testJBIG2() throws IOException {
         File pdfFile = new File(TestConstants.TEST_ROOT_DIR + "/documents/pia-09-lame-1980-small.pdf");
         String imageFormat = "jpg";
-        String color = "rgb";
         ImageIO.scanForPlugins();
         int resolution;
         try {
@@ -63,14 +62,14 @@ public class PDFJBIG2TestCase {
         outputPrefix = new File(System.getProperty("java.io.tmpdir"), outputPrefix).toString();
         PDDocument document = openPDF("", pdfFile);
 
+        File outputFile = new File(outputPrefix + pageNum + "." + imageFormat);
         if (document != null) {
 
-            int imageType = determineImageType(color);
+            ImageType color = ImageType.RGB;
             try {
-                PDFImageWriter imageWriter = new PDFImageWriter();
-                // The following library call will write "Writing: " + the file name to the System.out stream. Naughty!
-                // This is fixed in a later version of pdfbox, but we have a transitive dependency via Tika...
-                boolean success = imageWriter.writeImage(document, imageFormat, "", pageNum, pageNum, outputPrefix, imageType, resolution);
+                PDFRenderer pdfRenderer = new PDFRenderer(document);
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(pageNum, 300, color);
+                boolean success = ImageIOUtil.writeImage(bim, outputFile.getAbsolutePath(), 300);
                 if (!success) {
                     log.info("Error: no writer found for image format '" + imageFormat + "'");
                 }
@@ -81,28 +80,10 @@ public class PDFJBIG2TestCase {
                 log.debug("PDF image extraction failed", e);
             }
         }
-        File outputFile = new File(outputPrefix + pageNum + "." + imageFormat);
         log.debug("output file: {} size: {}", outputFile, outputFile.length());
         assertTrue(outputFile.length() > 2);
     }
 
-    private int determineImageType(String color) {
-        int imageType = 24;
-        if ("bilevel".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_BYTE_BINARY;
-        } else if ("indexed".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_BYTE_INDEXED;
-        } else if ("gray".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_BYTE_GRAY;
-        } else if ("rgb".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_INT_RGB;
-        } else if ("rgba".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_INT_ARGB;
-        } else {
-            log.debug("Error: the number of bits per pixel must be 1, 8 or 24.");
-        }
-        return imageType;
-    }
 
     private PDDocument openPDF(String password, File pdfFile) throws IOException {
         PDDocument document = null;

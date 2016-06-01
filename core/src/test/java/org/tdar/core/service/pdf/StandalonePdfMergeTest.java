@@ -7,10 +7,8 @@ import static org.junit.Assert.assertThat;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.exceptions.COSVisitorException;
-import org.apache.pdfbox.io.RandomAccess;
-import org.apache.pdfbox.io.RandomAccessFile;
-import org.apache.pdfbox.util.PDFMergerUtility;
+import org.apache.pdfbox.io.MemoryUsageSetting;
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -51,7 +49,7 @@ public class StandalonePdfMergeTest {
     }
 
     @Test
-    public void testMerge() throws IOException, COSVisitorException {
+    public void testMerge() throws IOException {
         destinationPdf = new File(TMP_FOLDER, "result.pdf");
         PDFMergerUtility ut = new PDFMergerUtility();
         ut.addSource(coverpagePdf);
@@ -64,14 +62,26 @@ public class StandalonePdfMergeTest {
     }
 
     @Test
-    public void testMergeNonSeq() throws IOException, COSVisitorException {
+    public void testMergeNonSeq() throws IOException {
         destinationPdf = new File(TMP_FOLDER, "result-nonseq.pdf");
         PDFMergerUtility ut = new PDFMergerUtility();
-        RandomAccess ram = new RandomAccessFile(File.createTempFile("mergeram", ".bin"), "rw");
         ut.addSource(coverpagePdf);
         ut.addSource(documentPdf);
         ut.setDestinationFileName(destinationPdf.getCanonicalPath());
-        ut.mergeDocumentsNonSeq(ram);
+        ut.mergeDocuments(MemoryUsageSetting.setupTempFileOnly());
+
+        //not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
+        assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is( greaterThan(documentPdf.length())));
+    }
+
+    @Test
+    public void testMergeMixed() throws IOException {
+        destinationPdf = new File(TMP_FOLDER, "result-mixed.pdf");
+        PDFMergerUtility ut = new PDFMergerUtility();
+        ut.addSource(coverpagePdf);
+        ut.addSource(documentPdf);
+        ut.setDestinationFileName(destinationPdf.getCanonicalPath());
+        ut.mergeDocuments(MemoryUsageSetting.setupMixed(1000L));
 
         //not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
         assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is( greaterThan(documentPdf.length())));

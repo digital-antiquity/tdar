@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.LicenseType;
@@ -968,5 +969,22 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public boolean shouldShowExactLocationToThoseWhoCanEdit() {
         return assistant.getBooleanProperty("show.exact.location.to.editable", false);
+    }
+
+    /*
+     *         long freemem = Runtime.getRuntime().freeMemory();
+        boolean enoughRam = freemem >  irfv.getFileLength();
+
+     */
+    public MemoryUsageSetting getPDFMemoryReadSetting() {
+        return MemoryUsageSetting.setupTempFileOnly();
+    }
+
+    public MemoryUsageSetting getPDFMemoryWriteSetting(File file) {
+        if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
+            return MemoryUsageSetting.setupMixed(1073741824);
+        } else {
+            return MemoryUsageSetting.setupMainMemoryOnly();
+        }
     }
 }
