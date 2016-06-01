@@ -115,7 +115,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 resultSetPosition = resultSetPosition + 1;
                 // HANDLE NULL
                 String mappedVal = (String) row[resultSetPosition];
-                String type = "";
+                String type = "OK";
                 if (StringUtils.isBlank(value)) {
                     value = MessageHelper.getMessage("database.null_empty_integration_value");
                     if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
