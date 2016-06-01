@@ -323,8 +323,9 @@ public class SearchParameters {
         } else {
             queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.CONTENT, support.getText("searchParameter.file_contents"), getOperator(), contents));
         }
-        queryPartGroup.append(new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"),
-                getOperator(), filenames));
+        FieldQueryPart<String> filenamePart = new FieldQueryPart<String>(QueryFieldNames.FILENAME, support.getText("searchParameter.file_name"), getOperator(), filenames);
+        filenamePart.setPhraseFormatters(Arrays.asList(PhraseFormatter.ESCAPE_QUOTED));
+        queryPartGroup.append(filenamePart);
 
         if (creatorOwner != null) {
             if (CollectionUtils.isNotEmpty(getCreatorOwnerRoles())) {

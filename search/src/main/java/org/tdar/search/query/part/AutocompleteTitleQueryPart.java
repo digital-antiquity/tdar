@@ -61,7 +61,7 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
         titleGroup.append(autoPart.setBoost(TITLE_BOOST));
         titleGroup.append(titleSortPart.setBoost(TITLE_SORT_BOOST));
         titleGroup.append(keywordTitlePart);
-        logger.info("{}", titleGroup);
+        logger.trace("{}", titleGroup);
         return titleGroup;
 
     }
