@@ -21,7 +21,6 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
     private static final float TITLE_SORT_BOOST = 4f;
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private static final float TITLE_BOOST = 6f;
-    private static final Pattern WHITESPACE_PATTERN = Pattern.compile("\\s");
 
     private final String title;
 
@@ -48,16 +47,6 @@ public class AutocompleteTitleQueryPart implements QueryPart<String> {
             // FIXME: if title is over 2 characters, use escaped wildcard formatter?
             keywordTitlePart.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
         }
-/*
-        if (WHITESPACE_PATTERN.matcher(title).find()) {
-            // FIXME: if the value contains a space, should we change from ESCAPED -> WILDCARD to WILDCARD -> QUOTED?
-            titleSortPart.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
-            if (title.length() > 2) {
-                // FIXME: if value contains a space, should we change from ESCAPED -> WILDCARD to WILDCARD -> QUOTED?
-                keywordTitlePart.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD, PhraseFormatter.QUOTED);
-            }
-        }
-*/
         titleGroup.append(autoPart.setBoost(TITLE_BOOST));
         titleGroup.append(titleSortPart.setBoost(TITLE_SORT_BOOST));
         titleGroup.append(keywordTitlePart);

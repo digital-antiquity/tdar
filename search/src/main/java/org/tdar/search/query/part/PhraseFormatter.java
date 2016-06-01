@@ -14,8 +14,8 @@ public enum PhraseFormatter {
     QUOTED,
     ESCAPE_QUOTED, ESCAPED_EMBEDDED;
 
-    private static final String[] FIND = Arrays.asList(" ",":").toArray(new String[0]);
-    private static final String[] REPLACE = Arrays.asList("\\ ", "\\:").toArray(new String[0]);
+    private static final String[] FIND = Arrays.asList(" ").toArray(new String[0]);
+    private static final String[] REPLACE = Arrays.asList("\\ ").toArray(new String[0]);
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public String format(String value) {

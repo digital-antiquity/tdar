@@ -85,6 +85,9 @@ public class SearchDao<I extends Indexable> {
 	public SolrSearchObject<I> search(SolrSearchObject<I> query, LuceneSearchResultHandler<I> resultHandler,
 			TextProvider provider) throws ParseException, SolrServerException, IOException {
 		query.markStartSearch();
+		if (logger.isTraceEnabled()) {
+		    logger.trace("{}",query.getSolrParams());
+		}
 		QueryResponse rsp = template.query(query.getCoreName(), query.getSolrParams());
 		query.processResults(rsp);
 		convertProjectedResultIntoObjects(resultHandler, query);

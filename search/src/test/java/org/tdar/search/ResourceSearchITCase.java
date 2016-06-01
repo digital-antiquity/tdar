@@ -76,6 +76,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.TdarAssert;
+import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
@@ -123,11 +124,21 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     }
 
     @Test
-    public void testInvalidWithColor() throws ParseException, SolrServerException, IOException {
+    public void testInvalidWithColon() throws ParseException, SolrServerException, IOException {
         ResourceLookupObject look = new ResourceLookupObject();
         look.setTerm("Temporal Control in the Southern North Coast Ranges of California: The Application of Obsidian Hydration Analysis");
         LuceneSearchResultHandler<Resource> result = new SearchResult<>();
         resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
+    }
+
+    @Test
+    public void testInvalidWithColon2() throws ParseException, SolrServerException, IOException {
+        SearchParameters sp = new SearchParameters();
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
+        asqo.getSearchParameters().add(sp);
+        sp.getAllFields().add("Temporal Control in the Southern North Coast Ranges of California: The Application of Obsidian Hydration Analysis");
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
     }
 
     @Test
