@@ -33,6 +33,8 @@ import org.tdar.utils.PersistableUtils;
  */
 public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Object[]> {
 
+    private static final String OK = "OK";
+
     public IntegrationResultSetDecorator(Iterator<Object[]> iterator, IntegrationContext context) {
         super(iterator);
         this.context = context;
@@ -115,7 +117,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 resultSetPosition = resultSetPosition + 1;
                 // HANDLE NULL
                 String mappedVal = (String) row[resultSetPosition];
-                String type = "OK";
+                String type = OK;
                 if (StringUtils.isBlank(value)) {
                     value = MessageHelper.getMessage("database.null_empty_integration_value");
                     if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
@@ -123,7 +125,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                         type = CodingRule.NULL.getTerm();
                     }
                 }
-                
+
                 if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
                     // HANDLE MISSING
                     if (StringUtils.contains(value, Database.NO_CODING_SHEET_VALUE)) {
@@ -131,23 +133,23 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                         type = CodingRule.MISSING.getTerm();
                     }
                 }
-                
+
                 values.add(value);
                 DataTableColumn realColumn = integrationColumn.getColumns().get(0);
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
                 if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
                     Map<String, OntologyNode> nodeMap = realColumn.getDefaultCodingSheet().getTermToOntologyNodeMap();
-                    if (StringUtils.isNotBlank(type)) {
+                    if (!StringUtils.equals(OK, type)) {
                         // if type == NULL || MISSING, try and get value:
                         mappedOntologyNode = nodeMap.get(mappedVal);
-                        
-                    } else if ( mappedOntologyNode == null) {
+
+                    } else if (mappedOntologyNode == null) {
                         mappedVal = CodingRule.UNMAPPED.getTerm();
                         type = CodingRule.UNMAPPED.getTerm();
                         mappedOntologyNode = nodeMap.get(value);
                     }
                 }
-                
+
                 if (mappedOntologyNode != null && StringUtils.isNotBlank(mappedOntologyNode.getDisplayName())) {
                     mappedVal = mappedOntologyNode.getDisplayName();
                     ontologyNodes.add(mappedOntologyNode);
