@@ -3,14 +3,12 @@
  */
 package org.tdar.filestore.tasks;
 
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 import org.apache.pdfbox.rendering.ImageType;
 import org.apache.pdfbox.rendering.PDFRenderer;
 import org.apache.pdfbox.tools.imageio.ImageIOUtil;
@@ -83,12 +81,6 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         File pdfFile = originalFile.getTransientFile();
         String imageFormat = "jpg";
         ImageType color = ImageType.RGB;
-        int resolution;
-        try {
-            resolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        } catch (HeadlessException e) {
-            resolution = 96;
-        }
 
         String fn = originalFile.getFilename();
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
@@ -135,12 +127,10 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         try {
             document = PDDocument.load(pdfFile, TdarConfiguration.getInstance().getPDFMemoryReadSetting());
 
-            if (document.isEncrypted()) {
-                getLogger().info("access permissions: " + document.getCurrentAccessPermission());
-                getLogger().info("security manager: " + document.getCurrentAccessPermission());
-                getWorkflowContext().setErrorFatal(true);
-                throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
-            }
+//            if (document.isEncrypted()) {
+//                getLogger().info("access permissions: " + document.getCurrentAccessPermission());
+//                getLogger().info("security manager: " + document.getCurrentAccessPermission());
+//            }
 
             // try {
             // document.decrypt(password);
@@ -149,6 +139,9 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             // }
             // }
             getWorkflowContext().setNumPages(document.getNumberOfPages());
+        } catch (InvalidPasswordException ipe) {
+            getWorkflowContext().setErrorFatal(true);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
         } catch (IOException e) {
             getWorkflowContext().setErrorFatal(true);
             getLogger().info("IO Exception ocurred", e);
