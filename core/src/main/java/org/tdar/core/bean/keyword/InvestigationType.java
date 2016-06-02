@@ -35,6 +35,12 @@ public class InvestigationType extends Keyword.Base<InvestigationType> implement
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> synonyms = new HashSet<InvestigationType>();
 
+    public InvestigationType() {}
+    
+    public InvestigationType(String string) {
+        setLabel(string);
+    }
+
     @Override
     public Set<InvestigationType> getSynonyms() {
         return synonyms;

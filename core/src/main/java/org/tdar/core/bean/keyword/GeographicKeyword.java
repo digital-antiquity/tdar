@@ -41,6 +41,14 @@ public class GeographicKeyword extends UncontrolledKeyword.Base<GeographicKeywor
 
     private static final long serialVersionUID = 9120049059501138213L;
 
+    public GeographicKeyword(String string) {
+        this.setLabel(string);
+    }
+    
+    public GeographicKeyword() {
+    }
+
+
     @OneToMany(cascade = { CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST })
     @JoinColumn(name = "merge_keyword_id")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)

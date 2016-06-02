@@ -38,6 +38,12 @@ public class MaterialKeyword extends Keyword.Base<MaterialKeyword> implements Co
 
     private boolean approved;
 
+    public MaterialKeyword() {}
+    
+    public MaterialKeyword(String string) {
+        this.setLabel(string);
+    }
+
     @Override
     public Set<MaterialKeyword> getSynonyms() {
         return synonyms;

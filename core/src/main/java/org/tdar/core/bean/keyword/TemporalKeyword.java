@@ -36,6 +36,13 @@ public class TemporalKeyword extends UncontrolledKeyword.Base<TemporalKeyword> {
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> synonyms = new HashSet<TemporalKeyword>();
 
+    public TemporalKeyword(String string) {
+        this.setLabel(string);
+    }
+    
+    public TemporalKeyword() {
+    }
+
     @Override
     public Set<TemporalKeyword> getSynonyms() {
         return synonyms;
