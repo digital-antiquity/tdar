@@ -173,10 +173,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         takeScreenshot();
         find(linkText("Add Integration Column")).click();
         find(linkText("Fauna Taxon Ontology")).click();
-        // wait for tab visible
-        waitFor(id("tabtab1")).isDisplayed();
-        // wait for tab contents is visible
-        waitFor(id("tab1")).isDisplayed();
+
+        // wait until integration column becomes visible
+        waitFor(visibilityOfElementLocated(id("tab1")));
+
         logger.debug(getText());
 
         find(aves).click();
@@ -195,6 +195,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         clearPageCache();
         find(partialLinkText(TEST_INTEGRATION)).first().click();
         waitForPageload();
+
+        // wait until integration column becomes visible
+        waitFor(visibilityOfElementLocated(id("tab1")));
+
 
         waitFor(partialLinkText("Fauna Taxon Ontology")).click();
         waitFor(".nodechild1");
