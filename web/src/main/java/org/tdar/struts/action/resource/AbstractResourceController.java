@@ -1127,7 +1127,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.submitterProperName = submitterProperName;
     }
 
-    public boolean isSelect2Enabled() {
+    public Boolean isSelect2Enabled() {
         return select2Enabled;
     }
 
@@ -1135,7 +1135,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.select2Enabled = select2Enabled;
     }
 
-    public boolean isSelect2SingleEnabled() {
+    public Boolean isSelect2SingleEnabled() {
         return select2SingleEnabled;
     }
 

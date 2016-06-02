@@ -75,8 +75,8 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
-    public void testCreateImageEditSavehasResource() throws InterruptedException {
-        gotoPage("/image/add?select2SingleEnabled=true&select2Enabled=true");
+    public void testCreateImageEditSavehasResource()  {
+        gotoPage("/image/add");
         WebElement form = find("#metadataForm").first();
         prepIndexedFields();
         // fill in various text fields
@@ -91,7 +91,6 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             }
         }
         find(".resource-autocomplete").click();
-
         submitForm();
 
         String path = getDriver().getCurrentUrl();
