@@ -49,14 +49,14 @@
         <Logger name="uk.org" level="debug" />
 
         <!--exclude common but less-important errors from the email appender -->
-        <Logger name="org.apache.pdfbox.filter.JBIG2Filter" level="error" additivity="false">
+<!--        <Logger name="org.apache.pdfbox.filter.JBIG2Filter" level="error" additivity="false">
             <AppenderRef ref="File"/>
             <AppenderRef ref="Mail" level="fatal" />
         </Logger>
         <Logger name="org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap" level="error" additivity="false">
             <AppenderRef ref="File"/>
             <AppenderRef ref="Mail" level="fatal" />
-        </Logger>
+        </Logger> -->
     </Loggers>
 </Configuration>
 
