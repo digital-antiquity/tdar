@@ -32,6 +32,12 @@ public class InvestigationType extends AbstractKeyword<InvestigationType> implem
 
     private static final long serialVersionUID = 2557655317256194003L;
 
+    public InvestigationType() {}
+    
+    public InvestigationType(String string) {
+        setLabel(string);
+    }
+
     @Override
     public String getUrlNamespace() {
         return KeywordType.INVESTIGATION_TYPE.getUrlNamespace();

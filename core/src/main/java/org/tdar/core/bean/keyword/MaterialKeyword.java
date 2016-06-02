@@ -36,6 +36,12 @@ public class MaterialKeyword extends AbstractKeyword<MaterialKeyword> implements
 
     private boolean approved;
 
+    public MaterialKeyword() {}
+    
+    public MaterialKeyword(String string) {
+        this.setLabel(string);
+    }
+
     @Override
     public String getUrlNamespace() {
         return KeywordType.MATERIAL_TYPE.getUrlNamespace();

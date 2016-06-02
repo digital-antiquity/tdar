@@ -43,6 +43,12 @@ public class GeographicKeyword extends AbstractKeyword<GeographicKeyword> implem
 
     private static final long serialVersionUID = 9120049059501138213L;
 
+    public GeographicKeyword(String string) {
+        this.setLabel(string);
+    }
+    
+    public GeographicKeyword() {
+    }
 
     public enum Level {
         CONTINENT("Continent"),
