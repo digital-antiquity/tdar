@@ -1,5 +1,7 @@
 package org.tdar.search.query.part;
 
+import java.util.Arrays;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
 import org.slf4j.Logger;
@@ -12,6 +14,8 @@ public enum PhraseFormatter {
     QUOTED,
     ESCAPE_QUOTED, ESCAPED_EMBEDDED;
 
+    private static final String[] FIND = Arrays.asList(" ").toArray(new String[0]);
+    private static final String[] REPLACE = Arrays.asList("\\ ").toArray(new String[0]);
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public String format(String value) {
@@ -20,7 +24,7 @@ public enum PhraseFormatter {
         }
         switch (this) {
             case ESCAPED:
-                return StringUtils.replace(QueryParser.escape(value.trim())," ", "\\ ");
+                return StringUtils.replaceEach(QueryParser.escape(value.trim()),FIND, REPLACE);
             case WILDCARD:
             	if (StringUtils.startsWith(value, "\"") && StringUtils.endsWith(value, "\"")) {
             		return value;
