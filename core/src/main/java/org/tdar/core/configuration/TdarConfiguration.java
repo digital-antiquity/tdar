@@ -971,18 +971,13 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("show.exact.location.to.editable", false);
     }
 
-    /*
-     *         long freemem = Runtime.getRuntime().freeMemory();
-        boolean enoughRam = freemem >  irfv.getFileLength();
-
-     */
     public MemoryUsageSetting getPDFMemoryReadSetting() {
         return MemoryUsageSetting.setupTempFileOnly();
     }
 
     public MemoryUsageSetting getPDFMemoryWriteSetting(File file) {
         if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
-            return MemoryUsageSetting.setupMixed(1073741824);
+            return MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 3L);
         } else {
             return MemoryUsageSetting.setupMainMemoryOnly();
         }
