@@ -117,6 +117,20 @@ public class ImageThumbnailTask extends AbstractTask {
             getLogger().error(msg);
         }
 
+        
+        if (ijSource == null && StringUtils.containsIgnoreCase(ext,"tif")) {
+            try {
+                GeoTiffReader reader = new GeoTiffReader(sourceFile, new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
+                GridCoverage2D coverage=reader.read(null);
+                RenderedOp renderedImage = (RenderedOp) coverage.getRenderedImage();
+                
+                ijSource = new ImagePlus("", renderedImage.getAsBufferedImage());
+            } catch (IOException e) {
+                getLogger().error("issue with GeoTiff attempt to process" + sourceFile, e);
+                msg = e.getMessage();
+            }
+        }
+
         if (isJaiImageJenabled() && (ijSource == null)) {
             getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
             try {
@@ -128,19 +142,6 @@ public class ImageThumbnailTask extends AbstractTask {
                 if (msg == null) {
                     msg = e.getMessage();
                 }
-            }
-        }
-        
-        if (ijSource == null) {
-            try {
-                GeoTiffReader reader = new GeoTiffReader(sourceFile, new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
-                GridCoverage2D coverage=reader.read(null);
-                RenderedOp renderedImage = (RenderedOp) coverage.getRenderedImage();
-    
-                ijSource = new ImagePlus("", renderedImage.getAsBufferedImage());
-            } catch (IOException e) {
-                getLogger().error("issue with GeoTiff attempt to process" + sourceFile, e);
-                msg = e.getMessage();
             }
         }
 

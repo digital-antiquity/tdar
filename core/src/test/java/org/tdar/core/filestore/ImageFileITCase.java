@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -71,7 +70,7 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testGEoTIFF() throws Exception {
-        InformationResourceFile informationResourceFile = testFileProcessing(new File("PUEBLO_ALTO_50.tif"), true);
+        InformationResourceFile informationResourceFile = testFileProcessing("PUEBLO_ALTO_50.tif", true);
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
     }
 
