@@ -69,10 +69,9 @@ public class ImageFileITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Ignore
     @Rollback
     public void testGEoTIFF() throws Exception {
-        InformationResourceFile informationResourceFile = testFileProcessing(new File("/Users/abrin/udig-workspace/Map.tif"), true);
+        InformationResourceFile informationResourceFile = testFileProcessing(new File("PUEBLO_ALTO_50.tif"), true);
         assertEquals(FileStatus.PROCESSED, informationResourceFile.getStatus());
     }
 
