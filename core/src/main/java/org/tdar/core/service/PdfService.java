@@ -203,7 +203,8 @@ public class PdfService {
             }
         }
 
-        PDPageContentStream content = new PDPageContentStream(doc, page, true, false, true);
+        PDPageContentStream content = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, true, true);
+//                PDPageContentStream(doc, page, true, false, true);
         appendCoverPageLogo(doc, content);
         int cursorPositionFromBottom = 580;
         /*
@@ -294,7 +295,7 @@ public class PdfService {
 
             int TOP = 646;
             int LEFT = 541 - img.getWidth();
-            content.drawXObject(img, LEFT, TOP, img.getWidth(), img.getHeight());
+            content.drawImage(img, LEFT, TOP, img.getWidth(), img.getHeight());
         }
     }
 
@@ -322,8 +323,8 @@ public class PdfService {
 
         content.beginText();
         content.setFont(fontHelper.getBold(), fontHelper.getFontSize());
-        content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
-        content.drawString(label);
+        content.newLineAtOffset(xFromLeft, yFromBottom);// INITIAL POSITION
+        content.showText(label);
         content.setFont(fontHelper.getFont(), fontHelper.getFontSize());
 
         String line = StringUtils.repeat(" ", label.length()) + text; // take into account the label when wrapping
@@ -390,7 +391,7 @@ public class PdfService {
         int yFromBottom = yFromBottom_;
         String text = transliterate(utf8Text);
         content.beginText();
-        content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
+        content.newLineAtOffset(xFromLeft, yFromBottom);// INITIAL POSITION
 
         if (bold) {
             content.setFont(fontHelper.getBold(), fontHelper.getFontSize());
@@ -424,11 +425,11 @@ public class PdfService {
 
         for (String line : text.split("([\r|\n]+)")) {
             logger.trace(line);
-            content.drawString(line);
+            content.showText(line);
             yFromBottom -= fontHelper.getLineHeight();
             content.endText();
             content.beginText();
-            content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
+            content.newLineAtOffset(xFromLeft, yFromBottom);// INITIAL POSITION
         }
         content.endText();
         return yFromBottom;
