@@ -177,15 +177,15 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         // wait until integration column becomes visible
         waitFor(visibilityOfElementLocated(id("tab1")));
 
-        logger.debug(getText());
 
         find(aves).click();
-        assertThat(find(aves).isSelected(), is(true));
         find(rabbit).click();
-        assertThat(find(rabbit).isSelected(), is(true));
         find(sheep).click();
         waitFor(elementToBeClickable(saveButton));
 
+        logger.debug(getText());
+        assertThat(find(aves).isSelected(), is(true));
+        assertThat(find(rabbit).isSelected(), is(true));
         assertThat(find(sheep).isSelected(), is(true));
         waitFor(saveButton).click();
         waitFor(textToBePresentInElementLocated(id("divStatusMessage"), "Saved"), 20);
