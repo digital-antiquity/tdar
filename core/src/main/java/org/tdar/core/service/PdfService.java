@@ -137,14 +137,13 @@ public class PdfService {
             return false;
         }
         
-        //pdfbox 1.8.x uses at least irfv.fileLength bytes of RAM for merges (even when using scratchdisk)
-        long freemem = Runtime.getRuntime().freeMemory();
-        boolean enoughRam = freemem >  irfv.getFileLength();
-        if(!enoughRam) {
-            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
-        }
-
-        return enoughRam;
+//        long freemem = Runtime.getRuntime().freeMemory();
+//        boolean enoughRam = freemem >  irfv.getFileLength();
+//        if(!enoughRam) {
+//            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
+//        }
+        return true;
+//        return enoughRam;
     }
 
     /**

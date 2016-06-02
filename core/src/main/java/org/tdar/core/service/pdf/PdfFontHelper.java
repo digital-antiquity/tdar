@@ -27,6 +27,7 @@ public enum PdfFontHelper {
 
     private PdfFontHelper(PDType1Font font, PDType1Font boldVariant, PDType1Font italicVariant, Encoding encoding, int size, int charsPerLine) {
         setFont(font);
+
         setBold(boldVariant);
         setItalic(italicVariant);
         setFontSize(size);

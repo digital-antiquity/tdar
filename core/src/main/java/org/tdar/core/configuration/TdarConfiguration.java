@@ -896,7 +896,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public boolean shouldUseLowMemoryPDFMerger() {
-        return assistant.getBooleanProperty("pdf.use_low_mem", false);
+        return assistant.getBooleanProperty("pdf.use_low_mem", true);
     }
 
     public boolean shouldLogToFilestore() {
