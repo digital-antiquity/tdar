@@ -5,6 +5,7 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,7 +51,8 @@ public class WorkflowContextService {
     private ApplicationEventPublisher publisher;
     
     @Autowired
-    public WorkflowContextService(TargetDatabase tdarDataImportDatabase, InformationResourceFileVersionService informationResourceFileVersionService,
+    public WorkflowContextService(
+            @Qualifier("target") TargetDatabase tdarDataImportDatabase, InformationResourceFileVersionService informationResourceFileVersionService,
             GenericDao genericDao, SerializationService serializationService, DatasetImportService datasetImportService,
             OntologyService ontologyService, CodingSheetService codingSheetService) {
         this.tdarDataImportDatabase = tdarDataImportDatabase;

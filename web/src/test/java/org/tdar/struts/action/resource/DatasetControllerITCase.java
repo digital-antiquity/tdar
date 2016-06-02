@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -39,6 +40,8 @@ import org.tdar.core.bean.resource.datatable.DataTableColumnType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.db.model.PostgresDatabase;
+import org.tdar.db.model.PostgresIntegrationDatabase;
+import org.tdar.db.model.abstracts.IntegrationDatabase;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
@@ -86,7 +89,7 @@ public class DatasetControllerITCase extends AbstractDataIntegrationTestCase {
     }
 
     @Autowired
-    private PostgresDatabase database;
+    private PostgresIntegrationDatabase database;
 
     @Test
     @Rollback(true)
