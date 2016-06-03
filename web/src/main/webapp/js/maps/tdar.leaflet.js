@@ -33,7 +33,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         },
         zoomLevel: 4,
         leafletTileProvider: 'mapbox',
-        maxBounds: [[[-85, -180.0], [85, 180.0]]],
         minZoom: 2,
         maxZoom: 17,
         id: 'abrin.n9j4f56m',
@@ -69,7 +68,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _elemData = $elem.data();
         // bootstrap stores a lot of data in BODY. We only want a subset
         var _bdata = $('body').data();
-//        console.log(_bdata.centerlat);
         var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
         if (_bdata.centerlat && _bdata.centerlong) {
             _bodyData.center =  {lat: _bdata.centerlat, lng: _bdata.centerlong} 
@@ -234,8 +232,13 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      */
     function _initRectangle(map, minx, miny, maxx, maxy, rectangleSettings) {
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined && !isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
-            //console.log(minx, maxx, miny, maxy);
-            var poly = [[maxy, maxx], [miny, minx]];
+            // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
+            // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY ADD 360
+            if (parseFloat(maxx) < parseFloat(minx)) {
+                maxx = parseFloat(maxx) +  360.0;
+            }
+            var poly = [[maxy, minx], [miny, maxx]];
+            console.log(poly);
             var rectangle = L.rectangle(poly, rectangleSettings).addTo(map);
             console.log("fitToBounds:", rectangleSettings.fitToBounds);
             console.log("fitToBounds (rec):", rectangle.getBounds());
@@ -327,6 +330,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             var $dix = $(".d_minx", $el);
             var $dmy = $(".d_maxy", $el);
             var $diy = $(".d_miny", $el);
+
             // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
             $dmx.change(function() {
                 $(".maxx", $el).val(Geo.parseDMS($dmx.val()));
@@ -468,7 +472,14 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         $(".maxy", $el).val(bnds.getNorth());
         $(".d_minx", $el).val(bnds.getWest());
         $(".d_miny", $el).val(bnds.getSouth());
-        $(".d_maxx", $el).val(bnds.getEast());
+        if (bnds.getEast() > 180) {
+            // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
+            // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY HERE, THE REVERSE AS ABOVE
+            // 
+            $(".d_maxx", $el).val(parseFloat(bnds.getEast()) - 360.0 );
+        } else {
+            $(".d_maxx", $el).val(bnds.getEast());
+        }
         $(".d_maxy", $el).val(bnds.getNorth());
         return bnds;
     }
