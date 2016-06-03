@@ -26,6 +26,7 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     private Class<?> jsonView = null;
     private boolean spatial;
 
+    @SuppressWarnings("deprecation")
     public LatitudeLongitudeBoxWrapper(Resource resource, FeedSearchHelper helper) {
         this.jsonView = helper.getJsonFilter();
         if (helper.getGeoMode() != null) {
@@ -35,7 +36,7 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
             this.resource = resource;
             LatitudeLongitudeBox llb = resource.getFirstActiveLatitudeLongitudeBox();
             if (llb != null) {
-                if (!helper.isOverrideAndObfuscate() || resource.isLatLongVisible()) {
+                if (helper.isOverrideAndObfuscate() == true || resource.isLatLongVisible()) {
                     setSpatial(true);
                     this.minLatitude = llb.getMinObfuscatedLatitude();
                     this.minLongitude = llb.getMinObfuscatedLongitude();
@@ -43,6 +44,17 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
                     this.maxLongitude = llb.getMaxObfuscatedLongitude();
                     this.centerLatitude = llb.getObfuscatedCenterLatitude();
                     this.centerLongitude = llb.getObfuscatedCenterLongitude();
+                }
+                
+                if (helper.isOverrideAndObfuscate() == false && resource.isConfidentialViewable()) {
+                    setSpatial(true);
+                    this.minLatitude = llb.getMinimumLatitude();
+                    this.minLongitude = llb.getMinimumLongitude();
+                    this.maxLatitude = llb.getMaximumLatitude();
+                    this.maxLongitude = llb.getMaximumLongitude();
+                    this.centerLatitude = llb.getCenterLatitude();
+                    this.centerLongitude = llb.getCenterLongitude();
+                    
                 }
             }
         }

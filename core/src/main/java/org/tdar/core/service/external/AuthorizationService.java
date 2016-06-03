@@ -32,6 +32,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
+import org.tdar.core.bean.resource.ConfidentialViewable;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
@@ -547,6 +548,12 @@ public class AuthorizationService implements Accessible {
                 logger.trace("user can edit: {}", p);
                 viewable = true;
             }
+            
+            
+            if (viewable && item instanceof Resource && item instanceof ConfidentialViewable) {
+                ((ConfidentialViewable)item).setConfidentialViewable(canViewConfidentialInformation(authenticatedUser, (Resource)item));
+            }
+            
             item.setViewable(viewable);
         }
     }

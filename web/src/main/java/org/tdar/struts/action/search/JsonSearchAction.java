@@ -55,8 +55,8 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
         String ex = "";
         if (!isReindexing()) {
             try {
-                FeedSearchHelper feedSearchHelper = new FeedSearchHelper(getRssUrl(), this, getGeoMode());
-                ex = serializationService.createGeoJsonFromResourceList(getResults(), feedSearchHelper);
+                FeedSearchHelper feedSearchHelper = new FeedSearchHelper(getRssUrl(), this, getGeoMode(), getAuthenticatedUser());
+                ex = serializationService.createGeoJsonFromResourceList(feedSearchHelper);
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }

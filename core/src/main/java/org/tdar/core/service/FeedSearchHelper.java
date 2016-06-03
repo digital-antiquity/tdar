@@ -16,7 +16,7 @@ public class FeedSearchHelper implements Serializable {
     private static final long serialVersionUID = -2363981015159221672L;
     private String rssUrl;
     private GeoRssMode geoMode;
-    private boolean overrideAndObfuscate;
+    private boolean overrideAndObfuscate = true;
     private Class<?> jsonFilter;
     private String jsonCallback;
     private Map<String, Object> searchParams = new HashMap<>();

@@ -69,7 +69,10 @@ public class ProjectionTransformer<I extends Indexable> {
 			// add file info
 		    InformationResource ir = (InformationResource) r_;
 
-		    ir.setTransientAccessType(ResourceAccessType.valueOf((String)doc.getFieldValue(QueryFieldNames.RESOURCE_ACCESS_TYPE)));
+		    String fieldValue = (String)doc.getFieldValue(QueryFieldNames.RESOURCE_ACCESS_TYPE);
+		    if (fieldValue != null) {
+		        ir.setTransientAccessType(ResourceAccessType.valueOf(fieldValue));
+		    }
 			Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
 			if (resultHandler.getOrientation() == DisplayOrientation.GRID || resultHandler.getOrientation() == DisplayOrientation.MAP || resultHandler.getOrientation() == null) {
 				ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));

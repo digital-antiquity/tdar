@@ -449,7 +449,7 @@
 	        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
 	        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
 	        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"
-        <#if userAbleToViewUnobfuscatedMap && resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent>
+        <#if resource.confidentialViewable && resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent>
 	        data-real-maxy="${resource.firstActiveLatitudeLongitudeBox.maximumLatitude}" 
 	        data-real-minx="${resource.firstActiveLatitudeLongitudeBox.minimumLongitude}"
 	        data-real-maxx="${resource.firstActiveLatitudeLongitudeBox.maximumLongitude}"

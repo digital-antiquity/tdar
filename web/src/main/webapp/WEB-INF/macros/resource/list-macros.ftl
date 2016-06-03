@@ -70,7 +70,7 @@
 	                        data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
 	                        data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
 	                    </#if>
-	                    <#if editor >
+	                    <#if editor || resource.confidentialViewable  >
 	                        data-real-lat="${box.centerLatitude?c}"
 	                        data-real-long="${box.centerLongitude?c}"
 	                        data-real-lat-length="${box.absoluteLatLength?c}"
@@ -146,6 +146,7 @@
         data-minx="${map_.minObfuscatedLongitude}"
         data-maxx="${map_.maxObfuscatedLongitude}"
         data-miny="${map_.minObfuscatedLatitude}"
+        
         </#if> >
 
 		</div>
