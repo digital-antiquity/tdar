@@ -244,8 +244,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         List<BillingAccount> accounts = new LinkedList<>(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
         if (getResource() != null) {
             BillingAccount resourceAccount = getResource().getAccount();
-            if ((resourceAccount != null) && !accounts.contains(resourceAccount) && (
-                    isEditor() || authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource()))) {
+            if ((resourceAccount != null) && !accounts.contains(resourceAccount)
+                    && (isEditor() || authorizationService.isAllowedToEditInherited(getAuthenticatedUser(), getResource()))) {
                 accounts.add(0, resourceAccount);
             }
         }
@@ -266,6 +266,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     /**
      * FIXME: appears to only override the INPUT result type compared to AbstractPersistableController's declaration,
      * see if it's possible to do this with less duplicatiousness
+     * 
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
@@ -553,7 +554,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         resourceService.saveHasResources((Resource) getPersistable(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, getResourceAnnotations(),
                 getResource().getResourceAnnotations(), ResourceAnnotation.class);
-        
+
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
             resourceCollectionService.saveSharedResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),

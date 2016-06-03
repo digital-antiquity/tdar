@@ -429,51 +429,35 @@
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
     <h2>Spatial Coverage</h2>
+    <#assign llb = resource.firstActiveLatitudeLongitudeBox />
     <div class="title-data">
         <p>
-            min long: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}; min
-            lat: ${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude} ;
-            max long: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}; max
-            lat: ${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude} ;
-            <!-- ${resource.firstActiveLatitudeLongitudeBox.scale } -->
+            min long: ${llb.minObfuscatedLongitude}; min
+            lat: ${llb.minObfuscatedLatitude} ;
+            max long: ${llb.maxObfuscatedLongitude}; max
+            lat: ${llb.maxObfuscatedLatitude} ;
+            <!-- ${llb.scale } -->
             <!-- ${resource.managedGeographicKeywords } -->
             <#if userAbleToViewUnobfuscatedMap>
-                <#if resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent> [obfuscated]</#if>
+                <#if llb.obfuscatedObjectDifferent> [obfuscated]</#if>
             </#if>
         </p>
     </div>
 
     <div class="row">
         <div id='large-map' style="height:300px" class="leaflet-map span9" 
-	        data-maxy="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" 
-	        data-minx="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}"
-	        data-maxx="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}"
-	        data-miny="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}"
-        <#if resource.confidentialViewable && resource.firstActiveLatitudeLongitudeBox.obfuscatedObjectDifferent>
-	        data-real-maxy="${resource.firstActiveLatitudeLongitudeBox.maximumLatitude}" 
-	        data-real-minx="${resource.firstActiveLatitudeLongitudeBox.minimumLongitude}"
-	        data-real-maxx="${resource.firstActiveLatitudeLongitudeBox.maximumLongitude}"
-	        data-real-miny="${resource.firstActiveLatitudeLongitudeBox.minimumLatitude}"
+	        data-maxy="${llb.maxObfuscatedLatitude}" 
+	        data-minx="${llb.minObfuscatedLongitude}"
+	        data-maxx="${llb.maxObfuscatedLongitude}"
+	        data-miny="${llb.minObfuscatedLatitude}"
+        <#if resource.confidentialViewable && llb.obfuscatedObjectDifferent>
+	        data-real-maxy="${llb.maximumLatitude}" 
+	        data-real-minx="${llb.minimumLongitude}"
+	        data-real-maxx="${llb.maximumLongitude}"
+	        data-real-miny="${llb.minimumLatitude}"
         </#if>
         ></div>
     </div>
-    <#--
-    <div id="divCoordContainer" style="display:none">
-        <input type="hidden" class="ne-lat" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLatitude}" id="maxy"/>
-        <input type="hidden" class="sw-lng" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLongitude}" id="minx"/>
-        <input type="hidden" class="ne-lng" value="${resource.firstActiveLatitudeLongitudeBox.maxObfuscatedLongitude}" id="maxx"/>
-        <input type="hidden" class="sw-lat" value="${resource.firstActiveLatitudeLongitudeBox.minObfuscatedLatitude}" id="miny"/>
-    </div>
-        <#elseif ableToViewConfidentialFiles && geoJson??>
-            <div class="row">
-            <div id='large-map' style="height:300px" class="leaflet-map span9"></div>
-        </div>
-        <#noescape>
-        <script id="leafetGeoJson">
-            [${geoJson!''}]
-        </script>
-        </#noescape>
-        -->
     </#if>
     <#if creditProxies?has_content >
     <h3>Individual &amp; Institutional Roles</h3>
