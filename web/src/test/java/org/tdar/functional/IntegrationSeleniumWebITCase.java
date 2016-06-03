@@ -197,7 +197,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitForPageload();
 
         // wait until integration column becomes visible
-        waitFor(visibilityOfElementLocated(id("tab1")));
+//        waitFor(visibilityOfElementLocated(id("tab1")));
 
 
         waitFor(partialLinkText("Fauna Taxon Ontology")).click();

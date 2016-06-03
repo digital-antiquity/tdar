@@ -9,6 +9,7 @@ package org.tdar.functional.resource;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -23,7 +24,9 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.MultipleWebTdarConfigurationRunner;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
+import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.functional.AbstractBasicSeleniumWebITCase;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractWebTestCase;
@@ -51,7 +54,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         alternateTextLookup.add(AbstractWebTestCase.RESTRICTED_ACCESS_TEXT);
 
         docValMap.put("projectId", "-1");
-        docValMap.put("image.title", "My Sample Dataset");
+        docValMap.put("image.title", "My Sample image");
         docValMap.put("authorshipProxies[0].person.firstName", "Jim");
         docValMap.put("authorshipProxies[0].person.lastName", "deVos");
         docValMap.put("authorshipProxies[0].person.email", "testabc123@test.com");
@@ -78,7 +81,9 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     public void testCreateImageEditSavehasResource()  {
         gotoPage("/image/add");
         WebElement form = find("#metadataForm").first();
+        expandAllTreeviews();
         prepIndexedFields();
+        //uploadFileAsync(FileAccessRestriction.PUBLIC, new File(TestConstants.TEST_IMAGE));
         // fill in various text fields
         for (Map.Entry<String, String> entry : docValMap.entrySet()) {
             find(By.name(entry.getKey())).val(entry.getValue());
@@ -90,7 +95,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
                 find(By.name(key)).val(val);
             }
         }
-        find(".resource-autocomplete").click();
+//        find(".resource-autocomplete").click();
         submitForm();
 
         String path = getDriver().getCurrentUrl();
