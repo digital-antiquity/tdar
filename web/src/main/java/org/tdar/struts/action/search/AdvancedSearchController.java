@@ -118,7 +118,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         // not_found
         
         if (getProjectionModel() == null) {
-        	setProjectionModel(ProjectionModel.LUCENE_EXPERIMENTAL);
+            setProjectionModel(ProjectionModel.LUCENE_EXPERIMENTAL);
         }
         
         try {

@@ -10,6 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -26,7 +29,6 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -83,16 +85,28 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     // ranges from -90 (South) to +90 (North)
     @Column(nullable = false, name = "minimum_latitude")
+    @DecimalMin(value="-90.0",inclusive=true)
+    @DecimalMax(value="90.0",inclusive=true)
+    @NotNull
     private Double minimumLatitude;
 
     @Column(nullable = false, name = "maximum_latitude")
+    @DecimalMin(value="-90.0",inclusive=true)
+    @DecimalMax(value="90.0",inclusive=true)
+    @NotNull
     private Double maximumLatitude;
 
     // ranges from -180 (West) to +180 (East)
     @Column(nullable = false, name = "minimum_longitude")
+    @DecimalMin(value="-180.0",inclusive=true)
+    @DecimalMax(value="180.0",inclusive=true)
+    @NotNull
     private Double minimumLongitude;
 
     @Column(nullable = false, name = "maximum_longitude")
+    @DecimalMin(value="-180.0",inclusive=true)
+    @DecimalMax(value="180.0",inclusive=true)
+    @NotNull
     private Double maximumLongitude;
 
     // used in testing and management
@@ -121,7 +135,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public Double getObfuscatedCenterLongitude() {
-        return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
+        return getCenterLong(getMinObfuscatedLongitude(), getMaxObfuscatedLongitude());
     }
 
     @Deprecated
@@ -131,9 +145,21 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Deprecated
     public Double getCenterLongitude() {
-        return (getMaximumLongitude() + getMinimumLongitude()) / 2.0;
+        return getCenterLong(getMinimumLongitude(), getMaximumLongitude());
     }
 
+    
+    private Double getCenterLong(Double minLong, Double maxLong) {
+        if (maxLong < minLong) {
+            Double tmp = (minLong + maxLong * -1d + 180d) / 2d;
+            if (tmp > 180) {
+                tmp = 180 - tmp;
+            }
+            return tmp;
+        } 
+        return (minLong + maxLong) / 2d;
+ 
+    }
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
@@ -311,9 +337,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new minimum latitude
      */
     public void setMinimumLatitude(Double minimumLatitude) {
-        if ((minimumLatitude != null) && !isValidLatitude(minimumLatitude)) {
-            throw new TdarValidationException("latLong.lat_invalid");
-        }
+//        if ((minimumLatitude != null) && !isValidLatitude(minimumLatitude)) {
+//            throw new TdarValidationException("latLong.lat_invalid");
+//        }
         setMiny(minimumLatitude);
     }
 
@@ -338,9 +364,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new maximum latitude
      */
     public void setMaximumLatitude(Double maximumLatitude) {
-        if ((maximumLatitude != null) & !isValidLatitude(maximumLatitude)) {
-            throw new TdarValidationException("latLong.lat_invalid");
-        }
+//        if ((maximumLatitude != null) & !isValidLatitude(maximumLatitude)) {
+//            throw new TdarValidationException("latLong.lat_invalid");
+//        }
         setMaxy(maximumLatitude);
     }
 
@@ -365,9 +391,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new minimum longitude
      */
     public void setMinimumLongitude(Double minimumLongitude) {
-        if ((minimumLongitude != null) && !isValidLongitude(minimumLongitude)) {
-            throw new TdarValidationException("latLong.long_invalid");
-        }
+//        if ((minimumLongitude != null) && !isValidLongitude(minimumLongitude)) {
+//            throw new TdarValidationException("latLong.long_invalid");
+//        }
         setMinx(minimumLongitude);
     }
 
@@ -398,9 +424,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new maximum longitude
      */
     public void setMaximumLongitude(Double maximumLongitude) {
-        if ((maximumLongitude != null) && !isValidLongitude(maximumLongitude)) {
-            throw new TdarValidationException("latLong.long_invalid");
-        }
+//        if ((maximumLongitude != null) && !isValidLongitude(maximumLongitude)) {
+//            throw new TdarValidationException("latLong.long_invalid");
+//        }
         setMaxx(maximumLongitude);
     }
 
