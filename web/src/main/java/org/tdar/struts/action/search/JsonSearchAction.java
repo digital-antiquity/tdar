@@ -1,8 +1,6 @@
 package org.tdar.struts.action.search;
 
 import java.io.ByteArrayInputStream;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -12,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.TdarActionException;
@@ -29,7 +28,7 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
     private transient SerializationService serializationService;
 
     private GeoRssMode geoMode = GeoRssMode.POINT;
-    private boolean webObfuscation =  false;
+    private boolean webObfuscation = false;
 
     @Action(value = "json", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" }) })
@@ -56,14 +55,8 @@ public class JsonSearchAction extends AbstractAdvancedSearchController {
         String ex = "";
         if (!isReindexing()) {
             try {
-            	Map<String,Object> params = new HashMap<>();
-            	params.put(	"recordsPerPage", this.getRecordsPerPage());
-            	params.put(	"totalRecords", this.getTotalRecords());
-            	params.put(	"startRecord", this.getStartRecord());
-            	params.put(	"description", this.getSearchDescription());
-            	params.put(	"title", this.getSearchTitle());
-            	params.put(	"url", this.getRssUrl());
-                ex = serializationService.createGeoJsonFromResourceList(getResults(), getRssUrl(), params, getGeoMode(),webObfuscation, filter, getCallback());
+                FeedSearchHelper feedSearchHelper = new FeedSearchHelper(getRssUrl(), this, getGeoMode());
+                ex = serializationService.createGeoJsonFromResourceList(getResults(), feedSearchHelper);
             } catch (Exception e) {
                 getLogger().error("error creating json", e);
             }

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.RssService.GeoRssMode;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
@@ -25,16 +26,16 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
     private Class<?> jsonView = null;
     private boolean spatial;
 
-    public LatitudeLongitudeBoxWrapper(Resource resource, Class<?> filter, GeoRssMode mode,boolean webObfuscation) {
-        this.jsonView = filter;
-        if (mode != null) {
-            this.mode = mode;
+    public LatitudeLongitudeBoxWrapper(Resource resource, FeedSearchHelper helper) {
+        this.jsonView = helper.getJsonFilter();
+        if (helper.getGeoMode() != null) {
+            this.mode = helper.getGeoMode();
         }
         if (resource != null) {
             this.resource = resource;
             LatitudeLongitudeBox llb = resource.getFirstActiveLatitudeLongitudeBox();
             if (llb != null) {
-                if (!webObfuscation || resource.isLatLongVisible()) {
+                if (!helper.isOverrideAndObfuscate() || resource.isLatLongVisible()) {
                     setSpatial(true);
                     this.minLatitude = llb.getMinObfuscatedLatitude();
                     this.minLongitude = llb.getMinObfuscatedLongitude();
