@@ -5,6 +5,7 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -13,8 +14,12 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.junit.RunWithTdarConfiguration;
 
+@RunWith(MultipleWebTdarConfigurationRunner.class)
+@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.SELECT2})
 public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
