@@ -114,13 +114,13 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // check the filter checkbox labeled "Aves"
         find(ByLabelText.byLabelText("Aves")).click();
+        find(rabbit).click();
+        find(sheep).click();
 
         // make sure that the thing we checked is checked
         assertThat("Aves filter should be checked", find(id("cbont_64870")).isSelected(), is(true));
 
-        find(rabbit).click();
         assertThat("rabbit filter should be checked", find(rabbit).isSelected(), is(true));
-        find(sheep).click();
         waitFor(elementToBeClickable(saveButton));
 
         assertTrue("Perca flavescens node should be visible for spitalfields", find(id("cbx-32450-60600")).isDisplayed());
