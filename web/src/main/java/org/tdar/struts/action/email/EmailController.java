@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.email;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,6 +21,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;

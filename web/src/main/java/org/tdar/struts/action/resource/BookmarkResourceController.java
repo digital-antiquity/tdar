@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.resource;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -18,6 +18,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 

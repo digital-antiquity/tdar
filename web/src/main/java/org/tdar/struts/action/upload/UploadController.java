@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.upload;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -25,6 +25,8 @@ import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.filestore.personal.PersonalFilestore;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonLookupFilter;

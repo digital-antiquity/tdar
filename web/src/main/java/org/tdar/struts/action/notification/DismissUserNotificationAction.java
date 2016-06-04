@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.notification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.service.UserNotificationService;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 

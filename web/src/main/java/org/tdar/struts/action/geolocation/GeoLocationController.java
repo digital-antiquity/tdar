@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.geolocation;
 
 import java.io.InputStream;
 import java.util.Set;
@@ -15,6 +15,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.struts.action.TdarActionSupport;
 
 @Component
 @Scope("prototype")

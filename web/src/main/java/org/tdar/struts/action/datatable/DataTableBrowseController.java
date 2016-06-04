@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.datatable;
 
 import java.util.HashMap;
 
@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.utils.PersistableUtils;
 

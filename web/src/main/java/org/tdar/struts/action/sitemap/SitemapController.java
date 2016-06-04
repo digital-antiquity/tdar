@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.sitemap;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -13,6 +13,8 @@ import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.convention.annotation.Results;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.TdarActionSupport;
 
 @Namespace("/sitemap")
 @ParentPackage("default")

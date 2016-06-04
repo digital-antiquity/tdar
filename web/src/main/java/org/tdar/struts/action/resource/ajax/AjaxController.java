@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.resource.ajax;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.service.SerializationService;
+import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 /**
