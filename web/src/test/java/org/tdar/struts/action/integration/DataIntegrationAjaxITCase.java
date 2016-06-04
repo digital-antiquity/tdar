@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.integration;
 
 import static org.junit.Assert.assertTrue;
 
@@ -29,6 +29,8 @@ import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.api.integration.IntegrationColumnDetailsAction;
 import org.tdar.struts.action.api.integration.NodeParticipationByColumnAction;

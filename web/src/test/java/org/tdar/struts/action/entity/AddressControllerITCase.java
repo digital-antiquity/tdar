@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.entity;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,6 +8,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.entity.AddressController;
 import org.tdar.utils.MessageHelper;
 

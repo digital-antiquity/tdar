@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.integration;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,6 +34,7 @@ import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.struts.action.workspace.LegacyWorkspaceController;
 import org.tdar.utils.MessageHelper;

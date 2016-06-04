@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.entity;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasKey;
@@ -12,6 +12,8 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.entity.PersonController;
 import org.tdar.struts.action.entity.TdarUserController;
 

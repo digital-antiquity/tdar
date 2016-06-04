@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.entity;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -15,6 +15,8 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.InstitutionManagementAuthorization;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.entity.InstitutionController;
 
 public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
