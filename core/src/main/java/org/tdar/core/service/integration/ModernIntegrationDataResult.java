@@ -14,7 +14,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.db.model.PostgresDatabase;
+import org.tdar.db.model.PostgresIntegrationDatabase;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
@@ -123,7 +123,7 @@ public class ModernIntegrationDataResult implements Serializable {
         for (DataTableColumn dtc : integrationContext.getTempTable().getDataTableColumns()) {
             labels.add(dtc.getDisplayName());
 
-            if (dtc.getName().contains(PostgresDatabase.INTEGRATION_SUFFIX)) {
+            if (dtc.getName().endsWith(PostgresIntegrationDatabase.INTEGRATION_SUFFIX)) {
                 labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value",Arrays.asList(dtc.getDisplayName())));
                 labels.add(instance.getText("dataIntegrationWorkbook.data_type_value",Arrays.asList(dtc.getDisplayName())));
             }

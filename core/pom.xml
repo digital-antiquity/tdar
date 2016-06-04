@@ -15,11 +15,12 @@
         <jena.version>2.13.0</jena.version>
         <exec-maven-version>1.3.2</exec-maven-version>
         <!-- /end managed versions -->
-        <geotools.version>14.3</geotools.version>
-        <tika.version>1.12</tika.version>
+        <geotools.version>15.0</geotools.version>
+        <tika.version>1.13</tika.version>
         <batik.version>1.7</batik.version>
         <rome.version>1.6.0</rome.version>
         <jackson.version>2.7.3</jackson.version>
+        <pdfbox.version>2.0.1</pdfbox.version>
         <http-components.version>4.4.4</http-components.version>
         <http-client.version>4.5.2</http-client.version>
         <skipTestLiquibase>false</skipTestLiquibase>
@@ -749,13 +750,13 @@
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
-            <version>1.8.10</version>
+            <version>${pdfbox.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>preflight</artifactId>
-            <version>1.8.10</version>
+            <version>${pdfbox.version}</version>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>
                 <exclusion>
@@ -963,7 +964,7 @@
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>tdar-logging</artifactId>
-            <version>1.0</version>
+            <version>1.1</version>
             <scope>runtime</scope>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>

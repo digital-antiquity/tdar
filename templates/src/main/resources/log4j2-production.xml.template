@@ -24,18 +24,6 @@
                 <pattern>%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n</pattern>
             </PatternLayout>
         </PatternSMTP>
-        <Rewrite name="Rewrite2">
-            <AppenderRef ref="Mail"/>
-            <LoggerNameLevelRewritePolicy logger="org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap">
-                <KeyValuePair key="ERROR" value="WARN"/>
-            </LoggerNameLevelRewritePolicy>
-        </Rewrite>
-        <Rewrite name="Rewrite">
-            <AppenderRef ref="Rewrite2"/>
-            <LoggerNameLevelRewritePolicy logger="org.apache.pdfbox.filter.JBIG2Filter">
-                <KeyValuePair key="ERROR" value="WARN"/>
-            </LoggerNameLevelRewritePolicy>
-        </Rewrite>
         <Routing name="File">
             <Routes pattern="$${sd:type}">
                 <Route>
@@ -53,19 +41,22 @@
     <Loggers>
         <Root level="error">
             <AppenderRef ref="File" />
-            <AppenderRef ref="Rewrite" />
+            <AppenderRef ref="Mail" />
         </Root>
         <Logger name="org.hibernate.util.JDBCExceptionReporter" level="debug" />
         <Logger name="org.liquibase" level="error" />
         <Logger name="org.tdar" level="DEBUG" />
         <Logger name="uk.org" level="debug" />
 
-        <Logger name="org.apache.pdfbox.filter.JBIG2Filter" level="error">
+        <!--exclude common but less-important errors from the email appender -->
+<!--        <Logger name="org.apache.pdfbox.filter.JBIG2Filter" level="error" additivity="false">
+            <AppenderRef ref="File"/>
             <AppenderRef ref="Mail" level="fatal" />
         </Logger>
-        <Logger name="org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap" level="error">
-            <AppenderRef ref="Mail"  level="fatal"/>
-        </Logger>
+        <Logger name="org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap" level="error" additivity="false">
+            <AppenderRef ref="File"/>
+            <AppenderRef ref="Mail" level="fatal" />
+        </Logger> -->
     </Loggers>
 </Configuration>
 

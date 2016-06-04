@@ -1,9 +1,7 @@
 package org.tdar.core.service;
 
-import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,19 +14,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import javax.imageio.ImageIO;
 import javax.persistence.Transient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.text.WordUtils;
-import org.apache.pdfbox.exceptions.COSVisitorException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
 import org.apache.pdfbox.pdmodel.common.PDRectangle;
-import org.apache.pdfbox.pdmodel.edit.PDPageContentStream;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDPixelMap;
-import org.apache.pdfbox.pdmodel.graphics.xobject.PDXObjectImage;
-import org.apache.pdfbox.pdmodel.interactive.action.type.PDActionURI;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
+import org.apache.pdfbox.pdmodel.interactive.action.PDActionURI;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDAnnotationLink;
 import org.apache.pdfbox.pdmodel.interactive.annotation.PDBorderStyleDictionary;
 import org.slf4j.Logger;
@@ -142,14 +137,13 @@ public class PdfService {
             return false;
         }
         
-        //pdfbox 1.8.x uses at least irfv.fileLength bytes of RAM for merges (even when using scratchdisk)
-        long freemem = Runtime.getRuntime().freeMemory();
-        boolean enoughRam = freemem >  irfv.getFileLength();
-        if(!enoughRam) {
-            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
-        }
-
-        return enoughRam;
+//        long freemem = Runtime.getRuntime().freeMemory();
+//        boolean enoughRam = freemem >  irfv.getFileLength();
+//        if(!enoughRam) {
+//            logger.error("Not enough RAM for coverpage (free:{} needed:{}) ", freemem, irfv.getFileLength());
+//        }
+        return true;
+//        return enoughRam;
     }
 
     /**
@@ -161,7 +155,7 @@ public class PdfService {
      * @throws COSVisitorException
      * @throws InterruptedException
      */
-    private PipedInputStream mergePDFs(File coverPage, File document, File coverPageImage) throws IOException, COSVisitorException, InterruptedException {
+    private PipedInputStream mergePDFs(File coverPage, File document, File coverPageImage) throws IOException, InterruptedException {
         final PDFMergeWrapper wrapper = new PDFMergeWrapper();
 
         int downloadBufferSize = CONFIG.getDownloadBufferSize();
@@ -199,19 +193,18 @@ public class PdfService {
      * @throws URISyntaxException
      */
     private File createCoverPage(TextProvider provider, Person submitter, File template, Document document, String description)
-            throws IOException,
-            COSVisitorException, FileNotFoundException,
-            URISyntaxException {
+            throws IOException,  FileNotFoundException, URISyntaxException {
         PDDocument doc = PDDocument.load(template);
         PDPage page = null;
-        for (Object kid : doc.getDocumentCatalog().getPages().getKids()) {
+        for (Object kid : doc.getDocumentCatalog().getPages()) {
             if (kid instanceof PDPage) {
                 page = (PDPage) kid;
                 break;
             }
         }
 
-        PDPageContentStream content = new PDPageContentStream(doc, page, true, false, true);
+        PDPageContentStream content = new PDPageContentStream(doc, page, PDPageContentStream.AppendMode.APPEND, true, true);
+//                PDPageContentStream(doc, page, true, false, true);
         appendCoverPageLogo(doc, content);
         int cursorPositionFromBottom = 580;
         /*
@@ -295,14 +288,14 @@ public class PdfService {
     private void appendCoverPageLogo(PDDocument doc, PDPageContentStream content) throws FileNotFoundException, IOException {
         File coverPageLogo = null;
         if (coverPageLogo != null && coverPageLogo.exists()) {
-            InputStream in = new FileInputStream(coverPageLogo);
-
-            BufferedImage awtImage = ImageIO.read(in);
-            PDXObjectImage img = new PDPixelMap(doc, awtImage);
+//            InputStream in = new FileInputStream(coverPageLogo);
+//            BufferedImage awtImage = ImageIO.read(in);
+//            IOUtils.closeQuietly(in);
+            PDImageXObject img = PDImageXObject.createFromFile(coverPageLogo.getAbsolutePath(),doc);
 
             int TOP = 646;
             int LEFT = 541 - img.getWidth();
-            content.drawXObject(img, LEFT, TOP,awtImage.getWidth(), awtImage.getHeight());
+            content.drawImage(img, LEFT, TOP, img.getWidth(), img.getHeight());
         }
     }
 
@@ -330,8 +323,8 @@ public class PdfService {
 
         content.beginText();
         content.setFont(fontHelper.getBold(), fontHelper.getFontSize());
-        content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
-        content.drawString(label);
+        content.newLineAtOffset(xFromLeft, yFromBottom);// INITIAL POSITION
+        content.showText(label);
         content.setFont(fontHelper.getFont(), fontHelper.getFontSize());
 
         String line = StringUtils.repeat(" ", label.length()) + text; // take into account the label when wrapping
@@ -398,7 +391,7 @@ public class PdfService {
         int yFromBottom = yFromBottom_;
         String text = transliterate(utf8Text);
         content.beginText();
-        content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
+        content.newLineAtOffset(xFromLeft, yFromBottom);// INITIAL POSITION
 
         if (bold) {
             content.setFont(fontHelper.getBold(), fontHelper.getFontSize());
@@ -432,11 +425,11 @@ public class PdfService {
 
         for (String line : text.split("([\r|\n]+)")) {
             logger.trace(line);
-            content.drawString(line);
+            content.showText(line);
             yFromBottom -= fontHelper.getLineHeight();
             content.endText();
             content.beginText();
-            content.moveTextPositionByAmount(xFromLeft, yFromBottom);// INITIAL POSITION
+            content.newLineAtOffset(xFromLeft, yFromBottom);// INITIAL POSITION
         }
         content.endText();
         return yFromBottom;

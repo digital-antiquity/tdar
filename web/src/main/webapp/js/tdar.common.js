@@ -402,16 +402,6 @@ TDAR.common = function (TDAR, fileupload) {
         //Display status messages during ajax requests.
         _registerAjaxStatusContainer();
 
-        // I must be "last"
-        $(form).not('.disableFormNavigate').FormNavigate({
-            message: "Leaving the page will cause any unsaved data to be lost!",
-            customEvents: "repeatrowdeleted fileuploadstarted",
-            cleanOnSubmit: false
-        });
-
-        
-        
-
 
         if (props.includeInheritance) {
             TDAR.inheritance.applyInheritance(props.formSelector);
@@ -430,6 +420,13 @@ TDAR.common = function (TDAR, fileupload) {
         });
 
         TDAR.inheritance.registerClearSectionButtons(form);
+
+        // I should be "last", to avoid accidentally marking the form dirty before the user has done anything.
+        $(form).not('.disableFormNavigate').FormNavigate({
+            message: "Leaving the page will cause any unsaved data to be lost!",
+            customEvents: "repeatrowdeleted fileuploadstarted",
+            cleanOnSubmit: false
+        });
     };
 
     /**

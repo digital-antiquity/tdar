@@ -35,8 +35,8 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -69,9 +69,12 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.TdarAssert;
+import org.tdar.search.bean.AdvancedSearchQueryObject;
 import org.tdar.search.bean.ReservedSearchParameters;
+import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
+import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.index.SearchIndexService;
@@ -92,6 +95,31 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Autowired
     EntityService entityService;
 
+    @Test
+    public void testInvalidPhrase() throws ParseException, SolrServerException, IOException {
+        ResourceLookupObject look = new ResourceLookupObject();
+        look.setTerm("he operation and evolution of an irrigation system\"");
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
+    }
+
+    @Test
+    public void testInvalidWithColon() throws ParseException, SolrServerException, IOException {
+        ResourceLookupObject look = new ResourceLookupObject();
+        look.setTerm("Temporal Control in the Southern North Coast Ranges of California: The Application of Obsidian Hydration Analysis");
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.lookupResource(getAdminUser(), look, result , MessageHelper.getInstance());
+    }
+
+    @Test
+    public void testInvalidWithColon2() throws ParseException, SolrServerException, IOException {
+        SearchParameters sp = new SearchParameters();
+        AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
+        asqo.getSearchParameters().add(sp);
+        sp.getAllFields().add("Temporal Control in the Southern North Coast Ranges of California: The Application of Obsidian Hydration Analysis");
+        LuceneSearchResultHandler<Resource> result = new SearchResult<>();
+        resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
+    }
 
     @Test
     @Rollback

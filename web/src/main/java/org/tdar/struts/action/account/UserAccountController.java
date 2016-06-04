@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -84,10 +85,12 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
 
     @Actions(value = {
             @Action(value = "new",
+                    interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
                     results = {
                             @Result(name = SUCCESS, location = "edit.ftl"),
                             @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) }),
             @Action(value = "add",
+                    interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
                     results = {
                             @Result(name = SUCCESS, location = "edit.ftl"),
                             @Result(name = AUTHENTICATED, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD) })
@@ -108,6 +111,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     }
 
     @Action(value = "recover",
+            interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
             results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = "${passwordResetURL}") })
     @SkipValidation
     @HttpsOnly
@@ -127,8 +131,9 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
     }
 
     // FIXME: not implemented yet.
-    @Action(value = "reminder"
-            , results = { @Result(name = SUCCESS, location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
+    @Action(value = "reminder",
+            interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
+            results = { @Result(name = SUCCESS, location = "recover.ftl"), @Result(name = "input", location = "recover.ftl") })
     @SkipValidation
     @HttpsOnly
     public String sendNewPassword() {
@@ -143,6 +148,7 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
 
     @Actions({
             @Action(value = "register",
+                    interceptorRefs = { @InterceptorRef("tdarDefaultStack") },
                     results = { @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = URLConstants.DASHBOARD),
                             @Result(name = ADD, type = TdarActionSupport.TDAR_REDIRECT, location = "/account/add"),
                             @Result(name = INPUT, location = "edit.ftl") })
@@ -170,13 +176,11 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
         return TdarActionSupport.INPUT;
     }
 
-    public String getPasswordResetURL()
-    {
+    public String getPasswordResetURL() {
         return passwordResetURL;
     }
 
-    public void setPasswordResetURL(String url)
-    {
+    public void setPasswordResetURL(String url) {
         this.passwordResetURL = url;
     }
 
@@ -229,12 +233,12 @@ public class UserAccountController extends AbstractAuthenticatableAction impleme
         processErrorObject(errors);
     }
 
-	public List<UserAffiliation> getAffiliations() {
-		return affiliations;
-	}
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
+    }
 
-	public void setAffiliations(List<UserAffiliation> affiliations) {
-		this.affiliations = affiliations;
-	}
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
+    }
 
 }

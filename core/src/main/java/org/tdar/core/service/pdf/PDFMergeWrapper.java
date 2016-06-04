@@ -3,11 +3,13 @@ package org.tdar.core.service.pdf;
 import java.io.File;
 import java.io.Serializable;
 
+import org.apache.pdfbox.multipdf.PDFMergerUtility;
+
 public class PDFMergeWrapper implements Serializable {
 
     private static final long serialVersionUID = 3411714473307807362L;
 
-    private TdarPDFMergerUtility merger = new TdarPDFMergerUtility();
+    private PDFMergerUtility merger = new PDFMergerUtility();
     private boolean successful = false;
     private String failureReason;
     private File document;
@@ -20,11 +22,11 @@ public class PDFMergeWrapper implements Serializable {
         this.successful = successful;
     }
 
-    public TdarPDFMergerUtility getMerger() {
+    public PDFMergerUtility getMerger() {
         return merger;
     }
 
-    public void setMerger(TdarPDFMergerUtility merger) {
+    public void setMerger(PDFMergerUtility merger) {
         this.merger = merger;
     }
 

@@ -327,7 +327,13 @@ TDAR.validate = (function($, ctx) {
         var $submit = $form.find(".submitButton").prop("disabled", false);
         var options = {
             //FIXME: allow for error label container to be specified from options,
-            errorLabelContainer: $("#error"),
+            wrapper: "",
+            showErrors: null, //use default showErrors
+            //errorLabelContainer: $("#error"),
+            errorClass: 'help-block',
+            highlight: function (label) {
+                $(label).closest('.control-group').addClass('error');
+            },
             submitHandler: function (f) {
                 var $submit = $(f).find(".submitButton").prop("disabled", true);
                 //prevent doublesubmit for certain amount of time.

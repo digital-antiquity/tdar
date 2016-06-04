@@ -809,8 +809,10 @@ View freemarker macros
         </#list>
         </div>
         <!-- Carousel nav -->
+    <#if (resourceList?size > 1) >
         <a class="carousel-control left" href="#slider" data-slide="prev">&lsaquo;</a>
         <a class="carousel-control right" href="#slider" data-slide="next">&rsaquo;</a>
+    </#if>
     </div>
 </div>
 </#macro>

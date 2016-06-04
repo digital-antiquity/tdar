@@ -275,13 +275,28 @@
             <h4>Choose a Project</h4>
 
             <div id="t-project" data-tooltipcontent="#projectTipText" data-tiplabel="Project">
-            <#if select2Enabled>
-	            <select name="projectId" class="resource-autocomplete" tabindex="-1" aria-hidden="true" style="width:100%"
-	            	data-ajax--url="/lookup/resource?term=Ith&resourceTypes=PROJECT&useSubmitterContext=true" data-minimum-input-length="0">
-	            	<#if resource.project?has_content>
-	            		<option value="${resource.project.id?c}">${resource.project.title}</option>
-	            	</#if>
-	            </select>
+            <#if select2SingleEnabled>
+                <div class="control-group">
+                    <label class="control-label">Project</label>
+                    <div class="controls">
+                        <div class="">
+                            <select name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
+                                    data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
+                                    data-allow-clear="false"
+                                    data-placeholder="Search for a project..."
+                                    data-minimum-input-length="0">
+                                <option value=""></option>
+                                <option value="-1">No parent project</option>
+                                <#if resource.project?has_content && resource.project.id &gt; -1>
+                                    <option selected="selected" value="${resource.project.id?c}">${resource.project.title}</option>
+                                </#if>
+                            </select>
+                            <button type="button" class="btn btn-mini btn-clear-select" id="btnClearProjectId"><i class="icon-trash"> </i></button>
+                        </div>
+
+                        </div>
+                </div>
+
             <#else>
                 <@s.select title="Please select a project" emptyOption='true' id='projectId' label="Project"  
                 labelposition="left" name='projectId' listKey='id' listValue='title' list='%{potentialParents}'

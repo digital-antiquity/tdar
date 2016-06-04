@@ -70,12 +70,12 @@ public class FaimsExportService {
                 e1.printStackTrace();
             }
         });
-
+        skip = false;
         for (Long id : genericService.findAllIds(InformationResource.class)) {
             try {
-            processResource(id, projectIdMap, skip, client, accountId);
+                processResource(id, projectIdMap, skip, client, accountId);
             } catch (Throwable t) {
-                logger.error("error processing FAIMS resource: {}", t,t);
+                logger.error("error processing FAIMS resource: {}", t, t);
             }
             genericService.clearCurrentSession();
             try {
@@ -95,52 +95,59 @@ public class FaimsExportService {
             return;
         }
         List<File> files = new ArrayList<>();
-        logger.debug("{} -- {}", id, resource.getTitle());
+        logger.debug("{} -- {} ({})", id, resource.getTitle(), (resource instanceof CodingSheet));
+
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
             InformationResourceFileVersion version = file.getLatestUploadedVersion();
+            // logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
+            File retrieveFile = null;
+            try {
+                retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+            } catch (FileNotFoundException e) {
+                logger.error("cannot find file: {}", e, e);
+            }
             if (resource instanceof CodingSheet) {
                 if (file.getCurrentVersion(VersionType.UPLOADED_TEXT) != null) {
                     version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
                     if (resource instanceof CodingSheet) {
                         try {
-                            File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                            retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
                             File tmp = new File(CONFIG.getTempDirectory(), retrieveFile.getName().replace(".txt", ".csv"));
                             version.setTransientFile(tmp);
+                            file.setFilename(tmp.getName());
+                            try {
+                                FileUtils.copyFile(retrieveFile, tmp);
+                            } catch (IOException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                            retrieveFile = tmp;
                         } catch (FileNotFoundException e1) {
                             logger.error("exception renaming file:", e1);
                         }
                     }
-                    // if (resource instanceof Ontology) {
-                    //
-                    // version.setTransientFile(tmp);
-                    // }
                 }
             }
+            files.add(retrieveFile);
 
-            // logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
-            try {
-                File retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
-                files.add(retrieveFile);
-            } catch (FileNotFoundException e) {
-                logger.error("cannot find file: {}", e, e);
-            }
         }
+
         // logger.debug(" --> {}", files);
         String output = export(resource, projectIdMap.get(resource.getProjectId()));
-        if (resource instanceof CodingSheet) {
-            // logger.debug(output);
-        }
+
         if (skip) {
             genericService.clearCurrentSession();
             return;
         }
         try {
             ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
-            projectIdMap.put(id, uploadRecord.getTdarId());
-            logger.debug("status: {}", uploadRecord.getStatusLine());
-            if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
-                    && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
-                logger.warn(uploadRecord.getBody());
+            if (uploadRecord != null) {
+                projectIdMap.put(id, uploadRecord.getTdarId());
+                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+                        && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+                    logger.warn(uploadRecord.getBody());
+                }
+                logger.debug("status: {}", uploadRecord.getStatusLine());
             }
         } catch (IOException e) {
             logger.error("error uploading", e);

@@ -33,6 +33,12 @@ public class TemporalKeyword extends AbstractKeyword<TemporalKeyword> implements
 
     private static final long serialVersionUID = -626136232824053935L;
 
+    public TemporalKeyword(String string) {
+        this.setLabel(string);
+    }
+    
+    public TemporalKeyword() {
+    }
 
     @Override
     public String getUrlNamespace() {

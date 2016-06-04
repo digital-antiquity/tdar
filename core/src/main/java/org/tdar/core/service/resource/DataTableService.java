@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -40,6 +41,7 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
     private DataTableColumnDao dataTableColumnDao;
 
     @Autowired
+    @Qualifier("target")
     private TargetDatabase tdarDataImportDatabase;
 
     /*

@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.scheduling.annotation.Async;
@@ -69,6 +70,7 @@ import com.opensymphony.xwork2.TextProvider;
 public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, DatasetDao> {
 
     @Autowired
+    @Qualifier("target")
     private TargetDatabase tdarDataImportDatabase;
 
     @Autowired

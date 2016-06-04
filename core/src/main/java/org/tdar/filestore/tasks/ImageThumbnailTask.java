@@ -4,8 +4,11 @@
 package org.tdar.filestore.tasks;
 
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -14,9 +17,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.media.jai.OpImage;
+import javax.media.jai.RenderedOp;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.data.DataSourceException;
+import org.geotools.factory.Hints;
+import org.geotools.gce.geotiff.GeoTiffReader;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -85,7 +94,7 @@ public class ImageThumbnailTask extends AbstractTask {
             throw new TdarRecoverableRuntimeException("error.file_not_found");
         }
         String filename = sourceFile.getName();
-        getLogger().debug("sourceFile: " + sourceFile);
+        getLogger().debug("sourceFile: {}", sourceFile);
 
         String ext = FilenameUtils.getExtension(sourceFile.getName());
         List<String> exts = Arrays.asList("jpg", "gif", "tif", "tiff", "png", "jpeg", "bmp");
@@ -108,6 +117,20 @@ public class ImageThumbnailTask extends AbstractTask {
             getLogger().error(msg);
         }
 
+        
+        if (ijSource == null && StringUtils.containsIgnoreCase(ext,"tif")) {
+            try {
+                GeoTiffReader reader = new GeoTiffReader(sourceFile, new Hints(Hints.FORCE_LONGITUDE_FIRST_AXIS_ORDER, Boolean.TRUE));
+                GridCoverage2D coverage=reader.read(null);
+                RenderedOp renderedImage = (RenderedOp) coverage.getRenderedImage();
+                
+                ijSource = new ImagePlus("", renderedImage.getAsBufferedImage());
+            } catch (IOException e) {
+                getLogger().error("issue with GeoTiff attempt to process" + sourceFile, e);
+                msg = e.getMessage();
+            }
+        }
+
         if (isJaiImageJenabled() && (ijSource == null)) {
             getLogger().debug("Unable to load source image with ImageJ: " + sourceFile);
             try {
@@ -116,12 +139,15 @@ public class ImageThumbnailTask extends AbstractTask {
                 ijSource = read[0];
             } catch (Exception e) {
                 getLogger().error("could not open image with ImageJ-ImageIO" + sourceFile, e);
+                if (msg == null) {
+                    msg = e.getMessage();
+                }
             }
         }
 
         if (ijSource == null) {
-            getLogger().debug("Unable to load source image: " + sourceFile);
-            if (!msg.contains("Note: IJ cannot open CMYK JPEGs")) {
+            getLogger().debug("Unable to load source image: {} ({}) ", sourceFile, msg);
+            if (msg != null && !msg.contains("Note: IJ cannot open CMYK JPEGs")) {
                 getWorkflowContext().setErrorFatal(true);
             }
 

@@ -17,6 +17,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -66,8 +67,10 @@ public class ProjectionTransformer<I extends Indexable> {
 
 		if (r_ instanceof InformationResource) {
 			// add file info
+		    InformationResource ir = (InformationResource) r_;
+
+		    ir.setTransientAccessType(ResourceAccessType.valueOf((String)doc.getFieldValue(QueryFieldNames.RESOURCE_ACCESS_TYPE)));
 			Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
-			InformationResource ir = (InformationResource) r_;
 			if (resultHandler.getOrientation() == DisplayOrientation.GRID || resultHandler.getOrientation() == DisplayOrientation.MAP || resultHandler.getOrientation() == null) {
 				ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));
 			}

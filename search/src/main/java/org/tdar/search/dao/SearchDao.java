@@ -10,7 +10,6 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrClient;
-import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.FacetField.Count;
@@ -28,11 +27,11 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -88,7 +87,6 @@ public class SearchDao<I extends Indexable> {
             logger.trace(solrParams.toQueryString());
         }
         QueryResponse rsp = template.query(query.getCoreName(), solrParams);
-
         query.processResults(rsp);
         if (logger.isTraceEnabled()) {
             logger.trace(rsp.toString());
@@ -120,7 +118,7 @@ public class SearchDao<I extends Indexable> {
         FacetedResultHandler facetHandler = (FacetedResultHandler) handler;
         FacetWrapper wrapper = facetHandler.getFacetWrapper();
         handleJsonFacetingApi(rsp, facetMap, wrapper);
-        SimpleOrderedMap pivot = (SimpleOrderedMap)rsp.getResponse().findRecursive("facet_counts", "facet_pivot");
+        SimpleOrderedMap pivot = (SimpleOrderedMap) rsp.getResponse().findRecursive("facet_counts", "facet_pivot");
         Object map = SolrMapConverter.toMap(pivot);
         ObjectMapper mapper = new ObjectMapper();
         try {
@@ -128,7 +126,7 @@ public class SearchDao<I extends Indexable> {
             logger.trace(writeValueAsString);
             wrapper.setFacetPivotJson(writeValueAsString);
         } catch (JsonProcessingException e) {
-            logger.error("{}",e,e);
+            logger.error("{}", e, e);
         }
         Map<String, List<Facet>> facetResults = wrapper.getFacetResults();
         for (FacetField field : rsp.getFacetFields()) {
@@ -193,6 +191,7 @@ public class SearchDao<I extends Indexable> {
             if (enum1 == null) {
                 enum1 = Enum.valueOf(facetClass, name);
             }
+
             if (enum1 instanceof PluralLocalizable && c.getCount() > 1) {
                 label = ((PluralLocalizable) enum1).getPluralLocaleKey();
             } else {
@@ -258,46 +257,46 @@ public class SearchDao<I extends Indexable> {
         // iterate over all of the objects and create an objectMap if needed
         if (CollectionUtils.isNotEmpty(results.getIdList())) {
             switch (projectionModel) {
-            case LUCENE:
-                for (SolrDocument doc : results.getDocumentList()) {
-                    I obj = null;
-                    Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
-                    String cls_ = (String) doc.getFieldValue(QueryFieldNames.CLASS);
-                    try {
-                        Class<I> cls = (Class<I>) Class.forName(cls_);
-                        I r = cls.newInstance();
-                        r.setId(id);
-                    } catch (ClassNotFoundException e) {
-                        logger.error("error finding {}: {}", cls_, id, e);
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        logger.error("error finding {}: {}", cls_, id, e);
+                case LUCENE:
+                    for (SolrDocument doc : results.getDocumentList()) {
+                        I obj = null;
+                        Long id = (Long) doc.getFieldValue(QueryFieldNames.ID);
+                        String cls_ = (String) doc.getFieldValue(QueryFieldNames.CLASS);
+                        try {
+                            Class<I> cls = (Class<I>) Class.forName(cls_);
+                            I r = cls.newInstance();
+                            r.setId(id);
+                        } catch (ClassNotFoundException e) {
+                            logger.error("error finding {}: {}", cls_, id, e);
+                        } catch (InstantiationException | IllegalAccessException e) {
+                            logger.error("error finding {}: {}", cls_, id, e);
+                        }
+                        toReturn.add(obj);
                     }
-                    toReturn.add(obj);
-                }
-                break;
-            case LUCENE_EXPERIMENTAL:
-                hydrateExperimental(resultHandler, results, toReturn);
-                break;
+                    break;
+                case LUCENE_EXPERIMENTAL:
+                    hydrateExperimental(resultHandler, results, toReturn);
+                    break;
 
-            case HIBERNATE_DEFAULT:
-                if (groupedSearchMode) {
-                    // try to group the results together to improve the DB query
-                    // performance by removing multiple connections,
-                    // theoretically, this should be faster.
-                    toReturn = processGroupSearch(resultHandler, results);
-                } else {
-                    // serial queries
-                    toReturn = processSerialSearch(resultHandler, results);
-                }
-                break;
-            case RESOURCE_PROXY:
-                for (I i : (List<I>) datasetDao.findSkeletonsForSearch(false, results.getIdList())) {
-                    obfuscateAndMarkViewable(resultHandler, i);
-                    toReturn.add((I) i);
-                }
-                break;
-            default:
-                break;
+                case HIBERNATE_DEFAULT:
+                    if (groupedSearchMode) {
+                        // try to group the results together to improve the DB query
+                        // performance by removing multiple connections,
+                        // theoretically, this should be faster.
+                        toReturn = processGroupSearch(resultHandler, results);
+                    } else {
+                        // serial queries
+                        toReturn = processSerialSearch(resultHandler, results);
+                    }
+                    break;
+                case RESOURCE_PROXY:
+                    for (I i : (List<I>) datasetDao.findSkeletonsForSearch(false, results.getIdList())) {
+                        obfuscateAndMarkViewable(resultHandler, i);
+                        toReturn.add((I) i);
+                    }
+                    break;
+                default:
+                    break;
             }
         }
         resultHandler.setResults(toReturn);
@@ -305,7 +304,7 @@ public class SearchDao<I extends Indexable> {
 
     @Autowired
     ProjectionTransformer<I> projectionTransformer;
-    
+
     @SuppressWarnings("unchecked")
     private void hydrateExperimental(SearchResultHandler<I> resultHandler, SolrSearchObject<I> results, List<I> toReturn) {
         for (SolrDocument doc : results.getDocumentList()) {
@@ -316,7 +315,7 @@ public class SearchDao<I extends Indexable> {
                 I r = cls.newInstance();
                 r.setId(id);
                 if (r instanceof Resource) {
-                    logger.trace("{}",doc);
+                    logger.trace("{}", doc);
                     r = projectionTransformer.transformResource(resultHandler, doc, r, obfuscationService);
 
                 }

@@ -113,7 +113,6 @@
     function _init(formId) {
 
         var $form = $(formId);
-        $form.FormNavigate();
         TDAR.common.suppressKeypressFormSubmissions($form);
 
         //Use a plugin if browser doesn't support resizeable textareas
@@ -164,7 +163,8 @@
         $("#chooseColumn").change(function (e) {
             TDAR.datasetMetadata.gotoColumn($(this));
         });
-
+        
+        $form.FormNavigate();
     }
 
     function _pagination(idPrefix) {

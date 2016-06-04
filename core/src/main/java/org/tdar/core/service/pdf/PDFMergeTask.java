@@ -6,10 +6,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PipedOutputStream;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.pdfbox.io.RandomAccessFile;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -39,14 +38,8 @@ public class PDFMergeTask implements Runnable {
     
     @Override
     public void run() {
-        File scratchFile = null;
         try {
-            scratchFile = File.createTempFile("pdfbox-merge-scratch", ".bin");
-            if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
-            wrapper.getMerger().mergeDocumentsNonSeq(new RandomAccessFile(scratchFile, "rw"));
-            } else {
-                wrapper.getMerger().mergeDocuments();
-            }
+            wrapper.getMerger().mergeDocuments(TdarConfiguration.getInstance().getPDFMemoryWriteSetting(wrapper.getDocument()));
             wrapper.setSuccessful(true);
         } catch (IOException ioe) {
             // downgrade broken pipe exceptions
@@ -66,7 +59,6 @@ public class PDFMergeTask implements Runnable {
             attemptTransferWithoutMerge(wrapper.getDocument(), pipedOutputStream);
         } finally {
             IOUtils.closeQuietly(pipedOutputStream);
-            FileUtils.deleteQuietly(scratchFile);
         }
     }
 

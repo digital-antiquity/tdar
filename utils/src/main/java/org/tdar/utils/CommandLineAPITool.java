@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,29 +26,14 @@ import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.w3c.dom.Document;
 
 /**
  * http://thegenomefactory.blogspot.com.au/2013/08/minimum-standards-for-bioinformatics.html
@@ -58,18 +42,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CommandLineAPITool {
 
-    private static final String UTF_8 = "UTF-8";
-    // The following are the names of the fields on the APIController that we set
-    /** Set in the query. Not really needed. */
-    private static final String API_UPLOADED_ITEM = "uploadedItem";
-    /** The list of attachment files */
-    private static final String API_FIELD_UPLOAD_FILE = "uploadFile";
-    /** The meta-data describing the files, an xml file itself, adhering to the published schema */
-    private static final String API_FIELD_RECORD = "record";
-    /** The project to which the files are to be added. Will overwrite anything within the record */
-    private static final String API_FIELD_PROJECT_ID = "projectId";
-    /** The billing account ID that the upload is to be charge against */
-    private static final String API_FIELD_ACCOUNT_ID = "accountId";
 
     private static final String IMPORT_SEEN_FILE = "files_seen";
     private static final String IMPORT_SEEN_FILE_EXTENSION = "txt";
@@ -100,7 +72,6 @@ public class CommandLineAPITool {
     private static final transient Logger logger = LoggerFactory.getLogger(CommandLineAPITool.class);
 
     private static int errorCount = 0;
-    private DefaultHttpClient httpclient = new DefaultHttpClient();
     private String hostname = ALPHA_TDAR_ORG; // DEFAULT SHOULD NOT BE CORE
     private String username = ALPHA_USER_NAME;
     private String password = ALPHA_PASSWORD;
@@ -111,6 +82,7 @@ public class CommandLineAPITool {
     private List<String> seen = new ArrayList<>();
     private String httpProtocol = HTTPS_PROTOCOL;
     private File[] files;
+    private APIClient client;
 
     /**
      * The exit codes have the following meaning:
@@ -153,9 +125,6 @@ public class CommandLineAPITool {
         if (hasUnrecognizedOptions(line)) {
             showHelpAndExit(SITE_ACRONYM, options, EXIT_ARGUMENT_ERROR);
         }
-//        if (line.hasOption(OPTION_SHOW_LOG)) {
-//            copyLogOutputToScreen();
-//        }
         if (line.hasOption(OPTION_HTTP)) {
             importer.setHttpProtocol(HTTP_PROTOCOL);
         }
@@ -195,8 +164,6 @@ public class CommandLineAPITool {
         Options options = new Options();
         options.addOption(OptionBuilder.withArgName(OPTION_HELP).withDescription("print this message").create(OPTION_HELP));
         options.addOption(OptionBuilder.withArgName(OPTION_HTTP).withDescription("use the http protocol (default is https)").create(OPTION_HTTP));
-//        options.addOption(OptionBuilder.withArgName(OPTION_SHOW_LOG).withDescription("send the log output to the screen at the info level")
-//                .create(OPTION_SHOW_LOG));
         options.addOption(OptionBuilder.withArgName(OPTION_USERNAME).hasArg().withDescription(SITE_ACRONYM + " username")
                 .create(OPTION_USERNAME));
         options.addOption(OptionBuilder.withArgName(OPTION_PASSWORD).hasArg().withDescription(SITE_ACRONYM + " password")
@@ -261,16 +228,6 @@ public class CommandLineAPITool {
         return new Long(property.trim());
     }
 
-    private static void copyLogOutputToScreen() {
-
-//        Logger.getRootLogger().removeAllAppenders();
-//        ConsoleAppender console = new ConsoleAppender(new PatternLayout("%-5p [%t]: %m%n"));
-//        console.setName("console");
-//        console.setWriter(new OutputStreamWriter(System.out));
-//        logger.setLevel(Level.INFO);
-//        logger.addAppender(console);
-    }
-
     private static boolean hasNoOptions(CommandLine line) {
         return line.getOptions().length == 0;
     }
@@ -328,47 +285,10 @@ public class CommandLineAPITool {
      */
     private void processFiles() {
         try {
-            if (getHostname().equalsIgnoreCase(ALPHA_TDAR_ORG)) {
-                AuthScope scope = new AuthScope(getHostname(), 80);
-                UsernamePasswordCredentials usernamePasswordCredentials = new UsernamePasswordCredentials(ALPHA_USER_NAME, ALPHA_PASSWORD);
-                httpclient.getCredentialsProvider().setCredentials(scope, usernamePasswordCredentials);
-                logger.info("creating challenge/response authentication request for alpha");
-                HttpGet tdarIPAuth = new HttpGet(httpProtocol + getHostname() + "/");
-                logger.debug("{}",tdarIPAuth.getRequestLine());
-                HttpResponse response = httpclient.execute(tdarIPAuth);
-                HttpEntity entity = response.getEntity();
-                EntityUtils.consume(entity);
-            }
-            // make tdar authentication call
-            HttpPost tdarAuth = new HttpPost(httpProtocol + getHostname() + "/api/login");
-            List<NameValuePair> postNameValuePairs = new ArrayList<>();
-            postNameValuePairs.add(new BasicNameValuePair("userLogin.loginUsername", getUsername()));
-            postNameValuePairs.add(new BasicNameValuePair("userLogin.loginPassword", getPassword()));
+            client  = new APIClient(httpProtocol + getHostname() + "/api/login");
+            ApiClientResponse response = client.apiLogin(getUsername(), getPassword());
 
-            tdarAuth.setEntity(new UrlEncodedFormEntity(postNameValuePairs, UTF_8));
-            HttpResponse response = httpclient.execute(tdarAuth);
-            HttpEntity entity = response.getEntity();
             logger.trace("Login form get: " + response.getStatusLine());
-            logger.trace("Post logon cookies:");
-            List<Cookie> cookies = httpclient.getCookieStore().getCookies();
-            boolean sawCrowdAuth = false;
-            if (cookies.isEmpty()) {
-                logger.trace("None");
-            } else {
-                for (int i = 0; i < cookies.size(); i++) {
-                    if (cookies.get(i).getName().equals("crowd.token_key")) {
-                        sawCrowdAuth = true;
-                    }
-                    logger.trace("- " + cookies.get(i).toString());
-                }
-            }
-
-            if (!sawCrowdAuth) {
-                logger.error("unable to authenticate, check username and password " + getHostname());
-                exit(-1);
-            }
-            logger.trace(EntityUtils.toString(entity));
-            EntityUtils.consume(entity);
 
             for (File file : files) {
                 out.print("*"); // give the user some sort of visual indicator as to progress
@@ -435,33 +355,13 @@ public class CommandLineAPITool {
         boolean callSuccessful = true;
         String path = record.getPath();
         try {
-            String uri = String.format("%s%s/api/ingest/upload?%s=%s", httpProtocol, getHostname(), API_UPLOADED_ITEM, URLEncoder.encode(path, UTF_8));
-            HttpPost apicall = new HttpPost(uri);
-            MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+
             if (seen.contains(path)) {
                 logger.warn("skipping: " + path);
             }
-            builder.addTextBody(API_FIELD_RECORD, FileUtils.readFileToString(record));
-
-            if (projectId != null) {
-                logger.trace("setting " + API_FIELD_PROJECT_ID + ":" + projectId);
-                builder.addTextBody(API_FIELD_PROJECT_ID, projectId.toString());
-            }
-            if (accountId != null) {
-                logger.trace("setting " + API_FIELD_ACCOUNT_ID + ":" + accountId);
-                builder.addTextBody(API_FIELD_ACCOUNT_ID, accountId.toString());
-            }
-
-            if (!CollectionUtils.isEmpty(attachments)) {
-                for (int i = 0; i < attachments.size(); i++) {
-                    builder.addPart(API_FIELD_UPLOAD_FILE, new FileBody(attachments.get(i)));
-                }
-            }
-
-            apicall.setEntity(builder.build());
+            ApiClientResponse response = client.uploadRecord(FileUtils.readFileToString(record), null, accountId, attachments.toArray(new File[0]));
             logger.debug("      files: " + StringUtils.join(attachments, ", "));
 
-            HttpResponse response = httpclient.execute(apicall);
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode >= HttpStatus.SC_BAD_REQUEST) {
@@ -474,14 +374,8 @@ public class CommandLineAPITool {
                 callSuccessful = false;
             }
             logger.info(record.toString() + " - " + response.getStatusLine());
-            HttpEntity entity = response.getEntity();
-            if (entity != null) {
-                String resp = StringEscapeUtils.unescapeHtml4(EntityUtils.toString(entity));
-                EntityUtils.consume(entity);
-                if (StringUtils.isNotBlank(resp)) {
-                    logger.info(resp);
-                }
-            }
+            Document entity = response.getXmlDocument();
+            logger.info("{}",entity);
             if (callSuccessful) {
                 FileUtils.writeStringToFile(getSeenFile(), path + " successful: " + callSuccessful + lineSeparator(),
                         true);
