@@ -3,18 +3,18 @@
  */
 package org.tdar.filestore.tasks;
 
-import java.awt.HeadlessException;
-import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.pdfbox.io.RandomAccessFile;
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFImageWriter;
+import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
+import org.apache.pdfbox.rendering.ImageType;
+import org.apache.pdfbox.rendering.PDFRenderer;
+import org.apache.pdfbox.tools.imageio.ImageIOUtil;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.filestore.WorkflowContext;
 
@@ -42,7 +42,6 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         }
     }
 
-    private File scratchFile;
 
     @Override
     public void run() throws Exception {
@@ -81,13 +80,7 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         @SuppressWarnings("unused")
         File pdfFile = originalFile.getTransientFile();
         String imageFormat = "jpg";
-        String color = "rgb";
-        int resolution;
-        try {
-            resolution = Toolkit.getDefaultToolkit().getScreenResolution();
-        } catch (HeadlessException e) {
-            resolution = 96;
-        }
+        ImageType color = ImageType.RGB;
 
         String fn = originalFile.getFilename();
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
@@ -95,13 +88,13 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String outputFilename = outputPrefix + pageNum + "." + imageFormat;
 
         if (document != null) {
-            int imageType = determineImageType(color);
+//            ImageType imageType = determineImageType(color);
 
             try {
-                PDFImageWriter imageWriter = new PDFImageWriter();
-                // The following library call will write "Writing: " + the file name to the System.out stream. Naughty!
-                // This is fixed in a later version of pdfbox, but we have a transitive dependency via Tika...
-                boolean success = imageWriter.writeImage(document, imageFormat, "", pageNum, pageNum, outputPrefix, imageType, resolution);
+                PDFRenderer pdfRenderer = new PDFRenderer(document);
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(pageNum, 300, color);
+                boolean success = ImageIOUtil.writeImage(bim, outputFilename, 300);
+
                 if (!success) {
                     getLogger().info("Error: no writer found for image format '" + imageFormat + "'");
                 }
@@ -125,7 +118,6 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             } catch (IOException e) {
                 getLogger().warn("cannot close PDF", e);
             } finally {
-                FileUtils.deleteQuietly(scratchFile);
             }
         }
     }
@@ -133,15 +125,12 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
     private PDDocument openPDF(String password, File pdfFile) {
         PDDocument document = null;
         try {
-            scratchFile = File.createTempFile("pdfbox-scratch", ".bin");
-            document = PDDocument.load(pdfFile, new RandomAccessFile(scratchFile, "rw"));
+            document = PDDocument.load(pdfFile, TdarConfiguration.getInstance().getPDFMemoryReadSetting());
 
-            if (document.isEncrypted()) {
-                getLogger().info("access permissions: " + document.getCurrentAccessPermission());
-                getLogger().info("security manager: " + document.getSecurityHandler());
-                getWorkflowContext().setErrorFatal(true);
-                throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
-            }
+//            if (document.isEncrypted()) {
+//                getLogger().info("access permissions: " + document.getCurrentAccessPermission());
+//                getLogger().info("security manager: " + document.getCurrentAccessPermission());
+//            }
 
             // try {
             // document.decrypt(password);
@@ -150,6 +139,9 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             // }
             // }
             getWorkflowContext().setNumPages(document.getNumberOfPages());
+        } catch (InvalidPasswordException ipe) {
+            getWorkflowContext().setErrorFatal(true);
+            throw new TdarRecoverableRuntimeException("pdfDerivativeTask.encryption_warning");
         } catch (IOException e) {
             getWorkflowContext().setErrorFatal(true);
             getLogger().info("IO Exception ocurred", e);
@@ -160,23 +152,24 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         return document;
     }
 
-    private int determineImageType(String color) {
-        int imageType = 24;
-        if ("bilevel".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_BYTE_BINARY;
-        } else if ("indexed".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_BYTE_INDEXED;
-        } else if ("gray".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_BYTE_GRAY;
-        } else if ("rgb".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_INT_RGB;
-        } else if ("rgba".equalsIgnoreCase(color)) {
-            imageType = BufferedImage.TYPE_INT_ARGB;
-        } else {
-            getLogger().debug("Error: the number of bits per pixel must be 1, 8 or 24.");
-        }
-        return imageType;
-    }
+//    private int determineImageType(ImageType color) {
+//        int imageType = 24;
+//        ImageType.valueOf(name)
+//        if ("bilevel".equalsIgnoreCase(color)) {
+//            imageType = BufferedImage.TYPE_BYTE_BINARY;
+//        } else if ("indexed".equalsIgnoreCase(color)) {
+//            imageType = BufferedImage.TYPE_BYTE_INDEXED;
+//        } else if ("gray".equalsIgnoreCase(color)) {
+//            imageType = BufferedImage.TYPE_BYTE_GRAY;
+//        } else if ("rgb".equalsIgnoreCase(color)) {
+//            imageType = BufferedImage.TYPE_INT_RGB;
+//        } else if ("rgba".equalsIgnoreCase(color)) {
+//            imageType = BufferedImage.TYPE_INT_ARGB;
+//        } else {
+//            getLogger().debug("Error: the number of bits per pixel must be 1, 8 or 24.");
+//        }
+//        return imageType;
+//    }
 
     @Override
     public String getName() {

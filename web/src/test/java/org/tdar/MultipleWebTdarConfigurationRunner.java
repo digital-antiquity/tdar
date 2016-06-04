@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.ReflectionService;
+import org.tdar.functional.AbstractSeleniumWebITCase;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.junit.WebTestCase;
 
@@ -78,7 +79,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
     protected void setConfiguration(FrameworkMethod method, String config) {
         TdarConfiguration.getInstance().setConfigurationFile(config);
         Class<?> testClass = getTestClass().getJavaClass();
-        if (WebTestCase.class.isAssignableFrom(testClass)) {
+        if (WebTestCase.class.isAssignableFrom(testClass) || AbstractSeleniumWebITCase.class.isAssignableFrom(testClass)) {
             try {
                 // if we tried to change the baseUrl, this could break stuff
                 String url = TdarConfiguration.getInstance().getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;

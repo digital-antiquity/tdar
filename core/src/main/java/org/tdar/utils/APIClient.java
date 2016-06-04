@@ -87,7 +87,6 @@ public class APIClient {
         ApiClientResponse toReturn = new ApiClientResponse(response);
         response.close();
         return toReturn;
-
     }
 
     private void addFiles(MultipartEntityBuilder builder, File... files) {

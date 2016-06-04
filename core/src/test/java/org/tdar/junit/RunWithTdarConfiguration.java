@@ -18,6 +18,7 @@ public @interface RunWithTdarConfiguration {
     String BROKEN_KETTLE = "src/test/resources/tdar.broken.kettle.properties";
     String TDARDATA_SMALL_BATCH = "src/test/resources/tdar.small.batch.properties";
     String SMALL_EXCEL = "src/test/resources/tdar.small.excel.properties";
+    String SELECT2 = "src/test/resources/tdar.select2.properties";
 
     public String[] runWith() default {};
 

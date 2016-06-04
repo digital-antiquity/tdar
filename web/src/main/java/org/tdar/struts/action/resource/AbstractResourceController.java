@@ -97,6 +97,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private static final long serialVersionUID = 8620875853247755760L;
     private boolean select2Enabled = TdarConfiguration.getInstance().isSelect2Enabled();
+    private boolean select2SingleEnabled = TdarConfiguration.getInstance().isSelect2SingleEnabled();
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
@@ -254,7 +255,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Action(value = SAVE,
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
             results = {
-                    @Result(name = SUCCESS, type = TdarActionSupport.TDAR_REDIRECT, location = SAVE_SUCCESS_PATH),
+                    @Result(name = SUCCESS, type = TdarActionSupport.REDIRECT, location = SAVE_SUCCESS_PATH),
                     @Result(name = SUCCESS_ASYNC, location = "view-async.ftl"),
                     @Result(name = INPUT, location = RESOURCE_EDIT_TEMPLATE)
             })
@@ -1126,7 +1127,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.submitterProperName = submitterProperName;
     }
 
-    public boolean isSelect2Enabled() {
+    public Boolean isSelect2Enabled() {
         return select2Enabled;
     }
 
@@ -1134,4 +1135,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         this.select2Enabled = select2Enabled;
     }
 
+    public Boolean isSelect2SingleEnabled() {
+        return select2SingleEnabled;
+    }
+
+    public void setSelect2SingleEnabled(boolean select2SingleEnabled) {
+        this.select2SingleEnabled = select2SingleEnabled;
+    }
 }

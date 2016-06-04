@@ -12,6 +12,7 @@ import java.io.File;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.resource.Document;
@@ -41,6 +42,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
     private MessageService messageService;
 
     @Test
+    @Rollback(true)
     public void testBrokenImageStatus() throws Exception {
         String filename = "volume1-encrypted-test.pdf";
         File f = new File(TestConstants.TEST_DOCUMENT_DIR + "/sample_pdf_formats/", filename);
@@ -60,6 +62,7 @@ public class DocumentFileITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
+    @Rollback(true)
     public void testRTFTextExtraction() throws Exception {
         String filename = "test-file.rtf";
         File f = new File(TestConstants.TEST_DOCUMENT_DIR, filename);

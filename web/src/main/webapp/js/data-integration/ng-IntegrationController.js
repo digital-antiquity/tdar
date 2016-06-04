@@ -39,6 +39,9 @@
 
         self.closeTab = function(idx) {
             integration.removeOutputColumn(idx);
+            if (integration.columns.length > 0) {
+                self.setTab(integration.columns.length - 1);
+            }
         }
 
         self.saveClicked = function() {

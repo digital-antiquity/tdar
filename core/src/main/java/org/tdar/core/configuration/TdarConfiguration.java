@@ -11,6 +11,7 @@ import java.util.List;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.pdfbox.io.MemoryUsageSetting;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.LicenseType;
@@ -895,7 +896,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public boolean shouldUseLowMemoryPDFMerger() {
-        return assistant.getBooleanProperty("pdf.use_low_mem", false);
+        return assistant.getBooleanProperty("pdf.use_low_mem", true);
     }
 
     public boolean shouldLogToFilestore() {
@@ -962,7 +963,23 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("select2.enabled", false);
     }
 
+    public boolean isSelect2SingleEnabled() {
+        return assistant.getBooleanProperty("select2.single.enabled", false);
+    }
+
     public boolean shouldShowExactLocationToThoseWhoCanEdit() {
         return assistant.getBooleanProperty("show.exact.location.to.editable", false);
+    }
+
+    public MemoryUsageSetting getPDFMemoryReadSetting() {
+        return MemoryUsageSetting.setupTempFileOnly();
+    }
+
+    public MemoryUsageSetting getPDFMemoryWriteSetting(File file) {
+        if (TdarConfiguration.getInstance().shouldUseLowMemoryPDFMerger()) {
+            return MemoryUsageSetting.setupMixed(Runtime.getRuntime().freeMemory() / 3L);
+        } else {
+            return MemoryUsageSetting.setupMainMemoryOnly();
+        }
     }
 }

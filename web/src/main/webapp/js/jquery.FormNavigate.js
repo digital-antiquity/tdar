@@ -80,7 +80,6 @@
             });
 
             var _eventHandler = function (evt) {
-                //console.log("Form #%s has become dirty. event:%s\t target:%s\t ", $this.attr("id"), evt.type, evt.target);
                 $this.data(DATA_FIELD, false);
             };
 
@@ -90,7 +89,7 @@
             }
 
             if (_options.cleanOnSubmit) {
-                $this.find("input:submit, .submitButton").click(function () {
+                $this.find(' input[type="submit"], button[type="submit"], .submitButton').click(function () {
                     $this.data(DATA_FIELD, true);
                 });
             }

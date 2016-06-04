@@ -37,19 +37,34 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
+import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.coverage.CoverageType;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.ExternalKeywordMapping;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
+import org.tdar.core.bean.keyword.MaterialKeyword;
+import org.tdar.core.bean.keyword.OtherKeyword;
+import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Geospatial;
 import org.tdar.core.bean.resource.Language;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.ImportService;
 import org.tdar.core.service.ObfuscationService;
@@ -89,6 +104,35 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     public void testJAXBDocumentConversion() throws Exception {
         Document document = genericService.find(Document.class, 4232l);
         String xml = serializationService.convertToXML(document);
+        logger.info(xml);
+    }
+
+    @Test
+    @Rollback
+    // no assertions, mostly setup for documentation output
+    public void testJAXBDocumentConversionGIS() throws Exception {
+        Geospatial geos = new Geospatial();
+        geos.setStatus(Status.ACTIVE);
+        geos.markUpdated(getAdminUser());
+        geos.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.CREATOR));
+        geos.setScale("1:1000");
+        geos.setCurrentnessUpdateNotes("current as of 2012");
+        geos.setSpatialReferenceSystem("WGS:84");
+        geos.getGeographicKeywords().add(new GeographicKeyword("Washington, DC"));
+        geos.getCultureKeywords().add(new CultureKeyword("Modern"));
+        geos.getTemporalKeywords().add(new TemporalKeyword("21st Century"));
+        geos.getOtherKeywords().add(new OtherKeyword("map"));
+        geos.getInvestigationTypes().add(new InvestigationType("Architectural Survey"));
+        geos.getMaterialKeywords().add(new MaterialKeyword("Ceramic"));
+        geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
+        geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
+        geos.setTitle("map of ceramics around national monument");
+        geos.getResourceCollections().add(new ResourceCollection("test collection", "test description", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getAdminUser()));
+        geos.setDescription("test map");
+        geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
+        geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
+        String xml = serializationService.convertToXML(geos);
+        xml = StringUtils.replace(xml," id=\"-1\"", "");
         logger.info(xml);
     }
 

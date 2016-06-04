@@ -9,10 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnType;
-import org.tdar.core.service.integration.IntegrationContext;
-import org.tdar.core.service.integration.ModernIntegrationDataResult;
-
-import com.opensymphony.xwork2.TextProvider;
 
 /**
  * A base class for target Databases that can be written to via a
@@ -89,9 +85,6 @@ public interface TargetDatabase extends Database {
     String selectTableAsXml(DataTable dataTable);
 
     int getMaxColumnNameLength();
-
-    @Transactional(value = "tdarDataTx", readOnly = false)
-    ModernIntegrationDataResult generateIntegrationResult(IntegrationContext proxy, String rawIntegration, TextProvider provider);
 
     @Transactional(value = "tdarDataTx", readOnly = false)
     Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
