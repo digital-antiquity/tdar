@@ -2,7 +2,6 @@ package org.tdar.struts.action;
 
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.hasKey;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Assert;
@@ -11,16 +10,10 @@ import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
-import org.tdar.core.bean.entity.Address;
-import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
-import org.tdar.struts.action.entity.AbstractCreatorController;
 import org.tdar.struts.action.entity.PersonController;
 import org.tdar.struts.action.entity.TdarUserController;
-import org.tdar.utils.MessageHelper;
-
-import com.opensymphony.xwork2.Action;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 
@@ -110,104 +103,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
     @SuppressWarnings("unused")
     @Test
     @Rollback
-    public void addNullAddressToPerson() throws TdarActionException {
-        setIgnoreActionErrors(true);
-        Person p = createAndSaveNewPerson();
-        Long presonId = p.getId();
-        p = null;
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setId(presonId);
-        controller.prepare();
-        String editAddress = controller.editAddress();
-        assertEquals(Action.SUCCESS, editAddress);
-
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setId(presonId);
-        controller.prepare();
-        String msg = null;
-        controller.setAddress(null);
-        controller.setServletRequest(getServletPostRequest());
-
-        assertEquals(Action.INPUT, controller.saveAddress());
-        assertEquals(MessageHelper.getMessage("address.street_required"), controller.getActionErrors().iterator().next());
-
-    }
-
-    @Test
-    @Rollback
-    public void addAddressToPerson() throws TdarActionException {
-        Long presonId = addAddressToNewPerson();
-
-        Person person = genericService.find(Person.class, presonId);
-        assertEquals(1, person.getAddresses().size());
-        assertEquals("85287", person.getAddresses().iterator().next().getPostal());
-    }
-
-    @Test
-    @Rollback
-    public void editAddressInitialize() throws TdarActionException {
-        Long presonId = addAddressToNewPerson();
-        Person person = genericService.find(Person.class, presonId);
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setAddressId(person.getAddresses().iterator().next().getId());
-        controller.setId(presonId);
-        person = null;
-        controller.prepare();
-        controller.editAddress();
-        assertEquals("85287", controller.getAddress().getPostal());
-    }
-
-    @Test
-    @Rollback
-    public void editAddressSave() throws TdarActionException {
-        Long presonId = addAddressToNewPerson();
-        Person person = genericService.find(Person.class, presonId);
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setAddressId(person.getAddresses().iterator().next().getId());
-        controller.setId(presonId);
-        person = null;
-        controller.prepare();
-        assertEquals(controller.getAddressId(), controller.getAddress().getId());
-        assertEquals("tempe", controller.getAddress().getCity());
-        controller.getAddress().setCity("definitely not tempe");
-        controller.setServletRequest(getServletPostRequest());
-        controller.setReturnUrl("/test");
-        String saveAddress = controller.saveAddress();
-        assertEquals(AbstractCreatorController.RETURN_URL, saveAddress);
-        controller = null;
-
-        person = genericService.find(Person.class, presonId);
-
-        assertEquals("85287", person.getAddresses().iterator().next().getPostal());
-        assertNotEquals("tempe", person.getAddresses().iterator().next().getCity());
-    }
-
-    @Test
-    @Rollback
-    public void editAddressDelete() throws TdarActionException {
-        final Long presonId = addAddressToNewPerson();
-        Person person = genericService.find(Person.class, presonId);
-        Long addressId = person.getAddresses().iterator().next().getId();
-        // this seems hokey
-        genericService.detachFromSession(person);
-        person = null;
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setAddressId(addressId);
-        controller.setId(presonId);
-        controller.prepare();
-        controller.setServletRequest(getServletPostRequest());
-        logger.info("hi");
-        String saveAddress = controller.deleteAddress();
-        assertEquals(Action.SUCCESS, saveAddress);
-        controller = null;
-        Person person_ = genericService.find(Person.class, presonId);
-        assertEquals(0, person_.getAddresses().size());
-        genericService.delete(person_);
-    }
-
-    @SuppressWarnings("unused")
-    @Test
-    @Rollback
     public void editEmailAlreadyInUse() throws TdarActionException {
         setIgnoreActionErrors(true);
         String email1 = "email1@tdar.org";
@@ -258,33 +153,6 @@ public class PersonControllerITCase extends AbstractAdminControllerITCase {
         uc.setServletRequest(getServletPostRequest());
         uc.validate();
         assertThat(uc.getFieldErrors(), hasKey("email"));
-    }
-
-    private Long addAddressToNewPerson() throws TdarActionException {
-        Person p = createAndSaveNewPerson();
-        Long presonId = p.getId();
-        p = null;
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setId(presonId);
-        controller.prepare();
-        String editAddress = controller.editAddress();
-        assertEquals(Action.SUCCESS, editAddress);
-
-        controller = generateNewInitializedController(PersonController.class);
-        controller.setId(presonId);
-        controller.prepare();
-        controller.setServletRequest(getServletPostRequest());
-        Address address = controller.getAddress();
-        address.setCity("tempe");
-        address.setState("Arizona");
-        address.setStreet1("street");
-        address.setCountry("USA");
-        address.setPostal("85287");
-        address.setType(AddressType.BILLING);
-        String saveAddress = controller.saveAddress();
-        assertEquals(Action.SUCCESS, saveAddress);
-        evictCache();
-        return presonId;
     }
 
 }

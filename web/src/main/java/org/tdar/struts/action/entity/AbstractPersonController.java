@@ -4,7 +4,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.TdarActionException;
@@ -81,8 +80,7 @@ public abstract class AbstractPersonController<P extends Person> extends Abstrac
 
     @Override
     public boolean authorize() {
-        return getAuthenticatedUser().equals(getPersistable())
-                || authorizationService.can(InternalTdarRights.EDIT_PERSONAL_ENTITES, getAuthenticatedUser());
+        return authorizationService.canEditCreator(getPersistable(), getAuthenticatedUser());
     }
 
     public String getInstitutionName() {

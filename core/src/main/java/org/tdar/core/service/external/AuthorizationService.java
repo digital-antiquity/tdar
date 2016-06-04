@@ -28,6 +28,7 @@ import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -548,12 +549,11 @@ public class AuthorizationService implements Accessible {
                 logger.trace("user can edit: {}", p);
                 viewable = true;
             }
-            
-            
+
             if (viewable && item instanceof Resource && item instanceof ConfidentialViewable) {
-                ((ConfidentialViewable)item).setConfidentialViewable(canViewConfidentialInformation(authenticatedUser, (Resource)item));
+                ((ConfidentialViewable) item).setConfidentialViewable(canViewConfidentialInformation(authenticatedUser, (Resource) item));
             }
-            
+
             item.setViewable(viewable);
         }
     }
@@ -686,11 +686,11 @@ public class AuthorizationService implements Accessible {
         if (PersistableUtils.isNullOrTransient(workflow)) {
             return true;
         }
-        
+
         if (isAdministrator(authenticatedUser)) {
             return true;
         }
-        
+
         if (PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser) ||
                 authenticatedUser.equals(workflow.getAuthorizedMembers().contains(authenticatedUser))) {
             return true;
@@ -700,7 +700,7 @@ public class AuthorizationService implements Accessible {
 
     @Transactional(readOnly = true)
     public boolean canViewWorkflow(DataIntegrationWorkflow workflow, TdarUser authenticatedUser) {
-        
+
         if (!workflow.isHidden()) {
             return true;
         }
@@ -791,7 +791,7 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void updateAuthorizedMembers(HasUsers entity, List<TdarUser> members) {
         logger.info("authorized members (was): {}", entity.getAuthorizedMembers());
         entity.getAuthorizedMembers().clear();
@@ -800,13 +800,13 @@ public class AuthorizationService implements Accessible {
         institutionDao.saveOrUpdate(entity);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public boolean canViewBillingAccount(BillingAccount account, TdarUser authenticatedUser) {
         if (PersistableUtils.isNullOrTransient(authenticatedUser)) {
             return false;
         }
 
-        if (can(InternalTdarRights.VIEW_BILLING_INFO,authenticatedUser)) {
+        if (can(InternalTdarRights.VIEW_BILLING_INFO, authenticatedUser)) {
             return true;
         }
 
@@ -814,6 +814,22 @@ public class AuthorizationService implements Accessible {
             return true;
         }
 
+        return false;
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canEditCreator(Creator<?> persistable, TdarUser tdarUser) {
+        if (PersistableUtils.isNullOrTransient(tdarUser)) {
+            return false;
+        }
+        
+        if (persistable instanceof Institution) {
+            return canEdit(tdarUser, persistable);
+        }
+        
+        if (Objects.equals(persistable, tdarUser) || can(InternalTdarRights.EDIT_PERSONAL_ENTITES, tdarUser)) {
+            return true;
+        }
         return false;
     }
 

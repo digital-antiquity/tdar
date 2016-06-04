@@ -33,13 +33,14 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/billing")
 @HttpsOnly
-public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable {
+public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
 	public static final String UPDATE_QUOTAS = "updateQuotas";
 	public static final String FIX_FOR_DELETE_ISSUE = "fix";
