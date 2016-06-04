@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <include file="struts-local-settings.xml" />
+    <!-- performance enhancements -->
+    <!-- freemarker cache -->
+    <constant name="struts.freemarker.mru.max.strong.size" value="250" />
+    <constant name="struts.convention.default.parent.package" value="default" />
+
+    <!-- package.locators: Packages whose name end with one of these strings 
+        will be scanned for actions (default: 'action, actions, struts, struts2') -->
+    <constant name="struts.convention.package.locators" value="action" />
+    <constant name="struts.convention.package.locators.basePackage" value="org.tdar.struts.action" />
+
+    <!-- set this in struts-local-settings.xml <constant name="struts.freemarker.templatesCache.updateDelay" 
+        value="5000000"/> -->
+    <!-- javatemplates plugin, possible optimization for freemarker tags 
+        using the simple theme. it may only work if you're using basic JSP struts 
+        tags though, needs testing. -->
+    <!-- <constant name="struts.ui.templateSuffix" value="java" /> -->
+    <constant name="struts.ui.theme" value="bootstrap" />
+    <constant name="struts.url.includeParams" value="none" />
+    <constant name="struts.action.extension" value="," />
+    <constant name="struts.action.excludePattern" value="/services/.*,/dataone/.*,/oai-pmh/.*,/hosted/.*,/odata.svc/.*,/404.html" />
+    <constant name="struts.additional.excludedPatterns" value="^(action|method):.*"/>
+    <constant name="struts.custom.i18n.resources"
+        value="Locales/tdar-freemarker-messages,Locales/tdar-messages" />
+    <constant name="struts.freemarker.manager.classname" value="org.tdar.struts.freemarker.TdarFreemarkerManager"/>
+    <constant name="struts.objectFactory"
+        value="org.apache.struts2.spring.StrutsSpringObjectFactory" />
+    <constant name="struts.objectFactory.spring.autoWire.alwaysRespect" value="true" />
+    <constant name="struts.objectFactory.spring.autoWire" value="name" />
+
+    <constant name="struts.enable.SlashesInActionNames" value="true" />
+    <constant name="struts.mapper.alwaysSelectFullNamespace" value="false" />
+
+    <constant name="struts.patternMatcher"
+        value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher" />
+    <!--<constant name="struts.patternMatcher" value="regex" /> -->
+
+    <package name="default" extends="struts-default" namespace="/">
+        <!-- based tDAR stack - this is not complete, but effectively used 
+            as a "prefix" for other stacks -->
+        <result-types>
+            <result-type name="tdar-redirect"
+                class="org.tdar.struts.result.RedirectResult" />
+            <result-type name="jaxbdocument"
+                class="org.tdar.struts.result.JaxbDocumentResult" />
+            <result-type name="xmldocument"
+                class="org.tdar.struts.result.XMLDocumentResult" />
+            <result-type name="jsonresult"
+                class="org.tdar.struts.result.JsonDocumentResult" />
+            <result-type name="freemarkerhttp"
+                class="org.tdar.struts.result.FreemarkerHttpHeaderResult" />
+            <result-type name="streamhttp"
+                class="org.tdar.struts.result.StreamHttpStatusResult" />
+        </result-types>
+        <interceptors>
+            <interceptor name="authenticate"
+                class="org.tdar.struts.interceptor.AuthenticationInterceptor" />
+            <interceptor name="userAgreement"
+                class="org.tdar.struts.interceptor.UserAgreementInterceptor" />
+            <interceptor name="sessionSecurity"
+                class="org.tdar.struts.interceptor.SessionSecurityInterceptor" />
+            <interceptor name="httpsMethod"
+                class="org.tdar.struts.interceptor.HttpsInterceptor" />
+            <interceptor name="httpMethod"
+                class="org.tdar.struts.interceptor.HttpMethodInterceptor" />
+            <interceptor name="cacheControl"
+                class="org.tdar.struts.interceptor.CacheControlInterceptor" />
+            <interceptor name="activityLogging"
+                class="org.tdar.struts.interceptor.ActivityLoggingInterceptor" />
+            <interceptor name="sso" class="org.tdar.struts.interceptor.CrowdTokenInterceptor" />
+            <interceptor-stack name="tdarDefaultStack">
+                <interceptor-ref name="exception">
+                    <param name="logEnabled">true</param>
+                    <param name="logLevel">ERROR</param>
+                    <!-- <param name="exception.logCategory">org.tdar.struts</param> -->
+                </interceptor-ref>
+                <interceptor-ref name="activityLogging" />
+                <interceptor-ref name="sessionSecurity" />
+                <interceptor-ref name="cacheControl" />
+                <interceptor-ref name="httpsMethod" />
+                <interceptor-ref name="httpMethod" />
+                <interceptor-ref name="store">
+                    <param name="operationMode">AUTOMATIC</param>
+                </interceptor-ref>
+                <!--e.g. foo.action?request_locale=en_US see: http://struts.apache.org/release/2.0.x/struts2-core/apidocs/com/opensymphony/xwork2/interceptor/I18nInterceptor.html -->
+                <interceptor-ref name="i18n" />
+                <interceptor-ref name="checkbox" />
+                <!-- technically, this is not used or needed, but keeping 
+                    it just in case we start doing multi-selects -->
+                <interceptor-ref name="multiselect" />
+                <interceptor-ref name="staticParams" />
+                <interceptor-ref name="params" />
+                <interceptor-ref name="servletConfig" />
+                <interceptor-ref name="prepare" />
+                <interceptor-ref name="staticParams" />
+                <interceptor-ref name="actionMappingParams" />
+            </interceptor-stack>
+
+            <interceptor-stack name="tdarDefaultStackWritable">
+                <!-- used for when we are opening a Writable hibernate session, 
+                    should be used sparingly -->
+                <interceptor-ref name="sso" />
+                <interceptor-ref name="authenticate" />
+                <interceptor-ref name='tdarDefaultStack' />
+                <interceptor-ref name="fileUpload">
+                    <!-- ONLY OVERRIDE IF ABSOLUTELY NECESSARY - THIS PROTECTS 
+                        THE TEMP DIRECTORY AND CLEANS UP IF A FILE THAT'S TOO BIG IS UPLOADED <param 
+                        name="maximumSize">8589934592</param> -->
+                </interceptor-ref>
+                <interceptor-ref name="params" />
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+
+            <interceptor-stack name="registrationStack">
+                <!-- default stack for tDAR - not writable, does not have 
+                    params-prepare-params -->
+                <interceptor-ref name="tdarDefaultStack" />
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+
+            <interceptor-stack name="unauthenticatedStack">
+                <!-- default stack for tDAR - not writable, does not have 
+                    params-prepare-params -->
+                <interceptor-ref name="sso" />
+                <interceptor-ref name="tdarDefaultStack" />
+                <interceptor-ref name="conversionError" />
+                <interceptor-ref name="validation">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+                <interceptor-ref name="workflow">
+                    <param name="excludeMethods">input,back,cancel,browse</param>
+                </interceptor-ref>
+            </interceptor-stack>
+
+            <interceptor-stack name="authenticatedStack">
+                <!-- unauthenticated stack + authentication and user agreement -->
+                <interceptor-ref name="sso" />
+                <interceptor-ref name="authenticate" />
+                <interceptor-ref name="unauthenticatedStack" />
+                <interceptor-ref name="userAgreement" />
+            </interceptor-stack>
+
+            <interceptor-stack name='csrfDefaultStack'>
+                <interceptor-ref name='tokenSession' />
+                <interceptor-ref name="sso" />
+                <interceptor-ref name='tdarDefaultStack' />
+            </interceptor-stack>
+        </interceptors>
+
+        <default-interceptor-ref name="unauthenticatedStack" />
+        <global-results>
+            <result name="access-denied" type="redirect">/access-denied
+            </result>
+            <result name="login" type="redirect">/login</result>
+            <result name="error" type="freemarkerhttp">
+                <param name="status">500</param>
+                <param name="location">/WEB-INF/content/errors/error.ftl</param>
+            </result>
+            <result name="badrequest" type="freemarkerhttp">
+                <param name="status">400</param>
+                <param name="location">/WEB-INF/content/errors/error.ftl</param>
+            </result>
+            <!-- <result name="exception" type="freemarker">/WEB-INF/content/errors/exception.ftl</result> -->
+            <!-- good: we send propper http error code(so google doesn't 
+                keep this page). Bad: user gets ugly page with no helpful message. -->
+            <result name="exception" type="freemarkerhttp">
+                <param name="status">500</param>
+                <param name="location">/WEB-INF/content/errors/exception.ftl</param>
+            </result>
+            <result name="not_found" type="freemarkerhttp">
+                <param name="status">404</param>
+                <param name="location">/WEB-INF/content/errors/page-not-found.ftl</param>
+            </result>
+            <result name="gone" type="freemarkerhttp">
+                <param name="status">410</param>
+                <param name="location">/WEB-INF/content/errors/resource-deleted.ftl</param>
+            </result>
+            <result name="unauthorized_redirect" type="redirect">
+                <!-- used by the AuthenticationInterceptor which seems 
+                    to not be able to work with the FreemarkerHttpResult properly -->
+                <param name="location">/unauthorized</param>
+            </result>
+            <result name="unauthorized" type="freemarkerhttp">
+                <param name="status">401</param>
+                <param name='location'>/WEB-INF/content/errors/unauthorized.ftl</param>
+            </result>
+            <result name="forbidden" type="freemarkerhttp">
+                <param name="status">403</param>
+                <param name='location'>/WEB-INF/content/errors/unauthorized.ftl</param>
+            </result>
+            <result name="forbidden-status-only" type="httpheader">
+                <param name="status">403</param>
+            </result>
+            <result name="not-found-status-only" type="httpheader">
+                <param name="status">404</param>
+            </result>
+            <result name="invalid.token" type="redirect">
+                <param name="location">/invalid-token</param>
+            </result>
+            <result name="user_agreement" type="redirect">/show-notices
+            </result>
+            <result name="login" type="redirect">/login</result>
+        </global-results>
+        <!-- XXX: swallows all unhandled RuntimeExceptions and sends them 
+            to the exception result configured above -->
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.RuntimeException"
+                result="exception" />
+        </global-exception-mappings>
+    </package>
+    <package name="secured" extends="default" abstract="true">
+        <interceptors>
+            <interceptor-stack name="editAuthenticatedStack">
+                <!-- used explicitly when working with a writable hibernate 
+                    session -->
+                <interceptor-ref name="tdarDefaultStackWritable">
+                    <param name="validation.validateAnnotatedMethodOnly">true</param>
+                </interceptor-ref>
+            </interceptor-stack>
+            <interceptor-stack name='csrfAuthenticatedStack'>
+                <interceptor-ref name='tokenSession' />
+                <interceptor-ref name='editAuthenticatedStack' />
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="authenticatedStack" />
+    </package>
+
+
+
+</struts>

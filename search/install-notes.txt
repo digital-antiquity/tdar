@@ -1,0 +1,7 @@
+# note you'll need to install a copy of the JTS (java topology suite) jar
+# into the SOLR lib directory to properly get the cores to be setup
+# http://sourceforge.net/projects/jts-topo-suite/
+# This release upgrades the google analytics script to "universal analytics".  Check to make sure that events are
+captured properly.  For example,  take note of some of the event counts prior to testing and a few days after testing.
+There numbers should have gone up for all of the event types (pageview, download, share).
+
