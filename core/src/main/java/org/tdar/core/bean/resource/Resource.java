@@ -74,7 +74,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -154,7 +153,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlType(name = "resource", propOrder = {})
 @XmlTransient
 public class Resource implements Persistable,
-        Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
+        Comparable<Resource>, HasName, Updatable, Indexable, Validatable,
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
         DeHydratable, XmlLoggable, Slugable {
 
@@ -628,12 +627,11 @@ public class Resource implements Persistable,
         return title;
     }
 
-    @Override
     public String getTitleSort() {
         if (getTitle() == null) {
             return "";
         }
-        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "").toLowerCase();
+        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "").toLowerCase();
     }
 
     public void setTitle(String title) {

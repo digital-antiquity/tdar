@@ -16,10 +16,10 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Rev$
  * 
  */
-public class ResourceQueryBuilder extends QueryBuilder {
+public class MultiCoreQueryBuilder extends QueryBuilder {
 
-    public ResourceQueryBuilder() {
-        setTypeLimit(LookupSource.RESOURCE.name());
+    public MultiCoreQueryBuilder() {
+//        setTypeLimit(LookupSource.RESOURCE.name());
     }
     
 

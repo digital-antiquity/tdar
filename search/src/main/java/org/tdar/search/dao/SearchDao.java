@@ -30,6 +30,8 @@ import org.tdar.core.bean.PluralLocalizable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -177,8 +179,19 @@ public class SearchDao<I extends Indexable> {
                 }
             }
 
-            @SuppressWarnings("unchecked")
-            Enum enum1 = Enum.valueOf(facetClass, name);
+            @SuppressWarnings("rawtypes")
+            Enum enum1 = null;
+            if (facetClass.equals(ResourceType.class)) {
+                for (CollectionType type : CollectionType.values()) {
+                    if (name.equals(type.name())) {
+                        enum1 = type;
+                    }
+                }
+            }
+            if (enum1 == null) {
+                enum1 = Enum.valueOf(facetClass, name);
+            }
+
             if (enum1 instanceof PluralLocalizable && c.getCount() > 1) {
                 label = ((PluralLocalizable) enum1).getPluralLocaleKey();
             } else {

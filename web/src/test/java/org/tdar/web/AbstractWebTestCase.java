@@ -981,10 +981,6 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         assertTextPresentInPage("dataset_3088_knowthstage8.xls");
     }
 
-    public void testBasicSearchView() {
-        gotoPage("/search/basic");
-        assertTextPresentInPage("Search");
-    }
 
     public void testAdvancedSearchView() {
         gotoPage("/search/advanced");

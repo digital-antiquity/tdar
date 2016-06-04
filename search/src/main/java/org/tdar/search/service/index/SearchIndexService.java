@@ -402,18 +402,17 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     public void purgeAll(LookupSource... sources) {
         for (LookupSource src : sources) {
-            for (Class<? extends Indexable> clss : src.getClasses()) {
-                purgeCore(LookupSource.getCoreForClass(clss));
-            }
+            purgeCore(src);
         }
     }
 
-    void purgeCore(String core) {
+    void purgeCore(LookupSource src) {
         try {
-            template.deleteByQuery(core, "*:*");
-            commit(core);
+            // in most cases this is *:*, but for the shared core (Resources/Collections) it is limited by type
+            template.deleteByQuery(src.getCoreName(), src.getDeleteQuery());
+            commit(src.getCoreName());
         } catch (SolrServerException | IOException e) {
-            logger.error("error purging index: {}", core, e);
+            logger.error("error purging index: {}", src.getCoreName(), e);
         }
     }
 

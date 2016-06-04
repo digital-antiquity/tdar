@@ -63,7 +63,7 @@ import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
-import org.tdar.core.bean.SimpleSearch;
+import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
@@ -77,6 +77,7 @@ import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.util.UrlUtils;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -110,8 +111,9 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @Inheritance(strategy = InheritanceType.JOINED)
+
 public class ResourceCollection extends AbstractPersistable implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
+        Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -494,12 +496,11 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return false;
     }
 
-    @Override
     public String getTitleSort() {
         if (getTitle() == null) {
             return "";
         }
-        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
+        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "");
     }
 
     @Override
