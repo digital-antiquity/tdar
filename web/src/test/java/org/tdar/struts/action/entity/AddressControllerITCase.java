@@ -9,7 +9,6 @@ import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.entity.AddressController;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;

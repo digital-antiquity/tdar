@@ -8,7 +8,6 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.entity.PersonController;
 
 import com.opensymphony.xwork2.Action;
 

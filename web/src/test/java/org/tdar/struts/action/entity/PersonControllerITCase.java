@@ -14,8 +14,6 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.entity.PersonController;
-import org.tdar.struts.action.entity.TdarUserController;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 

@@ -9,7 +9,6 @@ package org.tdar.functional.resource;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -24,9 +23,7 @@ import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.MultipleWebTdarConfigurationRunner;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.functional.AbstractBasicSeleniumWebITCase;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractWebTestCase;
