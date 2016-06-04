@@ -1,10 +1,6 @@
 package org.tdar.struts.action.browse;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -63,7 +59,6 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.exception.SearchPaginationException;
@@ -120,12 +115,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
 
-    private transient InputStream inputStream;
-    private Long contentLength;
-    private float keywordMedian = 0;
-    private float creatorMedian = 0;
-    private float creatorMean = 0;
-    private float keywordMean = 0;
     private Map<String, Facet> creatorFacetMap = new HashMap<>();
     private Map<String, Facet> keywordFacetMap = new HashMap<>();
     private String slug = "";
@@ -166,31 +155,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return entityService.findAuthorityFromDuplicate(creator);
     }
 
-    @Action(value = "creatorRdf", results = {
-            @Result(name = TdarActionSupport.SUCCESS, type = "stream",
-                    params = {
-                            "contentType", "application/rdf+xml",
-                            "inputName", "inputStream",
-                            "contentLength", "${contentLength}"
-                    })
-    })
-    @SkipValidation
-    public String creatorRdf() throws FileNotFoundException {
-        try {
-            FileStoreFile object = new FileStoreFile(FilestoreObjectType.CREATOR, VersionType.METADATA, getId(), getId() + FOAF_XML);
-            File file = getTdarConfiguration().getFilestore().retrieveFile(FilestoreObjectType.CREATOR, object);
-            if (file.exists()) {
-                setInputStream(new FileInputStream(file));
-                setContentLength(file.length());
-                return SUCCESS;
-            }
-        } catch (FileNotFoundException fnf) {
-            return NOT_FOUND;
-        } catch (Exception e) {
-            return ERROR;
-        }
-        return ERROR;
-    }
 
     public boolean isEditable() {
         if (isEditorOrSelf()) {
@@ -391,22 +355,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         this.accounts = accounts;
     }
 
-    public Long getContentLength() {
-        return contentLength;
-    }
-
-    public void setContentLength(Long contentLength) {
-        this.contentLength = contentLength;
-    }
-
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
     public Map<String, SearchFieldType> getKeywordTypeBySimpleName() {
         if (CollectionUtils.isEmpty(searchFieldLookup.keySet())) {
             for (SearchFieldType type : SearchFieldType.values()) {
@@ -426,51 +374,6 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         return true;
     }
 
-    public float getKeywordMedian() {
-        return keywordMedian;
-    }
-
-    public void setKeywordMedian(float keywordMedian) {
-        this.keywordMedian = keywordMedian;
-    }
-
-    public float getCreatorMedian() {
-        return creatorMedian;
-    }
-
-    public void setCreatorMedian(float creatorMedian) {
-        this.creatorMedian = creatorMedian;
-    }
-
-    public float getCreatorMean() {
-        return creatorMean;
-    }
-
-    public void setCreatorMean(float creatorMean) {
-        this.creatorMean = creatorMean;
-    }
-
-    public float getKeywordMean() {
-        return keywordMean;
-    }
-
-    public void setKeywordMean(float keywordMean) {
-        this.keywordMean = keywordMean;
-    }
-
-    public int getSidebarValuesToShow() {
-        int num = getResults().size();
-        // start with how many records are being shown on the current page
-        if (num > getRecordsPerPage()) {
-            num = getRecordsPerPage();
-        }
-        // if less than 20, then show 20
-        if (num < 20) {
-            num = 20;
-        }
-        num = (int) Math.ceil(num / 2.0);
-        return num;
-    }
 
     public boolean isShowAdminInfo() {
         return isAuthenticated() && (isEditor() || Objects.equals(getId(), getAuthenticatedUser().getId()));

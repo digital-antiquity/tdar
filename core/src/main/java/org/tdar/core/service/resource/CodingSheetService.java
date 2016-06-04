@@ -291,4 +291,19 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         getDao().saveOrUpdate(codingSheet.getCodingRules());
         return mappingIssues;
     }
+
+    @Transactional(readOnly=true)
+    public boolean isOkToMapOntology(CodingSheet persistable) {
+        Ontology defaultOntology = persistable.getDefaultOntology();
+        if (PersistableUtils.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
+            getLogger().debug("cannot map, ontology issues, null or transient");
+            return false;
+        }
+        if (CollectionUtils.isEmpty(persistable.getCodingRules()) || CollectionUtils.isNotEmpty(persistable.getFilesWithProcessingErrors())) {
+            getLogger().debug("cannot map, coding sheet has errors or no rules");
+            return false;
+        }
+        return true;
+    }
+    
 }

@@ -800,4 +800,21 @@ public class AuthorizationService implements Accessible {
         institutionDao.saveOrUpdate(entity);
     }
 
+    @Transactional(readOnly=true)
+    public boolean canViewBillingAccount(BillingAccount account, TdarUser authenticatedUser) {
+        if (PersistableUtils.isNullOrTransient(authenticatedUser)) {
+            return false;
+        }
+
+        if (can(InternalTdarRights.VIEW_BILLING_INFO,authenticatedUser)) {
+            return true;
+        }
+
+        if (Objects.equals(authenticatedUser, account.getOwner()) || account.getAuthorizedMembers().contains(authenticatedUser)) {
+            return true;
+        }
+
+        return false;
+    }
+
 }

@@ -9,10 +9,12 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AddressType;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.EntityService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -35,8 +37,25 @@ public abstract class AbstractCreatorController<T extends Creator<?>> extends Ab
     private File file;
     private String fileContentType;
     private String fileFileName;
+    
+    @Autowired
+    private EntityService entityService;
 
-    @SkipValidation
+    
+    @Override
+    public void validate() {
+        super.validate();
+        try {
+            if (getAddress() == null) {
+                addActionError(CANNOT_SAVE_NULL_ADDRESS);
+            } else {
+                getAddress().isValidForController();
+            }
+        } catch (Exception e) {
+            addActionErrorWithException(ADDRESS_IS_NOT_VALID, e);
+        }
+    }
+    
     @WriteableSession
     @PostOnly
     @Action(value = "save-address",
@@ -48,18 +67,7 @@ public abstract class AbstractCreatorController<T extends Creator<?>> extends Ab
             })
     public String saveAddress() throws TdarActionException {
         Address address2 = getAddress();
-        try {
-            if (address2 == null) {
-                addActionError(CANNOT_SAVE_NULL_ADDRESS);
-            } else {
-                address2.isValidForController();
-            }
-        } catch (Exception e) {
-            addActionErrorWithException(ADDRESS_IS_NOT_VALID, e);
-            return INPUT;
-        }
-        getPersistable().getAddresses().add(address2);
-        getGenericService().saveOrUpdate(getPersistable());
+        entityService.saveAddress(address2,getCreator());
         getLogger().info("{}", address2.getId());
         if (StringUtils.isNotBlank(getReturnUrl())) {
             return RETURN_URL;
@@ -76,13 +84,7 @@ public abstract class AbstractCreatorController<T extends Creator<?>> extends Ab
                     @Result(name = SUCCESS, type = TDAR_REDIRECT, location = "../../creator/browse?id=${id}")
             })
     public String deleteAddress() throws TdarActionException {
-        Address toDelete = getAddress();
-        getLogger().info("to delete: {} ", toDelete);
-        boolean remove = getPersistable().getAddresses().remove(toDelete);
-        getLogger().info("did it work: {} ", remove);
-        // this is likely superflouous, but I'm tired
-        getGenericService().delete(toDelete);
-        getGenericService().saveOrUpdate(getPersistable());
+        entityService.deleteAddressForCreator(address, getCreator());
         return SUCCESS;
     }
 
