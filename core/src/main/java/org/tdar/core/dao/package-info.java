@@ -26,7 +26,7 @@
                         + " rescol.id in (:resourceCollectionIds)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from ResourceCollection resCol where resCol.type='SHARED' and lower(trim(resCol.name)) like lower(trim(:name)) "),
+                query = "SELECT distinct resCol from SharedCollection resCol where resCol.type='SHARED' and lower(trim(resCol.name)) like lower(trim(:name)) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
                 query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
@@ -54,7 +54,7 @@
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
-                query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.hidden) FROM ResourceCollection as col where col.id in (:ids) "),
+                query = "SELECT new SharedCollection(col.id, col.name, col.description, col.sortBy, col.hidden) FROM SharedCollection as col where col.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_RESOURCES,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType) " + TdarNamedQueries.HQL_EDITABLE_RESOURCE_SUFFIX),
@@ -464,7 +464,7 @@
                 query = "select distinct res from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id order by res.id asc"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
-                query = "select count(distinct res.id) from ResourceCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id"),
+                query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
                 query = "from ResourceCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
         @org.hibernate.annotations.NamedQuery(

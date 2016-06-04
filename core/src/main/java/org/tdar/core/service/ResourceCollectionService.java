@@ -30,9 +30,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -182,8 +185,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional
     public void delete(ResourceCollection resourceCollection) {
         getDao().delete(resourceCollection.getAuthorizedUsers());
-        for (Resource resource : resourceCollection.getResources()) {
-            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+        if (resourceCollection instanceof RightsBasedResourceCollection) {
+            for (Resource resource : ((RightsBasedResourceCollection)resourceCollection).getResources()) {
+                publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+            }
         }
         getDao().delete(resourceCollection);
     }
@@ -390,7 +395,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param errorHandling
      */
     @Transactional
-    public void saveSharedResourceCollections(Resource resource, Collection<ResourceCollection> incoming, Set<ResourceCollection> current,
+    public void saveSharedResourceCollections(Resource resource, Collection<SharedCollection> incoming, Set<ResourceCollection> current,
             TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
 
         logger.debug("incoming ResourceCollections: {} ({})", incoming, incoming.size());
@@ -400,12 +405,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         logger.info("collections to remove: {}", helper.getToDelete());
         for (ResourceCollection collection : helper.getToDelete()) {
             current.remove(collection);
-            collection.getResources().remove(resource);
+            ((RightsBasedResourceCollection)collection).getResources().remove(resource);
             resource.getResourceCollections().remove(collection);
         }
 
         for (ResourceCollection collection : helper.getToAdd()) {
-            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection);
+            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, (RightsBasedResourceCollection)collection);
         }
         logger.debug("after save: {} ({})", current, current.size());
 
@@ -422,31 +427,28 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collection
      */
     @Transactional(readOnly = false)
-    public void addResourceCollectionToResource(Resource resource, Set<ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
+    public void addResourceCollectionToResource(Resource resource, Set<? extends ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
             ErrorHandling errorHandling,
             ResourceCollection collection) {
-        ResourceCollection collectionToAdd = null;
+        RightsBasedResourceCollection collectionToAdd = null;
         logger.trace("{}", collection);
-        if (collection.isTransient() && !collection.isInternal()) {
+        if (collection.isTransient() && collection instanceof SharedCollection) {
             boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
-            ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection);
+            RightsBasedResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection);
             if (potential != null) {
                 collectionToAdd = potential;
             } else {
                 collection.setOwner(authenticatedUser);
                 collection.markUpdated(resource.getSubmitter());
-                collection.setType(CollectionType.SHARED);
                 if (collection.getSortBy() == null) {
                     collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
                 }
                 collection.setHidden(false);
-                collectionToAdd = collection;
+                collectionToAdd = (SharedCollection)collection;
                 publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             }
-        } else if (collection.isInternal()) {
-            collectionToAdd = collection;
-        } else {
-            collectionToAdd = find(collection.getId());
+        } else if (collection instanceof InternalCollection) {
+            collectionToAdd = (InternalCollection)collection;
         }
         logger.trace("{}", collectionToAdd);
 
@@ -457,7 +459,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                         Arrays.asList(collectionToAdd.getTitle()));
             }
             collectionToAdd.markUpdated(authenticatedUser);
-            if (collectionToAdd.isTransient()) { // && shouldSave abrin commented out for logging (3/6/2014)
+            if (collectionToAdd.isTransient()) { 
                 collectionToAdd.setChangesNeedToBeLogged(true);
             }
 
@@ -724,7 +726,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void reconcileIncomingResourcesForCollection(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
+    public void reconcileIncomingResourcesForCollection(RightsBasedResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
             List<Resource> resourcesToRemove) {
         Set<Resource> resources = persistable.getResources();
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
@@ -783,7 +785,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void deleteForController(ResourceCollection persistable, String deletionReason, TdarUser authenticatedUser) {
+    public void deleteForController(SharedCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
         for (Resource resource : persistable.getResources()) {
             resource.getResourceCollections().remove(persistable);
@@ -812,7 +814,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void saveCollectionForController(ResourceCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
+    public void saveCollectionForController(SharedCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
             List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, List<Resource> publicResourcesToAdd,
             List<Resource> publicResourcesToRemove, boolean shouldSaveResource,
             FileProxy fileProxy) {
@@ -827,7 +829,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         reconcileIncomingResourcesForCollection(persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
         reconcileIncomingResourcesForCollectionWithoutRights(persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
         saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
-        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
+        if (persistable.getProperties() == null) {
+            persistable.setProperties(new CollectionDisplayProperties());
+            getDao().saveOrUpdate(persistable.getProperties());
+        }
+        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable.getProperties(), fileProxy);
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
 
@@ -845,7 +851,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
+    public SharedCollection getWhiteLabelCollectionForResource(Resource resource) {
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 
@@ -864,7 +870,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            name that the method will use when filtering by exact name
      * @return
      */
-    public List<ResourceCollection> findCollectionsWithName(TdarUser user, String name) {
+    public List<SharedCollection> findCollectionsWithName(TdarUser user, String name) {
         boolean isAdmin = authenticationAndAuthorizationService.isEditor(user);
         return getDao().findCollectionsWithName(user, isAdmin, name);
     }
@@ -877,9 +883,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param rc
      * @return
      */
-    public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
+    public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
         if (rc.isWhiteLabelCollection()) {
-            return (WhiteLabelCollection) rc;
+            return rc;
         }
         return getDao().convertToWhitelabelCollection(rc);
     }
@@ -891,7 +897,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param wlc
      * @return
      */
-    public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
+    public ResourceCollection convertToResourceCollection(SharedCollection wlc) {
         return getDao().convertToResourceCollection(wlc);
     }
 

@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.statistics.AggregateStatistic;
@@ -82,8 +82,16 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
-        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, resourceCollectionService.findAllResourceCollections().size(), ""));
-        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, genericService.count(WhiteLabelCollection.class), ""));
+        List<ResourceCollection> findAllResourceCollections = resourceCollectionService.findAllResourceCollections();
+        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, findAllResourceCollections.size(), ""));
+        int whitelabelCount = 0;
+        for (ResourceCollection c : findAllResourceCollections) {
+            if (c.getProperties() != null && c.getProperties().isWhitelabel()) {
+                whitelabelCount++;
+            }
+        }
+        
+        stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS_WHITE_LABEL, whitelabelCount, ""));
         stats.add(generateStatistics(StatisticType.NUM_EMAILS, statisticService.countWeeklyEmails(), ""));
 
         stats.add(generateStatistics(StatisticType.NUM_CULTURE, genericKeywordService.countActiveKeyword(KeywordType.CULTURE_KEYWORD, true), ""));

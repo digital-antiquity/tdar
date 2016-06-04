@@ -18,6 +18,8 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -31,6 +33,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -39,9 +42,9 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +61,6 @@ import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
@@ -75,7 +77,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
@@ -105,21 +106,21 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "collection_owner_id_idx", columnList = "owner_id"),
         @Index(name = "collection_updater_id_idx", columnList = "updater_id")
 })
-@XmlRootElement(name = "resourceCollection")
-@XmlSeeAlso(WhiteLabelCollection.class)
+// @XmlRootElement(name = "resourceCollection")
+@XmlType(name = "collection")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
-@Inheritance(strategy = InheritanceType.JOINED)
-public class ResourceCollection extends AbstractPersistable implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
+@XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class })
+public abstract class ResourceCollection extends AbstractPersistable
+        implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
+        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, Slugable, OaiDcProvider {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
     private transient boolean viewable;
-    private transient Integer maxHeight;
-    private transient Integer maxWidth;
-    private transient VersionType maxSize;
 
     private static final long serialVersionUID = -5308517783896369040L;
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
@@ -140,28 +141,10 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private String formattedDescription;
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
-    private Set<Resource> resources = new LinkedHashSet<Resource>();
-
-    @XmlTransient
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "unmanagedResourceCollections", targetEntity = Resource.class)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.unmanagedResources")
     private Set<Resource> unmanagedResources = new LinkedHashSet<Resource>();
-
-    /**
-     * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
-     * field when it only really needs to get at the Ids for proper logging.
-     * 
-     * @return
-     */
-    @ElementCollection
-    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
-    @Column(name = "resource_id")
-    @Immutable
-    private Set<Long> resourceIds;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
@@ -176,8 +159,8 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "collection_type", length = FieldLength.FIELD_LENGTH_255)
-    @NotNull
+    // @NotNull
+    @Column(name = "collection_type", updatable = false, insertable = false)
     private CollectionType type;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
@@ -217,33 +200,43 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
 
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private CollectionDisplayProperties properties;
+
+    public CollectionDisplayProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CollectionDisplayProperties properties) {
+        this.properties = properties;
+    }
+
+    public boolean isWhiteLabelCollection() {
+        return properties != null && properties.isWhitelabel();
+    }
+
+    public boolean isSearchEnabled() {
+        if (properties == null) {
+            return false;
+        }
+        return properties.isSearchEnabled();
+    }
+
     public ResourceCollection() {
         setDateCreated(new Date());
     }
 
-    public ResourceCollection(Long id, String title, String description, SortOption sortBy, CollectionType type, boolean visible) {
-        this(title, description, sortBy, type, visible, null);
+    public ResourceCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
+        this(title, description, sortBy, visible, null);
         setId(id);
     }
 
-    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, TdarUser creator) {
+    public ResourceCollection(String title, String description, SortOption sortBy, boolean visible, TdarUser creator) {
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
-        setType(type);
         setHidden(visible);
         setOwner(creator);
-    }
-
-    public ResourceCollection(CollectionType type) {
-        this.type = type;
-        setDateCreated(new Date());
-    }
-
-    public ResourceCollection(Resource resource, TdarUser owner) {
-        this(CollectionType.SHARED);
-        this.owner = owner;
-        getResources().add(resource);
     }
 
     @Override
@@ -264,17 +257,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    //if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could crash tDAR if > 100,000)
-    @XmlTransient
-    public Set<Resource> getResources() {
-        return resources;
-    }
-
-
-    public void setResources(Set<Resource> resources) {
-        this.resources = resources;
     }
 
     public CollectionType getType() {
@@ -363,14 +345,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return dateCreated;
     }
 
-    public boolean isShared() {
-        return type == CollectionType.SHARED;
-    }
-
-    public boolean isInternal() {
-        return type == CollectionType.INTERNAL;
-    }
-
     /**
      * @param sortBy
      *            the sortBy to set
@@ -411,7 +385,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         }
         return getParent().getId();
     }
-
 
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree
@@ -457,7 +430,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
         while (iterator.hasNext()) {
             ResourceCollection collection = iterator.next();
-            if (!collection.isShared() || !collection.isHidden()) {
+            if (!(collection instanceof SharedCollection) || !collection.isHidden()) {
                 iterator.remove();
             }
         }
@@ -623,48 +596,8 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     }
 
     @Override
-    public Integer getMaxHeight() {
-        return maxHeight;
-    }
-
-    @Override
-    public void setMaxHeight(Integer maxHeight) {
-        this.maxHeight = maxHeight;
-    }
-
-    @Override
-    public Integer getMaxWidth() {
-        return maxWidth;
-    }
-
-    @Override
-    public void setMaxWidth(Integer maxWidth) {
-        this.maxWidth = maxWidth;
-    }
-
-    @Override
-    public VersionType getMaxSize() {
-        return maxSize;
-    }
-
-    @Override
-    public void setMaxSize(VersionType maxSize) {
-        this.maxSize = maxSize;
-    }
-
-    @Override
     public String getSlug() {
         return UrlUtils.slugify(getName());
-    }
-
-    @XmlTransient
-    public boolean isWhiteLabelCollection() {
-        return false;
-    }
-
-    @XmlTransient
-    public boolean isSearchEnabled() {
-        return false;
     }
 
     @XmlTransient
@@ -675,6 +608,45 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @XmlTransient
     public boolean isSubCollection() {
         return parent != null;
+    }
+
+    public Set<Resource> getUnmanagedResources() {
+        return unmanagedResources;
+    }
+
+    public void setUnmanagedResources(Set<Resource> publicResources) {
+        this.unmanagedResources = publicResources;
+    }
+
+    // FIXME: Move to RightsBasedResourceCollection
+    @XmlTransient
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
+    private Set<Resource> resources = new LinkedHashSet<Resource>();
+
+    /**
+     * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
+     * field when it only really needs to get at the Ids for proper logging.
+     * 
+     * @return
+     */
+    @ElementCollection
+    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
+    @Column(name = "resource_id")
+    @Immutable
+    private Set<Long> resourceIds;
+
+
+    //if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could crash tDAR if > 100,000)
+    @XmlTransient
+    public Set<Resource> getResources() {
+        return resources;
+    }
+
+
+    public void setResources(Set<Resource> resources) {
+        this.resources = resources;
     }
 
     /**
@@ -693,13 +665,4 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
     }
-
-    public Set<Resource> getUnmanagedResources() {
-        return unmanagedResources;
-    }
-
-    public void setUnmanagedResources(Set<Resource> publicResources) {
-        this.unmanagedResources = publicResources;
-    }
-
 }

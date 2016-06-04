@@ -5,32 +5,34 @@ import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.annotations.Type;
+import org.opengis.annotation.XmlElement;
+import org.tdar.core.bean.AbstractPersistable;
+import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.file.VersionType;
 
-/**
- * Created by jimdevos on 3/17/15.
- */
+@Table(name = "collection_display_properties")
 @Entity
-@Table(name = "whitelabel_collection")
-@Inheritance(strategy = InheritanceType.JOINED)
-//@Indexed
-@XmlRootElement(name = "whiteLabelCollection")
-public class WhiteLabelCollection extends ResourceCollection {
+@XmlElement("collectionDisplayProperties")
+public class CollectionDisplayProperties extends AbstractPersistable implements HasImage {
+    private static final long serialVersionUID = -3972164997710223460L;
+    
+    private transient Integer maxHeight;
+    private transient Integer maxWidth;
+    private transient VersionType maxSize;
 
-    private static final long serialVersionUID = -7436222082273438465L;
-
+    @Column(name = "whitelabel")
+    private boolean whitelabel = false;
+    
     @Column(name = "custom_header_enabled")
     private boolean customHeaderEnabled;
 
@@ -69,10 +71,6 @@ public class WhiteLabelCollection extends ResourceCollection {
     @Transient
     private Institution institution;
 
-    public WhiteLabelCollection() {
-        super(CollectionType.SHARED);
-    }
-
     public boolean isCustomHeaderEnabled() {
         return customHeaderEnabled;
     }
@@ -87,11 +85,6 @@ public class WhiteLabelCollection extends ResourceCollection {
 
     public void setFeaturedResourcesEnabled(boolean featuredResourcesEnabled) {
         this.featuredResourcesEnabled = featuredResourcesEnabled;
-    }
-
-    @Override
-    public boolean isSearchEnabled() {
-        return searchEnabled;
     }
 
     public void setSearchEnabled(boolean searchEnabled) {
@@ -122,11 +115,6 @@ public class WhiteLabelCollection extends ResourceCollection {
         this.institution = institution;
     }
 
-    @Override
-    public boolean isWhiteLabelCollection() {
-        return true;
-    }
-
     public List<Resource> getFeaturedResources() {
         return featuredResources;
     }
@@ -150,4 +138,42 @@ public class WhiteLabelCollection extends ResourceCollection {
     public void setCustomDocumentLogoEnabled(boolean customDocumentLogoEnabled) {
         this.customDocumentLogoEnabled = customDocumentLogoEnabled;
     }
+
+    public boolean isSearchEnabled() {
+        return searchEnabled;
+    }
+
+    public boolean isWhitelabel() {
+        return whitelabel;
+    }
+
+    public void setWhitelabel(boolean whitelabel) {
+        this.whitelabel = whitelabel;
+    }
+
+
+    public Integer getMaxHeight() {
+        return maxHeight;
+    }
+
+    public void setMaxHeight(Integer maxHeight) {
+        this.maxHeight = maxHeight;
+    }
+
+    public Integer getMaxWidth() {
+        return maxWidth;
+    }
+
+    public void setMaxWidth(Integer maxWidth) {
+        this.maxWidth = maxWidth;
+    }
+
+    public VersionType getMaxSize() {
+        return maxSize;
+    }
+
+    public void setMaxSize(VersionType maxSize) {
+        this.maxSize = maxSize;
+    }
+
 }

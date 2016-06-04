@@ -27,6 +27,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -497,7 +498,7 @@ public class AuthorizationService implements Accessible {
             return false;
         }
 
-        if (collection.isShared() && !collection.isHidden()) {
+        if (!collection.isHidden()) {
             return true;
         }
 
@@ -533,7 +534,7 @@ public class AuthorizationService implements Accessible {
             boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (((ResourceCollection) item).isShared() && !((ResourceCollection) item).isHidden()) {
+                if (!(((ResourceCollection) item) instanceof InternalCollection) && !((ResourceCollection) item).isHidden()) {
                     viewable = true;
                 }
             }

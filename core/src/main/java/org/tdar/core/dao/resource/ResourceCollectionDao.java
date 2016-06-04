@@ -24,11 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -101,11 +103,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
-    public ResourceCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
+    public SharedCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setString("name", collection.getName());
-        List<ResourceCollection> list = query.list();
-        for  (ResourceCollection coll : list) {
+        List<SharedCollection> list = query.list();
+        for  (SharedCollection coll : list) {
         	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
         		return coll;
         	}
@@ -114,10 +116,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
+    public List<SharedCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME);
         query.setString("name", name);
-        List<ResourceCollection> list = new ArrayList<>(query.list());
+        List<SharedCollection> list = new ArrayList<>(query.list());
         list.removeIf( rc -> (
             !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP)   
         ));
@@ -281,13 +283,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
     }
 
-    public WhiteLabelCollection getWhiteLabelCollectionForResource(Resource resource) {
-        Set<ResourceCollection> resourceCollections = resource.getSharedResourceCollections();
+    public SharedCollection getWhiteLabelCollectionForResource(Resource resource) {
+        Set<SharedCollection> resourceCollections = resource.getSharedResourceCollections();
 
-        List<WhiteLabelCollection> whiteLabelCollections = new ArrayList<>();
-        for (ResourceCollection rc : resourceCollections) {
-            if (rc.isWhiteLabelCollection()) {
-                whiteLabelCollections.add((WhiteLabelCollection) rc);
+        List<SharedCollection> whiteLabelCollections = new ArrayList<>();
+        for (SharedCollection rc : resourceCollections) {
+            if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
+                whiteLabelCollections.add(rc);
             }
         }
         if (whiteLabelCollections.size() > 1) {
@@ -330,8 +332,8 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
         ResourceCollection internalCollection;
-        internalCollection = new ResourceCollection();
-        internalCollection.setType(CollectionType.INTERNAL);
+        internalCollection = new InternalCollection();
+//        internalCollection.setType(CollectionType.INTERNAL);
         internalCollection.setOwner(owner);
         internalCollection.markUpdated(owner);
         if (resource != null) {
@@ -350,14 +352,14 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param rc
      * @return
      */
-    public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
-        Long id = rc.getId();
-        detachFromSession(rc);
-        SQLQuery query = getCurrentSession().createSQLQuery(QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL);
-        query.setLong("id", id);
-        query.executeUpdate();
-        WhiteLabelCollection wlc = find(WhiteLabelCollection.class, id);
-        return wlc;
+    public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
+        if (rc.getProperties() == null) {
+            rc.setProperties(new CollectionDisplayProperties());
+        }
+        rc.getProperties().setWhitelabel(true);
+        saveOrUpdate(rc.getProperties());
+        saveOrUpdate(rc);
+        return rc;
     }
 
     /**
@@ -366,13 +368,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param wlc
      * @return
      */
-    public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
-        Long id = wlc.getId();
-        detachFromSession(wlc);
-        SQLQuery query = getCurrentSession().createSQLQuery(QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION);
-        query.setLong("id", id);
-        query.executeUpdate();
-        ResourceCollection rc = find(ResourceCollection.class, id);
-        return rc;
+    public ResourceCollection convertToResourceCollection(SharedCollection wlc) {
+        if (wlc.getProperties() == null) {
+            return wlc;
+        }
+        wlc.getProperties().setWhitelabel(false);
+        return wlc;
     }
 }

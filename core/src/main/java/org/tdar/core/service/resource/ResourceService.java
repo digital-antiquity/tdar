@@ -30,8 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -496,9 +497,9 @@ public class ResourceService {
             // CLONE if internal, otherwise just add
 
             for (ResourceCollection collection : proxy.getResourceCollections()) {
-                if (collection.isInternal()) {
+                if (collection instanceof InternalCollection) {
                     logger.info("cloning collection: {}", collection);
-                    ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
+                    InternalCollection newInternal = new InternalCollection();
                     newInternal.setName(collection.getName());
                     TdarUser owner = collection.getOwner();
                     genericDao.refresh(owner);
@@ -513,13 +514,15 @@ public class ResourceService {
                     }
                     resource.getResourceCollections().add(newInternal);
                     newInternal.getResources().add(resource);
-                } else {
+                } else if (collection instanceof SharedCollection){
                     logger.info("adding to shared collection : {} ", collection);
                     if (collection.isTransient() && save) {
                         genericDao.save(collection);
                     }
-                    collection.getResources().add(resource);
+                    ((SharedCollection)collection).getResources().add(resource);
                     resource.getResourceCollections().add(collection);
+                } else {
+                    throw new TdarRecoverableRuntimeException("resourceService.collectiontype");
                 }
             }
 

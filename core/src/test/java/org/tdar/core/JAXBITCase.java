@@ -38,6 +38,7 @@ import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -108,7 +109,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void exportResourceCollection() throws Exception {
-        ResourceCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
+        SharedCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
         for (Resource r : genericService.findRandom(Resource.class, 10)) {
             collection.getResources().add(r);
             r.getResourceCollections().add(collection);
@@ -227,7 +228,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Rollback(false)
     public void testJaxbRoundtrip() throws Exception {
         Project project = genericService.find(Project.class, 3805l);
-        ResourceCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
+        SharedCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
         collection.getResources().add(project);
         project.getResourceCollections().add(collection);
         genericService.saveOrUpdate(project);

@@ -9,4 +9,5 @@
   <include file="target/liquibase/munsell.xml"/> 
   <include file="target/liquibase/neolithic.xml"/> 
   <include file="target/liquibase/obsidian.xml"/> 
+  <include file="target/liquibase/prehistoric.xml"/> 
 </databaseChangeLog>

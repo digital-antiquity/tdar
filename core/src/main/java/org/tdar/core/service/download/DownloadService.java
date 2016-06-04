@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.InformationResource;
@@ -307,8 +307,8 @@ public class DownloadService {
     }
 
     private File getCoverLogo(InformationResource resourceToDownload) {
-        WhiteLabelCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
-        if (whiteLabelCollection == null || !whiteLabelCollection.isCustomDocumentLogoEnabled()) {
+        SharedCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().isCustomDocumentLogoEnabled()) {
             return null;
         }
         return fileSystemResourceDao.getHostedFile(WhiteLabelFiles.PDF_COVERPAGE_FILENAME, FilestoreObjectType.COLLECTION, whiteLabelCollection.getId());

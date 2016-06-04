@@ -75,9 +75,11 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -467,18 +469,21 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     // create new, public, collection with the getUser() as the owner and no resources
-    public ResourceCollection createAndSaveNewResourceCollection(String name) {
-        return init(new ResourceCollection(), name);
+    public SharedCollection createAndSaveNewResourceCollection(String name) {
+        return init(new SharedCollection(), name);
     }
 
-    public WhiteLabelCollection createAndSaveNewWhiteLabelCollection(String name) {
-        WhiteLabelCollection wlc = new WhiteLabelCollection();
-        wlc.setSubtitle("This is a fancy whitelabel collection");
+    public SharedCollection createAndSaveNewWhiteLabelCollection(String name) {
+        SharedCollection wlc = new SharedCollection();
+        wlc.setProperties(new CollectionDisplayProperties());
+        wlc.getProperties().setWhitelabel(true);
+        wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");
+        genericService.saveOrUpdate(wlc.getProperties());
         init(wlc, name);
         return wlc;
     }
 
-    ResourceCollection init(ResourceCollection resourceCollection, String name) {
+    protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setType(CollectionType.SHARED);
@@ -622,7 +627,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
         ResourceCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
-            internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
+            internalResourceCollection = new InternalCollection();
             internalResourceCollection.setOwner(person);
             internalResourceCollection.markUpdated(person);
             resource.getResourceCollections().add(internalResourceCollection);

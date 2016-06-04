@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
@@ -103,7 +104,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             int totalCollections = 0;
             while (activeCollections.next()) {
                 ResourceCollection collection = (ResourceCollection) activeCollections.get(0);
-                if (collection.isInternal() || collection.isHidden()) {
+                if (collection instanceof InternalCollection || collection.isHidden()) {
                     continue;
                 }
                 String url = UrlService.absoluteUrl(collection);

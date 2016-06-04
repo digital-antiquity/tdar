@@ -34,6 +34,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -256,7 +257,7 @@ public class BulkUploadService {
         Iterator<ResourceCollection> iter = resourceTemplate.getResourceCollections().iterator();
         while (iter.hasNext()) {
             ResourceCollection collection = iter.next();
-            if (collection.isInternal()) {
+            if (collection instanceof InternalCollection) {
                 continue;
             }
             iter.remove();

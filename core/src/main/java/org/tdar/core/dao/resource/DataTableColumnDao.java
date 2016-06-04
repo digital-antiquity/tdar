@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
@@ -92,7 +93,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
         if (dataset != null) {
             codingSheet.setProject(dataset.getProject());
             for (ResourceCollection collection : dataset.getResourceCollections()) {
-                if (collection.isShared()) {
+                if (collection instanceof SharedCollection) {
                     codingSheet.getResourceCollections().add(collection);
                 }
             }

@@ -31,7 +31,10 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -395,7 +398,7 @@ public class ImportService {
         }
 
         // obfuscate LatLong and clear collections if no permissions to resource
-        ResourceCollection irc = rec.getInternalResourceCollection();
+        InternalCollection irc = rec.getInternalResourceCollection();
 
         if (irc != null) {
             for (AuthorizedUser au : irc.getAuthorizedUsers()) {
@@ -418,7 +421,9 @@ public class ImportService {
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
             for (ResourceCollection rc : rec.getResourceCollections()) {
-                rc.getResources().add(rec);
+                if (rc instanceof SharedCollection) {
+                ((SharedCollection)rc).getResources().add(rec);
+                }
             }
         }
         genericService.detachFromSession(rec);
@@ -526,8 +531,8 @@ public class ImportService {
             Long id = property.getId();
 //            property = null;
             P toReturn = (P) findById(cls, id);
-            if (toReturn instanceof ResourceCollection && resource instanceof Resource) {
-                ResourceCollection collection = (ResourceCollection) toReturn;
+            if (toReturn instanceof RightsBasedResourceCollection && resource instanceof Resource) {
+                RightsBasedResourceCollection collection = (RightsBasedResourceCollection) toReturn;
                 // making sure that the collection's creators and other things are on the sessions properly too
                 resetOwnerOnSession(collection);
                 collection.getResources().add((Resource) resource);
@@ -598,7 +603,7 @@ public class ImportService {
                     toReturn = (P) Project.NULL;
                 } else if ((property instanceof Creator) && ((Creator<?>) property).hasNoPersistableValues()) {
                     toReturn = null;
-                } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property).isInternal()) {
+                } else if ((property instanceof ResourceCollection) && ((ResourceCollection) property) instanceof InternalCollection) {
                     toReturn = property;
                 } else {
                     throw new APIException("importService.object_invalid", Arrays.asList(property.getClass(), property), StatusCode.FORBIDDEN);

@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.resource.Document;
 
@@ -49,11 +49,10 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
     public void testCloneInternalCollection() throws Exception {
         Document document = genericService.find(Document.class, 4287L);
         Long id = document.getId();
-        ResourceCollection rc = new ResourceCollection(document,getAdminUser());
+        ResourceCollection rc = new SharedCollection(document,getAdminUser());
         rc.setSortBy(SortOption.TITLE);
         rc.setDescription("test");
         rc.setName("name");
-        rc.setType(CollectionType.SHARED);
         rc.markUpdated(getAdminUser());
         genericService.saveOrUpdate(rc);
         document.getResourceCollections().add(rc);

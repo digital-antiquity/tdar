@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -177,9 +178,9 @@ public class ResourceExportService {
         }
 
         // remove internal
-        resource.getResourceCollections().removeIf(rc -> rc.isInternal());
+        resource.getResourceCollections().removeIf(rc -> rc instanceof InternalCollection);
         resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
-        resource.getResourceCollections().forEach(rc -> {
+        resource.getSharedResourceCollections().forEach(rc -> {
             clearId(rc);
             rc.setResourceIds(null);
             rc.getResources().clear();

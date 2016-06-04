@@ -83,8 +83,9 @@ import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -1274,10 +1275,10 @@ public class Resource implements Persistable,
     }
 
     @Transient
-    public ResourceCollection getInternalResourceCollection() {
+    public InternalCollection getInternalResourceCollection() {
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.getType() == CollectionType.INTERNAL) {
-                return collection;
+            if (collection instanceof InternalCollection) {
+                return (InternalCollection)collection;
             }
         }
         return null;
@@ -1361,22 +1362,22 @@ public class Resource implements Persistable,
     }
 
     @Transient
-    public Set<ResourceCollection> getSharedResourceCollections() {
-        Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
+    public Set<SharedCollection> getSharedResourceCollections() {
+        Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared()) {
-                sharedCollections.add(collection);
+            if (collection instanceof SharedCollection) {
+                sharedCollections.add((SharedCollection)collection);
             }
         }
         return sharedCollections;
     }
 
     @Transient
-    public Set<ResourceCollection> getSharedVisibleResourceCollections() {
-        Set<ResourceCollection> sharedCollections = new LinkedHashSet<ResourceCollection>();
+    public Set<SharedCollection> getSharedVisibleResourceCollections() {
+        Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection.isShared() && !collection.isHidden()) {
-                sharedCollections.add(collection);
+            if (collection instanceof SharedCollection && !collection.isHidden()) {
+                sharedCollections.add((SharedCollection)collection);
             }
         }
         return sharedCollections;
@@ -1750,7 +1751,7 @@ public class Resource implements Persistable,
     public Collection<? extends ResourceCollection> getVisibleUnmanagedResourceCollections() {
         Set<ResourceCollection> collections = new LinkedHashSet<ResourceCollection>();
         for (ResourceCollection collection : getUnmanagedResourceCollections()) {
-            if (collection.isShared() && !collection.isHidden()) {
+            if (collection instanceof SharedCollection && !collection.isHidden()) {
                 collections.add(collection);
             }
         }

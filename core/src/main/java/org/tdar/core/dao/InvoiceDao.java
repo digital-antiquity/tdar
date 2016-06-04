@@ -17,8 +17,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -281,9 +280,9 @@ public class InvoiceDao extends Dao.HibernateBase<Invoice>{
             List<Resource> findAll = findAll(Resource.class, coupon.getResourceIds());
             for (Resource res : findAll) {
                 res = markWritableOnExistingSession(res);
-                ResourceCollection rc = res.getInternalResourceCollection();
+                InternalCollection rc = res.getInternalResourceCollection();
                 if (rc == null) {
-                    rc = new ResourceCollection(CollectionType.INTERNAL);
+                    rc = new InternalCollection();
                     rc.markUpdated(invoice.getOwner());
                     saveOrUpdate(rc);
                     res.getResourceCollections().add(rc);

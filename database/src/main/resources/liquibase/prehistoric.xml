@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="prehistoric-collections-1" author="abrin" failOnError="true">
+    	<addColumn tableName="collection">
+    		<column name="properties_id" type="bigint"  />
+    	</addColumn>
+    	<addColumn tableName="whitelabel_collection">
+    		<column name="whitelabel" type="boolean" defaultValueBoolean="false"  />
+    	</addColumn>
+    	<addForeignKeyConstraint constraintName="collection_properties_fkey" referencedTableName="whitelabel_collection" 
+    		baseColumnNames="properties_id" baseTableName="collection" referencedColumnNames="id" />
+   		<dropForeignKeyConstraint baseTableName="whitelabel_collection" constraintName="whitelabel_collection_id_collection_fkey"/>
+    	<addAutoIncrement tableName="whitelabel_collection" columnName="id"/>	
+    	<renameTable newTableName="collection_display_properties" oldTableName="whitelabel_collection" />
+    </changeSet>
+</databaseChangeLog>

@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.utils.PersistableUtils;
 
 
@@ -16,14 +18,17 @@ public class ResourceCollectionSaveHelper {
     private Set<ResourceCollection> toDelete = new HashSet<>();
     private Set<ResourceCollection> toAdd = new HashSet<>();
     
-    public ResourceCollectionSaveHelper(Collection<ResourceCollection> incoming,Collection<ResourceCollection> existing_, CollectionType type) {
+    public ResourceCollectionSaveHelper(Collection<? extends ResourceCollection> incoming,Collection<? extends ResourceCollection> existing_, CollectionType type) {
         
         Set<ResourceCollection> existing = new HashSet<>(existing_);
         if (type != null) {
             Iterator<ResourceCollection> iterator = existing.iterator();
             while (iterator.hasNext()) {
                 ResourceCollection c = iterator.next();
-                if (c.getType() != type) {
+                if (type == CollectionType.SHARED && !(c instanceof SharedCollection)) {
+                    iterator.remove();
+                }
+                if (type == CollectionType.INTERNAL && !(c instanceof InternalCollection)) {
                     iterator.remove();
                 }
             }

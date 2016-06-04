@@ -183,8 +183,8 @@ public interface TdarNamedQueries {
             + "(select count(distinct information_resource_id) from information_resource_file irf join resource rr on (rr.id = irf.information_resource_id) where rr.resource_type = rt.resource_type and rr.status = 'ACTIVE' and irf.restriction = 'CONFIDENTIAL') as with_conf "
             + "from (select distinct resource_type from resource) as rt";
 
-    String QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION = "delete from whitelabel_collection where id = :id";
-    String QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL = "insert into whitelabel_collection(id) values(:id)";
+    String QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION = "update collection set collection_type= :type where id = :id";
+    String QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL = "update collection set collection_type='WHITELABEL' where id in (:id)";
 
     // generated HQL formats
     String QUERY_CREATOR_MERGE_ID = "select merge_creator_id from creator where id=%1$s";
@@ -218,7 +218,7 @@ public interface TdarNamedQueries {
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
             + " lower(ds.title) like :titleLookup and "
-            + "(:collectionId=-1L or ds.id in (select distinct r.id from ResourceCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
+            + "(:collectionId=-1L or ds.id in (select distinct r.id from SharedCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
             + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
             + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
             + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "
