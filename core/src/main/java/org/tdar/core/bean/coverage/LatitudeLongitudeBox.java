@@ -131,7 +131,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public Double getObfuscatedCenterLatitude() {
-        return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
+        return getCenterLat(getMaxObfuscatedLatitude(), getMinObfuscatedLatitude());
+    }
+
+    protected Double getCenterLat(Double double1, Double double2) {
+        return (double1 + double2 )/ 2d;
     }
 
     public Double getObfuscatedCenterLongitude() {
@@ -140,7 +144,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Deprecated
     public Double getCenterLatitude() {
-        return (getMaximumLatitude() + getMinimumLatitude()) / 2.0;
+        return getCenterLat(getMaximumLatitude(), getMinimumLatitude());
     }
 
     @Deprecated
@@ -149,7 +153,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     
-    private Double getCenterLong(Double minLong, Double maxLong) {
+    protected Double getCenterLong(Double minLong, Double maxLong) {
         if (maxLong < minLong) {
             Double tmp = (minLong + maxLong * -1d + 180d) / 2d;
             if (tmp > 180) {

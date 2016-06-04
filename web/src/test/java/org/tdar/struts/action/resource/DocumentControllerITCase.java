@@ -49,10 +49,10 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.action.UploadController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
 import org.tdar.struts.action.project.ProjectController;
+import org.tdar.struts.action.upload.UploadController;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;

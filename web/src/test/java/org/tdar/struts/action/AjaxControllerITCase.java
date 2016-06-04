@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.service.resource.CategoryVariableService;
+import org.tdar.struts.action.resource.ajax.AjaxController;
 
 public class AjaxControllerITCase extends AbstractAdminControllerITCase {
     private AjaxController controller;
