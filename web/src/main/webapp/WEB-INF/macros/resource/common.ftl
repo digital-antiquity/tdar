@@ -315,7 +315,7 @@ Common macros used in multiple contexts
         </#list>
         <div class="span3">
             <#local retUrl><@s.url includeParams="all"/></#local>
-            <a class="button btn btn-primary submitButton" href="/entity/${entityType}/${entity.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
+            <a class="button btn btn-primary submitButton" href="/entity/address/${entity.id?c}/add?returnUrl=${retUrl?url}">Add Address</a>
         </div>
     </div>
     </#macro>
@@ -335,10 +335,14 @@ Common macros used in multiple contexts
         <span>${address.city}</span>, <span>${address.state}</span>, <span
             >${address.postal}</span><br/>
         <span>${address.country}</span><#if modifiable><br/>
-        <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>"><@s.text name="menu.edit" /></a>
+        <a href="<@s.url value="/entity/address/${creatorId?c}/${address.id?c}"/>"><@s.text name="menu.edit" /></a>
     </#if><#if deletable && modifiable> |</#if>
         <#if deletable>
-            <a href="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"><@s.text name="menu.delete" /></a>
+        	<@s.form method="POST" action="/entity/address/delete-address">
+				<@s.hidden name="id" value="${creatorId?c}"/>
+				<@s.hidden name="addressId" value="${address.id?c}"/>
+            	<@s.button name="menu.delete" />
+			</@s.form>
         </#if>
     </p>
     </#macro>

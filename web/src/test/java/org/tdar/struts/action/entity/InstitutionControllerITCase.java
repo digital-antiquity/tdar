@@ -31,7 +31,7 @@ public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
     public void testInstitutionAuthorization() throws TdarActionException {
         setIgnoreActionErrors(true);
-        Institution test = new Institution(TESTING_AUTH_INSTIUTION);
+        Institution test = new Institution(TESTING_AUTH_INSTIUTION + " abc32");
         // test no authorization
         genericService.saveOrUpdate(test);
         controller = generateNewInitializedController(InstitutionController.class, getBasicUser());

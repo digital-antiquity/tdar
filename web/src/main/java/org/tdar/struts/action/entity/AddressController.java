@@ -5,9 +5,9 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.apache.struts2.interceptor.validation.SkipValidation;
@@ -30,10 +30,7 @@ import org.tdar.utils.PersistableUtils;
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;
 
-@Namespaces(value={
-    @Namespace("entity/institution"),
-    @Namespace("entity/person")}
-)
+@Namespace("/entity/address")
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
@@ -100,7 +97,10 @@ public class AddressController extends AbstractAuthenticatableAction implements 
     }
 
     @SkipValidation
-    @Action(value = "{id}/address", results = { @Result(name = SUCCESS, location = "../address-info.ftl") })
+    @Actions(value = {
+            @Action(value = "{id}/add", results = { @Result(name = SUCCESS, location = "../address-info.ftl") }),
+            @Action(value = "{id}/{addressId}", results = { @Result(name = SUCCESS, location = "../address-info.ftl") })
+    })
     public String editAddress() throws TdarActionException {
 
         return SUCCESS;
@@ -181,6 +181,6 @@ public class AddressController extends AbstractAuthenticatableAction implements 
 
     @Override
     public void prepare() throws Exception {
-        prepareAndLoad(this, RequestType.EDIT);        
+        prepareAndLoad(this, RequestType.EDIT);
     }
 }
