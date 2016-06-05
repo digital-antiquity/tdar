@@ -5,12 +5,19 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.RichTextString;
@@ -30,14 +37,17 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.dao.resource.OntologyNodeDao;
-import org.tdar.core.service.integration.ColumnType;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
+import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.action.workspace.LegacyWorkspaceController;
 import org.tdar.utils.MessageHelper;
+
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 /**
  * $Id$
@@ -46,6 +56,7 @@ import org.tdar.utils.MessageHelper;
  * @version $Revision$
  */
 public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
+    private static final String TEST_PATH = TestConstants.TEST_ROOT_DIR + "/data_integration_tests/json/";
 
     private static final String ALEXANDRIA_DB_NAME = "qrybonecatalogueeditedkk.xls";
     private static final String BELEMENT_COL = "belement";
@@ -156,6 +167,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         taxonColumn.setTransientOntology(taxonOntology);
         elementColumn.setName(BELEMENT_COL);
         taxonColumn.setName(TAXON_COL);
+
         elementColumn.setId(alexandriaTable.getColumnByName(BELEMENT_COL).getId());
         taxonColumn.setId(alexandriaTable.getColumnByName(TAXON_COL).getId());
         elementColumn.setColumnEncodingType(DataTableColumnEncodingType.UNCODED_VALUE);
@@ -171,6 +183,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         elementColumn2.setId(spitalMainTable.getColumnByName(BONE_COMMON_NAME_COL).getId());
         taxonColumn2.setId(spitalMainTable.getColumnByName(SPECIES_COMMON_NAME_COL).getId());
 
+        
+        Map<String, Long> idMap = setupIdMap(bElementOntology, taxonOntology, alexandriaTable, spitalMainTable, elementColumn, taxonColumn, elementColumn2, taxonColumn2);
+
         mapColumnsToDataset(spitalDb, spitalMainTable, elementColumn2, taxonColumn2);
 
         mapDataOntologyValues(alexandriaTable, BELEMENT_COL, getElementValueMap(), bElementOntology);
@@ -179,85 +194,15 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         mapDataOntologyValues(alexandriaTable, TAXON_COL, getTaxonValueMap(), taxonOntology);
         mapDataOntologyValues(spitalMainTable, SPECIES_COMMON_NAME_COL, getTaxonValueMap(), taxonOntology);
 
-        // testing actual integration mode
-        LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
-        controller.execute();
-        assertTrue(controller.getBookmarkedDatasets().size() == 2);
+        String integration = FileUtils.readFileToString(new File(TEST_PATH, "spital_alex.json"));
+        ModernIntegrationDataResult result = runIntegration(idMap, integration);
 
-        // select tables
-        List<Long> tableIds = new ArrayList<>();
-        tableIds.add(alexandriaTable.getId());
-        tableIds.add(spitalMainTable.getId());
-        controller = generateNewInitializedController(LegacyWorkspaceController.class);
-        controller.setTableIds(tableIds);
-
-        // select columns
-        controller.selectColumns();
-        controller.execute();
-        assertTrue("expected 2 selected tables", controller.getSelectedDataTables().size() == 2);
-        List<IntegrationColumn> integrationColumns = new ArrayList<>();
-        integrationColumns.add(new IntegrationColumn(ColumnType.INTEGRATION, spitalMainTable.getColumnByName(SPECIES_COMMON_NAME_COL), alexandriaTable
-                .getColumnByName(TAXON_COL)));
-        integrationColumns.add(new IntegrationColumn(ColumnType.INTEGRATION, spitalMainTable.getColumnByName(BONE_COMMON_NAME_COL), alexandriaTable
-                .getColumnByName(BELEMENT_COL)));
-
-        List<String> displayRulesColumns = new ArrayList<>();
-        displayRulesColumns.addAll(Arrays.asList("col_no", "fus_prox"));
-
-        for (String col : displayRulesColumns) {
-            integrationColumns.add(new IntegrationColumn(ColumnType.DISPLAY, spitalMainTable.getColumnByName(col)));
-        }
-        integrationColumns.get(integrationColumns.size() - 1).getColumns().add(alexandriaTable.getColumnByName("feature"));
-
-        // setup filters
-        controller = generateNewInitializedController(LegacyWorkspaceController.class);
-        controller.setTableIds(tableIds);
-        controller.setIntegrationColumns(integrationColumns);
-        controller.filterDataValues();
-        for (IntegrationColumn column : controller.getIntegrationColumns()) {
-            if (!column.isIntegrationColumn()) {
-                continue;
-            }
-
-            for (OntologyNode node : column.getFlattenedOntologyNodeList()) {
-                logger.trace("node: {} ", node);
-                if (node.getIri().equals("Atlas") || node.getIri().equals("Axis")) {
-                    logger.trace("node: {} - {}", node, node.getColumnHasValueMap());
-                    boolean oneTrue = false;
-                    for (boolean val : node.getColumnHasValueMap().values()) {
-                        if (val) {
-                            oneTrue = true;
-                            break;
-                        }
-                    }
-                    assertTrue(String.format("Mapped value for :%s should be true", node.getIri()), oneTrue);
-                }
-            }
-        }
-        controller.execute();
-        integrationColumns = controller.getIntegrationColumns();
-        assertFalse(integrationColumns.isEmpty());
-        assertEquals(4, integrationColumns.size());
-        int integ = 0;
-        for (IntegrationColumn ic : integrationColumns) {
-            if (ic.isIntegrationColumn()) {
-                integ++;
-            }
-        }
-
-        assertEquals(2, integ);
-        assertEquals(2, integrationColumns.size() - integ);
-        HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<>();
-        nodeSelectionMap.put(taxonOntology, new String[] { "Felis catus (Cat)", "Canis familiaris (Dog)", "Ovis aries (Sheep)" });
-        nodeSelectionMap.put(bElementOntology, new String[] { "Atlas", "Axis", "Carpal", "Tooth", "Ulna" });
-
-        Object results_ = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
+        // Object results_ = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
         // assuming we're dealing with alexandria here
         boolean seenElementNull = false;
         boolean seenSpeciesNull = false;
         boolean seenUnmapped = false;
-        
-        ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
+
         logger.trace("result: {}", result);
         Workbook workbook = result.getWorkbook().getWorkbook();
         Sheet sheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
@@ -267,15 +212,15 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             if (logger.isTraceEnabled()) {
                 logger.trace(" {} | {} | {} | {} | {}", getVal(row, 0), getVal(row, 1), getVal(row, 2), getVal(row, 3), getVal(row, 4));
             }
-            
+
             if (row.getCell(1) != null) {
                 // avoid note column
                 String stringCellValue = row.getCell(1).getStringCellValue();
-                
-                if (StringUtils.equals(stringCellValue,"rockfish")) {
+
+                if (StringUtils.equals(stringCellValue, "rockfish")) {
                     seenUnmapped = true;
                 }
-                
+
                 if (stringCellValue.equals(MessageHelper.getMessage("database.null_empty_integration_value"))) {
                     seenElementNull = true;
                 }
@@ -285,24 +230,23 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
             }
         }
         // assertTrue(resultingDataTableColumns.containsAll(displayRulesColumns));
-        assertTrue("should have seen null element values",seenElementNull);
-        assertTrue("should have seen 'unmapped values'",seenUnmapped);
-        assertTrue("should have seen null species values",seenSpeciesNull);
+        assertTrue("should have seen null element values", seenElementNull);
+        assertTrue("should have seen 'unmapped values'", seenUnmapped);
+        assertTrue("should have seen null species values", seenSpeciesNull);
 
         // confirm that the pivot sheet is created properly with names and at least one known value
         Sheet summarySheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.summary_worksheet"));
         List<String> names = new ArrayList<>();
-        for (IntegrationColumn col : integrationColumns) {
-            if (col.isIntegrationColumn()) {
-                names.add(col.getName());
-            }
-        }
+        names.addAll(Arrays.asList("Fauna Element Ontology", "Fauna Taxon Ontology"));
         names.add(ModernDataIntegrationWorkbook.formatTableName(alexandriaTable));
         names.add(ModernDataIntegrationWorkbook.formatTableName(spitalMainTable));
         Row row = summarySheet.getRow(3);
+        logger.debug(" {} | {} | {} | {} | {}", getVal(row, 0), getVal(row, 1), getVal(row, 2), getVal(row, 3), getVal(row, 4));
         List<String> seen = new ArrayList<String>();
         for (int i = 0; i < names.size(); i++) {
-            seen.add(row.getCell(i).getStringCellValue());
+            if (row.getCell(i) != null) {
+                seen.add(row.getCell(i).getStringCellValue());
+            }
         }
 
         names.removeAll(seen);
@@ -325,6 +269,54 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // assertions on descriptions too?
 
         logger.info("hi, we're done here");
+    }
+
+    private ModernIntegrationDataResult runIntegration(Map<String, Long> idMap, final String integration_)
+            throws JsonParseException, JsonMappingException, IOException, IntegrationDeserializationException {
+        String integration = integration_;
+        for (String key : idMap.keySet()) {
+            integration = StringUtils.replace(integration, key, idMap.get(key).toString());
+        }
+
+        IntegrationAction action = generateNewInitializedController(IntegrationAction.class, getAdminUser());
+        action.setIntegration(integration);
+        action.integrate();
+        StringWriter writer = new StringWriter();
+        IOUtils.copyLarge(new InputStreamReader(action.getJsonInputStream()), writer);
+        ModernIntegrationDataResult result = action.getResult();
+        return result;
+    }
+
+    private Map<String, Long> setupIdMap(Ontology bElementOntology, Ontology taxonOntology, DataTable alexandriaTable, DataTable spitalMainTable,
+            DataTableColumn elementColumn, DataTableColumn taxonColumn, DataTableColumn elementColumn2, DataTableColumn taxonColumn2) {
+        Map<String, Long> idMap = new HashMap<>();
+        idMap.put("$element", bElementOntology.getId());
+        idMap.put("$qrybone", alexandriaTable.getId());
+        idMap.put("$main", spitalMainTable.getId());
+        idMap.put("$col_element", elementColumn.getId());
+        idMap.put("$bone_common_name", elementColumn2.getId());
+
+        logger.debug("names:{}", alexandriaTable.getColumnNames());
+        idMap.put("$fus_prox", spitalMainTable.getColumnByName("fus_prox").getId());
+        idMap.put("$col_no", alexandriaTable.getColumnByName("boxno").getId());
+
+        if (taxonOntology != null) {
+            idMap.put("$col_taxon", taxonColumn.getId());
+            idMap.put("$species_common_name", taxonColumn2.getId());
+            idMap.put("$taxon", taxonOntology.getId());
+            idMap.put("$catus", taxonOntology.getNodeByName("Felis catus (Cat)").getId());
+            idMap.put("$canis", taxonOntology.getNodeByName("Canis familiaris (Dog)").getId());
+            idMap.put("$ovis", taxonOntology.getNodeByName("Ovis aries (Sheep)").getId());
+        }
+        
+        idMap.put("$atlas", bElementOntology.getNodeByName("Atlas").getId());
+        idMap.put("$axis", bElementOntology.getNodeByName("Axis").getId());
+        idMap.put("$astragalus", bElementOntology.getNodeByName("Astragalus").getId());
+        idMap.put("$tarsal", bElementOntology.getNodeByName("Tarsal").getId());
+        idMap.put("$carpal", bElementOntology.getNodeByName("Carpal").getId());
+        idMap.put("$tooth", bElementOntology.getNodeByName("Tooth").getId());
+        idMap.put("$ulna", bElementOntology.getNodeByName("Ulna").getId());
+        return idMap;
     }
 
     private RichTextString getVal(Row row, int val) {
@@ -365,53 +357,37 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // map ontologies to columns (setup proxies and then map)
         logger.info("mapping ontologies");
         // testing actual integration mode
-        LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
         DataTableColumn elementColumn = new DataTableColumn();
         elementColumn.setId(alexandriaTable.getColumnByName(BELEMENT_COL).getId());
         elementColumn.setName(BELEMENT_COL);
         elementColumn.setTransientOntology(bElementOntology);
         // persists this pojo using the dataset controller
         mapColumnsToDataset(alexandriaDb, alexandriaTable, elementColumn);
-        elementColumn.setDefaultCodingSheet(null);
-        elementColumn.setId(spitalTable.getColumnByName(BONE_COMMON_NAME_COL).getId());
-        elementColumn.setName(BONE_COMMON_NAME_COL);
-        mapColumnsToDataset(spitalDb, spitalTable, elementColumn);
+        DataTableColumn elementColumn2 = new DataTableColumn();
+        elementColumn2.setDefaultCodingSheet(null);
+        elementColumn2.setTransientOntology(bElementOntology);
+        elementColumn2.setId(spitalTable.getColumnByName(BONE_COMMON_NAME_COL).getId());
+        elementColumn2.setName(BONE_COMMON_NAME_COL);
+        mapColumnsToDataset(spitalDb, spitalTable, elementColumn2);
 
         mapDataOntologyValues(alexandriaTable, BELEMENT_COL, getHierarchyElementMap(), bElementOntology);
         mapDataOntologyValues(spitalTable, BONE_COMMON_NAME_COL, getHierarchyElementMap(), bElementOntology);
 
-        controller.execute();
-        assertEquals(2, controller.getBookmarkedDatasets().size());
+        Map<String,Long> idMap = setupIdMap(bElementOntology, null, alexandriaTable, spitalTable, elementColumn, null, elementColumn2, null);
 
-        // select tables
+//        // select tables
         List<Long> tableIds = new ArrayList<>();
         tableIds.add(alexandriaTable.getId());
         tableIds.add(spitalTable.getId());
-        controller = generateNewInitializedController(LegacyWorkspaceController.class);
-        controller.setTableIds(tableIds);
 
-        // select columns
-        controller.selectColumns();
-        controller.execute();
-        assertEquals("expected 2 selected tables", 2, controller.getSelectedDataTables().size());
-        List<IntegrationColumn> integrationColumns = new ArrayList<>();
-        integrationColumns.add(new IntegrationColumn(ColumnType.INTEGRATION, spitalTable.getColumnByName(BONE_COMMON_NAME_COL), alexandriaTable
-                .getColumnByName(BELEMENT_COL)));
-
-        // setup filters
-        controller = generateNewInitializedController(LegacyWorkspaceController.class);
-        controller.setTableIds(tableIds);
-        controller.setIntegrationColumns(integrationColumns);
-        controller.filterDataValues();
-        controller.execute();
-        integrationColumns = controller.getIntegrationColumns();
+        String integration = FileUtils.readFileToString(new File(TEST_PATH, "spital_alex_hier.json"));
+        ModernIntegrationDataResult result = runIntegration(idMap, integration);
+        List<IntegrationColumn> integrationColumns = result.getIntegrationContext().getIntegrationColumns();
         assertFalse(integrationColumns.isEmpty());
         assertEquals(1, integrationColumns.size());
         HashMap<Ontology, String[]> nodeSelectionMap = new HashMap<>();
         nodeSelectionMap.put(bElementOntology, new String[] { "Tarsal", "Astragalus", "Ulna" });
 
-        Object results_ = performActualIntegration(tableIds, integrationColumns, nodeSelectionMap);
-        logger.info("{}", results_);
         // assuming we're dealing with alexandria here
         boolean seenElementNull = false;
         int ulna = 0;
@@ -419,7 +395,6 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         int astragalus = 0;
         int empty = 0;
 
-        ModernIntegrationDataResult result = (ModernIntegrationDataResult) results_;
 
         int unmapped = 0;
         int nulls = 0;
@@ -470,7 +445,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         assertEquals(332, ulna);
         assertTrue(seenElementNull);
         if (getTdarConfiguration().includeSpecialCodingRules()) {
-            assertEquals("expect to see NULL value",276,nulls);
+            assertEquals("expect to see NULL value", 276, nulls);
             assertEquals("expect to see Unmapped", 9187, unmapped);
         } else {
             assertEquals(276, empty);
