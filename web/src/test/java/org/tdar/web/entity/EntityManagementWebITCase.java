@@ -1,8 +1,9 @@
-package org.tdar.web;
+package org.tdar.web.entity;
 
 import static org.junit.Assert.assertFalse;
 
 import org.junit.Test;
+import org.tdar.web.AbstractAuthenticatedWebTestCase;
 
 public class EntityManagementWebITCase extends AbstractAuthenticatedWebTestCase {
 

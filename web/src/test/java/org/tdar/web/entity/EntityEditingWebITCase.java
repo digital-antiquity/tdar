@@ -1,6 +1,7 @@
-package org.tdar.web;
+package org.tdar.web.entity;
 
 import org.junit.Test;
+import org.tdar.web.AbstractEditorAuthenticatedWebTestCase;
 
 public class EntityEditingWebITCase extends AbstractEditorAuthenticatedWebTestCase {
 
