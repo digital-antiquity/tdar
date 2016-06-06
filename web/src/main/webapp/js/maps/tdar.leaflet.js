@@ -466,24 +466,58 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         }
 
         // the change() watch deosn't always pay attention to these explicit calls
-        $(".minx", $el).val(bnds.getWest());
         $(".miny", $el).val(bnds.getSouth());
-        $(".maxx", $el).val(bnds.getEast());
         $(".maxy", $el).val(bnds.getNorth());
-        $(".d_minx", $el).val(bnds.getWest());
         $(".d_miny", $el).val(bnds.getSouth());
-        if (bnds.getEast() > 180) {
+        
+        console.log("west: " + bnds.getWest() + " east:" + bnds.getEast());
+        var x = bnds.getWest();
+        x = _correctForWorldWrap(x);
+        $(".minx", $el).val(x);
+        $(".d_minx", $el).val(x);
+        if (x < -180) {
+            x = parseFloat(x) + 360.0;
+            
+            $(".d_minx", $el).val(x );
+            $(".minx", $el).val(x );
+        }
+
+        x = bnds.getEast();
+        x = _correctForWorldWrap(x);
+        $(".maxx", $el).val(x);
+        $(".d_maxx", $el).val(x);
+        if (x > 180) {
             // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
             // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY HERE, THE REVERSE AS ABOVE
             // 
-            $(".d_maxx", $el).val(parseFloat(bnds.getEast()) - 360.0 );
-        } else {
-            $(".d_maxx", $el).val(bnds.getEast());
-        }
+            x = parseFloat(x) - 360.0 ;
+            $(".d_maxx", $el).val(x);
+            $(".maxx", $el).val(x);
+        } 
+        console.log("west(set): " + $(".d_minx").val() + " east(set):" + $(".d_maxx").val());
         $(".d_maxy", $el).val(bnds.getNorth());
         return bnds;
     }
 
+    /**
+     * Leaflet corrects for world wrapping by adding or subtracting 360... to get the valid Lat/Long we need to correct for this
+     */
+    function _correctForWorldWrap(x_) {
+        var x = x_;
+        console.log(x);
+        while (x > 360) {
+            x -= 360;
+            console.log(" > > " + x);
+        }
+        while (x < -360) {
+            x += 360;
+            console.log(" > > " + x);
+        }
+        console.log("> " + x);
+        return x;
+    }
+
+    
     function _isIntialized() {
         return _initialized;
     }
