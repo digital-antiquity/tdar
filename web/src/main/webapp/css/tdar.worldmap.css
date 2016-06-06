@@ -1,0 +1,79 @@
+
+#mapgraphdata {
+    text-align:center;
+    height: 100px;
+}
+
+#worldmap.leaflet-container {
+    background-color: #D5F0FD !important;
+    border: 1px solid #AAA;
+}
+#worldmap .info {
+    background-color:#fff;
+    opacity:.8;
+    padding:2px;
+}
+
+#worldmap .legend {
+    background-color:#fff;
+    float:right;
+}
+
+
+#worldmap .leaflet-control-attribution {
+    display:none;
+    
+}
+
+.worldmap {
+    border: 1px solid #aaa;
+}
+
+#map_legend {
+    position: absolute;
+    display: block;
+    width: 300px;
+    height: 1.8em;
+    bottom: 0px;
+    /* //FIXME: 100px shift is unnecessary if we can put legend inside of .worldmap */
+    right: 100px;
+}
+
+.mapcontainer .legendText {
+    padding-top: 0px !important;
+    margin-left: 5px;
+    margin-right: 5px
+}
+
+.mapcontainer .legendBox, .mapcontainer .legendText {
+    clear: none;
+    float: left;
+}
+
+.mapcontainer .legendBox {
+    border: 1px solid #666666;
+    width: 10px;
+    margin-top: 3px;
+    height: 10px;
+    padding: 2px;
+}
+
+div.mapcontainer {
+    position: relative;
+}
+
+div.mapcontainer img {
+    height: 304px !Important;
+    right: 0px;
+    display: block;
+    position: relative;
+}
+
+.mapcontainer #data {
+    font-weight:bold;
+}
+
+#mapGraphZoomOut,#mapGraphZoomOut * {
+     cursor: hand;
+     cursor: pointer;
+}
