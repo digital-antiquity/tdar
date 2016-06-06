@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.test.nelnet;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -36,12 +36,14 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTempla
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTemplate.NelnetTransactionItemResponse;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@Namespace("/mock-nelnet")
+@Namespace("/test/nelnet")
 public class MockNelnetController extends AbstractAuthenticatableAction implements ParameterAware, Serializable {
 
     private static final long serialVersionUID = -973297044126882831L;
@@ -49,6 +51,7 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
     private Map<String, String[]> params;
     private Map<String, String[]> responseParams = new HashMap<String, String[]>();
 
+    
     @Autowired
     private transient NelNetPaymentDao nelnet;
 

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.admin;
+package org.tdar.struts.action.test;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
-@Namespace("/admin/switchContext")
+@Namespace("/test/switchContext")
 @Component
 @Scope("prototype")
 public class ContextSwitchingController extends AbstractAuthenticatableAction {

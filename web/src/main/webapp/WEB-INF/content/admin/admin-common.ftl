@@ -19,7 +19,7 @@
             </ul>
             </li>
             <li><a href="<@s.url value="/admin/file-info"/>">File Information</a></li>
-            <li><a href="<@s.url value="/admin/authority-management/index"/>">DeDupe</a></li>
+            <li><a href="<@s.url value="/admin/authority/index"/>">DeDupe</a></li>
             <#if billingManager || editor>
                 <li class="dropdown">
                     <a class='dropdown-toggle' data-toggle='dropdown' href='#'>Billing <b class='caret'></b></a>

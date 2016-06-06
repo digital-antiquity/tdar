@@ -82,7 +82,7 @@ public class MultipleWebTdarConfigurationRunner extends BlockJUnit4ClassRunner {
         if (WebTestCase.class.isAssignableFrom(testClass) || AbstractSeleniumWebITCase.class.isAssignableFrom(testClass)) {
             try {
                 // if we tried to change the baseUrl, this could break stuff
-                String url = TdarConfiguration.getInstance().getBaseUrl() + "/admin/switchContext/denied?configurationFile=" + config;
+                String url = TdarConfiguration.getInstance().getBaseUrl() + "/test/switchContext/denied?configurationFile=" + config;
                 logger.info("LOADING CONFIG : " + url);
                 webClient.getPage(url);
             } catch (Exception e) {

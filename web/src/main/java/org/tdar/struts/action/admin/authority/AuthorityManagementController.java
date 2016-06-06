@@ -1,4 +1,4 @@
-package org.tdar.struts.action.admin;
+package org.tdar.struts.action.admin.authority;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -31,7 +31,7 @@ import org.tdar.struts.interceptor.annotation.WriteableSession;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
-@Namespace("/admin/authority-management")
+@Namespace("/admin/authority")
 @Component
 @Scope("prototype")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)

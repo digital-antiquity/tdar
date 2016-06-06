@@ -73,7 +73,7 @@ public class AdminLoginWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAuthManagement() {
-        gotoPage("/admin/authority-management/index");
+        gotoPage("/admin/authority/index");
         assertTextPresentInPage("Merge Duplicates");
     }
 
