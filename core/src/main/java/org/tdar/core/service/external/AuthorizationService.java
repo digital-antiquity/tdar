@@ -692,7 +692,7 @@ public class AuthorizationService implements Accessible {
         }
 
         if (PersistableUtils.isEqual(workflow.getSubmitter(), authenticatedUser) ||
-                authenticatedUser.equals(workflow.getAuthorizedMembers().contains(authenticatedUser))) {
+                workflow.getAuthorizedMembers().contains(authenticatedUser)) {
             return true;
         }
         return false;

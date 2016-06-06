@@ -26,7 +26,7 @@ import org.tdar.utils.PersistableUtils;
 public class IntegrationSettingsController extends AbstractPersistableController<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -2663378965534285107L;
-    private static final String SUCCESS_WORKSPACE = "/workspace/";
+    public static final String SUCCESS_WORKSPACE = "/workspace/";
     private List<TdarUser> authorizedMembers = new ArrayList<>();
 
     @Autowired
