@@ -70,12 +70,13 @@
 	                        data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
 	                        data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
 	                    </#if>
+                        <#-- disabled for Obsidian 
 	                    <#if editor || resource.confidentialViewable  >
 	                        data-real-lat="${box.centerLatitude?c}"
 	                        data-real-long="${box.centerLongitude?c}"
 	                        data-real-lat-length="${box.absoluteLatLength?c}"
 	                        data-real-long-length="${box.absoluteLongLength?c}"
-	                    </#if>
+	                    </#if> -->
 	                    </#if>
                     id="resource-${resource.id?c}">
 

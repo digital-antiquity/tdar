@@ -450,12 +450,13 @@
 	        data-minx="${llb.minObfuscatedLongitude}"
 	        data-maxx="${llb.maxObfuscatedLongitude}"
 	        data-miny="${llb.minObfuscatedLatitude}"
-        <#if resource.confidentialViewable && llb.obfuscatedObjectDifferent>
+	    <#-- disabled for Obsidian 
+        <#if resource.confidentialViewable && llb.obfuscatedObjectDifferent >
 	        data-real-maxy="${llb.maximumLatitude}" 
 	        data-real-minx="${llb.minimumLongitude}"
 	        data-real-maxx="${llb.maximumLongitude}"
 	        data-real-miny="${llb.minimumLatitude}"
-        </#if>
+        </#if> -->
         ></div>
     </div>
     </#if>
