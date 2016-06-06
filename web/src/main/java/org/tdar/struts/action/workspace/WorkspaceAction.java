@@ -21,7 +21,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
