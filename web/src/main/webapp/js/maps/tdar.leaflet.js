@@ -504,16 +504,12 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      */
     function _correctForWorldWrap(x_) {
         var x = x_;
-        console.log(x);
         while (x > 360) {
             x -= 360;
-            console.log(" > > " + x);
         }
         while (x < -360) {
             x += 360;
-            console.log(" > > " + x);
         }
-        console.log("> " + x);
         return x;
     }
 
