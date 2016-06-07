@@ -23,7 +23,7 @@
         <#list selectedDupeValues as dupe >
         <tr>
             <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
-            <td>${dupe.name!}</td>
+            <td><a href="<@s.url value="${dupe.detailUrl}"/>">${dupe.name!}</a></td>
             <td>${dupe.registered?string}</td>
             <td>${dupe.email!}</td>
             <td>${dupe.institutionName!}</td>
@@ -45,7 +45,7 @@
         <#list selectedDupeValues as dupe >
         <tr>
             <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
-            <td>${dupe.name!}</td>
+            <td><a href="<@s.url value="${dupe.detailUrl}"/>">${dupe.name!}</a></td>
         </tr>
         </#list>
     </tbody>
@@ -64,7 +64,7 @@
         <#list selectedDupeValues as dupe >
         <tr>
             <td class="datatable-cell-unstyled"><@inputTags dupe/></td>
-            <td>${dupe.label!}</td>
+            <td><a href="<@s.url value="${dupe.detailUrl}"/>">${dupe.label!}</a></td>
         </tr>
         </#list>
     </tbody>
