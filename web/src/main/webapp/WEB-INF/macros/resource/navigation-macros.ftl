@@ -65,7 +65,7 @@ navigation freemarker macros
                     <@makeLink namespace "usage/${persistable.id?c}" "usage" "stats" current true _large />
 
              <#if administrator && whiteLabelCollection>
-                        <@makeLink namespace "admin/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
+                        <@makeLink namespace "admin/whitelabel/${persistable.id?c}/edit" "Whitelabel" "Private Label Settings" current false />             
              </#if>
         </#if>
         <#nested>

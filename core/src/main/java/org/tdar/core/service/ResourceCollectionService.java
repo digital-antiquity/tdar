@@ -843,11 +843,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person, TdarUser newOwner) {
+    public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person) {
         if (!authenticationAndAuthorizationService.canEditCollection(person, col)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.make_active_permissions");
         }
-        getDao().makeResourceInCollectionActive(col, person, newOwner);
+        getDao().makeResourceInCollectionActive(col, person);
     }
 
     @Transactional(readOnly = true)

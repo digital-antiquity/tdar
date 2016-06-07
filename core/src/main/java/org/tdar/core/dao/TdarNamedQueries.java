@@ -151,7 +151,7 @@ public interface TdarNamedQueries {
     String QUERY_BY_DOI = "query.by_doi";
     String QUERY_RECENT_INFORMATION_RESOURCE_WITH_DOI = "query.recent_ir_with_doi";
     String QUERY_DATAONE_LIST_OBJECTS = "query.d1_list_objects";
-    String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "resourceCollection.updateResourcesToActice";
+    String UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE = "update.updateResourcesToActive";
     String USERS_IN_COLLECTION = "query.users.in.collection";
     String COLLECTION_TIME_LIMITED_IDS = "query.collection_time_limited";
     String QUERY_SIMILAR_PEOPLE = "query.similar_people";

@@ -250,17 +250,14 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return (Long) query.uniqueResult();
     }
 
-    @SuppressWarnings("unchecked")
-    public void makeResourceInCollectionActive(ResourceCollection col, TdarUser person, TdarUser newOwner) {
-        Query query = createQuery(TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE);
+    public void makeResourceInCollectionActive(ResourceCollection col, TdarUser person) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE);
         query.setParameter("id", col.getId());
-        List<Resource> resources = query.list();
-        for (Resource resource : resources) {
+        List<?> resources = query.list();
+        for (Object resource_ : resources) {
+            Resource resource = (Resource)resource_;
             resource.markUpdated(person);
             resource.setStatus(Status.ACTIVE);
-            if (PersistableUtils.isNotNullOrTransient(newOwner)) {
-                resource.setSubmitter(newOwner);
-            }
             ResourceRevisionLog rrl = new ResourceRevisionLog("Resource made Active", resource, person);
             saveOrUpdate(rrl);
             saveOrUpdate(resource);

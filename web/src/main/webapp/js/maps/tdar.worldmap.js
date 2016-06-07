@@ -6,11 +6,13 @@ TDAR.worldmap = (function(console, $, ctx) {
     var map;
     var $mapDiv;
     var OUTLINE = "#777777";
+    var _DEFAULT_ZOOM_LEVEL = .8;
     var stateLayer = undefined;
     var overlay = false;
     var allData = new Array();
     var clickId;
     var locales;
+    var interactive = true;
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
 
@@ -79,6 +81,11 @@ TDAR.worldmap = (function(console, $, ctx) {
             fillOpacity : 0.8
         },
         onEachFeature : function(feature, layer) {
+            if (!interactive) {
+                return;
+            }
+            layer.title = "test";
+            layer.alt = "test";
             layer.on({
                 click : _clickWorldMapLayer,
                 mouseover : _highlightFeature,
@@ -90,7 +97,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     /**
      * Init the world map passing in the DIV id
      */
-    function _initWorldMap(mapId_) {
+    function _initWorldMap(mapId_, mode) {
         if (mapId_ != undefined) {
             mapId = mapId_;
         }
@@ -105,6 +112,15 @@ TDAR.worldmap = (function(console, $, ctx) {
             c3colors = JSON.parse(c3_.html());
         }
         
+        
+        var showZoom = true;
+        var canPan = true;
+        if (mode == 'mini') {
+            showZoom = false;
+            _DEFAULT_ZOOM_LEVEL = -.4;
+            interactive = false;
+            canPan = false;
+        }
 
         map = L.map(mapId, {
             // config for leaflet.sleep
@@ -117,12 +133,17 @@ TDAR.worldmap = (function(console, $, ctx) {
             sleepNote : false,
             // should hovering wake the map? (clicking always will)
             hoverToWake : true,
-            sleepOpacity : 1
+            sleepOpacity : 1,
+            zoomControl: showZoom,
+            minZoom : -1,
+            dragging:canPan
         });
         var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
         _initializeGeoData(mapdata);
         locales = _getLocaleData($parent);
-        _setupLegend(map, grades, _getColor, max);
+        if (mode != 'mini') {
+            _setupLegend(map, grades, _getColor, max);
+        }
         _resetView();
 
         // load map data
@@ -156,7 +177,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             return div;
         };
         zoom.addTo(map);
-        
+    
         legend.onAdd = function(map) {
 
             var div = L.DomUtil.create('div', 'info');
@@ -211,6 +232,9 @@ TDAR.worldmap = (function(console, $, ctx) {
      * handle the Click event and load the local map if needed, alternately, and load the graph data
      */
     function _clickWorldMapLayer(event) {
+        if (!interactive) {
+            return;
+        }
         var ly = event.target.feature.geometry.coordinates[0];
         var id = event.target.feature.id;
         console.log(event.target.feature);
@@ -398,7 +422,7 @@ TDAR.worldmap = (function(console, $, ctx) {
      * Zoom out
      */
     function _resetView() {
-        map.setView([ 44.505, -0.09 ], 1);
+        map.setView([ 44.505, -0.09 ], _DEFAULT_ZOOM_LEVEL);
         overlay = false;
         var $zoomout = $("#mapGraphZoomOut");
         $zoomout.hide();

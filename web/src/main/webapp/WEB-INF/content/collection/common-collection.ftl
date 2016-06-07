@@ -20,11 +20,12 @@
     <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
         <#if results?has_content>
-            <h3 class="sidebar-spacer">Contents</h3>
+        <br/><br/>
+        <@common.renderWorldMap mode="mini" />
+<!--            <h3>Contents</h3> -->
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
 <i class="icon-document-red"></i>
         </#if>
-
         <h3>Child Collections</h3>
         <@common.listCollections collections=collections showOnlyVisible=true />
 
@@ -56,13 +57,16 @@
         <p>
             <strong>${label}</strong><br>
             <#items as item>
-                <a href="${item.url}">${item.label}</a><#sep> &bull;</#sep>
+                <a href="${item.detailUrl}">${item.label}</a><#sep> &bull;</#sep>
             </#items>
         </p>
         </#list>
     </#macro>
 
 <#macro descriptionSection>
+    <#if editor>
+    <div data-spy="affix" class="affix  screen adminbox rotate-90"><a href="<@s.url value="/collection/admin/${id?c}"/>">ADMIN</a></div>
+    </#if>
         <#if resourceCollection.parent?? || resourceCollection.description??  || resourceCollection.formattedDescription?? || collections??>
         <div>
             <#if resourceCollection.parent??><p><b>Part of:</b>
@@ -184,41 +188,6 @@
         <#if editable>
         <h3>Administrative Information</h3>
 
-            <@common.resourceUsageInfo />
-		<#if editor>
-		<div class="row">
-		  <div class="span6">
-			<p><b>Admin Tools</b>
-			<ul>
-             <li> <a href="<@s.url value="/collection/report/${resourceCollection.id?c}"/>">Admin Metadata Report</a></li>
-			 <li> <a href="<@s.url value="/search/download?collectionId=${resourceCollection.id?c}"/>">Export to Excel</a></li>
-			 <#if administrator && !whiteLabelCollection>
-			 <li>
-                <b>Make Whitelabel</b>
-                <form action="/collection/admin/makeWhitelabel/${id?c}" method="POST">
-                    <@s.submit cssClass="button btn tdar-button" id="makeWhiteLabelCollection" />
-                </form>
-			 
-			 </li>
-            </#if>
-			 <li>
-                <b>Reindex collection contents</b>
-                <form action="/collection/admin/reindex/${id?c}" method="POST">
-                    <@s.submit cssClass="button btn tdar-button" id="reindexCollection" />
-                </form>
-			 
-			 </li>
-			 <li>
-                <b>Make all DRAFT Resources Active</b>
-                <form action="/collection/admin/makeActive/${id?c}" method="POST">
-                    <@s.submit cssClass="button btn tdar-button" id="makeActive" />
-                </form>
-			 
-			 </li>
-         </ul>
-            </div>
-            </div>
-		</#if>
         <div class="row">
             <div class="span4">
                 <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type}" />

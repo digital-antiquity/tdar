@@ -34,7 +34,6 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.bean.statistics.ResourceCollectionViewStatistic;
 import org.tdar.core.exception.StatusCode;
@@ -42,7 +41,6 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.filestore.PairtreeFilestore;
 import org.tdar.search.exception.SearchPaginationException;
@@ -60,6 +58,8 @@ import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.web.service.HomepageDetails;
+import org.tdar.web.service.HomepageService;
 
 @Component
 @Scope("prototype")
@@ -88,11 +88,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
     @Autowired
+    private HomepageService homepageService;
+    @Autowired
     private transient ResourceSearchService resourceSearchService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
-    @Autowired
-    private transient ResourceService resourceService;
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -116,9 +116,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
 	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
 
-    private boolean keywordSectionVisible = false;
+    private boolean keywordSectionVisible = true;
 
 	private DisplayOrientation orientation;
+
+    private HomepageDetails homepageGraphs;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -186,18 +188,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return;
         }
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), getId(), this));
         getLogger().trace("child collections: begin");
         Set<ResourceCollection> findAllChildCollections;
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
-
-            if (isEditor()) {
-                List<Long> collectionIds = PersistableUtils.extractIds(getPersistable().getTransientChildren());
-                collectionIds.add(getId());
-                setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
-            }
         } else {
             findAllChildCollections = new LinkedHashSet<>(resourceCollectionService.findDirectChildCollections(getId(), false,
                     CollectionType.SHARED));
@@ -559,5 +556,14 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     public void setKeywordSectionVisible(boolean keywordSectionVisible) {
         this.keywordSectionVisible = keywordSectionVisible;
     }
+
+    public HomepageDetails getHomepageGraphs() {
+        return homepageGraphs;
+    }
+
+    public void setHomepageGraphs(HomepageDetails homepageGraphs) {
+        this.homepageGraphs = homepageGraphs;
+    }
+
 
 }

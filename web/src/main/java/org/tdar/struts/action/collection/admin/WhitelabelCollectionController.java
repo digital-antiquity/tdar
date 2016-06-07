@@ -26,7 +26,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-@Namespace("/collection/admin")
+@Namespace("/collection/admin/whitelabel")
 @HttpsOnly
 public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<WhiteLabelCollection> {
 
