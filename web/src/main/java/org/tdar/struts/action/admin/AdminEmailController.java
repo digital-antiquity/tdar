@@ -67,14 +67,13 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
 
     @Action(value = "changeEmailStatus",
             results = {
-                    @Result(name = SUCCESS, location = "email.ftl"),
+                    @Result(name = SUCCESS, type=REDIRECT, location = "/admin/email"),
                     @Result(name = INPUT, location = "email.ftl") }
             )
             @PostOnly
             public String changeEmailStatus() {
         emailService.changeEmailStatus(getEmailAction(), emails);
 
-        execute();
         return SUCCESS;
     }
 
