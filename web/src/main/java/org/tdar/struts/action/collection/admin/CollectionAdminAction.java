@@ -46,6 +46,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
 
         List<Long> collectionIds = PersistableUtils.extractIds(getCollection().getTransientChildren());
         collectionIds.add(getId());
+        
         setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         
     }
