@@ -7,7 +7,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Email.Status;
+import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;

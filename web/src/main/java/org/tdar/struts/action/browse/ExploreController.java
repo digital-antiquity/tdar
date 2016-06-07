@@ -73,12 +73,9 @@ public class ExploreController extends AbstractLookupController {
     private ResourceSpaceUsageStatistic totalResourceAccessStatistic;
     private List<String> groups = new ArrayList<String>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
-    private String mapJson;
 
-    private String homepageResourceCountCache;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private List<Resource> recentResources = new ArrayList<Resource>();
-    private String resourceTypeLocaleJson;
     private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
@@ -102,27 +99,18 @@ public class ExploreController extends AbstractLookupController {
     @Autowired
     private transient InformationResourceService informationResourceService;
 
+    private HomepageDetails homepageGraphs;
+
     @Action(EXPLORE)
     public String explore() throws IOException {
-        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
-        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
-        setResourceTypeLocaleJson(worldmap.getLocalesJson());
-        setMapJson(worldmap.getMapJson());
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
 
-        setHomepageResourceCountCache(serializationService.convertToJson(resourceService.getResourceCounts()));
         setMaterialTypes(genericService.findAll(MaterialKeyword.class));
         setInvestigationTypes(genericService.findAll(InvestigationType.class));
         setCultureKeywords(genericKeywordService.findAllApproved(CultureKeyword.class));
         setSiteTypeKeywords(genericKeywordService.findAllApproved(SiteTypeKeyword.class));
         setupTimelineData();
         setScholarData(informationResourceService.findResourceCountsByYear());
-
-        List<HomepageGeographicCache> isoGeographicCounts = resourceService.getISOGeographicCounts();
-        try {
-            setMapJson(serializationService.convertToJson(isoGeographicCounts));
-        } catch (IOException e) {
-            getLogger().error("issue serializing JSON", e);
-        }
 
         getFeaturedResources().addAll(resourceService.getWeeklyPopularResources());
         try {
@@ -209,14 +197,6 @@ public class ExploreController extends AbstractLookupController {
         this.totalResourceAccessStatistic = totalResourceAccessStatistic;
     }
 
-    public String getHomepageResourceCountCache() {
-        return homepageResourceCountCache;
-    }
-
-    public void setHomepageResourceCountCache(String string) {
-        this.homepageResourceCountCache = string;
-    }
-
     public List<BrowseYearCountCache> getScholarData() {
         return scholarData;
     }
@@ -273,20 +253,13 @@ public class ExploreController extends AbstractLookupController {
         this.viewCount = viewCount;
     }
 
-    public String getMapJson() {
-        return mapJson;
+    public HomepageDetails getHomepageGraphs() {
+        return homepageGraphs;
     }
 
-    public void setMapJson(String mapJson) {
-        this.mapJson = mapJson;
+    public void setHomepageGraphs(HomepageDetails homepageGraphs) {
+        this.homepageGraphs = homepageGraphs;
     }
 
-    public String getResourceTypeLocaleJson() {
-        return resourceTypeLocaleJson;
-    }
-
-    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
-        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
-    }
 
 }
