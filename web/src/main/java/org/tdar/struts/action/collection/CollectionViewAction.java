@@ -51,7 +51,6 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
-import org.tdar.struts.action.HasSearchResults;
 import org.tdar.struts.action.ResourceFacetedAction;
 import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts.action.TdarActionException;
@@ -73,7 +72,7 @@ import org.tdar.web.service.HomepageService;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements HasSearchResults<Resource>, SlugViewAction,
+public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
@@ -102,6 +101,14 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private Long parentId;
     private List<ResourceCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
+    private int startRecord = DEFAULT_START;
+    private int recordsPerPage = getDefaultRecordsPerPage();
+    private int totalRecords;
+    private List<Resource> results;
+    private SortOption secondarySortField;
+    private SortOption sortField;
+    private String mode = "CollectionBrowse";
+    private PaginationHelper paginationHelper;
     private String parentCollectionName;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
     private boolean showNavSearchBox = true;

@@ -91,6 +91,11 @@
                     </p>
                 </#if>
             </div>
+        </div>
+        </#if>
+</#macro>
+
+<#macro keywordSection>
             <#if keywordSectionVisible>
             <h5>Common Keywords found within this Collection</h5>
             <div class="row">
@@ -110,10 +115,7 @@
             </div>
             <hr/>
             </#if>
-        </div>
-        </#if>
 </#macro>
-
 
 <#macro resultsSection>
 

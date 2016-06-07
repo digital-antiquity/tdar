@@ -56,6 +56,8 @@
             </div>
         </#if>
 
+        <@commonCollection.keywordSection />
+
         <#if whitelabelCollection.subCollectionsEnabled>
             <div class="viewpage-section">
                 <h2>Collections</h2>
