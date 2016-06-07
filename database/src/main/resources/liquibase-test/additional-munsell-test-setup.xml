@@ -77,6 +77,5 @@
 			<column name="collection_id" valueNumeric="1003"/>
 			<column name="resource_id" valueNumeric="4230"/>
         </insert>
-		
 	</changeSet>
 </databaseChangeLog>
