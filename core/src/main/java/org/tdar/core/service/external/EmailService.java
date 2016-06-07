@@ -31,7 +31,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Email.Status;
+import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -232,6 +232,10 @@ public class EmailService {
             subject += " - " + subjectSuffix;
         }
         email.setSubject(subject);
+        email.setType(type);
+        if (resource != null) {
+            email.setResource(resource);
+        }
         email.setStatus(Status.IN_REVIEW);
         Map<String, Object> map = new HashMap<>();
         map.put("from", from);
@@ -280,6 +284,7 @@ public class EmailService {
         Email email = new Email();
         email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + ": " + resource.getTitle());
         email.setTo(requestor.getEmail());
+        email.setResource(resource);
         Map<String, Object> map = new HashMap<>();
         map.put("requestor", requestor);
         map.put("resource", resource);

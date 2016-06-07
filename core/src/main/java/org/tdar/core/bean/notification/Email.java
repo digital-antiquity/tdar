@@ -6,7 +6,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -15,6 +17,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.utils.EmailMessageType;
 
 @Entity
 @Table(name = "email_queue")
@@ -23,21 +27,14 @@ public class Email extends AbstractPersistable {
     private static final String SEPARATOR_CHARS = ";";
     private static final long serialVersionUID = -5791173542997998092L;
 
-    public enum Status {
-        IN_REVIEW,
-        QUEUED,
-        ERROR,
-        SENT;
-
-        public boolean isInReview() {
-            return this == IN_REVIEW;
-        }
-    }
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_25)
     private Status status = Status.QUEUED;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", length = FieldLength.FIELD_LENGTH_50)
+    private EmailMessageType type;
+    
     @Column(name = "user_generated", nullable = false, columnDefinition = "boolean default TRUE")
     private boolean userGenerated = true;
 
@@ -69,6 +66,10 @@ public class Email extends AbstractPersistable {
     @Column(name = "error_message", length = FieldLength.FIELD_LENGTH_2048)
     private String errorMessage;
 
+    @ManyToOne(optional=true)
+    @JoinColumn(name="resource_id")
+    private Resource resource;
+    
     public Status getStatus() {
         return status;
     }
@@ -170,5 +171,21 @@ public class Email extends AbstractPersistable {
 
     public void setUserGenerated(boolean userGenerated) {
         this.userGenerated = userGenerated;
+    }
+
+    public Resource getResource() {
+        return resource;
+    }
+
+    public void setResource(Resource resource) {
+        this.resource = resource;
+    }
+
+    public EmailMessageType getType() {
+        return type;
+    }
+
+    public void setType(EmailMessageType type) {
+        this.type = type;
     }
 }

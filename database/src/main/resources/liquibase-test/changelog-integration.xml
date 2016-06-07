@@ -13,4 +13,5 @@
 	<include file="target/liquibase/changelog.xml" />
 	<include file="target/liquibase-test/additional-munsell-test-setup.xml"/>
 	<include file="target/liquibase-test/additional-obsidian-test-setup.xml"/>
+	<!-- make sure similar changes get pushed to liquibase-test/changelog.xml -->
 </databaseChangeLog>
