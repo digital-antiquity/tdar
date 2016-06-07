@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * $Id$
@@ -41,7 +42,12 @@ public class PersonLookupAction extends AbstractLookupController<Person> {
     })
     public String lookupPerson() throws SolrServerException, IOException {
         setMode("personLookup");
-        Person person = new Person(firstName, lastName,email);
+        String email_ = null;
+        // security -- don't allow searching for email address matches if you're not logged in
+        if (PersistableUtils.isNotNullOrTransient(getAuthenticatedUser())) {
+            email_ = email;
+        }
+        Person person = new Person(firstName, lastName,email_);
         if (StringUtils.isNotBlank(institution)) {
             Institution inst = new Institution(institution);
             person.setInstitution(inst);
