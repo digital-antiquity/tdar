@@ -6,7 +6,7 @@
     <script type='text/javascript'>
         $(function () {
             TDAR.authority.initAuthTable();
-            $("#txtInstitution, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", function () {
+            $("#txtInstitution_p, #txtFirstName, #txtLastName, #txtInstitution, #txtEmail, #txtKeyword").bindWithDelay("keyup", function () {
                         $("#dupe_datatable").dataTable().fnDraw();
                     }, 500);
         });
@@ -71,7 +71,7 @@
                 <br/>
             </div>
             <div class="width99percent marginLeft10">
-            <@s.textfield  id='txtInstitution' placeholder="Institution Name" name="institution" maxlength="255"  />
+            <@s.textfield  id='txtInstitution_p' placeholder="Institution Name" name="institution" maxlength="255"  />
             </div>
         </div>
     </form>

@@ -22,11 +22,11 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/workspace/settings")
-@Result(name="workspace", location="/workspace",type=TdarActionSupport.REDIRECT)
+@Result(name="workspace", location="/workspace/list",type=TdarActionSupport.REDIRECT)
 public class IntegrationSettingsController extends AbstractPersistableController<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -2663378965534285107L;
-    public static final String SUCCESS_WORKSPACE = "/workspace/";
+    public static final String SUCCESS_WORKSPACE = "workspace";
     private List<TdarUser> authorizedMembers = new ArrayList<>();
 
     @Autowired
