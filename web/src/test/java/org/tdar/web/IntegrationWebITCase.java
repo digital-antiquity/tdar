@@ -31,9 +31,11 @@ public class IntegrationWebITCase extends AbstractAdminAuthenticatedWebTestCase 
         TestConfiguration instance = TestConfiguration.getInstance();
         login(instance.getUsername(), instance.getPassword());
         gotoPage("/workspace/list");
-        logger.debug(getPageText());
-        gotoPage("/workspace/settings/1000/edit");
-        logger.debug(getPageText());
+//        logger.debug(getPageText());
+        gotoPage("/workspace/settings/edit?id=1000");
+        assertTrue(getPageText().contains("Test Blank Integration"));
+        submitForm();
+//        logger.debug(getPageText());
         assertTrue(getPageText().contains("Test Blank Integration"));
         
     }
