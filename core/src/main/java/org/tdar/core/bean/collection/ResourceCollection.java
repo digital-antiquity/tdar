@@ -226,12 +226,12 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         setId(id);
     }
 
-    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean visible, TdarUser creator) {
+    public ResourceCollection(String title, String description, SortOption sortBy, CollectionType type, boolean hidden, TdarUser creator) {
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
         setType(type);
-        setHidden(visible);
+        setHidden(hidden);
         setOwner(creator);
     }
 

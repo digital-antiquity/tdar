@@ -44,13 +44,22 @@ public class CollectionSearchService extends AbstractSearchService {
         queryBuilder.setOperator(Operator.AND);
 
         if (CollectionUtils.isNotEmpty(query.getAllFields())) {
-            queryBuilder.append(new GeneralSearchQueryPart(query.getAllFields()));
+            GeneralSearchQueryPart q = new GeneralSearchQueryPart(query.getAllFields());
+            q.setOperator(query.getOperator());
+            queryBuilder.append(q);
         }
+
+        if (CollectionUtils.isNotEmpty(query.getTitles())) {
+            for (String title : query.getTitles()) {
+                queryBuilder.append(new AutocompleteTitleQueryPart(title));
+            }
+        }
+
         queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
         if (query.isLimitToTopLevel()) {
             queryBuilder.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, true));
         }
-        
+
         if (PersistableUtils.isNotNullOrTransient(query.getId())) {
             queryBuilder.append(new FieldQueryPart<Long>(QueryFieldNames.ID, query.getId()));
         }
@@ -68,26 +77,27 @@ public class CollectionSearchService extends AbstractSearchService {
                 // if we're a "real user" and not an administrator -- make sure the user has view rights to things in the collection
                 qpg.append(new FieldQueryPart<Long>(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, authenticatedUser.getId()));
                 rightsPart.append(qpg);
-            } else {
+            } else if (query.isIncludeHidden()) {
                 // if we're admin, drop the hidden check
                 rightsPart.clear();
             }
         }
         queryBuilder.append(rightsPart);
+        logger.debug(queryBuilder.generateQueryString());
         searchService.handleSearch(queryBuilder, result, provider);
         return result;
 
     }
 
-    public LuceneSearchResultHandler<ResourceCollection> findCollection(TdarUser authenticatedUser, GeneralPermissions permission, String title,
+    public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
             LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
-        q.append(new AutocompleteTitleQueryPart(title));
+        q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));
         boolean admin = false;
         if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
             admin = true;
         }
-        CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(authenticatedUser, admin, permission);
+        CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(authenticatedUser, admin, csqo.getPermission());
         q.append(queryPart);
         searchService.handleSearch(q, result, provider);
         return result;

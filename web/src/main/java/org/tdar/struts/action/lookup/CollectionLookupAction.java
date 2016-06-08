@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.CollectionSearchService;
@@ -50,7 +51,10 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         // only return results if query length has enough characters
         if (SearchUtils.checkMinString(getTerm(), getMinLookupLength())) {
             try {
-                collectionSearchService.findCollection(getAuthenticatedUser(), getPermission(), getTerm(),this,this);
+                CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+                csqo.setPermission(getPermission());
+                csqo.getTitles().add(getTerm());
+                collectionSearchService.lookupCollection(getAuthenticatedUser(), csqo,this,this);
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;

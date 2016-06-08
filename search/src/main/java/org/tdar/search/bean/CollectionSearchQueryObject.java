@@ -1,17 +1,25 @@
 package org.tdar.search.bean;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 public class CollectionSearchQueryObject implements Serializable {
 
     private static final long serialVersionUID = -7985022894011278341L;
 
     private Long id;
+    private Operator operator = Operator.AND;
+    
     private boolean includeHidden = true;
     private boolean limitToTopLevel = false;
-    private List<String> allFields;
-
+    private List<String> allFields = new ArrayList<>();
+    private GeneralPermissions permission;
+    private List<String> titles = new ArrayList<>();
+    
     public boolean isIncludeHidden() {
         return includeHidden;
     }
@@ -42,6 +50,30 @@ public class CollectionSearchQueryObject implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void setOperator(Operator operator) {
+        this.operator = operator;
+    }
+
+    public GeneralPermissions getPermission() {
+        return permission;
+    }
+
+    public void setPermission(GeneralPermissions permission) {
+        this.permission = permission;
+    }
+
+    public List<String> getTitles() {
+        return titles;
+    }
+
+    public void setTitles(List<String> title) {
+        this.titles = title;
     }
 
 }

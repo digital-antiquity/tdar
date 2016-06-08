@@ -8,8 +8,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
-
 
 public class PersonQueryPart extends FieldQueryPart<Person> {
 
@@ -18,6 +18,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
     }
 
     private boolean registered = false;
+    private boolean includeEmail = false;
 
     @Override
     public String generateQueryString() {
@@ -56,14 +57,21 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
                     username.setBoost(4f);
                     group.append(username);
                 }
-                FieldQueryPart<String> email = new FieldQueryPart<>(QueryFieldNames.EMAIL, wildcard);
-                email.setBoost(4f);
-                group.append(email);
+                if (isIncludeEmail()) {
+                    FieldQueryPart<String> email = new FieldQueryPart<>(QueryFieldNames.EMAIL, wildcard);
+                    email.setBoost(4f);
+                    group.append(email);
+                }
                 setOperator(Operator.OR);
             }
 
             if (StringUtils.isNotBlank(pers.getEmail())) {
-                ems.add(StringUtils.trim(pers.getEmail()));
+                if (isIncludeEmail()) {
+                    ems.add(StringUtils.trim(pers.getEmail()));
+                } else {
+                    // right now, throwing the exception is too disruptive, ignoring query component instead
+                    // throw new TdarRecoverableRuntimeException("personQueryPart.not_allowed_email");
+                }
             }
 
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
@@ -91,7 +99,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         if (CollectionUtils.isNotEmpty(insts)) {
             QueryPartGroup group1 = new QueryPartGroup(Operator.OR);
             group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME, insts));
-//            group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME_AUTO, insts));
+            // group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME_AUTO, insts));
             group.append(group1);
         }
 
@@ -119,7 +127,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
             fqp.setPhraseFormatters(PhraseFormatter.ESCAPED, PhraseFormatter.WILDCARD);
             group1.append(fqp);
             StringAutocompletePart autoField = new StringAutocompletePart(auto, terms);
-//            autoField.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
+            // autoField.setPhraseFormatters(PhraseFormatter.ESCAPE_QUOTED);
             autoField.setBoost(2.0f);
             group1.append(autoField);
             return group1;
@@ -133,5 +141,13 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
 
     public void setRegistered(boolean registered) {
         this.registered = registered;
+    }
+
+    public boolean isIncludeEmail() {
+        return includeEmail;
+    }
+
+    public void setIncludeEmail(boolean includeEmail) {
+        this.includeEmail = includeEmail;
     }
 }

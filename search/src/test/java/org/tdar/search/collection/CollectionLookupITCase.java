@@ -5,45 +5,24 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.search.QuietIndexReciever;
-import org.tdar.search.index.LookupSource;
+import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.query.SearchResult;
-import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.utils.MessageHelper;
 
-public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase {
+public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
 
-    @Override
-    public void reindex() {
-        searchIndexService.purgeAll(LookupSource.COLLECTION);
-        searchIndexService.indexAll(new QuietIndexReciever(), Arrays.asList( LookupSource.COLLECTION), getAdminUser());
-    };
-
-    @Autowired
-    CollectionSearchService collectionSearchService;
-
-    String[] collectionNames = new String[] { "Kalaupapa National Historical Park, Hawaii", "Kaloko-Honokohau National Historical Park, Hawaii", "Kapsul",
-            "KBP Artifact Photographs", "KBP Field Notes", "KBP Level Maps", "KBP Maps", "KBP Profiles", "KBP Reports", "KBP Site Photographs",
-            "Kharimkotan 1", "Kienuka", "Kintigh - Carp Fauna Coding Sheets", "Kintigh - Cibola Excavation", "Kintigh - Cibola Research",
-            "Kintigh - Cibola Survey Projects", "Kintigh - Context Ontologies", "Kintigh - Fauna Ontologies", "Kintigh - HARP Coding Sheets",
-            "Kintigh - Quantitative and Formal Methods Class - Assignments & Data", "Kleis", "Klinko", "Kokina 1", "Kompaneyskyy 1",
-            "Kuril Biocomplexity Research", "Kuybyshevskaya 1",
-            "Spielmann/Kintigh - Fauna Ontologies - Current" };
 
     @Test
     @Rollback(true)
@@ -69,7 +48,10 @@ public class CollectionLookupITCase extends AbstractWithIndexIntegrationTestCase
     private SearchResult<ResourceCollection> search(TdarUser user, GeneralPermissions permission, String title)
             throws ParseException, SolrServerException, IOException {
         SearchResult<ResourceCollection> results = new SearchResult<>(100);
-        collectionSearchService.findCollection(user, permission, title, results, MessageHelper.getInstance());
+        CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+        csqo.setPermission(permission);
+        csqo.getTitles().add(title);
+        collectionSearchService.lookupCollection(user, csqo, results, MessageHelper.getInstance());
         return results;
     }
 
