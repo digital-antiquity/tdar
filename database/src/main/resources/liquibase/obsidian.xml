@@ -30,6 +30,7 @@
             <column name="hidden" defaultValueBoolean="false" type="boolean"/>
         </addColumn>
     </changeSet>
+    
     <changeSet id="obsidian-3" author="abrin">
         <addColumn tableName="email_queue">
             <column name="resource_id" type="bigint" />
