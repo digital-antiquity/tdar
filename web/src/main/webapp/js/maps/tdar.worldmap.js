@@ -4,9 +4,11 @@ TDAR.worldmap = (function(console, $, ctx) {
     var hlayer;
     var geodata = {};
     var map;
+    var _mode = "normal";
     var $mapDiv;
     var OUTLINE = "#777777";
     var _DEFAULT_ZOOM_LEVEL = .8;
+    var _DEFAULT_CENTER = [ 44.505, -0.03 ];
     var stateLayer = undefined;
     var overlay = false;
     var allData = new Array();
@@ -112,14 +114,15 @@ TDAR.worldmap = (function(console, $, ctx) {
             c3colors = JSON.parse(c3_.html());
         }
         
-        
+        _mode = mode;
         var showZoom = true;
         var canPan = true;
-        if (mode == 'mini') {
+        if (_mode == 'mini') {
             showZoom = false;
             _DEFAULT_ZOOM_LEVEL = -.4;
             interactive = false;
             canPan = false;
+            _DEFAULT_CENTER = [ 44.505, 40 ];
         }
 
         map = L.map(mapId, {
@@ -422,7 +425,7 @@ TDAR.worldmap = (function(console, $, ctx) {
      * Zoom out
      */
     function _resetView() {
-        map.setView([ 44.505, -0.09 ], _DEFAULT_ZOOM_LEVEL);
+        map.setView( _DEFAULT_CENTER, _DEFAULT_ZOOM_LEVEL);
         overlay = false;
         var $zoomout = $("#mapGraphZoomOut");
         $zoomout.hide();
