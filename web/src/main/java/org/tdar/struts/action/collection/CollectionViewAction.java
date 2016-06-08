@@ -252,8 +252,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         }
 
         try {
-            resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
-                    getResourceCollection(), getAuthenticatedUser(), this, this);
+            resourceSearchService.buildResourceContainedInSearch(getResourceCollection(), null, getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);

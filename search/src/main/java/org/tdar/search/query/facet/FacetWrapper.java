@@ -2,15 +2,15 @@ package org.tdar.search.query.facet;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hadoop.util.StringUtils;
-import org.tdar.core.bean.resource.ResourceType;
+import org.apache.commons.lang.StringUtils;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+
 
 public class FacetWrapper implements Serializable {
 
@@ -25,9 +25,9 @@ public class FacetWrapper implements Serializable {
         facetMap.put(facetField, facetClass);
     }
     
-	public void facetBy(String facetField, Class<ResourceType> facetClass, ArrayList<ResourceType> selectedResourceTypes) {
+	public <T> void facetBy(String facetField, Class<T> facetClass, ArrayList<T> selectedResourceTypes) {
 		facetBy(facetField, facetClass);
-		filters.put(facetField, StringUtils.join(" ", selectedResourceTypes));
+		filters.put(facetField, StringUtils.join(selectedResourceTypes, " "));
 	}
 
 
