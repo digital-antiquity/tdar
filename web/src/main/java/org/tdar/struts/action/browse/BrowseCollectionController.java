@@ -27,6 +27,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
+import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.service.query.CollectionSearchService;
@@ -91,7 +92,10 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     private void performLuceneQuery() throws TdarActionException {
         setMode("browseCollections");
         try {
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), null, true, this, this);
+            CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+            csqo.setAllFields(null);
+            csqo.setLimitToTopLevel(true);
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), csqo, this, this);
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.NOT_FOUND, spe);
         } catch (TdarRecoverableRuntimeException tdre) {

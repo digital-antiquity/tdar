@@ -43,6 +43,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
@@ -162,7 +163,9 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
             result.setMode("COLLECTION MINI");
             result.setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), getAllGeneralQueryFields(), false,  result, this);
+            CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+            csqo.setAllFields(getAllGeneralQueryFields());
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), csqo,  result, this);
             setMode("SEARCH");
             getCollectionResults().addAll(result.getResults());
             getCollectionResults().removeAll(Collections.singleton(null));
