@@ -188,7 +188,6 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         if (PersistableUtils.isNullOrTransient(getPersistable())) {
             return;
         }
-        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), getId(), this));
         getLogger().trace("child collections: begin");
         Set<ResourceCollection> findAllChildCollections;
 
@@ -251,8 +250,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             }
         }
 
+        homepageService.setupResultForMapSearch(this);
         try {
             resourceSearchService.buildResourceContainedInSearch(getResourceCollection(), null, getAuthenticatedUser(), this, this);
+            homepageGraphs = homepageService.generateDetails(this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             throw new TdarActionException(StatusCode.BAD_REQUEST, spe);

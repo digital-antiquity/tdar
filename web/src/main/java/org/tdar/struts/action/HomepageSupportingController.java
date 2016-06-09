@@ -118,7 +118,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     @SkipValidation
     public String worldMap() {
-        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
+        setupMapGraphs();
 
         return SUCCESS;
     }
@@ -142,8 +142,12 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
             params = { "contentType", "text/html" }) })
     @SkipValidation
     public String resourceStats() {
-        homepageGraphs = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
+        setupMapGraphs();
         return SUCCESS;
+    }
+
+    private void setupMapGraphs() {
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
     }
 
     public Project getFeaturedProject() {
