@@ -51,7 +51,8 @@ public class GeospatialViewAction extends AbstractDatasetViewAction<Geospatial> 
                 getLogger().debug("an error occurred when trying to load the text version of a file", e);
             }
         }
-        return versionText;
+//        return versionText;
+        return null;
     }
 
 }

@@ -174,7 +174,7 @@ Common macros used in multiple contexts
 		data-x="label" data-values="count" data-click="resourceBarGraphClick" data-yaxis="log" data-colorcategories="true" >
 		</div>
 		<#noescape>
-		<script id="homepageResourceCountCache">
+		<script id="homepageResourceCountCache" type="application/json">
 		${homepageGraphs.resourceTypeJson}
 		</script>
 		</#noescape>

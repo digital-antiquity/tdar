@@ -123,10 +123,6 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         FeatureCollection<?, ?> collection = featureSource.getFeatures();
         FeatureIterator<?> iterator = collection.features();
         
-//        CoordinateReferenceSystem crs = CRS.parseWKT(wkt);
-        logger.debug("{}", dataStore.getNames());
-//        ReprojectingFeatureCollection reprojectingCollection = new ReprojectingFeatureCollection((FeatureCollection<SimpleFeatureType, SimpleFeature>)collection, CRS.decode("EPSG:4326"));
-        
         dumpToGeoJson(collection);
         
         // Filter filter = CQL.toFilter(text.getText());
@@ -196,7 +192,11 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
 
     private void dumpToGeoJson(FeatureCollection<?, ?> collection) {
         FeatureJSON fjson = new FeatureJSON();
-        
+
+//        CoordinateReferenceSystem crs = collection.getSchema().getCoordinateReferenceSystem();
+//      logger.debug("{}", collection.getSchema());
+//      ReprojectingFeatureCollection reprojectingCollection = new ReprojectingFeatureCollection((FeatureCollection)collection, crs, CRS.decode("EPSG:4326"));
+
         try {
             setGeoJsonFile(new File(System.getProperty("java.io.tmpdir"), FilenameUtils.getBaseName(getDatabaseFile().getName()) + ".json"));
             FileWriter writer = new FileWriter(getGeoJsonFile());

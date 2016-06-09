@@ -208,7 +208,7 @@
                     <#if (facetlist?size > 1)>
 
                         <span class="media-body">
-                        <#local facetUrl><#compress><@s.url action=action includeParams="get" encode="false" escapeAmp="false">
+                        <#local facetUrl><#compress><@s.url action=action includeParams="get" >
                     <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if (documentType!'') == '' && facetParam != 'documentType'>

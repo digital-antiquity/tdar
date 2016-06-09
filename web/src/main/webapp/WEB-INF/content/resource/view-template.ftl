@@ -427,11 +427,15 @@
         </#list>
 
 
-    <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
+    <#if (resource.activeLatitudeLongitudeBoxes?has_content) || (userAbleToViewUnobfuscatedMap && geoJson?has_content)>
     <h2>Spatial Coverage</h2>
-    <#assign llb = resource.firstActiveLatitudeLongitudeBox />
+    <#assign llb="" />
+    <#if  resource.firstActiveLatitudeLongitudeBox?has_content>
+    <#assign llb = resource.firstActiveLatitudeLongitudeBox?has_content />
+    </#if>
     <div class="title-data">
-        <p>
+        <#if llb?has_content>
+            <p>
             min long: ${llb.obfuscatedWest}; min
             lat: ${llb.obfuscatedSouth} ;
             max long: ${llb.obfuscatedEast}; max
@@ -442,10 +446,13 @@
                 <#if llb.obfuscatedObjectDifferent> [obfuscated]</#if>
             </#if>
         </p>
+        </#if>
     </div>
 
     <div class="row">
         <div id='large-map' style="height:300px" class="leaflet-map span9" 
+        <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>data-geojson="#localGeoJson"</#if>
+        <#if llb?has_content>
 	        data-maxy="${llb.obfuscatedNorth}" 
 	        data-minx="${llb.obfuscatedWest}"
 	        data-maxx="${llb.obfuscatedEast}"
@@ -457,8 +464,14 @@
 	        data-real-maxx="${llb.north}"
 	        data-real-miny="${llb.west}"
         </#if> -->
+        </#if>
         ></div>
     </div>
+    <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>
+        <#noescape>
+            <script id="localGeoJson" type="application/json">${geoJson}</script>
+        </#noescape>
+    </#if>
     </#if>
     <#if creditProxies?has_content >
     <h3>Individual &amp; Institutional Roles</h3>

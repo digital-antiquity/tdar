@@ -94,16 +94,19 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
         
-        var geoJson = $('#leafetGeoJson');
-        if (geoJson.length > 0) {
-            var gj = JSON.parse(geoJson.html());
-            console.log("parsed");
-            var glayer = L.geoJson(gj);
-            console.log("loaded");
-            glayer.addTo(map);
-            console.log("added");
-
-            _fitTo(map, glayer);
+        if (settings.geojson != undefined) {
+            var geoJson = $(settings.geojson);
+//            console.log(settings.geojson);
+            if (geoJson.length > 0) {
+                var gj = JSON.parse(geoJson.html());
+                console.log("parsed");
+                var glayer = L.geoJson(gj);
+                console.log("loaded");
+                glayer.addTo(map);
+                console.log("added");
+    
+                _fitTo(map, glayer);
+            }
         }
         if (settings.search) {
             L.Control.geocoder({}).addTo(map);

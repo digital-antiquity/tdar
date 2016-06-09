@@ -3,10 +3,15 @@ package org.tdar.db.conversion;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.util.Set;
 
 import javax.sql.DataSource;
 
+import org.geotools.referencing.CRS;
 import org.junit.Test;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.test.annotation.Rollback;
@@ -36,6 +41,12 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
+    @Test
+    public void testCRS() throws NoSuchAuthorityCodeException, FactoryException {
+        Set<String> supportedCodes = CRS.getSupportedCodes("Universal Transverse Mercator - Zone 13 (N)");
+        CoordinateReferenceSystem decode = CRS.decode(supportedCodes.iterator().next());
+        logger.debug("{}", decode);
+    }
     @Test
     @Rollback(true)
     public void testSpatialDatabase() throws Exception {
