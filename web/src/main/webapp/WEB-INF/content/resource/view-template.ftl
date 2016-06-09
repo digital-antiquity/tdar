@@ -429,12 +429,9 @@
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content) || (userAbleToViewUnobfuscatedMap && geoJson?has_content)>
     <h2>Spatial Coverage</h2>
-    <#assign llb="" />
-    <#if  resource.firstActiveLatitudeLongitudeBox?has_content>
-    <#assign llb = resource.firstActiveLatitudeLongitudeBox?has_content />
-    </#if>
     <div class="title-data">
-        <#if llb?has_content>
+        <#if (resource.activeLatitudeLongitudeBoxes?has_content) >
+            <#assign llb = resource.firstActiveLatitudeLongitudeBox />
             <p>
             min long: ${llb.obfuscatedWest}; min
             lat: ${llb.obfuscatedSouth} ;
@@ -452,7 +449,8 @@
     <div class="row">
         <div id='large-map' style="height:300px" class="leaflet-map span9" 
         <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>data-geojson="#localGeoJson"</#if>
-        <#if llb?has_content>
+        <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
+            <#assign llb = resource.firstActiveLatitudeLongitudeBox />
 	        data-maxy="${llb.obfuscatedNorth}" 
 	        data-minx="${llb.obfuscatedWest}"
 	        data-maxx="${llb.obfuscatedEast}"
