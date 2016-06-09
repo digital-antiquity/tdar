@@ -97,7 +97,7 @@
 
 <#macro keywordSection>
             <#if keywordSectionVisible>
-            <h5>Common Keywords found within this Collection</h5>
+            <!-- <h5>Common Keywords found within this Collection</h5> -->
             <div class="row">
                 <div class="span4">
                 <@_keywordSection "Site Name Keywords" facetWrapper.facetResults['activeSiteNameKeywords']![] "query" />

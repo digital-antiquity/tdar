@@ -208,8 +208,7 @@
                     <#if (facetlist?size > 1)>
 
                         <span class="media-body">
-                <#if link><#t>
-                <#local facetUrl><#compress><@s.url action=action includeParams="all">
+                        <#local facetUrl><#compress><@s.url action=action includeParams="get" encode="false" escapeAmp="false">
                     <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if (documentType!'') == '' && facetParam != 'documentType'>
@@ -223,8 +222,8 @@
                     </#if>
                     <#nested>
                 </@s.url></#compress></#local>
-                <a rel="noindex" href="${facetUrl}"></#if>
-<#compress>
+                <#if link><#t>
+                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"></#if><#compress>
                     <#if icon || pictoralIcon><#if pictoralIcon && facetParam=='selectedResourceTypes'>
                         <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
                     <#else>
@@ -234,7 +233,7 @@
                             <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_deselected"></use></svg>
                         </#if>
                     </#if></#if></a>
-                <a href="${facetUrl}"><@s.text name="${facet.label}"/></a>
+                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
 				<#if link></a></#if>
 				 <span>(${facet.count})</span></span></#compress>
                     <#elseif (currentValues?size > 0) >

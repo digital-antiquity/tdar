@@ -223,7 +223,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
 
     @Override
     public DisplayOrientation getOrientation() {
-        return null;
+        return DisplayOrientation.MAP;
     }
 
     public FacetWrapper getFacetWrapper() {

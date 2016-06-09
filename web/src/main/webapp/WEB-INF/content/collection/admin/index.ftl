@@ -23,7 +23,7 @@
     
     <table class="table tableformat">
         <thead>
-            <tr> <th>id</th><th>status</th><th>type</th><th>title</th></tr>
+            <tr> <th>id</th><th>status</th><th>type</th><th>title</th><th>files</th></tr>
         </thead>
         <tbody>
         <#list results>
@@ -33,6 +33,7 @@
                 <td>${res.status}</td>
                 <td>${res.resourceType}</td>
                 <td><a href="${res.detailUrl}">${res.title}</a></td>
+                <td>${(res.totalNumberOfActiveFiles!0)?c}</td>
                </tr>
             </#items>
         </#list>
@@ -100,7 +101,7 @@
              <#if editor >
              <li>
                 <form action="/collection/admin/makeActive/${id?c}" method="POST" class="inline">
-                    <@s.submit cssClass="btn btn-link tdar-btn-link" id="makeActive" value="Make all DRAFT Resources Active"/>
+                    <@s.submit cssClass="btn btn-link tdar-btn-link" id="makeActive" value="Make all Draft Resources Active"/>
                 </form>
              </li>
              </#if>
