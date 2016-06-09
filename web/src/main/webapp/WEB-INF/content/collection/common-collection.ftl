@@ -21,7 +21,9 @@
     <div id="sidebar-right" parse="true">
         <#if results?has_content>
         <br/><br/>
+        <hr class="light"/>
         <@common.renderWorldMap mode="mini" />
+        <hr class="light"/>
 <!--            <h3>Contents</h3> -->
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
 <i class="icon-document-red"></i>
