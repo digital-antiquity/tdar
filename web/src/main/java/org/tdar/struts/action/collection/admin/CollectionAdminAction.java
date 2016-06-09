@@ -18,6 +18,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
@@ -74,6 +75,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private String mode = "CollectionAdminBrowse";
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<>();
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
+    private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
 
     @Override
     public void prepare() throws Exception {
@@ -87,6 +89,8 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, getSelectedResourceTypes());
         facetWrapper.facetBy(QueryFieldNames.STATUS, Status.class, getSelectedResourceStatuses());
+        facetWrapper.facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class, getFileAccessTypes());
+
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
         }
@@ -253,6 +257,10 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.STATUS);
     }
 
+    public List<Facet> getFileAccessFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_ACCESS_TYPE);
+    }
+
     public List<Status> getAllStatuses() {
         return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
     }
@@ -283,6 +291,14 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
 
     public void setTerm(String term) {
         this.term = term;
+    }
+
+    public ArrayList<ResourceAccessType> getFileAccessTypes() {
+        return fileAccessTypes;
+    }
+
+    public void setFileAccessTypes(ArrayList<ResourceAccessType> fileAccessTypes) {
+        this.fileAccessTypes = fileAccessTypes;
     }
 
 }

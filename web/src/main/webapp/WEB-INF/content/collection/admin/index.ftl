@@ -53,7 +53,7 @@
           <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=true liCssClass="" ulClass="unstyled" pictoralIcon=true />
           <#if (selectedResourceTypes?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
-                        <@s.param name="selectedResourceTypes"value="" />
+                        <@s.param name="selectedResourceTypes" value="" />
                         <@s.param name="startRecord" value=""/>
             </@s.url>">[remove this filter]</a></sup>
           </#if>
@@ -62,7 +62,16 @@
           <@search.facetBy facetlist=statusFacets label="" facetParam="selectedResourceStatuses" link=true liCssClass="" ulClass="unstyled"  />
           <#if (selectedResourceStatuses?size > 0)>
           <a style="text-decoration: " href="<@s.url includeParams="all">
-                        <@s.param name="selectedResourceStatuses"value="" />
+                        <@s.param name="selectedResourceStatuses" value="" />
+                        <@s.param name="startRecord" value=""/>
+            </@s.url>">[remove this filter]</a></sup>
+          </#if>
+
+          <h5>File Access</h5>
+          <@search.facetBy facetlist=fileAccessFacets label="" facetParam="fileAccessTypes" link=true liCssClass="" ulClass="unstyled"  />
+          <#if (fileAccessTypes?size > 0)>
+          <a style="text-decoration: " href="<@s.url includeParams="all">
+                        <@s.param name="fileAccessTypes" value="" />
                         <@s.param name="startRecord" value=""/>
             </@s.url>">[remove this filter]</a></sup>
           </#if>
