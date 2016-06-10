@@ -1152,7 +1152,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFile(FileAccessRestriction restriction, File uploadFile) {
-        find("#inputMethodId").find("[value=file]").click();
+        find("[value=file]").click();
         find("#fileUploadField").sendKeys(uploadFile.getAbsolutePath());
     }
 
@@ -1248,7 +1248,7 @@ public abstract class AbstractSeleniumWebITCase {
         field.sendKeys(textEntry);
         WebElement autocompletePopup = waitForAutocompletePopup().first();
         field.sendKeys(Keys.ARROW_DOWN);
-        WebElementSelection menuItems = find(autocompletePopup).find("li.ui-menu-item");
+        WebElementSelection menuItems = find("li.ui-menu-item");
 
         if (logger.isTraceEnabled()) {
             logger.trace("menuItems: {} ({})", menuItems.getHtml(), menuItems.size());
