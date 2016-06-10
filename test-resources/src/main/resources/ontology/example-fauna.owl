@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:protege="http://protege.stanford.edu/plugins/owl/protege#"
+    xmlns:xsp="http://www.owl-ontologies.com/2005/08/07/xsp.owl#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:swrl="http://www.w3.org/2003/11/swrl#"
+    xmlns="http://www.owl-ontologies.com/Ontology1242150717.owl#"
+    xmlns:swrlb="http://www.w3.org/2003/11/swrlb#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+  xml:base="http://www.tdar.org/ontology/example-fauna.owl">
+  <owl:Ontology rdf:about=""/>
+  <owl:Class rdf:ID="elaphus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Cervus"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="americana">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Odocoileus"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="americana_2">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Antilocapra"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Cervidae">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Artiodactyla"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="canadensis">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Ovis"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Leporidae">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Lagomorpha"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="californicus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Jackrabbit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Sylvilagus">
+    <rdfs:subClassOf rdf:resource="#Leporidae"/>
+  </owl:Class>
+  <owl:Class rdf:ID="Antilocapridae">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Artiodactyla"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Cervus">
+    <rdfs:subClassOf rdf:resource="#Cervidae"/>
+  </owl:Class>
+  <owl:Class rdf:ID="hemionus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Odocoileus"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="taurus">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Bos"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="audubonii">
+    <rdfs:subClassOf rdf:resource="#Sylvilagus"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Bos">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Bovidae"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="Ovidae">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Artiodactyla"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:ID="floridanus">
+    <rdfs:subClassOf rdf:resource="#Sylvilagus"/>
+  </owl:Class>
+  <owl:Class rdf:ID="nuttallii">
+    <rdfs:subClassOf rdf:resource="#Sylvilagus"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Lagomorpha">
+    <rdfs:subClassOf>
+      <owl:Class rdf:ID="Mammalia"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Bovidae">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Artiodactyla"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Odocoileus">
+    <rdfs:subClassOf rdf:resource="#Cervidae"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Artiodactyla">
+    <rdfs:subClassOf rdf:resource="#Mammalia"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Ovis">
+    <rdfs:subClassOf rdf:resource="#Ovidae"/>
+  </owl:Class>
+  <owl:Class rdf:about="#Antilocapra">
+    <rdfs:subClassOf rdf:resource="#Antilocapridae"/>
+  </owl:Class>
+  <owl:Class rdf:ID="alleni">
+    <rdfs:subClassOf>
+      <owl:Class rdf:about="#Jackrabbit"/>
+    </rdfs:subClassOf>
+  </owl:Class>
+  <owl:Class rdf:about="#Jackrabbit">
+    <rdfs:subClassOf rdf:resource="#Leporidae"/>
+  </owl:Class>
+</rdf:RDF>
+
+<!-- Created with Protege (with OWL Plugin 3.4, Build 533)  http://protege.stanford.edu -->
