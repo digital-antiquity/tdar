@@ -50,6 +50,8 @@
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
+        <asm.version>5.1</asm.version>
+        
         <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
             resources -->

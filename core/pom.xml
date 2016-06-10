@@ -498,17 +498,17 @@
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-commons</artifactId>
-            <version>5.1</version>
+            <version>${asm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm</artifactId>
-            <version>5.1</version>
+            <version>${asm.version}</version>
         </dependency>
         <dependency>
             <groupId>org.ow2.asm</groupId>
             <artifactId>asm-debug-all</artifactId>
-            <version>5.1</version>
+            <version>${asm.version}</version>
         </dependency>
 
         <!-- freemarker -->
