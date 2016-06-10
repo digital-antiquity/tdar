@@ -1608,6 +1608,18 @@ public abstract class AbstractSeleniumWebITCase {
                 });
     }
 
+    /**
+     * Clears all values from a select2 control.  This only works with multi-valued select2 controls.  For single-value controls,  click on their delete button
+     * instead.
+     * @param selection Selection that contains the original &lt;select&gt; elements that back a select2 control (not the select2 container facades)
+     */
+    public final void select2Clear(WebElementSelection selection) {
+        selection.toList().stream()
+                .filter(elem -> elem.getAttribute("class").contains("select2-hidden-accessible"))
+                .map(elem -> find(elem.findElement(By.xpath("following-sibling::*[1]"))))
+                .forEach(facade -> facade.find(".select2-selection__choice__remove").click());
+    }
+
 
     //fixme: jtd: this function is likely unneeded (I wrote it thinking you needed to escape all css strings, instead of just literals).
     /**

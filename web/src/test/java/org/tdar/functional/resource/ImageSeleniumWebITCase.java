@@ -7,6 +7,9 @@
 package org.tdar.functional.resource;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -80,7 +83,6 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
     }
 
 
-    @SuppressWarnings("unused")
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
     public void testCreateImageEditSavehasResource()  {
@@ -94,7 +96,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             find(By.name(entry.getKey())).val(entry.getValue());
         }
 
-        // check various keyword checkboxes
+        // fill in uncontrolled keywords
         for (String key : docMultiValMap.keySet()) {
             select2val(find(By.name(key)), docMultiValMap.get(key));
         }
@@ -105,10 +107,17 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         logger.debug(getText());
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
-        // assertFalse("no errors present", getText().toLowerCase().contains("error"));
-        // doesn't work because -- Error setting expression 'submitAction' may occur
-
     }
+
+    @Test
+    public  void testKeywordsRemoved() {
+        testCreateImageEditSavehasResource();
+        find(".toolbar-edit").click();
+        waitForPageload();
+        select2Clear(find("#uncontrolledMaterialKeywordsRepeatable"));
+        assertThat(getText(), not( containsString("very small rocks")));
+    }
+
 
     @Override
     public boolean testRequiresLucene() {
