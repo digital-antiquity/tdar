@@ -1584,4 +1584,57 @@ public abstract class AbstractSeleniumWebITCase {
         setStyle(input, "cursor", "auto");
     }
 
+    //TODO: move this method to WebElementSelection
+    //TODO: comment all of the lambda/stream insanity that's going on in this method
+    //FIXME: instead of separate method name, selection.val() should intelligently handle real form elements as well as select2 controls
+    public final void select2val(WebElementSelection selection, List<String> vals) {
+        selection.toList().stream()
+                .filter(elem -> elem.getAttribute("class").contains("select2-hidden-accessible"))
+                .map(elem -> find(elem.findElement(By.xpath("following-sibling::*[1]"))))
+                .forEach( proxy -> {
+                    logger.debug("select2 proxy:: length:{} tag:{}  html:{}", proxy.size(), proxy.getTagName(), proxy.getHtml());
+                    logger.debug("values to set: {}", vals);
+                    proxy.find(".select2-selection__rendered").click();
+                    vals.forEach( (v) -> {
+                        waitFor(driver -> !proxy.find(".select2-search__field").isEmpty());
+                        //type value into textbox, wait for result menu , then click on the menu item.
+                        WebElementSelection searchField = proxy.find(".select2-search__field").sendKeys(v);
+                        String menuOption = String.format("span.select2-container--open span[data-id=\"%s\"]", v);
+                        logger.debug("looking for: {}", menuOption);
+                        waitFor(menuOption).click();
+                        logger.debug("set/added value to: {}", v);
+                    });
+
+                });
+    }
+
+
+    //fixme: jtd: this function is likely unneeded (I wrote it thinking you needed to escape all css strings, instead of just literals).
+    /**
+     * Escape a css literal.  Note that you probably don't need to do this.
+     * @param val
+     * @return
+     */
+    public String escapeCssLiteral(String val) {
+        char[] specials = {'"','#','$','%','&','\'','(',')','*','+','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','`','{','|','}','~'};
+        char[] valchars = val.toCharArray();
+        char esc = '\\';
+        StringBuilder sb = new StringBuilder();
+        if(Character.isDigit(valchars[0])) {
+            sb.append(esc);
+        }
+        sb.append(valchars[0]);
+
+        for (int i = 1; i < valchars.length; i++) {
+            for(int j = 0; j < specials.length; j++) {
+                if(valchars[i] == specials[j]) {
+                    sb.append(esc);
+                    break;
+                }
+            }
+            sb.append(valchars[i]);
+        }
+        return sb.toString();
+    }
+
 }

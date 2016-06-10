@@ -79,32 +79,6 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
-    //TODO: move this method to WebElementSelection
-    //TODO: comment all of the lambda/stream insanity that's going on in this method
-    //FIXME: instead of separate method name, selection.val() should intelligently handle real form elements as well as select2 controls
-    public void select2val(WebElementSelection selection, List<String> vals) {
-        selection.toList().stream()
-                .filter(elem -> elem.getAttribute("class").contains("select2-hidden-accessible"))
-                .map(elem -> find(elem.findElement(By.xpath("following-sibling::*[1]"))))
-                .forEach( proxy -> {
-                    logger.debug("select2 proxy:: length:{} tag:{}  html:{}", proxy.size(), proxy.getTagName(), proxy.getHtml());
-                    logger.debug("values to set: {}", vals);
-                    proxy.find(".select2-selection__rendered").click();
-                    vals.forEach( (v) -> {
-                        waitFor(driver -> !proxy.find(".select2-search__field").isEmpty());
-                        WebElementSelection searchField = proxy.find(".select2-search__field").sendKeys(v);
-
-                        //fixme:  this need to wait for options to appear before we can press ENTER, but this wait selector never finds anything.
-                        //waitFor(driver -> !proxy.find(".select2-results__option").isEmpty());
-                        waitFor(2);
-                        searchField.sendKeys(Keys.ENTER);
-                        logger.debug("set/added value to: {}", v);
-                    });
-
-                });
-    }
-
-
 
     @SuppressWarnings("unused")
     @Test
@@ -123,9 +97,6 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         // check various keyword checkboxes
         for (String key : docMultiValMap.keySet()) {
             select2val(find(By.name(key)), docMultiValMap.get(key));
-//            for (String val : docMultiValMap.get(key)) {
-//                find(By.name(key)).val(val);
-//            }
         }
         submitForm();
 
