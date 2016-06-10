@@ -175,6 +175,7 @@ public class PdfService {
         // Separate thread needed here to call merge
         // FIXME: handle exceptions better
         Thread thread = new Thread(new PDFMergeTask(wrapper, pipedOutputStream));
+        thread.setName(Thread.currentThread().getName() + "-pdf-merge");
         thread.start();
         logger.trace("done with PDF Merge"); // fixme: technically the method is done, but really you've just started the merge operation.
         return inputStream;
