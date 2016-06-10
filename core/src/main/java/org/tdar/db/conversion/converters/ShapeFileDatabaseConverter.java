@@ -18,13 +18,17 @@ import org.apache.commons.io.IOUtils;
 import org.geotools.data.DataStore;
 import org.geotools.data.DataStoreFinder;
 import org.geotools.data.FeatureSource;
+import org.geotools.data.store.ReprojectingFeatureCollection;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
+import org.geotools.referencing.CRS;
 import org.opengis.feature.Feature;
 import org.opengis.feature.Property;
 import org.opengis.feature.type.PropertyDescriptor;
 import org.opengis.feature.type.PropertyType;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -190,19 +194,21 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         }
     }
 
-    private void dumpToGeoJson(FeatureCollection<?, ?> collection) {
+    private void dumpToGeoJson(final FeatureCollection<?, ?> collection_) {
         FeatureJSON fjson = new FeatureJSON();
-
-//        CoordinateReferenceSystem crs = collection.getSchema().getCoordinateReferenceSystem();
-//      logger.debug("{}", collection.getSchema());
-//      ReprojectingFeatureCollection reprojectingCollection = new ReprojectingFeatureCollection((FeatureCollection)collection, crs, CRS.decode("EPSG:4326"));
+        FeatureCollection<?, ?> collection = collection_;
+        CoordinateReferenceSystem crs = collection.getSchema().getCoordinateReferenceSystem();
+        logger.debug("{}", collection.getSchema());
 
         try {
+            if (crs != null) {
+                collection = new ReprojectingFeatureCollection((FeatureCollection) collection, crs, CRS.decode("EPSG:4326"));
+            }
             setGeoJsonFile(new File(System.getProperty("java.io.tmpdir"), FilenameUtils.getBaseName(getDatabaseFile().getName()) + ".json"));
             FileWriter writer = new FileWriter(getGeoJsonFile());
             fjson.writeFeatureCollection(collection, writer);
             IOUtils.closeQuietly(writer);
-        } catch (IOException e) {
+        } catch (IOException | FactoryException e) {
             logger.error("could not convert dataset to GeoJSON", e);
         }
     }

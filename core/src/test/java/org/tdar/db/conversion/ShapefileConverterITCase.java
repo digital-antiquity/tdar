@@ -41,12 +41,7 @@ public class ShapefileConverterITCase extends AbstractIntegrationTestCase {
         tdarDataImportDatabase.setDataSource(dataSource);
     }
 
-    @Test
-    public void testCRS() throws NoSuchAuthorityCodeException, FactoryException {
-        Set<String> supportedCodes = CRS.getSupportedCodes("Universal Transverse Mercator - Zone 13 (N)");
-        CoordinateReferenceSystem decode = CRS.decode(supportedCodes.iterator().next());
-        logger.debug("{}", decode);
-    }
+
     @Test
     @Rollback(true)
     public void testSpatialDatabase() throws Exception {
