@@ -811,6 +811,8 @@
                                         and reload it -->
                                     <id>test-liquibase</id>
                                     <configuration>
+                                        <!--  NOTE CHANGELOGS can VARY so that we can load the integration data or not 
+                                        changelog.xml or changelog-integration.xml -->
                                         <changeLogFile>target/liquibase-test/${testChangeLog}</changeLogFile>
                                         <skip>${skipTestLiquibase}</skip>
                                         <logging>warning</logging>

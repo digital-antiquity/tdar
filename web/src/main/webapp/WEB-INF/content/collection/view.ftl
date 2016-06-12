@@ -30,6 +30,8 @@ ${resourceCollection.name!"untitled collection"}</h1>
 
         <@commonCollection.descriptionSection/>
 
+        <@commonCollection.keywordSection />
+
         <@commonCollection.resultsSection/>
 
         <@commonCollection.adminSection/>

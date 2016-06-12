@@ -77,7 +77,6 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
-import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
@@ -153,8 +152,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlType(name = "resource", propOrder = {})
 @XmlTransient
 public class Resource implements Persistable,
-        Comparable<Resource>, HasName, Updatable, Indexable, Validatable,
-        HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, Viewable, Addressable,
+        Comparable<Resource>, HasName, Updatable, Indexable, Validatable, 
+        HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
         DeHydratable, XmlLoggable, Slugable {
 
     private static final long serialVersionUID = -230400285817185637L;
@@ -172,6 +171,8 @@ public class Resource implements Persistable,
 
     @Transient
     private transient boolean viewable;
+    @Transient
+    private transient boolean viewConfidential;
     @Transient
     private transient Long transientAccessCount;
     protected final static transient Logger logger = LoggerFactory.getLogger(Resource.class);
@@ -1753,5 +1754,17 @@ public class Resource implements Persistable,
             }
         }
         return collections;
+    }
+
+    @Transient
+    @XmlTransient
+    @Override
+    public boolean isConfidentialViewable() {
+        return viewConfidential;
+    }
+
+    @Override
+    public void setConfidentialViewable(boolean editable) {
+        this.viewConfidential = editable;
     }
 }

@@ -25,7 +25,7 @@ public class BasicSeachSeleniumITCase extends AbstractSeleniumWebITCase {
         Set<String> urls = new HashSet<>();
         for (WebElement el_ : find("article ul")) {
             // only add one per selection group
-            for (WebElement el : new WebElementSelection(el_, getDriver()).find("a")) {
+            for (WebElement el : find("a")) {
                 String url = el.getAttribute("href");
                 if (url.contains(TestConfiguration.getInstance().getHostName())) {
                     urls.add(url);

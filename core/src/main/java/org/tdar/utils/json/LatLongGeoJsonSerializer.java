@@ -78,11 +78,11 @@ public class LatLongGeoJsonSerializer extends StdSerializer<LatitudeLongitudeBox
                     jgen.writeFieldName("coordinates");
                     jgen.writeStartArray();
                     jgen.writeStartArray();
-                    writeArrayEntry(value.getMinLongitude(), value.getMinLatitude(), jgen);
-                    writeArrayEntry(value.getMinLongitude(), value.getMaxLatitude(), jgen);
-                    writeArrayEntry(value.getMaxLongitude(), value.getMaxLatitude(), jgen);
-                    writeArrayEntry(value.getMaxLongitude(), value.getMinLatitude(), jgen);
-                    writeArrayEntry(value.getMinLongitude(), value.getMinLatitude(), jgen);
+                    writeArrayEntry(value.getWest(), value.getSouth(), jgen);
+                    writeArrayEntry(value.getWest(), value.getNorth(), jgen);
+                    writeArrayEntry(value.getEast(), value.getNorth(), jgen);
+                    writeArrayEntry(value.getEast(), value.getSouth(), jgen);
+                    writeArrayEntry(value.getWest(), value.getSouth(), jgen);
                     jgen.writeEndArray();
                     jgen.writeEndArray();
                     break;

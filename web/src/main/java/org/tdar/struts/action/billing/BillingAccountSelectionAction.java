@@ -10,7 +10,6 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.apache.struts2.interceptor.validation.SkipValidation;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -34,13 +33,14 @@ import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/billing")
 @HttpsOnly
-public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable {
+public class BillingAccountSelectionAction extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
 	public static final String UPDATE_QUOTAS = "updateQuotas";
 	public static final String FIX_FOR_DELETE_ISSUE = "fix";
@@ -75,23 +75,27 @@ public class BillingAccountSelectionAction extends AbstractAuthenticatableAction
 		}
 	}
 
-	@SkipValidation
+	@Override
+	public void validate() {
+	    if (invoice == null) {
+	        throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
+	    }
+	    if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
+	        throw new TdarRecoverableRuntimeException(getText("billingAccountController.rights_to_assign_this_invoice"));
+	    }
+	}
+
 	@Action(value = CHOOSE, results = { @Result(name = SUCCESS, location = "select-account.ftl"),
 			@Result(name = NEW_ACCOUNT, location = "add?invoiceId=${invoiceId}", type = TDAR_REDIRECT) })
 	public String selectAccount() throws TdarActionException {
-		if (invoice == null) {
-			throw new TdarRecoverableRuntimeException(getText("billingAccountController.invoice_is_requried"));
-		}
-		if (!authorizationService.canAssignInvoice(invoice, getAuthenticatedUser())) {
-			throw new TdarRecoverableRuntimeException(
-					getText("billingAccountController.rights_to_assign_this_invoice"));
-		}
-		setAccounts(accountService.listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE,
-				Status.FLAGGED_ACCOUNT_BALANCE));
-		if (CollectionUtils.isNotEmpty(getAccounts())) {
+
+	    setAccounts(accountService.listAvailableAccountsForUser(invoice.getOwner(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE));
+		
+	    if (CollectionUtils.isNotEmpty(getAccounts())) {
 			return SUCCESS;
 		}
-		return NEW_ACCOUNT;
+		
+	    return NEW_ACCOUNT;
 	}
 
 	public Invoice getInvoice() {

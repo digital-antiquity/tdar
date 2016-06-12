@@ -43,7 +43,6 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.MessageHelper;
 
-import com.opensymphony.xwork2.TextProvider;
 import com.rometools.modules.georss.GeoRSSModule;
 import com.rometools.modules.georss.SimpleModuleImpl;
 import com.rometools.modules.georss.geometries.Envelope;
@@ -175,15 +174,14 @@ public class RssService implements Serializable {
      * @throws FeedException
      */
     @SuppressWarnings("unused")
-    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, String rssUrl, GeoRssMode mode,
-            boolean includeEnclosures, TextProvider provider) throws IOException, FeedException {
+    public <I extends Indexable> ByteArrayInputStream createRssFeedFromResourceList(SearchResultHandler<I> handler, FeedSearchHelper helper) throws IOException, FeedException {
         SyndFeed feed = new SyndFeedImpl();
         feed.setFeedType(ATOM_1_0);
 
         List<Object> vals = new ArrayList<>();
         vals.add(TdarConfiguration.getInstance().getSiteAcronym());
         vals.add(cleanStringForXML(handler.getSearchTitle()));
-        feed.setTitle(provider.getText("rssService.title", vals));
+        feed.setTitle(helper.getTextProvider().getText("rssService.title", vals));
         OpenSearchModule osm = new OpenSearchModuleImpl();
         osm.setItemsPerPage(handler.getRecordsPerPage());
         osm.setStartIndex(handler.getStartRecord());
@@ -196,11 +194,11 @@ public class RssService implements Serializable {
         List<Module> modules = feed.getModules();
         modules.add(osm);
         feed.setModules(modules);
-        feed.setLink(rssUrl);
+        feed.setLink(helper.getRssUrl());
         feed.setDescription(handler.getSearchDescription());
         List<SyndEntry> entries = new ArrayList<SyndEntry>();
         for (I resource_ : handler.getResults()) {
-            createRssEntryForResource(handler, mode, includeEnclosures, entries, resource_);
+            createRssEntryForResource(handler, helper.getGeoMode(), helper.isEnclosureIncluded(), entries, resource_);
         }
         feed.setEntries(entries);
         feed.setPublishedDate(new Date());
@@ -331,8 +329,8 @@ public class RssService implements Serializable {
         if ((latLong != null) && latLong.isObfuscatedObjectDifferent() == false && hasRestrictions == false) {
             GeoRSSModule geoRss = new SimpleModuleImpl();
             if (mode == GeoRssMode.ENVELOPE) {
-                geoRss.setGeometry(new Envelope(latLong.getMinObfuscatedLatitude(), latLong.getMinObfuscatedLongitude(),
-                        latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()));
+                geoRss.setGeometry(new Envelope(latLong.getObfuscatedSouth(), latLong.getObfuscatedWest(),
+                        latLong.getObfuscatedNorth(), latLong.getObfuscatedEast()));
             }
             if (mode == GeoRssMode.POINT) {
                 geoRss.setPosition(new Position(latLong.getObfuscatedCenterLatitude(), latLong.getObfuscatedCenterLongitude()));

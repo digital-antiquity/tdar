@@ -62,11 +62,11 @@ public class GeoSearchDao {
             throw new TdarRuntimeException(MessageHelper.getMessage("geoSearchService.lat_long_Not_valid"));
         }
         if (latLong.crossesDateline()) {
-            return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude(),
-                    latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()).toString();
+            return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getObfuscatedWest(), latLong.getObfuscatedSouth(),
+                    latLong.getObfuscatedNorth(), latLong.getObfuscatedEast()).toString();
         }
-        return String.format(PSQL_POLYGON, latLong.getMaxObfuscatedLongitude(), latLong.getMaxObfuscatedLatitude(),
-                latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude()).toString();
+        return String.format(PSQL_POLYGON, latLong.getObfuscatedEast(), latLong.getObfuscatedNorth(),
+                latLong.getObfuscatedWest(), latLong.getObfuscatedSouth()).toString();
     }
 
     /*
@@ -106,10 +106,10 @@ public class GeoSearchDao {
     // , concat('${',%1$s,'-style?default('''')}') as style
 
     public enum SpatialTables {
-        COUNTRY("country_wgs84", "long_name", "iso_3digit"),
-        COUNTY("us_counties_wgs84", "cnty_name", "state_name"),
-        ADMIN("admin1_wgs84", "admin_name", "type_eng"),
-        CONTINENT("continents_wgs84", "continent");
+        COUNTRY("tdar.country_wgs84", "long_name", "iso_3digit"),
+        COUNTY("tdar.us_counties_wgs84", "cnty_name", "state_name"),
+        ADMIN("tdar.admin1_wgs84", "admin_name", "type_eng"),
+        CONTINENT("tdar.continents_wgs84", "continent");
 
         private String tableName;
         private String[] columns;
@@ -325,10 +325,10 @@ public class GeoSearchDao {
         Point thirdPoint = poly.getGeometry().getPoint(2);
         logger.trace(firstPoint + " " + firstPoint.getX());
         // NOTE: ASSUMES THAT BELOW IS result of an envelope
-        latLong.setMinimumLatitude(firstPoint.getY());
-        latLong.setMinimumLongitude(firstPoint.getX());
-        latLong.setMaximumLatitude(thirdPoint.getY());
-        latLong.setMaximumLongitude(thirdPoint.getX());
+        latLong.setSouth(firstPoint.getY());
+        latLong.setWest(firstPoint.getX());
+        latLong.setNorth(thirdPoint.getY());
+        latLong.setEast(thirdPoint.getX());
         logger.trace(latLong.toString());
 
         return latLong;

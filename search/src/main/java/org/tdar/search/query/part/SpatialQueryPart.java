@@ -74,10 +74,10 @@ public class SpatialQueryPart extends FieldQueryPart<LatitudeLongitudeBox> {
             
             
             //*** NOTE *** ENVELOPE uses following pattern minX, maxX, maxy, minY *** // 
-            Double minLong = box.getMinObfuscatedLongitude();
-			Double maxLat = box.getMaxObfuscatedLatitude();
-			Double minLat = box.getMinObfuscatedLatitude();
-			Double maxLong = box.getMaxObfuscatedLongitude();
+            Double minLong = box.getObfuscatedWest();
+			Double maxLat = box.getObfuscatedNorth();
+			Double minLat = box.getObfuscatedSouth();
+			Double maxLong = box.getObfuscatedEast();
 			if (box.crossesDateline() && !box.crossesPrimeMeridian()) {
                 q.append (String.format(" %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" OR"
                         + "  %s:\"Intersects(ENVELOPE(%s,%s,%s,%s)) distErrPct=0.025\" ", QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES,

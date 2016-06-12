@@ -25,10 +25,10 @@
     <div id="latlongoptions">
         <div id='large-map' class='leaflet-map-editable' data-search="true">
             <span class="latlong-fields">
-                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLongitude" id="maxx" cssClass="ne-lng latLongInput maxx" />
-                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLatitude"  id="miny" cssClass="sw-lat latLongInput miny" />
-                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].minimumLongitude" id="minx" cssClass="sw-lng latLongInput minx" />
-                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].maximumLatitude"  id="maxy" cssClass="ne-lat latLongInput maxy" />
+                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].east" id="maxx" cssClass="ne-lng latLongInput maxx" />
+                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].south"  id="miny" cssClass="sw-lat latLongInput miny" />
+                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].west" id="minx" cssClass="sw-lng latLongInput minx" />
+                <@s.hidden name="groups[0].latitudeLongitudeBoxes[0].north"  id="maxy" cssClass="ne-lat latLongInput maxy" />
             </span>
             <div class="mapdiv"></div>
         </div>
@@ -208,8 +208,7 @@
                     <#if (facetlist?size > 1)>
 
                         <span class="media-body">
-                <#if link><#t>
-                <a rel="noindex" href="<#compress><@s.url action=action includeParams="all">
+                        <#local facetUrl><#compress><@s.url action=action includeParams="get" >
                     <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
                     <#if (documentType!'') == '' && facetParam != 'documentType'>
@@ -222,8 +221,9 @@
                         <@s.param name="integratableOptions" value=""/>
                     </#if>
                     <#nested>
-                </@s.url></#compress>"></#if>
-<#compress>
+                </@s.url></#compress></#local>
+                <#if link><#t>
+                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"></#if><#compress>
                     <#if icon || pictoralIcon><#if pictoralIcon && facetParam=='selectedResourceTypes'>
                         <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
                     <#else>
@@ -232,8 +232,8 @@
                         <#else>
                             <svg class="svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_deselected"></use></svg>
                         </#if>
-                    </#if></#if>
-                <@s.text name="${facet.label}"/>
+                    </#if></#if></a>
+                <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
 				<#if link></a></#if>
 				 <span>(${facet.count})</span></span></#compress>
                     <#elseif (currentValues?size > 0) >

@@ -290,12 +290,15 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
             logger.info("beginning {}", process.getDisplayName());
 
         }
+        String threadName = Thread.currentThread().getName();
         try {
             Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+            Thread.currentThread().setName(threadName + "-"+process.getClass().getSimpleName());
             process.execute();
         } catch (Throwable e) {
             logger.error("an error ocurred when running {}", process.getDisplayName(), e);
         } finally {
+            Thread.currentThread().setName(threadName);
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         }
 

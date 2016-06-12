@@ -10,7 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -55,11 +54,37 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(collection);
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.findAll(ResourceCollection.class, Arrays.asList(collectionId)).get(0);
+        collection = genericService.find(ResourceCollection.class, collectionId);
         for (Resource resource : collection.getResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
         }
 
+    }
+
+    
+    @Test
+    @Rollback
+    public void testMakeActive() throws Exception {
+        ResourceCollection collection = new ResourceCollection("test", "test", SortOption.TITLE, CollectionType.SHARED, true, getAdminUser());
+        collection.markUpdated(getAdminUser());
+        boolean seen = false;
+        genericService.saveOrUpdate(collection);
+        for (Resource r  : genericService.findRandom(Resource.class, 20)) {
+            r.setStatus(Status.ACTIVE);
+            if (seen == false) {
+                r.setStatus(Status.DRAFT);
+            }
+            r.getResourceCollections().add(collection);
+            genericService.saveOrUpdate(r);
+            collection.getResources().add(r);
+        }
+        Long collectionId = collection.getId();
+        collection = null;
+        collection = genericService.find(ResourceCollection.class, collectionId);
+        resourceCollectionService.makeResourcesInCollectionActive(collection, getAdminUser());
+        for (Resource r : collection.getResources()) {
+            assertEquals(Status.ACTIVE,r.getStatus());
+        }
     }
 
     

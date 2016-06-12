@@ -6,7 +6,10 @@
  */
 package org.tdar.search.geosearch;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,9 +19,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
+import org.tdar.core.bean.keyword.Keyword;
+import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.dao.GenericDao.FindOptions;
+import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.utils.PersistableUtils;
 
 /**
  * @author Adam Brin
@@ -29,6 +38,10 @@ public class GeoSearchService {
 
     @Autowired
     GeoSearchDao geoSearchDao;
+
+    @Autowired
+    DatasetDao datasetDao;
+
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     // continent
@@ -144,6 +157,25 @@ public class GeoSearchService {
 
     public boolean isEnabled() {
         return geoSearchDao.isEnabled();
+    }
+
+    @Transactional(readOnly=false)
+    public void processManagedGeographicKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
+        // needed in cases like the APIController where the collection is not properly initialized
+        if (resource.getManagedGeographicKeywords() == null) {
+            resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
+        }
+
+        Set<GeographicKeyword> kwds = new HashSet<GeographicKeyword>();
+        for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
+            Set<GeographicKeyword> managedKeywords = extractAllGeographicInfo(latLong);
+            logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
+            kwds.addAll(
+                    datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
+                            FindOptions.FIND_FIRST_OR_CREATE));
+        }
+        PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
+        
     }
 
 }

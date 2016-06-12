@@ -26,6 +26,7 @@ import org.tdar.search.query.part.InstitutionAutocompleteQueryPart;
 import org.tdar.search.query.part.PersonQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.SearchUtils;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
 
@@ -125,6 +126,9 @@ public class CreatorSearchService<I extends Creator<?>> extends AbstractSearchSe
                 pqp.add(person);
                 q.append(pqp);
                 logger.trace("{}", pqp.toString());
+                if (PersistableUtils.isNotNullOrTransient(result.getAuthenticatedUser())) {
+                    pqp.setIncludeEmail(true);
+                }
             }
             if (registered == Boolean.TRUE) {
                 q.append(new FieldQueryPart<Boolean>(QueryFieldNames.REGISTERED,Boolean.TRUE));

@@ -80,3 +80,6 @@ standalone solr:
 —————————————————
  - for solr, change the field-types.xml's  spatialContextFactory entry to:
      spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+ - update Google Analytics for Universal Analytics
+ - re-run RebuildGeographicKeywordsProcess
+ - 

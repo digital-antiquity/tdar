@@ -58,6 +58,7 @@
             <img src="<@s.url value="/images/r4/data_integration.png"/>" class="responsive-image" alt="integrate" title="Integrate" />
         </div>
     </div>
+</div>
 </body>
 
 <#macro learn>

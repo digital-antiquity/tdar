@@ -17,9 +17,7 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -38,8 +36,8 @@ import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -80,7 +78,6 @@ import edu.emory.mathcs.backport.java.util.Collections;
 public class JAXBITCase extends AbstractIntegrationTestCase {
 
     private static final String BEDOUIN = "bedouin";
-
     private static final String NABATAEAN = "Nabataean";
 
     @Autowired
@@ -223,25 +220,6 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     }
 
     
-    @Test
-    @Rollback
-    public void testJsonSearchExport() throws Exception {
-        Document document = generateDocumentWithFileAndUseDefaultUser();
-        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
-        document.setInheritingCulturalInformation(true);
-        Project project = genericService.find(Project.class, 3805l);
-        project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
-        Map<String, Object> map =new HashMap<>();
-        List<Resource> list = new ArrayList<>();
-        list.add(document);
-        list.add(project);
-        String result = serializationService.createGeoJsonFromResourceList(list , "http://www.test.com", map, null, false, JsonLookupFilter.class, null);
-        logger.info(result);
-        assertFalse(result.contains("\"activeMaterialKeywords\":null"));
-        assertFalse(result.contains("minLatitude"));
-        assertFalse(result.contains("maxLatitude"));
-    }
-
     @Test()
     @Rollback(true)
     public void testRelatedKeyword() throws Exception {

@@ -78,15 +78,15 @@ public class ArchiveControllerITCase extends AbstractDataIntegrationTestCase {
         resource.setDescription("A JUnit test");
         controller.setServletRequest(getServletPostRequest());
         LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
-        llb.setMinimumLongitude(0.0003);
-        llb.setMinimumLatitude(0.0001);
-        llb.setMaximumLongitude(0.0002);
-        llb.setMaximumLatitude(0.0004);
+        llb.setWest(0.0003);
+        llb.setSouth(0.0001);
+        llb.setEast(0.0002);
+        llb.setNorth(0.0004);
         controller.setLatitudeLongitudeBoxes(Arrays.asList(llb));
         assertFalse(controller.isSwitchableMapObfuscation());
         String saveResult = controller.save();
         llb = controller.getResource().getFirstActiveLatitudeLongitudeBox();
-        assertFalse(llb.getMaxObfuscatedLatitude().equals(Double.valueOf(0.0001)));
+        assertFalse(llb.getObfuscatedNorth().equals(Double.valueOf(0.0001)));
         assertTrue("Unexpected Action Exceptions were found", controller.getActionErrors().size() == 0);
         assertEquals("Result was expected to be \"SUCCESS\", not " + saveResult, TdarActionSupport.SUCCESS, saveResult);
     }

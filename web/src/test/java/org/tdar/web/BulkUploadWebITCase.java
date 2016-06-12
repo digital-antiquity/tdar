@@ -80,10 +80,10 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         Map<String, String> extra = new HashMap<String, String>();
         String accountId = setupAccount(extra, 200, 20);
         extra.put("investigationTypeIds", "1");
-        extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
-        extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
-        extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
-        extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        extra.put("latitudeLongitudeBoxes[0].north", "41.83228739643032");
+        extra.put("latitudeLongitudeBoxes[0].east", "-71.39860153198242");
+        extra.put("latitudeLongitudeBoxes[0].south", "41.82608370627639");
+        extra.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         extra.put("resource.inheritingInvestigationInformation", "true");
         extra.put("resourceProviderInstitutionName", "Digital Antiquity");
@@ -161,10 +161,10 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
         extra.put("investigationTypeIds", "1");
         extra.put("status", "DRAFT");
-        extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
-        extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
-        extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
-        extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        extra.put("latitudeLongitudeBoxes[0].north", "41.83228739643032");
+        extra.put("latitudeLongitudeBoxes[0].east", "-71.39860153198242");
+        extra.put("latitudeLongitudeBoxes[0].south", "41.82608370627639");
+        extra.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         setupTestUserProxy(extra);
         extra.put(PROJECT_ID_FIELDNAME, "3805");
         extra.put("resource.inheritingInvestigationInformation", "true");
@@ -211,10 +211,10 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         extra.put("authorshipProxies[0].person.firstName", "Allen");
         extra.put("sourceCollections[0].text", "ASU Museum Collection1");
         extra.put("sourceCollections[1].text", "test Museum Collection1");
-        extra.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
-        extra.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
-        extra.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
-        extra.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        extra.put("latitudeLongitudeBoxes[0].north", "41.83228739643032");
+        extra.put("latitudeLongitudeBoxes[0].east", "-71.39860153198242");
+        extra.put("latitudeLongitudeBoxes[0].south", "41.82608370627639");
+        extra.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         extra.put(PROJECT_ID_FIELDNAME, projectId.toString());
         // extra.put("resource.inheritingInvestigationInformation","true");
         File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);

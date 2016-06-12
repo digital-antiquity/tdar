@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.struts.action.TdarActionException;
@@ -56,7 +57,9 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
             setSearchDescription(getText("advancedSearchController.rss_subtitle", TdarConfiguration.getInstance().getSiteAcronym(),
                     StringEscapeUtils.escapeXml11(getSearchPhrase())));
             if (!isReindexing()) {
-                setInputStream(rssService.createRssFeedFromResourceList(this, getRssUrl(), geoMode, true, this));
+                FeedSearchHelper feedSearchHelper = new FeedSearchHelper(getRssUrl(), this, getGeoMode(), getAuthenticatedUser());
+                feedSearchHelper.setEnclosureIncluded(true);
+                setInputStream(rssService.createRssFeedFromResourceList(this, feedSearchHelper));
             } else {
                 setInputStream(new ByteArrayInputStream("".getBytes()));
             }
@@ -68,7 +71,6 @@ public class RSSSearchAction extends AbstractAdvancedSearchController {
             return ERROR;
         } catch (Exception e) {
             getLogger().error("rss error", e);
-//            addActionErrorWithException(getText("advancedSearchController.could_not_process"), e);
             setStatusCode(500);
             return ERROR;
         }

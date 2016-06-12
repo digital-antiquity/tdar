@@ -175,7 +175,12 @@
 <#assign mode>horizontal</#assign>
     <div class=" <#if mode == 'vertical'>span7<#else>span6 map mapcontainer</#if>">
             <h3>${siteAcronym} Worldwide</h3>
-        <script type="application/json" data-mapdata>${mapJson}</script>
+        <script type="application/json" data-mapdata>
+			${homepageGraphs.mapJson}
+        </script>
+        <script type="application/json" data-locales>
+			${homepageGraphs.localesJson}
+        </script>
 
              <div id="worldmap" style="height:350px" data-max="">
              </div>
@@ -189,7 +194,7 @@
         <#if mode !='vertical'></div></#if>
 	<script>
 	$(function() {
-    	TDAR.worldmap.initWorldMap();
+    	TDAR.worldmap.initWorldMap("${mode}");
 	});
 	</script>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>

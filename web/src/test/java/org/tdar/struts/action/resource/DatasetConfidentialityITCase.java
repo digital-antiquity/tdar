@@ -27,6 +27,7 @@ import org.tdar.struts.action.dataset.ColumnMetadataController;
 
 public class DatasetConfidentialityITCase extends AbstractControllerITCase {
 
+    private static final String TEST_DESCRIPTION = "test description";
     private static final String TEST_DATA_SET_FILE_PATH = TestConstants.TEST_DATA_INTEGRATION_DIR + "total-number-of-bones-per-period.xlsx";
     private static final String EXCEL_FILE_NAME = "periods-modified-sm-01182011.xlsx";
 
@@ -48,7 +49,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         codingSheetController.prepare();
         CodingSheet codingSheet = codingSheetController.getCodingSheet();
         codingSheet.setTitle("test coding sheet");
-        codingSheet.setDescription("test description");
+        codingSheet.setDescription(TEST_DESCRIPTION);
         List<File> codingFiles = new ArrayList<File>();
         List<String> codingFileNames = new ArrayList<String>();
         File codingFile = new File(TestConstants.TEST_DATA_INTEGRATION_DIR, EXCEL_FILE_NAME);
@@ -78,6 +79,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
         logger.info("{}", cloneBean);
         List<DataTableColumn> list = new ArrayList<DataTableColumn>();
         list.add(cloneBean);
+        datasetController.setTableDescription(TEST_DESCRIPTION);
         datasetController.setDataTableColumns(list);
         datasetController.saveColumnMetadata();
         setVerifyTransactionCallback(new TransactionCallback<Dataset>() {
@@ -87,6 +89,7 @@ public class DatasetConfidentialityITCase extends AbstractControllerITCase {
                 logger.info("{} {}", datasetId, mydataset);
                 Set<InformationResourceFile> informationResourceFiles = mydataset.getInformationResourceFiles();
                 assertNotEmpty(informationResourceFiles);
+                assertEquals("should have description", TEST_DESCRIPTION,mydataset.getDataTables().iterator().next().getDescription());
                 assertEquals(FileAccessRestriction.CONFIDENTIAL, informationResourceFiles.iterator().next().getRestriction());
                 genericService.delete(mydataset);
                 return null;

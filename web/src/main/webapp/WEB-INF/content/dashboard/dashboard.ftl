@@ -359,7 +359,7 @@
 		</ul>
 		<form>
 		<!-- fixme - send email via email-controller 
-			construct list of people; contruct url for -- dedup /admin/authority-management/select-authority?selectedDupeIds=...&entityType=PERSON -->
+			construct list of people; contruct url for -- dedup /admin/authority/select-authority?selectedDupeIds=...&entityType=PERSON -->
 		<button name="yes" class="button btn">Yes</button>
 		<button name="no"  class="button btn">No</button>
 		</form>

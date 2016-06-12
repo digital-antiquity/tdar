@@ -26,7 +26,7 @@
         <li><a href="${commentUrlEscaped}?subject=tDAR%20comments"><@s.text name="menu.contact"/></a></li>
         <li>
              <form class="form-complete-inline seleniumIgnoreForm" id="frmMenuLogout" name="logoutFormMenu" method="post" action="/logout" >
-                    <button type="submit" class="btn btn-link tdar-btn-link" name="logout" value="Logout">Logout</button>
+                    <button type="submit" class="btn btn-link tdar-btn-link serif" name="logout" value="Logout">Logout</button>
              </form>
          </li>
     </ul>

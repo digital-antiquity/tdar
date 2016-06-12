@@ -50,7 +50,6 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
 
     private Project featuredProject;
 
-    private String homepageResourceCountCache;
     private List<Resource> featuredResources = new ArrayList<Resource>();
     private ResourceCollection featuredCollection;
 
@@ -62,10 +61,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     private transient HomepageService homepageService;
 
     private List<SyndEntry> rssEntries;
-
-    private String mapJson;
-
-    private String resourceTypeLocaleJson;
+    private HomepageDetails homepageGraphs;
 
     @HttpOnlyIfUnauthenticated
     @Actions({
@@ -122,10 +118,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @Action(value = "map", results = { @Result(name = SUCCESS, location = "map.ftl", type = FREEMARKER, params = { "contentType", "text/html" }) })
     @SkipValidation
     public String worldMap() {
-        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
-        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
-        setResourceTypeLocaleJson(worldmap.getLocalesJson());
-        setMapJson(worldmap.getMapJson());
+        setupMapGraphs();
 
         return SUCCESS;
     }
@@ -149,10 +142,12 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
             params = { "contentType", "text/html" }) })
     @SkipValidation
     public String resourceStats() {
-        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
-        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
-        setResourceTypeLocaleJson(worldmap.getLocalesJson());
+        setupMapGraphs();
         return SUCCESS;
+    }
+
+    private void setupMapGraphs() {
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
     }
 
     public Project getFeaturedProject() {
@@ -161,14 +156,6 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
 
     public void setFeaturedProject(Project featuredProject) {
         this.featuredProject = featuredProject;
-    }
-
-    public String getHomepageResourceCountCache() {
-        return homepageResourceCountCache;
-    }
-
-    public void setHomepageResourceCountCache(String homepageResourceCountCache) {
-        this.homepageResourceCountCache = homepageResourceCountCache;
     }
 
     public List<Resource> getFeaturedResources() {
@@ -195,14 +182,6 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
         this.sitemapFile = sitemapFile;
     }
 
-    public String getMapJson() {
-        return mapJson;
-    }
-
-    public void setMapJson(String mapJson) {
-        this.mapJson = mapJson;
-    }
-
     public ResourceCollection getFeaturedCollection() {
         return featuredCollection;
     }
@@ -227,11 +206,11 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
         return false;
     }
 
-    public String getResourceTypeLocaleJson() {
-        return resourceTypeLocaleJson;
+    public HomepageDetails getHomepageGraphs() {
+        return homepageGraphs;
     }
 
-    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
-        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
+    public void setHomepageGraphs(HomepageDetails homepageGraphs) {
+        this.homepageGraphs = homepageGraphs;
     }
 }

@@ -55,6 +55,8 @@ import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts.action.ontology.OntologyController;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
+import org.tdar.struts.action.resource.BookmarkResourceController;
+import org.tdar.struts.action.upload.UploadController;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 

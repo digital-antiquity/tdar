@@ -55,7 +55,7 @@ public class StandalonePdfMergeTest {
         ut.addSource(coverpagePdf);
         ut.addSource(documentPdf);
         ut.setDestinationFileName(destinationPdf.getCanonicalPath());
-        ut.mergeDocuments();
+        ut.mergeDocuments(MemoryUsageSetting.setupMainMemoryOnly());
 
         //not a very robust assertion, but one telltale sign that the bug occurred is if the merger generated a file that is smaller than the original
         assertThat("destination pdf should be larger than the original pdf", destinationPdf.length(), is( greaterThan(documentPdf.length())));

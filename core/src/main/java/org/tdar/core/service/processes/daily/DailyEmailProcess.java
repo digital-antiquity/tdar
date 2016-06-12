@@ -14,7 +14,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Email.Status;
+import org.tdar.core.bean.notification.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.external.EmailService;

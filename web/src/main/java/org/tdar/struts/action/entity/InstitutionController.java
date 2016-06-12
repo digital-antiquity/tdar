@@ -91,10 +91,7 @@ public class InstitutionController extends AbstractCreatorController<Institution
 
     @Override
     public boolean authorize() {
-        if (!isAuthenticated()) {
-            return false;
-        }
-        return authorizationService.canEdit(getAuthenticatedUser(), getInstitution());
+        return authorizationService.canEditCreator(getInstitution(), getAuthenticatedUser());
     }
 
     public String getName() {

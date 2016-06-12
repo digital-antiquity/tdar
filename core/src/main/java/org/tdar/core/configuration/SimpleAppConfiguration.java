@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import javax.imageio.ImageIO;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
@@ -81,7 +82,7 @@ public abstract class SimpleAppConfiguration implements Serializable {
         System.setProperty("org.jboss.logging.provider", "slf4j");
 
         System.setProperty("java.awt.headless", "true");
-
+        ImageIO.scanForPlugins();
     }
 
     @Autowired

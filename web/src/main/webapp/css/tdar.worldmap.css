@@ -5,7 +5,7 @@
 }
 
 #worldmap.leaflet-container {
-    background-color: #D5F0FD !important;
+    background-color: #D5F0FD;
     border: 1px solid #AAA;
 }
 #worldmap .info {
@@ -76,4 +76,10 @@ div.mapcontainer img {
 #mapGraphZoomOut,#mapGraphZoomOut * {
      cursor: hand;
      cursor: pointer;
+}
+
+.mapcontainer.mini h3, .mapcontainer.mini #mapgraphdata {display:none}
+.mini #worldmap.leaflet-container {
+    border:none;
+    background-color:#fff;
 }

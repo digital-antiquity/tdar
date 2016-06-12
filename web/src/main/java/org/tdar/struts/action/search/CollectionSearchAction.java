@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
@@ -57,7 +58,9 @@ public class CollectionSearchAction extends AbstractLookupController<ResourceCol
         setMode("COLLECTION SEARCH:");
 
         try {
-            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), Arrays.asList(getQuery()),false, this,this);
+            CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+            csqo.setAllFields(Arrays.asList(getQuery()));
+            collectionSearchService.buildResourceCollectionQuery(getAuthenticatedUser(), csqo,  this, this);
             determineCollectionSearchTitle();
         } catch (TdarRecoverableRuntimeException tdre) {
             getLogger().warn("search parse exception: {}", tdre.getMessage());

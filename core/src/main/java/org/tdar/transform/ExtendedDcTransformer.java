@@ -137,10 +137,10 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
         dc.addIdentifier(source.getId().toString());
         dc.addReferences(UrlService.absoluteUrl(source));
         for (LatitudeLongitudeBox longLat : toSortedList(source.getActiveLatitudeLongitudeBoxes())) {
-            String maxy = longLat.getMaxObfuscatedLatitude().toString();
-            String miny = longLat.getMinObfuscatedLatitude().toString();
-            String maxx = longLat.getMaxObfuscatedLongitude().toString();
-            String minx = longLat.getMinObfuscatedLongitude().toString();
+            String maxy = longLat.getObfuscatedNorth().toString();
+            String miny = longLat.getObfuscatedSouth().toString();
+            String maxx = longLat.getObfuscatedEast().toString();
+            String minx = longLat.getObfuscatedWest().toString();
             dc.addSpatial(minx, miny, maxx, maxy);
             // dc.addCoverage(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
         }

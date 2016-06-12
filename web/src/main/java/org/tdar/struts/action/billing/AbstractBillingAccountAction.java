@@ -31,15 +31,11 @@ public abstract class AbstractBillingAccountAction extends AbstractAuthenticatab
     public boolean isEditable() {
         return authorizationService.canEditAccount(getAccount(), getAuthenticatedUser());
     }
-
-    
     
     @Override
     public void prepare() throws TdarActionException {
         prepareAndLoad(this, RequestType.EDIT);
     }
-
-    
 
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_BILLING_INFO;
@@ -50,9 +46,6 @@ public abstract class AbstractBillingAccountAction extends AbstractAuthenticatab
         this.setAccount(persistable);
     }
 
-    
-    
-    
     public Long getId() {
         return id;
     }
@@ -61,13 +54,9 @@ public abstract class AbstractBillingAccountAction extends AbstractAuthenticatab
         this.id = id;
     }
 
-
-
     public BillingAccount getAccount() {
         return account;
     }
-
-
 
     public void setAccount(BillingAccount account) {
         this.account = account;

@@ -35,7 +35,6 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
@@ -51,7 +50,6 @@ import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.db.model.abstracts.IntegrationDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.filestore.personal.PersonalFilestore;
-import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -130,33 +128,6 @@ public class DataIntegrationService {
         }
     }
 
-    private void hydrateIntegrationColumn(IntegrationColumn integrationColumn) {
-        List<DataTableColumn> dataTableColumns = genericDao.loadFromSparseEntities(integrationColumn.getColumns(), DataTableColumn.class);
-        dataTableColumns.removeAll(Collections.singletonList(null));
-        integrationColumn.setColumns(dataTableColumns);
-        List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
-        if (integrationColumn.isIntegrationColumn()) {
-            if (CollectionUtils.isNotEmpty(filteredOntologyNodes)) {
-                filteredOntologyNodes.removeAll(Collections.singletonList(null));
-            }
-
-            integrationColumn.setSharedOntology(genericDao.loadFromSparseEntity(integrationColumn.getSharedOntology(), Ontology.class));
-            if (CollectionUtils.isEmpty(filteredOntologyNodes)) {
-                filteredOntologyNodes.addAll(integrationColumn.getSharedOntology().getOntologyNodes());
-            }
-        }
-        logger.debug("before: {} - {}", integrationColumn, filteredOntologyNodes);
-        filteredOntologyNodes = genericDao.loadFromSparseEntities(filteredOntologyNodes, OntologyNode.class);
-        integrationColumn.setFilteredOntologyNodes(filteredOntologyNodes);
-        // for each of the integration columns, grab the unique set of all children within an ontology
-
-        // that is, even if child is not selected, should get all children for query and pull up
-
-        integrationColumn.buildNodeChildHierarchy(ontologyNodeDao);
-
-        logger.debug("after: {} - {}", integrationColumn, filteredOntologyNodes);
-        logger.info("integration column: {}", integrationColumn);
-    }
 
     /**
      * Convert the integration context to XML for persistance in the @link PersonalFilestore and logging
@@ -254,70 +225,6 @@ public class DataIntegrationService {
         return sw.toString();
     }
 
-    /**
-     * Iterate over every {@link DataTableColumn} in every {@link DataTable} and find ones that have shared {@link Ontology} entries. Return those back in Lists
-     * of Lists.
-     * 
-     * @param selectedDataTables
-     * @return
-     */
-    public List<List<DataTableColumn>> getIntegrationColumnSuggestions(Collection<DataTable> selectedDataTables) {
-        // iterate through all of the columns and get a map of the ones associated
-        // with any ontology.
-        HashMap<Ontology, List<DataTableColumn>> dataTableAutoMap = new HashMap<>();
-
-        for (DataTable table : selectedDataTables) {
-            List<DataTableColumn> dataTableColumns;
-
-            // FIXME: not sure if this is correct
-            if (TdarConfiguration.getInstance().getLeftJoinDataIntegrationFeatureEnabled()) {
-                dataTableColumns = table.getLeftJoinColumns();
-            } else {
-                dataTableColumns = table.getDataTableColumns();
-            }
-            for (DataTableColumn column : dataTableColumns) {
-                Ontology ontology = column.getMappedOntology();
-                if (ontology != null) {
-                    List<DataTableColumn> columns = dataTableAutoMap.get(ontology);
-                    if (columns == null) {
-                        columns = new ArrayList<>();
-                        dataTableAutoMap.put(ontology, columns);
-                    }
-                    columns.add(column);
-                }
-            }
-        }
-
-        // okay now we have a map of the data table columns,
-        List<List<DataTableColumn>> columnAutoList = new ArrayList<>();
-        for (Ontology key : dataTableAutoMap.keySet()) {
-            Pair<ArrayList<Long>, ArrayList<DataTableColumn>> set1 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
-            Pair<ArrayList<Long>, ArrayList<DataTableColumn>> set2 = new Pair<>(new ArrayList<Long>(), new ArrayList<DataTableColumn>());
-
-            // go through the hashMap and try and pair out by set of rules assuming that there is one column per table at a time
-            // and there might be a case where there are more than one
-            for (DataTableColumn column : dataTableAutoMap.get(key)) {
-                Long dataTableIld = column.getDataTable().getId();
-                if (!set1.getFirst().contains(dataTableIld)) {
-                    set1.getSecond().add(column);
-                    set1.getFirst().add(dataTableIld);
-                } else if (!set2.getFirst().contains(dataTableIld)) {
-                    set2.getSecond().add(column);
-                    set2.getFirst().add(dataTableIld);
-                } // give up
-            }
-
-            // might want to tune this to some logic like:
-            // if just one table, then anything with an ontology if more than one, just show lists with at least two ontologies
-            if (set1.getSecond().size() > 0) {
-                columnAutoList.add(set1.getSecond());
-            }
-            if (set2.getSecond().size() > 0) {
-                columnAutoList.add(set2.getSecond());
-            }
-        }
-        return columnAutoList;
-    }
 
     @Transactional(readOnly = true)
     public Map<Ontology, List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {
@@ -473,31 +380,6 @@ public class DataIntegrationService {
             columns.add(dataTableColumn);
         }
         return columnsByOntology;
-    }
-
-    /**
-     * Take the entire Integration Context, hydrate it (if needed) and run the integration
-     * 
-     * @param context
-     * @param provider
-     * @return
-     * @throws Exception
-     */
-    @Transactional
-    @Deprecated
-    public ModernIntegrationDataResult generateModernIntegrationResult(IntegrationContext context, TextProvider provider) throws Exception {
-        context.setDataTables(genericDao.loadFromSparseEntities(context.getDataTables(), DataTable.class));
-        for (IntegrationColumn integrationColumn : context.getIntegrationColumns()) {
-            hydrateIntegrationColumn(integrationColumn);
-        }
-
-        // logger.debug(serializationService.convertToXML(context));
-
-        validateIntegrationContext(context);
-
-        ModernIntegrationDataResult result = tdarDataImportDatabase.generateIntegrationResult(context, null, provider);
-        storeResult(result);
-        return result;
     }
 
     private void validateIntegrationContext(IntegrationContext context) {

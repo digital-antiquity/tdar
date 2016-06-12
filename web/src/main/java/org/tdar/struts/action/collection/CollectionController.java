@@ -26,7 +26,6 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
-import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
@@ -59,8 +58,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient ResourceService resourceService;
-    @Autowired
-    private transient GenericService genericService;
     @Autowired
     private transient AuthorizationService authorizationService;
     
@@ -161,18 +158,8 @@ public class CollectionController extends AbstractPersistableController<Resource
         if(hasActionErrors()) {
             return INPUT;
         }
-
-        List<Resource> resourcesToRemove = genericService.findAll(Resource.class, toRemove);
-        List<Resource> resourcesToAdd = genericService.findAll(Resource.class, toAdd);
-        getLogger().debug("toAdd: {}", resourcesToAdd);
-        getLogger().debug("toRemove: {}", resourcesToRemove);
-
-        List<Resource> publicResourcesToRemove = genericService.findAll(Resource.class, publicToRemove);
-        List<Resource> publicResourcesToAdd = genericService.findAll(Resource.class, publicToAdd);
-        getLogger().debug("toAdd: {}", resourcesToAdd);
-        getLogger().debug("toRemove: {}", resourcesToRemove);
-        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), resourcesToAdd,
-                resourcesToRemove, publicResourcesToAdd, publicResourcesToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
+        resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), toAdd,
+                toRemove, publicToAdd, publicToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }

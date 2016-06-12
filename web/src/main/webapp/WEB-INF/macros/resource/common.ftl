@@ -175,8 +175,8 @@ Common macros used in multiple contexts
 		data-x="label" data-values="count" data-click="resourceBarGraphClick" data-yaxis="log" data-colorcategories="true" >
 		</div>
 		<#noescape>
-		<script id="homepageResourceCountCache">
-		${homepageResourceCountCache}
+		<script id="homepageResourceCountCache" type="application/json">
+		${homepageGraphs.resourceTypeJson}
 		</script>
 		</#noescape>
 	
@@ -189,16 +189,16 @@ Common macros used in multiple contexts
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
     <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal">
-    <div class=" <#if mode == 'vertical'>span7<#else>span6 map mapcontainer</#if>">
+    <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>span6 map mapcontainer<#else> mapcontainer</#if> ${mode}">
             <h3>${siteAcronym} Worldwide</h3>
         <script type="application/json" data-mapdata>
-			<#noescape>${mapJson}</#noescape>
+			<#noescape>${homepageGraphs.mapJson}</#noescape>
         </script>
         <script type="application/json" data-locales>
-			<#noescape>${resourceTypeLocaleJson}</#noescape>
+			<#noescape>${homepageGraphs.localesJson}</#noescape>
         </script>
 
-             <div id="worldmap" style="height:350px" data-max="">
+             <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="">
              </div>
         <#if mode =='vertical'></div></#if>
              <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="span4 offset1"<#else>style="width:100%"</#if>>
@@ -210,7 +210,7 @@ Common macros used in multiple contexts
         <#if mode !='vertical'></div></#if>
 	<script>
 	$(function() {
-    	TDAR.worldmap.initWorldMap();
+    	TDAR.worldmap.initWorldMap("worldmap","${mode}");
 	});
 	</script>
     </#macro>
@@ -316,7 +316,7 @@ Common macros used in multiple contexts
         </#list>
         <div class="span3">
             <#local retUrl><@s.url includeParams="all"/></#local>
-            <a class="button btn btn-primary submitButton" href="/entity/${entityType}/${entity.id?c}/address?returnUrl=${retUrl?url}">Add Address</a>
+            <a class="button btn btn-primary submitButton" href="/entity/address/${entity.id?c}/add?returnUrl=${retUrl?url}">Add Address</a>
         </div>
     </div>
     </#macro>
@@ -336,10 +336,14 @@ Common macros used in multiple contexts
         <span>${address.city}</span>, <span>${address.state}</span>, <span
             >${address.postal}</span><br/>
         <span>${address.country}</span><#if modifiable><br/>
-        <a href="<@s.url value="/entity/${creatorType}/${creatorId?c}/address?addressId=${address.id}"/>"><@s.text name="menu.edit" /></a>
+        <a href="<@s.url value="/entity/address/${creatorId?c}/${address.id?c}"/>"><@s.text name="menu.edit" /></a>
     </#if><#if deletable && modifiable> |</#if>
         <#if deletable>
-            <a href="/entity/${creatorType}/${creatorId?c}/delete-address?addressId=${address.id}"><@s.text name="menu.delete" /></a>
+        	<@s.form method="POST" action="/entity/address/delete-address">
+				<@s.hidden name="id" value="${creatorId?c}"/>
+				<@s.hidden name="addressId" value="${address.id?c}"/>
+            	<@s.button name="menu.delete" />
+			</@s.form>
         </#if>
     </p>
     </#macro>

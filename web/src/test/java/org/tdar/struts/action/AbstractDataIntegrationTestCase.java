@@ -4,9 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,11 +21,8 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.service.integration.IntegrationColumn;
-import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.struts.action.codingSheet.CodingSheetMappingController;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
-import org.tdar.struts.action.workspace.IntegrationDownloadAction;
-import org.tdar.struts.action.workspace.LegacyWorkspaceController;
 import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractDataIntegrationTestCase extends AbstractAdminControllerITCase {
@@ -145,30 +139,6 @@ public abstract class AbstractDataIntegrationTestCase extends AbstractAdminContr
         }
     }
 
-    public Object performActualIntegration(List<Long> tableIds, List<IntegrationColumn> integrationColumns,
-            HashMap<Ontology, String[]> nodeSelectionMap) throws Exception {
-        LegacyWorkspaceController controller = generateNewInitializedController(LegacyWorkspaceController.class);
-        performIntegrationFiltering(integrationColumns, nodeSelectionMap);
-        controller.setTableIds(tableIds);
-        controller.setIntegrationColumns(integrationColumns);
-        controller.displayFilteredResults();
-
-        logger.info("Testing Integration Results");
-        assertNotNull(controller.getResult());
-        logger.info("{}", controller.getIntegrationColumns());
-
-        Long ticketId = controller.getTicketId();
-        assertNotNull(ticketId);
-        ModernIntegrationDataResult result = controller.getResult();
-        IntegrationDownloadAction dc = generateNewInitializedController(IntegrationDownloadAction.class);
-        dc.setTicketId(ticketId);
-        dc.prepare();
-        dc.downloadIntegrationDataResults();
-        InputStream integrationDataResultsInputStream = dc.getIntegrationDataResultsInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(integrationDataResultsInputStream));
-        Assert.assertFalse(StringUtils.isEmpty(reader.readLine()));
-        return result;
-    }
 
     public List<String> performIntegrationFiltering(List<IntegrationColumn> integrationColumns, HashMap<Ontology, String[]> nodeSelectionMap) {
         List<String> checkedNodeList = new ArrayList<String>();

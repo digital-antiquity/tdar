@@ -63,9 +63,8 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     private List<SyndEntry> rssEntries;
 
-    private String mapJson;
-    private String resourceTypeLocaleJson;
-    private String homepageResourceCountCache;
+    private HomepageDetails homepageGraphs;
+
 
     @Actions(value = {
             @Action(value = "", results = { @Result(name = SUCCESS, location = "about.ftl") }),
@@ -75,10 +74,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
     @SkipValidation
     @HttpOnlyIfUnauthenticated
     public String about() {
-        HomepageDetails worldmap = homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this);
-        setHomepageResourceCountCache(worldmap.getResourceTypeJson());
-        setResourceTypeLocaleJson(worldmap.getLocalesJson());
-        setMapJson(worldmap.getMapJson());
+        setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
 //        setHomepageResourceCountCache(homepageService.getResourceCountsJson());
         try {
@@ -100,14 +96,6 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     public void setFeaturedProject(Project featuredProject) {
         this.featuredProject = featuredProject;
-    }
-
-    public String getHomepageResourceCountCache() {
-        return homepageResourceCountCache;
-    }
-
-    public void setHomepageResourceCountCache(String homepageResourceCountCache) {
-        this.homepageResourceCountCache = homepageResourceCountCache;
     }
 
     public List<Resource> getFeaturedResources() {
@@ -158,24 +146,16 @@ public class IndexAction extends AbstractAuthenticatableAction {
         return true;
     }
 
-    public String getMapJson() {
-        return mapJson;
-    }
-
-    public void setMapJson(String mapJson) {
-        this.mapJson = mapJson;
-    }
-
     @Override
     public boolean isSubnavEnabled() {
         return false;
     }
 
-    public String getResourceTypeLocaleJson() {
-        return resourceTypeLocaleJson;
+    public HomepageDetails getHomepageGraphs() {
+        return homepageGraphs;
     }
 
-    public void setResourceTypeLocaleJson(String resourceTypeLocaleJson) {
-        this.resourceTypeLocaleJson = resourceTypeLocaleJson;
+    public void setHomepageGraphs(HomepageDetails homepageGraphs) {
+        this.homepageGraphs = homepageGraphs;
     }
 }

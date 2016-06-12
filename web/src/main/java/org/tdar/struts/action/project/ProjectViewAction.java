@@ -78,7 +78,7 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE,  ResourceType.class, selectedResourceTypes);
 
         try {
-            resourceSearchService.buildResourceContainedInSearch(QueryFieldNames.PROJECT_ID, project, getAuthenticatedUser(), this, this);
+            resourceSearchService.buildResourceContainedInSearch(project, null, getAuthenticatedUser(), this, this);
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
             reSortFacets(this, project);
         } catch (SearchPaginationException e) {
