@@ -10,6 +10,10 @@
 <#global jquery_version="1.11.3">
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
+<#assign pageType ="view">
+<#if  actionName=='edit' || actionName='add' || actionName='columns'>
+    <#assign pageType=actionName>
+</#if>
 
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
      This is a less-than ideal solution, but seems to be the best that we have. -->
