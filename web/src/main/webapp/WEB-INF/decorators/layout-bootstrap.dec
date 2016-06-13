@@ -86,7 +86,7 @@ ${head}
     <base id="basePath" href="<@s.url value='/'/>">
     </#if>
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${pageType} <#if !production>not-production</#if>"
 	 data-leaflet-api-key="${leafletApiKey}" data-leaflet-tile-provider="${leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc="${geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
 
