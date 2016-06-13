@@ -198,7 +198,7 @@
 
 
     <#macro facetBy facetlist=[] currentValues=[] label="Facet Label" facetParam="" ulClass="media-list tools" liCssClass="media" action=actionName link=true icon=true pictoralIcon=false>
-        <#if (facetlist?? && !facetlist.empty)>
+        <#if (facetlist?has_content && !facetlist.empty)>
             <#if label != ''>
             <h4>${label}:</h4>
             </#if>

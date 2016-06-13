@@ -80,12 +80,12 @@
           
           <h5>Admin Tools</h5>
             <ul>
-             <li> <a href="<@s.url value="/collection/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
+             <li> <a href="<@s.url value="/collection/admin/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
              <li> <a href="<@s.url value="/search/download?collectionId=${collection.id?c}"/>">Export to Excel</a></li>
              <#if administrator && !collection.whiteLabelCollection >
              <li>
                 <form action="/collection/admin/makeWhitelabel/${id?c}" method="POST" class="inline">
-                    <@s.submit cssClass="button btn tdar-button tdar-btn-link" id="makeWhiteLabelCollection" value="Make Whitelabel"/>
+                    <@s.submit cssClass="button btn btn-link tdar-btn-link" id="makeWhiteLabelCollection" value="Make Whitelabel"/>
                 </form>
              
              </li>
