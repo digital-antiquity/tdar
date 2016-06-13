@@ -111,14 +111,14 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         if (tables == null) {
             tables = findDataTablesUsingResource(sheet);
         }
-        logger.debug("tables to check: {}", tables);
+        logger.trace("tables to check: {}", tables);
         Set<String> uniqueValues = new HashSet<>();
         for (DataTable table : tables) {
             for (DataTableColumn col : table.getDataTableColumns()) {
                 if (PersistableUtils.isEqual(col.getDefaultCodingSheet(), sheet)) {
                 	try {
                         List<String> selectNonNullDistinctValues = tdarDataImportDatabase.selectNonNullDistinctValues(col,true);
-                        logger.debug("unique values for {}: {}", table.getName(), selectNonNullDistinctValues);
+                        logger.trace("unique values for {}: {}", table.getName(), selectNonNullDistinctValues);
                         uniqueValues.addAll(selectNonNullDistinctValues);
                 	} catch(Exception e) {
                         logger.error("table doesn't exist: {}", table.getName());
@@ -134,7 +134,7 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         }
         Set<String> keySet = sheet.getCodeToRuleMap().keySet();
         uniqueValues.removeAll(keySet);
-        logger.debug("unique missing: {}", uniqueValues);
+        logger.trace("unique missing: {}", uniqueValues);
         return uniqueValues;
     }    
 

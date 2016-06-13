@@ -62,7 +62,7 @@ public class CreatorOwnerQueryPart<C extends Creator<?>> extends FieldQueryPart<
             terms.add(ResourceCreator.getCreatorRoleIdentifier(creator, role));
         }
         parent.append(new FieldQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Operator.OR, terms));
-        logger.debug(parent.generateQueryString());
+        logger.trace(parent.generateQueryString());
         return parent;
     }
 
