@@ -1,0 +1,72 @@
+syntax:glob
+.project
+.checkstyle
+.settings
+.classpath
+.checkstyle
+indexes
+target
+bin
+src/main/resources/*.properties
+src/main/resources/*-local-settings.xml
+src/main/resources/log4j.xml
+src/main/webapp/wro*
+googlemaps-api-key.js
+logs
+*.jpage
+*.class
+*~
+tags
+*.orig
+*.rej
+.idea/*
+*.iml
+nb-configuration.xml
+nbactions*
+glassfish-web.xml
+.DS_Store
+libpeerconnection.log
+
+.externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
+import.log
+
+*.sublime-workspace
+*.sublime-project
+
+node
+node_modules
+clover.snapshot
+log4j2.xml
+npm-debug.log
+Indexes
+syntax: regexp
+^src/main/webapp/robots\.txt$
+
+syntax: regexp
+^src/main/db/log\.txt$
+
+syntax: regexp
+^src/main/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/test/resources/jetty-ssl\.keystore$
+syntax: regexp
+^src/main/resources/jetty/jetty-ssl\.keystore$
+syntax: regexp
+^src/test/resources/jetty/jetty-ssl\.keystore$
+
+syntax: regexp
+^src/main/resources/hibernate-ehcache\.xml$
+syntax: regexp
+^(.+)/src/main/db/log\.txt
+^(.+)/src/main/resources/jetty-ssl\.keystore
+^(.+)/src/main/resources/jetty/jetty-ssl\.keystore
+^(.+)/src/main/resources/hibernate-ehcache\.xml
+^(.+)/src/main/resources/(.+)\.properties
+^(.+)/src/main/resources/(.+)-local-settings.xml
+^(.+)/src/main/resources/log4j\.xml
+^(.+)/src/main/resources/log4j2\.xml
+^(.+)/src/main/webapp/bower_components
+^(.+)/(indexes|target|logs|bin|node|node_modules)
+^web/src/main/webapp/components/(.+)/(examples|examples_support|test|tests|unit_testing|demo|docs)/(.+)
+^web/src/main/webapp/components/(.+)\.sh
+^web/src/main/webapp/components/jquery-file-upload/server

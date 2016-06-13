@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="obsidian-1" author="abrin" failOnError="false">
+        <dropColumn tableName="institution" columnName="merge_creator_id" />
+        <dropColumn tableName="person" columnName="merge_creator_id" />
+    </changeSet>
+
+    <changeSet id="obsidian-2" author="abrin">
+        <addPrimaryKey tableName="data_integration_workflow" columnNames="id"/>
+        <createTable tableName="data_integration_users">
+            <column name="id" type="bigserial" />
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" references="tdar_user"
+                    foreignKeyName="fk_integration_authorization__tdar_user_id" />
+            </column>
+            <column name="integration_id" type="bigint">
+                <constraints nullable="false"
+                    references="data_integration_workflow"
+                    foreignKeyName="fk_integration_authorization___id" />
+            </column>
+        </createTable>
+        <addColumn tableName="data_integration_workflow">
+            <column name="hidden" defaultValueBoolean="false" type="boolean"/>
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-3" author="abrin">
+        <addColumn tableName="email_queue">
+            <column name="resource_id" type="bigint" />
+        </addColumn>
+        <addForeignKeyConstraint constraintName="fk_email_resource_id" referencedTableName="resource" baseColumnNames="resource_id" baseTableName="email_queue" referencedColumnNames="id" />        
+        <addColumn tableName="email_queue">
+            <column name="message_type" type="varchar(50)" />
+        </addColumn>
+    </changeSet>
+</databaseChangeLog>
