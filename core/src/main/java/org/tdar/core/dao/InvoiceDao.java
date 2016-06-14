@@ -268,7 +268,7 @@ public class InvoiceDao extends Dao.HibernateBase<Invoice>{
             if (account != null) {
                 Number numFlagged = accountDao.findCountOfFlaggedResourcesInAccount(account);
                 if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE || numFlagged != null && numFlagged.longValue() > 0) {
-                    accountDao.updateQuota(account, account.getResources());
+                    accountDao.updateQuota(account, account.getResources(), invoice.getOwner());
                 }
             }
         } catch (Exception e) {
@@ -296,7 +296,7 @@ public class InvoiceDao extends Dao.HibernateBase<Invoice>{
                 res.markUpdated(invoice.getOwner());
                 res.setAccount(account);
                 account.getResources().add(res);
-                accountDao.updateQuota(account, account.getResources());
+                accountDao.updateQuota(account, account.getResources(),invoice.getOwner());
                 saveOrUpdate(rc);
                 saveOrUpdate(res);
                 logger.debug("{}",res);

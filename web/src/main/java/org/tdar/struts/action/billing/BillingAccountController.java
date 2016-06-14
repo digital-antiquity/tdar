@@ -119,7 +119,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             @Result(name = SUCCESS, location = "${id}", type = TDAR_REDIRECT)
     })
     public String updateQuotas() {
-        accountService.updateQuota(getAccount(), getAccount().getResources());
+        accountService.updateQuota(getAccount(), getAccount().getResources(), getAuthenticatedUser());
         return SUCCESS;
     }
 
@@ -134,7 +134,7 @@ public class BillingAccountController extends AbstractPersistableController<Bill
             @Result(name = SUCCESS, location = "${id}", type = TDAR_REDIRECT)
     })
     public String fix() {
-        accountService.resetAccountTotalsToHaveOneFileLeft(getAccount());
+        accountService.resetAccountTotalsToHaveOneFileLeft(getAccount(), getAuthenticatedUser());
         return SUCCESS;
     }
 
