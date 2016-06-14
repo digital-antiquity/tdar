@@ -229,7 +229,7 @@ public class BulkUploadService {
 
         Collection<Resource> remainingResources = manifestProxy.getResourcesCreated().values();
         logger.info("bulk: applying account: {}", accountId);
-        updateAccountQuotas(accountId, remainingResources, updateReciever);
+        updateAccountQuotas(accountId, remainingResources, updateReciever, submitter);
 
         logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
         completeBulkUpload(accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
@@ -349,12 +349,12 @@ public class BulkUploadService {
      * 
      * @param updateReciever
      */
-    private void updateAccountQuotas(Long accountId, Collection<Resource> resources, AsyncUpdateReceiver updateReciever) {
+    private void updateAccountQuotas(Long accountId, Collection<Resource> resources, AsyncUpdateReceiver updateReciever, TdarUser user) {
         try {
             logger.info("bulk: finishing quota work");
             if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
                 BillingAccount account = genericDao.find(BillingAccount.class, accountId);
-                accountService.updateQuota(account, resources);
+                accountService.updateQuota(account, resources, user);
             }
         } catch (Throwable t) {
             logger.error("quota error happend", t);

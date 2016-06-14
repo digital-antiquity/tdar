@@ -389,7 +389,7 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Invoice, Invoi
                 BillingAccount account = genericDao.markWritableOnExistingSession(accountDao.getAccountForInvoice(invoice));
                 // this is unlikely, but possible (especially if a "bad" request is made
                 if (account != null && CollectionUtils.isNotEmpty(account.getResources())) {
-                    accountDao.updateQuota(account, account.getResources());
+                    accountDao.updateQuota(account, account.getResources(), invoice.getOwner());
                 }
             }
         }

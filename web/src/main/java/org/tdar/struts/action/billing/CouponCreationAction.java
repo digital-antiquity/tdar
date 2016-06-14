@@ -43,7 +43,7 @@ public class CouponCreationAction extends AbstractBillingAccountAction {
         for (int i = 0; i < quantity; i++) {
             accountService.generateCouponCode(getAccount(), getNumberOfFiles(), getNumberOfMb(), getExpires());
         }
-        accountService.updateQuota(getAccount());
+        accountService.updateQuota(getAccount(), getAuthenticatedUser());
         return SUCCESS;
     }
 

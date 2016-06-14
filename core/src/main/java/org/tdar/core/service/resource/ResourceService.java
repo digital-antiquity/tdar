@@ -844,7 +844,7 @@ public class ResourceService {
                 }
             }
             account = genericDao.markWritableOnExistingSession(account);
-            accountDao.updateQuota(account, toEvaluate);
+            accountDao.updateQuota(account, toEvaluate,authUser);
             genericDao.saveOrUpdate(account);
         }
 

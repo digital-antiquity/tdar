@@ -473,7 +473,7 @@ public class APIController extends AuthenticationAware.Base {
     public void updateQuota(BillingAccount account_, Resource resource) {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
             BillingAccount account = getGenericService().markWritableOnExistingSession(account_);
-            accountService.updateQuota(account, resource);
+            accountService.updateQuota(account, getAuthenticatedUser(), resource);
         }
     }
 

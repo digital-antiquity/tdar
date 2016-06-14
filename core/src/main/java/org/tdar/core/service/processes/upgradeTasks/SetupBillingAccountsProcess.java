@@ -184,7 +184,7 @@ public class SetupBillingAccountsProcess extends AbstractScheduledBatchProcess<T
             account.getInvoices().add(invoice);
             nextResourceBatch = getNextResourceBatch(queue);
             while (CollectionUtils.isNotEmpty(nextResourceBatch)) {
-                accountService.updateQuota(account, nextResourceBatch.toArray(new Resource[0]));
+                accountService.updateQuota(account, person, nextResourceBatch.toArray(new Resource[0]));
                 nextResourceBatch = getNextResourceBatch(queue);
             }
             genericDao.saveOrUpdate(account);

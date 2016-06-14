@@ -187,7 +187,7 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
         assertFalse(account.getResources().contains(resource));
 
-        AccountAdditionStatus status = accountService.updateQuota(account, resource);
+        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter() ,resource);
         genericService.refresh(account);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, status);
         logger.info("{} space used in bytes ({})", account.getSpaceUsedInBytes(), spaceUsedInBytes);
@@ -218,9 +218,9 @@ public class AccountITCase extends AbstractIntegrationTestCase {
 
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
-        AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
+        AccountAdditionStatus statusOk = accountService.updateQuota(account, resource.getSubmitter(), resource);
         genericService.refresh(account);
-        AccountAdditionStatus status = accountService.updateQuota(account, resource2);
+        AccountAdditionStatus status = accountService.updateQuota(account, resource.getSubmitter(), resource2);
         Resource ok = null;
         Resource flagged = null;
         genericService.refresh(account);
@@ -239,10 +239,10 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(Status.ACTIVE, ok.getStatus());
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, flagged.getStatus());
         ok.setTitle("new title");
-        accountService.updateQuota(account, ok);
+        accountService.updateQuota(account, account.getOwner(), ok);
         assertEquals(Status.ACTIVE, ok.getStatus());
         addFileToResource((InformationResource) ok, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
-        accountService.updateQuota(account, ok);
+        accountService.updateQuota(account, account.getOwner(), ok);
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, ok.getStatus());
 
     }
@@ -259,11 +259,11 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         Document resource = generateDocumentWithUser();
         logger.info("f{} s{}", resource.getFilesUsed(), resource.getSpaceInBytesUsed());
 
-        AccountAdditionStatus statusOk = accountService.updateQuota(account, resource);
+        AccountAdditionStatus statusOk = accountService.updateQuota(account, account.getOwner(), resource);
         genericService.refresh(account);
         addFileToResource(resource, new File(TestConstants.TEST_DOCUMENT));
 
-        AccountAdditionStatus status = accountService.updateQuota(account, resource);
+        AccountAdditionStatus status = accountService.updateQuota(account, account.getOwner(), resource);
         genericService.refresh(account);
         Resource ok = null;
         Resource flagged = null;
@@ -282,10 +282,10 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(AccountAdditionStatus.CAN_ADD_RESOURCE, status);
         assertEquals(Status.ACTIVE, ok.getStatus());
         ok.setTitle("new title");
-        accountService.updateQuota(account, ok);
+        accountService.updateQuota(account, account.getOwner(), ok);
         assertEquals(Status.ACTIVE, ok.getStatus());
         addFileToResource((InformationResource) ok, new File(TestConstants.TEST_DOCUMENT_DIR, "/t1/test.pdf"));
-        accountService.updateQuota(account, ok);
+        accountService.updateQuota(account, account.getOwner(), ok);
         assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, ok.getStatus());
 
     }
@@ -336,11 +336,11 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(doc);
         Long availableSpaceInMb = account.getAvailableSpaceInMb();
         Long availableNumberOfFiles = account.getAvailableNumberOfFiles();
-        accountService.updateQuota(account, doc);
+        accountService.updateQuota(account, account.getOwner(), doc);
         doc.setStatus(Status.DELETED);
         logger.info("m:{} f:{}", account.getAvailableSpaceInMb(), account.getAvailableNumberOfFiles());
         genericService.saveOrUpdate(doc);
-        accountService.updateQuota(account, doc);
+        accountService.updateQuota(account, account.getOwner(), doc);
         assertEquals(availableNumberOfFiles, account.getAvailableNumberOfFiles());
         assertEquals(availableSpaceInMb, account.getAvailableSpaceInMb());
         logger.info("m:{} f:{}", account.getAvailableSpaceInMb(), account.getAvailableNumberOfFiles());
