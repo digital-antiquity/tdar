@@ -13,7 +13,7 @@
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.13.1" >
 <#assign pageType ="view">
-<#if  actionName=='edit' || actionName='add' || actionName='columns'>
+<#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
     <#assign pageType=actionName>
 </#if>
 
