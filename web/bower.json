@@ -1,0 +1,36 @@
+{
+  "authors": [
+    "Adam Brin <abrin@digitalantiquity.org>"
+  ],
+  "dependencies": {
+    "DataTables": "~1.9.4",
+    "bootstrap": "~2.3.2",
+    "jquery": "~1.11.3",
+    "jquery-file-upload": "8.6.1",
+    "jquery-validation": "~1.8.1",
+    "leaflet": "~0.7.3",
+    "leaflet-draw": "https://github.com/Leaflet/Leaflet.draw.git#0.2.4",
+    "leaflet-cluster": "https://github.com/Leaflet/Leaflet.markercluster.git#v0.4.0-hotfix.1 ",
+    "angular-modal-service": "0.4.0",
+    "d3": "~3.5.6",
+    "c3": "~0.4.10",
+    "DataTablesPlugins": "https://github.com/DataTables/Plugins.git#1.0.1"
+  },
+  "homepage": "https://bitbucket.org/tdar/tdar.src",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "license": "Apache 2.0",
+  "name": "tDAR",
+  "private": true,
+  "resolutions": {
+    "d3": "~3.5.6",
+    "DataTablesPlugins": "1.0.1",
+    "jquery": "~1.11.3"
+  },
+  "version": "14.0.0"
+}

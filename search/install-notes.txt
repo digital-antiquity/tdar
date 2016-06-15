@@ -1,0 +1,4 @@
+# note you'll need to install a copy of the JTS (java topology suite) jar
+# into the SOLR lib directory to properly get the cores to be setup
+# http://sourceforge.net/projects/jts-topo-suite/
+

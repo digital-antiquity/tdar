@@ -1,0 +1,196 @@
+
+.columnSquare {
+    display: inline-block;
+    border: 1px solid #999;
+    margin-right: 5px;
+    bottom: -.15em !important;
+    width: 1em;
+    height: .8em;
+    padding: 0px;
+}
+.columnSquare.uncoded {
+    background: #ffffff;
+}
+
+.countColumn, .buttontable div[data-count], .columnSquare.count {
+    background: #e5e696; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+.measurementColumn, .buttontable div[data-measurement], .columnSquare.measurement {
+    background: #deefff; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+.integrationColumn, .buttontable div[data-ontology], .columnSquare.integration {
+    background: #e4efc0; /* Old browsers */
+    border: 1px solid #999999;
+}
+
+.columnSquare span:before {
+    font-size: 14px;
+    font-weight: bold;
+    position: relative;
+    font-family: helvetica;
+    display: inline-block;
+    text-align: center;
+    width: 1em;
+    top: -3px;
+}
+
+.columnSquare.complete span:before {
+    content: "\2713"; /* check mark */
+    color: #000;
+}
+
+.columnSquare.invalid span:before {
+    content: "X";
+    color: #7a1501;
+}
+
+.defaultColumn, .buttontable div, .columnSquare.coded {
+    background: #eeeeee;
+    border: 1px solid #999999;
+}
+
+.columnSquare.mapped {
+    background: #8b755e;
+}
+
+.mappingInfo label {
+    position: static;
+}
+
+.mappingInfo input {
+    margin-left: 1em;
+}
+
+.mappingInfo input[type="checkbox"] {
+    margin-left: 1em;
+}
+
+
+#cbCheckAllToggle, .sorting_1 input[type='checkbox'] {
+    margin-right: 10px !Important;
+    margin-left: 10px !Important;
+}
+
+#drplist .ui-droppable {
+    min-height: 100px;
+    position: relative;
+}
+
+.legend {
+    line-height: 1.2em;
+}
+
+table.legend {
+    border-top: 1px solid #aaa;
+    border-bottom: 1px solid #aaa;
+}
+
+
+.displayColumn {
+    background: #e9e4cd;
+    border: 1px solid #999999;
+}
+
+.buttontable td, .integrationColumn, .displayColumn {
+    vertical-align: top;
+}
+
+
+
+.buttontable {
+    border-spacing: 0px;
+    border: 1px solid #ccc;
+}
+
+.buttontable .columnName {
+    font-weight: bold !important;
+}
+
+.buttontable .ontology {
+    font-weight: normal !important;
+}
+
+#drplist button {
+    font-size: 80%;
+}
+
+#drplist td div {
+    position: relative !important;
+    border-bottom: 1px solid #aeaeae;
+    /*    height: 3.2em; */
+}
+
+.short .columnName {
+    width: 100px;
+    overflow: hidden;
+}
+
+.short button {
+    visibility: hidden;
+}
+
+.short .ontology {
+    display: none;
+}
+
+
+
+
+
+/*** data integration old? **/
+
+
+.select-columns .showhide {
+    display: inline;
+    font-size: 80%;
+    right: 0px;
+}
+
+.select-columns .collapse {
+    overflow: visible !important;
+}
+
+.select-columns .fixed {
+    position: fixed;
+    top: 0;
+    z-index: 1000;
+    border: 1px solid #AAA;
+    background-color: #DEDEDE;
+    padding: 4px;
+    margin: 0px;
+    opacity: .95;
+}
+
+.select-columns .buttontable .integrationTableNumber {
+    display: none;
+    visibility: hidden;
+}
+
+.select-columns .integrationColumn div[table] .ontology {
+    display: none !important;
+}
+
+.select-columns .status {
+    color: #660033;
+    font-weight: bold;
+}
+
+.select-columns #drplist {
+    border: 1px solid #ccc;
+}
+
+
+.select-columns .addAnother {
+    margin-left: 1em !important;
+    font-weight: bold;
+}
+
+.select-columns .addAnother img {
+    bottom: 2px !important;
+    position: relative !important;
+}
+

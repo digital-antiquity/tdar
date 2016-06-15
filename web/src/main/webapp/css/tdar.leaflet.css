@@ -1,0 +1,31 @@
+/** leaflet maps - **/
+.disable-map .leaflet-draw {
+	display:none;
+	visibility:hidden;
+}
+
+.disable-map .leaflet-container, .leaflet-container.disable-map {
+	opacity:.5;
+}
+
+
+
+/* bootstrap css affects google maps v3 - http://stackoverflow.com/questions/9141249/twitter-bootstrap-css-affecting-google-maps */
+#large-google-map img, .google-map img {
+    border: inherit;
+    height: auto;
+    max-width: inherit;
+}
+
+.tdar-map-large, #large-google-map {
+    height: 450px;
+}
+
+#large-google-map label, .google-map label {
+    width: auto;
+    display: inline;
+}
+
+.tdar-gmap-control button:disabled {
+    display: none;
+}

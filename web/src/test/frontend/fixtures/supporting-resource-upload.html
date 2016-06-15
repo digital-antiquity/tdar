@@ -1,0 +1,10 @@
+<!--This is the section of the form that allows to attach a coding-sheet/ontology by either uploading a file
+or by typing the file content into textarea element -->
+<div>
+    <select id="inputMethodId" name="fileInputMethod">
+        <option value="file">Upload an Excel or CSV coding sheet file</option>
+        <option value="text" selected="selected">Manually enter coding rules into a textarea</option>
+    </select>
+    <input type="file" id="fileUploadField" name="uploadedFiles">
+    <textarea id="fileInputTextArea" name="fileTextInput"></textarea>
+</div>

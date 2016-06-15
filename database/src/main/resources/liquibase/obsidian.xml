@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+
+
+    <!-- http://www.liquibase.org/documentation/changes/index.html -->
+
+    <changeSet id="obsidian-1" author="abrin">
+        <dropColumn tableName="institution" columnName="merge_creator_id" />
+        <dropColumn tableName="person" columnName="merge_creator_id" />
+    </changeSet>
+    
+</databaseChangeLog>
