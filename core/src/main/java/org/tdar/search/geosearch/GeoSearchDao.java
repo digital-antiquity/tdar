@@ -83,12 +83,12 @@ public class GeoSearchDao {
      * So, there needs to be some overlap between the two, and it needs to be a reasonable amount. Suggested parameters are
      * 30% for x and 80% for y. But, this needs more testing.
      */
-    private final static String QUERY_COVERAGE_NEW = "SELECT %1$s, ST_Area(the_geom) as \"geom_area\", ST_Area(%3$s) as \"sect_area\", " +
+    private final static String QUERY_COVERAGE_NEW = "SELECT %1$s, area as \"geom_area\", ST_Area(%3$s) as \"sect_area\", " +
             "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_Area(%3$s) > %4$s as \"overlap\", " +
-            "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_area(the_geom) > %4$s as \"overlap_i\"  " +
+            "ST_Area(ST_Intersection(%3$s,the_geom)) / area > %4$s as \"overlap_i\"  " +
             "FROM %2$s where (ST_Disjoint(the_geom,%3$s) is false) AND ST_Area(ST_Intersection(%3$s, the_geom)) > 0 AND ( " +
             "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_Area(%3$s) > %4$s OR " +
-            "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_area(the_geom) > %5$s )";
+            "ST_Area(ST_Intersection(%3$s,the_geom)) / area > %5$s )";
 
     private final static String QUERY_GEOM_PART = "ST_GeomFromText('%1$s',%2$s)";
 
@@ -100,7 +100,7 @@ public class GeoSearchDao {
      * 42.0591071009751))',4326));
      */
 
-    private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
+    private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM %1$s where %3$s";
 
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
