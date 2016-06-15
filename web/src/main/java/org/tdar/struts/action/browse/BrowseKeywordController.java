@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Addressable;
@@ -23,6 +24,7 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.exception.SearchPaginationException;
+import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -57,7 +59,9 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private transient GenericKeywordService genericKeywordService;
     @Autowired
     private transient GenericService genericService;
-
+    @Autowired
+    private transient GeoSearchService geoSearchService;
+    
     private Long id;
     private KeywordType keywordType;
     private Keyword keyword;
@@ -68,6 +72,8 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     private boolean redirectBadSlug;
 
     private String schemaOrgJsonLD;
+
+    private String geoJson;
 
     public Keyword getKeyword() {
         return keyword;
@@ -110,7 +116,16 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         getLogger().trace("kwd:{} ({})", getKeywordType().getKeywordClass(), getId());
         setKeyword(genericService.find(getKeywordType().getKeywordClass(), getId()));
-
+        if (keyword instanceof GeographicKeyword) {
+            GeographicKeyword kwd = (GeographicKeyword) keyword;
+            if (kwd.getLevel() != null) {
+                try {
+                setGeoJson(geoSearchService.toGeoJson(kwd));
+                } catch (Throwable t) {
+                    getLogger().warn("issue with geographic keyword geojson conversion", t);
+                }
+            }
+        }
         if (PersistableUtils.isNotNullOrTransient(keyword) && getKeyword().isDuplicate()) {
             keyword = genericKeywordService.findAuthority(keyword);
             setRedirectBadSlug(true);
@@ -237,5 +252,13 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
 
     public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
         this.schemaOrgJsonLD = schemaOrgJsonLD;
+    }
+
+    public String getGeoJson() {
+        return geoJson;
+    }
+
+    public void setGeoJson(String geoJson) {
+        this.geoJson = geoJson;
     }
 }

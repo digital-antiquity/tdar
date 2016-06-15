@@ -177,5 +177,19 @@ public class GeoSearchService {
         PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
         
     }
+    
+    
+    @Transactional(readOnly=true)
+    public String toGeoJson(GeographicKeyword kwd) {
+        if (StringUtils.isBlank(kwd.getCode())) {
+            return null;
+        }
+
+        if (kwd.getLevel() == null) {
+            return null;
+        }
+        return geoSearchDao.toGeoJson(kwd);
+    }
+
 
 }

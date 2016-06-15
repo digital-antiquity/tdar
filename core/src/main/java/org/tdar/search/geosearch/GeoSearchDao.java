@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -28,6 +27,8 @@ import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
@@ -105,76 +106,7 @@ public class GeoSearchDao {
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
 
-    public enum SpatialTables {
-        COUNTRY("tdar.country_wgs84", "long_name", "iso_3digit"),
-        COUNTY("tdar.us_counties_wgs84", "cnty_name", "state_name"),
-        ADMIN("tdar.admin1_wgs84", "admin_name", "type_eng"),
-        CONTINENT("tdar.continents_wgs84", "continent");
 
-        private String tableName;
-        private String[] columns;
-
-        private SpatialTables(String tableName, String... columns) {
-            this.setTableName(tableName);
-            this.setColumns(columns);
-        }
-
-        public String getTableName() {
-            return tableName;
-        }
-
-        public void setTableName(String tableName) {
-            this.tableName = tableName;
-        }
-
-        public String[] getColumns() {
-            return columns;
-        }
-
-        public void setColumns(String[] columns) {
-            this.columns = columns;
-        }
-
-        public String getPrimaryColumn() {
-            if (this == COUNTRY) {
-                return StringUtils.join(columns, ",");
-            }
-            return getColumns()[0];
-        }
-
-        public String getIdColumn() {
-            switch (this) {
-                case COUNTRY:
-                    return columns[columns.length - 1];
-                case ADMIN:
-                    return "fips_admin";
-                case COUNTY:
-                    return "fips";
-                default:
-                    break;
-            }
-            throw new NotImplementedException("Fips Search not implemented");
-        }
-
-        public String getLimitColumn() {
-            switch (this) {
-                case COUNTRY:
-                    return columns[columns.length - 1];
-                case ADMIN:
-                    return "fips_cntry";
-                case COUNTY:
-                    return "state_fips";
-                default:
-                    break;
-            }
-            throw new NotImplementedException("Fips search not implemented");
-        }
-
-        public String getLabelColumn() {
-            return columns[0];
-        }
-
-    }
 
     private static final String COL_FIPS = "fips";
 
@@ -340,6 +272,26 @@ public class GeoSearchDao {
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
+    }
+
+    public SpatialTables getTableFromLevel(Level level) {
+        switch (level) {
+            case CONTINENT:
+                return SpatialTables.CONTINENT;
+            case COUNTRY:
+                return SpatialTables.COUNTRY;
+            case COUNTY:
+                return SpatialTables.COUNTY;
+            default:
+                return null;
+        }
+    }
+
+    public String toGeoJson(GeographicKeyword kwd) {
+        SpatialTables table = getTableFromLevel(kwd.getLevel());
+        String sql = String.format("select ST_asGeoJson(the_geom) from %s where %s='%s'", table.getTableName(), table.getElementName(),
+                StringUtils.substringBeforeLast(kwd.getLabel(), "("));
+        return jdbcTemplate.queryForObject(sql, String.class);
     }
 
 }
