@@ -132,7 +132,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         queue(DailyStatisticsUpdate.class);
     }
 
-    
     /**
      * Send emails at midnight
      */
@@ -398,27 +397,31 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     }
 
     private void logCurrentState() {
-        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
-        long[] allThreadIds = threadMXBean.getAllThreadIds();
-        ThreadInfo[] threadInfo = threadMXBean.getThreadInfo(allThreadIds);
-        long totalTime = 0;
-        Map<Long, Long> totals = new HashMap<>();
-        for (ThreadInfo info : threadInfo) {
-            long id = info.getThreadId();
-            long threadCpuTime = threadMXBean.getThreadUserTime(id);
-            totalTime += threadCpuTime;
-            totals.put(id, threadCpuTime);
-        }
-        for (ThreadInfo info : threadInfo) {
-            long id = info.getThreadId();
-            long percent = (100 * totals.get(id)) / totalTime;
-            if (percent > 0) {
-                logger.debug("{} :: CPU: {}% {} ({})", id, percent, info.getThreadName(), info.getThreadState());
-                StackTraceElement[] st = info.getStackTrace();
-                for (StackTraceElement t : st) {
-                    logger.debug("\t{} ", t);
+        try {
+            ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+            long[] allThreadIds = threadMXBean.getAllThreadIds();
+            ThreadInfo[] threadInfo = threadMXBean.getThreadInfo(allThreadIds);
+            long totalTime = 0;
+            Map<Long, Long> totals = new HashMap<>();
+            for (ThreadInfo info : threadInfo) {
+                long id = info.getThreadId();
+                long threadCpuTime = threadMXBean.getThreadUserTime(id);
+                totalTime += threadCpuTime;
+                totals.put(id, threadCpuTime);
+            }
+            for (ThreadInfo info : threadInfo) {
+                long id = info.getThreadId();
+                long percent = (100 * totals.get(id)) / totalTime;
+                if (percent > 0) {
+                    logger.debug("{} :: CPU: {}% {} ({})", id, percent, info.getThreadName(), info.getThreadState());
+                    StackTraceElement[] st = info.getStackTrace();
+                    for (StackTraceElement t : st) {
+                        logger.debug("\t{} ", t);
+                    }
                 }
             }
+        } catch (Throwable t) {
+            logger.warn("exception in logging error state", t);
         }
     }
 

@@ -206,7 +206,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
             updateDisplayOrientationBasedOnSearchResults();
             setCollectionSearchBoxVisible(getAsqo().isCollectionSearchBoxVisible());
         } catch (SearchPaginationException spe) {
-            getLogger().debug("pagination issue: {}", spe);
+            getLogger().debug("pagination issue: {}", spe.getMessage() );
             throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,
                     TdarActionSupport.NOT_FOUND);
         } catch (TdarRecoverableRuntimeException | ParseException tdre) {

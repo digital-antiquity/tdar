@@ -982,4 +982,8 @@ public class TdarConfiguration extends AbstractConfigurationFile {
             return MemoryUsageSetting.setupMainMemoryOnly();
         }
     }
+
+    public boolean ssoEnabled() {
+        return assistant.getBooleanProperty("sso.enabled", true);
+    }
 }

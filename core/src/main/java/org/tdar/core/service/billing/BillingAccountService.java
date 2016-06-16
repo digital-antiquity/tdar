@@ -227,8 +227,8 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @return
      */
     @Transactional(readOnly=false)
-    public AccountAdditionStatus updateQuota(BillingAccount account, Resource... resources) {
-        return updateQuota(account, Arrays.asList(resources));
+    public AccountAdditionStatus updateQuota(BillingAccount account, TdarUser user, Resource... resources) {
+        return updateQuota(account, Arrays.asList(resources), user);
     }
 
     /**
@@ -254,8 +254,8 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
      * @return
      */
     @Transactional(readOnly = false)
-    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate) {
-        return getDao().updateQuota(account, resourcesToEvaluate);
+    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate, TdarUser user) {
+        return getDao().updateQuota(account, resourcesToEvaluate, user);
     }
 
     /**
@@ -318,8 +318,8 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
         to.resetTransientTotals();
         from.resetTransientTotals();
         logger.debug("{}", invoice);
-        updateQuota(from, from.getResources());
-        updateQuota(to, to.getResources());
+        updateQuota(from, from.getResources(), user);
+        updateQuota(to, to.getResources(), user);
     }
 
     /**
@@ -376,10 +376,10 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
     }
 
     @Transactional(readOnly=false)
-    public void resetAccountTotalsToHaveOneFileLeft(BillingAccount account) {
+    public void resetAccountTotalsToHaveOneFileLeft(BillingAccount account, TdarUser user) {
         getDao().markWritableOnExistingSession(account);
         getLogger().debug(">>>>> F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
-        updateQuota(account, account.getResources());
+        updateQuota(account, account.getResources(), user);
         getDao().refresh(account);
         getLogger().debug(":::: F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
         if (CollectionUtils.isNotEmpty(account.getInvoices()) && (account.getInvoices().size() == 1)) {
@@ -399,7 +399,7 @@ public class BillingAccountService extends ServiceInterface.TypedDaoBase<Billing
             }
             getDao().saveOrUpdate(invoice.getItems());
         }
-        updateQuota(account, account.getResources());
+        updateQuota(account, account.getResources(), user);
         getLogger().debug("<<<<<< F: {} S: {} ", account.getFilesUsed(), account.getSpaceUsedInMb());
 
     }

@@ -372,7 +372,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     public boolean hasColumn(final String tableName, final String columnName) {
-        logger.debug("Checking if " + tableName + " has column " + columnName);
+        logger.trace("Checking if " + tableName + " has column " + columnName);
         try {
             Boolean columnExists = (Boolean) JdbcUtils.extractDatabaseMetaData(
                     getDataSource(), new DatabaseMetaDataCallback() {

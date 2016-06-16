@@ -418,9 +418,8 @@ public class AuthenticationService {
 
     private void sendWelcomeEmail(Person person) {
         Map<String, Object> result = new HashMap<>();
-        final TdarConfiguration config = CONFIG;
         result.put("user", person);
-        result.put("config", config);
+        result.put("config", CONFIG);
         try {
             String subject = MessageHelper.getMessage("userAccountController.welcome", Arrays.asList(CONFIG.getSiteAcronym()));
             Email email = new Email();
