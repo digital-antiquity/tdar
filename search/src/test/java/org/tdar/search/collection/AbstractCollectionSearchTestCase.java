@@ -25,6 +25,6 @@ public abstract class AbstractCollectionSearchTestCase extends AbstractWithIndex
             "Kintigh - Cibola Survey Projects", "Kintigh - Context Ontologies", "Kintigh - Fauna Ontologies", "Kintigh - HARP Coding Sheets",
             "Kintigh - Quantitative and Formal Methods Class - Assignments & Data", "Kleis", "Klinko", "Kokina 1", "Kompaneyskyy 1",
             "Kuril Biocomplexity Research", "Kuybyshevskaya 1",
-            "Spielmann/Kintigh - Fauna Ontologies - Current" };
+            "Spielmann/Kintigh - Fauna Ontologies - Current", "Australian Journal of Historical Archaeology Archive" };
 
 }
