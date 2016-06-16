@@ -36,6 +36,7 @@ import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
+import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -64,20 +65,22 @@ public class HomepageService {
     @Autowired
     private GenericService genericService;
 
-    @Transactional(readOnly = true)
-    public synchronized HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, TextProvider provider) {
-        HomepageDetails details = new HomepageDetails();
-        AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
-        if (collectionId != null) {
-            SearchParameters sp = new SearchParameters();
-            sp.getCollections().add(genericService.find(ResourceCollection.class, collectionId));
-            advancedSearchQueryObject.getSearchParameters().add(sp);
+    @Transactional(readOnly=true)
+    public synchronized HomepageDetails getSearchAndHomepageGraphs(TdarUser authenticatedUser, AdvancedSearchQueryObject advancedSearchQueryObject, FacetedResultHandler<Resource> result, TextProvider provider) {
+        setupResultForMapSearch(result);
+
+        try {
+        resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, authenticatedUser, result, provider);
+        } catch (SolrServerException | IOException | ParseException e1) {
+            logger.error("issue generating map search", e1);
         }
-        SearchResult<Resource> result = new SearchResult<>();
-        result.setFacetWrapper(new FacetWrapper());
-        result.getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
-        result.getFacetWrapper().setMapFacet(true);
-        result.setRecordsPerPage(0);
+        return generateDetails(result);
+    }
+
+
+    @Transactional(readOnly=true)
+    public HomepageDetails generateDetails(FacetedResultHandler<Resource> result) {
+        HomepageDetails details = new HomepageDetails();
 
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> locales = new HashMap<>();
@@ -93,7 +96,6 @@ public class HomepageService {
 
         List<Map<String, Object>> rtypes = new ArrayList<>();
         try {
-            resourceSearchService.buildAdvancedSearch(advancedSearchQueryObject, authenticatedUser, result, provider);
             details.setMapJson(result.getFacetWrapper().getFacetPivotJson());
 
             List<Facet> list = result.getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
@@ -106,7 +108,7 @@ public class HomepageService {
                     rtypes.add(rtype);
                 }
             }
-        } catch (SolrServerException | IOException | ParseException e1) {
+        } catch (Exception e1) {
             logger.error("issue generating map json", e1);
         }
         try {
@@ -114,6 +116,28 @@ public class HomepageService {
         } catch (JsonProcessingException e) {
             logger.error("issue generating resourceType json", e);
         }
+        return details;
+    }
+
+    @Transactional(readOnly=true)
+    public void setupResultForMapSearch(FacetedResultHandler<Resource> result) {
+        result.getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+        result.getFacetWrapper().setMapFacet(true);
+    }
+    
+    @Transactional(readOnly = true)
+    public synchronized HomepageDetails getHomepageGraphs(TdarUser authenticatedUser, Long collectionId, TextProvider provider) {
+        AdvancedSearchQueryObject advancedSearchQueryObject = new AdvancedSearchQueryObject();
+        if (collectionId != null) {
+            SearchParameters sp = new SearchParameters();
+            sp.getCollections().add(genericService.find(ResourceCollection.class, collectionId));
+            advancedSearchQueryObject.getSearchParameters().add(sp);
+        }
+        SearchResult<Resource> result = new SearchResult<>();
+        result.setFacetWrapper(new FacetWrapper());
+        result.setRecordsPerPage(0);
+
+        HomepageDetails details = getSearchAndHomepageGraphs(authenticatedUser, advancedSearchQueryObject, result, provider);
         return details;
     }
 

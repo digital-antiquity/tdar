@@ -31,12 +31,12 @@ public class EventBusResourceHolder<T extends ObjectContainer<?>> extends Resour
 		if (pendingMessages.containsKey(id)) {
 			T existing = pendingMessages.get(id);
 			if (existing.getDateAdded() > message.getDateAdded()) {
-				logger.debug(" SKIP: {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
+				logger.trace(" SKIP: {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
 				return;
 			}
-	        logger.debug("REPLACING: {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
+	        logger.trace("REPLACING: {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
 		} else {
-		    logger.debug("  PENDING: {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
+		    logger.trace("  PENDING: {} EVENT: {} ({})", message.getType(), message.getEventType(), id);
 		}
 		pendingMessages.put(id, message);
 	}

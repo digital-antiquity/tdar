@@ -311,7 +311,7 @@ public class HtmlValidator {
                     int lineNum = Integer.parseInt(part.trim());
                     String lineText = lines[lineNum - 1];
                     logger.debug("{}: {}", lineNum, lineText);
-                    if (lineText.toLowerCase().contains("http")) {
+                    if (lineText.toLowerCase().contains("http") || lineText.toLowerCase().contains("href")) {
                         // NOTE: we may need to make this more strict in the future
                         // String substring = lineText.substring(lineText.toLowerCase().indexOf("http"));
                         skip = true;

@@ -16,7 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Email.Status;
+import org.tdar.core.bean.notification.Status;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -67,14 +67,13 @@ public class AdminEmailController extends AbstractAuthenticatableAction implemen
 
     @Action(value = "changeEmailStatus",
             results = {
-                    @Result(name = SUCCESS, location = "email.ftl"),
+                    @Result(name = SUCCESS, type=REDIRECT, location = "/admin/email"),
                     @Result(name = INPUT, location = "email.ftl") }
             )
             @PostOnly
             public String changeEmailStatus() {
         emailService.changeEmailStatus(getEmailAction(), emails);
 
-        execute();
         return SUCCESS;
     }
 

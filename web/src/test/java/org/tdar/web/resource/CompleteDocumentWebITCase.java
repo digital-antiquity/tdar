@@ -109,10 +109,10 @@ public class CompleteDocumentWebITCase extends AbstractAdminAuthenticatedWebTest
         docValMap.put("otherKeywords[0]", "other");
         docValMap.put("uncontrolledCultureKeywords[0]", "German");
         docValMap.put("geographicKeywords[0]", "Georgia");
-        docValMap.put("latitudeLongitudeBoxes[0].maximumLatitude", "41.83228739643032");
-        docValMap.put("latitudeLongitudeBoxes[0].maximumLongitude", "-71.39860153198242");
-        docValMap.put("latitudeLongitudeBoxes[0].minimumLatitude", "41.82608370627639");
-        docValMap.put("latitudeLongitudeBoxes[0].minimumLongitude", "-71.41018867492676");
+        docValMap.put("latitudeLongitudeBoxes[0].north", "41.83228739643032");
+        docValMap.put("latitudeLongitudeBoxes[0].east", "-71.39860153198242");
+        docValMap.put("latitudeLongitudeBoxes[0].south", "41.82608370627639");
+        docValMap.put("latitudeLongitudeBoxes[0].west", "-71.41018867492676");
         docValMap.put("temporalKeywords[0]", "before time");
         docValMap.put("coverageDates[0].startDate", "1200");
         docValMap.put("coverageDates[0].endDate", "1500");

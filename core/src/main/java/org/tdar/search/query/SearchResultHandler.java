@@ -65,7 +65,7 @@ public interface SearchResultHandler<I extends Indexable> extends SimpleSearchRe
     String getSearchDescription();
 
     int getNextPageStartRecord();
-
+    
     int getPrevPageStartRecord();
 
     int getDefaultRecordsPerPage();

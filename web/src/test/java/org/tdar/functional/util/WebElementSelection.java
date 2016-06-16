@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -56,7 +57,7 @@ public class WebElementSelection implements Iterable<WebElement> {
         this.driver = driver;
     }
 
-    public WebElementSelection(WebDriver driver, By locator) {
+    public WebElementSelection(By locator, WebDriver driver) {
         this.driver = driver;
         this.locator = locator;
         this.elements = driver.findElements(locator);
@@ -140,12 +141,12 @@ public class WebElementSelection implements Iterable<WebElement> {
      * simulate the keypresses corresponding to the provided charsequence for every element in this selection
      * This function really only makes sense for form elements that have a text entry feature but this method check if this is the case
      */
-    public void sendKeys(CharSequence... keysToSend) {
+    public WebElementSelection sendKeys(CharSequence... keysToSend) {
         for (WebElement elem : this) {
             logger.debug("{} sendKeys: {}", elem, keysToSend);
             elem.sendKeys(keysToSend);
         }
-
+        return this;
     }
 
     /**
@@ -226,7 +227,11 @@ public class WebElementSelection implements Iterable<WebElement> {
      * @return selection containing combined results of all findElements(By) from each element in the selection.
      */
     public WebElementSelection find(By by) {
-        return new WebElementSelection(driver, by);
+        List<WebElement> elements = new ArrayList<>();
+        for(WebElement elem : toList()) {
+            elements.addAll(elem.findElements(by));
+        }
+        return new WebElementSelection(elements, driver);
     }
 
     /**
@@ -478,6 +483,7 @@ public class WebElementSelection implements Iterable<WebElement> {
         }
         return this;
     }
+
 
     /**
      * return first element of selection as Select object.

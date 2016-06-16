@@ -817,10 +817,25 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void saveCollectionForController(SharedCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
             List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, List<Resource> publicResourcesToAdd,
             List<Resource> publicResourcesToRemove, boolean shouldSaveResource,
+
             FileProxy fileProxy) {
+        if (persistable == null) {
+            throw new TdarRecoverableRuntimeException();
+        }
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
+
+
+        List<Resource> resourcesToRemove = getDao().findAll(Resource.class, toRemove);
+        List<Resource> resourcesToAdd = getDao().findAll(Resource.class, toAdd);
+        getLogger().debug("toAdd: {}", resourcesToAdd);
+        getLogger().debug("toRemove: {}", resourcesToRemove);
+
+        List<Resource> publicResourcesToRemove = getDao().findAll(Resource.class, publicToRemove);
+        List<Resource> publicResourcesToAdd = getDao().findAll(Resource.class, publicToAdd);
+        getLogger().debug("toAdd: {}", resourcesToAdd);
+        getLogger().debug("toRemove: {}", resourcesToRemove);
 
         if (!Objects.equals(parentId, persistable.getParentId())) {
             updateCollectionParentTo(authenticatedUser, persistable, parent);
@@ -838,11 +853,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person, TdarUser newOwner) {
+    public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person) {
         if (!authenticationAndAuthorizationService.canEditCollection(person, col)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.make_active_permissions");
         }
-        getDao().makeResourceInCollectionActive(col, person, newOwner);
+        getDao().makeResourceInCollectionActive(col, person);
     }
 
     @Transactional(readOnly = true)

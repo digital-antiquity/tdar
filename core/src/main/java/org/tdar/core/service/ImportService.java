@@ -72,6 +72,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
@@ -93,6 +94,8 @@ public class ImportService {
     private FileAnalyzer fileAnalyzer;
     @Autowired
     private ReflectionService reflectionService;
+    @Autowired
+    private GeoSearchService geoSearchService;
     @Autowired
     private GenericKeywordService genericKeywordService;
     @Autowired
@@ -162,7 +165,8 @@ public class ImportService {
         }
 
         processFiles(blessedAuthorizedUser, proxies, incomingResource);
-
+        geoSearchService.processManagedGeographicKeywords(incomingResource, incomingResource.getLatitudeLongitudeBoxes());
+        
         incomingResource.setCreated(created);
         genericService.saveOrUpdate(incomingResource);
         return incomingResource;

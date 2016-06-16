@@ -54,7 +54,6 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.FilestoreLoggingException;
-import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.event.EventBusResourceHolder;
 import org.tdar.core.service.event.EventBusUtils;
 import org.tdar.core.service.event.LoggingObjectContainer;
@@ -80,10 +79,10 @@ import com.fasterxml.jackson.databind.util.JSONPObject;
  * class to help with marshalling and unmarshalling of resources
  */
 @Service
-public class SerializationService implements TxMessageBus<LoggingObjectContainer>{
+public class SerializationService implements TxMessageBus<LoggingObjectContainer> {
 
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
-	public static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
+    public static final String RDF_KEYWORD_MEDIAN = "/rdf/keywordMedian";
     public static final String RDF_KEYWORD_MEAN = "/rdf/keywordMean";
     public static final String RDF_XML_ABBREV = "RDF/XML-ABBREV";
     public static final String FOAF_XML = ".foaf.xml";
@@ -110,11 +109,10 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     private JaxbResourceCollectionRefConverter collectionRefConverter;
     private Class<?>[] jaxbClasses;
 
-    
     public SerializationService() throws ClassNotFoundException {
         jaxbClasses = ReflectionService.scanForAnnotation(XmlElement.class, XmlRootElement.class);
     }
-    
+
     @SuppressWarnings("unchecked")
     @EventListener
     public void handleFilestoreEvent(TdarEvent event) {
@@ -122,54 +120,52 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
             return;
         }
 
-        XmlLoggable record = (XmlLoggable)event.getRecord();
-        if (record instanceof Persistable && PersistableUtils.isNullOrTransient((Persistable)record)) {
-        	return;
+        XmlLoggable record = (XmlLoggable) event.getRecord();
+        if (record instanceof Persistable && PersistableUtils.isNullOrTransient((Persistable) record)) {
+            return;
         }
         String id = record.getClass().getSimpleName() + "-" + record.getId().toString();
 
         try {
-        File file = writeToTempFile(id, record);
-        LoggingObjectContainer container = new LoggingObjectContainer(file, id, event.getType(), FilestoreObjectType.fromClass(record.getClass()), record.getId());
-        if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
-			post(container);
-            return;
-        }
-        
+            File file = writeToTempFile(id, record);
+            LoggingObjectContainer container = new LoggingObjectContainer(file, id, event.getType(), FilestoreObjectType.fromClass(record.getClass()),
+                    record.getId());
+            if (!isUseTransactionalEvents() || !CONFIG.useTransactionalEvents()) {
+                post(container);
+                return;
+            }
 
-		@SuppressWarnings("rawtypes")
-        Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
-		if (holder.isPresent() ) {
-			holder.get().addMessage(container);
-		} else {
-			post(container);
-		}
+            @SuppressWarnings("rawtypes")
+            Optional<EventBusResourceHolder> holder = EventBusUtils.getTransactionalResourceHolder(this);
+            if (holder.isPresent()) {
+                holder.get().addMessage(container);
+            } else {
+                post(container);
+            }
         } catch (Throwable t) {
-        	logger.error("error processing XML Log: {}", t,t);
+            logger.error("error processing XML Log: {}", t, t);
         }
     }
-    
 
-	private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
+    private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
         File tempDirectory = CONFIG.getTempDirectory();
-        File dir = new File(tempDirectory,"index");
+        File dir = new File(tempDirectory, "index");
         if (!dir.exists()) {
             dir.mkdir();
         }
-		File temp =  new File(dir,String.format("%s-%s.xml", recordId, System.nanoTime()));
-		temp.deleteOnExit();
-		if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
-		    XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
-		    newInstance.setId(record.getId());
-		    ((HasStatus) newInstance).setStatus(Status.DELETED);
-		    convertToXML(newInstance, new FileWriter(temp));
-		} else {
-			convertToXML(record, new FileWriter(temp));
-		}
-		return temp;
-	}
+        File temp = new File(dir, String.format("%s-%s.xml", recordId, System.nanoTime()));
+        temp.deleteOnExit();
+        if (record instanceof HasStatus && ((HasStatus) record).getStatus() == Status.DELETED) {
+            XmlLoggable newInstance = (XmlLoggable) record.getClass().newInstance();
+            newInstance.setId(record.getId());
+            ((HasStatus) newInstance).setStatus(Status.DELETED);
+            convertToXML(newInstance, new FileWriter(temp));
+        } else {
+            convertToXML(record, new FileWriter(temp));
+        }
+        return temp;
+    }
 
-    
     /**
      * Serializes the JAXB-XML representation of a @link Record to the tDAR @link Filestore
      * 
@@ -189,19 +185,18 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
             logger.error("something happend when converting record to XML:" + resource, e);
             throw new FilestoreLoggingException("serializationService.could_not_save");
         }
-        
+
         writeToFilestore(FilestoreObjectType.fromClass(resource.getClass()), resource.getId(), xml);
         logger.trace("done saving");
     }
 
-    
     public <T extends Persistable> void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, String xml) {
-    	StringInputStream content = new StringInputStream(xml, "UTF-8");
+        StringInputStream content = new StringInputStream(xml, "UTF-8");
         writeToFilestore(filestoreObjectType, id, content);
     }
 
-	private void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, InputStream content) {
-		@SuppressWarnings("deprecation")
+    private void writeToFilestore(FilestoreObjectType filestoreObjectType, Long id, InputStream content) {
+        @SuppressWarnings("deprecation")
         InformationResourceFileVersion version = new InformationResourceFileVersion();
         version.setFilename("record.xml");
         version.setExtension("xml");
@@ -209,13 +204,12 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         version.setInformationResourceId(id);
         try {
             StorageMethod rotate = StorageMethod.DATE;
-			CONFIG.getFilestore().storeAndRotate(filestoreObjectType, content, version, rotate);
+            CONFIG.getFilestore().storeAndRotate(filestoreObjectType, content, version, rotate);
         } catch (Exception e) {
             logger.error("something happend when converting record to XML:" + filestoreObjectType, e);
             throw new FilestoreLoggingException("serializationService.could_not_save");
         }
-	}
-
+    }
 
     /**
      * Convert the existing object to an XML representation using JAXB
@@ -447,21 +441,20 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     }
 
     @Transactional(readOnly = true)
-    public String createGeoJsonFromResourceList(List<Resource> rslts, String rssUrl, Map<String,Object> params, GeoRssMode mode, boolean webObfuscation, Class<?> filter, String callback)
-            throws IOException {
+    public String createGeoJsonFromResourceList(FeedSearchHelper helper) throws IOException {
         List<LatitudeLongitudeBoxWrapper> wrappers = new ArrayList<>();
-        for (Object obj : rslts) {
+        for (Object obj : helper.getResults()) {
             if (obj instanceof Resource) {
-                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, filter, mode, webObfuscation));
+                wrappers.add(new LatitudeLongitudeBoxWrapper((Resource) obj, helper));
             }
         }
-        Map<String,Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>();
         result.put("type", "FeatureCollection");
         result.put("features", wrappers);
-        result.put("properties", params);
+        result.put("properties", helper.getSearchParams());
         StringWriter writer = new StringWriter();
-        logger.debug("filter: {}", filter);
-        convertToJson(result, writer, filter, callback);
+        logger.debug("filter: {}", helper.getJsonFilter());
+        convertToJson(result, writer, helper.getJsonFilter(), helper.getJsonCallback());
         return writer.toString();
     }
 
@@ -473,8 +466,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         this.useTransactionalEvents = useTransactionalEvents;
     }
 
-	@Override
-	public void post(LoggingObjectContainer o) throws Exception {
-       writeToFilestore(o.getFilestoreObjectType(), o.getPersistableId(), new FileInputStream(o.getDoc()));		
-	}
+    @Override
+    public void post(LoggingObjectContainer o) throws Exception {
+        writeToFilestore(o.getFilestoreObjectType(), o.getPersistableId(), new FileInputStream(o.getDoc()));
+    }
 }

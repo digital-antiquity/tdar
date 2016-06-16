@@ -109,10 +109,10 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         }
         setInput("uncontrolledSiteTypeKeywords[0]", LAT_LONG_SECURITY_TEST);
         if (latLong != null) {
-            setInput("latitudeLongitudeBoxes[0].maximumLatitude", latLong.getMaximumLatitude());
-            setInput("latitudeLongitudeBoxes[0].maximumLongitude", latLong.getMaximumLongitude());
-            setInput("latitudeLongitudeBoxes[0].minimumLatitude", latLong.getMinimumLatitude());
-            setInput("latitudeLongitudeBoxes[0].minimumLongitude", latLong.getMinimumLongitude());
+            setInput("latitudeLongitudeBoxes[0].north", latLong.getNorth());
+            setInput("latitudeLongitudeBoxes[0].east", latLong.getEast());
+            setInput("latitudeLongitudeBoxes[0].south", latLong.getSouth());
+            setInput("latitudeLongitudeBoxes[0].west", latLong.getWest());
         }
         if (status != null) {
             setInput("status", status.name());

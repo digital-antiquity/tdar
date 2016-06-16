@@ -1,8 +1,9 @@
 package org.tdar.functional;
 
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.openqa.selenium.By;
-import static org.junit.Assert.assertTrue;
 
 public class StatistcsSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 

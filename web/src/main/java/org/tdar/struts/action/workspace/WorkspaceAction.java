@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -22,7 +21,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
@@ -46,9 +44,6 @@ public class WorkspaceAction extends AbstractAuthenticatableAction {
     private transient AuthorizationService authorizationService;
 
     @Autowired
-    private transient DataIntegrationService dataIntegrationService;
-
-    @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     @Autowired
@@ -64,8 +59,6 @@ public class WorkspaceAction extends AbstractAuthenticatableAction {
     @Override
     @Action(value = "list", results = { @Result(name = SUCCESS, location = "workspace.ftl") })
     public String execute() {
-        Map<Ontology, List<DataTable>> suggestions = dataIntegrationService.getIntegrationSuggestions(getBookmarkedDataTables(), false);
-        setSharedOntologies(suggestions.keySet());
         setWorkflows(integrationWorkflowService.getWorkflowsForUser(getAuthenticatedUser()));
         // in the future we could use the Map to prompt the user with suggestions
         return SUCCESS;

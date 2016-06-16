@@ -99,7 +99,7 @@ public abstract class AbstractResourceControllerITCase extends AbstractControlle
         boolean seen = false;
         controller.setServletRequest(getServletPostRequest());
         genericService.refresh(controller.getAccount());
-        accountService.updateQuota(controller.getAccount());
+        accountService.updateQuota(controller.getAccount(), controller.getAuthenticatedUser());
         try {
             logger.info("saving account");
             assertEquals(Action.SUCCESS, controller.save());

@@ -44,8 +44,11 @@ public class ContinueInvoiceAction extends AbstractAuthenticatableAction {
     public String execute() {
         getLogger().debug("setting invoice id {} on the session", invoiceId);
         getSessionData().setInvoiceId(invoiceId);
-        // stupid personal preferenence, cannot read turnarys well
+        
         if (isAuthenticated()) {
+            Invoice invoice = getGenericService().find(Invoice.class, invoiceId);
+            invoice.setOwner(getAuthenticatedUser());
+            getGenericService().saveOrUpdate(invoice);
             return SUCCESS;
         } else {
             return SUCCESS_UNAUTH;

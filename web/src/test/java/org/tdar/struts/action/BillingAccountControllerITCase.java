@@ -45,6 +45,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.prepare();
         String msg = null;
         try {
+            controller.validate();
             assertEquals(BillingAccountSelectionAction.NEW_ACCOUNT, controller.selectAccount());
         } catch (Exception e) {
             msg = e.getMessage();
@@ -63,6 +64,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         init(controller, user);
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
+        controller.validate();
         assertEquals(BillingAccountController.NEW_ACCOUNT, controller.selectAccount());
 
     }
@@ -77,6 +79,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
         try {
+            controller.validate();
             assertEquals(BillingAccountController.NEW_ACCOUNT, controller.selectAccount());
         } catch (Exception e) {
             msg = e.getMessage();
@@ -94,6 +97,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
         init(controller, getAdminUser());
         controller.setInvoiceId(invoice.getId());
         controller.prepare();
+        controller.validate();
         assertEquals(Action.SUCCESS, controller.selectAccount());
         assertTrue(controller.getAccounts().contains(account));
 
@@ -183,6 +187,7 @@ public class BillingAccountControllerITCase extends AbstractResourceControllerIT
     private Long setupAccountWithUsers() throws TdarActionException {
         BillingAccountController controller = generateNewInitializedController(BillingAccountController.class);
         controller.prepare();
+        controller.validate();
         controller.getAuthorizedMembers().add(getAdminUser());
         controller.getAuthorizedMembers().add(getBillingUser());
         controller.getAuthorizedMembers().add(getEditorUser());

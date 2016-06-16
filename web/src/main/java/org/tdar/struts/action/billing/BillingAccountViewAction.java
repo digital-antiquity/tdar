@@ -20,7 +20,6 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractPersistableViewableAction;
@@ -70,19 +69,7 @@ public class BillingAccountViewAction extends AbstractPersistableViewableAction<
     @Override
     public boolean authorize() {
         getLogger().info("isViewable {} {}", getAuthenticatedUser(), getAccount().getId());
-        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
-            return false;
-        }
-
-        if (authorizationService.can(InternalTdarRights.VIEW_BILLING_INFO, getAuthenticatedUser())) {
-            return true;
-        }
-
-        if (getAuthenticatedUser().equals(getAccount().getOwner()) || getAccount().getAuthorizedMembers().contains(getAuthenticatedUser())) {
-            return true;
-        }
-
-        return false;
+        return authorizationService.canViewBillingAccount(getAccount(), getAuthenticatedUser());
     }
 
     public boolean isEditable() {

@@ -128,12 +128,12 @@ public abstract class ModsTransformer<R extends Resource> implements
         for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
             Subject sub = mods.createSubject();
             List<String> coords = new ArrayList<>();
-            coords.add("MaxY: ".concat(longLat.getMaxObfuscatedLatitude().toString()));
-            coords.add("MinY: ".concat(longLat.getMinObfuscatedLatitude().toString()));
+            coords.add("MaxY: ".concat(longLat.getObfuscatedNorth().toString()));
+            coords.add("MinY: ".concat(longLat.getObfuscatedSouth().toString()));
             coords.add("MaxX: "
-                    .concat(longLat.getMaxObfuscatedLongitude().toString()));
+                    .concat(longLat.getObfuscatedEast().toString()));
             coords.add("MinX: "
-                    .concat(longLat.getMinObfuscatedLongitude().toString()));
+                    .concat(longLat.getObfuscatedWest().toString()));
             sub.addCartographics(coords, "wgs84", null);
         }
 

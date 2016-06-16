@@ -523,6 +523,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         BrowseCollectionController controller_ = generateNewInitializedController(BrowseCollectionController.class);
         initAnonymousUser(controller_);
         Long fileId = testFile.getId();
+
         genericService.synchronize();
         searchIndexService.indexAll(getAdminUser(), LookupSource.RESOURCE);
         testFile = null;
@@ -610,6 +611,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 new ArrayList<Resource>(), collection1.getId());
         evictCache();
         searchIndexService.index(collection1, collection2);
+
 //        logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
 //        logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
         genericService.synchronize();
@@ -730,6 +732,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 Arrays.asList(draftDocument, activeDocument), null);
         collection.setOwner(getAdminUser());
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
+
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(collection.getId());
         vc.setSlug(collection.getSlug());
@@ -901,6 +904,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Assert.assertEquals(Action.SUCCESS, result);
         Long rcid = rc.getId();
         String slug = rc.getSlug();
+
         // so, wait, is this resource actually in the collection?
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(rcid);
@@ -921,6 +925,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         resourceDeleteAction.setAsync(false);
         resourceDeleteAction.delete();
         genericService.synchronize();
+
         // go back to the collection's 'edit' page and make sure that we are not displaying the deleted resource
         vc = generateNewInitializedController(CollectionViewAction.class, getUser());
         vc.setId(rcid);
@@ -969,6 +974,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         projectController.setAsync(false);
         projectController.save();
         evictCache();
+
         searchIndexService.index(project2);
 
         logger.info("{}", project2.getResourceCollections());
@@ -1049,6 +1055,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.save();
         evictCache();
         genericService.synchronize();
+
         // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource
         vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);

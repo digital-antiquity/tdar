@@ -20,6 +20,7 @@ import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.GenericService;
+import org.tdar.struts.action.admin.authority.AuthorityManagementController;
 import org.tdar.utils.MessageHelper;
 
 public class AuthorityManagementControllerITCase extends AbstractAdminControllerITCase {

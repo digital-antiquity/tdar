@@ -29,14 +29,14 @@
 	    function updateMap() {
 	        var b = map.getBounds();
 	        var latLong = "&";  
-	        latLong += "groups[0].latitudeLongitudeBoxes[0].maximumLongitude=";
+	        latLong += "groups[0].latitudeLongitudeBoxes[0].east=";
 	        latLong += b.getEast();
-	        latLong += "&groups[0].latitudeLongitudeBoxes[0].minimumLatitude=";
+	        latLong += "&groups[0].latitudeLongitudeBoxes[0].south=";
 	        latLong += b.getSouth();
 	
-	        latLong += "&groups[0].latitudeLongitudeBoxes[0].minimumLongitude=";
+	        latLong += "&groups[0].latitudeLongitudeBoxes[0].west=";
 	        latLong += b.getWest();
-	        latLong += "&groups[0].latitudeLongitudeBoxes[0].maximumLatitude=";
+	        latLong += "&groups[0].latitudeLongitudeBoxes[0].north=";
 	        latLong += b.getNorth();
 	        latLong += "&";
 	        var baseUrl = "/search/json?orientation=MAP&recordsPerPage=100&projectionModel=LUCENE_EXPERIMENTAL&latScaleUsed=true&" + latLong;

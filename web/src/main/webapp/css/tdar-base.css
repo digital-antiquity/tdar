@@ -1324,8 +1324,11 @@ p.tableDescription {
 .tdar-btn-link {
     padding: 0px;
     color:  #7a1501;
-    font-family: "ff-tisa-web-pro", serif !important;
 }
+
+.serif {
+ font-family: "ff-tisa-web-pro", serif !important;
+}   
 
 .black {
     color:#000;
@@ -1342,4 +1345,11 @@ p.tableDescription {
 
 .white-border-bottom {
     border-bottom:4px solid white;
+}
+
+
+hr.light {
+    border: 0;
+    height: 1px;
+    background-color: #eee;
 }

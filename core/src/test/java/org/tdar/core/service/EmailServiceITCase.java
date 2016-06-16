@@ -16,7 +16,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.Email;
-import org.tdar.core.bean.notification.Email.Status;
+import org.tdar.core.bean.notification.Status;
 import org.tdar.core.service.external.MockMailSender;
 
 public class EmailServiceITCase extends AbstractIntegrationTestCase {

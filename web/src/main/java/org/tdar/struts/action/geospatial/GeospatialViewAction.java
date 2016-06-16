@@ -22,7 +22,8 @@ import org.tdar.struts.action.dataset.AbstractDatasetViewAction;
 public class GeospatialViewAction extends AbstractDatasetViewAction<Geospatial> {
 
     private static final long serialVersionUID = 6518833514525728322L;
-
+    private boolean showGeoJson = false;
+    
     @Override
     public Class<Geospatial> getPersistableClass() {
         return Geospatial.class;
@@ -52,6 +53,16 @@ public class GeospatialViewAction extends AbstractDatasetViewAction<Geospatial> 
             }
         }
         return versionText;
+    }
+
+
+    public boolean isShowGeoJson() {
+        return showGeoJson;
+    }
+
+
+    public void setShowGeoJson(boolean showGeoJson) {
+        this.showGeoJson = showGeoJson;
     }
 
 }

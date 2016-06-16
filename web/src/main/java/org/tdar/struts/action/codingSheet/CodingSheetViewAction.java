@@ -2,18 +2,16 @@ package org.tdar.struts.action.codingSheet;
 
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Ontology;
+import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractSupportingResourceViewAction;
-import org.tdar.utils.PersistableUtils;
 
 @Component
 @Scope("prototype")
@@ -30,6 +28,8 @@ public class CodingSheetViewAction extends AbstractSupportingResourceViewAction<
 
     @Autowired
     private transient DataTableService dataTableService;
+    @Autowired
+    private CodingSheetService codingSheetService;
     private Set<String> missingCodingKeys;
 
     @Override
@@ -41,20 +41,7 @@ public class CodingSheetViewAction extends AbstractSupportingResourceViewAction<
     }
     
     public boolean isOkToMapOntology() {
-        CodingSheet persistable = (CodingSheet) getPersistable();
-        if (persistable.getResourceType().isCodingSheet()) {
-            Ontology defaultOntology = persistable.getDefaultOntology();
-            if (PersistableUtils.isNullOrTransient(defaultOntology) || CollectionUtils.isNotEmpty(defaultOntology.getFilesWithProcessingErrors())) {
-                getLogger().debug("cannot map, ontology issues, null or transient");
-                return false;
-            }
-            if (CollectionUtils.isEmpty(persistable.getCodingRules()) || CollectionUtils.isNotEmpty(persistable.getFilesWithProcessingErrors())) {
-                getLogger().debug("cannot map, coding sheet has errors or no rules");
-                return false;
-            }
-            return true;
-        }
-        return false;
+        return codingSheetService.isOkToMapOntology(getPersistable());
     }
 
     public Set<String> getMissingCodingKeys() {

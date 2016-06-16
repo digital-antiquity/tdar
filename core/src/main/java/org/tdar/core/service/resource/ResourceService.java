@@ -301,20 +301,7 @@ public class ResourceService {
      */
     @Transactional
     public void processManagedKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
-        // needed in cases like the APIController where the collection is not properly initialized
-        if (resource.getManagedGeographicKeywords() == null) {
-            resource.setManagedGeographicKeywords(new LinkedHashSet<GeographicKeyword>());
-        }
-
-        Set<GeographicKeyword> kwds = new HashSet<GeographicKeyword>();
-        for (LatitudeLongitudeBox latLong : allLatLongBoxes) {
-            Set<GeographicKeyword> managedKeywords = geoSearchService.extractAllGeographicInfo(latLong);
-            logger.debug(resource.getId() + " :  " + managedKeywords + " " + managedKeywords.size());
-            kwds.addAll(
-                    datasetDao.findByExamples(GeographicKeyword.class, managedKeywords, Arrays.asList(Keyword.IGNORE_PROPERTIES_FOR_UNIQUENESS),
-                            FindOptions.FIND_FIRST_OR_CREATE));
-        }
-        PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
+        geoSearchService.processManagedGeographicKeywords(resource, allLatLongBoxes);
     }
 
     @Transactional
@@ -863,7 +850,7 @@ public class ResourceService {
                 }
             }
             account = genericDao.markWritableOnExistingSession(account);
-            accountDao.updateQuota(account, toEvaluate);
+            accountDao.updateQuota(account, toEvaluate,authUser);
             genericDao.saveOrUpdate(account);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }

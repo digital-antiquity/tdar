@@ -14,7 +14,6 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -28,6 +27,8 @@ import org.springframework.jdbc.CannotGetJdbcConnectionException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
@@ -62,11 +63,11 @@ public class GeoSearchDao {
             throw new TdarRuntimeException(MessageHelper.getMessage("geoSearchService.lat_long_Not_valid"));
         }
         if (latLong.crossesDateline()) {
-            return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude(),
-                    latLong.getMaxObfuscatedLatitude(), latLong.getMaxObfuscatedLongitude()).toString();
+            return String.format(PSQL_MULTIPOLYGON_DATELINE, latLong.getObfuscatedWest(), latLong.getObfuscatedSouth(),
+                    latLong.getObfuscatedNorth(), latLong.getObfuscatedEast()).toString();
         }
-        return String.format(PSQL_POLYGON, latLong.getMaxObfuscatedLongitude(), latLong.getMaxObfuscatedLatitude(),
-                latLong.getMinObfuscatedLongitude(), latLong.getMinObfuscatedLatitude()).toString();
+        return String.format(PSQL_POLYGON, latLong.getObfuscatedEast(), latLong.getObfuscatedNorth(),
+                latLong.getObfuscatedWest(), latLong.getObfuscatedSouth()).toString();
     }
 
     /*
@@ -82,12 +83,12 @@ public class GeoSearchDao {
      * So, there needs to be some overlap between the two, and it needs to be a reasonable amount. Suggested parameters are
      * 30% for x and 80% for y. But, this needs more testing.
      */
-    private final static String QUERY_COVERAGE_NEW = "SELECT %1$s, ST_Area(the_geom) as \"geom_area\", ST_Area(%3$s) as \"sect_area\", " +
+    private final static String QUERY_COVERAGE_NEW = "SELECT %1$s, area as \"geom_area\", ST_Area(%3$s) as \"sect_area\", " +
             "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_Area(%3$s) > %4$s as \"overlap\", " +
-            "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_area(the_geom) > %4$s as \"overlap_i\"  " +
+            "ST_Area(ST_Intersection(%3$s,the_geom)) / area > %4$s as \"overlap_i\"  " +
             "FROM %2$s where (ST_Disjoint(the_geom,%3$s) is false) AND ST_Area(ST_Intersection(%3$s, the_geom)) > 0 AND ( " +
             "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_Area(%3$s) > %4$s OR " +
-            "ST_Area(ST_Intersection(%3$s,the_geom)) / ST_area(the_geom) > %5$s )";
+            "ST_Area(ST_Intersection(%3$s,the_geom)) / area > %5$s )";
 
     private final static String QUERY_GEOM_PART = "ST_GeomFromText('%1$s',%2$s)";
 
@@ -99,82 +100,13 @@ public class GeoSearchDao {
      * 42.0591071009751))',4326));
      */
 
-    private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM \"%1$s\" where %3$s";
+    private final static String QUERY_ENVELOPE = "SELECT ST_Envelope(ST_Collect(the_geom)) as %2$s FROM %1$s where %3$s";
 
     private final static String QUERY_ENVELOPE_2 = "(%1$s='%2$s') ";
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
 
-    public enum SpatialTables {
-        COUNTRY("country_wgs84", "long_name", "iso_3digit"),
-        COUNTY("us_counties_wgs84", "cnty_name", "state_name"),
-        ADMIN("admin1_wgs84", "admin_name", "type_eng"),
-        CONTINENT("continents_wgs84", "continent");
 
-        private String tableName;
-        private String[] columns;
-
-        private SpatialTables(String tableName, String... columns) {
-            this.setTableName(tableName);
-            this.setColumns(columns);
-        }
-
-        public String getTableName() {
-            return tableName;
-        }
-
-        public void setTableName(String tableName) {
-            this.tableName = tableName;
-        }
-
-        public String[] getColumns() {
-            return columns;
-        }
-
-        public void setColumns(String[] columns) {
-            this.columns = columns;
-        }
-
-        public String getPrimaryColumn() {
-            if (this == COUNTRY) {
-                return StringUtils.join(columns, ",");
-            }
-            return getColumns()[0];
-        }
-
-        public String getIdColumn() {
-            switch (this) {
-                case COUNTRY:
-                    return columns[columns.length - 1];
-                case ADMIN:
-                    return "fips_admin";
-                case COUNTY:
-                    return "fips";
-                default:
-                    break;
-            }
-            throw new NotImplementedException("Fips Search not implemented");
-        }
-
-        public String getLimitColumn() {
-            switch (this) {
-                case COUNTRY:
-                    return columns[columns.length - 1];
-                case ADMIN:
-                    return "fips_cntry";
-                case COUNTY:
-                    return "state_fips";
-                default:
-                    break;
-            }
-            throw new NotImplementedException("Fips search not implemented");
-        }
-
-        public String getLabelColumn() {
-            return columns[0];
-        }
-
-    }
 
     private static final String COL_FIPS = "fips";
 
@@ -325,10 +257,10 @@ public class GeoSearchDao {
         Point thirdPoint = poly.getGeometry().getPoint(2);
         logger.trace(firstPoint + " " + firstPoint.getX());
         // NOTE: ASSUMES THAT BELOW IS result of an envelope
-        latLong.setMinimumLatitude(firstPoint.getY());
-        latLong.setMinimumLongitude(firstPoint.getX());
-        latLong.setMaximumLatitude(thirdPoint.getY());
-        latLong.setMaximumLongitude(thirdPoint.getX());
+        latLong.setSouth(firstPoint.getY());
+        latLong.setWest(firstPoint.getX());
+        latLong.setNorth(thirdPoint.getY());
+        latLong.setEast(thirdPoint.getX());
         logger.trace(latLong.toString());
 
         return latLong;
@@ -340,6 +272,26 @@ public class GeoSearchDao {
 
     public JdbcTemplate getJdbcTemplate() {
         return jdbcTemplate;
+    }
+
+    public SpatialTables getTableFromLevel(Level level) {
+        switch (level) {
+            case CONTINENT:
+                return SpatialTables.CONTINENT;
+            case COUNTRY:
+                return SpatialTables.COUNTRY;
+            case COUNTY:
+                return SpatialTables.COUNTY;
+            default:
+                return null;
+        }
+    }
+
+    public String toGeoJson(GeographicKeyword kwd) {
+        SpatialTables table = getTableFromLevel(kwd.getLevel());
+        String sql = String.format("select ST_asGeoJson(the_geom) from %s where %s='%s'", table.getTableName(), table.getElementName(),
+                StringUtils.substringBeforeLast(kwd.getLabel(), "("));
+        return jdbcTemplate.queryForObject(sql, String.class);
     }
 
 }

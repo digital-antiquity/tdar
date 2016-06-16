@@ -12,9 +12,10 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 
 	private static final String BODY_FONT_COLOR_RUST = "{body:font-color:dark-orange;}";
 	private static final String ABCDEF = "abcdef";
-	private static final String EDIT = "/collection/admin/1003/edit";
+	private static final String EDIT = "/collection/admin/whitelabel/1003/edit";
 	private static final String COLLECTION_2580 = "/collection/1003";
-
+    private static final String COLLECTION_ADMIN_2580 = "/collection/admin/1003";
+    
 	@Before
 	public void setupWhiteLabel() {
 		gotoPage(COLLECTION_2580);
@@ -22,6 +23,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 			// already a white-label collection
 			return;
 		} else {
+		    gotoPage(COLLECTION_ADMIN_2580);
 			clickElementWithId("makeWhiteLabelCollection");
 		}
 	}

@@ -68,10 +68,10 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testNoCounties() {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        latLong.setMinimumLatitude(37.222d);
-        latLong.setMaximumLatitude(38.865d);
-        latLong.setMaximumLongitude(-121.31d);
-        latLong.setMinimumLongitude(-124.43d);
+        latLong.setSouth(37.222d);
+        latLong.setNorth(38.865d);
+        latLong.setEast(-121.31d);
+        latLong.setWest(-124.43d);
         Set<GeographicKeyword> countryInfo = geoSearchService.extractAllGeographicInfo(latLong);
         for (GeographicKeyword kwd : countryInfo) {
             logger.info("{}", kwd);
@@ -288,10 +288,10 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
 
     private LatitudeLongitudeBox constructLatLongBox() {
         LatitudeLongitudeBox latLongBox = new LatitudeLongitudeBox();
-        latLongBox.setMinimumLatitude(37.7129);
-        latLongBox.setMinimumLongitude(-122.5240);
-        latLongBox.setMaximumLatitude(37.8968);
-        latLongBox.setMaximumLongitude(-122.0416);
+        latLongBox.setSouth(37.7129);
+        latLongBox.setWest(-122.5240);
+        latLongBox.setNorth(37.8968);
+        latLongBox.setEast(-122.0416);
         return latLongBox;
     }
 

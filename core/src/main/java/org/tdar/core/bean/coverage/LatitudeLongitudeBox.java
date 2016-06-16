@@ -10,6 +10,9 @@ import javax.persistence.Entity;
 import javax.persistence.Index;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.DecimalMax;
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -26,7 +29,6 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
-import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -73,27 +75,39 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     private boolean isOkayToShowExactLocation = false;
 
     @Column(name = "min_obfuscated_lat")
-    private Double minObfuscatedLatitude = null;
+    private Double obfuscatedSouth = null;
     @Column(name = "min_obfuscated_long")
-    private Double minObfuscatedLongitude = null;
+    private Double obfuscatedWest = null;
     @Column(name = "max_obfuscated_lat")
-    private Double maxObfuscatedLatitude = null;
+    private Double obfuscatedNorth = null;
     @Column(name = "max_obfuscated_long")
-    private Double maxObfuscatedLongitude = null;
+    private Double obfuscatedEast = null;
 
     // ranges from -90 (South) to +90 (North)
     @Column(nullable = false, name = "minimum_latitude")
-    private Double minimumLatitude;
+    @DecimalMin(value="-90.0",inclusive=true)
+    @DecimalMax(value="90.0",inclusive=true)
+    @NotNull
+    private Double south;
 
     @Column(nullable = false, name = "maximum_latitude")
-    private Double maximumLatitude;
+    @DecimalMin(value="-90.0",inclusive=true)
+    @DecimalMax(value="90.0",inclusive=true)
+    @NotNull
+    private Double north;
 
     // ranges from -180 (West) to +180 (East)
     @Column(nullable = false, name = "minimum_longitude")
-    private Double minimumLongitude;
+    @DecimalMin(value="-180.0",inclusive=true)
+    @DecimalMax(value="180.0",inclusive=true)
+    @NotNull
+    private Double west;
 
     @Column(nullable = false, name = "maximum_longitude")
-    private Double maximumLongitude;
+    @DecimalMin(value="-180.0",inclusive=true)
+    @DecimalMax(value="180.0",inclusive=true)
+    @NotNull
+    private Double east;
 
     // used in testing and management
     private transient Set<GeographicKeyword> geographicKeywords;
@@ -101,39 +115,55 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public LatitudeLongitudeBox() {
     }
 
-    public LatitudeLongitudeBox(Double minxOrMinLong, Double minyOrMinLat, Double maxxOrMaxLong, Double maxyOrMaxLat) {
-        this.minimumLongitude = minxOrMinLong;
-        this.minimumLatitude = minyOrMinLat;
-        this.maximumLatitude = maxyOrMaxLat;
-        this.maximumLongitude = maxxOrMaxLong;
+    public LatitudeLongitudeBox(Double west, Double south, Double east, Double north) {
+        this.west = west;
+        this.south = south;
+        this.north = north;
+        this.east = east;
     }
 
     @Deprecated
     /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
-    public Double getMinimumLatitude() {
-        return minimumLatitude;
+    public Double getSouth() {
+        return south;
     }
 
     public Double getObfuscatedCenterLatitude() {
-        return (getMaxObfuscatedLatitude() + getMinObfuscatedLatitude()) / 2.0;
+        return getCenterLat(getObfuscatedNorth(), getObfuscatedSouth());
+    }
+
+    protected Double getCenterLat(Double double1, Double double2) {
+        return (double1 + double2 )/ 2d;
     }
 
     public Double getObfuscatedCenterLongitude() {
-        return (getMaxObfuscatedLongitude() + getMinObfuscatedLongitude()) / 2.0;
+        return getCenterLong(getObfuscatedWest(), getObfuscatedEast());
     }
 
     @Deprecated
     public Double getCenterLatitude() {
-        return (getMaximumLatitude() + getMinimumLatitude()) / 2.0;
+        return getCenterLat(getNorth(), getSouth());
     }
 
     @Deprecated
     public Double getCenterLongitude() {
-        return (getMaximumLongitude() + getMinimumLongitude()) / 2.0;
+        return getCenterLong(getWest(), getEast());
     }
 
+    
+    protected Double getCenterLong(Double minLong, Double maxLong) {
+        if (maxLong < minLong) {
+            Double tmp = (minLong + maxLong * -1d + 180d) / 2d;
+            if (tmp > 180) {
+                tmp = 180 - tmp;
+            }
+            return tmp;
+        } 
+        return (minLong + maxLong) / 2d;
+ 
+    }
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
@@ -244,64 +274,64 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return result;
     }
 
-    private void setMinObfuscatedLatitude() {
-        minObfuscatedLatitude = randomizeIfNeedBe(minimumLatitude, maximumLatitude, LATITUDE, true);
+    private void setObfuscatedSouth() {
+        obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
     }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
-    public Double getMinObfuscatedLatitude() {
-        if (minObfuscatedLatitude == null) {
-            setMinObfuscatedLatitude();
+    public Double getObfuscatedSouth() {
+        if (obfuscatedSouth == null) {
+            setObfuscatedSouth();
         }
-        return getProtectedResult(minObfuscatedLatitude, minimumLatitude);
+        return getProtectedResult(obfuscatedSouth, south);
     }
 
-    private void setMaxObfuscatedLatitude() {
-        maxObfuscatedLatitude = randomizeIfNeedBe(maximumLatitude, minimumLatitude, LATITUDE, false);
+    private void setObfuscatedNorth() {
+        obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
     }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
-    public Double getMaxObfuscatedLatitude() {
-        if (maxObfuscatedLatitude == null) {
-            setMaxObfuscatedLatitude();
+    public Double getObfuscatedNorth() {
+        if (obfuscatedNorth == null) {
+            setObfuscatedNorth();
         }
-        return getProtectedResult(maxObfuscatedLatitude, maximumLatitude);
+        return getProtectedResult(obfuscatedNorth, north);
     }
 
-    private void setMinObfuscatedLongitude() {
-        minObfuscatedLongitude = randomizeIfNeedBe(minimumLongitude, maximumLongitude, LONGITUDE, true);
+    private void setObfuscatedWest() {
+        obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
     }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
-    public Double getMinObfuscatedLongitude() {
-        if (minObfuscatedLongitude == null) {
-            setMinObfuscatedLongitude();
+    public Double getObfuscatedWest() {
+        if (obfuscatedWest == null) {
+            setObfuscatedWest();
         }
-        return getProtectedResult(minObfuscatedLongitude, minimumLongitude);
+        return getProtectedResult(obfuscatedWest, west);
     }
 
-    private void setMaxObfuscatedLongitude() {
-        maxObfuscatedLongitude = randomizeIfNeedBe(maximumLongitude, minimumLongitude, LONGITUDE, false);
+    private void setObfuscatedEast() {
+        obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
     }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
-    public Double getMaxObfuscatedLongitude() {
-        if (maxObfuscatedLongitude == null) {
-            setMaxObfuscatedLongitude();
+    public Double getObfuscatedEast() {
+        if (obfuscatedEast == null) {
+            setObfuscatedEast();
         }
-        return getProtectedResult(maxObfuscatedLongitude, maximumLongitude);
+        return getProtectedResult(obfuscatedEast, east);
     }
 
     /**
@@ -310,25 +340,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @param minimumLatitude
      *            the new minimum latitude
      */
-    public void setMinimumLatitude(Double minimumLatitude) {
-        if ((minimumLatitude != null) && !isValidLatitude(minimumLatitude)) {
-            throw new TdarValidationException("latLong.lat_invalid");
-        }
+    public void setSouth(Double minimumLatitude) {
         setMiny(minimumLatitude);
     }
 
     @Transient
     public void setMiny(Double minY) {
-        this.minimumLatitude = minY;
-        setMinObfuscatedLatitude();
+        this.south = minY;
+        setObfuscatedSouth();
     }
 
     @Deprecated
     /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
-    public Double getMaximumLatitude() {
-        return maximumLatitude;
+    public Double getNorth() {
+        return north;
     }
 
     /**
@@ -337,25 +364,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @param maximumLatitude
      *            the new maximum latitude
      */
-    public void setMaximumLatitude(Double maximumLatitude) {
-        if ((maximumLatitude != null) & !isValidLatitude(maximumLatitude)) {
-            throw new TdarValidationException("latLong.lat_invalid");
-        }
+    public void setNorth(Double maximumLatitude) {
         setMaxy(maximumLatitude);
     }
 
     @Transient
     public void setMaxy(Double maxY) {
-        this.maximumLatitude = maxY;
-        setMaxObfuscatedLatitude();
+        this.north = maxY;
+        setObfuscatedNorth();
     }
 
     @Deprecated
     /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
-    public Double getMinimumLongitude() {
-        return minimumLongitude;
+    public Double getWest() {
+        return west;
     }
 
     /**
@@ -364,10 +388,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @param minimumLongitude
      *            the new minimum longitude
      */
-    public void setMinimumLongitude(Double minimumLongitude) {
-        if ((minimumLongitude != null) && !isValidLongitude(minimumLongitude)) {
-            throw new TdarValidationException("latLong.long_invalid");
-        }
+    public void setWest(Double minimumLongitude) {
         setMinx(minimumLongitude);
     }
 
@@ -379,16 +400,16 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      */
     @Transient
     public void setMinx(Double minX) {
-        this.minimumLongitude = minX;
-        setMinObfuscatedLongitude();
+        this.west = minX;
+        setObfuscatedWest();
     }
 
     @Deprecated
     /**
      * This property should only be used by hibernate or if you REALLY need the unobfuscated version
      */
-    public Double getMaximumLongitude() {
-        return maximumLongitude;
+    public Double getEast() {
+        return east;
     }
 
     /**
@@ -397,10 +418,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @param maximumLongitude
      *            the new maximum longitude
      */
-    public void setMaximumLongitude(Double maximumLongitude) {
-        if ((maximumLongitude != null) && !isValidLongitude(maximumLongitude)) {
-            throw new TdarValidationException("latLong.long_invalid");
-        }
+    public void setEast(Double maximumLongitude) {
         setMaxx(maximumLongitude);
     }
 
@@ -412,8 +430,8 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      */
     @Transient
     public void setMaxx(Double maxX) {
-        this.maximumLongitude = maxX;
-        setMaxObfuscatedLongitude();
+        this.east = maxX;
+        setObfuscatedEast();
     }
 
     @Transient
@@ -430,13 +448,13 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Override
     public boolean isValid() {
-        if (isValidLatitude(maximumLatitude)
-                && isValidLatitude(minimumLatitude)
-                && isValidLongitude(minimumLongitude)
-                && isValidLongitude(maximumLongitude)
-                && maximumLatitude >= minimumLatitude
-                && isValidLongitudeSpan(minimumLongitude, maximumLongitude)
-                && Math.abs(maximumLatitude - minimumLatitude) < 180) {
+        if (isValidLatitude(north)
+                && isValidLatitude(south)
+                && isValidLongitude(west)
+                && isValidLongitude(east)
+                && north >= south
+                && isValidLongitudeSpan(west, east)
+                && Math.abs(north - south) < 180) {
             return true;
         }
         return false;
@@ -455,14 +473,14 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Override
     public String toString() {
-        return String.format("Latitude [%s to %s], Longitude [%s to %s]", minimumLatitude, maximumLatitude, minimumLongitude, maximumLongitude);
+        return String.format("Latitude [%s to %s], Longitude [%s to %s]", south, north, west, east);
     }
 
     public void copyValuesFrom(LatitudeLongitudeBox otherBox) {
-        setMinimumLatitude(otherBox.minimumLatitude);
-        setMaximumLatitude(otherBox.maximumLatitude);
-        setMinimumLongitude(otherBox.minimumLongitude);
-        setMaximumLongitude(otherBox.maximumLongitude);
+        setSouth(otherBox.south);
+        setNorth(otherBox.north);
+        setWest(otherBox.west);
+        setEast(otherBox.east);
     }
 
     public double getObfuscatedArea() {
@@ -470,19 +488,19 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public double getObfuscatedAbsoluteLatLength() {
-        return Math.abs(getMaxObfuscatedLatitude() - getMinObfuscatedLatitude());
+        return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
     }
 
     public double getObfuscatedAbsoluteLongLength() {
-        return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
+        return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
 
     public double getAbsoluteLatLength() {
-        return Math.abs(getMaxObfuscatedLatitude() - getMinObfuscatedLatitude());
+        return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
     }
 
     public double getAbsoluteLongLength() {
-        return Math.abs(getMaxObfuscatedLongitude() - getMinObfuscatedLongitude());
+        return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
 
     public double getArea() {
@@ -494,11 +512,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @return
      */
     public boolean crossesDateline() {
-        return LatitudeLongitudeBox.crossesDateline(getMinObfuscatedLongitude(), getMaxObfuscatedLongitude());
+        return LatitudeLongitudeBox.crossesDateline(getObfuscatedWest(), getObfuscatedEast());
     }
 
     public boolean crossesPrimeMeridian() {
-        return LatitudeLongitudeBox.crossesPrimeMeridian(getMinObfuscatedLongitude(), getMaxObfuscatedLongitude());
+        return LatitudeLongitudeBox.crossesPrimeMeridian(getObfuscatedWest(), getObfuscatedEast());
     }
 
     public static boolean crossesDateline(double minLongitude, double maxLongitude) {
@@ -556,25 +574,25 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;
         logger.trace("obfuscating latLong");
-        Double val = getMaxObfuscatedLatitude();
-        if (ObjectUtils.notEqual(val, getMaximumLatitude())) {
-            setMaximumLatitude(val);
+        Double val = getObfuscatedNorth();
+        if (ObjectUtils.notEqual(val, getNorth())) {
+            setNorth(val);
             obfuscatedObjectDifferent = true;
         }
-        val = getMinObfuscatedLatitude();
-        if (ObjectUtils.notEqual(val, getMinimumLatitude())) {
-            setMinimumLatitude(val);
+        val = getObfuscatedSouth();
+        if (ObjectUtils.notEqual(val, getSouth())) {
+            setSouth(val);
             obfuscatedObjectDifferent = true;
         }
 
-        val = getMaxObfuscatedLongitude();
-        if (ObjectUtils.notEqual(val, getMaximumLongitude())) {
-            setMaximumLongitude(val);
+        val = getObfuscatedEast();
+        if (ObjectUtils.notEqual(val, getEast())) {
+            setEast(val);
             obfuscatedObjectDifferent = true;
         }
-        val = getMinObfuscatedLongitude();
-        if (ObjectUtils.notEqual(val, getMinimumLongitude())) {
-            setMinimumLongitude(val);
+        val = getObfuscatedWest();
+        if (ObjectUtils.notEqual(val, getWest())) {
+            setWest(val);
             obfuscatedObjectDifferent = true;
         }
         setObfuscated(true);
@@ -640,7 +658,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public boolean isInitialized() {
-        return maximumLatitude != null && minimumLatitude != null && maximumLongitude != null && minimumLongitude != null;
+        return north != null && south != null && east != null && west != null;
     }
 
     public boolean isInitializedAndValid() {
@@ -663,4 +681,45 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public void setOkayToShowExactLocation(boolean isOkayToShowExactLocation) {
         this.isOkayToShowExactLocation = isOkayToShowExactLocation;
     }
+    
+    @Deprecated
+    public Double getMinimumLatitude() {
+        return south;
+    }
+
+    @Deprecated
+    public Double getMaximumLatitude() {
+        return north;
+    }
+
+    @Deprecated
+    public Double getMinimumLongitude() {
+        return west;
+    }
+
+    @Deprecated
+    public Double getMaximumLongitude() {
+        return east;
+    }
+
+    @Deprecated
+    public void setMinimumLatitude(Double val) {
+        this.south= val;
+    }
+
+    @Deprecated
+    public void setMaximumLatitude(Double val) {
+        this.north= val;
+    }
+
+    @Deprecated
+    public void setMinimumLongitude(Double val) {
+        this.west= val;
+    }
+
+    @Deprecated
+    public void setMaximumLongitude(Double val) {
+        this.east= val;
+    }
+
 }

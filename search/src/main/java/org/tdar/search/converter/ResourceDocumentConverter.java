@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.search.index.GeneralKeywordBuilder;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
@@ -202,6 +203,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
+        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
     }
 
     
@@ -302,8 +304,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         List<Integer> scales = new ArrayList<>();
         List<Long> llibId = new ArrayList<>();
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
-            Envelope env = new Envelope(llb.getMinObfuscatedLongitude(), llb.getMaxObfuscatedLongitude(), llb.getMinObfuscatedLatitude(),
-                    llb.getMaxObfuscatedLatitude());
+            Envelope env = new Envelope(llb.getObfuscatedWest(), llb.getObfuscatedEast(), llb.getObfuscatedSouth(),
+                    llb.getObfuscatedNorth());
             llibId.add(llb.getId());
             WKTWriter wrt = new WKTWriter();
             String str = wrt.write(JTS.toGeometry(env));
@@ -345,8 +347,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument replaceCollectionFields(Resource r) {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
-        ResourceDocumentConverter.indexCollectionInformation(doc, r);
         addRequiredField(r, doc);
+        ResourceDocumentConverter.indexCollectionInformation(doc, r);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_IDS);
@@ -361,6 +363,5 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         partialUpdate.put("set", doc.getField(fieldName).getValues());
         doc.setField(fieldName, partialUpdate);
     }
-
 
 }

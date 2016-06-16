@@ -70,12 +70,13 @@
 	                        data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
 	                        data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
 	                    </#if>
-	                    <#if editor >
+                        <#-- disabled for Obsidian 
+	                    <#if editor || resource.confidentialViewable  >
 	                        data-real-lat="${box.centerLatitude?c}"
 	                        data-real-long="${box.centerLongitude?c}"
 	                        data-real-lat-length="${box.absoluteLatLength?c}"
 	                        data-real-long-length="${box.absoluteLongLength?c}"
-	                    </#if>
+	                    </#if> -->
 	                    </#if>
                     id="resource-${resource.id?c}">
 
@@ -142,10 +143,11 @@
             <#assign map_ = g[0].latitudeLongitudeBoxes[0] />
         </#if>
         <#if map_?has_content && map_.valid && map_.minimumLatitude?has_content >
-        data-maxy="${map_.maxObfuscatedLatitude}" 
-        data-minx="${map_.minObfuscatedLongitude}"
-        data-maxx="${map_.maxObfuscatedLongitude}"
-        data-miny="${map_.minObfuscatedLatitude}"
+        data-maxy="${map_.obfuscatedNorth}" 
+        data-minx="${map_.obfuscatedWest}"
+        data-maxx="${map_.obfuscatedEast}"
+        data-miny="${map_.obfuscatedSouth}"
+        
         </#if> >
 
 		</div>
@@ -227,7 +229,7 @@
                     <#if (resource.citationRecord?has_content && resource.citationRecord && !resource.resourceType.project)>
                         <span class='cartouche' title="Citation only; this record has no attached files.">Citation</span>
                     </#if>
-                    <@common.cartouche resource true><@_listCreators resource/></@common.cartouche>
+                    <@common.cartouche resource true><#if resource.hidden!false><i class="icon-eye-close" title="hidden" alt="hidden"></i></#if><@_listCreators resource/></@common.cartouche>
                     <#if resource.resourceType?has_content>
                         <@view.unapiLink resource  />
                     </#if>

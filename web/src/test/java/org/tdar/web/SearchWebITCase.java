@@ -74,9 +74,9 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    @Override
     public void testBasicSearchView() {
-        super.testBasicSearchView();
+        gotoPage("/search/simple");
+        assertTextPresentInPage("Search");
         submitForm("Search");
         assertNoErrorTextPresent();
     }
@@ -168,10 +168,10 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testLatLongSearch() throws InterruptedException {
 
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        latLong.setMaximumLatitude(45.336701909968106);
-        latLong.setMinimumLatitude(32.175612478499325);
-        latLong.setMaximumLongitude(-83.0126953125);
-        latLong.setMinimumLongitude(-93.7412109375);
+        latLong.setNorth(45.336701909968106);
+        latLong.setSouth(32.175612478499325);
+        latLong.setEast(-83.0126953125);
+        latLong.setWest(-93.7412109375);
         Long draft = setupDocumentWithProject("Philadelphia 1", latLong, Status.ACTIVE, null, null);
 
         gotoPage(SEARCH_RESULTS_BASE_URL

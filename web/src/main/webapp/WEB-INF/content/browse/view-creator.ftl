@@ -18,10 +18,6 @@
 
     <title><#if creator?? && creator.properName??>${creator.properName}<#else>No title</#if></title>
 
-
-    <#if creator??&& ( keywords?has_content || collaborators?has_content)>
-        <link rel="meta" type="application/rdf+xml" title="FOAF" href="<@s.url value="/browse/creators/${creator.id?c}/rdf"/>">
-    </#if>
 </head>
 
 

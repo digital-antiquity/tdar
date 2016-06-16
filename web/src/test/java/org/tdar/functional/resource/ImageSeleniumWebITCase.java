@@ -6,28 +6,27 @@
 
 package org.tdar.functional.resource;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.MultipleWebTdarConfigurationRunner;
-import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.functional.AbstractBasicSeleniumWebITCase;
+import org.tdar.functional.util.WebElementSelection;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
@@ -67,6 +66,14 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         docValMap.put("image.doi", "10.1016/j.iheduc.2003.11.004");
         docValMap.put("image.url", "http://www.tdar.org");
         docValMap.put("publisherName", "test");
+
+        docMultiValMap.put("geographicKeywords", asList("Georgia"));
+        docMultiValMap.put("temporalKeywords", asList("before time"));
+        docMultiValMap.put("uncontrolledMaterialKeywords", asList("bread", "apples", "very small rocks", "a duck"));
+        docMultiValMap.put("uncontrolledCultureKeywords", asList("German"));
+        docMultiValMap.put("siteNameKeywords", asList("sandy"));
+        docMultiValMap.put("uncontrolledSiteTypeKeywords", asList("uncontrolled"));
+        docMultiValMap.put("otherKeywords", asList("other"));
     }
 
     private void prepIndexedFields() {
@@ -75,7 +82,7 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         prepIndexedFields(docUnorderdValMap.keySet());
     }
 
-    @SuppressWarnings("unused")
+
     @Test
     @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.SELECT2 })
     public void testCreateImageEditSavehasResource()  {
@@ -89,13 +96,10 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
             find(By.name(entry.getKey())).val(entry.getValue());
         }
 
-        // check various keyword checkboxes
+        // fill in uncontrolled keywords
         for (String key : docMultiValMap.keySet()) {
-            for (String val : docMultiValMap.get(key)) {
-                find(By.name(key)).val(val);
-            }
+            select2val(find(By.name(key)), docMultiValMap.get(key));
         }
-//        find(".resource-autocomplete").click();
         submitForm();
 
         String path = getDriver().getCurrentUrl();
@@ -103,10 +107,17 @@ public class ImageSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
         assertTrue("should be on view page", getCurrentUrl().matches(REGEX_DATASET_VIEW));
         logger.debug(getText());
         assertFalse("no errors present", getText().toLowerCase().contains("exception"));
-        // assertFalse("no errors present", getText().toLowerCase().contains("error"));
-        // doesn't work because -- Error setting expression 'submitAction' may occur
-
     }
+
+    @Test
+    public  void testKeywordsRemoved() {
+        testCreateImageEditSavehasResource();
+        find(".toolbar-edit").click();
+        waitForPageload();
+        select2Clear(find("#uncontrolledMaterialKeywordsRepeatable"));
+        assertThat(getText(), not( containsString("very small rocks")));
+    }
+
 
     @Override
     public boolean testRequiresLucene() {

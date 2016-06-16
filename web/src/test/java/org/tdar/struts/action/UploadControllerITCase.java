@@ -2,6 +2,7 @@ package org.tdar.struts.action;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.tdar.struts.action.upload.UploadController;
 
 public class UploadControllerITCase extends AbstractAdminControllerITCase {
 

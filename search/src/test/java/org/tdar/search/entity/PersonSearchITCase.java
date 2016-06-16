@@ -86,7 +86,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
     private SearchResult<Person> searchPerson(String term) throws ParseException, SolrServerException, IOException {
         SearchResult<Person> result = new SearchResult<>();
-        creatorSearchService.findPerson(term,result, MessageHelper.getInstance());
+        creatorSearchService.findPerson(term, result, MessageHelper.getInstance());
         assertResultsOkay(term, result);
         return result;
     }
@@ -142,7 +142,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertEquals(person, people.get(0));
 
         // searching by username
-        result = findPerson(null, "mscottthompson@sua.edu", null, min, SortOption.RELEVANCE);
+        result = findPerson(null, "mscottthompson@sua.edu", null, min, SortOption.RELEVANCE, getBasicUser());
         people = result.getResults();
         logger.debug("results:{} ", people);
         assertEquals(person, people.get(0));
@@ -211,7 +211,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
     @Test
     public void testPersonLookupWithOneResult() throws SolrServerException, IOException, ParseException {
         Person person_ = setupPerson(null, null, "test@tdar.org", null);
-        SearchResult<Person> result = findPerson(person_, null, null, min);
+        SearchResult<Person> result = findPerson(person_, null, null, min,null,getBasicUser());
         List<Person> people = result.getResults();
         assertEquals("person list should have exactly one item", people.size(), 1);
     }
@@ -250,7 +250,7 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         SearchResult<Person> result = findPerson(person_, null, true, min);
         List<Person> people = result.getResults();
         for (Person p : people) {
-            logger.debug("{} {} {}",p.getClass().getSimpleName(), p.getId(), p.isRegistered());
+            logger.debug("{} {} {}", p.getClass().getSimpleName(), p.getId(), p.isRegistered());
         }
         assertEquals("person list should have exactly two items", 2, people.size());
     }
@@ -342,11 +342,46 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         // okay now "log in" and make sure that email lookup is still working
         String email = "james.t.devos@dasu.edu";
         Person person_ = setupPerson(null, null, email, null);
-        SearchResult<Person> result = findPerson(person_, null, null, 0);
+        SearchResult<Person> result = findPerson(person_, null, null, 0, null, getBasicUser());
 
         assertEquals(1, result.getResults().size());
         Person jim = (Person) result.getResults().get(0);
         assertEquals(email, jim.getEmail());
+    }
+
+    @Test
+    @Rollback
+    public void testUnauthenticatedWithEmail() throws ParseException, SolrServerException, IOException {
+        Person person = new Person();
+        person.setEmail("tiffany.clark@dsu.edu");
+        String msg = null;
+        try {
+            boolean seen = true;
+            SearchResult<Person> findPerson = findPerson(person, null, null, 0);
+            for (Person p : findPerson.getResults()) {
+                if (StringUtils.equals(p.getEmail(), person.getEmail())) {
+//                    seen = true;
+                } else {
+                    seen = false;
+                }
+            }
+            assertFalse("should have seen people that don't match email", seen);
+        } catch (Exception e) {
+            msg = e.getMessage();
+        }
+        assertFalse(msg != null);
+    }
+
+    @Test
+    @Rollback
+    public void testAuthenticatedWithEmail() throws ParseException, SolrServerException, IOException {
+        Person person = new Person();
+        person.setEmail("tiffany.clark@dsu.edu");
+        SearchResult<Person> result = new SearchResult<>();
+        result.setAuthenticatedUser(getBasicUser());
+        creatorSearchService.findPerson(person, null, null, result, MessageHelper.getInstance(), 0);
+        // we ignore the email parameter
+        assertEquals(1, result.getResults().size());
     }
 
     @Test
@@ -397,15 +432,19 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return person;
     }
 
-    private SearchResult<Person> findPerson(Person person_, String term, Boolean registered, int min2, SortOption relevance)
+    private SearchResult<Person> findPerson(Person person_, String term, Boolean registered, int min2, SortOption relevance, TdarUser user)
             throws ParseException, SolrServerException, IOException {
         SearchResult<Person> result = new SearchResult<>();
+        result.setAuthenticatedUser(user);
         result.setSortField(relevance);
         creatorSearchService.findPerson(person_, term, registered, result, MessageHelper.getInstance(), min2);
         return result;
     }
 
+    private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2, SortOption option) throws ParseException, SolrServerException, IOException {
+        return findPerson(person, term, registered, min2, option, null);
+    }
     private SearchResult<Person> findPerson(Person person, String term, Boolean registered, int min2) throws ParseException, SolrServerException, IOException {
-        return findPerson(person, term, registered, min2, null);
+        return findPerson(person, term, registered, min2, null, null);
     }
 }

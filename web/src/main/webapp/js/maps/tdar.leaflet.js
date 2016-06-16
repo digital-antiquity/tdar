@@ -33,7 +33,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         },
         zoomLevel: 4,
         leafletTileProvider: 'mapbox',
-        maxBounds: [[[-85, -180.0], [85, 180.0]]],
         minZoom: 2,
         maxZoom: 17,
         id: 'abrin.n9j4f56m',
@@ -69,7 +68,6 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _elemData = $elem.data();
         // bootstrap stores a lot of data in BODY. We only want a subset
         var _bdata = $('body').data();
-//        console.log(_bdata.centerlat);
         var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
         if (_bdata.centerlat && _bdata.centerlong) {
             _bodyData.center =  {lat: _bdata.centerlat, lng: _bdata.centerlong} 
@@ -96,16 +94,19 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
         
-        var geoJson = $('#leafetGeoJson');
-        if (geoJson.length > 0) {
-            var gj = JSON.parse(geoJson.html());
-            console.log("parsed");
-            var glayer = L.geoJson(gj);
-            console.log("loaded");
-            glayer.addTo(map);
-            console.log("added");
-
-            _fitTo(map, glayer);
+        if (settings.geojson != undefined) {
+            var geoJson = $(settings.geojson);
+//            console.log(settings.geojson);
+            if (geoJson.length > 0) {
+                var gj = JSON.parse(geoJson.html());
+                console.log("parsed");
+                var glayer = L.geoJson(gj);
+                console.log("loaded");
+                glayer.addTo(map);
+                console.log("added");
+    
+                _fitTo(map, glayer);
+            }
         }
         if (settings.search) {
             L.Control.geocoder({}).addTo(map);
@@ -234,8 +235,13 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      */
     function _initRectangle(map, minx, miny, maxx, maxy, rectangleSettings) {
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined && !isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
-            //console.log(minx, maxx, miny, maxy);
-            var poly = [[maxy, maxx], [miny, minx]];
+            // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
+            // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY ADD 360
+            if (parseFloat(maxx) < parseFloat(minx)) {
+                maxx = parseFloat(maxx) +  360.0;
+            }
+            var poly = [[maxy, minx], [miny, maxx]];
+            console.log(poly);
             var rectangle = L.rectangle(poly, rectangleSettings).addTo(map);
             console.log("fitToBounds:", rectangleSettings.fitToBounds);
             console.log("fitToBounds (rec):", rectangle.getBounds());
@@ -327,6 +333,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             var $dix = $(".d_minx", $el);
             var $dmy = $(".d_maxy", $el);
             var $diy = $(".d_miny", $el);
+
             // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
             $dmx.change(function() {
                 $(".maxx", $el).val(Geo.parseDMS($dmx.val()));
@@ -462,17 +469,54 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         }
 
         // the change() watch deosn't always pay attention to these explicit calls
-        $(".minx", $el).val(bnds.getWest());
         $(".miny", $el).val(bnds.getSouth());
-        $(".maxx", $el).val(bnds.getEast());
         $(".maxy", $el).val(bnds.getNorth());
-        $(".d_minx", $el).val(bnds.getWest());
         $(".d_miny", $el).val(bnds.getSouth());
-        $(".d_maxx", $el).val(bnds.getEast());
+        
+        console.log("west: " + bnds.getWest() + " east:" + bnds.getEast());
+        var x = bnds.getWest();
+        x = _correctForWorldWrap(x);
+        $(".minx", $el).val(x);
+        $(".d_minx", $el).val(x);
+        if (x < -180) {
+            x = parseFloat(x) + 360.0;
+            
+            $(".d_minx", $el).val(x );
+            $(".minx", $el).val(x );
+        }
+
+        x = bnds.getEast();
+        x = _correctForWorldWrap(x);
+        $(".maxx", $el).val(x);
+        $(".d_maxx", $el).val(x);
+        if (x > 180) {
+            // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
+            // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY HERE, THE REVERSE AS ABOVE
+            // 
+            x = parseFloat(x) - 360.0 ;
+            $(".d_maxx", $el).val(x);
+            $(".maxx", $el).val(x);
+        } 
+        console.log("west(set): " + $(".d_minx").val() + " east(set):" + $(".d_maxx").val());
         $(".d_maxy", $el).val(bnds.getNorth());
         return bnds;
     }
 
+    /**
+     * Leaflet corrects for world wrapping by adding or subtracting 360... to get the valid Lat/Long we need to correct for this
+     */
+    function _correctForWorldWrap(x_) {
+        var x = x_;
+        while (x > 360) {
+            x -= 360;
+        }
+        while (x < -360) {
+            x += 360;
+        }
+        return x;
+    }
+
+    
     function _isIntialized() {
         return _initialized;
     }

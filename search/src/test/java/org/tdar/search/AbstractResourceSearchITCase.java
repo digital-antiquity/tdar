@@ -118,10 +118,10 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         CultureKeyword label = genericKeywordService.findByLabel(CultureKeyword.class, "Folsom");
         CultureKeyword label2 = genericKeywordService.findByLabel(CultureKeyword.class, "Early Archaic");
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        latLong.setMinimumLongitude(-117.124);
-        latLong.setMaximumLongitude(-117.101);
-        latLong.setMaximumLatitude(35.791);
-        latLong.setMinimumLatitude(33.354);
+        latLong.setWest(-117.124);
+        latLong.setEast(-117.101);
+        latLong.setNorth(35.791);
+        latLong.setSouth(33.354);
         img.setLatitudeLongitudeBox(latLong);
         assertNotNull(label.getId());
         img.getCultureKeywords().add(label);

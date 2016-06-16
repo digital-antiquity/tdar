@@ -97,10 +97,10 @@ public abstract class DcTransformer<R extends Resource> implements Transformer<R
         dc.getType().add(source.getResourceType().getLabel());
 
         for (LatitudeLongitudeBox longLat : source.getActiveLatitudeLongitudeBoxes()) {
-            String maxy = "MaxY: ".concat(longLat.getMaxObfuscatedLatitude().toString());
-            String miny = "MinY: ".concat(longLat.getMinObfuscatedLatitude().toString());
-            String maxx = "MaxX: ".concat(longLat.getMaxObfuscatedLongitude().toString());
-            String minx = "MinX: ".concat(longLat.getMinObfuscatedLongitude().toString());
+            String maxy = "MaxY: ".concat(longLat.getObfuscatedNorth().toString());
+            String miny = "MinY: ".concat(longLat.getObfuscatedSouth().toString());
+            String maxx = "MaxX: ".concat(longLat.getObfuscatedEast().toString());
+            String minx = "MinX: ".concat(longLat.getObfuscatedWest().toString());
             dc.getCoverage().add(String.format("%s, %s, %s, %s", maxy, miny, maxx, minx));
         }
 

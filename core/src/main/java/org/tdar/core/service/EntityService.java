@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Address;
 import org.tdar.core.bean.entity.AgreementTypes;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -543,9 +544,28 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         return getDao().getAffiliationCounts(true);
     }
 
+    @Transactional(readOnly=true)
     public String createSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException {
         SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
         return transformer.convert(serializationService, creator, logoUrl);
+    }
+
+    @Transactional(readOnly=false)
+    public void saveAddress(Address address2, Creator<?> creator) {
+        creator.getAddresses().add(address2);
+        getDao().saveOrUpdate(creator);
+    }
+
+    @Transactional(readOnly=false)
+    public void deleteAddressForCreator(Address address, Creator<?> creator) {
+        Address toDelete = address;
+        getLogger().info("to delete: {} ", toDelete);
+        boolean remove = creator.getAddresses().remove(toDelete);
+        getLogger().info("did it work: {} ", remove);
+        // this is likely superflouous, but I'm tired
+        getDao().delete(toDelete);
+        getDao().saveOrUpdate(creator);
+        
     }
 
 }

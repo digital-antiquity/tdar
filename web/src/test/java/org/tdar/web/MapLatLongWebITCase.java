@@ -37,15 +37,15 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm();
         String url = getCurrentUrlPath() + "?type=1";
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
-        latLong.setMaximumLatitude(45.336701909968106);
-        latLong.setMinimumLatitude(32.175612478499325);
-        latLong.setMaximumLongitude(-83.0126953125);
-        latLong.setMinimumLongitude(-114.7412109375);
+        latLong.setNorth(45.336701909968106);
+        latLong.setSouth(32.175612478499325);
+        latLong.setEast(-83.0126953125);
+        latLong.setWest(-114.7412109375);
         LatitudeLongitudeBox detailedLatLong = new LatitudeLongitudeBox();
-        detailedLatLong.setMaximumLatitude(40.21362051996706);
-        detailedLatLong.setMinimumLatitude(40.2115886265213);
-        detailedLatLong.setMaximumLongitude(-106.38383388519287);
-        detailedLatLong.setMinimumLongitude(-106.38091564178467);
+        detailedLatLong.setNorth(40.21362051996706);
+        detailedLatLong.setSouth(40.2115886265213);
+        detailedLatLong.setEast(-106.38383388519287);
+        detailedLatLong.setWest(-106.38091564178467);
         File file = new File(TestConstants.TEST_DOCUMENT_DIR, TestConstants.TEST_DOCUMENT_NAME);
         Long confidentialFile = setupDocumentWithProject(RESOURCE_WITH_NORMAL_LAT_LONG_AND_CONFIDENTIAL_FILE, latLong, Status.ACTIVE, file,
                 FileAccessRestriction.CONFIDENTIAL);
