@@ -231,6 +231,9 @@ TDAR.inheritance = (function () {
         if ($select2.length > 0) {
         	repeatRowValues = $select2.val();
         }
+        if (repeatRowValues == undefined) {
+            repeatRowValues = new Array();
+        }
         return repeatRowValues.length === 0 || $.compareArray(repeatRowValues, values);
     }
 
