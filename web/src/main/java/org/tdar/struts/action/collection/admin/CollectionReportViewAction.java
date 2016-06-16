@@ -1,4 +1,4 @@
-package org.tdar.struts.action.collection;
+package org.tdar.struts.action.collection.admin;
 
 import java.util.Arrays;
 import java.util.List;
@@ -45,7 +45,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/collection/report")
+@Namespace("/collection/admin/report")
 @HttpsOnly
 public class CollectionReportViewAction extends AbstractAuthenticatableAction
         implements FacetedResultHandler<Resource>, PersistableLoadingAction<ResourceCollection>, Preparable {

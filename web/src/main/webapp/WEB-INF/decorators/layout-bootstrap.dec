@@ -12,6 +12,10 @@
 <#global jquery_ui_version="1.11.4">
 <#global jquery_ui_css_version="1.11.4">
 <#global jquery_validate_version="1.13.1" >
+<#assign pageType ="view">
+<#if ["add", "columns", "confirm-delete", "dashboard", "delete", "edit"]?seq_contains(actionName)>
+    <#assign pageType=actionName>
+</#if>
 
 <#-- if something bad happened, we're no-longer backed by TdarActionSupport, and thus protocol is not on the stack... switch to static error.
      This is a less-than ideal solution, but seems to be the best that we have. -->
@@ -89,7 +93,7 @@ ${head}
     	</style>
     </#if>
 </head>
-<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${actionName} <#if !production>not-production</#if>"
+<body id="${bodyid}" data-spy="scroll" data-target="#subnavbar" class="results ${pageType} <#if !production>not-production</#if>"
 	 data-leaflet-api-key="${leafletApiKey}" data-leaflet-tile-provider="${leafletApiKey?has_content?then('mapbox', 'osm')}" data-centerLat="${mapDefaultLat}" data-centerLong="${mapDefaultLng}"  data-useGeoLoc="${geoLocationToBeUsed?then('true', 'false')}"
     data-sessionTimeout="${sessionTimeout?c}" data-maxUploadFiles="${maxUploadFilesPerRecord?c}"
 

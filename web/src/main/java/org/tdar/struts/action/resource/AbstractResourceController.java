@@ -341,7 +341,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
                 if (getResource().getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                     getResource().setStatus(getResource().getPreviousStatus());
                 }
-                updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), getResource());
+                updateQuota(getGenericService().find(BillingAccount.class, getAccountId()), getResource(), getAuthenticatedUser());
             }
         } else {
             loadAddMetadata();
@@ -1076,9 +1076,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return isEditor();
     }
 
-    public void updateQuota(BillingAccount account, Resource resource) {
+    public void updateQuota(BillingAccount account, Resource resource, TdarUser user) {
         if (getTdarConfiguration().isPayPerIngestEnabled()) {
-            accountService.updateQuota(account, resource);
+            accountService.updateQuota(account, user, resource);
         }
     }
 

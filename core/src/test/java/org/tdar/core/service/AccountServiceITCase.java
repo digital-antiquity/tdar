@@ -90,7 +90,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
         final long rid = resource.getId();
         final long accountId = account.getId();
         genericService.saveOrUpdate(resource);
-        AccountAdditionStatus updateQuota = accountService.updateQuota(account, resource);
+        AccountAdditionStatus updateQuota = accountService.updateQuota(account, account.getOwner(), resource);
         assertEquals(AccountAdditionStatus.NOT_ENOUGH_SPACE, updateQuota);
 
         Invoice invoice = new Invoice();
@@ -117,7 +117,7 @@ public class AccountServiceITCase extends AbstractIntegrationTestCase {
                 genericService.update(resource2);
                 assertFalse(resource2.isUpdated());
                 assertEquals(Status.FLAGGED_ACCOUNT_BALANCE, resource2.getStatus());
-                accountService.updateQuota(account, account.getResources());
+                accountService.updateQuota(account, account.getResources(), account.getOwner());
                 Invoice invoice_ = account.getInvoices().iterator().next();
                 assertEquals(Status.ACTIVE, resource2.getStatus());
                 genericService.delete(resource2);

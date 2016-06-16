@@ -43,6 +43,9 @@ public abstract class AbstractAuthenticationInterceptor implements SessionDataAw
         if (StringUtils.isBlank(token)) {
             return false;
         }
+        if (!CONFIG.ssoEnabled()) {
+            return false;
+        }
 
         logger.trace("checking valid token: {}", token);
         AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());

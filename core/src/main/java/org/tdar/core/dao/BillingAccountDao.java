@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,7 +29,9 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
@@ -259,7 +262,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
      * @param resourcesToEvaluate
      * @return
      */
-    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate_) {
+    public AccountAdditionStatus updateQuota(BillingAccount account, Collection<Resource> resourcesToEvaluate_, TdarUser user) {
         Collection<Resource> resourcesToEvaluate = resourcesToEvaluate_;
         logger.info("updating quota(s) {} {}", account, resourcesToEvaluate);
         logger.trace("model {}", getLatestActivityModel());
@@ -317,10 +320,12 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
             logger.info("flagged: {} overdrawn:{}", helper.getFlagged(), overdrawn);
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
                 account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+                account.markUpdated(user);
                 logger.info("marking account as FLAGGED {} {}", overdrawn, helper.getFlagged());
             } else {
                 if (account.getStatus().equals(Status.FLAGGED_ACCOUNT_BALANCE)) {
                     account.setStatus(Status.ACTIVE);
+                    account.markUpdated(user);
                 }
             }
 //            saveOrUpdate(resourcesToEvaluate);

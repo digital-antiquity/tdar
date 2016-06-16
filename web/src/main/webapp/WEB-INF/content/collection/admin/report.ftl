@@ -1,14 +1,15 @@
 facetWrapper<#escape _untrusted as _untrusted?html>
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "common-collection.ftl" as commonCollection>
+    <#import "../common-collection.ftl" as commonCollection>
 	<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 	
 <head>
+<title>Metadata Report: ${resourceCollection.name!"untitled collection"}</title>
 </head>
 <body>
 
-<h1>${resourceCollection.name!"untitled collection"}</h1>
+<h1>Metadata Report: ${resourceCollection.name!"untitled collection"}</h1>
 <div class="row">
 <div class="span6">
 <h3>Status Breakdown</h3>

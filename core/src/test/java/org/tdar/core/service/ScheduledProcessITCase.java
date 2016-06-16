@@ -8,6 +8,7 @@ import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
@@ -38,6 +39,8 @@ import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
+
+import com.sun.mail.handlers.message_rfc822;
 
 /**
  * $Id$
@@ -200,14 +203,18 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     public void testAccountEmail() {
         BillingAccount account = setupAccountForPerson(getBasicUser());
         account.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+        account.markUpdated(getAdminUser());
+        account.setLastModified(DateTime.now().minusDays(1).toDate());
         genericService.saveOrUpdate(account);
         oau.execute();
         sendEmailProcess.execute();
-        SimpleMailMessage received = ((MockMailSender) emailService.getMailSender()).getMessages().get(0);
+        ArrayList<SimpleMailMessage> messages = ((MockMailSender) emailService.getMailSender()).getMessages();
+        SimpleMailMessage received = messages.get(0);
         assertTrue(received.getSubject().contains(OverdrawnAccountUpdate.SUBJECT));
         assertTrue(received.getText().contains("Flagged Items"));
         assertEquals(received.getFrom(), emailService.getFromEmail());
         assertEquals(received.getTo()[0], getTdarConfiguration().getSystemAdminEmail());
+        assertNotNull(messages.get(1));
     }
 
     @Test
