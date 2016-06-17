@@ -334,6 +334,17 @@ TDAR.inheritance = (function () {
         _disableSection($(sectionId));
     }
 
+    function _inheritOtherInformation(formId, json, sectionId, tableId) {
+        //console.debug("_inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
+        var $section = $(sectionId);
+
+        _clearFormSection($section);
+        TDAR.inheritance.resetRepeatable("#otherKeywordsRepeatable", json.otherInformation.otherKeywords.length);
+        _populateSection(formId, json)
+        _populateSelect2Keywords($section, json.otherInformation.otherKeywords);
+        _disableSection($(sectionId));
+    }
+
 //
 
     function _inheritSiteInformation(formId, json) {
@@ -342,14 +353,18 @@ TDAR.inheritance = (function () {
         TDAR.inheritance.resetRepeatable('#siteNameKeywordsRepeatable', json.siteInformation['siteNameKeywords'].length);
         TDAR.inheritance.resetRepeatable('#uncontrolledSiteTypeKeywordsRepeatable', json.siteInformation['uncontrolledSiteTypeKeywords'].length);
         _populateSection(formId, json.siteInformation);
+        _populateSelect2Keywords($('#siteNameKeywordsRepeatable').parent(), json.siteInformation.siteNameKeywords);
+        _populateSelect2Keywords($('#uncontrolledSiteTypeKeywordsRepeatable').parent(), json.siteInformation.uncontrolledSiteTypeKeywords);
         _disableSection($section);
     }
+
 
     function _inheritCulturalInformation(formId, json) {
     	var $section = $('#divCulturalInformation');
         _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#uncontrolledCultureKeywordsRepeatable', json.culturalInformation['uncontrolledCultureKeywords'].length);
         _populateSection(formId, json.culturalInformation);
+        _populateSelect2Keywords($section, json.culturalInformation.uncontrolledCultureKeywords);
         _disableSection($section);
     }
 
@@ -358,6 +373,7 @@ TDAR.inheritance = (function () {
         _clearFormSection($section);
         TDAR.inheritance.resetRepeatable('#uncontrolledMaterialKeywordsRepeatable', json.materialInformation['uncontrolledMaterialKeywords'].length);
         _populateSection(formId, json.materialInformation);
+        _populateSelect2Keywords($section, json.materialInformation.uncontrolledMaterialKeywords);
         _disableSection($section);
     }
 
@@ -385,6 +401,7 @@ TDAR.inheritance = (function () {
         _populateSection(formId, json.noteInformation);
         _disableSection($section);
     }
+
 
     function _populateSelect2Keywords($section, array) {
         var $gk = $(".keyword-autocomplete", $section);
@@ -425,6 +442,7 @@ TDAR.inheritance = (function () {
         TDAR.inheritance.resetRepeatable('#temporalKeywordsRepeatable', json.temporalInformation.temporalKeywords.length);
         TDAR.inheritance.resetRepeatable('#coverageDateRepeatable', json.temporalInformation.coverageDates.length);
         _populateSection(formId, json.temporalInformation);
+        _populateSelect2Keywords($section, json.temporalInformation.temporalKeywords);
         _disableSection($section);
     }
 
@@ -569,7 +587,10 @@ TDAR.inheritance = (function () {
                 mappedData: "siteInformation", // curently not used 
                 isSafeCallback: function () {
                     var allKeywords = TDAR.inheritance.json.siteInformation.siteNameKeywords.concat(TDAR.inheritance.json.siteInformation.uncontrolledSiteTypeKeywords);
-                    return _inheritingCheckboxesIsSafe('#divSiteInformation', TDAR.inheritance.json.siteInformation.approvedSiteTypeKeywordIds) && _inheritingRepeatRowsIsSafe('#divSiteInformation', allKeywords);
+                    return _inheritingCheckboxesIsSafe('#divSiteInformation', TDAR.inheritance.json.siteInformation.approvedSiteTypeKeywordIds)
+                        && _inheritingRepeatRowsIsSafe('#siteNameKeywordsRepeatable', TDAR.inheritance.json.siteInformation.siteNameKeywords)
+                        && _inheritingRepeatRowsIsSafe('#uncontrolledSiteTypeKeywordsRepeatable', TDAR.inheritance.json.siteInformation.uncontrolledSiteTypeKeywords)
+                        ;
 
                 },
                 inheritSectionCallback: function () {
@@ -604,7 +625,7 @@ TDAR.inheritance = (function () {
                 mappedData: "materialInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingCheckboxesIsSafe('#allMaterialInformation', TDAR.inheritance.json.materialInformation.approvedMaterialKeywordIds) &&
-                            _inheritingRepeatRowsIsSafe('#allMaterialInformation', TDAR.inheritance.json.materialInformation.uncontrolledMaterialKeywords);
+                            _inheritingRepeatRowsIsSafe('#uncontrolledMaterialKeywordsRepeatable', TDAR.inheritance.json.materialInformation.uncontrolledMaterialKeywords);
                 },
                 inheritSectionCallback: function () {
                     _inheritMaterialInformation('#allMaterialInformation', TDAR.inheritance.json);
@@ -617,7 +638,7 @@ TDAR.inheritance = (function () {
                 mappedData: "culturalInformation", // curently not used 
                 isSafeCallback: function () {
                     return _inheritingCheckboxesIsSafe('#divCulturalInformation', TDAR.inheritance.json.culturalInformation.approvedCultureKeywordIds) && 
-                    _inheritingRepeatRowsIsSafe('#divCulturalInformation', TDAR.inheritance.json.culturalInformation.uncontrolledCultureKeywords);
+                    _inheritingRepeatRowsIsSafe('#uncontrolledCultureKeywordsRepeatable', TDAR.inheritance.json.culturalInformation.uncontrolledCultureKeywords);
                 },
                 inheritSectionCallback: function () {
                     _inheritCulturalInformation('#divCulturalInformation', TDAR.inheritance.json);
@@ -629,10 +650,10 @@ TDAR.inheritance = (function () {
                 divSelector: '#divOtherInformation',
                 mappedData: "otherInformation", // curently not used 
                 isSafeCallback: function () {
-                    return _inheritingRepeatRowsIsSafe('#divOtherInformation', TDAR.inheritance.json.otherInformation.otherKeywords);
+                    return _inheritingRepeatRowsIsSafe('#otherKeywordsRepeatable', TDAR.inheritance.json.otherInformation.otherKeywords);
                 },
                 inheritSectionCallback: function () {
-                    _inheritInformation('#divOtherInformation', TDAR.inheritance.json.otherInformation, "#divOtherInformation", "otherKeywords");
+                    _inheritOtherInformation('#divOtherInformation', TDAR.inheritance.json, "#divOtherInformation", "otherKeywords");
                 }
             },
             {
@@ -1005,6 +1026,8 @@ TDAR.inheritance = (function () {
      * @param newSize the number of rows the table will contain.
      */
     var resetRepeatable = function (repeatableSelector, newSize) {
+        //ignrore the element if it is a backing <select> for a select2 control.
+        if($(repeatableSelector).is(".select2-hidden-accessible")) {return;}
         $(repeatableSelector).find(".repeat-row:not(:first)").remove();
         var $firstRow = $('.repeat-row', repeatableSelector);
         _resetIndexedAttributes($firstRow);
