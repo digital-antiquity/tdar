@@ -75,7 +75,7 @@ public class ReflectionDao {
     at org.tdar.core.dao.ReflectionDao.findReferrers(ReflectionDao.java:60)
 
  */
-        hql = hql.replace(":idlist", StringUtils.join(idlist,","));
+//        hql = hql.replace(":idlist", StringUtils.join(idlist,","));
         Query query = getCurrentSession().createQuery(hql);
 //        query.setParameter("idlist", idlist);
 
