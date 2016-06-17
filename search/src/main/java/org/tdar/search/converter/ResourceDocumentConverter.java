@@ -1,12 +1,15 @@
 package org.tdar.search.converter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -73,7 +76,10 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
                 doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
             }
-            doc.setField(QueryFieldNames.DATE, ir.getDate());
+            SimpleDateFormat dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+
+            doc.setField(QueryFieldNames.DATE, dateFormatUTC.format(new Date(ir.getDate())));
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
             if (ir.getMetadataLanguage() != null) {
@@ -228,6 +234,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     public static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
+        
         ResourceRightsExtractor rightsExtractor = new ResourceRightsExtractor(resource);
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());

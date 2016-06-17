@@ -2,6 +2,9 @@ package org.tdar.search.converter;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrInputDocument;
@@ -33,8 +36,12 @@ public class ContentDocumentConverter extends AbstractSolrDocumentConverter {
             }
 //            logger.debug("{} {} {} {}", irf.getInformationResource().getId(), irf.getFilename(), irf.getRestriction());
         }
+        
+        SimpleDateFormat dateFormatUTC = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        dateFormatUTC.setTimeZone(TimeZone.getTimeZone("UTC"));
+
         doc.setField(QueryFieldNames.FILENAME, irf.getFilename());
-        doc.setField(QueryFieldNames.DATE, irf.getFileCreatedDate());
+        doc.setField(QueryFieldNames.DATE, dateFormatUTC.format(irf.getFileCreatedDate()));
         doc.setField(QueryFieldNames.RESOURCE_ID, irf.getInformationResource().getId());
         doc.setField(QueryFieldNames.RESOURCE_ACCESS_TYPE, irf.getRestriction());
 
