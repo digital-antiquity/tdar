@@ -1,6 +1,7 @@
 package org.tdar.search.converter;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.TimeZone;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -34,5 +35,15 @@ public class AbstractSolrDocumentConverter {
         }
         return doc;
 
+    }
+
+    protected static void addDateField(SolrInputDocument doc, Date date, String field) {
+        if (date != null) {
+            if (date instanceof java.sql.Date) {
+                doc.setField(field, new Date(date.getTime()));
+            } else {
+                doc.setField(field, date);
+            }
+        }
     }
 }
