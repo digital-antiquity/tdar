@@ -186,10 +186,10 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
 
         assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
         String result = null;
-        TdarActionException tdae = null;
+        Exception tdae = null;
         try {
-            result = rc.doDefault();
-        } catch (TdarActionException e) {
+            result = rc.execute();
+        } catch (Exception e) {
             tdae = e;
         }
         Assert.assertFalse(rc.isAllowedToCreateResource());
