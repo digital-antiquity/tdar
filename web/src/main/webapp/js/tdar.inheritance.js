@@ -102,10 +102,10 @@ TDAR.inheritance = (function () {
 
         if (rawJson.activeLatitudeLongitudeBoxes != undefined && rawJson.activeLatitudeLongitudeBoxes.length > 0) {
             var llb = rawJson.activeLatitudeLongitudeBoxes[0];
-            obj.spatialInformation['minx'] = llb.minObfuscatedLongitude;
-            obj.spatialInformation['maxx'] = llb.maxObfuscatedLongitude;
-            obj.spatialInformation['miny'] = llb.minObfuscatedLatitude;
-            obj.spatialInformation['maxy'] = llb.maxObfuscatedLatitude;
+            obj.spatialInformation['minx'] = llb.obfuscatedWest;
+            obj.spatialInformation['maxx'] = llb.obfuscatedEast;
+            obj.spatialInformation['miny'] = llb.obfuscatedSouth;
+            obj.spatialInformation['maxy'] = llb.obfuscatedNorth;
         } else{
             obj.spatialInformation['minx'] = '';
             obj.spatialInformation['maxx'] = '';
