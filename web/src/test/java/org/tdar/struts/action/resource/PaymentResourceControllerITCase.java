@@ -179,12 +179,29 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
     @Test
     @Rollback()
     public void testResourceControllerWithoutValidAccount() throws Exception {
+        // run first a general tDAR user -- so you get the CONTRIBUTOR result
         Assert.assertTrue(getTdarConfiguration().isPayPerIngestEnabled());
-        ResourceController rc = generateNewController(ResourceController.class);
         TdarUser user = createAndSaveNewPerson();
+        String result = runController(user, true);
+        assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
+        Assert.assertEquals(ResourceController.CONTRIBUTOR, result);
+        // mark the user as a contributor, and you should get BILLING WARNING
+        user.setContributor(true);
+        assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
+        result = runController(user,true);
+        Assert.assertEquals(ResourceController.BILLING, result);
+        BillingAccount account = setupAccountWithInvoiceFiveResourcesAndSpace(accountService.getLatestActivityModel(), user);
+        genericService.saveOrUpdate(account);
+        result = runController(user, false);
+        Assert.assertEquals(ResourceController.SUCCESS, result);
+
+    }
+
+    private String runController(TdarUser user, boolean enabled) {
+        ResourceController rc;
+        rc = generateNewController(ResourceController.class);
         init(rc, user);
 
-        assertTrue(CollectionUtils.isEmpty(accountService.listAvailableAccountsForUser(user)));
         String result = null;
         Exception tdae = null;
         try {
@@ -192,10 +209,12 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         } catch (Exception e) {
             tdae = e;
         }
-        Assert.assertFalse(rc.isAllowedToCreateResource());
-        Assert.assertTrue(rc.isPayPerIngestEnabled());
+        if (enabled) {
+            Assert.assertFalse(rc.isAllowedToCreateResource());
+            Assert.assertTrue(rc.isPayPerIngestEnabled());
+        }
         Assert.assertNull(tdae);
-        Assert.assertEquals(Action.SUCCESS, result);
+        return result;
     }
 
     @Test
