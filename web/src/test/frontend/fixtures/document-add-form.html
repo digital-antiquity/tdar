@@ -1,7 +1,26 @@
 <script>
    //FIXME: get rid of these singletons when we implement TDAR-4801
    TDAR.filesJson = [];
-   TDAR.inheritance.project = {};
+   TDAR.inheritance.project = {
+       activeInvestigationTypes:{},
+       activeSiteNameKeywords:{},
+       approvedSiteTypeKeywords:{},
+       uncontrolledSiteTypeKeywords:{},
+       approvedMaterialKeywords:{},
+       uncontrolledMaterialKeywords:{},
+       approvedCultureKeywords:{},
+       uncontrolledCultureKeywords:{},
+       activeGeographicKeywords:{},
+       activeTemporalKeywords:{},
+       activeCoverageDates:{},
+       activeResourceAnnotations:{},
+       activeResourceNotes:{},
+       activeSourceCollections:{},
+       activeRelatedComparativeCollections:{},
+       activeOtherKeywords:{},
+       activeIndividualAndInstitutionalCredit:{},
+       activeLatitudeLongitudeBoxes:{}       
+   };
 </script>
 <form id="metadataForm" data-submitterid="8608" class="tdarvalidate" data-validate-method="initBasicForm">
     <fieldset>
