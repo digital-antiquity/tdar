@@ -489,14 +489,18 @@ TDAR.inheritance = (function () {
         //hack:  formId is no longer global, and updateInheritableSections() needs it...
         var formId = $(formSelector).attr("id");
 
+        console.log("applying inheritance to:" + formSelector);
         // if we are editing, set up the initial form values
-//    if (project) {
-//        json = _convertToFormJson(project);
-//        _updateInheritableSections(json, formId);
-//    }
+        var $projectId = $('.projectId',formSelector);
+        var pid = $projectId.val();
+        if (pid != undefined && pid > -1) {
+            TDAR.inheritance.json = _convertToFormJson(project);
+            console.log(TDAR.inheritance.json);
+            _updateInheritableSections(formId, TDAR.inheritance.json);
+        }
 
         // update the inherited form values when project selection changes.
-        $('#projectId').change(function (e) {
+        $projectId.change(function (e) {
             var sel = this;
             if ($(sel).val() !== '' && $(sel).val() > 0) {
                 $.ajax({
@@ -789,16 +793,18 @@ TDAR.inheritance = (function () {
         ];
 
         $.each(optionsList, function (idx, options) {
+            console.log("register inheritance:"+ options.divSelector);
             TDAR.inheritance.registerInheritSection(options);
+//            $(options.cbSelector).change();
         });
 
         /* We want to disable the map when a user inherits spatialInformation, however, the map isn't available immediately after pageload. So we wait for the
         browser to load the map gmap api and initialize the map. */
-        $('#editmapv3').one('mapready', function (e) {
-            if ($('#cbInheritingSpatialInformation').prop('checked')) {
-                _disableMap();
-            }
-        });
+        // $('#editmapv3').one('mapready', function (e) {
+        //     if ($('#cbInheritingSpatialInformation').prop('checked')) {
+        //         _disableMap();
+        //     }
+        // });
     }
 
     function _inheritingCreditInfoIsSafe() {
@@ -1117,7 +1123,6 @@ TDAR.inheritance = (function () {
                                 _updateSelectAllCheckboxState();
                             });
                 }
-                ;
             } else {
                 //user unchecked inheritance - enable the controls
                 _options.enableSectionCallback($(_options.divSelector));
