@@ -340,7 +340,7 @@ TDAR.inheritance = (function () {
 
         _clearFormSection($section);
         TDAR.inheritance.resetRepeatable("#otherKeywordsRepeatable", json.otherInformation.otherKeywords.length);
-        _populateSection(formId, json)
+        _populateSection(formId, json.otherInformation);
         _populateSelect2Keywords($section, json.otherInformation.otherKeywords);
         _disableSection($(sectionId));
     }
@@ -488,13 +488,17 @@ TDAR.inheritance = (function () {
 
         //hack:  formId is no longer global, and updateInheritableSections() needs it...
         var formId = $(formSelector).attr("id");
+        if(TDAR.inheritance.project == undefined) {
+            TDAR.inheritance.project = _getBlankProject();
+        };
+        TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
 
         console.log("applying inheritance to:" + formSelector);
         // if we are editing, set up the initial form values
-        var $projectId = $('.projectId',formSelector);
+        var $projectId = $('#projectId',formSelector);
         var pid = $projectId.val();
         if (pid != undefined && pid > -1) {
-            TDAR.inheritance.json = _convertToFormJson(project);
+            TDAR.inheritance.json = _convertToFormJson(TDAR.inheritance.project);
             console.log(TDAR.inheritance.json);
             _updateInheritableSections(formId, TDAR.inheritance.json);
         }
@@ -502,9 +506,10 @@ TDAR.inheritance = (function () {
         // update the inherited form values when project selection changes.
         $projectId.change(function (e) {
             var sel = this;
-            if ($(sel).val() !== '' && $(sel).val() > 0) {
+            var $sel = $(this);
+            if ($sel.val() !== '' && $sel.val() > 0) {
                 $.ajax({
-                    url: TDAR.uri() + "project/json/" + $(sel).val() ,
+                    url: TDAR.uri() + "project/json/" + $sel.val() ,
                     dataType: "jsonp",
                     success: _projectChangedCallback,
                     error: function (msg) {
