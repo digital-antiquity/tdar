@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div class="span4" style="height:400px">
+    <div class="span4">
         <img alt="nelnet exmaple" src="<@s.url value="/includes/nellnet_screenshot.png"/>" title="Nellnet Screenshot"
              class="img-polaroid responsive-image">
     </div>
