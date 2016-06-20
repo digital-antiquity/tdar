@@ -262,9 +262,12 @@ public class SearchDao<I extends Indexable> {
                     }
                     break;
                 case LUCENE_EXPERIMENTAL:
-                    hydrateExperimental(resultHandler, results, toReturn);
-                    break;
-
+                    // if we're stored and projected properly, then use the new projection model, otherwise fall through to hibernate model
+                    if (projectionTransformer.isProjected(results)) {
+                        hydrateExperimental(resultHandler, results, toReturn);
+                        break;
+                    }
+                    logger.debug("fallback projection (hibernate)");
                 case HIBERNATE_DEFAULT:
                     if (groupedSearchMode) {
                         // try to group the results together to improve the DB query
