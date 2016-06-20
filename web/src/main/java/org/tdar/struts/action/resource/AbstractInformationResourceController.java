@@ -313,9 +313,10 @@ public abstract class AbstractInformationResourceController<R extends Informatio
     protected void saveResourceProviderInformation() {
         getLogger().debug("Saving resource provider information: {}", resourceProviderInstitutionName);
         // save resource provider institution and contact information
-        // TODO: use findOrSaveInstitution()
         if (StringUtils.isNotBlank(resourceProviderInstitutionName)) {
             getResource().setResourceProviderInstitution(entityService.findOrSaveCreator(new Institution(resourceProviderInstitutionName)));
+        } else {
+            getResource().setResourceProviderInstitution(null);
         }
 
         if (StringUtils.isNotBlank(publisherName)) {
