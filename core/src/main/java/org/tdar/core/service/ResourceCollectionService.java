@@ -815,10 +815,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional(readOnly = false)
     public void saveCollectionForController(SharedCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
-            List<AuthorizedUser> authorizedUsers, List<Resource> resourcesToAdd, List<Resource> resourcesToRemove, List<Resource> publicResourcesToAdd,
-            List<Resource> publicResourcesToRemove, boolean shouldSaveResource,
-
-            FileProxy fileProxy) {
+            List<AuthorizedUser> authorizedUsers, Long toAdd, List<Resource> toRemove, List<Resource> publicToAdd, List<Resource> publicToRemove, boolean shouldSaveResource, FileProxy fileProxy) {
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
         }

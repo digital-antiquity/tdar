@@ -117,7 +117,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class })
 public abstract class ResourceCollection extends AbstractPersistable
         implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
-        SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, Slugable, OaiDcProvider {
+        Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, Slugable, OaiDcProvider {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
