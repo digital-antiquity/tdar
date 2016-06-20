@@ -97,6 +97,12 @@
                 </form>
              
              </li>
+             <li>
+                <form action="/collection/admin/changeSubmitter/${id?c}" method="POST" class="inline">
+                    <@s.submit cssClass="button btn btn-link tdar-btn-link" id="reindexCollection" value="Set Submitter to 'System User'"/>
+                </form>
+             
+             </li>
              </#if>
              <#if editor >
              <li>

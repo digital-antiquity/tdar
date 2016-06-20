@@ -916,4 +916,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().convertToResourceCollection(wlc);
     }
 
+    @Transactional(readOnly=false)
+    public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
+        getDao().changeSubmitter(collection, submitter, authenticatedUser);
+    }
+
 }

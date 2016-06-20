@@ -2,6 +2,7 @@ package org.tdar.search.converter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.solr.common.SolrInputDocument;
@@ -34,10 +35,11 @@ public class ContentDocumentConverter extends AbstractSolrDocumentConverter {
 //            logger.debug("{} {} {} {}", irf.getInformationResource().getId(), irf.getFilename(), irf.getRestriction());
         }
         doc.setField(QueryFieldNames.FILENAME, irf.getFilename());
-        doc.setField(QueryFieldNames.DATE, irf.getFileCreatedDate());
+        addDateField(doc, irf.getFileCreatedDate(), QueryFieldNames.DATE);
         doc.setField(QueryFieldNames.RESOURCE_ID, irf.getInformationResource().getId());
         doc.setField(QueryFieldNames.RESOURCE_ACCESS_TYPE, irf.getRestriction());
 
         return doc;
     }
+
 }

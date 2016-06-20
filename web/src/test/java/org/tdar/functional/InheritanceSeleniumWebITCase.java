@@ -5,7 +5,6 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.lang.StringUtils;
 import org.junit.After;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -14,9 +13,7 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.core.bean.resource.Project;
-import org.tdar.junit.RunWithTdarConfiguration;
 
 //@RunWith(MultipleWebTdarConfigurationRunner.class)
 //@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.TDAR, RunWithTdarConfiguration.SELECT2})
@@ -197,6 +194,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         WebDriverWait wait = new WebDriverWait(getDriver(), 5);
         WebElement cb = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("#cbSelectAllInheritance")));
         cb.click();
+        waitFor(ExpectedConditions.elementToBeSelected(By.id("cbSelectAllInheritance")));
 
         // okay, now inherit nothing
         cb.click();
@@ -206,6 +204,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         Thread.sleep(1000); // wait for coordinates to appear.
         assertTrue("geo bounds should be set", StringUtils.isNotBlank(find("#d_maxy").val()));
         takeScreenshot("before checking other keyword");
+        find("#metadataForm_otherKeywords_0_").click();
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
     }
 
@@ -217,6 +216,7 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#dateCreated").val("2012");
         find("#projectId").val("3805");
         find("#cbInheritingCreditRoles").click();
+        waitFor(ExpectedConditions.elementToBeSelected(By.id("cbInheritingCreditRoles")));
         // this project should have about four contributors.
         waitFor("#creditTable > :nth-child(4)");
         find("#submitButton").click();

@@ -157,6 +157,7 @@ public interface TdarNamedQueries {
     String QUERY_SIMILAR_PEOPLE = "query.similar_people";
     String MAPPED_RESOURCES = "query.mapped_resources";
     String COUNT_MAPPED_RESOURCES = "query.count_mapped_resources";
+    String ALL_RESOURCES_IN_COLLECTION = "query.non_deleted_in_collection";
     // raw SQL/HQL queries
 
     /**

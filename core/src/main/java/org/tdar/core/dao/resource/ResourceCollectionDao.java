@@ -372,4 +372,19 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         wlc.getProperties().setWhitelabel(false);
         return wlc;
     }
+
+    public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION);
+        query.setParameter("id", collection.getId());
+        List<?> resources = query.list();
+        for (Object resource_ : resources) {
+            Resource resource = (Resource)resource_;
+            resource.markUpdated(authenticatedUser);
+            String msg = String.format("changed submitter from %s to %s ", resource.getSubmitter().toString(), submitter.toString());
+            ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, authenticatedUser);
+            resource.setSubmitter(submitter);
+            saveOrUpdate(rrl);
+            saveOrUpdate(resource);
+        }
+    }
 }

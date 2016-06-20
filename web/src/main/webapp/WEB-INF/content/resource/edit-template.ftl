@@ -255,7 +255,7 @@
 			<#-- use 1 beacause we prepend with a blank for -1 -->
 		<#assign showProjects = (potentialParents?has_content && potentialParents?size > 1) />
     	<#if !showProjects && !resource.resourceType.project >
-			<input type="hidden" name="projectId" value="-1"/>
+			<input type="hidden" name="projectId" value="-1" id="projectId"/>
 		</#if>
 
         <#if !resource.resourceType.project && showProjects>
@@ -280,7 +280,7 @@
                     <label class="control-label">Project</label>
                     <div class="controls">
                         <div class="">
-                            <select name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
+                            <select id="projectId" name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
                                     data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
                                     data-allow-clear="false"
                                     data-placeholder="Search for a project..."
