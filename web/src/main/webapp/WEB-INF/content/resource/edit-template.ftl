@@ -1,4 +1,4 @@
--<#escape _untrusted as _untrusted?html>
+<#escape _untrusted as _untrusted?html>
 <#--
    This template is designed to try and reduce duplicated code in each of the tDAR resource-edit pages.  As we have almost 10 of them, 
    it becomes a challenge to maintain them in parallel without introducing bugs. The goal and function of this template is to (a) centralize logic

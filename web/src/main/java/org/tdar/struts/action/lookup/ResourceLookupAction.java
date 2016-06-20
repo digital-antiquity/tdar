@@ -81,6 +81,7 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         	look.getCollectionIds().addAll(collectionId);
         }
         look.setCategoryId(sortCategoryId);
+        look.setUseSubmitterContext(isUseSubmitterContext());
         look.setReservedSearchParameters(getReservedSearchParameters());
         look.setPermission(permission);
 
