@@ -53,6 +53,19 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     @Test
     @Rollback
+    public void testCustomStemming() throws ParseException, SolrServerException, IOException {
+        init();
+        CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+        csqo.getAllFields().add("Australia");
+        SearchResult<ResourceCollection> result = new SearchResult<>();
+        collectionSearchService.buildResourceCollectionQuery(getBasicUser(), csqo,  result, MessageHelper.getInstance());
+        logger.debug("{}", result.getResults());
+        assertNotEmpty(result.getResults());
+        assertEquals("should have one result",  1, result.getResults().size());
+    }
+
+    @Test
+    @Rollback
     public void testBasicCollectionSearch() throws ParseException, SolrServerException, IOException {
         init();
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();

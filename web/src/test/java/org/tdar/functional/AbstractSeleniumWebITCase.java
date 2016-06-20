@@ -366,7 +366,7 @@ public abstract class AbstractSeleniumWebITCase {
                 /* yes, this is ugly */
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File(CONFIG.getChromeDriverPath());
-                logger.info("usign app: {} ", app);
+                logger.info("using app: {} ", app);
                 ChromeDriverService service = new ChromeDriverService
                         .Builder().usingDriverExecutable(app).usingPort(9515).withEnvironment(environment).build();
                 ChromeOptions copts = new ChromeOptions();

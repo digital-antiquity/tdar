@@ -75,6 +75,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
             }
             doc.setField(QueryFieldNames.DATE, ir.getDate());
+
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
             if (ir.getMetadataLanguage() != null) {
@@ -230,6 +231,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     public static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
+        
         ResourceRightsExtractor rightsExtractor = new ResourceRightsExtractor(resource);
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());

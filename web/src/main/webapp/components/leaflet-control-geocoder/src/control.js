@@ -9,48 +9,54 @@ module.exports = {
 			expand: 'click',
 			position: 'topright',
 			placeholder: 'Search...',
-			errorMessage: 'Nothing found.'
+			errorMessage: 'Nothing found.',
+			suggestMinLength: 3,
+			suggestTimeout: 250,
+			defaultMarkGeocode: true
 		},
 
-		_callbackId: 0,
+		includes: L.Mixin.Events,
 
 		initialize: function (options) {
 			L.Util.setOptions(this, options);
 			if (!this.options.geocoder) {
 				this.options.geocoder = new Nominatim();
 			}
+
+			this._requestCount = 0;
 		},
 
 		onAdd: function (map) {
 			var className = 'leaflet-control-geocoder',
 			    container = L.DomUtil.create('div', className + ' leaflet-bar'),
-			    icon = L.DomUtil.create('a', 'leaflet-control-geocoder-icon', container),
-			    form = this._form = L.DomUtil.create('form', className + '-form', container),
+			    icon = L.DomUtil.create('button', className + '-icon', container),
+			    form = this._form = L.DomUtil.create('div', className + '-form', container),
 			    input;
 
-			icon.innerHTML = '&nbsp;';
-			icon.href = 'javascript:void(0);';
 			this._map = map;
 			this._container = container;
-			input = this._input = L.DomUtil.create('input');
+
+			icon.innerHTML = '&nbsp;';
+			icon.type = 'button';
+
+			input = this._input = L.DomUtil.create('input', '', form);
 			input.type = 'text';
 			input.placeholder = this.options.placeholder;
 
-			L.DomEvent.addListener(input, 'keydown', this._keydown, this);
-			//L.DomEvent.addListener(input, 'onpaste', this._clearResults, this);
-			//L.DomEvent.addListener(input, 'oninput', this._clearResults, this);
-
-			this._errorElement = document.createElement('div');
-			this._errorElement.className = className + '-form-no-error';
+			this._errorElement = L.DomUtil.create('div', className + '-form-no-error', container);
 			this._errorElement.innerHTML = this.options.errorMessage;
 
-			this._alts = L.DomUtil.create('ul', className + '-alternatives leaflet-control-geocoder-alternatives-minimized');
+			this._alts = L.DomUtil.create('ul',
+				className + '-alternatives leaflet-control-geocoder-alternatives-minimized',
+				container);
 
-			form.appendChild(input);
-			this._container.appendChild(this._errorElement);
-			container.appendChild(this._alts);
+			L.DomEvent.addListener(input, 'keydown', this._keydown, this);
+			L.DomEvent.addListener(input, 'blur', function() {
+				if (this.options.collapsed) {
+					this._collapse();
+				}
+			}, this);
 
-			L.DomEvent.addListener(form, 'submit', this._geocode, this);
 
 			if (this.options.collapsed) {
 				if (this.options.expand === 'click') {
@@ -72,14 +78,24 @@ module.exports = {
 				this._expand();
 			}
 
+			if (this.options.defaultMarkGeocode) {
+				this.on('markgeocode', this.markGeocode, this);
+			}
+
+			this.on('startgeocode', function() {
+				L.DomUtil.addClass(this._container, 'leaflet-control-geocoder-throbber');
+			}, this);
+			this.on('finishgeocode', function() {
+				L.DomUtil.removeClass(this._container, 'leaflet-control-geocoder-throbber');
+			}, this);
+
 			L.DomEvent.disableClickPropagation(container);
 
 			return container;
 		},
 
-		_geocodeResult: function (results) {
-			L.DomUtil.removeClass(this._container, 'leaflet-control-geocoder-throbber');
-			if (results.length === 1) {
+		_geocodeResult: function (results, suggest) {
+			if (!suggest && results.length === 1) {
 				this._geocodeResultSelected(results[0]);
 			} else if (results.length > 0) {
 				this._alts.innerHTML = '';
@@ -94,6 +110,8 @@ module.exports = {
 		},
 
 		markGeocode: function(result) {
+			result = result.geocode || result;
+
 			this._map.fitBounds(result.bbox);
 
 			if (this._geocodeMarker) {
@@ -108,14 +126,22 @@ module.exports = {
 			return this;
 		},
 
-		_geocode: function(event) {
-			L.DomEvent.preventDefault(event);
+		_geocode: function(suggest) {
+			var requestCount = ++this._requestCount,
+				mode = suggest ? 'suggest' : 'geocode';
 
-			L.DomUtil.addClass(this._container, 'leaflet-control-geocoder-throbber');
-			this._clearResults();
-			this.options.geocoder.geocode(this._input.value, this._geocodeResult, this);
+			this._lastGeocode = this._input.value;
+			if (!suggest) {
+				this._clearResults();
+			}
 
-			return false;
+			this.fire('start' + mode);
+			this.options.geocoder[mode](this._input.value, function(results) {
+				if (requestCount === this._requestCount) {
+					this.fire('finish' + mode);
+					this._geocodeResult(results, suggest);
+				}
+			}, this);
 		},
 
 		_geocodeResultSelected: function(result) {
@@ -124,7 +150,8 @@ module.exports = {
 			} else {
 				this._clearResults();
 			}
-			this.markGeocode(result);
+
+			this.fire('markgeocode', {geocode: result});
 		},
 
 		_toggle: function() {
@@ -138,12 +165,14 @@ module.exports = {
 		_expand: function () {
 			L.DomUtil.addClass(this._container, 'leaflet-control-geocoder-expanded');
 			this._input.select();
+			this.fire('expand');
 		},
 
 		_collapse: function () {
 			this._container.className = this._container.className.replace(' leaflet-control-geocoder-expanded', '');
 			L.DomUtil.addClass(this._alts, 'leaflet-control-geocoder-alternatives-minimized');
 			L.DomUtil.removeClass(this._errorElement, 'leaflet-control-geocoder-error');
+			this.fire('collapse');
 		},
 
 		_clearResults: function () {
@@ -174,7 +203,7 @@ module.exports = {
 				a.appendChild(text);
 			}
 
-			L.DomEvent.addListener(li, 'click', clickHandler, this);
+			L.DomEvent.addListener(li, 'mousedown', clickHandler, this);
 
 			return li;
 		},
@@ -218,10 +247,24 @@ module.exports = {
 					var index = parseInt(this._selection.getAttribute('data-result-index'), 10);
 					this._geocodeResultSelected(this._results[index]);
 					this._clearResults();
-					L.DomEvent.preventDefault(e);
+				} else {
+					this._geocode();
+				}
+				L.DomEvent.preventDefault(e);
+				break;
+			default:
+				var v = this._input.value;
+				if (this.options.geocoder.suggest && v !== this._lastGeocode) {
+					clearTimeout(this._suggestTimeout);
+					if (v.length >= this.options.suggestMinLength) {
+						this._suggestTimeout = setTimeout(L.bind(function() {
+							this._geocode(true);
+						}, this), this.options.suggestTimeout);
+					} else {
+						this._clearResults();
+					}
 				}
 			}
-			return true;
 		}
 	}),
 	factory: function(options) {

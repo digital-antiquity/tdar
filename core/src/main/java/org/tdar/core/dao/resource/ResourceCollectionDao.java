@@ -350,7 +350,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     public WhiteLabelCollection convertToWhitelabelCollection(ResourceCollection rc) {
         Long id = rc.getId();
         detachFromSession(rc);
-        SQLQuery query = getCurrentSession().createSQLQuery(QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL);
+        SQLQuery query = getCurrentSession().createSQLQuery(TdarNamedQueries.QUERY_SQL_CONVERT_COLLECTION_TO_WHITELABEL);
         query.setLong("id", id);
         query.executeUpdate();
         WhiteLabelCollection wlc = find(WhiteLabelCollection.class, id);
@@ -366,10 +366,25 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
         Long id = wlc.getId();
         detachFromSession(wlc);
-        SQLQuery query = getCurrentSession().createSQLQuery(QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION);
+        SQLQuery query = getCurrentSession().createSQLQuery(TdarNamedQueries.QUERY_SQL_CONVERT_WHITELABEL_TO_COLLECTION);
         query.setLong("id", id);
         query.executeUpdate();
         ResourceCollection rc = find(ResourceCollection.class, id);
         return rc;
+    }
+
+    public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION);
+        query.setParameter("id", collection.getId());
+        List<?> resources = query.list();
+        for (Object resource_ : resources) {
+            Resource resource = (Resource)resource_;
+            resource.markUpdated(authenticatedUser);
+            String msg = String.format("changed submitter from %s to %s ", resource.getSubmitter().toString(), submitter.toString());
+            ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, authenticatedUser);
+            resource.setSubmitter(submitter);
+            saveOrUpdate(rrl);
+            saveOrUpdate(resource);
+        }
     }
 }
