@@ -27,6 +27,7 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
@@ -280,7 +281,7 @@ public class CodingSheetService extends ServiceInterface.TypedDaoBase<CodingShee
         }
         codingSheet.markUpdated(authenticatedUser);
         saveOrUpdate(codingSheet);
-        ResourceRevisionLog rrl = new ResourceRevisionLog("updated coding sheet mapings", codingSheet, authenticatedUser);
+        ResourceRevisionLog rrl = new ResourceRevisionLog("updated coding sheet mapings", codingSheet, authenticatedUser, RevisionLogType.EDIT);
         try {
             rrl.setPayload(serializationService.convertToXML(codingSheet));
         } catch (Exception e) {

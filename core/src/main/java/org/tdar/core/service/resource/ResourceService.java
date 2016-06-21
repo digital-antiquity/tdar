@@ -46,6 +46,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -185,8 +186,8 @@ public class ResourceService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message) {
-        logResourceModification(modifiedResource, person, message, null);
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, RevisionLogType type) {
+        logResourceModification(modifiedResource, person, message, null, type);
     }
 
     /**
@@ -198,11 +199,8 @@ public class ResourceService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload) {
-        ResourceRevisionLog log = new ResourceRevisionLog();
-        log.setLogMessage(message);
-        log.setResource(modifiedResource);
-        log.setPerson(person);
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type) {
+        ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
         log.setTimestamp(new Date());
         log.setPayload(payload);
         genericDao.save(log);
@@ -830,7 +828,7 @@ public class ResourceService {
             reason = "reason not specified";
         }
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
-        logResourceModification(resource, authUser, logMessage);
+        logResourceModification(resource, authUser, logMessage , null, RevisionLogType.DELETE);
         genericDao.delete(resource);
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {

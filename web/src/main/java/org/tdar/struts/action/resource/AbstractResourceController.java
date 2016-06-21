@@ -52,6 +52,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRelationship;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
@@ -101,7 +102,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<MaterialKeyword> allMaterialKeywords;
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
-
+    private RevisionLogType revisionType = RevisionLogType.EDIT;
     private String submitterProperName = "";
 
     @Autowired
@@ -272,6 +273,9 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     public String save() throws TdarActionException {
         setupSubmitterField();
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
+        if (PersistableUtils.isNullOrTransient(getId())) {
+            revisionType = RevisionLogType.CREATE;
+        }
         // setSaveSuccessSuffix("/" + getResource().getSlug());
         return super.save();
     }
@@ -350,7 +354,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (getResource() != null) { // this will happen with the bulk uploader
             String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]", getResource().getResourceType().name(),
                     getAuthenticatedUser(), getResource().getId(), StringUtils.left(getResource().getTitle(), 100));
-            logModification(logMessage);
+            logModification(logMessage, revisionType);
         }
     }
 
@@ -576,8 +580,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         AbstractSequenced.applySequence(list);
     }
 
-    protected void logModification(String message) {
-        resourceService.logResourceModification(getPersistable(), getAuthenticatedUser(), message, null);
+    protected void logModification(String message, RevisionLogType type) {
+        resourceService.logResourceModification(getPersistable(), getAuthenticatedUser(), message, null, type);
     }
 
     protected void saveResourceCreators() {

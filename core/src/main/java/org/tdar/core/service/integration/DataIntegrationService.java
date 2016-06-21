@@ -435,7 +435,7 @@ public class DataIntegrationService {
         // logger.debug(serializationService.convertToXML(integrationContext));
 
         integrationContext.setCreator(authenticatedUser);
-        ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)", null, authenticatedUser);
+        ResourceRevisionLog log = new ResourceRevisionLog("display filtered results (payload: tableToDisplayColumns)", null, authenticatedUser, null);
         log.setTimestamp(new Date());
         log.setPayload(integration);
         genericDao.saveOrUpdate(log);

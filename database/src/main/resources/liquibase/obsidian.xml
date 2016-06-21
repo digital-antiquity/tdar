@@ -40,4 +40,9 @@
             <column name="message_type" type="varchar(50)" />
         </addColumn>
     </changeSet>
+    <changeSet id="obsidian-4" author="abrin">
+    	<addColumn tableName="resource_revision_log">
+            <column name="revision_type" type="varchar(50)" />
+    	</addColumn>
+    </changeSet>
 </databaseChangeLog>
