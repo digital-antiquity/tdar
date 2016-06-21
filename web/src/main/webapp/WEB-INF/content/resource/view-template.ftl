@@ -396,6 +396,9 @@
                 <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
             </#if>
         </#list>
+		<#if editor>
+	        <@_keywordSection "System Managed Geographic Keywords" resource.managedGeographicKeywords "query" />
+		</#if>
         <#if (resource.keywordProperties?size > 0)>
         </div>
         </#if>
