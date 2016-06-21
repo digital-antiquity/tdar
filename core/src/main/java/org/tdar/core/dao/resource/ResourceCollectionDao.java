@@ -36,6 +36,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.Dao;
@@ -258,7 +259,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             Resource resource = (Resource)resource_;
             resource.markUpdated(person);
             resource.setStatus(Status.ACTIVE);
-            ResourceRevisionLog rrl = new ResourceRevisionLog("Resource made Active", resource, person);
+            ResourceRevisionLog rrl = new ResourceRevisionLog("Resource made Active", resource, person, RevisionLogType.EDIT);
             saveOrUpdate(rrl);
             saveOrUpdate(resource);
         }
@@ -381,7 +382,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             Resource resource = (Resource)resource_;
             resource.markUpdated(authenticatedUser);
             String msg = String.format("changed submitter from %s to %s ", resource.getSubmitter().toString(), submitter.toString());
-            ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, authenticatedUser);
+            ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, authenticatedUser, RevisionLogType.EDIT);
             resource.setSubmitter(submitter);
             saveOrUpdate(rrl);
             saveOrUpdate(resource);

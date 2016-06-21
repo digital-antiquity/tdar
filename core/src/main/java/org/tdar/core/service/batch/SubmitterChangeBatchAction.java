@@ -3,6 +3,7 @@ package org.tdar.core.service.batch;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.RevisionLogType;
 
 public class SubmitterChangeBatchAction extends BatchAction {
 
@@ -17,7 +18,7 @@ public class SubmitterChangeBatchAction extends BatchAction {
 
     @Override
     public ResourceRevisionLog performAction(Resource resource, TdarUser user) {
-        ResourceRevisionLog log = new ResourceRevisionLog(String.format("changed submitter from %s to %s", resource.getSubmitter(), submitter), resource, user);
+        ResourceRevisionLog log = new ResourceRevisionLog(String.format("changed submitter from %s to %s", resource.getSubmitter(), submitter), resource, user, RevisionLogType.EDIT);
         resource.setSubmitter(getSubmitter());
         resource.markUpdated(user);
         return log;

@@ -276,7 +276,7 @@
 
         <div id="divScannerTechnologyOptions">
             <@s.radio name='sensoryData.scannerTechnology' id="selScannerTechnology" listValue="label"
-            list='%{scannerTechnologyTypes}' label="Scan Technology"  /><#--cssClass="scannerTechnology"-->
+            list='%{scannerTechnologyTypes}' label="Scan Technology"  cssClass="scannerTechnology" />
         </div>
 
         <div class="conditional-scantype phase_based time_of_flight triangulation">

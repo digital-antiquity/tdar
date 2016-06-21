@@ -17,7 +17,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     var interactive = true;
     // note no # (leaflet doesn't use jquery selectors)
     var mapId = "worldmap";
-
+    var searchUri = "";
     var myStyle = {
         "color" : OUTLINE,
         "weight" : 1,
@@ -174,10 +174,21 @@ TDAR.worldmap = (function(console, $, ctx) {
             position : 'topright'
         });
         zoom.onAdd = function(map) {
-            var div = L.DomUtil.create('div', 'mapGraphZoomOut');
-            div.id="mapGraphZoomOut";
-            $(div).append("<i class='icon-zoom-out'></i> Zoom Out");
-            return div;
+            var topRight = L.DomUtil.create('div', 'topright');
+            var zoomout = L.DomUtil.create('div', 'mapGraphZoomOut');
+            zoomout.id="mapGraphZoomOut";
+            $(zoomout).append("<i class='icon-zoom-out'></i> Zoom Out");
+            var search = L.DomUtil.create('div', 'mapGraphSearch');
+            search.id="mapGraphSearch";
+            var $search = $(search);
+            $search.append("<i class='icon-search'></i> Search");
+            $search.click(function() {
+                console.log(searchUri);
+                window.location.href = searchUri;
+            });
+            topRight.appendChild(zoomout);
+            topRight.appendChild(search);
+            return topRight;
         };
         zoom.addTo(map);
     
@@ -242,11 +253,21 @@ TDAR.worldmap = (function(console, $, ctx) {
         var id = event.target.feature.id;
         console.log(event.target.feature);
         var $zoomout = $("#mapGraphZoomOut");
-        if (id && id != 'RUS') {
-            $zoomout.show();
+        var $search = $("#mapGraphSearch");
+        var name = event.target.feature.properties.name;
+        if (id) {
+            if (id != 'RUS') {
+                $zoomout.show();
+            }
+            $search.show();
+            searchUri = _constructUri(undefined, id, name);
         } else {
             $zoomout.hide();
+            $search.hide();
         }
+        
+        
+        
         clickId = id;
         if (id && id.indexOf('USA') == -1) {
             if (stateLayer != undefined) {
@@ -259,7 +280,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             _loadStateData();
         }
 
-        _drawDataGraph(event.target.feature.properties.name, id);
+        _drawDataGraph(name, id);
 
         if (id != 'RUS') {
             map.fitBounds(event.target.getBounds());
@@ -355,15 +376,7 @@ TDAR.worldmap = (function(console, $, ctx) {
                     if (key.indexOf(_PLURAL) > 0) {
                         key = key.substring(0,key.length - _PLURAL.length);
                     }
-                    var uri = "/search/results?resourceTypes=" + key;
-                    if (clickId != undefined && name != undefined) {
-                        uri += "&geographicKeywords=" + name;
-                        if (clickId.length == 3) {
-                            uri += " (Country)";
-                        } else {
-                            uri += " (State / Territory)";
-                        }
-                    }
+                    var uri = _constructUri(key, clickId, name);
                     window.location.href = TDAR.c3graphsupport.getClickPath(uri);
                 }
             },
@@ -421,6 +434,22 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     }
 
+    function _constructUri(resourceType, id, name) {
+        
+        var uri = "/search/results?";
+        if (resourceType) {
+            uri += "resourceTypes=" + resourceType;
+        }
+        if (id != undefined && name != undefined) {
+            uri += "&geographicKeywords=" + name;
+            if (id.length == 3) {
+                uri += " (Country)";
+            } else {
+                uri += " (State / Territory)";
+            }
+        }
+        return uri;
+    }
     /**
      * Zoom out
      */
@@ -428,7 +457,9 @@ TDAR.worldmap = (function(console, $, ctx) {
         map.setView( _DEFAULT_CENTER, _DEFAULT_ZOOM_LEVEL);
         overlay = false;
         var $zoomout = $("#mapGraphZoomOut");
+        var $search = $("#mapGraphSearch");
         $zoomout.hide();
+        $search.hide();
         clickId = undefined;
         if (hlayer != undefined) {
             hlayer.setStyle({

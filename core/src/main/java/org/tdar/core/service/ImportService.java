@@ -55,6 +55,7 @@ import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -436,7 +437,7 @@ public class ImportService {
 
         rec.getResourceRevisionLog().clear();
         rec = bringObjectOntoSession(rec, user, false);
-        ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user);
+        ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user, RevisionLogType.CREATE);
         genericService.saveOrUpdate(rrl);
         if (rec instanceof Dataset) {
             Dataset dataset = (Dataset) rec;
