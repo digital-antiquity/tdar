@@ -196,7 +196,7 @@
                 <form>
                     <label for="table_select">Choose Table:</label>
                     <select id="table_select" name="dataTableId">
-                        <#list resource.dataTables as dataTable_>
+                        <#list resource.sortedDataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
                         </#list>
@@ -235,7 +235,7 @@
             <div class="span3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
     <br/>
-            <#list resource.dataTables as dataTable>
+            <#list resource.sortedDataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <#if dataTable.description?has_content>
 			<p class="tableDescription">${dataTable.description}</p>

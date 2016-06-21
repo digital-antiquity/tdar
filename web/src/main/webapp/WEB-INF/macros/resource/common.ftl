@@ -423,7 +423,7 @@ Common macros used in multiple contexts
             <#list accountList as account>
                 <#if account.active>
                 <li>
-                    <a href="<@s.url value="/billing/${account.id?c} " scheme="https" />">${account.name!"unamed"}</a>
+                    <a href="<@s.url value="/billing/${account.id?c}"  />">${account.name!"unamed"}</a>
                 </li>
                 </#if>
             </#list>
