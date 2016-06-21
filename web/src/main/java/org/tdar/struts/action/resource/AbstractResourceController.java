@@ -581,7 +581,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     protected void logModification(String message, RevisionLogType type) {
-        resourceService.logResourceModification(getPersistable(), getAuthenticatedUser(), message, null, type);
+        resourceService.logResourceModification(getPersistable(), getAuthenticatedUser(), message, null, type, getStartTime());
     }
 
     protected void saveResourceCreators() {

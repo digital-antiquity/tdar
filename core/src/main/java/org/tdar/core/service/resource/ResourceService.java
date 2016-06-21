@@ -190,6 +190,18 @@ public class ResourceService {
         logResourceModification(modifiedResource, person, message, null, type);
     }
 
+    @Transactional
+    public <T extends Resource> void  logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type, Long startTime) {
+        ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
+        log.setTimestamp(new Date());
+        log.setPayload(payload);
+        if (PersistableUtils.isNotNullOrTransient(startTime)) {
+             long milli = System.currentTimeMillis() - startTime.longValue();
+            log.setTimeInSeconds(milli / 1000);
+        }
+        genericDao.save(log);
+    }
+
     /**
      * Adds a @link ResourceRevisionLog entry for the resource based on the message.
      * 
@@ -200,10 +212,7 @@ public class ResourceService {
      */
     @Transactional
     public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type) {
-        ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
-        log.setTimestamp(new Date());
-        log.setPayload(payload);
-        genericDao.save(log);
+        logResourceModification(modifiedResource, person, message, payload, type, null);
     }
 
     /**

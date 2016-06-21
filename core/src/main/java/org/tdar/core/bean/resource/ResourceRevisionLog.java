@@ -74,6 +74,9 @@ public class ResourceRevisionLog extends AbstractPersistable {
     @Column(name = "payload", nullable = true)
     private String payload;
 
+    @Column(name="time_seconds", nullable=true)
+    private Long timeInSeconds;
+    
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "resourceRef")
     public Resource getResource() {
@@ -124,6 +127,14 @@ public class ResourceRevisionLog extends AbstractPersistable {
 
     public void setType(RevisionLogType type) {
         this.type = type;
+    }
+
+    public Long getTimeInSeconds() {
+        return timeInSeconds;
+    }
+
+    public void setTimeInSeconds(Long timeInSeconds) {
+        this.timeInSeconds = timeInSeconds;
     }
 
 }

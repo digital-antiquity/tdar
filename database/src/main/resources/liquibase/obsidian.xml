@@ -43,6 +43,7 @@
     <changeSet id="obsidian-4" author="abrin">
     	<addColumn tableName="resource_revision_log">
             <column name="revision_type" type="varchar(50)" />
+            <column name="time_seconds" type="bigint" />
     	</addColumn>
     </changeSet>
 </databaseChangeLog>
