@@ -315,17 +315,11 @@ TDAR.inheritance = (function () {
         //console.debug("_inheritInformation(formId:%s, json:%s, sectionId:%s, tableId:%s)", formId, json, sectionId, tableId);
         _clearFormSection($(sectionId));
         if (tableId !== undefined) {
-            if (document.getElementById("uncontrolled" + tableId + "Repeatable") !== null) {
-                TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
-            }
-            if (document.getElementById("approved" + tableId + "Repeatable") !== null) {
-                TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
-            }
+            TDAR.inheritance.resetRepeatable("#" + 'uncontrolled' + tableId + 'Repeatable', json['uncontrolled' + tableId].length);
+            TDAR.inheritance.resetRepeatable("#" + 'approved' + tableId + 'Repeatable', json['approved' + tableId].length);
             var simpleId = tableId;
             simpleId = simpleId[0].toLowerCase() + simpleId.substr(1);
-            if (document.getElementById(simpleId + "Repeatable") !== null) {
-                TDAR.inheritance.resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
-            }
+            TDAR.inheritance.resetRepeatable("#" + simpleId + 'Repeatable', json[simpleId].length);
         }
         _populateSection(formId, json);
         _disableSection($(sectionId));
@@ -1002,11 +996,15 @@ TDAR.inheritance = (function () {
      * @param newSize the number of rows the table will contain.
      */
     var resetRepeatable = function (repeatableSelector, newSize) {
-        $(repeatableSelector).find(".repeat-row:not(:first)").remove();
-        var $firstRow = $('.repeat-row', repeatableSelector);
-        _resetIndexedAttributes($firstRow);
-        for (var i = 0; i < newSize - 1; i++) {
-            TDAR.repeatrow.cloneSection($('.repeat-row:last', repeatableSelector)[0]);
+        var $sel = $(repeatableSelector);
+		console.log(repeatableSelector + " ->" + $sel.length);
+        if ($sel.length > 0) {
+            $sel.find(".repeat-row:not(:first)").remove();
+            var $firstRow = $('.repeat-row', $sel);
+            _resetIndexedAttributes($firstRow);
+            for (var i = 0; i < newSize - 1; i++) {
+                TDAR.repeatrow.cloneSection($('.repeat-row:last', $sel)[0]);
+            }
         }
     };
 
