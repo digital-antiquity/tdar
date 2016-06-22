@@ -70,7 +70,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
 
     public void validateEmailRequiredForActiveUsers() {
         if (getPersistable().isActive() && getPersistable().isRegistered() && StringUtils.isBlank(getEmail())) {
-            addFieldError("email", getText("userAccountController.email_invalid"));
+            addFieldError("email", getText("userAccountController.email_required"));
         }
     }
 

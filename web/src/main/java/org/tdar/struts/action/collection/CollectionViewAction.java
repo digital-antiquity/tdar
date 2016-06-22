@@ -315,7 +315,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     
     @Override
     public boolean isRightSidebar() {
-        return CollectionUtils.isNotEmpty(getCollections());
+        return true;
     };
 
     @Override
