@@ -174,8 +174,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     
     }
     
+
     function _update($el, data,startRecord) {
         var layers = new Array();
+        // iterates over each of the elements in the GeoJSON
         $(data.features).each(function(key, data_) {
             if (data_.geometry.type) {
                 var title = data_.properties.title;
@@ -185,12 +187,18 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 layers.push(marker);
             }
         });
+
+        // gets markers data from element
         var markers = $el.data("markers");
         if (startRecord == 0) {
             markers.clearLayers();
         }
+
+        // append the markers to the existing leaflet.cluster layer
         markers.addLayers(layers);
+
         // if we fit to bounds...
+        // fixme: if user-interaction happens we probably shouldn't call fit-bounds
         if ($el.data("fit-bounds")) {
             var map = $el.data("map");
             if (markers.getBounds().lat) {
