@@ -164,7 +164,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         dataType: "json",
         url: baseUrl + "&startRecord="+startRecord,
         success: function(data) {
-            _update($el, data,startRecord);
+            _update($el.data("map"), $el.data("markers"), data,startRecord, $el.is('[data-fit-bounds]', startRecord === 0));
             var nextPage = data.properties.startRecord + data.properties.recordsPerPage;
             if (data.properties && (nextPage) < data.properties.totalRecords) {
                 _dynamicUpdateMap($el, baseUrl, nextPage);
@@ -173,23 +173,32 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         }).error(function() {});
     
     }
-    
 
-    function _update($el, data,startRecord) {
-        var layers = new Array();
+
+    /**
+     * Update the map control associated w/ a specified dom element by appending markers contained in a specified data object
+     * @param $el jquery selection containing the dom element bound to a leaflet map.  This function assumes that the element has the following data-attributes:
+     *      - el[data-fit-bounds] boolean indicating whether the map should attempt to fit boundaries to contain map markers
+     *      - el[data-markers]  list of LatLng objects
+     *      - el[map]  leaflet map object
+     * @param data object containing list of leaflet feature objects (in data.features).  These features represent one "page" of data
+     * @param startRecord record number of the first record in the current page
+     * @private
+     */
+    function _update(map, markers, data,startRecord, bFitBounds) {
+        var layers = [];
         // iterates over each of the elements in the GeoJSON
         $(data.features).each(function(key, data_) {
             if (data_.geometry.type) {
                 var title = data_.properties.title;
                 var c = data_.geometry.coordinates;
-                var marker = L.marker(new L.LatLng(c[1],c[0]), {title: title.trim()});
+                var marker = L.marker(new L.LatLng(c[1],c[0]), {title: $.trim(title)});
                 marker.bindPopup(title + "<br><a href='" + data_.properties.detailUrl + "'>view</a>");
                 layers.push(marker);
             }
         });
 
         // gets markers data from element
-        var markers = $el.data("markers");
         if (startRecord == 0) {
             markers.clearLayers();
         }
@@ -199,14 +208,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         // if we fit to bounds...
         // fixme: if user-interaction happens we probably shouldn't call fit-bounds
-        if ($el.data("fit-bounds")) {
-            var map = $el.data("map");
+        if(bFitBounds) {
             if (markers.getBounds().lat) {
                 map.fitBounds(markers.getBounds());
-            }
-            // only zoom out on the first call
-            if (startRecord == 0) {
-                $el.data("map");
             }
         }
     }
@@ -541,7 +545,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         initialized: _isIntialized,
         defaults: _defaults,
         dynamicUpdateMap: _dynamicUpdateMap,
-        getMaps : _getMaps
+        getMaps : _getMaps,
+        update: _update
     }
 })(console, jQuery, window, L);
 $(function() {

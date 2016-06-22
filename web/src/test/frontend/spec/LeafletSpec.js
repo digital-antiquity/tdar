@@ -204,4 +204,28 @@ describe("LeafletSpec", function() {
         $('.locateCoordsButton').click();
 
     })
+
+
+    describe("map results", function() {
+        beforeEach(function() {
+            loadFixtures("leaflet/leaflet-results.html");
+            TDAR.leaflet.initResultsMaps();
+        });
+
+        it("update map markers", function () {
+
+            var $el = $(".leaflet-map-results");
+            var map  = $el.data("map");
+            var markers = $el.data("markers");
+            expect(map).toExist();
+            expect(markers).toExist();
+
+            var data = {};
+            var startRecord = 0;
+            TDAR.leaflet.update(map, markers, data, startRecord, true);
+        });
+    });
+
+
+
 });
