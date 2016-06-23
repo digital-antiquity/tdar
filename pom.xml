@@ -33,7 +33,7 @@
 
 
     <properties>
-        <hibernate.version>5.2.0.Final</hibernate.version>
+        <hibernate.version>5.2.1.SNAPSHOT</hibernate.version>
         <spring.framework.version>4.3.0.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4.1208.jre7</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
@@ -72,6 +72,7 @@
         <url>http://www.tdar.org</url>
     </organization>
     <repositories>
+    <!-- http://snapshots.jboss.org -->
         <repository>
             <id>internal</id>
             <name>Archiva Managed Internal Repository</name>
@@ -115,6 +116,12 @@
                 <enabled>true</enabled>
                 <updatePolicy>never</updatePolicy>
             </releases>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>JBoss Maven Repository (snapshots)</name>
+            <url>http://snapshots.jboss.org/maven2</url>
+            <snapshots><enabled>true</enabled></snapshots>
         </repository>
         <repository>
             <id>central</id>
