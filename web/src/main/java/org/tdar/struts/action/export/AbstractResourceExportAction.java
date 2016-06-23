@@ -64,32 +64,21 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         }
 
         if (getExportProxy().getCollection() != null && !authorizationService.canEditCollection(getAuthenticatedUser(), getExportProxy().getCollection())) {
-            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(getExportProxy().getCollection())));
+            addActionError(getText("abstractResourceExportAction.cannot_export"));
         }
 
         if (getExportProxy().getAccount() != null && !authorizationService.canEditAccount(getExportProxy().getAccount(), getAuthenticatedUser())) {
-            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(getExportProxy().getAccount())));
+            addActionError(getText("abstractResourceExportAction.cannot_export"));
         }
 
         if (CollectionUtils.isNotEmpty(resources)) {
-            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(issues)));
+            addActionError(getText("abstractResourceExportAction.cannot_export"));
         }
     }
 
-    public List<Long> getIds() {
-        return ids;
-    }
 
-    public void setIds(List<Long> ids) {
-        this.ids = ids;
-    }
-
-    public List<Resource> getResources() {
+    protected List<Resource> getResources() {
         return resources;
-    }
-
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
     }
 
     public Long getAccountId() {
@@ -103,17 +92,13 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     public Long getCollectionId() {
         return collectionId;
     }
-
     public void setCollectionId(Long collectionId) {
         this.collectionId = collectionId;
     }
 
-    public ResourceExportProxy getExportProxy() {
+    protected ResourceExportProxy getExportProxy() {
         return exportProxy;
     }
 
-    public void setExportProxy(ResourceExportProxy exportProxy) {
-        this.exportProxy = exportProxy;
-    }
 
 }
