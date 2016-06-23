@@ -118,7 +118,7 @@
             </releases>
         </repository>
         <repository>
-            <id>jboss</id>
+            <id>jboss-dev</id>
             <name>JBoss Maven Repository (snapshots)</name>
             <url>http://snapshots.jboss.org/maven2</url>
             <snapshots><enabled>true</enabled></snapshots>
