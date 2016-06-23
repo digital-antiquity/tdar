@@ -77,7 +77,7 @@ public class ReflectionDao {
  */
 //        hql = hql.replace(":idlist", StringUtils.join(idlist,","));
         Query query = getCurrentSession().createQuery(hql);
-//        query.setParameter("idlist", idlist);
+        query.setParameter("idlist", idlist);
 
         query.setFetchSize(TdarConfiguration.getInstance().getScrollableFetchSize());
         return query.scroll(ScrollMode.FORWARD_ONLY);
