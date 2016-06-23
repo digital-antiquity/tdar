@@ -131,6 +131,32 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             var infiniteUrl = $el.data("infinite-url");
             if (infiniteUrl) {
                 _dynamicUpdateMap($el, infiniteUrl,0);
+                var zoom = L.control({
+                    position : 'topright'
+                });
+                zoom.onAdd = function(map) {
+                    var topRight = L.DomUtil.create('div', 'topright');
+                    var loading = L.DomUtil.create('div', 'mapLoading');
+                    loading.id="mapLoading";
+                    var $loading = $(loading);
+                    $loading.append("<i class='icon-refresh'></i> Loading");
+                    $loading.hide();
+                    var resetBounds = L.DomUtil.create('div', 'mapResetBounds');
+                    resetBounds.id="mapResetBounds";
+                    var $resetBounds = $(resetBounds);
+                    $resetBounds.append("<i class='icon-zoom-out'></i> Zoom out to see more items");
+                    $resetBounds.hide();
+                    
+                    $resetBounds.click(function() {
+                        map.fitToBounds(markers.getBounds());
+                        $resetBounds.hide();
+                    });
+                    topRight.appendChild(resetBounds);
+                    topRight.appendChild(loading);
+                    return topRight;
+                };
+                zoom.addTo(map);
+
             } else {
                 $(".resource-list.MAP .listItem").each(function() {
                     var $t = $(this);
@@ -160,17 +186,26 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         if (!startRecord) {
             startRecord = 0;
         }
+        console.log(baseUrl + " --> " + startRecord);
         $.ajax({
         dataType: "json",
         url: baseUrl + "&startRecord="+startRecord,
         success: function(data) {
+            console.log(data);
             _update($el.data("map"), $el.data("markers"), data,startRecord, $el.is('[data-fit-bounds]', startRecord === 0));
             var nextPage = data.properties.startRecord + data.properties.recordsPerPage;
+            var $loading = $("#mapLoading");
             if (data.properties && (nextPage) < data.properties.totalRecords) {
                 _dynamicUpdateMap($el, baseUrl, nextPage);
-            }    
+                $loading.show();
+                $("#mapResetBounds").show();
+            } else {
+                $loading.hide();
+            }
         }
-        }).error(function() {});
+        }).error(function(e) {
+            console.log("error loading json: ", e);
+        });
     
     }
 
