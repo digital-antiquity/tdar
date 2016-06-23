@@ -51,6 +51,7 @@
     <th>Date</th>
     <th>Status</th>
     <th>Subject</th>
+    <th></th>
 </tr>
 </thead>
 <#list emails as email>
