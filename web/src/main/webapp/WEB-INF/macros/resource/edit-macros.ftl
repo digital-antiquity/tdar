@@ -1195,7 +1195,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
 <#-- emit the license section -->
     <#macro license>
-        <#assign currentLicenseType = defaultLicenseType!'No license information available.'/>
+        <#assign currentLicenseType = defaultLicenseType />
         <#if resource.licenseType?has_content>
             <#assign currentLicenseType = resource.licenseType/>
         </#if>
