@@ -207,12 +207,12 @@ describe("LeafletSpec", function() {
 
 
     describe("map results", function() {
-        beforeEach(function() {
-            loadFixtures("leaflet/leaflet-results.html");
+        beforeEach(function() {            
+            loadFixtures("leaflet/leaflet-results.html", "leaflet/leaflet-results-json.html");
             TDAR.leaflet.initResultsMaps();
         });
 
-        it("update map markers", function () {
+        it("adding markers should cause map bounds to change after calling update()", function () {
 
             var $el = $(".leaflet-map-results");
             var map  = $el.data("map");
@@ -220,9 +220,18 @@ describe("LeafletSpec", function() {
             expect(map).toExist();
             expect(markers).toExist();
 
-            var data = {};
+            //todo: configure getJSONFixture() instead
+            var data = JSON.parse($j('#dataPage1').text());
+            
             var startRecord = 0;
+
+            //get the original map bounds, then call update w/ marker coords
+            var bounds1 = map.getBounds();
             TDAR.leaflet.update(map, markers, data, startRecord, true);
+            //after update(), mapbounds should have changed
+            var bounds2 = map.getBounds();
+
+            expect(bounds1.equals(bounds2)).toBe(false);
         });
     });
 
