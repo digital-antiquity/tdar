@@ -453,6 +453,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
              * Assumption of only one bounding box
              */
             map.on('draw:deleted', function(e) {
+                console.log("deleted fired");
                 var layers = e.layers;
                 layers.eachLayer(function(layer) {
                     drawnItems.removeLayer(layer);
@@ -466,7 +467,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                     $(".d_maxx", $el).val('');
                     $(".d_maxy", $el).val('');
                 });
-                _enableRectangleCreate($mapDiv);
+                if (layers.length > 0 ) {
+                    _enableRectangleCreate($mapDiv);
+                }
             });
 
             //dirty the form if rectangle created, edited, or deleted
