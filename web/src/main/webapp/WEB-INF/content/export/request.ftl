@@ -12,7 +12,7 @@
     <div class="control-group" >
         <label class="control-label" for="collectionName">Account</label>
     <div class="controls">
-        <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" emptyOption='true'   theme="xhtml" />
+        <@s.select name="accountId" list="%{accounts}" listValue="name" listKey="id" emptyOption='true' />
     </div>
     </div>
 </div>
