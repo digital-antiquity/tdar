@@ -105,7 +105,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         this.collectionId = collectionId;
     }
 
-    protected ResourceExportProxy getExportProxy() {
+    public ResourceExportProxy getExportProxy() {
         return exportProxy;
     }
 
