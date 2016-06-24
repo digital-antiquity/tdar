@@ -600,11 +600,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public LicenseType getDefaultLicenseType() {
-        String type = assistant.getStringProperty("default.license.type");
-        if (StringUtils.isBlank(type)) {
-            return LicenseType.CREATIVE_COMMONS_ATTRIBUTION;
-        }
-        return LicenseType.valueOf(type);
+        return LicenseType.valueOf(assistant.getStringProperty("default.license.type", LicenseType.CREATIVE_COMMONS_ATTRIBUTION.name()));
     }
 
     public Boolean isRPAEnabled() {
