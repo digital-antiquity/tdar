@@ -83,3 +83,6 @@ standalone solr:
      - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
  - update Google Analytics for Universal Analytics
  - re-run RebuildGeographicKeywordsProcess
+ - additional tasks
+    - https://issues.tdar.org/browse/TDAR-3515
+    - https://issues.tdar.org/browse/TDAR-610
