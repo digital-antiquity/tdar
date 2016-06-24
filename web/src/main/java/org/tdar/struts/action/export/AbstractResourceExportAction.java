@@ -50,7 +50,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     SerializationService serializationService;
 
     private String format(HasName item) {
-        return String.format("%s (%s)", item.getName(), item.getId());
+        return String.format("%s",item.getId());
     }
 
     @Override
