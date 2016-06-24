@@ -244,7 +244,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         // if we fit to bounds...
         // fixme: if user-interaction happens we probably shouldn't call fit-bounds
-        if(bFitBounds && markers.length) {
+        if(bFitBounds && layers.length) {
             map.fitBounds(markers.getBounds());
         }
     }
