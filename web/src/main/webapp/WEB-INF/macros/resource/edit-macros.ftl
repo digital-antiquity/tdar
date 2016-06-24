@@ -93,7 +93,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <label class="control-label">${title}</label>
         <div class="controls">
             <select class="keyword-autocomplete form-control select2-hidden-accessible input-xxlarge" multiple="multiple" tabindex="-1" aria-hidden="true"
-                name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type?url}" id="${prefix}Repeatable" style="width:100%">
+                name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type?url}" id="${prefix}select2" style="width:100%">
                 <#list array![] as term>
                     <#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
                 </#list>
@@ -969,9 +969,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#if ableToUploadFiles>
             <td colspan="2">
 
-                <div class="control-group">
-
-                    <div class="controls">
                         <@s.select id="proxy${rowId}_conf"  name="fileProxies[${rowId}].restriction" labelposition="right"
                         style="padding-left: 20px;" list=fileAccessRestrictions listValue="label"  class="fileProxyConfidential confidential-contact-required" style="padding-left: 20px;" />
                 <#local val = ""/>
@@ -981,8 +978,6 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
                 <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
 
-                    </div>
-                </div>
             </td>
 
             <td class="delete">
@@ -1195,7 +1190,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
 
 <#-- emit the license section -->
     <#macro license>
-        <#assign currentLicenseType = defaultLicenseType/>
+        <#assign currentLicenseType = defaultLicenseType />
         <#if resource.licenseType?has_content>
             <#assign currentLicenseType = resource.licenseType/>
         </#if>

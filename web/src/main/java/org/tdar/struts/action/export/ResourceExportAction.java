@@ -18,7 +18,8 @@ public class ResourceExportAction extends AbstractResourceExportAction {
 
     @Override
     @Action(value = "perform", results = {
-            @Result(name = SUCCESS, location = "perform.ftl")
+            @Result(name = SUCCESS, location = "perform.ftl"),
+            @Result(name = INPUT, location = "request.ftl")
     })
     @PostOnly
     public String execute() {

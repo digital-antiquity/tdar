@@ -52,7 +52,7 @@
 
             <#if ( results?has_content )>
                 <@rlist.listResources resourcelist=results listTag="ol" headerTag="h4" titleTag="h5" itemsPerRow=4
-                sortfield=sortField  orientation=resource.orientation mapPosition="top" />
+                sortfield=sortField  orientation=resource.orientation mapPosition="top" mapHeight="400" />
             </#if>
 
             <#if ( paginationHelper.pageCount > 1)>

@@ -219,11 +219,11 @@ Common macros used in multiple contexts
         <#local cartouchePart><@upperPersistableTypeLabel persistable /></#local>
     <span class="cartouche">
     <#if persistable.resourceType?has_content>
-        <#local type>${persistable.resourceType?lower_case}</#local>
+        <#local type>svg-icons_icon-${persistable.resourceType?lower_case}</#local>
     <#elseif persistable.type?has_content><#t>
-        <#local type>collection</#local>
+        <#local type>svg-icons_collection</#local>
     </#if>
-    <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_icon-${type}"></use></svg>
+    <svg class="svgicon white svg-cartouche"><use xlink:href="/images/svg/symbol-defs.svg#${type}"></use></svg>
     <#--        <#if (persistable.status)?? && !persistable.active>
             ${persistable.status} <#t>
         </#if>  -->
@@ -424,7 +424,7 @@ Common macros used in multiple contexts
             <#list accountList as account>
                 <#if account.active>
                 <li>
-                    <a href="<@s.url value="/billing/${account.id?c} " scheme="https" />">${account.name!"unamed"}</a>
+                    <a href="<@s.url value="/billing/${account.id?c}"  />">${account.name!"unamed"}</a>
                 </li>
                 </#if>
             </#list>

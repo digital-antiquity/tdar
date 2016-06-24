@@ -85,7 +85,7 @@
 
         <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
             <#if editor && !administrator>
-                <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to DRAFT</p>
+                <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to draft</p>
             </#if>
             <label class="control-label">Status</label>
 
