@@ -22,12 +22,13 @@ import org.tdar.core.service.resource.ResourceExportService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/export")
-public abstract class AbstractResourceExportAction extends AbstractAuthenticatableAction implements Preparable {
+public abstract class AbstractResourceExportAction extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
     /**
      * 
@@ -51,14 +52,20 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     private String format(HasName item) {
         return String.format("%s (%s)", item.getName(), item.getId());
     }
-    
+
     @Override
     public void prepare() throws Exception {
         exportProxy = new ResourceExportProxy(getAuthenticatedUser());
-        List<Resource> resources = getGenericService().findAll(Resource.class, ids);
+        getExportProxy().setResources(getGenericService().findAll(Resource.class, ids));
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
         getExportProxy().setCollection(getGenericService().find(ResourceCollection.class, collectionId));
+    }
+
+    @Override
+    public void validate() {
         List<String> issues = new ArrayList<>();
+
+        List<Resource> resources = getExportProxy().getResources();
         if (resources != null) {
             for (Resource r : resources) {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), r, GeneralPermissions.MODIFY_METADATA)) {
@@ -82,7 +89,6 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         }
     }
 
-
     public Long getAccountId() {
         return accountId;
     }
@@ -94,6 +100,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     public Long getCollectionId() {
         return collectionId;
     }
+
     public void setCollectionId(Long collectionId) {
         this.collectionId = collectionId;
     }
@@ -101,6 +108,5 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     protected ResourceExportProxy getExportProxy() {
         return exportProxy;
     }
-
 
 }
