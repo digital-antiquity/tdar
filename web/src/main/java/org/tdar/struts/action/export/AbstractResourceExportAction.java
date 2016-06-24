@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -32,7 +33,6 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
      * 
      */
     private static final long serialVersionUID = 6309093261229203299L;
-    private List<Resource> resources;
     private List<Long> ids;
     private Long collectionId;
     private Long accountId;
@@ -48,27 +48,33 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     @Autowired
     SerializationService serializationService;
 
+    private String format(HasName item) {
+        return String.format("%s (%s)", item.getName(), item.getId());
+    }
+    
     @Override
     public void prepare() throws Exception {
         exportProxy = new ResourceExportProxy(getAuthenticatedUser());
-        resources = getGenericService().findAll(Resource.class, ids);
+        List<Resource> resources = getGenericService().findAll(Resource.class, ids);
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
         getExportProxy().setCollection(getGenericService().find(ResourceCollection.class, collectionId));
         List<String> issues = new ArrayList<>();
         if (resources != null) {
             for (Resource r : resources) {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), r, GeneralPermissions.MODIFY_METADATA)) {
-                    issues.add(String.format("%s (%s)", r.getTitle(), r.getId()));
+                    issues.add(format(r));
                 }
             }
         }
 
-        if (getExportProxy().getCollection() != null && !authorizationService.canEditCollection(getAuthenticatedUser(), getExportProxy().getCollection())) {
-            addActionError(getText("abstractResourceExportAction.cannot_export"));
+        ResourceCollection collection = getExportProxy().getCollection();
+        if (collection != null && !authorizationService.canEditCollection(getAuthenticatedUser(), collection)) {
+            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(collection))));
         }
 
-        if (getExportProxy().getAccount() != null && !authorizationService.canEditAccount(getExportProxy().getAccount(), getAuthenticatedUser())) {
-            addActionError(getText("abstractResourceExportAction.cannot_export"));
+        BillingAccount account = getExportProxy().getAccount();
+        if (account != null && !authorizationService.canEditAccount(account, getAuthenticatedUser())) {
+            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(account))));
         }
 
         if (CollectionUtils.isNotEmpty(resources)) {
@@ -76,10 +82,6 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
         }
     }
 
-
-    protected List<Resource> getResources() {
-        return resources;
-    }
 
     public Long getAccountId() {
         return accountId;
