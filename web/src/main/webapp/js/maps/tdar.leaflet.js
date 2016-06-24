@@ -6,7 +6,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
-    L.Icon.Default.imagePath = TDAR.assetsUri('/components/leaflet/dist/images/');
+    L.Icon.Default.imagePath = TDAR.assetsUri('/components/leaflet/dist/images');
 
     var $body = $('body');
 
@@ -120,7 +120,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             var map = _initMap(this);
             var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
             $el.data("markers", markers);
-
+            map.markers = markers;
+            
             var recDefaults = $.extend(_rectangleDefaults, {
                 fillOpacity: 0.08,
                 fitToBounds: true
@@ -134,21 +135,22 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 var zoom = L.control({
                     position : 'topright'
                 });
+
                 zoom.onAdd = function(map) {
                     var topRight = L.DomUtil.create('div', 'topright');
                     var loading = L.DomUtil.create('div', 'mapLoading');
                     loading.id="mapLoading";
                     var $loading = $(loading);
                     $loading.append("<i class='icon-refresh'></i> Loading");
-                    $loading.hide();
+//                    $loading.hide();
                     var resetBounds = L.DomUtil.create('div', 'mapResetBounds');
                     resetBounds.id="mapResetBounds";
                     var $resetBounds = $(resetBounds);
-                    $resetBounds.append("<i class='icon-zoom-out'></i> Zoom out to see more items");
+                    $resetBounds.append("<i class='icon-map-marker'></i> Fit map to all results");
                     $resetBounds.hide();
                     
                     $resetBounds.click(function() {
-                        map.fitToBounds(markers.getBounds());
+                        map.fitBounds(map.markers.getBounds());
                         $resetBounds.hide();
                     });
                     topRight.appendChild(resetBounds);
