@@ -1,0 +1,887 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>web</artifactId>
+    <packaging>war</packaging>
+    <name>tDAR (web)</name>
+
+    <properties>
+        <struts2.version>2.5.1</struts2.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <wro4j.version>1.8.0</wro4j.version>
+        <display.port></display.port>
+        <skipWebTests>false</skipWebTests>
+        <skipSeleniumTests>false</skipSeleniumTests>
+        <skipJetty>false</skipJetty>
+        <skipKarma>false</skipKarma>
+        <skipNode>false</skipNode>
+        <testChangeLog>changelog-integration.xml</testChangeLog>
+        <skipTestLiquibase>false</skipTestLiquibase>
+    </properties>
+    <parent>
+        <groupId>org.tdar</groupId>
+        <artifactId>web-base</artifactId>
+        <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
+        <relativePath>../web-base/pom.xml</relativePath>
+    </parent>
+
+    <prerequisites>
+        <maven>3.1.0</maven>
+    </prerequisites>
+    <organization>
+        <name>The Digital Archaeological Record</name>
+        <url>http://www.tdar.org</url>
+    </organization>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.struts</groupId>
+                <artifactId>struts2-bom</artifactId>
+                <version>${struts2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <!-- 3rd party dependencies and libraries -->
+    <dependencies>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>xwork-core</artifactId>
+            		<groupId>org.apache.struts.xwork</groupId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+            <exclusions>
+            	<exclusion>
+            		<artifactId>xwork-core</artifactId>
+            		<groupId>org.apache.struts.xwork</groupId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>search</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>search</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <!-- needed by spring for @Transactional calls -->
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.2.1</version>
+            <!-- LICENSE: APACHE 1.1 -->
+        </dependency>
+        <dependency>
+            <groupId>com.jgeppert.struts2.bootstrap</groupId>
+            <artifactId>struts2-bootstrap-plugin</artifactId>
+            <version>1.7.0</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>net.tanesha.recaptcha4j</groupId>
+            <artifactId>recaptcha4j</artifactId>
+            <version>0.0.7</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+
+        <!-- ANDS PID Client -->
+        <dependency>
+            <groupId>net.sourceforge.andspidclient</groupId>
+            <artifactId>ands-pid-client</artifactId>
+            <version>1.0.30</version>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- /these are required for htmlunit 2.10 -->
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-core</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>javassist</artifactId>
+                    <groupId>javassist</groupId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>asm</groupId>
+                    <artifactId>asm-commons</artifactId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+        <groupId>org.apache.struts</groupId>
+        <artifactId>struts2-java8-support-plugin</artifactId>
+        <version>2.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-sitemesh-plugin</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-spring-plugin</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-junit-plugin</artifactId>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.struts</groupId>
+            <artifactId>struts2-convention-plugin</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+            <version>4.0.4</version>
+            <type>jar</type>
+            <!-- LICENSE: BSD -->
+        </dependency>
+        <dependency>
+            <groupId>org.ebaysf.web</groupId>
+            <artifactId>cors-filter</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+            <scope>test</scope>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+
+
+        <!-- Selenium tests -->
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>2.53.0</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>httpclient</artifactId>
+                    <groupId>org.apache.httpcomponents</groupId>
+                </exclusion>
+            </exclusions>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>ro.isdc.wro4j</groupId>
+            <artifactId>wro4j-core</artifactId>
+            <version>${wro4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.yahoo.platform.yui</groupId>
+            <artifactId>yuicompressor</artifactId>
+            <version>2.4.8</version>
+        </dependency>
+        <!-- <dependency> <groupId>ro.isdc.wro4j</groupId> <artifactId>wro4j-extensions</artifactId> 
+            <version>${wro4j.version}</version> </dependency> -->
+    </dependencies>
+
+
+    <build>
+        <finalName>tdar-web</finalName>
+        <resources>
+            <!-- We only want a small set of files to be filtered. NOTE: 
+                These files are NOT read into maven properties for interpolation, they are 
+                just the set of files where any interpolated variables will be rewritten 
+                according to the currently loaded set of maven properties. To define interpolated 
+                variables, the file or variable has to be added to <filters></filters> XXX: 
+                only files that need to be rewritten should be included here -->
+            <resource>
+                <!-- switch filtering off for all but the desired set -->
+                <filtering>false</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <excludes>
+                    <exclude>tdar.properties</exclude>
+                    <exclude>crowd.properties</exclude>
+                    <exclude>hibernate.properties</exclude>
+                    <exclude>local-wro-config.properties</exclude>
+                    <exclude>struts-local-settings.xml</exclude>
+                    <exclude>common.json</exclude>
+                    <exclude>liquibase.properties</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <!-- And on for the set of files -->
+                <!-- Having to do it as mutually exclusive but that's how 
+                    Maven works -->
+                <!-- See: http://maven.apache.org/plugins/maven-resources-plugin/examples/filter.html -->
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>tdar.properties</include>
+                    <include>crowd.properties</include>
+                    <include>hibernate.properties</include>
+                    <include>local-wro-config.properties</include>
+                    <include>struts-local-settings.xml</include>
+                    <include>common.json</include>
+                    <include>liquibase.properties</include>
+                </includes>
+            </resource>
+        </resources>
+<!--         <filters>
+            <filter>${basedir}/src/main/release/profiles/${build.profile.id}/config.properties</filter>
+        </filters>
+ -->
+         <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+            <testResource>
+                <directory>${basedir}/src/main/webapp</directory>
+                <filtering>true</filtering>
+                <includes>
+                    <include>wsdl/*</include>
+                    <include>WEB-INF/*.xml</include>
+                </includes>
+            </testResource>
+        </testResources>
+        <plugins>
+        
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <id>process-search-resources</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <configuration>
+                            <attachToTest>true</attachToTest>
+                            <attachToMain>true</attachToMain>
+                            <resourceBundles>
+                                <resourceBundle>org.tdar:search:${project.version}</resourceBundle>
+                            </resourceBundles>
+                            <outputDirectory>target/solr</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.5</version>
+                <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>${project.build.directory}/generated/webapp</directory>
+                            <targetPath>/</targetPath>
+                            <filtering>false</filtering>
+                        </resource>
+                        <resource>
+                            <directory>src/main/resources/production/</directory>
+                            <targetPath>/WEB-INF/classes</targetPath>
+                            <includes>
+                                <include>struts-local-settings.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <configuration>
+                    <username>${javax.persistence.jdbc.user}</username>
+                    <password>${javax.persistence.jdbc.password}</password>
+                    <url>${javax.persistence.jdbc.url}</url>
+                    <driver>${javax.persistence.jdbc.driver}</driver>
+                    <verbose>false</verbose>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upgrade-liquibase</id>
+                        <!-- if the liquibase profile is active (default 
+                            context) run the upgrade -->
+                        <configuration>
+                            <changeLogFile>target/liquibase/changelog.xml</changeLogFile>
+                            <skip>${skipUpgradeLiquibase}</skip>
+                        </configuration>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <executions>
+                    <!-- note, this may have some issues with symlinks in 
+                        /usr -->
+                    <!-- note - npm, bower, karma and other tools
+                        are installed globally on build -->
+                    <execution>
+                        <id>exec-npm-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>npm</executable>
+                            <arguments>
+                                <argument>install</argument>
+                                <argument>--cache-min 9999999</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>${surefire-failsafe.version}</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
+                    <skip>${maven.test.skip}</skip>
+                    <runOrder>alphabetical</runOrder>
+                    <systemProperties>
+                        <property>
+                            <name>maven.version</name>
+                            <value>${maven.version}</value>
+                        </property>
+                        <property>
+                            <name>maven.home</name>
+                            <value>${preparedMavenHome}</value>
+                        </property>
+                        <property>
+                            <name>maven.it.global-settings.dir</name>
+                            <value>${project.build.testOutputDirectory}</value>
+                        </property>
+                    </systemProperties>
+                    <!-- <includes> <include>**/*ITCase.java</include> <include>**/*TestCase.java</include> 
+                        </includes> -->
+                    <argLine>${jvm.args}</argLine>
+                    <junitArtifactName>junit:junit-dep</junitArtifactName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>${surefire-failsafe.version}</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/core/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/web</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-spring</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                                <exclude>**/org/tdar/struts/**/Struts*ITCase.java</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/spring</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-spring-struts</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                                <exclude>**/org/tdar/web/**/*</exclude>
+                                <exclude>**/org/tdar/core/**/*</exclude>
+                                <!-- <exclude>**/org/tdar/struts/**/*ITCase.java</exclude> -->
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/struts/**/Struts*ITCase.java</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/spring-struts</reportsDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-web</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>**/org/tdar/experimental/**/*.java</exclude>
+                                <exclude>**/org/tdar/functional/**/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/web/**/*</include>
+                            </includes>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
+                            <skip>${skipWebTests}</skip>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>integration-test-selenium</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                            <goal>verify</goal>
+                        </goals>
+                        <configuration>
+                            <skip>${skipSeleniumTests}</skip>
+                            <failIfNoSpecifiedTests>false</failIfNoSpecifiedTests>
+                            <reportsDirectory>target/failsafe-reports/selenium</reportsDirectory>
+                            <excludes>
+                                <exclude>**/experimental/**/*.java</exclude>
+                                <exclude>**/web/**/*</exclude>
+                            </excludes>
+                            <includes>
+                                <include>**/org/tdar/functional/**/*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <runOrder>alphabetical</runOrder>
+                    <systemPropertyVariables>
+                        <display.port>${display.port}</display.port>
+                    </systemPropertyVariables>
+                    <argLine>${jvm.args} -Dsolr.data.dir=target/solr-failsafe/</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- with this plugin we can do the following to push our 
+                    war file out to the test server -->
+                <!-- mvn clean package tomcat7:redeploy -P faims_test,default 
+                    -Dserver="FAIMS Test Server" -->
+                <!-- note we are using the appropropriate properties declared 
+                    in the property file in the profile dir: -->
+                <!-- /src/main/release/profiles/ -->
+                <!-- there is a nice write up here: http://www.javathinking.com/2013/05/deploying-to-tomcat-7-with-maven.html -->
+                <!-- a point to remember is that the latest version of tomcat 
+                    doesn't allow a role to use both manager gui and manager scripts -->
+                <!-- so we are reduced to a manger scripts role for this 
+                    deployment -->
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <server>${tomcat.server.id}</server>
+                    <url>${tomcat.server.url}</url>
+                    <path>/</path>
+                </configuration>
+            </plugin>
+        </plugins>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>ro.isdc.wro4j</groupId>
+                    <artifactId>wro4j-maven-plugin</artifactId>
+                    <version>${wro4j.version}</version>
+                </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.codehaus.mojo
+                                        </groupId>
+                                        <artifactId>
+                                            exec-maven-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.4.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>exec</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>minify-web-resources</id>
+            <build>
+                <defaultGoal>run</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <groupId>ro.isdc.wro4j</groupId>
+                        <artifactId>wro4j-maven-plugin</artifactId>
+                        <version>${wro4j.version}</version>
+                        <executions>
+                            <execution>
+                                <phase>generate-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <targetGroups>default,ng-integrate</targetGroups>
+                            <minimize>true</minimize>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}</destinationFolder>
+                            <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+                            <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
+                            <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
+                            <ignoreMissingResources>false</ignoreMissingResources>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <!-- this is to put an extra copy where other things 
+                            like the tDAR website can deal with it. JS doesn't change that often so, 
+                            it should be okay -->
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${antrun.version}</version>
+                        <executions>
+                            <execution>
+                                <id>copy-wro-files</id>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy
+                                            todir="${project.build.directory}/generated/webapp/wro/">
+                                            <fileset
+                                                dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}" />
+                                        </copy>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>start-x-server</id>
+            <properties>
+                <display.port>:20</display.port>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>selenium-maven-plugin</artifactId>
+                        <version>2.3</version>
+                        <configuration>
+                            <display>${display.port}</display>
+                        </configuration>
+                        <executions>
+                            <!-- http://mojo.codehaus.org/selenium-maven-plugin/examples/headless-with-xvfb.html -->
+                            <execution>
+                                <id>xvfb</id>
+                                <phase>pre-integration-test</phase>
+                                <goals>
+                                    <goal>xvfb</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>jsprofile</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.cj.jshintmojo</groupId>
+                    <artifactId>jshint-maven-plugin</artifactId>
+                    <version>1.3.0</version>
+                    <!-- LICENSE: GPL 2 + classpath exception -->
+                </dependency>
+            </dependencies>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.cj.jshintmojo</groupId>
+                        <artifactId>jshint-maven-plugin</artifactId>
+                        <version>1.3.0</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>lint</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <version>2.4.1</version>
+                            <configFile>src/main/resources/validation_tools/jshint/jshint.conf.json</configFile>
+                            <directories>
+                                <directory>src/main/webapp/js</directory>
+                            </directories>
+                            <excludes>
+                                <exclude>src/main/webapp/hackyScript.js</exclude>
+                                <exclude>src/main/webapp/myDirectoryForThirdyPartyStuff</exclude>
+                            </excludes>
+                            <reporter>jslint</reporter>
+                            <reportFile>target/jshint.xml</reportFile>
+                            <failOnError>false</failOnError>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>test</id>
+            <build>
+                <defaultGoal>surefire:test</defaultGoal>
+                <filters>
+                    <filter>src/test/resources/hibernate.properties</filter>
+                    <filter>src/main/resources/liquibase.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/test/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>com.kelveden</groupId>
+                        <artifactId>maven-karma-plugin</artifactId>
+                        <version>1.8</version>
+                        <executions>
+                            <execution>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>start</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <configFile>karma.conf.js</configFile>
+                            <browsers>PhantomJS</browsers>
+                            <autoWatch>false</autoWatch>
+                            <singleRun>true</singleRun>
+                            <colors>true</colors>
+                            <skipKarma>${skipKarma}</skipKarma>
+                            <skipTests>${skipKarma}</skipTests>
+                            <karmaFailureIgnore>false</karmaFailureIgnore>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <properties>
+                <jetty.port>8180</jetty.port>
+                <jetty.ssl.port>8143</jetty.ssl.port>
+                <jetty.stop.port>12920</jetty.stop.port>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>update-bower</id>
+            <build>
+                <defaultGoal>process-resources</defaultGoal>
+                <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.3.2</version>
+                <executions>
+                    <execution>
+                        <id>exec-bower-install</id>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <skip>${skipNode}</skip>
+                            <executable>bower</executable>
+                            <arguments>
+                                <argument>install</argument>
+                            </arguments>
+                        </configuration>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                    </execution>
+                    <!-- <execution> <id>exec-grunt</id> <phase>process-resources</phase> 
+                        <configuration> <executable>grunt</executable> </configuration> <goals> <goal>exec</goal> 
+                        </goals> </execution> -->
+                </executions>
+            </plugin>
+            </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>setup-new-instance</id>
+            <build>
+                <defaultGoal>process-resources</defaultGoal>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-remote-resources-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>process-resources</id>
+                                <goals>
+                                    <goal>process</goal>
+                                </goals>
+                                <configuration>
+                                    <attachToTest>true</attachToTest>
+                                    <attachToMain>true</attachToMain>
+                                    <outputDirectory>${project.build.directory}/templates</outputDirectory>
+                                    <resourceBundles>
+                                        <resourceBundle>org.tdar:templates:${project.version}</resourceBundle>
+                                    </resourceBundles>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <target>
+                                        <copy failOnError="false"
+                                            file="target/templates/crowd.properties.template"
+                                            tofile="src/main/resources/crowd.properties" />
+                                        <copy failOnError="false"
+                                            file="target/templates/ldap.properties.template"
+                                            tofile="src/main/resources/ldap.properties" />
+                                        <copy
+                                            file="target/templates/hibernate.properties.template"
+                                            tofile="src/main/resources/hibernate.properties" />
+                                        <copy
+                                            file="target/templates/log4j2.xml.template"
+                                            tofile="src/main/resources/log4j2.xml" />
+                                        <copy failOnError="false"
+                                            file="target/templates/tdar.properties.template"
+                                            tofile="src/main/resources/tdar.properties" />
+                                        <copy failOnError="false"
+                                            file="target/templates/struts-local-settings.xml.template"
+                                            tofile="src/main/resources/struts-local-settings.xml" />
+                                        <copy
+                                            file="target/templates/spring-local-settings.xml.template"
+                                            tofile="src/main/resources/spring-local-settings.xml" />
+                                        <copy failOnError="false"
+                                            file="target/templates/hibernate-ehcache.xml.template"
+                                            tofile="src/main/resources/hibernate-ehcache.xml" />
+                                        <echo
+                                            message="the following can be used to grab all of the config files into a tar from an existing repo" />
+                                        <echo
+                                            message=" hg status --all | grep 'I ' | grep -v 'I target/' | awk '{print substr($0, index($0, $2))}' | tar -cvzf ../backup.tgz -T -" />
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>

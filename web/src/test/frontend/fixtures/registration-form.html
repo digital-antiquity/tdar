@@ -1,0 +1,170 @@
+<form id="accountForm" name="accountForm" action="https://core.tdar.org/account/register" method="post" class="tdarvalidate" data-validate-method="initRegForm">
+    <fieldset>
+        <input type="hidden" name="struts.token.name" value="struts.csrf.token">
+        <input type="hidden" name="struts.csrf.token" value="3KUZ5U9UHNT523UBX238AIJ4ZRTV0J7F">
+        <div class="alert alert-block alert-error" style="display:none" id="error">
+            <h4>Please correct the following issues with this submission</h4>
+            <ul id="errorList"></ul>
+        </div>
+        <input type="hidden" name="url" value="">
+        <div class="well">
+            <div class="pull-right">
+                <b>Already Registered?</b><br><a href="/login">Login</a>
+            </div>
+            <p><b>There is no charge to become a registered user of tDAR. As a registered user, you can:</b>
+            </p><ul>
+            <li>Download Documents, Data sets, Images, and Other Resources</li>
+            <li>Bookmark Resources for future use</li>
+
+        </ul>
+
+        <h3>About You</h3>
+
+        <input type="text" name="_cr42-1" value="" style="display:none">
+        <input type="password" name="_cr42-2" value="" style="display:none">
+        
+        <input type="hidden" name="h.timeCheck" value="1438237058237" id="accountForm_h_timeCheck">        <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
+
+
+
+        <div class="row">
+            <div class="span8">
+
+                <div class="control-group "><label class="control-label" for="username">Username <span class="required">*</span></label>    <div class="controls">
+
+                    <input type="text" name="registration.person.username" value="" id="username" class="required username input-xlarge" spellcheck="false" required="true"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span4">
+
+                <div class="control-group "><label class="control-label" for="firstName">First name <span class="required">*</span></label>    <div class="controls">
+
+                    <input type="text" name="registration.person.firstName" value="" id="firstName" class="required input-xlarge" spellcheck="false" required="true"></div>
+                </div>
+            </div>
+            <div class="span4">
+
+                <div class="control-group "><label class="control-label" for="lastName">Last name <span class="required">*</span></label>    <div class="controls">
+
+                    <input type="text" name="registration.person.lastName" value="" id="lastName" class="required input-xlarge" spellcheck="false" required="true"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span4">
+
+                <div class="control-group "><label class="control-label" for="emailAddress">Email address <span class="required">*</span></label>    <div class="controls">
+
+                    <input type="text" name="registration.person.email" value="" id="emailAddress" class="required email input-xlarge" spellcheck="false" required="true"></div>
+                </div>
+            </div>
+            <div class="span4">
+
+                <div class="control-group "><label class="control-label" for="confirmEmail">Confirm email <span class="required">*</span></label>    <div class="controls">
+
+                    <input type="text" name="registration.confirmEmail" value="" id="confirmEmail" class="required email input-xlarge" spellcheck="false" required="true"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span4">
+
+                <div class="control-group "><label class="control-label" for="institutionName">Organization</label>    <div class="controls">
+
+                    <input type="text" name="registration.institutionName" value="" id="institutionName" class="input-xlarge"></div>
+                </div>
+            </div>
+            <div class="span4">
+
+                <div class="control-group "><label class="control-label" for="accountForm_registration_affiliation">Affiliation / Interest</label>    <div class="controls">
+                    <select name="registration.affiliation" id="accountForm_registration_affiliation">
+                        <option value="">Select Affiliation</option>
+                        <option value="K12_STUDENT">K-12 Student</option>
+                        <option value="UNDERGRADUATE_STUDENT">Undergraduate Student</option>
+                        <option value="GRADUATE_STUDENT">Graduate Student</option>
+                        <option value="K_12_TEACHER">K-12 Teacher</option>
+                        <option value="HIGHER_ED_FACULTY">Higher Ed. Faculty</option>
+                        <option value="INDEPENDENT_RESEARCHER">Independent Researcher</option>
+                        <option value="PUBLIC_AGENCY_ARCH">Public Agency Archaeologist</option>
+                        <option value="CRM_ARCHAEOLOGIST">CRM Firm Archaeologist</option>
+                        <option value="NON_PROFESSIONAL_ARCH">Nonprofessional/Avocational Archaeologist</option>
+                        <option value="GENERAL_PUBLIC">General Public</option>
+
+
+                    </select>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="span4">
+
+            <div class="control-group "><label class="control-label" for="password">Password <span class="required">*</span></label>    <div class="controls">
+                <input type="password" name="registration.password" id="password" class="required input-xlarge" required="true" autocomplete="off"></div>
+            </div>
+        </div>
+        <div class="span4">
+
+            <div class="control-group "><label class="control-label" for="confirmPassword">Confirm password <span class="required">*</span></label>    <div class="controls">
+                <input type="password" name="registration.confirmPassword" id="confirmPassword" class="required input-xlarge" required="true" autocomplete="off"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span4">
+
+            <div class="control-group "><label class="control-label" for="phone">Work phone</label>    <div class="controls">
+
+                <input type="text" name="registration.person.phone" value="" id="phone" class=" input-xlarge"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="span12">
+            <span class="help-block">  </span>
+            <label class="checkbox">
+                <input type="checkbox" name="registration.acceptTermsOfUse" value="true" id="tou-id"><input type="hidden" id="__checkbox_tou-id" name="__checkbox_registration.acceptTermsOfUse" value="true">        I have read and accept the tDAR
+                <a href="http://www.tdar.org/about/policies/terms-of-use/" title="click to open contributor agreement in another window" target="_blank">User Agreement</a>.
+            </label>
+            <div class="control-group">
+                <label class="control-label">Contributor Agreement</label>
+                <div class="controls">
+                    <span class="help-block">Check this box if you will be contributing resources and/or resource metadata to tDAR. You may change this setting at any time.
+                    </span>
+                    <label class="checkbox">
+                        <input type="checkbox" name="registration.requestingContributorAccess" value="true" id="contributor-id"><input type="hidden" id="__checkbox_contributor-id" name="__checkbox_registration.requestingContributorAccess" value="true">                        I accept the tDAR
+                        <a href="http://www.tdar.org/about/policies/contributors-agreement/" title="click to open contributor agreement in another window" target="_blank">Contributor Agreement</a>
+                        and wish to add tDAR content.
+                    </label>
+                </div>
+            </div>
+            <div id="contributorReasonTextArea" class="collapse" style="height: 0px;">
+                <label class="control-label">Contributor information</label>
+                <div class="control-group">
+                    <div class="controls">
+                        <span class="help-block">
+                            Please briefly describe the geographical areas, time periods, or other subjects for which you
+                            would like to contribute information
+                        </span>
+                        <textarea name="registration.contributorReason" cols="" rows="6" id="contributorReasonId" class="input-xxlarge" disabled="disabled"></textarea>                    </div>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <input type="submit" class="btn btn-primary  submitButton" name="submitAction" value="Register">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</fieldset></form>

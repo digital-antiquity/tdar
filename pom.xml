@@ -1,0 +1,695 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.tdar</groupId>
+    <artifactId>parent</artifactId>
+    <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
+    <name>parent</name>
+    <packaging>pom</packaging>
+    <modules>
+        <!-- config templates -->
+        <module>templates</module>
+        <!-- contains shared "test" files -->
+        <module>test-resources</module>
+        <!-- contains all "liquibase" settings and config files -->
+        <module>database</module>
+        <!-- contains shared config and setup for all other modules, depends 
+            on "database" and "test" -->
+        <module>locales</module>
+        <module>base</module>
+        <!-- tdar "core" files -->
+        <module>core</module>
+        <module>search</module>
+        <module>faims</module>
+        <!-- the tdar webapp -->
+        <module>web-base</module>
+        <module>web</module>
+        <module>tag</module>
+        <module>dataone</module>
+        <module>odata</module>
+        <module>oai-pmh</module>
+        <module>utils</module>
+    </modules>
+
+
+    <properties>
+        <hibernate.version>5.1.0.Final</hibernate.version>
+        <spring.framework.version>4.2.6.RELEASE</spring.framework.version>
+        <postgresql.jdbc.version>9.4.1208.jre7</postgresql.jdbc.version>
+        <servlet.api.version>3.0.1</servlet.api.version>
+        <liquibase.version>3.5.0</liquibase.version>
+        <maven.compiler.version>3.3</maven.compiler.version>
+        <surefire-failsafe.version>2.18.1</surefire-failsafe.version>
+        <antrun.version>1.8</antrun.version>
+        <jvm.args>-Xms256m -Xmx3072m</jvm.args>
+        <use.test.classpath>false</use.test.classpath>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <slf4j.version>1.7.21</slf4j.version>
+        <skipTestLiquibase>true</skipTestLiquibase>
+        <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
+        <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
+        <indexDir>${basedir}/target</indexDir>
+        <asm.version>5.1</asm.version>
+        
+        <clover.licenseDir>/home/bamboo</clover.licenseDir>
+        <!-- Following points to the profile directory to use for filtering 
+            resources -->
+        <!-- override by redefining in a profile. don't forget to 'clean' 
+            when redefining -->
+        <!-- Be warned: Eclipse may have a different active profile in play 
+            to the command line -->
+        <build.profile.id>default</build.profile.id>
+        <clover.version>4.1.1</clover.version>
+        <!--<webXmlPath>/src/main/webapp/WEB-INF/web.xml</webXmlPath> -->
+    </properties>
+
+    <prerequisites>
+        <maven>3.1.0</maven>
+    </prerequisites>
+    <organization>
+        <name>The Digital Archaeological Record</name>
+        <url>http://www.tdar.org</url>
+    </organization>
+    <repositories>
+        <repository>
+            <id>internal</id>
+            <name>Archiva Managed Internal Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>snapshots</id>
+            <name>Archiva Managed Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>imageJ</id>
+            <name>ImageJ Repository</name>
+            <url>http://maven.imagej.net/content/repositories/releases</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <name>JBoss Maven Repository</name>
+            <url>https://repository.jboss.org/nexus/content/groups/public/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>libs-release</name>
+            <url>http://repo.springsource.org/libs-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>com.springsource.repository.libraries.external</id>
+            <name>SpringSource Enterprise Bundle Repository - External Library Releases</name>
+            <url>http://repository.springsource.com/maven/libraries/external</url>
+            <snapshots><enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>spring-release</id>
+            <url>http://maven.springframework.org/release</url>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+<!--         <repository>
+            <id>org.jboss.repository.nexus.public</id>
+            <name>Hibernate Public repository</name>
+            <url>https://repository.jboss.org/nexus/content/repositories/public/</url>
+            <snapshots><enabled>false</enabled></snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+            
+        </repository>
+ -->        <repository>
+            <id>atlassian-m2-repository</id>
+            <url>https://m2proxy.atlassian.com/repository/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </repository>
+        <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <name>oss.sonatype.org - github-releases</name>
+            <id>oss.sonatype.org-github-releases</id>
+            <url>http://oss.sonatype.org/content/repositories/github-releases</url>
+            <releases>
+                <updatePolicy>never</updatePolicy>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-bom</artifactId>
+                <version>2.5</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-framework-bom</artifactId>
+                <version>${spring.framework.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-all</artifactId>
+            <version>1.3</version>
+            <!-- LICENSE: BSD -->
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-junit4</artifactId>
+            <version>2.5.1</version>
+            <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jmock</groupId>
+            <artifactId>jmock-legacy</artifactId>
+            <version>2.5.1</version>
+            <scope>test</scope>
+            <!-- LICENSE: MIT/BSD VARIENT -->
+        </dependency>
+        <!-- log4j -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <!-- LICENSE: MIT -->
+        </dependency>
+        <!-- <dependency> HIBERNATE-SPRING - LOGGER (log4j) <groupId>org.slf4j</groupId> 
+            <artifactId>slf4j-log4j12</artifactId> <version>${slf4j.version}</version> 
+            </dependency> -->
+        <dependency>
+            <groupId>com.mattbertolini</groupId>
+            <artifactId>liquibase-slf4j</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.4.5</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>activation</artifactId>
+                    <groupId>javax.activation</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>commons-dbutils</groupId>
+            <artifactId>commons-dbutils</artifactId>
+            <version>1.6</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>2.1.1</version>
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <!-- hibernate and JPA persistence -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-ehcache</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-c3p0</artifactId>
+            <version>${hibernate.version}</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+        <!-- <dependency> -->
+            <!-- this attempts to use the META-INF/ configuraiton for the 
+                right logging source; this allows us to pipe hibernate into slf4j -->
+            <!-- <groupId>org.jboss.logging</groupId>
+            <artifactId>jboss-logging</artifactId>
+            <version>3.2.0.Final</version>
+        </dependency> -->
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>5.2.4.Final</version>
+            <!-- LICENSE: LGPL 2.1 -->
+        </dependency>
+    </dependencies>
+    <profiles>
+        <profile>
+            <id>clover</id>
+            <properties>
+                <webapp.deploy.dir>${java.io.tmpdir}/clover/webapp</webapp.deploy.dir>
+                <use.test.classpath>true</use.test.classpath>
+                <clover.dir>${user.home}/clover/${hg.branch}</clover.dir>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.atlassian.maven.plugins</groupId>
+                        <artifactId>clover-maven-plugin</artifactId>
+                        <version>${clover.version}</version>
+                        <configuration>
+                            <licenseLocation>${clover.licenseDir}/clover.license</licenseLocation>
+                            <!-- <cloverDatabase>${clover.dir}/database.db</cloverDatabase>
+                            <cloverMergeDatabase>${clover.dir}/merge-database.db</cloverMergeDatabase> -->
+                            <snapshot>${clover.dir}/snapshot/clover.snapshot</snapshot>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>generate</id>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>setup</goal>
+                                    <goal>optimize</goal>
+                                    <goal>optimizeIntegration</goal>
+                                    <goal>aggregate</goal>
+                                    <goal>snapshot</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>post-integration-test</phase>
+                                <goals>
+                                    <goal>clover</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.2</version>
+                        <configuration>
+                            <autoVersionSubmodules>true</autoVersionSubmodules>
+                            <releaseProfiles>release</releaseProfiles>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+            <dependencies>
+                <dependency>
+                    <groupId>com.atlassian.clover</groupId>
+                    <artifactId>clover</artifactId>
+                    <version>${clover.version}</version>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>checkVersions</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <profile>
+            <id>maven-scm-branch</id>
+            <activation>
+                <!-- always run (except when told not to) -->
+                <property>
+                    <name>!skipMavenMercurialSetup</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                        <version>${antrun.version}</version>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <phase>validate</phase>
+                                <goals>
+                                    <goal>run</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- <exportAntProperties>true</exportAntProperties> -->
+                                    <target>
+                                        <mkdir dir="target" />
+                                        <mkdir
+                                            dir="${project.build.directory}" />
+                                        <mkdir
+                                            dir="${project.build.directory}/generated" />
+                                        <mkdir
+                                            dir="${project.build.directory}/generated/webapp" />
+                                        <mkdir
+                                            dir="target/generated/webapp-test" />
+                                        <!--<rmdir dir="src/main/webapp/wro" 
+                                            /> -->
+                                        <condition property="hg.location"
+                                            value="/usr/local/bin/hg">
+                                            <available
+                                                file="/usr/local/bin/hg" />
+                                        </condition>
+                                        <condition property="hg.location"
+                                            value="/usr/bin/hg">
+                                            <available file="/usr/bin/hg" />
+                                        </condition>
+                                        <property name="hg.location"
+                                            value="hg" />
+                                        <echo
+                                            message=" using mercurial from: ${hg.location}" />
+                                        <mkdir dir="target/classes" />
+                                        <exec
+                                            output="target/classes/version.txt"
+                                            executable="${hg.location}">
+                                            <arg line="id -n" />
+                                        </exec>
+                                        <exec
+                                            output="target/classes/version-sum.txt"
+                                            executable="${hg.location}">
+                                            <arg line="id -i" />
+                                        </exec>
+                                        <exec
+                                            output="target/classes/branch.txt"
+                                            executable="${hg.location}">
+                                            <arg line="branch" />
+                                        </exec>
+                                        <loadfile property="hg.version"
+                                            srcFile="target/classes/version.txt" />
+                                        <loadfile property="hg.absoluteversion"
+                                            srcFile="target/classes/version-sum.txt">
+                                            <filterchain>
+                                                <deletecharacters
+                                                    chars="\t\r\n+" />
+                                            </filterchain>
+                                        </loadfile>
+                                        <loadfile property="hg.branch"
+                                            srcFile="target/classes/branch.txt">
+                                            <filterchain>
+                                                <tokenfilter>
+                                                    <replaceregex
+                                                        pattern="-"
+                                                        replace="_"
+                                                        flags="gi" />
+                                                </tokenfilter>
+                                                <deletecharacters
+                                                    chars="\t\r\n+" />
+                                            </filterchain>
+                                        </loadfile>
+                                        <loadfile property="hg.version.as_dir"
+                                            srcFile="target/classes/version.txt">
+                                            <filterchain>
+                                                <deletecharacters
+                                                    chars="\t\r\n+" />
+                                            </filterchain>
+                                        </loadfile>
+                                        <echo
+                                            message=" ${hg.branch}: ${hg.version.as_dir}" />
+                                        <echo file="target/hg.properties" append="false">
+hg.version=${hg.version.as_dir}
+hg.branch=${hg.branch}
+                                        </echo>
+                                    </target>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                          <groupId>org.codehaus.mojo</groupId>
+                          <artifactId>properties-maven-plugin</artifactId>
+                          <version>1.0.0</version>
+                          <executions>
+                            <execution>
+                              <phase>validate</phase>
+                              <goals>
+                                <goal>read-project-properties</goal>
+                              </goals>
+                              <configuration>
+                                <files>
+                                  <file>target/hg.properties</file>
+                                </files>
+                              </configuration>
+                            </execution>
+                          </executions>
+                        </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>duplicateFinder</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.basepom.maven</groupId>
+                        <artifactId>duplicate-finder-maven-plugin</artifactId>
+                        <version>1.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>default</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>check</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <checkCompileClasspath>false</checkCompileClasspath>
+                            <checkRuntimeClasspath>true</checkRuntimeClasspath>
+                            <checkTestClasspath>false</checkTestClasspath>
+                            <ignoredResourcePatterns>
+                                <ignoredResourcePattern>.*</ignoredResourcePattern>
+                            </ignoredResourcePatterns>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>updateVersion</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>versions-maven-plugin</artifactId>
+                        <version>2.2</version>
+                        <configuration>
+                            <newVersion>14.1.${bambooBuildNumber}</newVersion>
+                            <generateBackupPoms>false</generateBackupPoms>
+                            <processParent>true</processParent>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <goals>
+                                    <goal>set</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+    <scm>
+        <url>https://bitbucket.org/tdar/tdar.src/</url>
+        <connection>scm:hg:https://bitbucket.org/tdar/tdar.src/</connection>
+        <developerConnection>scm:hg:https://bitbucket.org/tdar/tdar.src/</developerConnection>
+    </scm>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://dev.tdar.org/jira/</url>
+    </issueManagement>
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <ciManagement>
+        <system>Bamboo</system>
+        <url>http://build.tdar.org/bamboo</url>
+    </ciManagement>
+    <mailingLists>
+        <mailingList>
+            <name>Developer Discussion List</name>
+            <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-dev</archive>
+        </mailingList>
+        <mailingList>
+            <name>Developer Notification / Commit List</name>
+            <archive>http://lists.asu.edu/cgi-bin/wa?A0=tdar-svn</archive>
+        </mailingList>
+    </mailingLists>
+
+    <distributionManagement>
+        <repository>
+            <id>archiva.internal</id>
+            <name>Internal Release Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/internal/</url>
+        </repository>
+        <snapshotRepository>
+            <id>archiva.snapshots</id>
+            <name>Internal Snapshot Repository</name>
+            <url>https://dev.tdar.org/archiva/repository/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+</project>
