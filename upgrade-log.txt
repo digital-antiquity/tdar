@@ -78,8 +78,8 @@ standalone solr:
 —————————————————
 ::Obsidian:
 —————————————————
- - for solr, change the field-types.xml's  spatialContextFactory entry to:
+ - for solr (6.1), change the field-types.xml's  spatialContextFactory entry to:
      spatialContextFactory="org.locationtech.spatial4j.context.jts.JtsSpatialContextFactory"
+     - install notes: https://cwiki.apache.org/confluence/display/solr/Taking+Solr+to+Production
  - update Google Analytics for Universal Analytics
  - re-run RebuildGeographicKeywordsProcess
- - 
