@@ -790,12 +790,16 @@ public class Resource implements Persistable,
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return getGeographicKeywords();
     }
+    
+    public Set<GeographicKeyword> getActiveManagedGeographicKeywords() {
+        return getManagedGeographicKeywords();
+    }
 
     public Set<GeographicKeyword> getIndexedGeographicKeywords() {
         Set<GeographicKeyword> indexed = new HashSet<GeographicKeyword>(
                 getActiveGeographicKeywords());
-        if (!CollectionUtils.isEmpty(managedGeographicKeywords)) {
-            indexed.addAll(managedGeographicKeywords);
+        if (!CollectionUtils.isEmpty(getActiveManagedGeographicKeywords())) {
+            indexed.addAll(getActiveManagedGeographicKeywords());
         }
         return indexed;
     }
