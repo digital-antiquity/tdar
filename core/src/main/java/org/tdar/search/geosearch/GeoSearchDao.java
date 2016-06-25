@@ -106,8 +106,6 @@ public class GeoSearchDao {
     private final static String POLYGON = "polygon";
     // , concat('${',%1$s,'-style?default('''')}') as style
 
-
-
     private static final String COL_FIPS = "fips";
 
     private static final int FIPS_ALL_COUNTIES_SUFFIX = 999;
@@ -282,16 +280,23 @@ public class GeoSearchDao {
                 return SpatialTables.COUNTRY;
             case COUNTY:
                 return SpatialTables.COUNTY;
+            case STATE:
+                return SpatialTables.ADMIN;
             default:
                 return null;
         }
     }
 
     public String toGeoJson(GeographicKeyword kwd) {
-        SpatialTables table = getTableFromLevel(kwd.getLevel());
-        String sql = String.format("select ST_asGeoJson(the_geom) from %s where %s='%s'", table.getTableName(), table.getElementName(),
-                kwd.getLabel());
-        return jdbcTemplate.queryForObject(sql, String.class);
+        try {
+            SpatialTables table = getTableFromLevel(kwd.getLevel());
+            String sql = String.format("select ST_asGeoJson(the_geom) from %s where %s='%s'", table.getTableName(), table.getElementName(),
+                    kwd.getLabel());
+            return jdbcTemplate.queryForObject(sql, String.class);
+        } catch (Exception e) {
+            logger.warn("exception in getting json", e);
+        }
+        return null;
     }
 
 }
