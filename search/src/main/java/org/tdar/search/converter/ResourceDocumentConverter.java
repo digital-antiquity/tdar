@@ -95,7 +95,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                     total++;
                 }
             }
-            if (ir.getResourceType().allowsMultipleFIles()) {
+            if (ir.getResourceType().allowsMultipleFiles()) {
                 doc.setField(QueryFieldNames.TOTAL_FILES, total);
             } else {
                 doc.setField(QueryFieldNames.TOTAL_FILES, 1);

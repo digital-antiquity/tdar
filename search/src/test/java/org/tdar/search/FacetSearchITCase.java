@@ -43,7 +43,6 @@ public class FacetSearchITCase extends AbstractResourceSearchITCase {
         SearchResult<Resource> result = new SearchResult<>();
         FacetWrapper facetWrapper = new FacetWrapper();
         facetWrapper.setMapFacet(true);
-        // facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
         result.setFacetWrapper(facetWrapper);
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         resourceSearchService.buildAdvancedSearch(asqo, null, result, MessageHelper.getInstance());
