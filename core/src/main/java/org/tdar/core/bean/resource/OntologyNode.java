@@ -28,7 +28,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
@@ -51,7 +53,7 @@ import com.fasterxml.jackson.annotation.JsonView;
         @Index(name = "ontology_node_interval_end_index", columnList = "interval_end"),
         @Index(name = "ontology_node_index", columnList = "index")
 })
-public class OntologyNode extends AbstractPersistable implements Comparable<OntologyNode> {
+public class OntologyNode extends AbstractPersistable implements Comparable<OntologyNode>, Slugable {
 
     private static final long serialVersionUID = 6997306639142513872L;
 
@@ -349,6 +351,13 @@ public class OntologyNode extends AbstractPersistable implements Comparable<Onto
 
     public void setColumnHasValueMap(Map<DataTableColumn, Boolean> columnHasValueMap) {
         this.columnHasValueMap = columnHasValueMap;
+    }
+
+    @Override
+    @XmlElement
+    @Transient
+    public String getSlug() {
+        return UrlUtils.slugify(getIri());
     }
 
 }
