@@ -2,43 +2,48 @@
 <head>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="unapi-server" type="application/xml" title="unAPI" href="/unapi" />
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="${host}/unapi" />
     <link rel="search" type="application/opensearchdescription+xml" href='/opensearch.xml' title="Search tDAR" />
 
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link href="${host}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${host}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
         <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.min.css">
 
-    <link href="/css/tdar-base.css" rel="stylesheet">
-    <link href="/css/tdar-print.css" rel="stylesheet" media="print">
-    <link rel="stylesheet" type="text/css" href="/css/tdar-bootstrap.css" />
-    <link rel="stylesheet" type="text/css" href="/css/famfamfam.css" />
-    <link rel="stylesheet" type="text/css" href="/css/tdar-svg.css" />
-    <link rel="stylesheet" type="text/css" href="/components/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" type="text/css" href="/css/tdar.homepage.css" />
-    <link rel="stylesheet" type="text/css" href="/css/tdar.c3graph.css" />
-    <link rel="stylesheet" type="text/css" href="/css/tdar.leaflet.css" />
-    <link rel="stylesheet" type="text/css" href="/css/tdar.worldmap.css" />
-    <link rel="stylesheet" type="text/css" href="/css/tdar.sprites.css" />
+<#assign host="">
+<#if prefixHost>
+	<#assign host="//assets.tdar.org/" />
+</#if>
+
+    <link href="${host}/css/tdar-base.css" rel="stylesheet">
+    <link href="${host}/css/tdar-print.css" rel="stylesheet" media="print">
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar-bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/famfamfam.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar-svg.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/components/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.homepage.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.c3graph.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.worldmap.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.sprites.css" />
 
 
 
     <script>TDAR_jsErrorDelim = "ɹǝʇıɯıןǝp?js_string";</script>
-    <script type="text/javascript" src="/js/tdar.errorutils.js?build10029"></script>
-    <script src="/includes/modernizr-custom-2.6.2.min.js"></script>
+    <script type="text/javascript" src="${host}/js/tdar.errorutils.js?build10029"></script>
+    <script src="${host}/includes/modernizr-custom-2.6.2.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="${host}//www.google.com/jsapi"></script>
 <meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
 <meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
 <meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
 <Meta name = "baidu-site-verification" content = "QBf6pGiSwd" />
 
 <link rel='shortcut icon' href='/images/tdar-favicon.ico'/>
-<link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
-<link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
+<link rel="apple-touch-icon" href="${host}/images/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="${host}/images/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="${host}/images/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="152x152" href="${host}/images/touch-icon-ipad-retina.png">
 
 <meta name="description"
       content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
@@ -189,18 +194,18 @@
 
 
 
-        <script type="text/javascript" src="/components/svgxuse/svgxuse.min.js"></script>
-        <script type="text/javascript" src="/components/leaflet/dist/leaflet.js"></script>
-        <script type="text/javascript" src="/includes/jquery.populate.js"></script>
-        <script type="text/javascript" src="/includes/Leaflet.Sleep.js"></script>
-        <script type="text/javascript" src="/components/d3/d3.min.js"></script>
-        <script type="text/javascript" src="/components/c3/c3.min.js"></script>
-        <script type="text/javascript" src="/js/tdar.core.js"></script>
-        <script type="text/javascript" src="/js/tdar.c3graphsupport.js"></script>
-        <script type="text/javascript" src="/js/tdar.c3graph.js"></script>
-        <script type="text/javascript" src="/js/tdar.d3tree.js"></script>
-        <script type="text/javascript" src="/js/maps/tdar.worldmap.js"></script>
-  	    <script type="text/javascript"  src="/components/leaflet-choropleth/dist/choropleth.js"></script>
+        <script type="text/javascript" src="${host}/components/svgxuse/svgxuse.min.js"></script>
+        <script type="text/javascript" src="${host}/components/leaflet/dist/leaflet.js"></script>
+        <script type="text/javascript" src="${host}/includes/jquery.populate.js"></script>
+        <script type="text/javascript" src="${host}/includes/Leaflet.Sleep.js"></script>
+        <script type="text/javascript" src="${host}/components/d3/d3.min.js"></script>
+        <script type="text/javascript" src="${host}/components/c3/c3.min.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.core.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.c3graphsupport.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.c3graph.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.d3tree.js"></script>
+        <script type="text/javascript" src="${host}/js/maps/tdar.worldmap.js"></script>
+  	    <script type="text/javascript"  src="${host}/components/leaflet-choropleth/dist/choropleth.js"></script>
 <script id="c3colors">
  [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>

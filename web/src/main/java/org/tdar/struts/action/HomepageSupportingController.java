@@ -60,6 +60,7 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @Autowired
     private transient HomepageService homepageService;
 
+    private Boolean prefixHost = false;
     private List<SyndEntry> rssEntries;
     private HomepageDetails homepageGraphs;
 
@@ -212,5 +213,13 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
 
     public void setHomepageGraphs(HomepageDetails homepageGraphs) {
         this.homepageGraphs = homepageGraphs;
+    }
+
+    public Boolean getPrefixHost() {
+        return prefixHost;
+    }
+
+    public void setPrefixHost(Boolean prefixHost) {
+        this.prefixHost = prefixHost;
     }
 }
