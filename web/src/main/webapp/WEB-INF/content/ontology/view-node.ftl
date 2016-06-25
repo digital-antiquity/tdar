@@ -9,7 +9,7 @@
 
 <p><strong>Parent:</strong>
     <#if parentNode?has_content>
-        <a href="<@s.url value="${parentNode.iri}"/>">${parentNode.displayName}</a></p>
+        <a href="<@s.url value="${parentNode.slug}"/>">${parentNode.displayName}</a></p>
     <#else>
         <a href="<@s.url value="${ontology.detailUrl}"/>">${ontology.title} (ontology root)</a></p>
 	</#if>
@@ -28,7 +28,7 @@
     <p><strong>Children:</strong>
         <#list children as child>
             <#if child_index !=0>,</#if>
-            <a href="<@s.url value="${child.iri}"/>">${child.displayName}</a>
+            <a href="<@s.url value="${child.slug}"/>">${child.displayName}</a>
         </#list>
     </p>
     </#if>

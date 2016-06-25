@@ -199,7 +199,7 @@ TDAR.d3tree = (function(console, $, ctx) {
                 loc = loc.substring(0, loc.length - 2);
             }
             loc = loc.substring(0, loc.lastIndexOf("/"));
-            window.location = loc + "/node/" + d.iri;
+            window.location = loc + "/node/" + d.slug;
         });
 
         // Transition nodes to their new position.

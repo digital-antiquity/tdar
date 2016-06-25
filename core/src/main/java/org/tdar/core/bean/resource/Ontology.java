@@ -57,6 +57,7 @@ public class Ontology extends InformationResource implements SupportsResource {
 
     private transient Map<Long, OntologyNode> idMap = new WeakHashMap<>();
     private transient Map<String, OntologyNode> iriMap = new WeakHashMap<>();
+    private transient Map<String, OntologyNode> slugMap = new WeakHashMap<>();
     private transient Map<String, OntologyNode> nameMap = new WeakHashMap<>();
 
     public final static Comparator<OntologyNode> IMPORT_ORDER_COMPARATOR = new Comparator<OntologyNode>() {
@@ -138,10 +139,19 @@ public class Ontology extends InformationResource implements SupportsResource {
         return iriMap.get(iri);
     }
 
+    @Transient
+    public OntologyNode getNodeBySlug(String slug) {
+        if (MapUtils.isEmpty(slugMap)) {
+            initializeNameAndIriMaps();
+        }
+        return slugMap.get(slug);
+    }
+
     private void initializeNameAndIriMaps() {
         for (OntologyNode node : getOntologyNodes()) {
             nameMap.put(node.getDisplayName(), node);
             iriMap.put(node.getNormalizedIri(), node);
+            slugMap.put(node.getSlug(), node);
         }
     }
 
@@ -149,6 +159,7 @@ public class Ontology extends InformationResource implements SupportsResource {
         nameMap.clear();
         iriMap.clear();
         idMap.clear();
+        slugMap.clear();
     }
     
     @Transient

@@ -105,6 +105,7 @@ public class SolrSearchObject<I extends Indexable> {
                 if (wrap.isMapFacet()) {
                     this.pivotFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
                     this.statsFields = Arrays.asList(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, QueryFieldNames.RESOURCE_TYPE);
+                    facetLimit = 10000;
                     facetFieldNames.add(QueryFieldNames.RESOURCE_TYPE);
                 }
                 for (String facet : facetFieldNames) {

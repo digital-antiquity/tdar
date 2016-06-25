@@ -299,7 +299,7 @@ public enum ResourceType implements HasLabel, Localizable, PluralLocalizable {
         return type.hasDemensions();
     }
     
-    public boolean allowsMultipleFIles() {
+    public boolean allowsMultipleFiles() {
         switch (this) {
             case DOCUMENT:
             case IMAGE:

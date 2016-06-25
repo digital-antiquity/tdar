@@ -106,6 +106,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (document.getElementById(mapId) == undefined) {
             return;
         }
+        console.log("init:" + mapId_);
         $mapDiv = $("#" + mapId);
         var $parent = $mapDiv.parent();
         var mapdata = _getMapdata($parent);
@@ -203,7 +204,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             for (var i = 0; i < grades.length; i++) {
                 legnd.innerHTML += '<i style="width:10px;height:10px;display:inline-block;background:' + colorFunction(grades[i] + 1) + '">&nbsp;</i> ';
             }
-            legnd.innerHTML += " <span>" + TDAR.common.formatNumber(_max) + "</span> ";
+            legnd.innerHTML += " <span>" + _formatNumber(_max) + "</span> ";
             $(div).append(legnd);
             return div;
         };
@@ -393,7 +394,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             tooltip : {
                 format : {
                     value : function(value, ratio, id, index) {
-                        return TDAR.common.formatNumber(value) + " (" + (ratio * 100.00).toFixed(2) + "%)";
+                        return _formatNumber(value) + " (" + (ratio * 100.00).toFixed(2) + "%)";
                     }
                 }
             },
@@ -491,7 +492,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             }
         }
 
-        $("#data").html(layer.feature.properties.name + ": " + TDAR.common.formatNumber(cnt));
+        $("#data").html(layer.feature.properties.name + ": " + _formatNumber(cnt));
         if (overlay === true) {
             return false;
         }
@@ -540,6 +541,25 @@ TDAR.worldmap = (function(console, $, ctx) {
             return '#FED976';
         }
         return '#FFF';
+    }
+
+    /**
+     * Format number w/ comma grouping. If num is fractional, display fractional to two places.
+     * @param num
+     * @returns {string}
+     */
+    function _formatNumber(num) {
+        var numparts = Math.floor(num).toString().split('.');
+        var r = num % 1;
+        var str = numparts[0].split('').reverse().join('').replace(/(\d{3})\B/g, '$1,').split('').reverse().join('');
+        str += numparts[1] ? '.'  + numparts[1] : '';
+
+        if(r > 0) {
+            str += '.' + r.toFixed(2).replace('0.', '');
+        }
+
+
+        return str;
     }
 
     return {

@@ -2,57 +2,48 @@
 <head>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link rel="unapi-server" type="application/xml" title="unAPI" href="/unapi" />
+    <link rel="unapi-server" type="application/xml" title="unAPI" href="${host}/unapi" />
     <link rel="search" type="application/opensearchdescription+xml" href='/opensearch.xml' title="Search tDAR" />
 
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
-        <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
+        <link href="${host}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet">
+        <link href="${host}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
         <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.min.css">
 
-    <link href="/css/tdar-base.css" rel="stylesheet">
-    <link href="/css/tdar-print.css" rel="stylesheet" media="print">
-        <link rel="stylesheet" type="text/css" href="/css/tdar-bootstrap.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/famfamfam.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/includes/jquery-treeview/jquery.treeview.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/includes/jquery.datatables-1.9.4/media/css/jquery.dataTables.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar-svg.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/jquery-file-upload/css/jquery.fileupload-ui.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/leaflet/dist/leaflet.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/leaflet-draw/dist/leaflet.draw.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/leaflet-cluster/dist/MarkerCluster.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/leaflet-cluster/dist/MarkerCluster.Default.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/c3/c3.min.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/components/leaflet-control-geocoder/dist/Control.Geocoder.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.homepage.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.d3tree.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.c3graph.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.leaflet.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.worldmap.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.datatablemapping.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.sprites.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.datatables.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.searchresults.css?buildId=10029" data-version="10029" />
-        <link rel="stylesheet" type="text/css" href="/css/tdar.invoice.css?buildId=10029" data-version="10029" />
+<#assign host="">
+<#if prefixHost>
+	<#assign host="//assets.tdar.org/" />
+</#if>
+
+    <link href="${host}/css/tdar-base.css" rel="stylesheet">
+    <link href="${host}/css/tdar-print.css" rel="stylesheet" media="print">
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar-bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/famfamfam.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar-svg.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/components/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.homepage.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.c3graph.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.leaflet.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.worldmap.css" />
+    <link rel="stylesheet" type="text/css" href="${host}/css/tdar.sprites.css" />
 
 
 
     <script>TDAR_jsErrorDelim = "ɹǝʇıɯıןǝp?js_string";</script>
-    <script type="text/javascript" src="/js/tdar.errorutils.js?build10029"></script>
-    <script src="/includes/modernizr-custom-2.6.2.min.js"></script>
+    <script type="text/javascript" src="${host}/js/tdar.errorutils.js?build10029"></script>
+    <script src="${host}/includes/modernizr-custom-2.6.2.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
         <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="//www.google.com/jsapi"></script>
+    <script type="text/javascript" src="${host}//www.google.com/jsapi"></script>
 <meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
 <meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
 <meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
 <Meta name = "baidu-site-verification" content = "QBf6pGiSwd" />
 
 <link rel='shortcut icon' href='/images/tdar-favicon.ico'/>
-<link rel="apple-touch-icon" href="/images/touch-icon-iphone.png">
-<link rel="apple-touch-icon" sizes="76x76" href="/images/touch-icon-ipad.png">
-<link rel="apple-touch-icon" sizes="120x120" href="/images/touch-icon-iphone-retina.png">
-<link rel="apple-touch-icon" sizes="152x152" href="/images/touch-icon-ipad-retina.png">
+<link rel="apple-touch-icon" href="${host}/images/touch-icon-iphone.png">
+<link rel="apple-touch-icon" sizes="76x76" href="${host}/images/touch-icon-ipad.png">
+<link rel="apple-touch-icon" sizes="120x120" href="${host}/images/touch-icon-iphone-retina.png">
+<link rel="apple-touch-icon" sizes="152x152" href="${host}/images/touch-icon-ipad-retina.png">
 
 <meta name="description"
       content="The Digital Archaeological Record (tDAR) is the digital repository of Digital Antiquity, an organization devoted to enhancing preservation and access to digital records of archaeological investigations. tDAR is a national/international digital repository for archaeological information, including databases, reports, images, and other kinds of archaeological information. tDAR is a database of archaeological Information"/>
@@ -194,7 +185,7 @@
         <#if mode !='vertical'></div></#if>
 	<script>
 	$(function() {
-    	TDAR.worldmap.initWorldMap("${mode}");
+    	TDAR.worldmap.initWorldMap("worldmap","${mode}");
 	});
 	</script>
         <script src="//ajax.aspnetcdn.com/ajax/jquery.validate/1.13.1/jquery.validate.min.js"></script>
@@ -203,60 +194,18 @@
 
 
 
-        <script type="text/javascript" src="/includes/jquery.cookie.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/svgxuse/svgxuse.min.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery.textarearesizer.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/jquery.FormNavigate.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery.watermark-3.1.3.min.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery.datatables-1.9.4/media/js/jquery.dataTables.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery.datatables.plugins-1.9.4/integration/bootstrap/2/dataTables.bootstrap.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery-treeview/jquery.treeview.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/blueimp-tmpl/js/tmpl.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.iframe-transport.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-process.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-validate.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/jquery-file-upload/js/jquery.fileupload-ui.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery.populate.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/jquery.tabby-0.12.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/latLongUtil-1.0.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/leaflet/dist/leaflet.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/Leaflet.Sleep.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/leaflet-draw/dist/leaflet.draw.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/leaflet-cluster/dist/leaflet.markercluster.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/d3/d3.min.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/c3/c3.min.js?buildId=10029"></script>
-        <script type="text/javascript" src="/components/leaflet-control-geocoder/dist/Control.Geocoder.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.core.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.upload.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.jquery-upload-validation.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.common.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.bulk.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.repeatrow.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.autocomplete.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.c3graphsupport.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.c3graph.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.validate.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.d3tree.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.datatable.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.dataset-metadata.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.ontology-mapping.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.sensorydata.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.notifications.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.advanced-search.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.authority-management.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.auth.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.inheritance.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.internalemail.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.download.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.pricing.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.contexthelp.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.menu.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/tdar.formValidateExtensions.js?buildId=10029"></script>
-        <script type="text/javascript" src="/includes/bindWithDelay.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/maps/tdar.worldmap.js?buildId=10029"></script>
-        <script type="text/javascript" src="/js/maps/tdar.leaflet.js?buildId=10029"></script>
-	<script src="http://timwis.com/leaflet-choropleth/dist/choropleth.js"></script>
+        <script type="text/javascript" src="${host}/components/svgxuse/svgxuse.min.js"></script>
+        <script type="text/javascript" src="${host}/components/leaflet/dist/leaflet.js"></script>
+        <script type="text/javascript" src="${host}/includes/jquery.populate.js"></script>
+        <script type="text/javascript" src="${host}/includes/Leaflet.Sleep.js"></script>
+        <script type="text/javascript" src="${host}/components/d3/d3.min.js"></script>
+        <script type="text/javascript" src="${host}/components/c3/c3.min.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.core.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.c3graphsupport.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.c3graph.js"></script>
+        <script type="text/javascript" src="${host}/js/tdar.d3tree.js"></script>
+        <script type="text/javascript" src="${host}/js/maps/tdar.worldmap.js"></script>
+  	    <script type="text/javascript"  src="${host}/components/leaflet-choropleth/dist/choropleth.js"></script>
 <script id="c3colors">
  [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>

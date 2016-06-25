@@ -15,6 +15,7 @@ public class OntologyNodeWrapper implements Serializable {
     String iri;
     String displayName;
     Long id;
+    private String slug;
     List<OntologyNodeWrapper> children = new ArrayList<>();
 
     public OntologyNodeWrapper() {
@@ -24,6 +25,7 @@ public class OntologyNodeWrapper implements Serializable {
         this.iri = c.getIri();
         this.displayName = c.getDisplayName();
         this.id = c.getId();
+        this.setSlug(c.getSlug());
     }
 
     public String getIri() {
@@ -56,6 +58,14 @@ public class OntologyNodeWrapper implements Serializable {
 
     public void setChildren(List<OntologyNodeWrapper> children) {
         this.children = children;
+    }
+
+    public String getSlug() {
+        return slug;
+    }
+
+    public void setSlug(String slug) {
+        this.slug = slug;
     }
 
 }
