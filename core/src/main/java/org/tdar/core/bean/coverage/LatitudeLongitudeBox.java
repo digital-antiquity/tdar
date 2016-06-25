@@ -171,7 +171,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     @Transient
     public boolean isObfuscatedObjectDifferent() {
         if (obfuscatedObjectDifferent == null) {
-            logger.debug("should call obfuscate before testing obfuscation");
+            logger.trace("should call obfuscate before testing obfuscation");
             return false;
         }
         return obfuscatedObjectDifferent;
