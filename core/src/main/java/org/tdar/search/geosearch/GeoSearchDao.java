@@ -291,7 +291,7 @@ public class GeoSearchDao {
         try {
             SpatialTables table = getTableFromLevel(kwd.getLevel());
             String sql = String.format("select ST_asGeoJson(the_geom) from %s where %s='%s'", table.getTableName(), table.getElementName(),
-                    kwd.getLabel());
+                    StringUtils.substringBeforeLast(kwd.getLabel(), "("));
             return jdbcTemplate.queryForObject(sql, String.class);
         } catch (Exception e) {
             logger.warn("exception in getting json", e);
