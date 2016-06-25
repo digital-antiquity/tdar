@@ -35,6 +35,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -356,6 +357,7 @@ public class OntologyNode extends AbstractPersistable implements Comparable<Onto
     @Override
     @XmlElement
     @Transient
+    @JsonIgnore
     public String getSlug() {
         return UrlUtils.slugify(getIri());
     }
