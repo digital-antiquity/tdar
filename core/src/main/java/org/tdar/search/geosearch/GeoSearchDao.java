@@ -290,7 +290,7 @@ public class GeoSearchDao {
     public String toGeoJson(GeographicKeyword kwd) {
         SpatialTables table = getTableFromLevel(kwd.getLevel());
         String sql = String.format("select ST_asGeoJson(the_geom) from %s where %s='%s'", table.getTableName(), table.getElementName(),
-                StringUtils.substringBeforeLast(kwd.getLabel(), "("));
+                kwd.getLabel());
         return jdbcTemplate.queryForObject(sql, String.class);
     }
 
