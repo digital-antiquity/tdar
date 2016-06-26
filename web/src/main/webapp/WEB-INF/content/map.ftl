@@ -1,5 +1,9 @@
 <title>Map</title>
 <head>
+<#assign host="">
+<#if prefixHost>
+	<#assign host="//assets.tdar.org/" />
+</#if>
     <!-- BEGIN-PAGE-HEADER -->
     <meta http-equiv="content-type" content="text/html; charset=utf-8">
     <link rel="unapi-server" type="application/xml" title="unAPI" href="${host}/unapi" />
@@ -9,10 +13,6 @@
         <link href="${host}//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap.min.css" rel="stylesheet" media="print">
         <link rel="stylesheet" type="text/css" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.min.css">
 
-<#assign host="">
-<#if prefixHost>
-	<#assign host="//assets.tdar.org/" />
-</#if>
 
     <link href="${host}/css/tdar-base.css" rel="stylesheet">
     <link href="${host}/css/tdar-print.css" rel="stylesheet" media="print">

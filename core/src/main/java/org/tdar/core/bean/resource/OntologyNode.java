@@ -355,7 +355,7 @@ public class OntologyNode extends AbstractPersistable implements Comparable<Onto
     }
 
     @Override
-    @XmlElement
+    @XmlTransient
     @Transient
     @JsonIgnore
     public String getSlug() {
