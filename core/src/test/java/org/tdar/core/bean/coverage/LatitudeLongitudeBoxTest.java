@@ -37,8 +37,8 @@ public class LatitudeLongitudeBoxTest {
     @Test
     public void testCenterPointIDL() {  
         LatitudeLongitudeBox llb  = new LatitudeLongitudeBox(111.97277777777776, -52.052499999999995, -87.71493055555561, 53.33082050317123);
-        logger.debug(" lat {}", llb.getCenterLatitude());
-        logger.debug("long {}", llb.getCenterLongitude());
+//        logger.debug(" lat {}", llb.getCenterLatitude());
+//        logger.debug("long {}", llb.getCenterLongitude());
 //        assertNotEquals(0.6391602515856185, llb.getCenterLatitude());
         assertNotEquals(-9.843854166666688, llb.getCenterLongitude());
     }

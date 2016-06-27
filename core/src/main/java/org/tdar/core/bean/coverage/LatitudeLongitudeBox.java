@@ -32,6 +32,8 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.hp.hpl.jena.sparql.function.library.max;
+import com.hp.hpl.jena.sparql.function.library.min;
 
 /**
  * $Id$
@@ -46,7 +48,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @Table(name = "latitude_longitude", indexes = {
         @Index(name = "resource_latlong", columnList = "resource_id, id") })
-//@ClassBridge(impl = LatLongClassBridge.class)
+// @ClassBridge(impl = LatLongClassBridge.class)
 @XmlRootElement
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.coverage.LatitudeLongitudeBox")
@@ -85,27 +87,27 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     // ranges from -90 (South) to +90 (North)
     @Column(nullable = false, name = "minimum_latitude")
-    @DecimalMin(value="-90.0",inclusive=true)
-    @DecimalMax(value="90.0",inclusive=true)
+    @DecimalMin(value = "-90.0", inclusive = true)
+    @DecimalMax(value = "90.0", inclusive = true)
     @NotNull
     private Double south;
 
     @Column(nullable = false, name = "maximum_latitude")
-    @DecimalMin(value="-90.0",inclusive=true)
-    @DecimalMax(value="90.0",inclusive=true)
+    @DecimalMin(value = "-90.0", inclusive = true)
+    @DecimalMax(value = "90.0", inclusive = true)
     @NotNull
     private Double north;
 
     // ranges from -180 (West) to +180 (East)
     @Column(nullable = false, name = "minimum_longitude")
-    @DecimalMin(value="-180.0",inclusive=true)
-    @DecimalMax(value="180.0",inclusive=true)
+    @DecimalMin(value = "-180.0", inclusive = true)
+    @DecimalMax(value = "180.0", inclusive = true)
     @NotNull
     private Double west;
 
     @Column(nullable = false, name = "maximum_longitude")
-    @DecimalMin(value="-180.0",inclusive=true)
-    @DecimalMax(value="180.0",inclusive=true)
+    @DecimalMin(value = "-180.0", inclusive = true)
+    @DecimalMax(value = "180.0", inclusive = true)
     @NotNull
     private Double east;
 
@@ -135,7 +137,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     protected Double getCenterLat(Double double1, Double double2) {
-        return (double1 + double2 )/ 2d;
+        return (double1 + double2) / 2d;
     }
 
     public Double getObfuscatedCenterLongitude() {
@@ -152,18 +154,54 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return getCenterLong(getWest(), getEast());
     }
 
-    
     protected Double getCenterLong(Double minLong, Double maxLong) {
+        // print out in degrees
         if (maxLong < minLong) {
+            logger.debug("min:" + minLong);
+            logger.debug("max:" + maxLong);
+
+            // min is one side of the dateline and max is on the other
+            if (maxLong < 0 && minLong > 0) {
+                // convert the eastern side to a positive number as if we go to 360º
+                double offsetRight = (-180d - maxLong) * -1d + 180d;
+                // get the distance 1/2 way
+                double ret = (offsetRight + minLong) / 2d;
+                // logger.debug("min: {} offset:{} max: {}", minLong, offsetRight, maxLong);
+                // logger.debug("toReturn:" + ret);
+                // if we're greater than 180º, then subtract 360º to get the negative variant
+                if (ret > 180) {
+                    ret += -360d;
+                }
+                // logger.debug("to return: {}", ret);
+                return ret;
+            }
+
             Double tmp = (minLong + maxLong * -1d + 180d) / 2d;
             if (tmp > 180) {
                 tmp = 180 - tmp;
             }
             return tmp;
-        } 
+        }
+
         return (minLong + maxLong) / 2d;
- 
+        /*
+         * // http://stackoverflow.com/questions/4656802/midpoint-between-two-latitude-and-longitude
+         * double dLon = Math.toRadians(maxLong - minLong);
+         * 
+         * double minLong_ = Math.toRadians(minLong);
+         * 
+         * double Bx = Math.cos(0.0) * Math.cos(dLon);
+         * double By = Math.cos(0.0) * Math.sin(dLon);
+         * double lon3 = minLong_ + Math.atan2(By, Math.cos(0.0) + Bx);
+         * double degrees = Math.toDegrees(lon3);
+         * if (degrees > 180) {
+         * return -180 + degrees - 180;
+         * }
+         * return degrees;
+         * 
+         */
     }
+
     /**
      * @return a helper method, useful for testing. Returns true if one or more of the obfuscated values differs from the original, false otherwise.
      */
@@ -507,7 +545,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return getObfuscatedAbsoluteLatLength() * getObfuscatedAbsoluteLongLength();
     }
 
-
     /**
      * @return
      */
@@ -681,7 +718,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public void setOkayToShowExactLocation(boolean isOkayToShowExactLocation) {
         this.isOkayToShowExactLocation = isOkayToShowExactLocation;
     }
-    
+
     @Deprecated
     public Double getMinimumLatitude() {
         return south;
@@ -704,22 +741,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
 
     @Deprecated
     public void setMinimumLatitude(Double val) {
-        this.south= val;
+        this.south = val;
     }
 
     @Deprecated
     public void setMaximumLatitude(Double val) {
-        this.north= val;
+        this.north = val;
     }
 
     @Deprecated
     public void setMinimumLongitude(Double val) {
-        this.west= val;
+        this.west = val;
     }
 
     @Deprecated
     public void setMaximumLongitude(Double val) {
-        this.east= val;
+        this.east = val;
     }
 
 }
