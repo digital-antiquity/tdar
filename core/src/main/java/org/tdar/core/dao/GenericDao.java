@@ -37,6 +37,7 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.HasStatic;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.EventType;
@@ -514,12 +515,16 @@ public class GenericDao {
     }
 
     public <T> boolean sessionContains(T entity) {
+        if (entity instanceof HasStatic && ((HasStatic) entity).isStatic()) {
+            return false;
+        }
+
         return getCurrentSession().contains(entity);
     }
 
     public <T> void detachFromSessionAndWarn(T entity) {
         Session session = getCurrentSession();
-        if (session.contains(entity)) {
+        if (sessionContains(entity)) {
             logger.error("This entity should not be on the session: {}", entity);
         }
         session.evict(entity);
@@ -604,7 +609,7 @@ public class GenericDao {
     }
 
     public <T> void markReadOnly(T obj) {
-        if (getCurrentSession().contains(obj)) {
+        if (sessionContains(obj)) {
             // mark as read only
             // dump it off the cache so that future searches don't find the updated version
             boolean readOnly = getCurrentSession().isReadOnly(obj);
@@ -626,7 +631,7 @@ public class GenericDao {
     }
 
     public <O> O markWritableOnExistingSession(O obj) {
-        if (getCurrentSession().contains(obj)) {
+        if (sessionContains(obj)) {
             getCurrentSession().setReadOnly(obj, false);
         }
         return obj;
@@ -641,7 +646,8 @@ public class GenericDao {
      * @return writeable entity instance.
      */
     public <T> T markWritable(T obj) {
-        if (getCurrentSession().contains(obj)) {
+
+        if (sessionContains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
             if ((obj instanceof Persistable) && PersistableUtils.isNotTransient((Persistable) obj)) {
                 getCurrentSession().setReadOnly(obj, false);

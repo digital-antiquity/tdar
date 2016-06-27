@@ -62,7 +62,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 })
 @XmlRootElement
 @JsonInclude(Include.NON_NULL)
-public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable {
+public class DataTableColumn extends AbstractSequenced<DataTableColumn> implements Validatable, HasStatic {
 
     private static final long serialVersionUID = 430090539610139732L;
 
@@ -99,8 +99,20 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
         public Long getId() {
             return -1L;
         }
+        
+        @Override
+        public boolean isStatic() {
+            return true;
+        }
     };
 
+    @Override
+    @XmlTransient
+    @Transient
+    public boolean isStatic() {
+        return false;
+    }
+    
     @ManyToOne(optional = false)
     // , cascade = { CascadeType.PERSIST })
     @JoinColumn(name = "data_table_id")

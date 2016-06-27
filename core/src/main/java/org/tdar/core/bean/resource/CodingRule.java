@@ -11,6 +11,7 @@ import javax.persistence.Index;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -20,6 +21,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.HasStatic;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -36,9 +38,16 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
         @Index(name = "coding_rule_term_index", columnList = "term"),
         @Index(name = "coding_rule_ontology_node_id_idx", columnList = "ontology_node_id")
 })
-public class CodingRule extends AbstractPersistable implements Comparable<CodingRule> {
+public class CodingRule extends AbstractPersistable implements Comparable<CodingRule>, HasStatic {
 
     private static final long serialVersionUID = -577936920767925065L;
+
+    @Override
+    @XmlTransient
+    @Transient
+    public boolean isStatic() {
+        return false;
+    }
 
     public static final CodingRule NULL = new CodingRule() {
 
@@ -56,6 +65,11 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
 
         public String getFormattedTerm() {
             return getTerm();
+        }
+
+        @Override
+        public boolean isStatic() {
+            return true;
         }
 
         
@@ -79,6 +93,11 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
             return getTerm();
         }
 
+        @Override
+        public boolean isStatic() {
+            return true;
+        }
+
         
     };
 
@@ -98,6 +117,11 @@ public class CodingRule extends AbstractPersistable implements Comparable<Coding
 
         public String getFormattedTerm() {
             return getTerm();
+        }
+
+        @Override
+        public boolean isStatic() {
+            return true;
         }
 
     };
