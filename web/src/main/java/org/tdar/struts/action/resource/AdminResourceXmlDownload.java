@@ -39,7 +39,7 @@ public class AdminResourceXmlDownload extends TdarActionSupport implements Prepa
 
     private Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
 
-    @Action(results = {
+    @Action(value="xml", results = {
             @Result(name = TdarActionSupport.SUCCESS, type = "stream",
                     params = {
                             "contentType", "application/xml",
