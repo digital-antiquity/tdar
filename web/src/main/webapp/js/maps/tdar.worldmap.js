@@ -236,10 +236,11 @@ TDAR.worldmap = (function(console, $, ctx) {
             fillColor : "#FEEFE",
             fillOpacity : 1
         };
-        $.getJSON(TDAR.uri("/js/maps/USA.json"), function(data) {
+        var jqxhr = $.getJSON(TDAR.uri("/js/maps/USA.json"));
+        jqxhr.done(function(data) {
             stateLayer = _setupMapLayer(data, map, true);
         });
-
+        
     }
 
     /**
