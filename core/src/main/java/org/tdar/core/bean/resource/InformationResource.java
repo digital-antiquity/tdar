@@ -359,7 +359,7 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     public String getProjectTitle() {
-        return getProject().getTitleSort();
+        return getProject().getTitle();
     }
 
     @Transient
