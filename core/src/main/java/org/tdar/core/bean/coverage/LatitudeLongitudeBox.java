@@ -32,8 +32,6 @@ import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.hp.hpl.jena.sparql.function.library.max;
-import com.hp.hpl.jena.sparql.function.library.min;
 
 /**
  * $Id$
