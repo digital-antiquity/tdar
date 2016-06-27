@@ -44,6 +44,11 @@
     </rule>
 
     <rule>
+        <from>^/filestore/download/(\d+)\,(\d+)/(.+)</from>
+        <to type="redirect">/filestore/download/$1$2/$3</to>
+    </rule>
+
+    <rule>
         <from>^/admin/?$</from>
         <to>/admin/internal</to>
     </rule>

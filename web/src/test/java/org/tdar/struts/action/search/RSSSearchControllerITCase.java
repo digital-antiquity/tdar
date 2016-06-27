@@ -121,7 +121,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         searchIndexService.index(document);
         String xml = setupGeoRssCall(document, GeoRssMode.POINT);
         logger.debug(xml);
-        assertTrue(xml.contains("<georss:point>42.480904926355166 -17.927970491414584</georss:point>"));
+        assertTrue(xml.contains("<georss:point>42.480904926355166 156.44359549141458</georss:point>"));
         xml = setupGeoRssCall(document, GeoRssMode.NONE);
         logger.debug(xml);
         assertTrue(!xml.contains("<georss"));
