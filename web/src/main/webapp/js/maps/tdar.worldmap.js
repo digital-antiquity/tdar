@@ -184,8 +184,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             var $search = $(search);
             $search.append("<i class='icon-search'></i> Search");
             $search.click(function() {
-                console.log(searchUri);
-                window.location.href = searchUri;
+                window.location.href = TDAR.c3graphsupport.getClickPath(searchUri);
             });
             topRight.appendChild(zoomout);
             topRight.appendChild(search);
