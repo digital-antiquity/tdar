@@ -41,9 +41,14 @@
         </addColumn>
     </changeSet>
     <changeSet id="obsidian-4" author="abrin">
-    	<addColumn tableName="resource_revision_log">
+        <addColumn tableName="resource_revision_log">
             <column name="revision_type" type="varchar(50)" />
             <column name="time_seconds" type="bigint" />
-    	</addColumn>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-5" author="abrin">
+        <update tableName="data_integration_workflow">
+        <column name="hidden" valueBoolean="true"/></update>
     </changeSet>
 </databaseChangeLog>
