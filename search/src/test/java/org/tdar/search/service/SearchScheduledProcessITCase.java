@@ -19,6 +19,7 @@ import org.tdar.core.service.ScheduledProcessService;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
+import org.tdar.search.service.processes.upgradeTasks.PartialReindexProjectTitleProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
 public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTestCase {
@@ -44,6 +45,14 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         
+    }
+    
+    @Autowired
+    PartialReindexProjectTitleProcess reindexProcess;
+    
+    @Test
+    public void testPartialReindexProcess() {
+        reindexProcess.execute();
     }
 
     @Autowired

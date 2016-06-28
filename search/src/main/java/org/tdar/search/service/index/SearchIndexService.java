@@ -594,4 +594,29 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         partialIndexAllResourcesInCollectionSubTree(persistable);
     }
 
+    public void partialIndexProject() {
+        ScrollableResults results = datasetDao.findAllResourceWithProjectsScrollable();
+        int numProcessed =0;
+        String coreName = LookupSource.RESOURCE.getCoreName();
+        while (results.next()) {
+            InformationResource r  = (InformationResource) results.get(0);
+            SolrInputDocument doc = ResourceDocumentConverter.replaceProjectFields(r);
+            try {
+                template.add(LookupSource.RESOURCE.getCoreName(), doc);
+            } catch (SolrServerException | IOException e1) {
+                logger.error("error adding: {}", e1);
+            }
+            if ((numProcessed  % FLUSH_EVERY) == 0) {
+                logger.debug("flushing search index - partial: {}", numProcessed);
+                commitAndClearSession(coreName);
+                logger.trace("flushed search index");
+            }
+            numProcessed++;
+
+        }
+        commitAndClearSession(coreName);
+        logger.debug("completed partial indexing of projectTitle");
+        
+    }
+
 }
