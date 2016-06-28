@@ -338,7 +338,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
             child.setParent(null);
             genericService.saveOrUpdate(child);
         }
-        evictCache();
+//        evictCache();
 
         deleteAction = generateNewInitializedController(CollectionDeleteAction.class);
         deleteAction.setId(rcid);
@@ -387,7 +387,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.MODIFY_RECORD);
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
         genericService.saveOrUpdate(resourceCollection);
-        evictCache();
+//        evictCache();
 
         // okay, now let's try to remove the resources from the collection via the
         // controller.
@@ -596,7 +596,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         logger.info("{}", vc.getActionErrors());
 
-        evictCache();
+        //evictCache();
     }
 
     @SuppressWarnings("deprecation")
