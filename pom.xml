@@ -40,7 +40,7 @@
         <liquibase.version>3.5.0</liquibase.version>
         <maven.compiler.version>3.3</maven.compiler.version>
         <surefire-failsafe.version>2.18.1</surefire-failsafe.version>
-        <antrun.version>1.9.7</antrun.version>
+        <antrun.version>1.8</antrun.version>
         <jvm.args>-Xms256m -Xmx3072m</jvm.args>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
