@@ -3,8 +3,10 @@ package org.tdar.search.service.index;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -89,7 +91,7 @@ public class BatchIndexer implements Serializable {
             Counter counter = new Counter();
             counter.setTotal(total);
             for (LookupSource src : sources) {
-                searchIndexService.purgeCore(src.getCoreName());
+                searchIndexService.purgeCore(src);
 	            for (Class<? extends Indexable> toIndex : src.getClasses()) {
 	                updateAllStatuses(updateReceiver, activity, "initializing... ["+toIndex.getSimpleName()+": "+total+"]", counter.getPercent());
 	                ScrollableResults scrollableResults = null;

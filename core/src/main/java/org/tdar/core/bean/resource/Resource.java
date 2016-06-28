@@ -74,7 +74,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
@@ -153,7 +152,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @XmlType(name = "resource", propOrder = {})
 @XmlTransient
 public class Resource implements Persistable,
-        Comparable<Resource>, HasName, Updatable, Indexable, Validatable, SimpleSearch,
+        Comparable<Resource>, HasName, Updatable, Indexable, Validatable, 
         HasStatus, HasSubmitter, OaiDcProvider, Obfuscatable, ConfidentialViewable, Addressable,
         DeHydratable, XmlLoggable, Slugable {
 
@@ -629,12 +628,11 @@ public class Resource implements Persistable,
         return title;
     }
 
-    @Override
     public String getTitleSort() {
         if (getTitle() == null) {
             return "";
         }
-        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "").toLowerCase();
+        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "").toLowerCase();
     }
 
     public void setTitle(String title) {
@@ -790,12 +788,16 @@ public class Resource implements Persistable,
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return getGeographicKeywords();
     }
+    
+    public Set<GeographicKeyword> getActiveManagedGeographicKeywords() {
+        return getManagedGeographicKeywords();
+    }
 
     public Set<GeographicKeyword> getIndexedGeographicKeywords() {
         Set<GeographicKeyword> indexed = new HashSet<GeographicKeyword>(
                 getActiveGeographicKeywords());
-        if (!CollectionUtils.isEmpty(managedGeographicKeywords)) {
-            indexed.addAll(managedGeographicKeywords);
+        if (!CollectionUtils.isEmpty(getActiveManagedGeographicKeywords())) {
+            indexed.addAll(getActiveManagedGeographicKeywords());
         }
         return indexed;
     }

@@ -78,7 +78,7 @@ describe("LeafletSpec", function() {
         });
 
         it("initLeafletMaps:effectiveSettings", function(){
-            //the default tile provider is 'mapbox'.  Confirm that we can override this setting in body[data-leaflet-tile-provider] 
+            //the default tile provider is 'mapbox'.  Confirm that we can override this setting in body[data-leaflet-tile-provider]
             loadFixtures("leaflet/leaflet-edit.html");
             TDAR.leaflet.initEditableLeafletMaps();
             //console.log('---------------')
@@ -204,4 +204,54 @@ describe("LeafletSpec", function() {
         $('.locateCoordsButton').click();
 
     })
+
+
+    describe("map results", function() {
+        beforeEach(function() {
+            loadFixtures("leaflet/leaflet-results.html", "leaflet/leaflet-results-json.html");
+            TDAR.leaflet.initResultsMaps();
+        });
+
+        it("adding markers should cause map bounds to change after calling update()", function () {
+
+            var $el = $(".leaflet-map-results");
+            var map  = $el.data("map");
+            var markers = $el.data("markers");
+            expect(map).toExist();
+            expect(markers).toExist();
+
+            //todo: configure getJSONFixture() instead
+            var data = JSON.parse($j('#dataPage1').text());
+
+            var startRecord = 0;
+
+            //get the original map bounds, then call update w/ marker coords
+            var bounds1 = map.getBounds();
+            TDAR.leaflet.update(map, markers, data, startRecord, true);
+            var bounds2 = map.getBounds();
+            expect(bounds1.equals(bounds2)).toBe(false);
+
+            //assert that all of the points fit in the new bounds
+            var points = data.features
+                .filter(function(feature){return feature.geometry.hasOwnProperty("type");})
+                .map(function(feature){
+                    var coords = feature.geometry.coordinates;
+                    return new L.LatLng(coords[1], coords[0])
+                });
+
+            var pointsThatFit = points.filter(function(point){
+                if(!map.getBounds().contains(point)){
+                    console.error("point does not fit:", point);
+                    console.error("bounds is:", map.getBounds());
+                }
+                return map.getBounds().contains(point);
+            });
+
+            //fixme: for some reason, fitBounds() expands to fit most - but not all - points
+            //expect(pointsThatFit.length).toBe(points.length);
+        });
+    });
+
+
+
 });

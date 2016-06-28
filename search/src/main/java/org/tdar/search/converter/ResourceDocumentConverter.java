@@ -37,6 +37,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.search.index.GeneralKeywordBuilder;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.utils.PersistableUtils;
@@ -74,6 +75,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
             }
             doc.setField(QueryFieldNames.DATE, ir.getDate());
+
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
 
             if (ir.getMetadataLanguage() != null) {
@@ -94,7 +96,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                     total++;
                 }
             }
-            if (ir.getResourceType().allowsMultipleFIles()) {
+            if (ir.getResourceType().allowsMultipleFiles()) {
                 doc.setField(QueryFieldNames.TOTAL_FILES, total);
             } else {
                 doc.setField(QueryFieldNames.TOTAL_FILES, 1);
@@ -202,6 +204,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
+        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
     }
 
     
@@ -228,6 +231,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     public static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
+        
         ResourceRightsExtractor rightsExtractor = new ResourceRightsExtractor(resource);
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());
@@ -345,8 +349,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument replaceCollectionFields(Resource r) {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
-        ResourceDocumentConverter.indexCollectionInformation(doc, r);
         addRequiredField(r, doc);
+        ResourceDocumentConverter.indexCollectionInformation(doc, r);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS);
         replaceField(doc, QueryFieldNames.RESOURCE_COLLECTION_IDS);
@@ -361,6 +365,5 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         partialUpdate.put("set", doc.getField(fieldName).getValues());
         doc.setField(fieldName, partialUpdate);
     }
-
 
 }

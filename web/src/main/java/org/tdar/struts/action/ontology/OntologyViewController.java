@@ -111,18 +111,23 @@ public class OntologyViewController extends AbstractOntologyViewAction {
             // otherwise, try to see if the slug is an IRI
             String normalizeIri = OntologyNode.normalizeIri(getSlug());
             getLogger().trace("iri:{} --> {}", getIri(), normalizeIri);
-            OntologyNode node_ = getOntology().getNodeByIri(normalizeIri);
+            OntologyNode  node_ = getOntology().getNodeBySlug(getSlug());
             // handle struts differences /\\'\\,\\./ ...
+            if (node_ == null) {
+                node_ = getOntology().getNodeByIri(normalizeIri);
+            }
+
             if (node_ == null) {
                 node_ = fallbackCheckForIri(normalizeIri);
             }
+            
 
             // redirect if we have an actual node match to the new home
             if (node_ != null) {
-                setIri(node_.getIri());
-                getLogger().trace("redirecting by iri: {}", node_.getIri());
+                setIri(node_.getSlug());
+                getLogger().trace("redirecting by iri: {}", node_.getSlug());
                 setNode(node_);
-                setRedirectIri(String.format("/ontology/%s/node/%s", getId(), node_.getIri()));
+                setRedirectIri(String.format("/ontology/%s/node/%s", getId(), node_.getSlug()));
                 return;
             }
         }

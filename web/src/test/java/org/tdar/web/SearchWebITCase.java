@@ -74,9 +74,9 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     }
 
     @Test
-    @Override
     public void testBasicSearchView() {
-        super.testBasicSearchView();
+        gotoPage("/search/simple");
+        assertTextPresentInPage("Search");
         submitForm("Search");
         assertNoErrorTextPresent();
     }

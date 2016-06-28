@@ -1,6 +1,7 @@
 package org.tdar.core.configuration;
 
 import java.beans.PropertyVetoException;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.Serializable;
@@ -80,7 +81,7 @@ public abstract class SimpleAppConfiguration implements Serializable {
          * * commons-logging and other logging options can also produce conflicts.
          */
         System.setProperty("org.jboss.logging.provider", "slf4j");
-
+        System.setProperty("pdfbox.fontcache",System.getProperty("java.io.tmpdir") + File.separatorChar + "pdfboxFontCache");
         System.setProperty("java.awt.headless", "true");
         ImageIO.scanForPlugins();
     }

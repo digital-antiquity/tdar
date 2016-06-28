@@ -170,9 +170,11 @@ TDAR.validate = (function($, ctx) {
         }
         
         
-        if ($form.data("type") == 'GEOSPATIAL') {
+        var _type = $form.data("type");
+        if (_type == 'GEOSPATIAL') {
             TDAR.fileupload.addGisValidation(fileValidator);
         }
+        
 
         if (!$form.data("multiple-upload") && ($form.data("total-files") == 0 || $form.data("total-files") > 0)) {
             var rtype = $form.data("resource-type");

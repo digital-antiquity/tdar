@@ -816,6 +816,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             List<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove, List<Long> publicToAdd,
             List<Long> publicToRemove, boolean shouldSaveResource,
             FileProxy fileProxy) {
+        if (persistable == null) {
+            throw new TdarRecoverableRuntimeException();
+        }
         if (persistable.getType() == null) {
             persistable.setType(CollectionType.SHARED);
         }
@@ -904,6 +907,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     public ResourceCollection convertToResourceCollection(WhiteLabelCollection wlc) {
         return getDao().convertToResourceCollection(wlc);
+    }
+
+    @Transactional(readOnly=false)
+    public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
+        getDao().changeSubmitter(collection, submitter, authenticatedUser);
     }
 
 }

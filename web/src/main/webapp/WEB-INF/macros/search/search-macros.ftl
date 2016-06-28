@@ -106,7 +106,7 @@
     <#macro searchUrl path><@s.url includeParams="all" value="${path}"><#if path?? && path!="results"><@s.param name="id" value=""/><@s.param name="keywordType" value=""/><@s.param name="slug" value=""/></#if><#nested></@s.url></#macro>
 
     <#macro refineUrl actionName=actionName>
-        <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution"}><#t>
+        <#local _actionmap = {"results": "advanced", "people": "person", "collections": "collection", "institutions":"institution","multi":"basic"}><#t>
         <#local _path = _actionmap[actionName]><#t>
         <@searchUrl _path/><#t>
     </#macro>

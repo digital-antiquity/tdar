@@ -41,6 +41,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -370,7 +371,7 @@ public class BulkUploadService {
 
                 try {
                     cols.addAll(resource.getResourceCollections());
-                    resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage);
+                    resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
                     receiver.addError(trex);

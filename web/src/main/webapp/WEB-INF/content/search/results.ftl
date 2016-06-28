@@ -48,7 +48,7 @@
                             Return to project page &raquo;</@s.a></li>
                     <#else>
                         <li class="media"><@s.a href="/collection/${collectionId?c}">
-                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_project"></use></svg>
+                            <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                             Return To collection page &raquo;</@s.a></li>
                     </#if>
                 </#if>

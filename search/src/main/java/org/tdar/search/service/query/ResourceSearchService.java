@@ -38,6 +38,7 @@ import org.tdar.search.bean.ResourceLookupObject;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.query.builder.MultiCoreQueryBuilder;
 import org.tdar.search.query.builder.QueryBuilder;
 import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
@@ -162,6 +163,7 @@ public class ResourceSearchService extends AbstractSearchService {
         q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();
+        reservedSearchParameters.setUseSubmitterContext(look.isUseSubmitterContext());
         initializeReservedSearchParameters(reservedSearchParameters, user);
         q.append(reservedSearchParameters.toQueryPartGroup(support));
         q.appendFilter(reservedSearchParameters.getFilters());
@@ -189,6 +191,9 @@ public class ResourceSearchService extends AbstractSearchService {
     public LuceneSearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
         QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        if (asqo.isMultiCore()) {
+            queryBuilder = new MultiCoreQueryBuilder();
+        }
         queryBuilder.setOperator(Operator.AND);
         QueryPartGroup topLevelQueryPart;
         QueryPartGroup reservedQueryPart;

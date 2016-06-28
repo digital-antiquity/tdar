@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>deploy</artifactId>
-    <version>15.0.0-OBSIDIAN-SNAPSHOT</version>
+    <version>14.1.0-NEOLITHIC-SNAPSHOT</version>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>parent</artifactId>

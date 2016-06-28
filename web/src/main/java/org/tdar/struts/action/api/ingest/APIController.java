@@ -26,6 +26,7 @@ import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -134,12 +135,14 @@ public class APIController extends AbstractAuthenticatableAction {
             setId(loadedRecord.getId());
 
             message = "updated:" + loadedRecord.getId();
+            RevisionLogType type = RevisionLogType.EDIT;
             StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED;
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED;
                 message = "created:" + loadedRecord.getId();
+                type = RevisionLogType.CREATE;
                 code = StatusCode.CREATED;
                 getXmlResultObject().setRecordId(loadedRecord.getId());
                 getXmlResultObject().setId(loadedRecord.getId());
@@ -157,7 +160,7 @@ public class APIController extends AbstractAuthenticatableAction {
             }
             getXmlResultObject().setStatusCode(statuscode);
             getXmlResultObject().setStatus(code.toString());
-            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle(), type);
             xmlResultObject.setMessage(message);
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
@@ -267,7 +270,7 @@ public class APIController extends AbstractAuthenticatableAction {
 
             getXmlResultObject().setStatusCode(statuscode);
             getXmlResultObject().setStatus(code.toString());
-            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
             xmlResultObject.setMessage(message);
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));

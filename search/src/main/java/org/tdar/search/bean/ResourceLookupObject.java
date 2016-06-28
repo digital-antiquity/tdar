@@ -18,6 +18,7 @@ public class ResourceLookupObject implements Serializable {
     private List<Long> collectionIds = new ArrayList<Long>();
     private Long categoryId;
     private GeneralPermissions permission;
+    private boolean useSubmitterContext;
     private ReservedSearchParameters reservedSearchParameters;
     private SearchParameters searchParameters = new SearchParameters();
     
@@ -110,5 +111,13 @@ public class ResourceLookupObject implements Serializable {
 	public void setGeneralQuery(String generalQuery) {
 		this.generalQuery = generalQuery;
 	}
+
+    public boolean isUseSubmitterContext() {
+        return useSubmitterContext;
+    }
+
+    public void setUseSubmitterContext(boolean useSubmitterContext) {
+        this.useSubmitterContext = useSubmitterContext;
+    }
     
 }

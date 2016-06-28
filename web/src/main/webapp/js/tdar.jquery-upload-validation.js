@@ -551,7 +551,7 @@
         };
 
         var requiredFiles = {
-            shapefile: ["shp", "shx", "dbf"]
+            shapefile: ["shp", "shx", "dbf","prj"]
         }
 
         //require image files if image metadata file is present
@@ -593,7 +593,7 @@
         }, "consider including an image metadata file such as .tfw, .aux, or .aux.xml");
 
         //require the mandatory shapefiles if any shapefiles are present
-        $.each(["shp", "shx", "dbf"], function (idx, ext) {
+        $.each(["shp", "shx", "dbf", "prj"], function (idx, ext) {
             validator.addRule("required", {
                         extension: ext,
                         when: function (files) {

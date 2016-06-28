@@ -534,6 +534,9 @@
                 name = TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE,
                 query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and status='DRAFT'"),
         @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION,
+                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and status!='DELETED'"),
+        @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.USERS_IN_COLLECTION,
                 query = "select au from ResourceCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),
         @org.hibernate.annotations.NamedQuery(
