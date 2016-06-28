@@ -178,21 +178,18 @@
                 <#assign key = resource.resourceType.plural />
                 <#assign defaultKeyLabel="No Resource Type"/>
             </#if>
-            <#assign keyLabel = "" />
-
             <#if sortfield?contains('PROJECT')>
                 <#if resource.project??>
-                    <#assign key = (resource.projectId!-1)?c />
+                    <#assign key = resource.project.title />
                 <#elseif resource.resourceType.project >
-                    <#assign key = (resource.id!-1)?c />
-                    <#assign keyLabel = resource.title />
+                    <#assign key = resource.title!'' />
                 </#if>
             </#if>
         <#-- print special header and group/list tag -->
             <#if first || (prev != key) && key?has_content>
                 <#if prev != '' || sortField?has_content && !first && (sortField?contains("RESOURCE_TYPE") || sortField?contains("PROJECT"))></${listTag_}
                     ></#if>
-                <${headerTag}><#if keyLabel?has_content>${keyLabel}<#elseif key?has_content && key != "-1">${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
+                <${headerTag}><#if key?has_content>${key}<#else>${defaultKeyLabel}</#if></${headerTag}>
 
             <#-- if we're a grid, then reset rows -->
                 <#if isGridLayout>
