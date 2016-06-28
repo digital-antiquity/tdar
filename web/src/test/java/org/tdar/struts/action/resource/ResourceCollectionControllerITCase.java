@@ -283,7 +283,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testDeleteResourceCollection() throws Exception {
         ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         ResourceCollection resourceCollectionParent = new ResourceCollection(CollectionType.SHARED);
@@ -351,7 +351,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
-        evictCache();
+//        evictCache();
         assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
@@ -365,12 +365,12 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         logger.info("children: {}", children);
         assertTrue(child.getParent() == null);
         assertTrue((children == null) || (children.size() == 0));
-        evictCache();
+//        evictCache();
 
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testDeleteResourceCollectionWithUser() throws Exception {
         ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
         resourceCollection.setName("a resource collection");
@@ -418,13 +418,13 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
-        evictCache();
+//        evictCache();
         assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
         resourceCollection = genericService.find(ResourceCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
         assertTrue("user should be able to delete collection", resourceCollection == null);
-        evictCache();
+//        evictCache();
     }
 
     @Test
