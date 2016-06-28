@@ -40,17 +40,19 @@
         <liquibase.version>3.5.0</liquibase.version>
         <maven.compiler.version>3.3</maven.compiler.version>
         <surefire-failsafe.version>2.18.1</surefire-failsafe.version>
-        <antrun.version>1.8</antrun.version>
+        <antrun.version>1.9.7</antrun.version>
         <jvm.args>-Xms256m -Xmx3072m</jvm.args>
         <use.test.classpath>false</use.test.classpath>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4j.version>1.7.21</slf4j.version>
         <skipTestLiquibase>true</skipTestLiquibase>
+        <exec-maven-version>1.4.0</exec-maven-version>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
         <asm.version>5.1</asm.version>
+        <maven-jar-version>2.6</maven-jar-version>
         
         <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
