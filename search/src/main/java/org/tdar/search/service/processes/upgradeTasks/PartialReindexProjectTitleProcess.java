@@ -19,6 +19,7 @@ public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchPro
     @Autowired
     private transient SearchIndexService searchIndexService;
 
+    private boolean completed = false;
     @Override
     public boolean isSingleRunProcess() {
         return true;
@@ -42,8 +43,14 @@ public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchPro
     @Override
     public synchronized void execute() {
         searchIndexService.partialIndexProject();
+        completed = true;
     }
 
+    
+    @Override
+    public boolean isCompleted() {
+        return completed;
+    }
     public void process(Resource resource) {
     }
     

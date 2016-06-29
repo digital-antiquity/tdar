@@ -247,14 +247,17 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         runNextScheduledProcessesInQueue();
     }
 
+    @Transactional(readOnly=false)
     public void runUpgradeTasks() {
         if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
             Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks() .iterator();
             while (iterator.hasNext()) {
                 ScheduledProcess process = iterator.next();
-                if (process.isEnabled() && process.shouldRunAtStartup() && !process.isCompleted()) {
+                boolean run = checkIfRun(process.getDisplayName());
+                logger.debug("{} -- enabled:{} startup: {} completed: {}, hasRun: {}", process.getDisplayName(), process.isEnabled(), process.shouldRunAtStartup(), process.isCompleted(), run);
+                if (process.isEnabled() && process.shouldRunAtStartup() && !process.isCompleted() && !run) {
                     if (process instanceof UpgradeTask && !((UpgradeTask) process).hasRun()) {
-                        complete(iterator, process);
+                        iterator.remove();
                         continue;
                     }
                     String threadName = Thread.currentThread().getName();
@@ -270,16 +273,19 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
                     }
 
                     complete(iterator, process);
+                } else {
+                    iterator.remove();
                 }
             }
         }
     }
 
     private void complete(Iterator<?> iterator, ScheduledProcess process) {
+        logger.debug("process {} , completed: {} class: {}", process.getDisplayName(), process.isCompleted(), process.getClass().getName());
         if (process.isCompleted()) {
             process.cleanup();
-            if (process instanceof UpgradeTask) {
-                completedSuccessfully((UpgradeTask)process);
+            if (process.isSingleRunProcess()) {
+                completedSuccessfully(process);
             }
             iterator.remove();
         }
@@ -302,8 +308,8 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         }
         // look in upgradeTasks to see what's there, if the task defined is not
         // there, then run the task, and then add it
-        UpgradeTask upgradeTask = checkIfRun(process.getDisplayName());
-        if (process.isSingleRunProcess() && upgradeTask.hasRun()) {
+        boolean run = checkIfRun(process.getDisplayName());
+        if (process.isSingleRunProcess() && run) {
             logger.debug("process has already run once, removing {}", process);
             getScheduledProcessQueue().remove(process.getClass());
             return;
@@ -346,14 +352,17 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     /**
      * Mark an @link UpgradeTask as having been run successfully
      * 
-     * @param upgradeTask
+     * @param process
      */
-    @Transactional
-    private void completedSuccessfully(UpgradeTask upgradeTask) {
-        upgradeTask.setRun(true);
-        upgradeTask.setRecordedDate(new Date());
-        genericService.save(upgradeTask);
-        logger.info("completed " + upgradeTask.getName());
+    @Transactional(readOnly=false)
+    private void completedSuccessfully(ScheduledProcess process) {
+        UpgradeTask task = new UpgradeTask();
+        task = genericService.markWritable(task);
+        task.setName(process.getDisplayName());
+        task.setRun(true);
+        task.setRecordedDate(new Date());
+        genericService.save(task);
+        logger.info("completed " + task.getName());
     }
 
     /**
@@ -362,18 +371,17 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
      * @param name
      * @return
      */
-    private UpgradeTask checkIfRun(String name) {
+    private boolean checkIfRun(String name) {
         UpgradeTask upgradeTask = new UpgradeTask();
         upgradeTask.setName(name);
         List<String> ignoreProperties = new ArrayList<String>();
         ignoreProperties.add("recordedDate");
         ignoreProperties.add("run");
-        List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties,
-                FindOptions.FIND_ALL);
+        List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties, FindOptions.FIND_ALL);
         if ((tasks.size() > 0) && (tasks.get(0) != null)) {
-            return tasks.get(0);
+            return true;
         } else {
-            return upgradeTask;
+            return false;
         }
     }
 
