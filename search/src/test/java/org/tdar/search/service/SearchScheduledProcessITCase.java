@@ -1,8 +1,9 @@
 package org.tdar.search.service;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateTime;
@@ -45,6 +46,18 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         scheduledProcessService.queue(SendEmailProcess.class);
         scheduledProcessService.runNextScheduledProcessesInQueue();
         
+    }
+    
+    @Test
+    @Rollback
+    public void testUpgradeTask() {
+        scheduledProcessService.getManager().getUpgradeTasks().add(reindexProcess);
+        List<String> runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
+        assertTrue(runUpgradeTasks.contains(reindexProcess.getDisplayName()));
+        scheduledProcessService.checkIfRun(reindexProcess.getDisplayName());
+        runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
+        assertFalse(runUpgradeTasks.contains(reindexProcess.getDisplayName()));
+
     }
     
     @Autowired

@@ -248,7 +248,8 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     }
 
     @Transactional(readOnly=false)
-    public void runUpgradeTasks() {
+    public List<String> runUpgradeTasks() {
+        List<String> tasksRun = new ArrayList<>();
         if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
             Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks() .iterator();
             while (iterator.hasNext()) {
@@ -265,6 +266,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
                         Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
                         Thread.currentThread().setName(threadName + "-"+process.getClass().getSimpleName());
                         process.execute();
+                        tasksRun.add(process.getDisplayName());
                     } catch (Throwable e) {
                         logger.error("an error ocurred when running {}", process.getDisplayName(), e);
                     } finally {
@@ -278,6 +280,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
                 }
             }
         }
+        return tasksRun;
     }
 
     private void complete(Iterator<?> iterator, ScheduledProcess process) {
@@ -371,7 +374,8 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
      * @param name
      * @return
      */
-    private boolean checkIfRun(String name) {
+    @Transactional(readOnly=true)
+    public boolean checkIfRun(String name) {
         UpgradeTask upgradeTask = new UpgradeTask();
         upgradeTask.setName(name);
         List<String> ignoreProperties = new ArrayList<String>();
