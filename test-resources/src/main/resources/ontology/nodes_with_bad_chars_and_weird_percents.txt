@@ -1,0 +1,231 @@
+Appendicular
+	Clavicle % Clavicle.clavicle
+	Tilde~cular (avuncular)
+	Femur
+	Fibula or Tibia
+		Fibula
+		Tibia (Tibiotarsus)
+	Humerus
+	Patella
+	Pelvis
+		Acetabulum
+		Ilium
+		Ischium
+		Pubis	
+	Radius or Ulna
+		Radius
+		Ulna
+	Scapula
+Axial
+	Baculum
+	Rib
+		Costal Cartilage
+	Sesamoid
+	Sternum
+	Vertebra
+		Cervical Vertebra
+			Atlas
+			Axis
+		Thoracic Vertebra
+		Lumbar Vertebra
+		Sacrum
+		Caudal Vertebra
+		Vertebral Pad
+Cranial
+	Skull
+		Antler or Horncore
+			Antler
+			Horncore
+		Basiooccipital
+		Bulla
+		Frontal or Parietal
+			Frontal
+			Parietal
+		Hyoid
+		Interparietal
+		Lacrimal
+		Maxillary or Mandibular
+			Mandible
+			Maxilla
+		Nasal
+		Occipital
+			Occipital Condyle
+		Palatinal
+		Petrous
+		Premaxilla
+		Sphenoid
+		Squamous
+		Temporal
+		Vomer
+		Zygomaticus
+	Tooth
+		Incisor
+			I1
+				Lower I1
+				Upper I1
+			I2
+				Lower I2
+				Upper I2
+			I3
+				Lower I3
+				Upper I3
+			I4
+				Lower I4
+				Upper I4
+		Deciduous Incisor
+			i1
+				Lower i1
+				Upper i1
+			i2
+				Lower i2
+				Upper i2
+			i3
+				Lower i3
+				Upper i3
+			i4
+				Lower i4
+				Upper i4
+		Canine
+			Lower C
+			Upper C
+		Deciduous Canine
+			Lower c
+			Upper c
+		Molar or Premolar
+			Premolar
+				P1
+					Lower P1
+					Upper P1
+				P2
+					Lower P2
+					Upper P2
+				P3 or P4
+					P3
+						Lower P3
+						Upper P3
+					P4
+						Lower P4
+						Upper P4
+			Deciduous Premolar
+				dp1 (m1)
+					Lower dp1
+					Upper DP1
+				dp2 (m2)
+					Lower dp2
+					Upper dp2
+				dp3 (m3)
+					Lower dp3
+					Upper dp3
+				dp4 (m4)
+					Lower dp4
+					Upper dp4
+			Molar
+				M1 or M2
+					M1
+						Lower M1
+						Upper M1
+					M2
+						Lower M2
+						Upper M2
+				M3
+					Lower M3
+					Upper M3
+		Enamel Fragment
+		Root Fragment
+
+Feet
+	Carpal or Tarsal
+		Carpal
+			Scaphoid (Radial)
+			Lunate (Intermediate)
+			Scaphoid & Lunate (Radial & Intermediate)
+			Triquetrum (Ulnar)
+			Pisiform (Accessory)
+			Trapezium (1st Carpal)
+			Trapezoid (2nd Carpal)
+			Capitate (3rd Carpal)
+			Carpato-Trapezoid (2nd & 3rd Carpal)
+			Hamate (4th Carpal)
+		Tarsal
+			Astragalus
+			Calcaneus
+			Cuboid (4th Tarsal3)
+			Navicular (Central)
+			Navicular (Central) & Cuboid (4th Tarsal2)
+			1st Cuneiform (1st Tarsal)
+			2nd Cuneiform (2nd Tarsal)
+			3rd Cuneiform (3rd Tarsal)
+			2nd & 3rd Cuneiform (2nd & 3rd Tarsal)
+			Lateral Malleolus
+	Metapodial
+		Metacarpal (Carpometacarpus)
+			1st Metacarpal
+			2nd Metacarpal
+			3rd Metacarpal
+			2nd & 3rd Metacarpal
+			4th Metacarpal
+			3rd & 4th Metacarpal
+			5th Metacarpal
+			Peripheral Metacarpal
+		Metatarsal (Tarsometatarsus)
+			1st Metatarsal
+			2nd Metatarsal
+			3rd Metatarsal
+			3rd & 4th Metatarsal
+			4th Metatarsal
+			5th Metatarsal
+			Peripheral Metatarsal
+		Peripheral Metapodial
+	Ossified Tendon
+	Phalanx
+		1st or 2nd Phalanx
+			1st Phalanx
+				Peripheral 1st Phalanx
+			2nd Phalanx
+				Peripheral 2nd Phalanx
+		3rd Phalanx
+			Peripheral 3rd Phalanx
+<Amphibian & Reptile Element Additional>
+	Carapace or Plastron
+		Carapace
+		Plastron
+		Urostyle
+<Bird Element Additional>
+	Beak
+	Coracoid
+	Eggshell
+	Furculum
+	Jugal
+	Pollex
+	Pygostyle
+	Quadrate-Bird
+	Synsacrum
+	Wing Phalanges
+		1st Phalanx Digit II
+		2nd Phalanx Digit II
+<Fish Element Additional>
+	Articular
+	Branchiostegal Ray
+	Ceratohyal
+	Ceratobranchial
+	Cleithrum
+	Dentary
+	Ectopterygoid
+	Fin Ray
+	Fin Spine
+	Hyomandibular
+	Interhaemal Spine
+	Interopercular
+	Opercular
+	Parasphenoid
+	Pharyngeal Bone
+	Postcleithrum
+	Posttemporal
+	Preopercular
+	Quadrate-Fish
+	Subopercular
+	Supraoccipital
+	Vertebra Abdominal Anterior
+	Vertebra Abdominal Posterior
+Unidentifed Element
+Not Recorded

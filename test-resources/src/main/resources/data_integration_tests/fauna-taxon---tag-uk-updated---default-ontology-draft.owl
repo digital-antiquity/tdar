@@ -1,0 +1,1096 @@
+<?xml version="1.0"?>
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+xmlns:owl="http://www.w3.org/2002/07/owl#"
+xmlns="http://www.tdar.org/ontologies/5862#"
+xml:base="http://www.tdar.org/ontologies/5862">
+<owl:Ontology rdf:about=""/>
+<owl:Class rdf:ID="MAMMALIA">
+<rdfs:label>MAMMALIA</rdfs:label>
+</owl:Class>
+<owl:Class rdf:ID="Large_mammal_(vertebra_and_ribs)_(cattle_horse_red_deer-sized)">
+<rdfs:label>Large mammal (vertebra and ribs) (cattle horse red deer-sized)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Medium_mammal_(vertebra_and_ribs)_(pig_and_fallow_deer-sized)">
+<rdfs:label>Medium mammal (vertebra and ribs) (pig and fallow deer-sized)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Small_mammal_(sheep_goat_dog_roe_deer-sized)">
+<rdfs:label>Small mammal (sheep goat dog roe deer-sized)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Microfauna_(rats_mice_bats">
+<rdfs:label>Microfauna (rats mice bats</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Artiodactyla">
+<rdfs:label>Artiodactyla</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Dama_dama_Capreolus_capreolus_(Fallow_deer_Roe_deer)">
+<rdfs:label>Dama dama Capreolus capreolus (Fallow deer Roe deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Cervus_elaphus_Dama_dama_(Red_deer_Fallow_deer)">
+<rdfs:label>Cervus elaphus Dama dama (Red deer Fallow deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Cervus_elaphus_(Red_deer)">
+<rdfs:label>Cervus elaphus (Red deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Dama_dama_(Fallow_deer)">
+<rdfs:label>Dama dama (Fallow deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Capreolus_capreolus_(Roe_deer)">
+<rdfs:label>Capreolus capreolus (Roe deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Ovis_aries_Capra_hircus_Capreolus_capreolus_(Sheep_Goat_Roe_deer)">
+<rdfs:label>Ovis aries Capra hircus Capreolus capreolus (Sheep Goat Roe deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Ovis_aries_Capra_hircus_(Sheep_Goat)">
+<rdfs:label>Ovis aries Capra hircus (Sheep Goat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Capra_hircus_(Goat)">
+<rdfs:label>Capra hircus (Goat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Ovis_aries_Capra_hircus_(Sheep_Goat)"/>
+</owl:Class>
+<owl:Class rdf:ID="Ovis_aries_(Sheep)">
+<rdfs:label>Ovis aries (Sheep)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Ovis_aries_Capra_hircus_(Sheep_Goat)"/>
+</owl:Class>
+<owl:Class rdf:ID="Bos_taurus_Cervus_elaphus_(Cattle_Red_deer)">
+<rdfs:label>Bos taurus Cervus elaphus (Cattle Red deer)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Bos_primigenius_(Auroch)">
+<rdfs:label>Bos primigenius (Auroch)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Bos_taurus_(Cattle)">
+<rdfs:label>Bos taurus (Cattle)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Sus_domesticus_scrofa_(Pig_Wild_boar)">
+<rdfs:label>Sus domesticus scrofa (Pig Wild boar)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Artiodactyla"/>
+</owl:Class>
+<owl:Class rdf:ID="Sus_domesticus_(Pig)">
+<rdfs:label>Sus domesticus (Pig)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sus_domesticus_scrofa_(Pig_Wild_boar)"/>
+</owl:Class>
+<owl:Class rdf:ID="Sus_scrofa_(Wild_boar)">
+<rdfs:label>Sus scrofa (Wild boar)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sus_domesticus_scrofa_(Pig_Wild_boar)"/>
+</owl:Class>
+<owl:Class rdf:ID="Carnivora">
+<rdfs:label>Carnivora</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Felis_sp.">
+<rdfs:label>Felis sp.</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Carnivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Felis_catus_(Cat)">
+<rdfs:label>Felis catus (Cat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Felis_sp."/>
+</owl:Class>
+<owl:Class rdf:ID="Felis_sylvestris_(Wild_cat)">
+<rdfs:label>Felis sylvestris (Wild cat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Felis_sp."/>
+</owl:Class>
+<owl:Class rdf:ID="Canis_familiaris_Vulpes_vulpes_(Dog_Fox)">
+<rdfs:label>Canis familiaris Vulpes vulpes (Dog Fox)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Carnivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Canis_familiaris_lupus_(Dog_Wolf)">
+<rdfs:label>Canis familiaris lupus (Dog Wolf)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Carnivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Canis_familiaris_(Dog)">
+<rdfs:label>Canis familiaris (Dog)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Canis_familiaris_lupus_(Dog_Wolf)"/>
+</owl:Class>
+<owl:Class rdf:ID="Canis_lupus_(Wolf)">
+<rdfs:label>Canis lupus (Wolf)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Canis_familiaris_lupus_(Dog_Wolf)"/>
+</owl:Class>
+<owl:Class rdf:ID="Vulpes_vulpes_(Red_fox)">
+<rdfs:label>Vulpes vulpes (Red fox)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Canis_familiaris_lupus_(Dog_Wolf)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mustela_(Mustelid)">
+<rdfs:label>Mustela (Mustelid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Carnivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Meles_meles_(Badger)">
+<rdfs:label>Meles meles (Badger)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_(Mustelid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mustela_erminea_nivalis_(Stoat_Weasel)">
+<rdfs:label>Mustela erminea nivalis (Stoat Weasel)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_(Mustelid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mustela_erminea_(Stoat)">
+<rdfs:label>Mustela erminea (Stoat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_erminea_nivalis_(Stoat_Weasel)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mustela_nivalis_(Weasel)">
+<rdfs:label>Mustela nivalis (Weasel)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_erminea_nivalis_(Stoat_Weasel)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mustela_putorius_Martes_martes_(Polecat_Pine_martin)">
+<rdfs:label>Mustela putorius Martes martes (Polecat Pine martin)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_(Mustelid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mustela_putorius_(Polecat)">
+<rdfs:label>Mustela putorius (Polecat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_putorius_Martes_martes_(Polecat_Pine_martin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Martes_martes_(Pine_martin)">
+<rdfs:label>Martes martes (Pine martin)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_putorius_Martes_martes_(Polecat_Pine_martin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Lutra_lutra_(Otter)">
+<rdfs:label>Lutra lutra (Otter)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mustela_(Mustelid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Ursus_arctos_(Brown_bear)">
+<rdfs:label>Ursus arctos (Brown bear)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Carnivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Phoca_vitulina_Halichoerus_grypus_(Common_Grey_seal)">
+<rdfs:label>Phoca vitulina Halichoerus grypus (Common Grey seal)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Carnivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Phoca_vitulina_(Common_seal)">
+<rdfs:label>Phoca vitulina (Common seal)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phoca_vitulina_Halichoerus_grypus_(Common_Grey_seal)"/>
+</owl:Class>
+<owl:Class rdf:ID="Halichoerus_grypus_(Grey_seal)">
+<rdfs:label>Halichoerus grypus (Grey seal)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phoca_vitulina_Halichoerus_grypus_(Common_Grey_seal)"/>
+</owl:Class>
+<owl:Class rdf:ID="Chiroptera_(Bat)">
+<rdfs:label>Chiroptera (Bat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Insectivora">
+<rdfs:label>Insectivora</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Tapla_sp._(Mole)">
+<rdfs:label>Tapla sp. (Mole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Insectivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Talpa_europaea_(Common_mole)">
+<rdfs:label>Talpa europaea (Common mole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Tapla_sp._(Mole)"/>
+</owl:Class>
+<owl:Class rdf:ID="Sorex_Neomys_spp._(Shrew)">
+<rdfs:label>Sorex Neomys spp. (Shrew)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Insectivora"/>
+</owl:Class>
+<owl:Class rdf:ID="Sorex_araneus_(Common_shrew)">
+<rdfs:label>Sorex araneus (Common shrew)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sorex_Neomys_spp._(Shrew)"/>
+</owl:Class>
+<owl:Class rdf:ID="Sorex_minutus_(Pygmy_shrew)">
+<rdfs:label>Sorex minutus (Pygmy shrew)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sorex_Neomys_spp._(Shrew)"/>
+</owl:Class>
+<owl:Class rdf:ID="Erinacaeus_europaeus_(Hedgehog)">
+<rdfs:label>Erinacaeus europaeus (Hedgehog)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sorex_Neomys_spp._(Shrew)"/>
+</owl:Class>
+<owl:Class rdf:ID="Lagomorpha">
+<rdfs:label>Lagomorpha</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Lepus_sp._(Hare)">
+<rdfs:label>Lepus sp. (Hare)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Lagomorpha"/>
+</owl:Class>
+<owl:Class rdf:ID="Lepus_europaeus_(Brown_hare)">
+<rdfs:label>Lepus europaeus (Brown hare)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Lepus_sp._(Hare)"/>
+</owl:Class>
+<owl:Class rdf:ID="Oryctolagus_cuniculus_(Rabbit)">
+<rdfs:label>Oryctolagus cuniculus (Rabbit)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Lagomorpha"/>
+</owl:Class>
+<owl:Class rdf:ID="Rodentia">
+<rdfs:label>Rodentia</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Large_rodent_(rat_water_vole_squirrel_doormouse-sized)">
+<rdfs:label>Large rodent (rat water vole squirrel doormouse-sized)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Small_rodent_(field_vole_common_vole_mouse-sized)">
+<rdfs:label>Small rodent (field vole common vole mouse-sized)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Murinae_(small)">
+<rdfs:label>Murinae (small)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Apomedus_Mus_spp._(Murid)">
+<rdfs:label>Apomedus Mus spp. (Murid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Murinae_(small)"/>
+</owl:Class>
+<owl:Class rdf:ID="Apomedus_sp._(Murid)">
+<rdfs:label>Apomedus sp. (Murid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Murinae_(small)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mus_musculus_(House_mouse)">
+<rdfs:label>Mus musculus (House mouse)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Murinae_(small)"/>
+</owl:Class>
+<owl:Class rdf:ID="Small_microtinae_(Small_arvicolinae)">
+<rdfs:label>Small microtinae (Small arvicolinae)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Clethrionomys_glareolus_(Bank_vole)">
+<rdfs:label>Clethrionomys glareolus (Bank vole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Small_microtinae_(Small_arvicolinae)"/>
+</owl:Class>
+<owl:Class rdf:ID="Microtus_agrestis_(Field_vole)">
+<rdfs:label>Microtus agrestis (Field vole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Small_microtinae_(Small_arvicolinae)"/>
+</owl:Class>
+<owl:Class rdf:ID="Arvicola_terrestris_(Water_vole)">
+<rdfs:label>Arvicola terrestris (Water vole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Small_microtinae_(Small_arvicolinae)"/>
+</owl:Class>
+<owl:Class rdf:ID="Rattus_sp._(Rat)">
+<rdfs:label>Rattus sp. (Rat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Rattus_rattus_(Black_rat)">
+<rdfs:label>Rattus rattus (Black rat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rattus_sp._(Rat)"/>
+</owl:Class>
+<owl:Class rdf:ID="Rattus_norvegicus_(Brown_rat)Rattus_norvegicus_Arvicola_terrestris_(Brown_rat_Water_vole)">
+<rdfs:label>Rattus norvegicus (Brown rat)Rattus norvegicus Arvicola terrestris (Brown rat Water vole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Castor_fiber_(Beaver)">
+<rdfs:label>Castor fiber (Beaver)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rodentia"/>
+</owl:Class>
+<owl:Class rdf:ID="Equidae_(Equid)">
+<rdfs:label>Equidae (Equid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Equus_asinus_(Donkey)">
+<rdfs:label>Equus asinus (Donkey)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Equidae_(Equid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Equus_caballus_(Horse)">
+<rdfs:label>Equus caballus (Horse)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Equidae_(Equid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Cetacea">
+<rdfs:label>Cetacea</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Small_cetacean">
+<rdfs:label>Small cetacean</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cetacea"/>
+</owl:Class>
+<owl:Class rdf:ID="Large_cetacean">
+<rdfs:label>Large cetacean</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cetacea"/>
+</owl:Class>
+<owl:Class rdf:ID="Primates">
+<rdfs:label>Primates</rdfs:label>
+<rdfs:subClassOf rdf:resource="#MAMMALIA"/>
+</owl:Class>
+<owl:Class rdf:ID="Macaca_sp._(Macaque)">
+<rdfs:label>Macaca sp. (Macaque)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Primates"/>
+</owl:Class>
+<owl:Class rdf:ID="AMPHIBIA_(Amphibian)">
+<rdfs:label>AMPHIBIA (Amphibian)</rdfs:label>
+</owl:Class>
+<owl:Class rdf:ID="Bufo_bufo_(Toad)">
+<rdfs:label>Bufo bufo (Toad)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#AMPHIBIA_(Amphibian)"/>
+</owl:Class>
+<owl:Class rdf:ID="AVES">
+<rdfs:label>AVES</rdfs:label>
+</owl:Class>
+<owl:Class rdf:ID="Non-passerine_families">
+<rdfs:label>Non-passerine families</rdfs:label>
+<rdfs:subClassOf rdf:resource="#AVES"/>
+</owl:Class>
+<owl:Class rdf:ID="Accipitridae">
+<rdfs:label>Accipitridae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Buteo_Buteo_(Buzzard)">
+<rdfs:label>Buteo Buteo (Buzzard)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Accipitridae"/>
+</owl:Class>
+<owl:Class rdf:ID="Accipiter_gentilis_(Goshawk)">
+<rdfs:label>Accipiter gentilis (Goshawk)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Accipitridae"/>
+</owl:Class>
+<owl:Class rdf:ID="Milvus_milvus_(Red_kite)">
+<rdfs:label>Milvus milvus (Red kite)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Accipitridae"/>
+</owl:Class>
+<owl:Class rdf:ID="Accipiter_nisus_(Sparrowhawk)">
+<rdfs:label>Accipiter nisus (Sparrowhawk)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Accipitridae"/>
+</owl:Class>
+<owl:Class rdf:ID="Alcidae">
+<rdfs:label>Alcidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Cepphus_grylle_(Black_guillemot)">
+<rdfs:label>Cepphus grylle (Black guillemot)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Alcidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Alle_alle_(Little_auk)">
+<rdfs:label>Alle alle (Little auk)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Alcidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Anatidae_(Ducks)">
+<rdfs:label>Anatidae (Ducks)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Anserinae">
+<rdfs:label>Anserinae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatidae_(Ducks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anser_anser_(Domestic_Greylag_goose)">
+<rdfs:label>Anser anser (Domestic Greylag goose)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anserinae"/>
+</owl:Class>
+<owl:Class rdf:ID="Goose_(Goose)">
+<rdfs:label>Goose (Goose)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anserinae"/>
+</owl:Class>
+<owl:Class rdf:ID="Cygnus_sp._(Swan)">
+<rdfs:label>Cygnus sp. (Swan)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anserinae"/>
+</owl:Class>
+<owl:Class rdf:ID="Cygnus_Anser_spp._(Swan_Goose)">
+<rdfs:label>Cygnus Anser spp. (Swan Goose)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anserinae"/>
+</owl:Class>
+<owl:Class rdf:ID="Cygnus_cygnus_(Whooper_swan)">
+<rdfs:label>Cygnus cygnus (Whooper swan)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anserinae"/>
+</owl:Class>
+<owl:Class rdf:ID="Cygnus_olar_(Mute_swan)">
+<rdfs:label>Cygnus olar (Mute swan)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anserinae"/>
+</owl:Class>
+<owl:Class rdf:ID="Aythyini_(Aythyin)">
+<rdfs:label>Aythyini (Aythyin)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatidae_(Ducks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anatini_(Anatin)">
+<rdfs:label>Anatini (Anatin)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatidae_(Ducks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anas_querquedula_(Garganey)">
+<rdfs:label>Anas querquedula (Garganey)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatini_(Anatin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anas_platyrhynchos_(Mallard_Domestic_duck)">
+<rdfs:label>Anas platyrhynchos (Mallard Domestic duck)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatini_(Anatin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anas_penelope_(Wigeon)">
+<rdfs:label>Anas penelope (Wigeon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatini_(Anatin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anas_crecca_(Teal)">
+<rdfs:label>Anas crecca (Teal)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatini_(Anatin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anas_crecca_querquedula_(Teal_Garganey)">
+<rdfs:label>Anas crecca querquedula (Teal Garganey)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatini_(Anatin)"/>
+</owl:Class>
+<owl:Class rdf:ID="Branta_leucopsis_(Barnacle_goose)">
+<rdfs:label>Branta leucopsis (Barnacle goose)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatidae_(Ducks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Tadorna_tadorna_(Shelduck)">
+<rdfs:label>Tadorna tadorna (Shelduck)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Anatidae_(Ducks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Ardeidae">
+<rdfs:label>Ardeidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Botaurus_stellaris_(Bittern)">
+<rdfs:label>Botaurus stellaris (Bittern)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Ardeidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Ardea_cinerea_(Grey_heron)">
+<rdfs:label>Ardea cinerea (Grey heron)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Ardeidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Calidris_(Stints)">
+<rdfs:label>Calidris (Stints)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Calidris_canutus_(Red_knot)">
+<rdfs:label>Calidris canutus (Red knot)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Calidris_(Stints)"/>
+</owl:Class>
+<owl:Class rdf:ID="Charadriidae">
+<rdfs:label>Charadriidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Pluvialis_apricaria_(Golden_plover)">
+<rdfs:label>Pluvialis apricaria (Golden plover)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Charadriidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Pluvialis_squatarola_(Grey_plover)">
+<rdfs:label>Pluvialis squatarola (Grey plover)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Charadriidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Vanellus_vanellus_(Lapwing)">
+<rdfs:label>Vanellus vanellus (Lapwing)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Charadriidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Haematopus_ostralegus_(Oystercatcher)">
+<rdfs:label>Haematopus ostralegus (Oystercatcher)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Charadriidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Pluvialis_sp._(Plover)">
+<rdfs:label>Pluvialis sp. (Plover)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Charadriidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Columbidae_(Columbid)">
+<rdfs:label>Columbidae (Columbid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Columba_livia_(Rock_dove_Feral_pigeon)">
+<rdfs:label>Columba livia (Rock dove Feral pigeon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Columbidae_(Columbid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Columba_palumbus_(Wood_pigeon)">
+<rdfs:label>Columba palumbus (Wood pigeon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Columbidae_(Columbid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Cuculidae">
+<rdfs:label>Cuculidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Cuculus_canorus_(Cuckoo)">
+<rdfs:label>Cuculus canorus (Cuckoo)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cuculidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Ciconiiformes_(former_Falconiformes)">
+<rdfs:label>Ciconiiformes (former Falconiformes)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Falconidae_(Falconid)">
+<rdfs:label>Falconidae (Falconid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Ciconiiformes_(former_Falconiformes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Falco_peregrinus_(Peregrine_falcon)">
+<rdfs:label>Falco peregrinus (Peregrine falcon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Falconidae_(Falconid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Galliformes">
+<rdfs:label>Galliformes</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Meleagris_gallopavo_(turkey)">
+<rdfs:label>Meleagris gallopavo (turkey)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Galliformes"/>
+</owl:Class>
+<owl:Class rdf:ID="Gaviidae">
+<rdfs:label>Gaviidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Gavia_immer_(Great_northern_diver)">
+<rdfs:label>Gavia immer (Great northern diver)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gaviidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Gruidae">
+<rdfs:label>Gruidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Grus_grus_(Crane)">
+<rdfs:label>Grus grus (Crane)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gruidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Laridae_(Gull)">
+<rdfs:label>Laridae (Gull)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="large_gull">
+<rdfs:label>large gull</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Laridae_(Gull)"/>
+</owl:Class>
+<owl:Class rdf:ID="small_gull">
+<rdfs:label>small gull</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Laridae_(Gull)"/>
+</owl:Class>
+<owl:Class rdf:ID="Sterna_hirundo_(Common_tern)">
+<rdfs:label>Sterna hirundo (Common tern)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Laridae_(Gull)"/>
+</owl:Class>
+<owl:Class rdf:ID="Phallacrocoracidae">
+<rdfs:label>Phallacrocoracidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Phalacrocorax_carbo_(Cormorant)">
+<rdfs:label>Phalacrocorax carbo (Cormorant)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phallacrocoracidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Phalacrocorax_aristotelis_(Shag)">
+<rdfs:label>Phalacrocorax aristotelis (Shag)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phallacrocoracidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Phasianidae">
+<rdfs:label>Phasianidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Gallus_gallus_Numida_meleagris_(Chicken_Guinea_fowl)">
+<rdfs:label>Gallus gallus Numida meleagris (Chicken Guinea fowl)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Gallus_gallus_Numida_meleagris_Phasianus_colchicus_(Chicken_Guinea_fowl_Pheasant)">
+<rdfs:label>Gallus gallus Numida meleagris Phasianus colchicus (Chicken Guinea fowl Pheasant)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Gallus_gallus_Phasianus_colchicus_(Chicken_Pheasant)">
+<rdfs:label>Gallus gallus Phasianus colchicus (Chicken Pheasant)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Gallus_gallus_(Chicken)">
+<rdfs:label>Gallus gallus (Chicken)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Perdix_perdix_(Grey_partridge)">
+<rdfs:label>Perdix perdix (Grey partridge)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Pavo_cristatus_(Peacock)">
+<rdfs:label>Pavo cristatus (Peacock)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Phasianus_colchicus_(Pheasant)">
+<rdfs:label>Phasianus colchicus (Pheasant)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Coturnix_coturnix_(Quail)">
+<rdfs:label>Coturnix coturnix (Quail)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Lagopus_lagopus_(Willow_Red_grouse)">
+<rdfs:label>Lagopus lagopus (Willow Red grouse)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Phasianidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Procellariidae">
+<rdfs:label>Procellariidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Puffinus_puffinus_(Manx_shearwater)">
+<rdfs:label>Puffinus puffinus (Manx shearwater)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Procellariidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Rallidae">
+<rdfs:label>Rallidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Fulica_atra_(Coot)">
+<rdfs:label>Fulica atra (Coot)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rallidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Crex_crex_(Corncrake)">
+<rdfs:label>Crex crex (Corncrake)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rallidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Gallinula_chloropus_(Moorhen)">
+<rdfs:label>Gallinula chloropus (Moorhen)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rallidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Rallus_aquaticus_(Water_rail)">
+<rdfs:label>Rallus aquaticus (Water rail)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rallidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Scolopacidae_(Scolopacid)">
+<rdfs:label>Scolopacidae (Scolopacid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Limosa_sp._(Godwit)">
+<rdfs:label>Limosa sp. (Godwit)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scolopacidae_(Scolopacid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Numenius_arquata_(Curlew)">
+<rdfs:label>Numenius arquata (Curlew)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scolopacidae_(Scolopacid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Lymnocryptes_minimus_(Jack_snipe)">
+<rdfs:label>Lymnocryptes minimus (Jack snipe)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scolopacidae_(Scolopacid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Gallinago_gallinago_(Snipe)">
+<rdfs:label>Gallinago gallinago (Snipe)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scolopacidae_(Scolopacid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Scolopax_rusticola_(Woodcock)">
+<rdfs:label>Scolopax rusticola (Woodcock)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scolopacidae_(Scolopacid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Strigidae_(Owl)">
+<rdfs:label>Strigidae (Owl)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Asio_otus_(Long-eared_owl)">
+<rdfs:label>Asio otus (Long-eared owl)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Strigidae_(Owl)"/>
+</owl:Class>
+<owl:Class rdf:ID="Sulidae">
+<rdfs:label>Sulidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Morus_bassanus_(Northern_Gannet)">
+<rdfs:label>Morus bassanus (Northern Gannet)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sulidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Tetraoninae">
+<rdfs:label>Tetraoninae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Lyrurus_tetrix_(Black_grouse)">
+<rdfs:label>Lyrurus tetrix (Black grouse)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Tetraoninae"/>
+</owl:Class>
+<owl:Class rdf:ID="Tytonidae">
+<rdfs:label>Tytonidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Non-passerine_families"/>
+</owl:Class>
+<owl:Class rdf:ID="Tyto_alba_(Barn_owl)">
+<rdfs:label>Tyto alba (Barn owl)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Tytonidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Passeriformes_(Passeriforme)">
+<rdfs:label>Passeriformes (Passeriforme)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#AVES"/>
+</owl:Class>
+<owl:Class rdf:ID="Alaudidae">
+<rdfs:label>Alaudidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Alauda_arvensis_(Skylark)">
+<rdfs:label>Alauda arvensis (Skylark)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Alaudidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Corvidae_(Corvid)">
+<rdfs:label>Corvidae (Corvid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="small_corvid">
+<rdfs:label>small corvid</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="large_corvid">
+<rdfs:label>large corvid</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Corvus_monedula_(Jackdaw)">
+<rdfs:label>Corvus monedula (Jackdaw)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Garrulus_glandarius_(Jay)">
+<rdfs:label>Garrulus glandarius (Jay)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Pica_pica_(Magpie)">
+<rdfs:label>Pica pica (Magpie)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Corvus_corax_(Raven)">
+<rdfs:label>Corvus corax (Raven)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Corvus_frugilegus_corone_(Rook_Carrion_crow)">
+<rdfs:label>Corvus frugilegus corone (Rook Carrion crow)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Corvidae_(Corvid)"/>
+</owl:Class>
+<owl:Class rdf:ID="Hirundinidae">
+<rdfs:label>Hirundinidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Hirundo_rustico_(Swallow)">
+<rdfs:label>Hirundo rustico (Swallow)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Hirundinidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Motacillidae">
+<rdfs:label>Motacillidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anthus_pratensis_(Meadow_pipit)">
+<rdfs:label>Anthus pratensis (Meadow pipit)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Motacillidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Muscicapidae">
+<rdfs:label>Muscicapidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Erithacus_rubecula_(Robin)">
+<rdfs:label>Erithacus rubecula (Robin)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Muscicapidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Passeridae">
+<rdfs:label>Passeridae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Passer_domesticus_(House_sparrow)">
+<rdfs:label>Passer domesticus (House sparrow)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeridae"/>
+</owl:Class>
+<owl:Class rdf:ID="Prunellidae">
+<rdfs:label>Prunellidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Prunella_modularis_(Dunnock)">
+<rdfs:label>Prunella modularis (Dunnock)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Prunellidae"/>
+</owl:Class>
+<owl:Class rdf:ID="Turdidae_Sturnidae_(Turdid_Sturnid)">
+<rdfs:label>Turdidae Sturnidae (Turdid Sturnid)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Turdidae">
+<rdfs:label>Turdidae</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Passeriformes_(Passeriforme)"/>
+</owl:Class>
+<owl:Class rdf:ID="Turdus_viscivorus_(Mistle_thrush)">
+<rdfs:label>Turdus viscivorus (Mistle thrush)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Turdidae"/>
+</owl:Class>
+<owl:Class rdf:ID="OSTEICHTHYES_(bony_fishes)">
+<rdfs:label>OSTEICHTHYES (bony fishes)</rdfs:label>
+</owl:Class>
+<owl:Class rdf:ID="Gadid_Size_(Cod_Sized)">
+<rdfs:label>Gadid Size (Cod Sized)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#OSTEICHTHYES_(bony_fishes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Chondrostei_(Paddlefishes_sturgeons)">
+<rdfs:label>Chondrostei (Paddlefishes sturgeons)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#OSTEICHTHYES_(bony_fishes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Acipenseriformes_(paddlefishes_spoonfishes_sturgeons)">
+<rdfs:label>Acipenseriformes (paddlefishes spoonfishes sturgeons)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Chondrostei_(Paddlefishes_sturgeons)"/>
+</owl:Class>
+<owl:Class rdf:ID="Acipenser_sturio_(Baltic_sturgeon_European_sturgeon)">
+<rdfs:label>Acipenser sturio (Baltic sturgeon European sturgeon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acipenseriformes_(paddlefishes_spoonfishes_sturgeons)"/>
+</owl:Class>
+<owl:Class rdf:ID="Neopterygii_(neopterygians)">
+<rdfs:label>Neopterygii (neopterygians)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#OSTEICHTHYES_(bony_fishes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Acanthopterygii">
+<rdfs:label>Acanthopterygii</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Neopterygii_(neopterygians)"/>
+</owl:Class>
+<owl:Class rdf:ID="Beloniformes_(needlefishes_orphies)">
+<rdfs:label>Beloniformes (needlefishes orphies)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Belone_belone_(garfish_garfish)">
+<rdfs:label>Belone belone (garfish garfish)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Beloniformes_(needlefishes_orphies)"/>
+</owl:Class>
+<owl:Class rdf:ID="Gasterosteiformes_(pipefishes_sticklebacks)">
+<rdfs:label>Gasterosteiformes (pipefishes sticklebacks)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Gasterosteus_aculeatus_(threespine_stickleback)">
+<rdfs:label>Gasterosteus aculeatus (threespine stickleback)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gasterosteiformes_(pipefishes_sticklebacks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Mugiliformes_(mullets)">
+<rdfs:label>Mugiliformes (mullets)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Mugilidae_(grey_mullets)">
+<rdfs:label>Mugilidae (grey mullets)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Mugiliformes_(mullets)"/>
+</owl:Class>
+<owl:Class rdf:ID="Perciformes_(perch-like_fishes)">
+<rdfs:label>Perciformes (perch-like fishes)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Labridae_(wrasses)">
+<rdfs:label>Labridae (wrasses)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Perciformes_(perch-like_fishes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Percoidei">
+<rdfs:label>Percoidei</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Perciformes_(perch-like_fishes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Dicentrarchus_labrax_(European_seabass)">
+<rdfs:label>Dicentrarchus labrax (European seabass)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Percoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Perca_fluviatilis_(European_perch_river_perch)">
+<rdfs:label>Perca fluviatilis (European perch river perch)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Percoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Sparidae_(sea-bream)">
+<rdfs:label>Sparidae (sea-bream)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Percoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Scombroidei_(albacores_bonitos_mackerels_tunas)">
+<rdfs:label>Scombroidei (albacores bonitos mackerels tunas)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Perciformes_(perch-like_fishes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Scomber_scombrus_(Atlantic_mackerel)">
+<rdfs:label>Scomber scombrus (Atlantic mackerel)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scombroidei_(albacores_bonitos_mackerels_tunas)"/>
+</owl:Class>
+<owl:Class rdf:ID="Pleuronectiformes_(flatfishes_flounders_soles)">
+<rdfs:label>Pleuronectiformes (flatfishes flounders soles)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Pleuronectoidei">
+<rdfs:label>Pleuronectoidei</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectiformes_(flatfishes_flounders_soles)"/>
+</owl:Class>
+<owl:Class rdf:ID="Hippoglossus_hippoglossus_(Atlantic_halibut)">
+<rdfs:label>Hippoglossus hippoglossus (Atlantic halibut)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Limanda_limanda_(dab)">
+<rdfs:label>Limanda limanda (dab)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Plaice_Flounder">
+<rdfs:label>Plaice Flounder</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Platichthys_flesus_(North_Atlantic_flounder)">
+<rdfs:label>Platichthys flesus (North Atlantic flounder)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Plaice_Flounder"/>
+</owl:Class>
+<owl:Class rdf:ID="Pleuronectes_platessa_(European_plaice)">
+<rdfs:label>Pleuronectes platessa (European plaice)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Plaice_Flounder"/>
+</owl:Class>
+<owl:Class rdf:ID="Solea_solea_(sole)">
+<rdfs:label>Solea solea (sole)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Scophthalmidae_(left-eyed_flatfishes_turbots)">
+<rdfs:label>Scophthalmidae (left-eyed flatfishes turbots)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Psetta_maxima_(turbot_Former_scopthalmus_maximus)">
+<rdfs:label>Psetta maxima (turbot Former scopthalmus maximus)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Pleuronectoidei"/>
+</owl:Class>
+<owl:Class rdf:ID="Scorpaeniformes_(chabots_mail-cheeked_fishes_rascasses_scorpion_fishes_sculpins)">
+<rdfs:label>Scorpaeniformes (chabots mail-cheeked fishes rascasses scorpion fishes sculpins)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Acanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Triglidae_(gurnards)">
+<rdfs:label>Triglidae (gurnards)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Scorpaeniformes_(chabots_mail-cheeked_fishes_rascasses_scorpion_fishes_sculpins)"/>
+</owl:Class>
+<owl:Class rdf:ID="Clupeomorpha">
+<rdfs:label>Clupeomorpha</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Neopterygii_(neopterygians)"/>
+</owl:Class>
+<owl:Class rdf:ID="Clupeidae_(herrings_menhadens_sardines_shads_sprats)">
+<rdfs:label>Clupeidae (herrings menhadens sardines shads sprats)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Clupeomorpha"/>
+</owl:Class>
+<owl:Class rdf:ID="Alosa_alosa_(Alice_shad_allis_shad)">
+<rdfs:label>Alosa alosa (Alice shad allis shad)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Clupeidae_(herrings_menhadens_sardines_shads_sprats)"/>
+</owl:Class>
+<owl:Class rdf:ID="Clupeinae_(herrings_sardines_sprats)">
+<rdfs:label>Clupeinae (herrings sardines sprats)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Clupeidae_(herrings_menhadens_sardines_shads_sprats)"/>
+</owl:Class>
+<owl:Class rdf:ID="Clupea">
+<rdfs:label>Clupea</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Clupeinae_(herrings_sardines_sprats)"/>
+</owl:Class>
+<owl:Class rdf:ID="Clupea_harengus_(Atlantic_herring_herring)">
+<rdfs:label>Clupea harengus (Atlantic herring herring)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Clupea"/>
+</owl:Class>
+<owl:Class rdf:ID="Sprattus">
+<rdfs:label>Sprattus</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Clupeinae_(herrings_sardines_sprats)"/>
+</owl:Class>
+<owl:Class rdf:ID="Sprattus_sprattus_(European_sprat_sprat)">
+<rdfs:label>Sprattus sprattus (European sprat sprat)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Sprattus"/>
+</owl:Class>
+<owl:Class rdf:ID="Elopomorpha">
+<rdfs:label>Elopomorpha</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Neopterygii_(neopterygians)"/>
+</owl:Class>
+<owl:Class rdf:ID="Anguilla_anguilla_(common_eel_European_eel)">
+<rdfs:label>Anguilla anguilla (common eel European eel)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Elopomorpha"/>
+</owl:Class>
+<owl:Class rdf:ID="Conger_conger_(conger_eel_sea_eel)">
+<rdfs:label>Conger conger (conger eel sea eel)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Elopomorpha"/>
+</owl:Class>
+<owl:Class rdf:ID="Ostariophysi">
+<rdfs:label>Ostariophysi</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Neopterygii_(neopterygians)"/>
+</owl:Class>
+<owl:Class rdf:ID="Cyprinidae_(carps_and_minnows)">
+<rdfs:label>Cyprinidae (carps and minnows)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Ostariophysi"/>
+</owl:Class>
+<owl:Class rdf:ID="Abramis_brama">
+<rdfs:label>Abramis brama</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Barbus_barbus">
+<rdfs:label>Barbus barbus</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Blicca_bjoerkna">
+<rdfs:label>Blicca bjoerkna</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Cyprinus_carpio_(common_carp_European_carp)">
+<rdfs:label>Cyprinus carpio (common carp European carp)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Gobio_gobio_(gudgeon)">
+<rdfs:label>Gobio gobio (gudgeon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Leuciscus_cephalus_(chub)">
+<rdfs:label>Leuciscus cephalus (chub)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Leuciscus_leuciscus_(dace)">
+<rdfs:label>Leuciscus leuciscus (dace)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Rutilus_rutilus_(roach)">
+<rdfs:label>Rutilus rutilus (roach)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Tinca_tinca_(tench)">
+<rdfs:label>Tinca tinca (tench)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Cyprinidae_(carps_and_minnows)"/>
+</owl:Class>
+<owl:Class rdf:ID="Paracanthopterygii">
+<rdfs:label>Paracanthopterygii</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Neopterygii_(neopterygians)"/>
+</owl:Class>
+<owl:Class rdf:ID="Gadidae_(true_cods)">
+<rdfs:label>Gadidae (true cods)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Paracanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Gadidae_Large_(large_true_cods)">
+<rdfs:label>Gadidae Large (large true cods)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_(true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Gadidae_Small_(small_true_cods)">
+<rdfs:label>Gadidae Small (small true cods)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_(true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Gadus_morhua_(Atlantic_cod_rock_cod)">
+<rdfs:label>Gadus morhua (Atlantic cod rock cod)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_Small_(small_true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Melanogrammus_aeglefinus_(haddock)">
+<rdfs:label>Melanogrammus aeglefinus (haddock)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_Small_(small_true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Merlangius_merlangus_(English_whiting_whiting)">
+<rdfs:label>Merlangius merlangus (English whiting whiting)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_Small_(small_true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Pollachius_pollachius_(European_pollock)">
+<rdfs:label>Pollachius pollachius (European pollock)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_Small_(small_true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Pollachius_virens_(coalfish_saithe_coley)">
+<rdfs:label>Pollachius virens (coalfish saithe coley)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Gadidae_Small_(small_true_cods)"/>
+</owl:Class>
+<owl:Class rdf:ID="Merlucciidae_(merluccid_hakes)">
+<rdfs:label>Merlucciidae (merluccid hakes)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Paracanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Merluccius_merluccius_(European_hake)">
+<rdfs:label>Merluccius merluccius (European hake)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Merlucciidae_(merluccid_hakes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Protacanthopterygii">
+<rdfs:label>Protacanthopterygii</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Neopterygii_(neopterygians)"/>
+</owl:Class>
+<owl:Class rdf:ID="Esociformes_(mudminnows_pikes)">
+<rdfs:label>Esociformes (mudminnows pikes)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Protacanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Esox_masquinongy_(muskellunge)">
+<rdfs:label>Esox masquinongy (muskellunge)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Esociformes_(mudminnows_pikes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Osmeriformes_(smelts)">
+<rdfs:label>Osmeriformes (smelts)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Protacanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Osmerus_eperlanus_(smelt)">
+<rdfs:label>Osmerus eperlanus (smelt)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Osmeriformes_(smelts)"/>
+</owl:Class>
+<owl:Class rdf:ID="Salmoniformes_(salmons_saumons)">
+<rdfs:label>Salmoniformes (salmons saumons)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Protacanthopterygii"/>
+</owl:Class>
+<owl:Class rdf:ID="Salmonidae_(salmonids)">
+<rdfs:label>Salmonidae (salmonids)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Salmoniformes_(salmons_saumons)"/>
+</owl:Class>
+<owl:Class rdf:ID="Salmo_salar_(Atlantic_salmon)">
+<rdfs:label>Salmo salar (Atlantic salmon)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Salmonidae_(salmonids)"/>
+</owl:Class>
+<owl:Class rdf:ID="CHRONDRICHTHYES_(cartilaginous_fishes_rays_requins_sharks)">
+<rdfs:label>CHRONDRICHTHYES (cartilaginous fishes rays requins sharks)</rdfs:label>
+</owl:Class>
+<owl:Class rdf:ID="Elasmobranchii_(cartilaginous_fishes_rays_sharks_skates_torpedoes)">
+<rdfs:label>Elasmobranchii (cartilaginous fishes rays sharks skates torpedoes)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#CHRONDRICHTHYES_(cartilaginous_fishes_rays_requins_sharks)"/>
+</owl:Class>
+<owl:Class rdf:ID="Rajidae_(_rays_skates)">
+<rdfs:label>Rajidae ( rays skates)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Elasmobranchii_(cartilaginous_fishes_rays_sharks_skates_torpedoes)"/>
+</owl:Class>
+<owl:Class rdf:ID="Raja_clavata_(thornback_ray)">
+<rdfs:label>Raja clavata (thornback ray)</rdfs:label>
+<rdfs:subClassOf rdf:resource="#Rajidae_(_rays_skates)"/>
+</owl:Class>
+<owl:Class rdf:ID="OTHER_ANIMAL">
+<rdfs:label>OTHER ANIMAL</rdfs:label>
+</owl:Class>
+</rdf:RDF>
