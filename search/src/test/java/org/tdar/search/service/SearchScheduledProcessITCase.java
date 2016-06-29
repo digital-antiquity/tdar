@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateTime;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
@@ -50,6 +51,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     
     @Test
     @Rollback
+    @ignore
     public void testUpgradeTask() {
         scheduledProcessService.getManager().getUpgradeTasks().add(reindexProcess);
         List<String> runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
