@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -279,7 +278,9 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     private void complete(Iterator<?> iterator, ScheduledProcess process) {
         if (process.isCompleted()) {
             process.cleanup();
-            completedSuccessfully((UpgradeTask)process);
+            if (process instanceof UpgradeTask) {
+                completedSuccessfully((UpgradeTask)process);
+            }
             iterator.remove();
         }
     }

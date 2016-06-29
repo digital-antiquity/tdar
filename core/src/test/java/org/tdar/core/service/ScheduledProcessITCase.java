@@ -40,8 +40,6 @@ import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
 import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
 
-import com.sun.mail.handlers.message_rfc822;
-
 /**
  * $Id$
  * 
