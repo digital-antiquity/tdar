@@ -36,7 +36,7 @@ public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchPro
 
     @Override
     public boolean isEnabled() {
-        return false;// geoSearchService.isEnabled();
+        return true;// geoSearchService.isEnabled();
     }
 
     @Override
@@ -45,6 +45,11 @@ public class PartialReindexProjectTitleProcess extends AbstractScheduledBatchPro
     }
 
     public void process(Resource resource) {
+    }
+    
+    @Override
+    public boolean shouldRunAtStartup() {
+        return true;
     }
 
     @Override

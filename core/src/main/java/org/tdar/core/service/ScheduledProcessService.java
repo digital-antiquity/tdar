@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -247,8 +248,44 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         runNextScheduledProcessesInQueue();
     }
 
+    public void runUpgradeTasks() {
+        if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
+            Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks() .iterator();
+            while (iterator.hasNext()) {
+                ScheduledProcess process = iterator.next();
+                if (process.isEnabled() && process.shouldRunAtStartup() && !process.isCompleted()) {
+                    if (process instanceof UpgradeTask && !((UpgradeTask) process).hasRun()) {
+                        complete(iterator, process);
+                        continue;
+                    }
+                    String threadName = Thread.currentThread().getName();
+                    try {
+                        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+                        Thread.currentThread().setName(threadName + "-"+process.getClass().getSimpleName());
+                        process.execute();
+                    } catch (Throwable e) {
+                        logger.error("an error ocurred when running {}", process.getDisplayName(), e);
+                    } finally {
+                        Thread.currentThread().setName(threadName);
+                        Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+                    }
+
+                    complete(iterator, process);
+                }
+            }
+        }
+    }
+
+    private void complete(Iterator<?> iterator, ScheduledProcess process) {
+        if (process.isCompleted()) {
+            process.cleanup();
+            completedSuccessfully((UpgradeTask)process);
+            iterator.remove();
+        }
+    }
     public void runNextScheduledProcessesInQueue() {
         logger.debug("processes in Queue: {}", getScheduledProcessQueue());
+        runUpgradeTasks();
         if (getScheduledProcessQueue().size() <= 0) {
             return;
         }
@@ -301,11 +338,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         }
 
-        if (process.isCompleted()) {
-            process.cleanup();
-            completedSuccessfully(upgradeTask);
-            iterator.remove();
-        }
+        complete(iterator, process);
         logger.trace("processes in Queue: {}", getScheduledProcessQueue());
     }
 
@@ -381,10 +414,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     @EventListener()
     public void onApplicationEvent(ContextRefreshedEvent event) {
         logger.debug("received app context event: " + event);
-        if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
-            logger.trace("already run startup processes, aborting");
-            return;
-        }
     }
 
     public ProcessManager getManager() {
