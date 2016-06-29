@@ -44,8 +44,15 @@
     </rule>
 
     <rule>
+        <name>malformed download url</name>
         <from>^/filestore/download/(\d+)\,(\d+)/(.+)</from>
         <to type="redirect">/filestore/download/$1$2/$3</to>
+    </rule>
+
+    <rule>
+        <name>malformed ontology url</name>
+        <from>^/ontology/(\d+)/node/(.+?)\((.+?)\)(.*)</from>
+        <to type="redirect">/ontology/$1/node/${lower:$2$3$4}</to>
     </rule>
 
     <rule>
