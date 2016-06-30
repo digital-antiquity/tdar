@@ -396,7 +396,7 @@
                 <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
             </#if>
         </#list>
-		<#if editor>
+		<#if editor && ((resource.managedGeographicKeywords![])?size > 0)>
         <p>
             <strong>System Managed Geographic Keywords</strong><br><span class="show red" onClick="$(this).hide();$('#managedKeywords').show()">show</span><span id="managedKeywords" style="display:none">
             <@view.keywordSearch resource.managedGeographicKeywords "query" false /></span>
