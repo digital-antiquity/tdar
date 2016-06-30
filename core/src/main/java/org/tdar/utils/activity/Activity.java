@@ -147,15 +147,11 @@ public class Activity implements Serializable {
     }
 
     public String getEndString() {
-        String msg = "";
-        if (getShortName() != null) {
-            msg = getShortName().toString();
-        }
-        return String.format(">> activity end: %s (%s ms%s)", StringUtils.left(msg, 80), getTotalTime(), getFreemarkerFormattedTime());
+        return String.format(">> end: %s ms%s", getTotalTime(), getFreemarkerFormattedTime());
     }
 
     public String getStartString() {
-        return String.format("<< activity begin: %s ", getName());
+        return String.format("<< begin: %s ", getName());
     }
 
     @Override
