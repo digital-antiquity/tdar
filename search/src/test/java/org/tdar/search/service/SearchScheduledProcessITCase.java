@@ -3,6 +3,7 @@ package org.tdar.search.service;
 import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
@@ -17,6 +18,7 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
@@ -51,22 +53,22 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     @Test
     @Rollback
     public void testUpgradeTask() {
-        scheduledProcessService.getManager().getUpgradeTasks().add(reindexProcess);
+        ScheduledProcess process = applicationContext.getBean(PartialReindexProjectTitleProcess.class);
+        LinkedHashSet<ScheduledProcess> tasks = scheduledProcessService.getManager().getUpgradeTasks();
+        tasks.clear();
+        tasks.add(process);
         List<String> runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
-        assertTrue(runUpgradeTasks.contains(reindexProcess.getDisplayName()));
-        scheduledProcessService.checkIfRun(reindexProcess.getDisplayName());
+        assertTrue(runUpgradeTasks.contains(process.getDisplayName()));
+        scheduledProcessService.checkIfRun(process.getDisplayName());
+        process = applicationContext.getBean(PartialReindexProjectTitleProcess.class);
+        tasks.clear();
+        tasks.add(process);
         runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
-        assertFalse(runUpgradeTasks.contains(reindexProcess.getDisplayName()));
+        assertFalse(runUpgradeTasks.contains(process.getDisplayName()));
 
     }
     
-    @Autowired
-    PartialReindexProjectTitleProcess reindexProcess;
     
-    @Test
-    public void testPartialReindexProcess() {
-        reindexProcess.execute();
-    }
 
     @Autowired
     DailyTimedAccessRevokingProcess dtarp;
