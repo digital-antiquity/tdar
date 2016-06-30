@@ -427,10 +427,12 @@ public abstract class AbstractSeleniumWebITCase {
     public final void shutdownSelenium() {
     	logout();
         try {
+            driver.close();
             driver.quit();
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
             driver.switchTo().alert().dismiss();
+            driver.close();
             driver.quit();
         } catch (Exception ex) {
             logger.error("Could not close selenium driver: {}", ex);
@@ -446,6 +448,10 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void takeScreenshot(String filename) {
+        if (!TestConfiguration.getInstance().screenshotsEnabled()) {
+            return;
+        }
+        
         if (!screenshotsAllowed) {
             return;
         }
