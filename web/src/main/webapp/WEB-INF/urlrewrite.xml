@@ -44,15 +44,24 @@
     </rule>
 
     <rule>
-        <name>malformed download url</name>
+        <name>unstrutsworthy download url</name>
         <from>^/filestore/download/(\d+)\,(\d+)/(.+)</from>
         <to type="redirect">/filestore/download/$1$2/$3</to>
     </rule>
 
     <rule>
-        <name>malformed ontology url</name>
-        <from>^/ontology/(\d+)/node/(.+?)\((.+?)\)(.*)</from>
-        <to type="redirect">/ontology/$1/node/${lower:$2$3$4}</to>
+        <name>unstrutsworthy ontology url</name>
+        <note>If node name does not match allowed struts pattern, redirect to the parent ontology node. In addition, urlencode the invalid
+            node name and append it as a querystring so that ontology action can potentially lookup the node and redirect again</note>
+        <from>^/ontology/(\d+)/node/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <to type="redirect">/ontology/$1?iri=${escape:utf8:$2}</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy keyword url</name>
+        <note>if keyword label doesnt match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
+        <from>^(\/browse\/[\w-]+\/\d+)\/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <to type="redirect">$1</to>
     </rule>
 
     <rule>
