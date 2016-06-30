@@ -43,6 +43,7 @@ public class WebFileSystemResourceService {
     @Autowired
     ResourceLoader resourceLoader;
 
+    private WroModelInspector wroModelInspector;
 
     public boolean testWRO() {
         if (wroExists != null) {
@@ -53,7 +54,7 @@ public class WebFileSystemResourceService {
             logger.debug("wroFile: {}", wroFile);
             Resource resource = resourceLoader.getResource(wroFile);
             wroExists = resource.exists();
-            
+
             if (wroExists) {
                 logger.debug("WRO found? true");
             }
@@ -71,7 +72,7 @@ public class WebFileSystemResourceService {
             return wroTempDirName;
         }
         try {
-            String file = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("version.txt"),Charsets.UTF_8);
+            String file = IOUtils.toString(getClass().getClassLoader().getResourceAsStream("version.txt"), Charsets.UTF_8);
             file = StringUtils.replace(file, "+", "");
             wroTempDirName = "/wro/" + file.trim();
             return wroTempDirName;
@@ -86,7 +87,7 @@ public class WebFileSystemResourceService {
      * 
      * @param groupName
      * @return
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public List<String> fetchGroupUrls(String groupName) throws URISyntaxException {
         return fetchGroupUrls(groupName, null);
@@ -96,7 +97,7 @@ public class WebFileSystemResourceService {
      * Return list of WRO group names as specified by wro.xml
      * 
      * @return
-     * @throws URISyntaxException 
+     * @throws URISyntaxException
      */
     public List<String> fetchGroupNames() throws URISyntaxException {
         WroModelInspector wroModelInspector = getWroInspector();
@@ -111,9 +112,11 @@ public class WebFileSystemResourceService {
      * @throws URISyntaxException
      */
     public WroModelInspector getWroInspector() throws URISyntaxException {
-        WroManager wroManager = getManagerFactory().create();
-        WroModel wroModel = wroManager.getModelFactory().create();
-        WroModelInspector wroModelInspector = new WroModelInspector(wroModel);
+        if (wroModelInspector == null) {
+            WroManager wroManager = getManagerFactory().create();
+            WroModel wroModel = wroManager.getModelFactory().create();
+            wroModelInspector = new WroModelInspector(wroModel);
+        }
         return wroModelInspector;
     }
 
@@ -147,14 +150,14 @@ public class WebFileSystemResourceService {
     public List<String> fetchGroupUrls(String groupName, ResourceType type) {
         List<String> srcList = new ArrayList<>();
         try {
-        WroModelInspector wroModelInspector = getWroInspector();
+            WroModelInspector wroModelInspector = getWroInspector();
 
-        Group group = wroModelInspector.getGroupByName(groupName);
-        for (ro.isdc.wro.model.resource.Resource resource : group.getResources()) {
-            if (type == null || type == resource.getType()) {
-                srcList.add(resource.getUri());
+            Group group = wroModelInspector.getGroupByName(groupName);
+            for (ro.isdc.wro.model.resource.Resource resource : group.getResources()) {
+                if (type == null || type == resource.getType()) {
+                    srcList.add(resource.getUri());
+                }
             }
-        }
         } catch (URISyntaxException uriEx) {
             logger.error("could not find wro.xml", uriEx);
         }
