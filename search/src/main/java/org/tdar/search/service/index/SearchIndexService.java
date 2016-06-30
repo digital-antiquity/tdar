@@ -442,7 +442,6 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @throws SolrServerException
      */
     public boolean indexProject(Project project) throws SolrServerException, IOException {
-        setupProjectForIndexing(project);
         index(project);
         logger.debug("reindexing project contents");
         ScrollableResults scrollableResults = projectDao.findAllResourcesInProject(project);
@@ -450,12 +449,6 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         batch.indexScrollable(0L, Resource.class, scrollableResults);
         logger.debug("completed reindexing project contents");
         return false;
-    }
-
-    private void setupProjectForIndexing(Project project) {
-        Collection<InformationResource> irs = new ImmutableScrollableCollection<InformationResource>(
-                projectDao.findAllResourcesInProject(project, Status.ACTIVE, Status.DRAFT));
-        project.setCachedInformationResources(irs);
     }
 
     /**

@@ -242,9 +242,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         if (doc instanceof Ontology) {
             ((Ontology) doc).getOntologyNodes().clear();
         }
-        if (doc instanceof Project) {
-            ((Project) doc).setCachedInformationResources(null);
-        }
     }
 
     @Test

@@ -342,13 +342,6 @@ public class ImportService {
             }
         }
 
-        if (incomingResource instanceof Project) {
-            Project project = (Project) incomingResource;
-            if (null != project.getCachedInformationResources()) {
-                throw new APIException(MessageHelper.getMessage("importService.cached_data_not_supported"), StatusCode.UNKNOWN_ERROR);
-            }
-        }
-
         if (incomingResource instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) incomingResource;
 

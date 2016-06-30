@@ -1,7 +1,9 @@
 package org.tdar.dataone.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -18,9 +20,6 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
 import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.regexp.recompile;
-import org.bouncycastle.crypto.digests.MD5Digest;
-import org.codehaus.plexus.util.StringInputStream;
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.utils.SimpleHttpUtils;
@@ -32,7 +31,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
-import com.hp.hpl.jena.sparql.function.library.e;
 
 public class DataOneWebITCase extends AbstractWebTest {
 
@@ -75,7 +73,7 @@ public class DataOneWebITCase extends AbstractWebTest {
     public void testChecksum2() throws ClientProtocolException, IOException, UnsupportedOperationException, ParserConfigurationException, SAXException {
         HttpResponse record = getRecord("/v1/object");
         String body = IOUtils.toString(record.getEntity().getContent());
-        Document xmlDocument = getXmlDocument(new InputSource(new StringInputStream(body)));
+        Document xmlDocument = getXmlDocument(new InputSource(new ByteArrayInputStream(body.getBytes())));
         logger.trace(body);
         NodeList elementsByTagName = xmlDocument.getElementsByTagName("objectInfo");
         for (int i=0;i < elementsByTagName.getLength(); i++) {
