@@ -448,6 +448,10 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void takeScreenshot(String filename) {
+        if (TestConfiguration.getInstance().screenshotsEnabled()) {
+            return;
+        }
+
         if (!screenshotsAllowed) {
             return;
         }
