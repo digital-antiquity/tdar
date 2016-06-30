@@ -326,8 +326,7 @@ public class ImportService {
             CodingSheet codingSheet = (CodingSheet) incomingResource;
             if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) ||
                     CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns()) ||
-                    CollectionUtils.isNotEmpty(codingSheet.getCodingRules()) ||
-                    PersistableUtils.isNotNullOrTransient(codingSheet.getDefaultOntology())) {
+                    CollectionUtils.isNotEmpty(codingSheet.getCodingRules())) {
                 throw new APIException(MessageHelper.getMessage("importService.coding_sheet_mappings_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }

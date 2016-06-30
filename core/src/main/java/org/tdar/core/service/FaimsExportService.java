@@ -21,6 +21,9 @@ import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
@@ -70,9 +73,49 @@ public class FaimsExportService {
             }
         });
         skip = false;
-        for (Long id : genericService.findAllIds(InformationResource.class)) {
+        Map<Long, Long> codingSheetMap = new HashMap<>();
+        Map<Long, Long> ontologyMap = new HashMap<>();
+
+        for (Long id : genericService.findAllIds(Ontology.class)) {
             try {
-                processResource(id, projectIdMap, skip, client, accountId);
+                Long newId = processResource(id, projectIdMap, null, null, skip, client, accountId);
+                ontologyMap.put(id, newId);
+            } catch (Throwable t) {
+                logger.error("error processing FAIMS resource: {}", t, t);
+            }
+            genericService.clearCurrentSession();
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        
+        for (Long id : genericService.findAllIds(CodingSheet.class)) {
+            try {
+                Long newId = processResource(id, projectIdMap, null, ontologyMap, skip, client, accountId);
+                codingSheetMap.put(id, newId);
+            } catch (Throwable t) {
+                logger.error("error processing FAIMS resource: {}", t, t);
+            }
+            genericService.clearCurrentSession();
+            try {
+                Thread.sleep(30000);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+
+        for (Long id : genericService.findAllIds(InformationResource.class)) {
+            if (codingSheetMap.containsKey(id) || ontologyMap.containsKey(id)) {
+                continue;
+            }
+
+            try {
+                processResource(id, projectIdMap, codingSheetMap, ontologyMap, skip, client, accountId);
             } catch (Throwable t) {
                 logger.error("error processing FAIMS resource: {}", t, t);
             }
@@ -86,12 +129,12 @@ public class FaimsExportService {
         }
     }
 
-    private void processResource(Long id, Map<Long, Long> projectIdMap, boolean skip, APIClient client, Long accountId) {
+    private Long processResource(Long id, Map<Long, Long> projectIdMap, Map<Long, Long> codingSheetMap, Map<Long, Long> ontologyMap, boolean skip, APIClient client, Long accountId) {
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
         InformationResource resource = genericService.find(InformationResource.class, id);
         if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
-            return;
+            return null;
         }
         List<File> files = new ArrayList<>();
         logger.debug("{} -- {} ({})", id, resource.getTitle(), (resource instanceof CodingSheet));
@@ -105,10 +148,33 @@ public class FaimsExportService {
             } catch (FileNotFoundException e) {
                 logger.error("cannot find file: {}", e, e);
             }
+
+            if (resource instanceof Dataset) {
+                Dataset ds = (Dataset) resource;
+                for (DataTable dt : ds.getDataTables()) {
+                    for (DataTableColumn dtc : dt.getDataTableColumns()) {
+                        CodingSheet cs = dtc.getDefaultCodingSheet();
+                        if (cs != null) {
+                            // set the coding sheet to a reference to the new coding sheet
+                            CodingSheet cs_ = new CodingSheet();
+                            makeFake(codingSheetMap, cs, cs_);
+                            dtc.setDefaultCodingSheet(cs_);
+                        }
+                    }
+                }
+            }
+
             if (resource instanceof CodingSheet) {
                 if (file.getCurrentVersion(VersionType.UPLOADED_TEXT) != null) {
                     version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
                     if (resource instanceof CodingSheet) {
+                        CodingSheet cs = (CodingSheet)resource;
+                        Ontology defaultOntology = cs.getDefaultOntology();
+                        if (defaultOntology != null) {
+                            Ontology ont_ = new Ontology();
+                            makeFake(codingSheetMap, defaultOntology, ont_);
+                            cs.setDefaultOntology(ont_);
+                        }
                         try {
                             retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
                             File tmp = new File(CONFIG.getTempDirectory(), retrieveFile.getName().replace(".txt", ".csv"));
@@ -136,7 +202,7 @@ public class FaimsExportService {
 
         if (skip) {
             genericService.clearCurrentSession();
-            return;
+            return null;
         }
         try {
             ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
@@ -147,11 +213,20 @@ public class FaimsExportService {
                     logger.warn(uploadRecord.getBody());
                 }
                 logger.debug("status: {}", uploadRecord.getStatusLine());
+                return uploadRecord.getTdarId();
             }
         } catch (IOException e) {
             logger.error("error uploading", e);
         }
+        return null;
 
+    }
+
+    private void makeFake(Map<Long, Long> map, Resource cs, Resource cs_) {
+        Long csid = map.get(cs.getId());
+        cs_.setId(csid);
+        cs_.setTitle(cs.getTitle());
+        cs_.setStatus(cs.getStatus());
     }
 
     private Map<Long, Long> uploadProjects(Long accountId, APIClient client, boolean skip) {
@@ -196,7 +271,7 @@ public class FaimsExportService {
 
         if (resource instanceof Dataset) {
             Dataset dataset = (Dataset) resource;
-            dataset.setDataTables(null);
+            // dataset.setDataTables(null);
             dataset.setRelationships(null);
         }
 
