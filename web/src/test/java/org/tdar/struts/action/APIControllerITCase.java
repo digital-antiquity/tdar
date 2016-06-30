@@ -304,7 +304,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("not implemented yet")
+//    @Ignore("not implemented yet")
     public void testDatasetWithMappings() throws Exception {
 
         APIController controller = generateNewInitializedController(APIController.class);
