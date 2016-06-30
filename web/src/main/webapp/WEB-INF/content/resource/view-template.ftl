@@ -396,9 +396,10 @@
                 <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
             </#if>
         </#list>
-		<#if editor>
+        <#assign mks = (resource.managedGeographicKeywords![])?size />
+		<#if editor && (mks > 0)>
         <p>
-            <strong>System Managed Geographic Keywords</strong><br><span class="show red" onClick="$(this).hide();$('#managedKeywords').show()">show</span><span id="managedKeywords" style="display:none">
+            <strong>System Managed Geographic Keywords (${mks})</strong><br><span class="show red" onClick="$(this).hide();$('#managedKeywords').show()">show</span><span id="managedKeywords" style="display:none">
             <@view.keywordSearch resource.managedGeographicKeywords "query" false /></span>
         </p>
 		</#if>

@@ -1,7 +1,5 @@
 package org.tdar.core.bean.resource;
 
-import java.util.Collection;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -9,7 +7,6 @@ import javax.persistence.Enumerated;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
@@ -71,9 +68,6 @@ public class Project extends Resource implements Sortable {
         setResourceType(ResourceType.PROJECT);
     }
 
-    @Transient
-    private transient Collection<InformationResource> cachedInformationResources;
-
     public Project() {
         setResourceType(ResourceType.PROJECT);
     }
@@ -99,15 +93,6 @@ public class Project extends Resource implements Sortable {
     // return the title without "The" as a prefix or "Project" as suffix
     public String getCoreTitle() {
         return getTitle().trim().replaceAll("^[T|t]he\\s", "").replaceAll("\\s[P|p]roject$", "");
-    }
-
-    @XmlTransient
-    public Collection<InformationResource> getCachedInformationResources() {
-        return cachedInformationResources;
-    }
-
-    public void setCachedInformationResources(Collection<InformationResource> cachedInformationResources) {
-        this.cachedInformationResources = cachedInformationResources;
     }
 
     @Override

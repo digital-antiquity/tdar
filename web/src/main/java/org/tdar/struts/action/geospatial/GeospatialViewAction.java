@@ -45,7 +45,7 @@ public class GeospatialViewAction extends AbstractDatasetViewAction<Geospatial> 
         // of these files for both text input and file uploads
         String versionText = "";
         InformationResourceFileVersion version = getLatestUploadedVersion();
-        if (version != null) {
+        if (version != null && showGeoJson) {
             try {
                 versionText = FileUtils.readFileToString(TdarConfiguration.getInstance().getFilestore().retrieveFile(FilestoreObjectType.RESOURCE, version));
             } catch (IOException e) {

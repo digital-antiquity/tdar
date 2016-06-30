@@ -70,11 +70,11 @@ public class OntologyNodeViewAction extends AbstractOntologyViewAction {
     public void prepare() throws TdarActionException {
         super.prepare();
         setNode(getNodeBySlug());
-        getLogger().debug("{}", getNode());
+//        getLogger().debug("{}", getNode());
         if (getNode() == null) {
             setNode(getNodeByIri());
         }
-        getLogger().debug("{}", getNode());
+  //      getLogger().debug("{}", getNode());
         if (getNode() == null) {
             abort(StatusCode.NOT_FOUND, getText("ontologyController.node_not_found", Arrays.asList(getIri())));
         }

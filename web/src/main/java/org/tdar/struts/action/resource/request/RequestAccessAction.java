@@ -134,7 +134,6 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
 
     @Override
     public void setPersistable(Resource persistable) {
-        getLogger().debug("set persistable: {}", persistable);
         this.resource = persistable;
     }
 
