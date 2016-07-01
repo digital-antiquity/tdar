@@ -183,7 +183,10 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         setSchemaOrgJsonLD(resourceService.getSchemaOrgJsonLD(getResource()));
         loadBasicViewMetadata();
         loadCustomViewMetadata();
-        resourceService.updateTransientAccessCount(getResource());
+        // only showing access count when logged in (speeds up page loads)
+        if (isAuthenticated()) {
+            resourceService.updateTransientAccessCount(getResource());
+        }
         // don't count if we're an admin
         if (!PersistableUtils.isEqual(getPersistable().getSubmitter(), getAuthenticatedUser()) && !isEditor()) {
             resourceService.incrementAccessCounter(getPersistable());
