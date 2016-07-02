@@ -241,8 +241,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	public Long getResourceCount(ResourceType resourceType, Status status) {
 		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS);
-		query.setParameter("resourceType", resourceType.toString());
-		query.setParameter("status", status.toString());
+		query.setParameter("resourceType", resourceType);
+		query.setParameter("status", status);
 		Long count = (Long) query.getSingleResult();
 		return count;
 	}

@@ -1,5 +1,6 @@
 package org.tdar.core.dao.resource;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -84,7 +85,7 @@ public class ProjectDao extends ResourceDao<Project> {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT);
         if (ArrayUtils.isNotEmpty(statuses)) {
             query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT_WITH_STATUS);
-            query.setParameter("statuses", statuses);
+            query.setParameter("statuses", Arrays.asList(statuses));
         }
         query.setParameter("projectId", project.getId());
         return query.scroll();

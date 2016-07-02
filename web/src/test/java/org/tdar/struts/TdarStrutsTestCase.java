@@ -25,8 +25,6 @@ import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 @ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@Transactional
-@Rollback(value=true)
 public abstract class TdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T> {
     @Override
     protected void initServletMockObjects() {
