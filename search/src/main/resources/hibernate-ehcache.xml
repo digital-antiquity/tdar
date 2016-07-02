@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache name="tdar-cache-manager">
+<ehcache>
     <!--  DO NOT USE THIS IN PRODUCTION, IT'S WRONG. It's MAINLY AN EXAMPLE
     
           http://www.ehcache.org/documentation/user-guide/hibernate#ehcache-xml
           
      -->
-    <diskStore path="java.io.tmpdir"/>        
+    <diskStore path="/tmp/ehcache"/>        
 
     <defaultCache
-            maxElementsInMemory="10000"
-            name="test-ehcache"
+            name="default"
+            maxElementsInMemory="10"
             eternal="false"
             timeToIdleSeconds="120"
             timeToLiveSeconds="120"
