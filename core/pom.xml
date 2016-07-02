@@ -989,6 +989,9 @@
                         <configuration>
                             <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -999,6 +1002,9 @@
                         <configuration>
                             <finalName>tdar-core-test</finalName>
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
