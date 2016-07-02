@@ -45,6 +45,8 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
+import edu.emory.mathcs.backport.java.util.Arrays;
+
 /**
  * $Id$
  * 
@@ -125,7 +127,7 @@ public class GenericDao {
     @SuppressWarnings("unchecked")
     public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
         Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
-        return query.setParameter("statuses", statuses).getResultList();
+        return query.setParameter("statuses", Arrays.asList(statuses)).getResultList();
     }
 
     @SuppressWarnings("unchecked")

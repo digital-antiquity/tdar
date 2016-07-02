@@ -126,8 +126,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 			query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES_SUBMITTER);
 			query.setParameter("submitter", submitter.getId());
 		}
-		query.setParameter("resourceType", resourceType.name());
-		query.setParameter("status", Status.ACTIVE.name());
+		query.setParameter("resourceType", resourceType);
+		query.setParameter("status", Status.ACTIVE);
 		query.setReadOnly(true);
 		return query.getResultList();
 	}

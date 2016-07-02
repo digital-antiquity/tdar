@@ -16,6 +16,8 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.query.Query;
+import org.hibernate.type.ListType;
+import org.hibernate.type.Type;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -66,7 +68,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         List<BillingAccount> accountGroups = new ArrayList<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personid", user.getId());
-        query.setParameter("statuses", statuses);
+        query.setParameter("statuses", Arrays.asList(statuses));
         accountGroups.addAll(query.getResultList());
         for (BillingAccountGroup group : findAccountGroupsForUser(user)) {
             accountGroups.addAll(group.getAccounts());
