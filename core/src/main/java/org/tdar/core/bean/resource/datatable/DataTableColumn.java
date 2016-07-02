@@ -115,7 +115,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     
     @ManyToOne(optional = false)
     // , cascade = { CascadeType.PERSIST })
-    @JoinColumn(name = "data_table_id")
+    @JoinColumn(name = "data_table_id",nullable=false)
     private DataTable dataTable;
 
     @Column(nullable = false)

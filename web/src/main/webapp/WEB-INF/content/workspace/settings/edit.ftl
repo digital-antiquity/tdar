@@ -25,9 +25,9 @@
     
             <div class="controls">
                 <label for="rdoheaderTrue" class="radio inline"><input type="radio" id="rdoheaderTrue" name="collection.customHeaderEnabled"
-                                                                        value="true" <@common.checkedif persistable.hidden true /> />Yes</label>
+                                                                        value="true" <@common.checkedif persistable.hidden false /> />Yes</label>
                 <label for="rdoheaderFalse" class="radio inline"><input type="radio" id="rdoheaderFalse" name="collection.customHeaderEnabled"
-                                                                         value="false" <@common.checkedif persistable.hidden false /> />No</label>
+                                                                         value="false" <@common.checkedif persistable.hidden true /> />No</label>
             </div>
         </div>
         

@@ -454,8 +454,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             map.on('draw:deleted', function(e) {
                 console.log("deleted fired");
                 var layers = e.layers;
+                var size = 1;
                 layers.eachLayer(function(layer) {
                     drawnItems.removeLayer(layer);
+                    size--;
                     // the change() watch deosn't always pay attention to these explicit calls
                     $(".minx", $el).val('');
                     $(".miny", $el).val('');
@@ -466,7 +468,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                     $(".d_maxx", $el).val('');
                     $(".d_maxy", $el).val('');
                 });
-                if (layers.length > 0 ) {
+
+                if (size == 0 ) {
                     _enableRectangleCreate($mapDiv);
                 }
             });

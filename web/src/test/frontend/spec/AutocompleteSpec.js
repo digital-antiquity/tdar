@@ -62,7 +62,7 @@ describe("collection autocomplete", function(){
     it("collection autocomplete1", function(){
 
         var $elem = $('#txtResourceCollectionRow_0_id');
-        applyCollectionAutocomplete($elem, false);
+        applyCollectionAutocomplete($elem, {});
 
         $elem.focus();
         //force a lookup

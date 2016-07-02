@@ -513,7 +513,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
             return true;
         }
         if (!resource.isCountedInBillingEvaluation()) {
-            logger.debug("Skipping {} in eval b/c it's not counted", resource.getId());
+            logger.trace("Skipping {} in eval b/c it's not counted", resource.getId());
             return true;
         }
         logger.trace("mode: {}", mode);

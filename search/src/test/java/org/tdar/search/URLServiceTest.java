@@ -1,16 +1,14 @@
 package org.tdar.search;
 
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-import static org.tdar.core.bean.util.UrlUtils.sanitizeRelativeUrl;
-import static org.tdar.core.bean.util.UrlUtils.slugify;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.service.UrlService;
+
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.*;
+import static org.tdar.core.bean.util.UrlUtils.*;
 
 public class URLServiceTest {
 
@@ -40,6 +38,8 @@ public class URLServiceTest {
         assertThat(slugify("OBVIOUSLY THE LATTER!!!"), is("obviously-the-latter"));
         assertThat(slugify("...oh, okay.  No, it doesn't smell ha-ha funny."), is("oh-okay-no-it-doesnt-smell-ha-ha-funny"));
         assertThat(slugify("Thanks"), is("thanks"));
+        assertThat(slugify("Odontophoridae_(family_New_World_quails)"), is("odontophoridae_family_new_world_quails"));
+        assertThat(slugify("first-second"), is("first-second"));
     }
 
     @Test

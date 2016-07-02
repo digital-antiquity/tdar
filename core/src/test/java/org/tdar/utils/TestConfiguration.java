@@ -264,4 +264,8 @@ public class TestConfiguration {
         OS() {
         }
     }
+
+    public boolean screenshotsEnabled() {
+        return assistant.getBooleanProperty("take.screenshots", false);
+    }
 }

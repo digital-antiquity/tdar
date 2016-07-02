@@ -1,8 +1,10 @@
 package org.tdar.search.service;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
+import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateTime;
@@ -16,9 +18,11 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.service.ScheduledProcessService;
+import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
 import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
+import org.tdar.search.service.processes.upgradeTasks.PartialReindexProjectTitleProcess;
 import org.tdar.search.service.processes.weekly.WeeklyResourcesAdded;
 
 public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTestCase {
@@ -45,6 +49,26 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         scheduledProcessService.runNextScheduledProcessesInQueue();
         
     }
+    
+    @Test
+    @Rollback
+    public void testUpgradeTask() {
+        ScheduledProcess process = applicationContext.getBean(PartialReindexProjectTitleProcess.class);
+        LinkedHashSet<ScheduledProcess> tasks = scheduledProcessService.getManager().getUpgradeTasks();
+        tasks.clear();
+        tasks.add(process);
+        List<String> runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
+        assertTrue(runUpgradeTasks.contains(process.getDisplayName()));
+        scheduledProcessService.checkIfRun(process.getDisplayName());
+        process = applicationContext.getBean(PartialReindexProjectTitleProcess.class);
+        tasks.clear();
+        tasks.add(process);
+        runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
+        assertFalse(runUpgradeTasks.contains(process.getDisplayName()));
+
+    }
+    
+    
 
     @Autowired
     DailyTimedAccessRevokingProcess dtarp;

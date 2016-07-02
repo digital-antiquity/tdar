@@ -4,25 +4,25 @@
   "description": "The Digital Archaeological Record Web Application",
   "main": "index.js",
   "dependencies": {
-    "bower": "~1.5.3",
-    "grunt-cli": "~0.1.13"
+    "bower": "~1.7.9",
+    "grunt-cli": "~1.2.0"
   },
   "devDependencies": {
     "deasync": "^0.1.0",
     "jasmine-core": "^2.4.1",
-    "karma": "~0.13.10",
-    "karma-chrome-launcher": "^0.2.0",
-    "karma-coverage": "^0.5.2",
-    "karma-firefox-launcher": "^0.1.6",
-    "karma-html2js-preprocessor": "^0.1.0",
-    "karma-jasmine": "^0.3.6",
+    "karma": "~1.1.0",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-coverage": "^1.0.0",
+    "karma-firefox-launcher": "^1.0.0",
+    "karma-html2js-preprocessor": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
     "karma-jasmine-ajax": "~0.1.13",
     "karma-jasmine-jquery": "^0.1.1",
-    "karma-junit-reporter": "^0.3.2",
-    "karma-phantomjs-launcher": "^0.2.1",
-    "phantomjs": "^1.9.18",
+    "karma-junit-reporter": "^1.1.0",
+    "karma-phantomjs-launcher": "^1.0.1",
+    "phantomjs-prebuilt": "^2.1.7",
     "xml2js": "^0.4.9",
-    "xmldoc": "^0.3.2"
+    "xmldoc": "^0.5.1"
   },
   "scripts": {
     "preinstall": "echo REMINDER: npm ignores package.json when npm-shrinkwrap.json present.  Generate a new shrinkwrap if you modify your dependencies.",

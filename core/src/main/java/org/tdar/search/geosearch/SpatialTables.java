@@ -61,7 +61,7 @@ public enum SpatialTables {
             case CONTINENT:
                 return "continent";
             case COUNTRY:
-                return "fips_cntry";
+                return "long_name";
             case COUNTY:
                 return "cnty_name";
             default:

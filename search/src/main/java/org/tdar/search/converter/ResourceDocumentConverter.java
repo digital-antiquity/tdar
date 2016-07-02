@@ -69,11 +69,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;
-            if (ir.getProject() != null) {
-                doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
-                doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
-                doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
-            }
+            indexProjectInformation(doc, ir);
             doc.setField(QueryFieldNames.DATE, ir.getDate());
 
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
@@ -152,11 +148,11 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addKeyword(doc, QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, KeywordType.GEOGRAPHIC_KEYWORD, resource.getIndexedGeographicKeywords());
         Set<String> geoCodes = new HashSet<>();
         resource.getIndexedGeographicKeywords().forEach(geo -> {
-                if (geo.isActive() || geo.isDuplicate()) {
-                    if (StringUtils.isNotBlank(geo.getCode())) {
-                        geoCodes.add(geo.getCode());
-                    }
+            if (geo.isActive() || geo.isDuplicate()) {
+                if (StringUtils.isNotBlank(geo.getCode())) {
+                    geoCodes.add(geo.getCode());
                 }
+            }
         });
         doc.addField(QueryFieldNames.ACTIVE_GEOGRAPHIC_ISO, geoCodes);
         addKeyword(doc, QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, KeywordType.INVESTIGATION_TYPE, resource.getActiveInvestigationTypes());
@@ -167,7 +163,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         addKeyword(doc, QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, KeywordType.TEMPORAL_KEYWORD, resource.getActiveTemporalKeywords());
 
         doc.addField(QueryFieldNames.SITE_CODE, extractSiteCodeTokens(resource));
-        
+
         GeneralKeywordBuilder gkb = new GeneralKeywordBuilder(resource, data);
         String text = gkb.getKeywords();
         doc.setField(QueryFieldNames.ALL, text);
@@ -187,12 +183,12 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
 
             if (sup instanceof Ontology) {
-//                Ontology ont = (Ontology) sup;
+                // Ontology ont = (Ontology) sup;
                 // ontology nodes?
             }
 
             if (sup instanceof CodingSheet) {
-//                CodingSheet sheet = (CodingSheet) sup;
+                // CodingSheet sheet = (CodingSheet) sup;
                 // coding rules?
             }
         }
@@ -200,6 +196,13 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         return doc;
     }
 
+    private static void indexProjectInformation(SolrInputDocument doc, InformationResource ir) {
+        if (ir.getProject() != null) {
+            doc.setField(QueryFieldNames.PROJECT_ID, ir.getProject().getId());
+            doc.setField(QueryFieldNames.PROJECT_TITLE, ir.getProjectTitle());
+            doc.setField(QueryFieldNames.PROJECT_TITLE_SORT, ir.getProjectTitleSort());
+        }
+    }
 
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
@@ -207,7 +210,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
     }
 
-    
     private static HashSet<String> extractSiteCodeTokens(Resource resource) {
         HashSet<String> kwds = new HashSet<>();
         kwds.addAll(SiteCodeExtractor.extractSiteCodeTokens(resource.getTitle()));
@@ -221,7 +223,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         return kwds;
     }
 
-
     private static void indexTemporalInformation(SolrInputDocument doc, Resource resource) {
         for (CoverageDate date : resource.getActiveCoverageDates()) {
             doc.setField(QueryFieldNames.ACTIVE_END_DATE, date.getEndDate());
@@ -231,7 +232,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     }
 
     public static void indexCollectionInformation(SolrInputDocument doc, Resource resource) {
-        
+
         ResourceRightsExtractor rightsExtractor = new ResourceRightsExtractor(resource);
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
         doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());
@@ -326,8 +327,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             if (!k.isActive() && !k.isDuplicate()) {
                 continue;
             }
-            
-            
+
             ids.add(k.getId());
             labels.add(k.getLabel());
             if (k instanceof HierarchicalKeyword) {
@@ -345,7 +345,6 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         }
 
     }
-
 
     public static SolrInputDocument replaceCollectionFields(Resource r) {
         SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
@@ -365,5 +364,16 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         partialUpdate.put("set", doc.getField(fieldName).getValues());
         doc.setField(fieldName, partialUpdate);
     }
+
+    public static SolrInputDocument replaceProjectFields(InformationResource r) {
+        SolrInputDocument doc = ResourceDocumentConverter.convertPersistable(r);
+        ResourceDocumentConverter.indexProjectInformation(doc, r);
+        addRequiredField(r, doc);
+        replaceField(doc, QueryFieldNames.PROJECT_ID);
+        replaceField(doc, QueryFieldNames.PROJECT_TITLE);
+        replaceField(doc, QueryFieldNames.PROJECT_TITLE_SORT);
+        return doc;
+    }
+
 
 }

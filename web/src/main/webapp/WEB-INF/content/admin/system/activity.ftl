@@ -141,7 +141,15 @@
     <tbody>
         <#list sessionStatistics.queries as query>
             <#assign stat = sessionStatistics.getQueryStatistics(query) />
-            <#if (stat.executionAvgTime > threshold || stat.executionMaxTime > threshold) >
+            <#assign continue = false />
+            <#if (query?contains("select coalesce") && stat.executionAvgTime < 300)  >
+                <#assign continue = true />            
+            </#if> 
+            <#if (stat.executionAvgTime > threshold || stat.executionMaxTime > threshold)>
+                <#assign continue = true />            
+            </#if>
+
+            <#if continue>
             <tr>
                 <td><b>${query}</b></td>
                 <td>${stat.executionCount}</td>

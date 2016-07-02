@@ -36,7 +36,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
 
     @Autowired
     private transient CollectionSearchService collectionSearchService;
-    
+
     private String term;
     private GeneralPermissions permission;
 
@@ -54,7 +54,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
                 CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
                 csqo.setPermission(getPermission());
                 csqo.getTitles().add(getTerm());
-                collectionSearchService.lookupCollection(getAuthenticatedUser(), csqo,this,this);
+                collectionSearchService.lookupCollection(getAuthenticatedUser(), csqo, this, this);
             } catch (ParseException e) {
                 addActionErrorWithException(getText("abstractLookupController.invalid_syntax"), e);
                 return ERROR;

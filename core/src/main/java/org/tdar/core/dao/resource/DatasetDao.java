@@ -269,6 +269,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
         return query.getResultList();
     }
+    
+    
 
     @SuppressWarnings("unchecked")
     public List<Resource> findAllSparseActiveResources() {
@@ -442,6 +444,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         return scroll;
+    }
+    
+    public ScrollableResults findAllResourceWithProjectsScrollable() {
+        Query query = getCurrentSession().createQuery("from InformationResource ir where ir.project is not null");
+        query.scroll(ScrollMode.FORWARD_ONLY);;
+        return query.scroll(ScrollMode.FORWARD_ONLY);
     }
 
     public Number countMappedResources() {

@@ -41,9 +41,26 @@
         </addColumn>
     </changeSet>
     <changeSet id="obsidian-4" author="abrin">
-    	<addColumn tableName="resource_revision_log">
+        <addColumn tableName="resource_revision_log">
             <column name="revision_type" type="varchar(50)" />
             <column name="time_seconds" type="bigint" />
-    	</addColumn>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-5" author="abrin">
+        <update tableName="data_integration_workflow">
+        <column name="hidden" valueBoolean="true"/></update>
+    </changeSet>
+    
+    <changeSet id="obsidian-6" author="abrin">
+    <comment>setting up resource revision log (type) based on unique keys/values</comment>    
+    <sql>
+        update  resource_revision_log set revision_type='DELETE' where log_message ilike '%deleted by%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike '%edited and saved%';
+        update  resource_revision_log set revision_type='CREATE' where log_message ilike '%created\:%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike 'updated:%';
+        update  resource_revision_log set revision_type='CREATE' where log_message ilike 'clone%';
+        update  resource_revision_log set revision_type='EDIT' where log_message ilike '%genearting%';
+    </sql>
     </changeSet>
 </databaseChangeLog>
