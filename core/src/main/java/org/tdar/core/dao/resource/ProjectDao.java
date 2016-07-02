@@ -3,7 +3,7 @@ package org.tdar.core.dao.resource;
 import java.util.List;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.ScrollableResults;
 import org.hibernate.type.StandardBasicTypes;
 import org.slf4j.Logger;
@@ -34,13 +34,13 @@ public class ProjectDao extends ResourceDao<Project> {
 
     public List<Project> findAllEditableProjects(final Person person) {
         Query query = getCurrentSession().getNamedQuery(QUERY_READ_ONLY_EDITABLE_PROJECTS);// QUERY_PROJECT_EDITABLE
-        query.setLong("submitterId", person.getId());
-        return query.list();
+        query.setParameter("submitterId", person.getId());
+        return query.getResultList();
     }
 
     public Boolean containsIntegratableDatasets(Project project) {
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECT_COUNT_INTEGRATABLE_DATASETS);
-        query.setLong("projectId", project.getId());
+        query.setParameter("projectId", project.getId());
         return (Long) query.uniqueResult() > 0;
     }
 
@@ -50,16 +50,16 @@ public class ProjectDao extends ResourceDao<Project> {
         }
         Query query = getCurrentSession().getNamedQuery(QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS);
         logger.debug("setting parameter list");
-        query.setParameterList("projectIdList", projectIds, StandardBasicTypes.LONG);
+        query.setParameter("projectIdList", projectIds, StandardBasicTypes.LONG);
         return (Long) query.uniqueResult() > 0;
     }
 
     // TODO:maxResults ignored for now. You can have as many results as you'd like, so long as it's 5
     public List<Resource> findSparseRecentlyEditedResources(Person updater, int maxResults) {
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RECENT_EDITS);
-        query.setLong("personId", updater.getId());
+        query.setParameter("personId", updater.getId());
         query.setMaxResults(maxResults);
-        return query.list();
+        return query.getResultList();
     }
 
     /**
@@ -68,8 +68,8 @@ public class ProjectDao extends ResourceDao<Project> {
      */
     public List<Project> findEmptyProjects(Person updater) {
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_EMPTY_PROJECTS);
-        query.setLong("submitter", updater.getId());
-        return query.list();
+        query.setParameter("submitter", updater.getId());
+        return query.getResultList();
     }
 
     /**
@@ -77,14 +77,14 @@ public class ProjectDao extends ResourceDao<Project> {
      */
     public List<Project> findAllSparse() {
         Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_PROJECTS);
-        return query.list();
+        return query.getResultList();
     }
 
     public ScrollableResults findAllResourcesInProject(Project project, Status... statuses) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT);
         if (ArrayUtils.isNotEmpty(statuses)) {
             query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_IN_PROJECT_WITH_STATUS);
-            query.setParameterList("statuses", statuses);
+            query.setParameter("statuses", statuses);
         }
         query.setParameter("projectId", project.getId());
         return query.scroll();

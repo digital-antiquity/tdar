@@ -11,7 +11,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import org.apache.commons.lang.StringUtils;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -113,7 +112,7 @@ public class ReflectionDao {
 
         hql = String.format(fmt, targetClass, field.getName());
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameterList("idlist", idlist);
+        query.setParameter("idlist", idlist);
         return (Long) query.uniqueResult();
     }
 
@@ -160,8 +159,8 @@ public class ReflectionDao {
 
         hql = String.format(fmt, targetClass, field.getName());
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameterList("idlist", idlist);
-        return query.list();
+        query.setParameter("idlist", idlist);
+        return query.getResultList();
     }
 
     public void updateReferrersToAuthority(Field field, List<Long> dupeIds, Long authorityId) {

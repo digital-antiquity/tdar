@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.junit.Assert;
@@ -59,8 +59,8 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     public void testGetProjects() {
         Assert.assertNotNull(sessionFactory);
         Query query = getCurrentSession().createQuery("from Resource where id = :id");
-        query.setLong("id", 1L);
-        List<Resource> list = query.list();
+        query.setParameter("id", 1L);
+        List<Resource> list = query.getResultList();
         assertNotNull(query);
         assertNotNull(list);
         assertTrue(list.size() > 0);
@@ -71,9 +71,9 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     public void testManyToOne() {
         String queryFormat = "from Resource where %s = :val";
         Query query = session.createQuery(String.format(queryFormat, "submitter_id"));
-        query.setLong("val", 8422L);
+        query.setParameter("val", 8422L);
         logger.debug("query is:{}", query.getQueryString());
-        List list = query.list();
+        List list = query.getResultList();
         assertTrue(list.size() > 0);
     }
 
@@ -81,7 +81,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     public void testOneToMany() {
         String str = "select resource from Resource resource inner join resource.resourceCreators rc";
         Query query = session.createQuery(str);
-        query.list();
+        query.getResultList();
     }
 
     @Test
@@ -121,7 +121,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     @Test
     public void testSimpleSelect() {
         Query query = session.createQuery("from Resource");
-        logger.debug("size:{}", query.list().size());
+        logger.debug("size:{}", query.getResultList().size());
     }
 
     @Test
@@ -142,9 +142,9 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         // "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
         String hql = String.format(TdarNamedQueries.QUERY_HQL_MANY_TO_MANY_REFERENCES, Resource.class.getSimpleName(), cultureKeywordField.getName());
         Query query = session.createQuery(hql);
-        query.setParameterList("idlist", idlist);
+        query.setParameter("idlist", idlist);
 
-        List<Resource> results = query.list();
+        List<Resource> results = query.getResultList();
         logger.debug("keywords: {}", results);
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
         assertTrue(Collection.class.isAssignableFrom(cultureKeywordField.getType()));
@@ -170,8 +170,8 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     public void testManyToOneParm() {
         String hql = String.format(TdarNamedQueries.QUERY_HQL_MANY_TO_ONE_REFERENCES, Resource.class.getSimpleName(), "submitter");
         Query query = session.createQuery(hql);
-        query.setParameterList("idlist", Arrays.asList(6L, 38L));
-        List results = query.list();
+        query.setParameter("idlist", Arrays.asList(6L, 38L));
+        List results = query.getResultList();
         logger.debug("keywords: {}", results);
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
 
@@ -183,8 +183,8 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         String hql1 = "select new Project(project.id, project.title) from Project project where (submitter.id=:submitter) and id not in (select resource.project.id from InformationResource resource where resource.status='ACTIVE' and resource.project.id is not null) and (status='ACTIVE' or status='DRAFT')";
         String hql2 = "select new Project(project.id, project.title) from Project project where (submitter.id=:submitter) and not exists(select 1 from InformationResource ir where ir.status='ACTIVE' and ir.project.id = project.id) and project.status in ('ACTIVE', 'DRAFT')";
 
-        List<Project> list1 = session.getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EMPTY_PROJECTS).setLong("submitter", 8092).list();
-        List<Project> list2 = session.createQuery(hql2).setLong("submitter", 8092).list();
+        List<Project> list1 = session.getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EMPTY_PROJECTS).setParameter("submitter", 8092).list();
+        List<Project> list2 = session.createQuery(hql2).setParameter("submitter", 8092).list();
         assertTrue(CollectionUtils.isNotEmpty(list1));
         assertTrue(list1.containsAll(list2));
         assertTrue(list2.containsAll(list1));
@@ -197,8 +197,8 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         Field cultureKeywordField = set.iterator().next();
         String hql = String.format(TdarNamedQueries.QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES_MAP, Resource.class.getSimpleName(), cultureKeywordField.getName());
         Query query = getCurrentSession().createQuery(hql);
-        query.setParameterList("idlist", Arrays.asList(120L, 8L, 40L, 25L));
-        List<Object> list = query.list();
+        query.setParameter("idlist", Arrays.asList(120L, 8L, 40L, 25L));
+        List<Object> list = query.getResultList();
         logger.debug("list size:{}, contents:{}", list.size(), list.toString());
 
     }
@@ -208,8 +208,8 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     public void testGetReferenceCountManyToOne() {
         String hql = String.format(TdarNamedQueries.QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES_MAP, Resource.class.getSimpleName(), "submitter");
         Query query = session.createQuery(hql);
-        query.setParameterList("idlist", Arrays.asList(6L, 38L));
-        List results = query.list();
+        query.setParameter("idlist", Arrays.asList(6L, 38L));
+        List results = query.getResultList();
         logger.debug("keywords: {}", results);
         Assert.assertTrue("list shouldn't be empty", CollectionUtils.isNotEmpty(results));
     }
@@ -219,7 +219,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
     public void testGetKeywordCounts() {
         String hql = TdarNamedQueries.QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED;
         Query query = session.getNamedQuery(hql);
-        List results = query.list();
+        List results = query.getResultList();
         logger.debug("keywords: {}", results);
         for (Object obj : results) {
             Object[] singleResult = (Object[]) obj;
@@ -241,7 +241,7 @@ public class HqlITCase extends AbstractIntegrationTestCase {
         // query.setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY);
         // query.setRecordsPerPage(10); //implicitly applies "distinct" functionality
         query.setFirstResult(0); // implicitly applies "distinct"
-        List results = query.list();
+        List results = query.getResultList();
         getLogger().debug("result size:{}", results.size());
         for (Object item : results) {
             getLogger().debug("result[{}] ihc:{}", item, System.identityHashCode(item));

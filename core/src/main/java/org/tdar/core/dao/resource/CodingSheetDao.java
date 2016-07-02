@@ -3,7 +3,7 @@ package org.tdar.core.dao.resource;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Ontology;
@@ -31,8 +31,8 @@ public class CodingSheetDao extends ResourceDao<CodingSheet> {
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY);
         query.setParameter("ontologyId", ontology.getId());
-        query.setParameterList("statuses", statuses);
-        return query.list();
+        query.setParameter("statuses", statuses);
+        return query.getResultList();
     }
 
 }

@@ -4,7 +4,6 @@ import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -16,7 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -29,7 +28,6 @@ import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.billing.Coupon;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
-import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
@@ -68,8 +66,8 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         List<BillingAccount> accountGroups = new ArrayList<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personid", user.getId());
-        query.setParameterList("statuses", statuses);
-        accountGroups.addAll(query.list());
+        query.setParameter("statuses", statuses);
+        accountGroups.addAll(query.getResultList());
         for (BillingAccountGroup group : findAccountGroupsForUser(user)) {
             accountGroups.addAll(group.getAccounts());
         }
@@ -80,8 +78,8 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     public List<BillingAccountGroup> findAccountGroupsForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON);
         query.setParameter("personid", user.getId());
-        query.setParameterList("statuses", Arrays.asList(Status.ACTIVE));
-        return query.list();
+        query.setParameter("statuses", Arrays.asList(Status.ACTIVE));
+        return query.getResultList();
 
     }
 
@@ -95,15 +93,15 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, BillingAccount account) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
-        query.setParameterList("ids", PersistableUtils.extractIds(resourcesToEvaluate));
-        return query.list();
+        query.setParameter("ids", PersistableUtils.extractIds(resourcesToEvaluate));
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
-        query.setParameterList("ids", PersistableUtils.extractIds(resourcesToEvaluate));
-        return query.list();
+        query.setParameter("ids", PersistableUtils.extractIds(resourcesToEvaluate));
+        return query.getResultList();
     }
 
     @Transactional(readOnly=true)
@@ -113,10 +111,10 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         if (CollectionUtils.isEmpty(resourceIdMap.keySet()) || ((resourceIdMap.keySet().size() == 1) && resourceIdMap.keySet().contains(-1L))) {
             return;
         }
-        Query query = getCurrentSession().createSQLQuery(sql);
+        Query query = getCurrentSession().createNativeQuery(sql);
 
         Map<Long, BillingAccount> accountIdMap = new HashMap<>();
-        for (Object objs : query.list()) {
+        for (Object objs : query.getResultList()) {
             Object[] obj = (Object[]) objs;
             Long resourceId = ((BigInteger) obj[0]).longValue();
             Long accountId = null;
@@ -142,10 +140,10 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_QUOTA_INIT);
         query.setParameter("accountId", account.getId());
         List<Status> statuses = new ArrayList<>(CollectionUtils.disjunction(Arrays.asList(Status.values()), re.getUncountedResourceStatuses()));
-        query.setParameterList("statuses", statuses);
+        query.setParameter("statuses", statuses);
         Long totalFiles = 0L;
         Long totalSpaceInBytes = 0L;
-        for (Object objs : query.list()) {
+        for (Object objs : query.getResultList()) {
             Object[] obj = (Object[]) objs;
             if (obj[0] != null) {
                 totalFiles = ((Long) obj[0]).longValue();
@@ -167,15 +165,15 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     public List<Invoice> findUnassignedInvoicesForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON);
         query.setParameter("personId", user.getId());
-        query.setParameterList("statuses", Arrays.asList(TransactionStatus.TRANSACTION_SUCCESSFUL));
-        return query.list();
+        query.setParameter("statuses", Arrays.asList(TransactionStatus.TRANSACTION_SUCCESSFUL));
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<Invoice> findInvoicesForUser(Person user) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.INVOICES_FOR_PERSON);
         query.setParameter("personId", user.getId());
-        return query.list();
+        return query.getResultList();
     }
 
     public Coupon findCoupon(String code, Person user) {
@@ -193,7 +191,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_INVOICE_FOR_COUPON);
         query.setParameter("code", coupon.getCode().toLowerCase());
-        for (Invoice inv : (List<Invoice>) query.list()) {
+        for (Invoice inv : (List<Invoice>) query.getResultList()) {
             if (inv.getTransactionStatus().isComplete()) {
                 throw new TdarRecoverableRuntimeException("accountDao.coupon_already_used");
             }

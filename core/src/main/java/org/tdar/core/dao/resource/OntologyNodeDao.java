@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.OntologyNode;
@@ -30,19 +30,19 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
     @SuppressWarnings("unchecked")
     public List<OntologyNode> getAllChildren(OntologyNode ontologyNode) {
         Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN);
-        query.setLong("ontologyId", ontologyNode.getOntology().getId());
-        query.setLong("intervalStart", ontologyNode.getIntervalStart());
-        query.setLong("intervalEnd", ontologyNode.getIntervalEnd());
-        return query.list();
+        query.setParameter("ontologyId", ontologyNode.getOntology().getId());
+        query.setParameter("intervalStart", ontologyNode.getIntervalStart());
+        query.setParameter("intervalEnd", ontologyNode.getIntervalEnd());
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<OntologyNode> getAllChildrenWithIndexWildcard(OntologyNode ontologyNode) {
         Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD);
-        query.setLong("ontologyId", ontologyNode.getOntology().getId());
+        query.setParameter("ontologyId", ontologyNode.getOntology().getId());
         String indexWildcardString = ontologyNode.getIndex() + ".%";
-        query.setString("indexWildcardString", indexWildcardString);
-        return query.list();
+        query.setParameter("indexWildcardString", indexWildcardString);
+        return query.getResultList();
     }
 
     public Set<OntologyNode> getAllChildren(List<OntologyNode> selectedOntologyNodes) {
@@ -56,8 +56,8 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
 
     public List<Dataset> findDatasetsUsingNode(OntologyNode node) {
         List<Long> ids = new ArrayList<>();
-        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()));
-        for (Object obj : query.list()) {
+        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()));
+        for (Object obj : query.getResultList()) {
             ids.add(((Number) obj).longValue());
         }
         return findAll(Dataset.class, ids);
@@ -65,10 +65,10 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
 
     public OntologyNode getParentNode(OntologyNode node) {
         Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_PARENT);
-        query.setLong("ontologyId", node.getOntology().getId());
+        query.setParameter("ontologyId", node.getOntology().getId());
         if (node.getIndex().indexOf(".") != -1) {
             String index = node.getIndex().substring(0, node.getIndex().lastIndexOf("."));
-            query.setString("index", index);
+            query.setParameter("index", index);
             return (OntologyNode) query.uniqueResult();
         }
         return null;

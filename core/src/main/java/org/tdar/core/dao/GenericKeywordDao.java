@@ -11,7 +11,7 @@ import javax.persistence.Table;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
@@ -134,13 +134,13 @@ public class GenericKeywordDao extends GenericDao {
             String tableName = (String) AnnotationUtils.getValue(AnnotationUtils.getAnnotation(type.getKeywordClass(), Table.class), NAME);
             Session session = getCurrentSession();
             logger.info("{} {} ", inheritanceField, tableName);
-            session.createSQLQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
+            session.createNativeQuery(String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_CLEAR_COUNT, tableName)).executeUpdate();
             String format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT, tableName);
             logger.trace(format);
-            session.createSQLQuery(format).executeUpdate();
+            session.createNativeQuery(format).executeUpdate();
             format = String.format(TdarNamedQueries.UPDATE_KEYWORD_OCCURRENCE_COUNT_INHERITANCE, tableName, inheritanceField);
             logger.trace(format);
-            session.createSQLQuery(format).executeUpdate();
+            session.createNativeQuery(format).executeUpdate();
             logger.info("completed update on {}", tableName);
         }
     }
@@ -148,9 +148,9 @@ public class GenericKeywordDao extends GenericDao {
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
-        Query query = getCurrentSession().createSQLQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
+        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = query.list();
+        List<BigInteger> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

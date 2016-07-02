@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
@@ -34,8 +34,8 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         }
         Query query = getCurrentSession().getNamedQuery(QUERY_DATATABLE_RELATED_ID);
         getLogger().trace("Searching for linked resources to {}", resource.getId());
-        query.setLong("relatedId", resource.getId());
-        return query.list();
+        query.setParameter("relatedId", resource.getId());
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -52,7 +52,7 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         query.setFirstResult(searchFilter.getStartRecord());
         query.setReadOnly(true);
         List<DataTableProxy> proxies = new ArrayList<>();
-        for (Object[] obj_ : (List<Object[]>) query.list()) {
+        for (Object[] obj_ : (List<Object[]>) query.getResultList()) {
             DataTable dataTable = (DataTable) obj_[0];
             proxies.add(new DataTableProxy(dataTable));
         }

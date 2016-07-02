@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -33,7 +33,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
 
     public int getNumberOfMappedDataValues(Ontology ontology) {
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_NUMBER_OF_MAPPED_DATA_VALUES_FOR_ONTOLOGY);
-        query.setLong("ontologyId", ontology.getId());
+        query.setParameter("ontologyId", ontology.getId());
         return ((Long) query.uniqueResult()).intValue();
     }
 
@@ -57,7 +57,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
             return;
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES);
-        query.setParameterList("ontologyNodes", toDelete);
+        query.setParameter("ontologyNodes", toDelete);
         query.executeUpdate();
 
     }
@@ -69,7 +69,7 @@ public class OntologyDao extends ResourceDao<Ontology> {
         query.setFirstResult(searchFilter.getStartRecord());
         query.setMaxResults(searchFilter.getRecordsPerPage());
         IntegrationOntologySearchResult result = new IntegrationOntologySearchResult();
-        for (Ontology ontology : (List<Ontology>) query.list()) {
+        for (Ontology ontology : (List<Ontology>) query.getResultList()) {
             result.getOntologies().add(new OntologyProxy(ontology));
         }
         return result;

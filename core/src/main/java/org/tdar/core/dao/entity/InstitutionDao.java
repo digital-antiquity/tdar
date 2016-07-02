@@ -4,7 +4,7 @@ import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
@@ -33,9 +33,9 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
     }
 
     public Institution findAuthorityFromDuplicate(Institution dup) {
-        Query query = getCurrentSession().createSQLQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
+        Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         @SuppressWarnings("unchecked")
-        List<BigInteger> result = query.list();
+        List<BigInteger> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

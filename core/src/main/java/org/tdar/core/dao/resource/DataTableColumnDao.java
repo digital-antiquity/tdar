@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
@@ -58,8 +58,8 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_MAPPED_CODING_RULES);
         query.setParameter("codingSheetId", sheet.getId());
-        query.setParameterList("valuesToMatch", valuesToMatch);
-        return query.list();
+        query.setParameter("valuesToMatch", valuesToMatch);
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -68,8 +68,8 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
             return Collections.emptyList();
         }
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY);
-        query.setLong("datasetId", dataset.getId());
-        return query.list();
+        query.setParameter("datasetId", dataset.getId());
+        return query.getResultList();
     }
 
     public CodingSheet setupGeneratedCodingSheet(DataTableColumn column, Dataset dataset, TdarUser user, TextProvider provider, Ontology ontology) {

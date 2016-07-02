@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.BookmarkedResource;
@@ -45,8 +45,8 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
             return null;
         }
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_IS_ALREADY_BOOKMARKED);
-        query.setLong("resourceId", resource.getId());
-        query.setLong("personId", person.getId());
+        query.setParameter("resourceId", resource.getId());
+        query.setParameter("personId", person.getId());
         return (BookmarkedResource) query.uniqueResult();
     }
 
@@ -55,8 +55,8 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
             return;
         }
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_REMOVE_BOOKMARK);
-        query.setLong("resourceId", resource.getId());
-        query.setLong("personId", person.getId());
+        query.setParameter("resourceId", resource.getId());
+        query.setParameter("personId", person.getId());
         query.executeUpdate();
     }
 
@@ -70,9 +70,9 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
             return Collections.emptyList();
         }
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCE_FIND_RESOURCE_BY_PERSON);
-        query.setParameterList("statuses", statuses);
-        query.setLong("personId", person.getId());
-        List<Resource> resources = query.list();
+        query.setParameter("statuses", statuses);
+        query.setParameter("personId", person.getId());
+        List<Resource> resources = query.getResultList();
         for (Resource res : resources) {
             res.setBookmarked(true);
         }
@@ -81,9 +81,9 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
 
     public List<BookmarkedResource> findBookmarksResourcesByPerson(TdarUser user) {
         Query query = getCurrentSession().getNamedQuery(QUERY_BOOKMARKEDRESOURCES_FOR_USER);
-        query.setLong("personId", user.getId());
+        query.setParameter("personId", user.getId());
         @SuppressWarnings("unchecked")
-        List<BookmarkedResource> resources = query.list();
+        List<BookmarkedResource> resources = query.getResultList();
         return resources;
     }
 }

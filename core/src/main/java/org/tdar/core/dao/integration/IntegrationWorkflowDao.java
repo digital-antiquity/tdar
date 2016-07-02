@@ -2,7 +2,7 @@ package org.tdar.core.dao.integration;
 
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
@@ -24,6 +24,6 @@ public class IntegrationWorkflowDao extends Dao.HibernateBase<DataIntegrationWor
         } else {
             query.setParameter("userId", authorizedUser.getId());
         }
-        return query.list();
+        return query.getResultList();
     }
 }

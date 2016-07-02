@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.ArrayUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.CriteriaSpecification;
@@ -46,10 +46,10 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public Map<String, Long> getAdminFileExtensionStats() {
         Query query = getCurrentSession().getNamedQuery(QUERY_KEYWORD_COUNT_FILE_EXTENSION);
-        query.setParameterList("internalTypes", Arrays.asList(VersionType.ARCHIVAL,
+        query.setParameter("internalTypes", Arrays.asList(VersionType.ARCHIVAL,
                 VersionType.UPLOADED, VersionType.UPLOADED_ARCHIVAL));
         Map<String, Long> toReturn = new HashMap<>();
-        for (Object o : query.list()) {
+        for (Object o : query.getResultList()) {
             try {
                 Object[] objs = (Object[]) o;
                 if (ArrayUtils.isEmpty(objs)) {
@@ -68,7 +68,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public Number getDownloadCount(InformationResourceFile irFile) {
         String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
-        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
+        return (Number) getCurrentSession().createNativeQuery(sql).uniqueResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {
@@ -105,8 +105,8 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
     @SuppressWarnings("unchecked")
     public List<InformationResourceFile> findFilesWithStatus(FileStatus[] statuses) {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATUS);
-        query.setParameterList("statuses", Arrays.asList(statuses));
-        return query.list();
+        query.setParameter("statuses", Arrays.asList(statuses));
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -115,11 +115,11 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
             List<FileStatus> fileStatus) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_STATUS);
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
-        query.setParameterList("statuses", resourceStatus);
-        query.setParameterList("fileStatuses", fileStatus);
+        query.setParameter("statuses", resourceStatus);
+        query.setParameter("fileStatuses", fileStatus);
         query.setParameter("submitterId", authenticatedUser.getId());
         List<InformationResource> list = new ArrayList<>();
-        for (ResourceProxy proxy : (List<ResourceProxy>) query.list()) {
+        for (ResourceProxy proxy : (List<ResourceProxy>) query.getResultList()) {
             try {
                 list.add((InformationResource) proxy.generateResource());
             } catch (IllegalAccessException | InvocationTargetException
@@ -140,7 +140,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_FILE_EMBARGO_EXIPRED);
         DateTime today = new DateTime().withTimeAtStartOfDay();
         query.setParameter("dateStart", today.toDate());
-        return query.list();
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -149,6 +149,6 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
         DateTime today = new DateTime().plusDays(1).withTimeAtStartOfDay();
         query.setParameter("dateStart", today.toDate());
         query.setParameter("dateEnd", today.plusDays(1).toDate());
-        return query.list();
+        return query.getResultList();
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.ResourceType;
@@ -29,9 +29,9 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         Query query = getCurrentSession().getNamedQuery(QUERY_USAGE_STATS);
         query.setDate("fromDate", fromDate);
         query.setDate("toDate", toDate);
-        query.setParameterList("statTypes", types);
+        query.setParameter("statTypes", types);
         Map<Date, Map<StatisticType, Long>> toReturn = new HashMap<Date, Map<StatisticType, Long>>();
-        for (AggregateStatistic result : (List<AggregateStatistic>) query.list()) {
+        for (AggregateStatistic result : (List<AggregateStatistic>) query.getResultList()) {
             Date date = result.getRecordedDate();
             if (!toReturn.containsKey(date)) {
                 toReturn.put(date, new HashMap<StatisticType, Long>());
@@ -48,9 +48,9 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
 
     @SuppressWarnings("unchecked")
     public Map<ResourceType, List<BigInteger>> getCurrentResourceStats() {
-        Query query = getCurrentSession().createSQLQuery(QUERY_SQL_RAW_RESOURCE_STAT_LOOKUP);
+        Query query = getCurrentSession().createNativeQuery(QUERY_SQL_RAW_RESOURCE_STAT_LOOKUP);
         Map<ResourceType, List<BigInteger>> toReturn = new HashMap<ResourceType, List<BigInteger>>();
-        for (Object[] result_ : (List<Object[]>) query.list()) {
+        for (Object[] result_ : (List<Object[]>) query.getResultList()) {
             List<BigInteger> stat = new ArrayList<BigInteger>();
             toReturn.put(ResourceType.valueOf((String) result_[0]), stat);
             stat.add((BigInteger) result_[1]);
@@ -64,9 +64,9 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     @SuppressWarnings("unchecked")
     public Map<String, List<Number>> getFileAverageStats(List<VersionType> types) {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_STATS);
-        query.setParameterList("types", types);
+        query.setParameter("types", types);
         Map<String, List<Number>> toReturn = new HashMap<String, List<Number>>();
-        for (Object[] result_ : (List<Object[]>) query.list()) {
+        for (Object[] result_ : (List<Object[]>) query.getResultList()) {
             List<Number> stat = new ArrayList<Number>();
             toReturn.put((String) result_[0], stat);
             stat.add((Double) result_[1]); // average
@@ -80,7 +80,7 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     public List<Pair<Long, Long>> getUserLoginStats() {
         Query query = getCurrentSession().getNamedQuery(QUERY_LOGIN_STATS);
         List<Pair<Long, Long>> toReturn = new ArrayList<Pair<Long, Long>>();
-        for (Object[] result_ : (List<Object[]>) query.list()) {
+        for (Object[] result_ : (List<Object[]>) query.getResultList()) {
             Number total = (Number) result_[0];
             Number count = (Number) result_[1];
             toReturn.add(Pair.create(total.longValue(), count.longValue()));
@@ -91,9 +91,9 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     @SuppressWarnings("unchecked")
     public Map<String, Long> getFileStats(List<VersionType> types) {
         Query query = getCurrentSession().getNamedQuery(QUERY_FILE_SIZE_TOTAL);
-        query.setParameterList("types", types);
+        query.setParameter("types", types);
         Map<String, Long> toReturn = new HashMap<>();
-        for (Object[] result_ : (List<Object[]>) query.list()) {
+        for (Object[] result_ : (List<Object[]>) query.getResultList()) {
             String txt = StringUtils.upperCase((String) result_[0]);
             switch (txt) {
                 case "JPEG":

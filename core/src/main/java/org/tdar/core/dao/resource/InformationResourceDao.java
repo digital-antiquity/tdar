@@ -3,7 +3,7 @@ package org.tdar.core.dao.resource;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
@@ -30,7 +30,7 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
 
     public InformationResourceFile findFileByFilename(InformationResource resource, String filename) {
         Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME);
-        query.setString("filename", filename).setEntity("resource", resource);
+        query.setParameter("filename", filename).setEntity("resource", resource);
         return (InformationResourceFile) query.uniqueResult();
     }
 
@@ -49,14 +49,14 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
     @SuppressWarnings("unchecked")
     public List<BrowseDecadeCountCache> findResourcesByDecade(Status ... statuses) {
         Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_BY_DECADE);
-        query.setParameterList("statuses", statuses);
-        return query.list();
+        query.setParameter("statuses", statuses);
+        return query.getResultList();
     }
 
     public List<BrowseYearCountCache> findResourcesByYear(Status ... statuses) {
-        Query query = getCurrentSession().createSQLQuery(QUERY_SQL_RESOURCES_BY_YEAR);
+        Query query = getCurrentSession().createNativeQuery(QUERY_SQL_RESOURCES_BY_YEAR);
         List<BrowseYearCountCache> result = new ArrayList<BrowseYearCountCache>();
-        for (Object obj : query.list()) {
+        for (Object obj : query.getResultList()) {
             Object[] row = (Object[]) obj;
             result.add(new BrowseYearCountCache(((Number) row[0]).intValue(), ((Number) row[1]).longValue()));
         }
