@@ -16,11 +16,10 @@ public class IntegrationWorkflowDao extends Dao.HibernateBase<DataIntegrationWor
         super(DataIntegrationWorkflow.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<DataIntegrationWorkflow> getWorkflowsForUser(TdarUser authorizedUser, boolean admin) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.WORKFLOWS_BY_USER);
+        Query<DataIntegrationWorkflow> query = getCurrentSession().createNamedQuery(TdarNamedQueries.WORKFLOWS_BY_USER, DataIntegrationWorkflow.class);
         if (admin) {
-            query = getCurrentSession().getNamedQuery(TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN);
+            query = getCurrentSession().createNamedQuery(TdarNamedQueries.WORKFLOWS_BY_USER_ADMIN,DataIntegrationWorkflow.class);
         } else {
             query.setParameter("userId", authorizedUser.getId());
         }

@@ -33,8 +33,7 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
     }
 
     public Institution findAuthorityFromDuplicate(Institution dup) {
-        Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
-        @SuppressWarnings("unchecked")
+        Query<BigInteger> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), BigInteger.class);
         List<BigInteger> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
@@ -51,10 +50,10 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
     }
 
     public boolean canEditInstitution(TdarUser authenticatedUser, Institution item) {
-        Query query = getNamedQuery(TdarNamedQueries.CAN_EDIT_INSTITUTION);
+        Query<Boolean> query = getNamedQuery(TdarNamedQueries.CAN_EDIT_INSTITUTION, Boolean.class);
         query.setParameter("institutionId", item.getId());
         query.setParameter("userId", authenticatedUser.getId());
-        Boolean result = (Boolean) query.uniqueResult();
+        Boolean result = (Boolean) query.getSingleResult();
         if (result == null) {
             return false;
         }

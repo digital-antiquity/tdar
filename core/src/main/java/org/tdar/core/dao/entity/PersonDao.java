@@ -12,11 +12,11 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -54,7 +54,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     @SuppressWarnings("unchecked")
     public List<TdarUser> findAllRegisteredUsers(Integer num) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
+        Query<TdarUser> query = getCurrentSession().getNamedQuery(QUERY_RECENT_USERS_ADDED);
         if ((num != null) && (num > 0)) {
             query.setMaxResults(num);
         }
@@ -65,7 +65,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public List<Person> findSimilarPeople(TdarUser user) {
         List<Person> people = new ArrayList<>();
         String initial = user.getFirstName().substring(0, 1).toUpperCase();
-        Query query = getCurrentSession().getNamedQuery(QUERY_SIMILAR_PEOPLE);
+        Query<Person> query = getCurrentSession().getNamedQuery(QUERY_SIMILAR_PEOPLE);
         query.setParameter("firstName", user.getFirstName());
         query.setParameter("lastName", user.getLastName());
         query.setParameter("initial", initial);
@@ -118,8 +118,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Person findAuthorityFromDuplicate(Creator<?> dup) {
-        Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
-        @SuppressWarnings("unchecked")
+        Query<BigInteger> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), BigInteger.class);
         List<BigInteger> result = query.getResultList();
         if (CollectionUtils.isNotEmpty(result)) {
             try {
@@ -181,7 +180,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     @SuppressWarnings("unchecked")
     public Set<Long> findAllContributorIds() {
         Set<Long> ids = new HashSet<>();
-        for (Number obj_ : (List<Number>) getCurrentSession().createNativeQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).list()) {
+        for (Number obj_ : (List<Number>) getCurrentSession().createNativeQuery(TdarNamedQueries.DISTINCT_SUBMITTERS).getResultList()) {
             ids.add(obj_.longValue());
         }
         return ids;
@@ -248,9 +247,9 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Long getCreatorViewCount(Creator<?> creator) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
+        Query<Number> query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
         query.setParameter("id", creator.getId());
-        Number result = (Number) query.uniqueResult();
+        Number result = query.getSingleResult();
         return result.longValue();
     }
 
@@ -266,7 +265,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     public Map<AgreementTypes, Long> getAgreementCounts() {
         HashMap<AgreementTypes, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AGREEMENT_COUNTS);
-        Object[] result = (Object[]) query.uniqueResult();
+        Object[] result = (Object[]) query.getSingleResult();
         toReturn.put(AgreementTypes.USER_AGREEMENT, ((Number) result[0]).longValue());
         toReturn.put(AgreementTypes.CONTRIBUTOR_AGREEMENT, ((Number) result[1]).longValue());
         return toReturn;

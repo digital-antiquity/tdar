@@ -15,11 +15,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.query.Query;
-import org.hibernate.type.ListType;
-import org.hibernate.type.Type;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -66,7 +64,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         // this does not return unique results
         List<BillingAccount> accountGroups = new ArrayList<>();
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
+        Query<BillingAccount> query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNTS_FOR_PERSON);
         query.setParameter("personid", user.getId());
         query.setParameter("statuses", Arrays.asList(statuses));
         accountGroups.addAll(query.getResultList());
@@ -78,7 +76,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     @SuppressWarnings("unchecked")
     public List<BillingAccountGroup> findAccountGroupsForUser(Person user) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON);
+        Query<BillingAccountGroup> query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUPS_FOR_PERSON);
         query.setParameter("personid", user.getId());
         query.setParameter("statuses", Arrays.asList(Status.ACTIVE));
         return query.getResultList();
@@ -86,14 +84,14 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     public BillingAccountGroup getAccountGroup(BillingAccount account) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
+        Query<BillingAccountGroup> query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
         query.setParameter("accountId", account.getId());
-        return (BillingAccountGroup) query.uniqueResult();
+        return (BillingAccountGroup) query.getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithDifferentAccount(List<Resource> resourcesToEvaluate, BillingAccount account) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
+        Query<Long> query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NON_MATCHING_ACCOUNT_ID);
         query.setParameter("accountId", account.getId());
         query.setParameter("ids", PersistableUtils.extractIds(resourcesToEvaluate));
         return query.getResultList();
@@ -101,7 +99,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     @SuppressWarnings("unchecked")
     public List<Long> findResourcesWithNullAccount(List<Resource> resourcesToEvaluate) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
+        Query<Long> query = getCurrentSession().getNamedQuery(TdarNamedQueries.RESOURCES_WITH_NULL_ACCOUNT_ID);
         query.setParameter("ids", PersistableUtils.extractIds(resourcesToEvaluate));
         return query.getResultList();
     }
@@ -165,7 +163,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     @SuppressWarnings("unchecked")
     public List<Invoice> findUnassignedInvoicesForUser(Person user) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON);
+        Query<Invoice> query = getCurrentSession().getNamedQuery(TdarNamedQueries.UNASSIGNED_INVOICES_FOR_PERSON);
         query.setParameter("personId", user.getId());
         query.setParameter("statuses", Arrays.asList(TransactionStatus.TRANSACTION_SUCCESSFUL));
         return query.getResultList();
@@ -173,27 +171,27 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
 
     @SuppressWarnings("unchecked")
     public List<Invoice> findInvoicesForUser(Person user) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.INVOICES_FOR_PERSON);
+        Query<Invoice> query = getCurrentSession().getNamedQuery(TdarNamedQueries.INVOICES_FOR_PERSON);
         query.setParameter("personId", user.getId());
         return query.getResultList();
     }
 
     public Coupon findCoupon(String code, Person user) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON);
+        Query<Coupon> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON);
         query.setParameter("code", code.toLowerCase());
         if (PersistableUtils.isNotNullOrTransient(user)) {
             query.setParameter("ownerId", user.getId());
         } else {
             query.setParameter("ownerId", null);
         }
-        return (Coupon) query.uniqueResult();
+        return (Coupon) query.getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
     public void checkCouponStillValidForCheckout(Coupon coupon, Invoice invoice) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_INVOICE_FOR_COUPON);
+        Query<Invoice> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_INVOICE_FOR_COUPON);
         query.setParameter("code", coupon.getCode().toLowerCase());
-        for (Invoice inv : (List<Invoice>) query.getResultList()) {
+        for (Invoice inv : query.getResultList()) {
             if (inv.getTransactionStatus().isComplete()) {
                 throw new TdarRecoverableRuntimeException("accountDao.coupon_already_used");
             }
@@ -204,9 +202,9 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     public BillingAccount getAccountForInvoice(Invoice invoice) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
+        Query<BillingAccount> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
         query.setParameter("id", invoice.getId());
-        return (BillingAccount) query.uniqueResult();
+        return query.getSingleResult();
     }
 
     /**

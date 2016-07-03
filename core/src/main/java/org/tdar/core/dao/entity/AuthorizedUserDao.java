@@ -13,8 +13,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.query.Query;
 import org.hibernate.Session;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -115,12 +115,11 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         CacheResult cacheResult = checkUserPermissionsCache(person, permission, ids, getCurrentSession());
         String cached = "";
         if (cacheResult == null || cacheResult == CacheResult.NOT_FOUND) {
-            Query query = getCurrentSession().getNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE);
+            Query<Integer> query = getCurrentSession().createNamedQuery(QUERY_IS_ALLOWED_TO_MANAGE, Integer.class);
             query.setParameter("userId", person.getId());
             query.setParameter("effectivePermission", permission.getEffectivePermissions() - 1);
             query.setParameter("resourceCollectionIds", ids);
 
-            @SuppressWarnings("unchecked")
             List<Integer> result = query.getResultList();
             getLogger().trace("results: {}", result);
             if (result.isEmpty() || result.get(0) != 1) {
@@ -181,10 +180,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      * @param person
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<Resource> findSpaseEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted) {
         String namedQuery = sorted ? QUERY_SPARSE_EDITABLE_SORTED_RESOURCES : QUERY_SPARSE_EDITABLE_RESOURCES;
-        Query query = getCurrentSession().getNamedQuery(namedQuery);// QUERY_PROJECT_EDITABLE
+        Query<Resource> query = getCurrentSession().createNamedQuery(namedQuery, Resource.class);// QUERY_PROJECT_EDITABLE
         query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameter("resourceTypes", resourceTypes);
@@ -199,10 +197,9 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Resource> findEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin) {
         String namedQuery = QUERY_EDITABLE_RESOURCES;
-        Query query = getCurrentSession().getNamedQuery(namedQuery);// QUERY_PROJECT_EDITABLE
+        Query<Resource> query = getCurrentSession().createNamedQuery(namedQuery, Resource.class);// QUERY_PROJECT_EDITABLE
         query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
         query.setParameter("resourceTypes", resourceTypes);
@@ -217,7 +214,6 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<Resource> findEditableResources(TdarUser person, List<ResourceType> resourceTypes, boolean isAdmin, boolean sorted, List<Long> collectionIds_) {
         List<Long> collectionIds = collectionIds_;
         // Hey guess what - you always get sorted results.
@@ -228,7 +224,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         if (PersistableUtils.isNullOrTransient(person)) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED);
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED, Resource.class);
         query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("userId", person.getId());
         query.setParameter("admin", isAdmin);
@@ -264,9 +260,8 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
      * @param user
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<ResourceCollection> findAccessibleResourceCollections(TdarUser user) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO);// QUERY_PROJECT_EDITABLE
+        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, ResourceCollection.class);// QUERY_PROJECT_EDITABLE
         query.setParameter("userId", user.getId());
         return (List<ResourceCollection>) query.getResultList();
     }

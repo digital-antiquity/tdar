@@ -106,7 +106,7 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> findAllWithL2Cache(Class<T> persistentClass, Collection<Long> ids) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
+        Query<T> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
         if (CollectionUtils.isNotEmpty(ids)) {
             query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
             query.setParameter("ids", ids);
@@ -120,13 +120,13 @@ public class GenericDao {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
+        Query<T> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
         return query.setParameter("ids", ids).getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
+        Query<F> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
         return query.setParameter("statuses", Arrays.asList(statuses)).getResultList();
     }
 
@@ -167,9 +167,13 @@ public class GenericDao {
         return getCurrentSession().getNamedQuery(queryName);
     }
 
+    public <T> Query<T> getNamedQuery(String queryName, Class<T> cls) {
+        return getCurrentSession().createNamedQuery(queryName, cls);
+    }
+
     public Number count(Class<?> persistentClass) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getName()));
-        return (Number) query.uniqueResult();
+        Query<Number> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getName()), Number.class);
+        return query.getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -270,7 +274,7 @@ public class GenericDao {
             orderingProperty = getDefaultOrderingProperty() + ASC;
         }
         String sql = String.format(FROM_HQL_ORDER_BY, cls.getName(), orderingProperty);
-        Query query = getCurrentSession().createQuery(sql);
+        Query<T> query = getCurrentSession().createQuery(sql);
         return query.getResultList();
     }
 

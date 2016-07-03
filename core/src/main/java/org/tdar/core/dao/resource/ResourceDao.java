@@ -71,7 +71,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	@SuppressWarnings("unchecked")
 	public Set<Long> findResourcesSubmittedByUser(Person person) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
+		Query<Long> query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
 		query.setParameter("submitterId", person.getId());
 		return new HashSet<Long>(query.getResultList());
 	}
@@ -106,7 +106,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	@SuppressWarnings("unchecked")
 	public List<ResourceRevisionLog> getLogEntriesForResource(Resource resource) {
-		Query query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
+		Query<ResourceRevisionLog> query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
 		query.setParameter("resourceId", resource.getId());
 		return query.getResultList();
 	}
@@ -121,7 +121,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	 */
 	@SuppressWarnings("unchecked")
 	public List<E> findSparseResourceBySubmitterType(Person submitter, ResourceType resourceType) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES);
+		Query<E> query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES);
 		if (submitter != null) {
 			query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES_SUBMITTER);
 			query.setParameter("submitter", submitter.getId());
@@ -133,10 +133,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public boolean hasBeenModifiedSince(Resource resource, Date date) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_MODIFIED_SINCE);
+		Query<Number> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_MODIFIED_SINCE);
 		query.setParameter("id", resource.getId());
 		query.setParameter("date", date);
-		int numFound = ((Integer) query.iterate().next()).intValue();
+		int numFound = query.getSingleResult().intValue();
 		return numFound > 0;
 	}
 
@@ -146,9 +146,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public ResourceType findResourceType(Number id) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
+		Query<ResourceType> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
 		query.setParameter("id", id.longValue());
-		return (ResourceType) query.getSingleResult();
+		return  query.getSingleResult();
 	}
 
 	public void incrementAccessCounter(Resource r) {
@@ -157,18 +157,18 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public Number countActiveResources(ResourceType type) {
-		Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE,
+		Query<Number> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE,
 				type.getResourceClass().getSimpleName(), type.name()));
-		return (Number) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 	public Number countActiveResourcesWithFiles(ResourceType type) {
 		if (type == ResourceType.PROJECT) {
 			return 0;
 		}
-		Query query = getCurrentSession().createNativeQuery(
+		Query<Number> query = getCurrentSession().createNativeQuery(
 				String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES, type.name()));
-		return (Number) query.getSingleResult();
+		return query.getSingleResult();
 	}
 
 	public List<HomepageGeographicCache> getISOGeographicCounts() {
@@ -240,10 +240,10 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public Long getResourceCount(ResourceType resourceType, Status status) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS);
+		Query<Long> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS);
 		query.setParameter("resourceType", resourceType);
 		query.setParameter("status", status);
-		Long count = (Long) query.getSingleResult();
+		Long count = query.getSingleResult();
 		return count;
 	}
 
@@ -317,13 +317,13 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end,
 			Long minCount) {
-		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
+		Query<AggregateViewStatistic> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
 		return query.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-		Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
+		Query<AggregateViewStatistic> query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
 		query.setMaxResults(max.intValue());
 		return query.getResultList();
 	}
@@ -331,7 +331,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getUsageStatsForResource(DateGranularity granularity, Date start, Date end,
 			Long minCount, List<Long> resourceIds) {
-		Query query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
+		Query<AggregateViewStatistic> query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
 		query.setParameter("start", start);
 		query.setParameter("end", end);
 		query.setParameter("minCount", minCount);
@@ -346,7 +346,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	@SuppressWarnings("unchecked")
 	public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end,
 			Long minCount, Long... irFileIds) {
-		Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
+		Query<AggregateDownloadStatistic> query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
 		query.setParameter("start", start);
 		query.setParameter("end", end);
 		query.setParameter("minCount", minCount);
@@ -354,8 +354,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.getResultList();
 	}
 
-	private Query setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
-		Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
+	private <D> Query<D> setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
+		Query<D> query = getCurrentSession().getNamedQuery(ACCESS_BY);
 		switch (mode) {
 		case ACCESS_DAY:
 			break;
@@ -373,10 +373,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
+	public <D> List<D> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
 			Long minCount) {
-		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
+		Query<D> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
 		logger.trace("s:{} e: {} min:{}", start, end, minCount);
 		return query.getResultList();
 	}
@@ -495,7 +494,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public ScrollableResults findAllActiveScrollableForSitemap() {
-		Query query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
+		Query<Resource> query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
 		return query.setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
 
 	}

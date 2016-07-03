@@ -27,12 +27,11 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         super(DataTable.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<DataTable> findDataTablesUsingResource(Resource resource) {
         if (resource == null) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().getNamedQuery(QUERY_DATATABLE_RELATED_ID);
+        Query<DataTable> query = getCurrentSession().createNamedQuery(QUERY_DATATABLE_RELATED_ID, DataTable.class);
         getLogger().trace("Searching for linked resources to {}", resource.getId());
         query.setParameter("relatedId", resource.getId());
         return query.getResultList();
@@ -43,7 +42,7 @@ public class DataTableDao extends Dao.HibernateBase<DataTable> {
         getLogger().debug("start table query");
         Query countQuery = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE_COUNT);
         countQuery.setProperties(searchFilter);
-        Number count = (Number) countQuery.uniqueResult();
+        Number count = (Number) countQuery.getSingleResult();
         getLogger().debug("done count: {}", count);
         // FIXME: rewrite query to run twice, once for total count, and once for the paginated data
         Query query = getCurrentSession().getNamedQuery(QUERY_INTEGRATION_DATA_TABLE);

@@ -131,7 +131,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (dataset == null) {
             return false;
         }
-        Query query = getCurrentSession().getNamedQuery(QUERY_DATASET_CAN_LINK_TO_ONTOLOGY);
+        Query query = getCurrentSession().createNamedQuery(QUERY_DATASET_CAN_LINK_TO_ONTOLOGY);
         query.setParameter("datasetId", dataset.getId());
         return !query.getResultList().isEmpty();
     }
@@ -140,7 +140,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (user == null) {
             return 0;
         }
-        Query query = getCurrentSession().getNamedQuery(QUERY_USER_GET_ALL_RESOURCES_COUNT);
+        Query<Number> query = getCurrentSession().createNamedQuery(QUERY_USER_GET_ALL_RESOURCES_COUNT, Number.class);
         query.setParameter("userId", user.getId());
         query.setParameter("resourceTypes", Arrays.asList(ResourceType.values()));
         query.setParameter("statuses", Status.values());
@@ -148,7 +148,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("allResourceTypes", true);
         query.setParameter("admin", false);
-        return (Long) query.iterate().next();
+        return  query.getSingleResult().longValue();
     }
 
     /**
@@ -159,7 +159,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
      */
     @SuppressWarnings("unchecked")
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RECENT);
+        Query query = getCurrentSession().createNamedQuery(QUERY_RECENT);
         query.setParameter("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
         return query.getResultList();
     }
@@ -173,7 +173,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
      */
     @SuppressWarnings("unchecked")
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
+        Query query = getCurrentSession().createNamedQuery(QUERY_EXTERNAL_ID_SYNC);
         query.setParameter("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
         return query.getResultList();
     }
@@ -261,12 +261,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     public Number getAccessCount(Resource resource) {
         String sql = String.format(TdarNamedQueries.RESOURCE_ACCESS_COUNT_SQL, resource.getId(), new Date());
-        return (Number) getCurrentSession().createNativeQuery(sql).uniqueResult();
+        return (Number) getCurrentSession().createNativeQuery(sql).getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findAllResourceIdsWithFiles() {
-        Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
+        Query query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
         return query.getResultList();
     }
     
@@ -274,7 +274,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     @SuppressWarnings("unchecked")
     public List<Resource> findAllSparseActiveResources() {
-        Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
+        Query query = getCurrentSession().createNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
         return query.getResultList();
     }
 
@@ -287,10 +287,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         // distinct prevents duplicates
         // left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        Query query = session.getNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
+        Query query = session.createNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
         // if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.size() > 1) {
-            query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
+            query = session.createNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
         if (!trustCache) {
             query.setCacheable(false);
@@ -326,7 +326,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
-        Query query = session.getNamedQuery(QUERY_RESOURCE_FIND_OLD_LIST);
+        Query query = session.createNamedQuery(QUERY_RESOURCE_FIND_OLD_LIST);
         query.setParameter("ids", Arrays.asList(ids));
         List<Resource> results = query.getResultList();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
@@ -379,7 +379,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
+        Query query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
         if (handler.getRecordsPerPage() < 0) {
             handler.setRecordsPerPage(250);
         }
@@ -392,10 +392,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         DateTime dt = new DateTime(year, 1, 1, 0, 0, 0, 0);
         query.setParameter("year_start", dt.toDate());
         query.setParameter("year_end", dt.plusYears(1).toDate());
-        Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR_COUNT);
+        Query query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR_COUNT);
         query2.setParameter("year_start", dt.toDate());
         query2.setParameter("year_end", dt.plusYears(1).toDate());
-        Number max = (Number) query2.uniqueResult();
+        Number max = (Number) query2.getSingleResult();
         handler.setTotalRecords(max.intValue());
 
         return query.getResultList();
@@ -407,10 +407,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS);
+        Query query = getCurrentSession().createNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS);
         query.setParameter("ids", ids);
         query.executeUpdate();
-        Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS);
+        Query query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS);
         query2.setParameter("ids", ids);
         query2.executeUpdate();
     }
@@ -434,7 +434,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public ScrollableResults findMappedResources(Project p) {
-        Query query = getCurrentSession().getNamedQuery(MAPPED_RESOURCES);
+        Query query = getCurrentSession().createNamedQuery(MAPPED_RESOURCES);
         Long id = null;
         if (PersistableUtils.isNotNullOrTransient(p)) {
             id = p.getId();
@@ -453,8 +453,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public Number countMappedResources() {
-        Query query = getCurrentSession().getNamedQuery(COUNT_MAPPED_RESOURCES);
-        return (Number) query.uniqueResult();
+        Query<Number> query = getCurrentSession().createNamedQuery(COUNT_MAPPED_RESOURCES, Number.class);
+        return query.getSingleResult();
     }
 
     public void remapColumns(List<DataTableColumn> columns, Project project) {
