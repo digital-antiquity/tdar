@@ -18,9 +18,8 @@ public class ResourceRelationshipDao extends Dao.HibernateBase<ResourceRelations
         super(ResourceRelationship.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<ResourceRelationship> findRelatedResources(Resource resource) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_RELATED_RESOURCES);
+        Query<ResourceRelationship> query = getNamedQuery(TdarNamedQueries.QUERY_RELATED_RESOURCES, ResourceRelationship.class);
         query.setParameter("statuses", Arrays.asList(Status.ACTIVE));
         query.setParameter("resourceId", resource.getId());
         return query.getResultList();

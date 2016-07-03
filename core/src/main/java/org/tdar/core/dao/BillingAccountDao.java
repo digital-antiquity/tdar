@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import javax.persistence.NoResultException;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,7 +86,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     public BillingAccountGroup getAccountGroup(BillingAccount account) {
-        Query<BillingAccountGroup> query = getCurrentSession().getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT);
+        Query<BillingAccountGroup> query = getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT, BillingAccountGroup.class);
         query.setParameter("accountId", account.getId());
         return (BillingAccountGroup) query.getSingleResult();
     }
@@ -177,7 +179,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     public Coupon findCoupon(String code, Person user) {
-        Query<Coupon> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON);
+        Query<Coupon> query = getNamedQuery(TdarNamedQueries.FIND_ACTIVE_COUPON, Coupon.class);
         query.setParameter("code", code.toLowerCase());
         if (PersistableUtils.isNotNullOrTransient(user)) {
             query.setParameter("ownerId", user.getId());
@@ -202,9 +204,13 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     public BillingAccount getAccountForInvoice(Invoice invoice) {
-        Query<BillingAccount> query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE);
+        Query<BillingAccount> query = getNamedQuery(TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE, BillingAccount.class);
         query.setParameter("id", invoice.getId());
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     /**

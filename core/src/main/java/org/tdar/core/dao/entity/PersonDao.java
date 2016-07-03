@@ -1,6 +1,5 @@
 package org.tdar.core.dao.entity;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -118,8 +117,8 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Person findAuthorityFromDuplicate(Creator<?> dup) {
-        Query<BigInteger> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), BigInteger.class);
-        List<BigInteger> result = query.getResultList();
+        Query<Number> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), Number.class);
+        List<Number> result = query.getResultList();
         if (CollectionUtils.isNotEmpty(result)) {
             try {
                 return find(result.get(0).longValue());
@@ -247,7 +246,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Long getCreatorViewCount(Creator<?> creator) {
-        Query<Number> query = getCurrentSession().getNamedQuery(TdarNamedQueries.CREATOR_VIEW);
+        Query<Number> query = getCurrentSession().createNamedQuery(TdarNamedQueries.CREATOR_VIEW, Number.class);
         query.setParameter("id", creator.getId());
         Number result = query.getSingleResult();
         return result.longValue();

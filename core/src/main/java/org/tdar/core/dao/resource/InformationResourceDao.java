@@ -30,9 +30,9 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
     }
 
     public InformationResourceFile findFileByFilename(InformationResource resource, String filename) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME);
-        query.setParameter("filename", filename).setEntity("resource", resource);
-        return (InformationResourceFile) query.uniqueResult();
+        Query<InformationResourceFile> query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCE_FIND_BY_FILENAME,InformationResourceFile.class);
+        query.setParameter("filename", filename).setParameter("resource", resource);
+        return (InformationResourceFile) query.getSingleResult();
     }
 
     public <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, int maxResults) {
@@ -47,9 +47,8 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
         return findRandomFeaturedResource(restrictToFiles, collections, null, maxResults);
     }
 
-    @SuppressWarnings("unchecked")
     public List<BrowseDecadeCountCache> findResourcesByDecade(Status ... statuses) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_BY_DECADE);
+        Query<BrowseDecadeCountCache> query = getCurrentSession().createNamedQuery(QUERY_RESOURCES_BY_DECADE,BrowseDecadeCountCache.class);
         query.setParameter("statuses", Arrays.asList(statuses));
         return query.getResultList();
     }
@@ -65,9 +64,9 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
     }
 
     public InformationResource findByDoi(String doi) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_BY_DOI);
+        Query<InformationResource> query = getCurrentSession().createNamedQuery(QUERY_BY_DOI, InformationResource.class);
         query.setParameter("doi", doi);
-        return (InformationResource) query.uniqueResult();
+        return (InformationResource) query.getSingleResult();
     }
 
 }

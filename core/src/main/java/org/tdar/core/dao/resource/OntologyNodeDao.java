@@ -27,18 +27,16 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
         super(OntologyNode.class);
     }
 
-    @SuppressWarnings("unchecked")
     public List<OntologyNode> getAllChildren(OntologyNode ontologyNode) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN);
+        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN,OntologyNode.class);
         query.setParameter("ontologyId", ontologyNode.getOntology().getId());
         query.setParameter("intervalStart", ontologyNode.getIntervalStart());
         query.setParameter("intervalEnd", ontologyNode.getIntervalEnd());
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<OntologyNode> getAllChildrenWithIndexWildcard(OntologyNode ontologyNode) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD);
+        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_ALL_CHILDREN_WITH_WILDCARD,OntologyNode.class);
         query.setParameter("ontologyId", ontologyNode.getOntology().getId());
         String indexWildcardString = ontologyNode.getIndex() + ".%";
         query.setParameter("indexWildcardString", indexWildcardString);
@@ -56,7 +54,7 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
 
     public List<Dataset> findDatasetsUsingNode(OntologyNode node) {
         List<Long> ids = new ArrayList<>();
-        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()));
+        Query<OntologyNode> query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.DATASETS_USING_NODES, node.getId()), OntologyNode.class);
         for (Object obj : query.getResultList()) {
             ids.add(((Number) obj).longValue());
         }
@@ -64,12 +62,12 @@ public class OntologyNodeDao extends Dao.HibernateBase<OntologyNode> {
     }
 
     public OntologyNode getParentNode(OntologyNode node) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_ONTOLOGYNODE_PARENT);
+        Query<OntologyNode> query = getNamedQuery(QUERY_ONTOLOGYNODE_PARENT, OntologyNode.class);
         query.setParameter("ontologyId", node.getOntology().getId());
         if (node.getIndex().indexOf(".") != -1) {
             String index = node.getIndex().substring(0, node.getIndex().lastIndexOf("."));
             query.setParameter("index", index);
-            return (OntologyNode) query.uniqueResult();
+            return (OntologyNode) query.getSingleResult();
         }
         return null;
     }

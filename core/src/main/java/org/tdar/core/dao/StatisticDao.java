@@ -25,14 +25,13 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
         super(AggregateStatistic.class);
     }
 
-    @SuppressWarnings("unchecked")
     public Map<Date, Map<StatisticType, Long>> getStatistics(Date fromDate, Date toDate, StatisticType... types) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_USAGE_STATS);
+        Query<AggregateStatistic> query = getNamedQuery(QUERY_USAGE_STATS, AggregateStatistic.class);
         query.setParameter("fromDate", fromDate);
         query.setParameter("toDate", toDate);
         query.setParameter("statTypes", Arrays.asList(types));
         Map<Date, Map<StatisticType, Long>> toReturn = new HashMap<Date, Map<StatisticType, Long>>();
-        for (AggregateStatistic result : (List<AggregateStatistic>) query.getResultList()) {
+        for (AggregateStatistic result : query.getResultList()) {
             Date date = result.getRecordedDate();
             if (!toReturn.containsKey(date)) {
                 toReturn.put(date, new HashMap<StatisticType, Long>());
@@ -115,8 +114,8 @@ public class StatisticDao extends Dao.HibernateBase<AggregateStatistic> {
     }
 
     public Number countWeeklyEmails() {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.WEEKLY_EMAIL_STATS);
+        Query<Number> query = getNamedQuery(TdarNamedQueries.WEEKLY_EMAIL_STATS, Number.class);
         query.setParameter("date", DateTime.now().minusDays(7).toDate());
-        return (Number) query.getSingleResult();
+        return query.getSingleResult();
     }
 }

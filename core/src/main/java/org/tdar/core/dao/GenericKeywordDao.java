@@ -1,6 +1,5 @@
 package org.tdar.core.dao;
 
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -11,11 +10,11 @@ import javax.persistence.Table;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
-import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -66,7 +65,7 @@ public class GenericKeywordDao extends GenericDao {
     protected <T extends Keyword> List<Pair<T, Integer>> getKeywordStats(String namedQuery) {
         List<Pair<T, Integer>> list = new ArrayList<Pair<T, Integer>>();
         Query q = getCurrentSession().getNamedQuery(namedQuery);
-        for (Object result : q.list()) {
+        for (Object result : q.getResultList()) {
             Object[] cols = (Object[]) result;
             @SuppressWarnings("unchecked")
             T keyword = (T) cols[0];
@@ -148,9 +147,8 @@ public class GenericKeywordDao extends GenericDao {
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
-        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
-        @SuppressWarnings("unchecked")
-        List<BigInteger> result = query.getResultList();
+        Query<Number> query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()), Number.class);
+        List<Number> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

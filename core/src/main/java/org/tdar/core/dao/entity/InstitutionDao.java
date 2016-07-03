@@ -1,11 +1,10 @@
 package org.tdar.core.dao.entity;
 
-import java.math.BigInteger;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.query.Query;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -33,8 +32,8 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
     }
 
     public Institution findAuthorityFromDuplicate(Institution dup) {
-        Query<BigInteger> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), BigInteger.class);
-        List<BigInteger> result = query.getResultList();
+        Query<Number> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), Number.class);
+        List<Number> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
         } else {

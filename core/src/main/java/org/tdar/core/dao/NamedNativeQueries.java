@@ -12,7 +12,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.query.NativeQuery;
-import org.hibernate.type.StandardBasicTypes;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;

@@ -111,9 +111,9 @@ public class ReflectionDao {
         }
 
         hql = String.format(fmt, targetClass, field.getName());
-        Query query = getCurrentSession().createQuery(hql);
+        Query<Long> query = getCurrentSession().createQuery(hql, Long.class);
         query.setParameter("idlist", idlist);
-        return (Long) query.uniqueResult();
+        return  query.getSingleResult();
     }
 
     /**
