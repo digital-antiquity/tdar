@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<schema name="resources" version="1.5">
+    <field name="name" type="text_en" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="name_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <field name="name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <copyField source="name" dest="name_autocomplete" />
+    <copyField source="name" dest="name_phrase" />
+
+    <field name="resourceCollections.name" type="text_en" indexed="true" stored="true" multiValued="true" />
+    <field name="resourceCollections.name_autocomplete" type="autocomplete" indexed="true" stored="true" multiValued="true" />
+    <field name="resourceCollections.name_phrase" type="text_general" indexed="true" stored="true" multiValued="true" />
+    <copyField source="resourceCollections.name" dest="resourceCollections.name_autocomplete" />
+    <copyField source="resourceCollections.name" dest="resourceCollections.name_phrase" />
+
+    <field name="description" type="text_en" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="description_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <copyField source="description" dest="description_phrase" />
+
+    <field name="content" type="text_en_splitting" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="all" type="text_en" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="all_phrase" type="text_general" indexed="true" stored="false" required="false" multiValued="false" />
+    <copyField source="all" dest="all_phrase" />
+
+    <field name="submitter.id" type="long" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="project.id" type="long" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="project.name" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="project.name_autocomplete" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="project.name_sort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <copyField source="project.name" dest="project.name_autocomplete" />
+    
+    <field name="date" type="int" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="decadeCreated" type="int" indexed="true" stored="false" required="false" multiValued="false" />
+
+    <field name="resourceType" type="string" indexed="true" stored="false" required="true" multiValued="false" />
+    <field name="resourceTypeSort" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="documentType" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="subType" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="degree" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="seriesName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="bookTitle" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="journalName" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="issn" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="isbn" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="doi" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="resourceLanguage" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="metadataLanguage" type="string" indexed="true" stored="false" required="false" multiValued="false" />
+
+
+    <field name="dataValuePair" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+
+    <field name="integratable" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="resourceAccessType" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="filename" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="totalFiles" type="int" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="file.id" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+
+    <field name="activeResourceCreators.role" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="crid" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="bookmarkedResource.person.id" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="collectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="allCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="directSharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="sharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+
+    <field name="usersWhoCanModify" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="usersWhoCanView" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+
+	
+    <field name="rcroleIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="CONTACT" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="AUTHOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="CONTRIBUTOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="EDITOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="TRANSLATOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="FIELD_DIRECTOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="LAB_DIRECTOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="PRINCIPAL_INVESTIGATOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="PROJECT_DIRECTOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="COLLABORATOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="LANDOWNER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="SPONSOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="PERMITTER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="REPOSITORY" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="CREATOR" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="PREPARER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="SUBMITTED_TO" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="COPYRIGHT_HOLDER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="SUBMITTER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="UPDATER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="RESOURCE_PROVIDER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="PUBLISHER" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="resourceOwner" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="activeResourceCreators.creator.properName" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+
+
+    <field name="activeLatitudeLongitudeBoxes.id" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
+    <field name="activeLatitudeLongitudeBoxes" type="location_rpt" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeLatitudeLongitudeBoxes.scale" type="ints" indexed="true" stored="false" required="false" multiValued="true" />
+
+    <field name="categoryVariable.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+
+
+    <field name="activeCultureKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+
+    <field name="activeCultureKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords_label" type="text_en" indexed="true" stored="false" required="false" multiValued="true" />
+    
+    <field name="geographic.ISO" type="strings" indexed="true" stored="true" multiValued="true" />
+    <field name="activeCultureKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeInvestigationTypes_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeMaterialKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeGeographicKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeOtherKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteNameKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteTypeKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeSiteCodes_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeTemporalKeywords_label_phrase" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <copyField source="activeCultureKeywords_label" dest="activeCultureKeywords_label_phrase" />
+    <copyField source="activeInvestigationTypes_label" dest="activeInvestigationTypes_label_phrase" />
+    <copyField source="activeMaterialKeywords_label" dest="activeMaterialKeywords_label_phrase" />
+    <copyField source="activeGeographicKeywords_label" dest="activeGeographicKeywords_label_phrase" />
+    <copyField source="activeOtherKeywords_label" dest="activeOtherKeywords_label_phrase" />
+    <copyField source="activeSiteNameKeywords_label" dest="activeSiteNameKeywords_label_phrase" />
+    <copyField source="activeSiteTypeKeywords_label" dest="activeSiteTypeKeywords_label_phrase" />
+    <copyField source="activeSiteCodes_label" dest="activeSiteCodes_label_phrase" />
+    <copyField source="activeTemporalKeywords_label" dest="activeTemporalKeywords_label_phrase" />
+
+    <field name="activeCoverageDates.dateType" type="strings" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeCoverageDates.startDate" type="ints" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeCoverageDates.endDate" type="ints" indexed="true" stored="false" required="false" multiValued="true" />
+
+
+    <field name="type" type="string" indexed="true" stored="false" required="true" multiValued="false" />
+
+	<!--  collection specific fields  -->
+    <field name="hidden" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="visibleInSearch" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="topLevel" type="boolean" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="resourceIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="parentIdList" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="parentId" type="long" indexed="true" stored="false" required="false" multiValued="false" />
+    <field name="usersWhoCanAdminister" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+	
+
+    <xi:include href="solrres:/common_fields.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/> 
+    <xi:include href="solrres:/field_types.xml" xmlns:xi="http://www.w3.org/2001/XInclude"/>
+
+    <!-- Field to use to determine and enforce document uniqueness. Unless 
+        this field is marked with required="false", it will be a required field -->
+    <uniqueKey>_id</uniqueKey>
+
+</schema>
