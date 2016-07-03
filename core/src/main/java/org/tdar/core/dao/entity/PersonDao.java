@@ -117,7 +117,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
     }
 
     public Person findAuthorityFromDuplicate(Creator<?> dup) {
-        Query<Number> query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()), Number.class);
+        Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         List<Number> result = query.getResultList();
         if (CollectionUtils.isNotEmpty(result)) {
             try {

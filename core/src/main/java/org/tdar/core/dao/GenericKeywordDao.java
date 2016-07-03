@@ -147,7 +147,7 @@ public class GenericKeywordDao extends GenericDao {
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
-        Query<Number> query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()), Number.class);
+        Query query = getCurrentSession().createNativeQuery(String.format(TdarNamedQueries.QUERY_KEYWORD_MERGE_ID, table.name(), kwd.getId()));
         List<Number> result = query.getResultList();
         if (CollectionUtils.isEmpty(result)) {
             return null;
