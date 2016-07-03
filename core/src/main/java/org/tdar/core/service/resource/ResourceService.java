@@ -147,12 +147,12 @@ public class ResourceService {
         if (id == null) {
             return null;
         }
-        ResourceType rt = datasetDao.findResourceType(id);
-        logger.trace("finding resource " + id + " type:" + rt);
-        if (rt == null) {
-            return null;
-        }
-        return (R) datasetDao.find(rt.getResourceClass(), id);
+//        ResourceType rt = datasetDao.findResourceType(id);
+//        logger.trace("finding resource " + id + " type:" + rt);
+//        if (rt == null) {
+//            return null;
+//        }
+        return (R) datasetDao.find(Resource.class, id);
     }
 
     /**
