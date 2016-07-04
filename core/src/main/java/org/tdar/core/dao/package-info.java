@@ -51,7 +51,7 @@
                 query = "SELECT count(*) FROM Resource as res where res.dateCreated between :year_start and :year_end and status='ACTIVE'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY,
-                query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
+                query = "SELECT new CodingSheet(res.id, res.title, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
                 query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.hidden) FROM ResourceCollection as col where col.id in (:ids) "),

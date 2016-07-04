@@ -88,7 +88,11 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     public BillingAccountGroup getAccountGroup(BillingAccount account) {
         Query<BillingAccountGroup> query = getNamedQuery(TdarNamedQueries.ACCOUNT_GROUP_FOR_ACCOUNT, BillingAccountGroup.class);
         query.setParameter("accountId", account.getId());
-        return (BillingAccountGroup) query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException rne) {
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -106,7 +110,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         return query.getResultList();
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void updateTransientAccountOnResources(Collection<Resource> resourcesToEvaluate) {
         Map<Long, Resource> resourceIdMap = PersistableUtils.createIdMap(resourcesToEvaluate);
         String sql = String.format(TdarNamedQueries.QUERY_ACCOUNTS_FOR_RESOURCES, StringUtils.join(resourceIdMap.keySet().toArray()));
@@ -276,7 +280,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
         }
         /* evaluate resources based on the model, and update their counts of files and space */
         ResourceEvaluator resourceEvaluator = getResourceEvaluator(resourcesToEvaluate);
-//        saveOrUpdate(resourcesToEvaluate);
+        // saveOrUpdate(resourcesToEvaluate);
 
         /* make sure the account associations are properly set for each resource in the bunch */
         updateTransientAccountOnResources(resourcesToEvaluate);
@@ -332,7 +336,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
                     account.markUpdated(user);
                 }
             }
-//            saveOrUpdate(resourcesToEvaluate);
+            // saveOrUpdate(resourcesToEvaluate);
             helper.updateAccount();
             updateAccountInfo(account, getResourceEvaluator());
         } else {
@@ -470,8 +474,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
     }
 
     enum Mode {
-        UPDATE,
-        ADD;
+        UPDATE, ADD;
     }
 
     /**
