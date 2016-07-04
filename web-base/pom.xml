@@ -256,13 +256,6 @@
                                     <goal>stop</goal>
                                 </goals>
                             </execution>
-                            <execution>
-                                <id>stop-jetty2</id>
-                                <phase>install</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
                         </executions>
                     </plugin>
                 </plugins>
