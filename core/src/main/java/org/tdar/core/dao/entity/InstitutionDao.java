@@ -2,6 +2,8 @@ package org.tdar.core.dao.entity;
 
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.Query;
@@ -52,10 +54,11 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
         Query<Boolean> query = getNamedQuery(TdarNamedQueries.CAN_EDIT_INSTITUTION, Boolean.class);
         query.setParameter("institutionId", item.getId());
         query.setParameter("userId", authenticatedUser.getId());
-        Boolean result = (Boolean) query.getSingleResult();
-        if (result == null) {
+        try {
+            Boolean result = (Boolean) query.getSingleResult();
+            return result;
+        } catch (NoResultException e) {
             return false;
         }
-        return result;
     }
 }

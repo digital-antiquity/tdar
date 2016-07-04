@@ -68,7 +68,7 @@ public class InformationResourceFileDao extends HibernateBase<InformationResourc
 
     public Number getDownloadCount(InformationResourceFile irFile) {
         String sql = String.format(TdarNamedQueries.DOWNLOAD_COUNT_SQL, irFile.getId(), new Date());
-        return getCurrentSession().createNativeQuery(sql, Number.class).getSingleResult();
+        return (Number)getCurrentSession().createNativeQuery(sql).getSingleResult();
     }
 
     public void deleteTranslatedFiles(Dataset dataset) {

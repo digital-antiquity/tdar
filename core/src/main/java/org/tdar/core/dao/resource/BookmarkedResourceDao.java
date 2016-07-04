@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.persistence.NoResultException;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
@@ -47,7 +49,11 @@ public class BookmarkedResourceDao extends Dao.HibernateBase<BookmarkedResource>
         Query<BookmarkedResource> query = getCurrentSession().createNamedQuery(QUERY_BOOKMARKEDRESOURCE_IS_ALREADY_BOOKMARKED, BookmarkedResource.class);
         query.setParameter("resourceId", resource.getId());
         query.setParameter("personId", person.getId());
-        return query.getSingleResult();
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        }
     }
 
     public void removeBookmark(Resource resource, TdarUser person) {
