@@ -50,6 +50,18 @@
     </rule>
 
     <rule>
+        <name>unstrutsworthy phishing</name>
+        <from>(.*)/(\.\.\.+|\*\*\*+)/(.*)</from>
+        <to type="redirect">/not-found</to>
+    </rule>
+
+    <rule>
+        <name>apple-continuity</name>
+        <from>^/\.well-known/apple-app-site-association</from>
+        <to type="redirect">/not-found</to>
+    </rule>
+
+    <rule>
         <name>unstrutsworthy ontology url</name>
         <note>If node name does not match allowed struts pattern, redirect to the parent ontology node. In addition, urlencode the invalid
             node name and append it as a querystring so that ontology action can potentially lookup the node and redirect again</note>
@@ -59,9 +71,16 @@
 
     <rule>
         <name>unstrutsworthy keyword url</name>
-        <note>if keyword label doesnt match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
+        <note>if keyword label does not match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
         <from>^(\/browse\/[\w-]+\/\d+)\/(.*[^a-zA-Z0-9_!/\-].*)$</from>
         <to type="redirect">$1</to>
+    </rule>
+
+    <rule>
+        <name>unstrutsworthy document url</name>
+        <note>if slug does not match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
+        <from>^/(\w+)/(\d+)/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <to type="redirect">/$1/$2</to>
     </rule>
 
     <rule>
