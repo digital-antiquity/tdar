@@ -11,8 +11,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
+import org.hibernate.query.Query;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -37,12 +37,15 @@ import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.datatable.HasStatic;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
+
+import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$
@@ -103,13 +106,13 @@ public class GenericDao {
 
     @SuppressWarnings("unchecked")
     public <T> List<T> findAllWithL2Cache(Class<T> persistentClass, Collection<Long> ids) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
+        Query<T> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL, persistentClass.getName()));
         if (CollectionUtils.isNotEmpty(ids)) {
             query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
-            query.setParameterList("ids", ids);
+            query.setParameter("ids", ids);
         }
         query.setCacheable(true);
-        return query.list();
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -117,55 +120,60 @@ public class GenericDao {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
-        return query.setParameterList("ids", ids).list();
+        Query<T> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_IDS, persistentClass.getName()));
+        return query.setParameter("ids", ids).getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public <F extends HasStatus> List<F> findAllWithStatus(Class<F> persistentClass, Status... statuses) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
-        return query.setParameterList("statuses", statuses).list();
+        Query<F> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_FIND_ALL_WITH_STATUS, persistentClass.getName()));
+        return query.setParameter("statuses", Arrays.asList(statuses)).getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass) {
-        return getCurrentSession().createQuery(String.format(SELECT_ID_FROM_HQL_ORDER_BY_ID_ASC, persistentClass.getName())).list();
+        return getCurrentSession().createQuery(String.format(SELECT_ID_FROM_HQL_ORDER_BY_ID_ASC, persistentClass.getName())).getResultList();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findActiveIds(Class<? extends HasStatus> persistentClass) {
         if (persistentClass.isAssignableFrom(Institution.class)) {
-            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_INSTITUTION_BY_ID, persistentClass.getName())).list();
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_INSTITUTION_BY_ID, persistentClass.getName())).getResultList();
         } else if (persistentClass.isAssignableFrom(Person.class)) {
-            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSON_BY_ID, persistentClass.getName())).list();
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSON_BY_ID, persistentClass.getName())).getResultList();
         } else {
-            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).list();
+            return getCurrentSession().createQuery(String.format(TdarNamedQueries.FIND_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName())).getResultList();
         }
     }
 
     public Number countActive(Class<? extends HasStatus> persistentClass) {
         return (Number) getCurrentSession().createQuery(String.format(TdarNamedQueries.COUNT_ACTIVE_PERSISTABLE_BY_ID, persistentClass.getName()))
-                .uniqueResult();
+                .getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
     public <T> List<Long> findAllIds(Class<T> persistentClass, long startId, long endId) {
         String hqlfmt = SELECT_RANGE_HQL;
         String hql = String.format(hqlfmt, persistentClass.getName(), startId, endId);
-        return getCurrentSession().createQuery(hql).list();
+        return getCurrentSession().createQuery(hql).getResultList();
     }
 
-    public Query createQuery(String queryString) {
+    public Query<?> createQuery(String queryString) {
         return getCurrentSession().createQuery(queryString);
     }
 
+    @SuppressWarnings("rawtypes")
     public Query getNamedQuery(String queryName) {
         return getCurrentSession().getNamedQuery(queryName);
     }
 
+    public <T> Query<T> getNamedQuery(String queryName, Class<T> cls) {
+        return getCurrentSession().createNamedQuery(queryName, cls);
+    }
+
     public Number count(Class<?> persistentClass) {
-        Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getName()));
-        return (Number) query.uniqueResult();
+        Query<Number> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT, persistentClass.getName()), Number.class);
+        return query.getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
@@ -217,13 +225,13 @@ public class GenericDao {
         if (CollectionUtils.isEmpty(ids)) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
+        Query<P> query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP);
         if (cls.isAssignableFrom(ResourceCollection.class)) {
             query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP);
         }
-        query.setParameterList("ids", ids);
+        query.setParameter("ids", ids);
         query.setReadOnly(true);
-        return query.list();
+        return query.getResultList();
     }
     
     public boolean isSessionReadOnly() {
@@ -241,13 +249,12 @@ public class GenericDao {
         return findAll(cls, -1);
     }
 
-    @SuppressWarnings("unchecked")
     public <T> List<T> findAll(Class<T> cls, int maxResults) {
-        Query query = getCurrentSession().createQuery(String.format(FROM_HQL, cls.getName()));
+        Query<T> query = getCurrentSession().createQuery(String.format(FROM_HQL, cls.getName()),cls);
         if (maxResults > 0) {
             query.setMaxResults(maxResults);
         }
-        return query.list();
+        return query.getResultList();
     }
 
     public <T> List<T> findAllSorted(Class<T> cls) {
@@ -267,8 +274,8 @@ public class GenericDao {
             orderingProperty = getDefaultOrderingProperty() + ASC;
         }
         String sql = String.format(FROM_HQL_ORDER_BY, cls.getName(), orderingProperty);
-        Query query = getCurrentSession().createQuery(sql);
-        return query.list();
+        Query<T> query = getCurrentSession().createQuery(sql);
+        return query.getResultList();
     }
 
     public <T> T findByProperty(Class<T> persistentClass, String propertyName, Object propertyValue) {
@@ -514,12 +521,16 @@ public class GenericDao {
     }
 
     public <T> boolean sessionContains(T entity) {
+        if (entity instanceof HasStatic && ((HasStatic) entity).isStatic()) {
+            return false;
+        }
+
         return getCurrentSession().contains(entity);
     }
 
     public <T> void detachFromSessionAndWarn(T entity) {
         Session session = getCurrentSession();
-        if (session.contains(entity)) {
+        if (sessionContains(entity)) {
             logger.error("This entity should not be on the session: {}", entity);
         }
         session.evict(entity);
@@ -557,8 +568,8 @@ public class GenericDao {
         return getCurrentSession().hashCode();
     }
 
-    public SQLQuery getNativeQuery(String sql) {
-        return getCurrentSession().createSQLQuery(sql);
+    public NativeQuery<?> getNativeQuery(String sql) {
+        return getCurrentSession().createNativeQuery(sql);
     }
     
     protected Session getCurrentSession() {
@@ -604,7 +615,7 @@ public class GenericDao {
     }
 
     public <T> void markReadOnly(T obj) {
-        if (getCurrentSession().contains(obj)) {
+        if (sessionContains(obj)) {
             // mark as read only
             // dump it off the cache so that future searches don't find the updated version
             boolean readOnly = getCurrentSession().isReadOnly(obj);
@@ -626,7 +637,7 @@ public class GenericDao {
     }
 
     public <O> O markWritableOnExistingSession(O obj) {
-        if (getCurrentSession().contains(obj)) {
+        if (sessionContains(obj)) {
             getCurrentSession().setReadOnly(obj, false);
         }
         return obj;
@@ -641,7 +652,8 @@ public class GenericDao {
      * @return writeable entity instance.
      */
     public <T> T markWritable(T obj) {
-        if (getCurrentSession().contains(obj)) {
+
+        if (sessionContains(obj)) {
             // theory -- if we're persistable and have not been 'saved' perhaps we don't need to worry about merging yet
             if ((obj instanceof Persistable) && PersistableUtils.isNotTransient((Persistable) obj)) {
                 getCurrentSession().setReadOnly(obj, false);

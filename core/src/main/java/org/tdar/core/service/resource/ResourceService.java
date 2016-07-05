@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -37,8 +36,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -59,7 +56,6 @@ import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -151,12 +147,7 @@ public class ResourceService {
         if (id == null) {
             return null;
         }
-        ResourceType rt = datasetDao.findResourceType(id);
-        logger.trace("finding resource " + id + " type:" + rt);
-        if (rt == null) {
-            return null;
-        }
-        return (R) datasetDao.find(rt.getResourceClass(), id);
+        return (R) datasetDao.find(Resource.class, id);
     }
 
     /**

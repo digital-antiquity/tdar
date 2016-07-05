@@ -195,7 +195,7 @@ public interface TdarNamedQueries {
     // e.g."from Resource r1 where exists (from Resource r2 inner join r2.cultureKeywords ck where r2.id = r1.id and ck.id in (:idlist))"
     String QUERY_HQL_MANY_TO_MANY_REFERENCES = "from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
     // e.g. "from Resource r1 where submitter_id in (:idlist)"
-    String QUERY_HQL_MANY_TO_ONE_REFERENCES = "from %1$s r1 where %2$s.id in (:idlist)";
+    String QUERY_HQL_MANY_TO_ONE_REFERENCES = "from %1$s r1 where r1.%2$s.id in (:idlist)";
 
     String QUERY_HQL_COUNT_MANY_TO_MANY_REFERENCES = "select count(*) as referenceCount from %1$s r1 where exists (from %1$s r2 inner join r2.%2$s ck where r2.id = r1.id and ck.id in (:idlist))";
     String QUERY_HQL_COUNT_MANY_TO_ONE_REFERENCES = "select count(*) as referenceCount from %1$s r1 where %2$s.id in (:idlist)";

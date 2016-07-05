@@ -12,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.bean.CollectionSearchQueryObject;

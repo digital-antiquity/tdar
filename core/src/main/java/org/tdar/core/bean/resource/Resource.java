@@ -201,7 +201,7 @@ public class Resource implements Persistable,
         this(id, title);
         setResourceType(type);
     }
-
+    
     public Resource(Long id, String title, ResourceType resourceType, String description, Status status) {
         this(id, title, resourceType);
         setDescription(description);

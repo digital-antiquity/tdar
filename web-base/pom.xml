@@ -7,7 +7,7 @@
     <packaging>pom</packaging>
     <name>tDAR (web-base)</name>
     <properties>
-        <jetty.version>9.3.9.v20160517</jetty.version>
+        <jetty.version>9.3.10.v20160621</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
@@ -17,7 +17,7 @@
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>15.1.0-OBSIDIAN-SNAPSHOT</version>
+        <version>15.5.1-OBSIDIAN-hibernate52-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <dependencies>
@@ -252,13 +252,6 @@
                             <execution>
                                 <id>stop-jetty</id>
                                 <phase>post-integration-test</phase>
-                                <goals>
-                                    <goal>stop</goal>
-                                </goals>
-                            </execution>
-                            <execution>
-                                <id>stop-jetty2</id>
-                                <phase>install</phase>
                                 <goals>
                                     <goal>stop</goal>
                                 </goals>

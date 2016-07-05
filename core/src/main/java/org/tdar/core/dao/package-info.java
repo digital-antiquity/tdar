@@ -42,7 +42,7 @@
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SCROLLABLE_SITEMAP,
-                query = "SELECT new Resource(res.id, res.title, res.resourceType, null, 'ACTIVE') from Resource as res where res.status='ACTIVE'"),
+                query = "SELECT new Resource(res.id, res.title, res.resourceType) from Resource as res where res.status='ACTIVE'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.FIND_BY_TDAR_YEAR,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.dateCreated between :year_start and :year_end and status='ACTIVE' order by res.dateCreated "),
@@ -51,7 +51,7 @@
                 query = "SELECT count(*) FROM Resource as res where res.dateCreated between :year_start and :year_end and status='ACTIVE'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_CODING_SHEETS_USING_ONTOLOGY,
-                query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
+                query = "SELECT new CodingSheet(res.id, res.title, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_LOOKUP,
                 query = "SELECT new ResourceCollection(col.id, col.name, col.description, col.sortBy, col.type, col.hidden) FROM ResourceCollection as col where col.id in (:ids) "),
@@ -121,7 +121,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLE_RELATED_ID,
-                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology=:relatedId  or code=:relatedId) and dt.dataset.status!='DELETED'"
+                query = "SELECT DISTINCT dt FROM DataTable dt join dt.dataTableColumns as dtc join dtc.defaultCodingSheet as code WHERE (code.defaultOntology.id=:relatedId  or code=:relatedId) and dt.dataset.status!='DELETED'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY,
@@ -402,7 +402,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_FILE_SIZE_TOTAL,
-                query = "select vers.extension, sum(vers.fileLength) from InformationResourceFileVersion vers where fileVersionType in (:types) group by extension"),
+                query = "select vers.extension as ext , sum(vers.fileLength) as sum from InformationResourceFileVersion vers where vers.fileVersionType in (:types) group by vers.extension"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROXY_RESOURCE_SHORT,
                 query = "select res from ResourceProxy res where res.id in (:ids)"
@@ -502,7 +502,7 @@
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
-                query = "from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
+                query = "select da from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),

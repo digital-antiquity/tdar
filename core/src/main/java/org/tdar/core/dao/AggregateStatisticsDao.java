@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.joda.time.DateTime;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
@@ -90,7 +90,7 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     public void generateAggregateDailyDownloadData(Date date) {
         String sql = String.format(TdarNamedQueries.DAILY_DOWNLOAD_UPDATE, date);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        getCurrentSession().createNativeQuery(sql).executeUpdate();
 
     }
 
@@ -102,7 +102,7 @@ public class AggregateStatisticsDao extends GenericDao {
     public void generateAggregateDailyResourceData(Date date) {
         String sql = String.format(TdarNamedQueries.DAILY_RESOURCE_UPDATE, date);
         getLogger().trace(sql);
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        getCurrentSession().createNativeQuery(sql).executeUpdate();
 
     }
 
@@ -116,10 +116,10 @@ public class AggregateStatisticsDao extends GenericDao {
      */
     @SuppressWarnings("unchecked")
     private StatsResultObject populateResultsObject(Collection<Long> resourceIds, List<String> labelKeys, String sql) {
-        Query query = getCurrentSession().createSQLQuery(sql);
-        query.setParameterList("ids", resourceIds);
+        Query query = getCurrentSession().createNativeQuery(sql);
+        query.setParameter("ids", resourceIds);
         StatsResultObject results = new StatsResultObject();
-        for (Object[] row : (List<Object[]>) query.list()) {
+        for (Object[] row : (List<Object[]>) query.getResultList()) {
             List<Number> numbers = new ArrayList<>();
             Resource resource = new Resource(((Number) row[0]).longValue(), (String) row[1], ResourceType.valueOf((String) row[2]), "",
                     Status.valueOf((String) row[3]));

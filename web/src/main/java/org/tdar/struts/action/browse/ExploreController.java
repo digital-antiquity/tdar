@@ -26,7 +26,6 @@ import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.cache.BrowseDecadeCountCache;
 import org.tdar.core.cache.BrowseYearCountCache;
-import org.tdar.core.cache.HomepageGeographicCache;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
