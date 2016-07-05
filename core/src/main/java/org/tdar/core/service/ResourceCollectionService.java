@@ -685,7 +685,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         persistable.getParentIds().clear();
         persistable.getParentIds().addAll(parentIds);
-        for (ResourceCollection child : children) {
+        for (SharedCollection child : children) {
             child.getParentIds().removeAll(oldParentIds);
             child.getParentIds().addAll(parentIds);
             saveOrUpdate(child);

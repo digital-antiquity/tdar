@@ -18,6 +18,8 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -76,23 +78,28 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
         for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
-            ids.addAll(collection.getParentIds());
+            if (collection instanceof SharedCollection) {
+                ids.addAll(((SharedCollection)collection).getParentIds());
+            }
             ids.add(collection.getId());
         }
         getLogger().trace("allowed to rights collection ids: {}", ids);
         return isAllowedTo(person, permission, ids);
     }
 
-    public boolean isAllowedTo(TdarUser person, ResourceCollection collection, GeneralPermissions permission) {
+    public boolean isAllowedTo(TdarUser person, RightsBasedResourceCollection collection, GeneralPermissions permission) {
         if (collection.isPublic()) {
             return false;
         }
         if (Objects.equals(collection.getOwner(), person)) {
             return true;
         }
-        List<Long> ids = new ArrayList<>(collection.getParentIds());
+        List<Long> ids = new ArrayList<>();
+        if (collection instanceof SharedCollection) {
+            ids.addAll(((SharedCollection)collection).getParentIds());
+        }
+
         ids.add(collection.getId());
-        ids.addAll(collection.getParentIds());
         return isAllowedTo(person, permission, ids);
     }
 

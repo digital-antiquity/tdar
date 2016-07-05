@@ -1,12 +1,15 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -57,6 +60,31 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
     public SharedCollection getParent() {
         return parent;
     }
+    
+
+    @ElementCollection()
+    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
+    @Column(name = "parent_id")
+    private Set<Long> parentIds = new HashSet<>();
+
+
+    /**
+     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
+     * 
+     * Note: in earlier implementations this contained the currentId as well, I've removed this, but am unsure
+     * whether it should be there
+     */
+    @Transient
+    @ElementCollection
+    public Set<Long> getParentIds() {
+        return parentIds;
+    }
+
+    public void setParentIds(Set<Long> parentIds) {
+        this.parentIds = parentIds;
+    }
+
+
 
     public void setParent(SharedCollection parent) {
         this.parent = parent;

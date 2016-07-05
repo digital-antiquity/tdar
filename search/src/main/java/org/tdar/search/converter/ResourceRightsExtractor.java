@@ -8,7 +8,6 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.InternalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
@@ -91,15 +90,15 @@ public class ResourceRightsExtractor {
     }
 
     public void extract() {
-        Set<ResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
-        collections.addAll(resource.getUnmanagedResourceCollections());
-        for (ResourceCollection collection : collections) {
+        Set<RightsBasedResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
+        for (RightsBasedResourceCollection collection : collections) {
             if (collection instanceof SharedCollection) {
                 directCollectionIds.add(collection.getId());
                 directCollectionNames.add(collection.getName());
-                collectionIds.addAll(collection.getParentIds());
                 if (collection instanceof SharedCollection) {
-                collectionNames.addAll(((SharedCollection)collection).getParentNameList());
+                SharedCollection shared = (SharedCollection)collection;
+                collectionNames.addAll(shared.getParentNameList());
+                collectionIds.addAll(shared.getParentIds());
                 }
             } else if (collection instanceof InternalCollection) {
                 allCollectionIds.add(collection.getId());

@@ -7,9 +7,7 @@
 package org.tdar.core.bean.collection;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
@@ -80,7 +78,6 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
-import com.google.common.base.Objects;
 
 /**
  * @author Adam Brin
@@ -179,11 +176,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
-
-    @ElementCollection()
-    @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
-    @Column(name = "parent_id")
-    private Set<Long> parentIds = new HashSet<>();
 
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
@@ -447,23 +439,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setFormattedDescription(String adminDescription) {
         this.formattedDescription = adminDescription;
     }
-
-    /**
-     * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
-     * 
-     * Note: in earlier implementations this contained the currentId as well, I've removed this, but am unsure
-     * whether it should be there
-     */
-    @Transient
-    @ElementCollection
-    public Set<Long> getParentIds() {
-        return parentIds;
-    }
-
-    public void setParentIds(Set<Long> parentIds) {
-        this.parentIds = parentIds;
-    }
-
     @XmlTransient
     public boolean isChangesNeedToBeLogged() {
         return changesNeedToBeLogged;

@@ -23,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.GenericDao;
@@ -296,8 +298,11 @@ public class OaiPmhService {
 		if (resource instanceof Resource) {
             for (ResourceCollection rc : ((Resource) resource).getSharedResourceCollections()) {
                 header.getSetSpec().add(Long.toString(rc.getId()));
-                for (Long pid : rc.getParentIds()) {
-                header.getSetSpec().add(Long.toString(pid));
+                if (rc instanceof HierarchicalCollection) {
+                    HierarchicalCollection hc = (HierarchicalCollection)rc;
+                    for (Long pid : hc.getParentIds() ) {
+                        header.getSetSpec().add(Long.toString(pid));
+                    }
                 }
             }
 		}

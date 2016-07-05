@@ -47,4 +47,5 @@ public interface HierarchicalCollection<C extends ResourceCollection> {
         return hierarchicalResourceCollections;
     }
 
+    public Set<Long> getParentIds();
 }

@@ -213,7 +213,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             String referrer) {
         InformationResource ir = informationResourceFileVersion.getInformationResourceFile().getInformationResource();
         Set<Long> sharedCollectionIds = new HashSet<>();
-        for (ResourceCollection rc : ir.getSharedResourceCollections()) {
+        for (SharedCollection rc : ir.getSharedResourceCollections()) {
             sharedCollectionIds.add(rc.getId());
             sharedCollectionIds.addAll(rc.getParentIds());
         }
