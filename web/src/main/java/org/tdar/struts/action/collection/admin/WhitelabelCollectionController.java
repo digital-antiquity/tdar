@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
@@ -28,13 +28,13 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @Namespace("/collection/admin/whitelabel")
 @HttpsOnly
-public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<WhiteLabelCollection> {
+public class WhitelabelCollectionController extends AbstractAuthenticatableAction implements Preparable, PersistableLoadingAction<SharedCollection> {
 
     @Autowired
     private transient AuthorizationService authorizationService;
     
     private static final long serialVersionUID = 7148462451707301708L;
-    private WhiteLabelCollection collection;
+    private SharedCollection collection;
     private Long id;
 
     @SkipValidation
@@ -74,8 +74,8 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
     @Override
-    public Class<WhiteLabelCollection> getPersistableClass() {
-        return WhiteLabelCollection.class;
+    public Class<SharedCollection> getPersistableClass() {
+        return SharedCollection.class;
     }
     
     @Override
@@ -84,7 +84,7 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
     @Override
-    public void setPersistable(WhiteLabelCollection persistable) {
+    public void setPersistable(SharedCollection persistable) {
         this.setCollection(persistable);
     }
 
@@ -109,12 +109,12 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
     }
 
 
-    public WhiteLabelCollection getCollection() {
+    public SharedCollection getCollection() {
         return collection;
     }
 
 
-    public void setCollection(WhiteLabelCollection collection) {
+    public void setCollection(SharedCollection collection) {
         this.collection = collection;
     }
 

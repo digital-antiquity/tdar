@@ -23,6 +23,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -172,7 +173,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), testResource, GeneralPermissions.MODIFY_METADATA));
 
         // create a new collection with an owner and three users that have each permission type (view, modify, admin)
-        ResourceCollection testCollection = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection testCollection = new SharedCollection();
         TdarUser testModify = createAndSaveNewPerson("a@b", "1234");
         TdarUser testOwner = createAndSaveNewPerson("a@b1", "12341");
         TdarUser testView = createAndSaveNewPerson("a@b2", "12341");
@@ -278,10 +279,9 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         project.setTitle("testing adding collection");
         project.setDescription("test");
         // controller expects incoming list of resource collections to be detached, so lets create one
-        ResourceCollection detachedCollection = new ResourceCollection(rc.getType());
+        SharedCollection detachedCollection = new SharedCollection();
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
-        detachedCollection.setType(CollectionType.SHARED);
         detachedCollection.setHidden(false);
         detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
@@ -309,11 +309,11 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         String name1 = "testing adhoc collection creation";
         String name2 = "yet another collection";
 
-        ResourceCollection collection = new ResourceCollection();
+        SharedCollection collection = new SharedCollection();
         collection.setName(name1);
         controller.getResourceCollections().add(collection);
 
-        collection = new ResourceCollection();
+        collection = new SharedCollection();
         collection.setName(name2);
         controller.getResourceCollections().add(collection);
 
@@ -329,7 +329,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
-    private void assertUniqueCollections(Collection<ResourceCollection> resourceCollections, String name1, String name2) {
+    private void assertUniqueCollections(Collection<? extends ResourceCollection> resourceCollections, String name1, String name2) {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
         for (ResourceCollection rc : resourceCollections) {
@@ -341,8 +341,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
     }
 
-    private ResourceCollection createNewEmptyCollection(String name) {
-        ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
+    private SharedCollection createNewEmptyCollection(String name) {
+        SharedCollection rc = new SharedCollection();
         Date date = new Date();
         TdarUser owner = new TdarUser("bob", "loblaw", "createNewEmptyCollection" + date.getTime() + "@tdar.net");
         genericService.save(owner);

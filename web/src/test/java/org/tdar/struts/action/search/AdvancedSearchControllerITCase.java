@@ -22,7 +22,6 @@ import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
@@ -36,6 +35,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
@@ -243,13 +243,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     public void testResourceCaseSensitivity() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
-        ResourceCollection titleCase = new ResourceCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE,  false, getAdminUser());
         titleCase.markUpdated(getAdminUser());
-        ResourceCollection lowerCase = new ResourceCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        SharedCollection lowerCase = new SharedCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE,  false, getAdminUser());
         lowerCase.markUpdated(getAdminUser());
-        ResourceCollection upperCase = new ResourceCollection("USAF", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        SharedCollection upperCase = new SharedCollection("USAF", "test", SortOption.RELEVANCE,  false, getAdminUser());
         upperCase.markUpdated(getAdminUser());
-        ResourceCollection usafLowerCase = new ResourceCollection("usaf", "test", SortOption.RELEVANCE, CollectionType.SHARED, false, getAdminUser());
+        SharedCollection usafLowerCase = new SharedCollection("usaf", "test", SortOption.RELEVANCE,  false, getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
         usafLowerCase.getResources().add(doc);
@@ -325,7 +325,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testWhitelabelAdvancedSearch() {
         String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
-        WhiteLabelCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
+        SharedCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
 
         getLogger().debug("collection saved. Id:{}  obj:{}", rc.getId(), rc);
         controller.setCollectionId(rc.getId());

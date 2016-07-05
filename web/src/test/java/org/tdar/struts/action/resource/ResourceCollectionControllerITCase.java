@@ -1,15 +1,16 @@
 package org.tdar.struts.action.resource;
 
+import static org.hamcrest.Matchers.lessThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
-import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,9 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -108,7 +111,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
 
         final Long id = collection.getId();
         String slug = collection.getSlug();
@@ -174,8 +177,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.PUBLIC, false, users, testPerson, resources, null);
-
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
+        fail("public collections not impletented yet");
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
@@ -211,7 +214,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_METADATA)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
 
         final Long id = collection.getId();
         collection = null;
@@ -230,7 +233,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback
     public void testRemoveResources() throws Exception {
-        ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection resourceCollection = new SharedCollection();
         resourceCollection.setName("a resource collection");
         resourceCollection.setDescription("testing add then remove resources");
         List<Document> docList = new ArrayList<>();
@@ -278,16 +281,16 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         evictCache();
 
         // now load our resource collection again. the resources should be gone.
-        resourceCollection = genericService.find(ResourceCollection.class, rcid);
+        resourceCollection = genericService.find(SharedCollection.class, rcid);
         assertEquals("resource list should be empty", 0, resourceCollection.getResources().size());
     }
 
     @Test
     @Rollback
     public void testDeleteResourceCollection() throws Exception {
-        ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
-        ResourceCollection resourceCollectionParent = new ResourceCollection(CollectionType.SHARED);
-        ResourceCollection resourceCollectionChild = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection resourceCollection = new SharedCollection();
+        ResourceCollection resourceCollectionParent = new SharedCollection();
+        ResourceCollection resourceCollectionChild = new SharedCollection();
         resourceCollectionChild.setName("child collection");
         resourceCollectionParent.setName("parent collection");
         resourceCollection.setName("a resource collection");
@@ -331,7 +334,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         deleteAction.delete();
 
         // now load our resource collection again. the resources should be gone.
-        resourceCollection = genericService.find(ResourceCollection.class, rcid);
+        resourceCollection = genericService.find(SharedCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
         for (ResourceCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED)) {
@@ -354,7 +357,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         evictCache();
         assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
-        resourceCollection = genericService.find(ResourceCollection.class, rcid);
+        resourceCollection = genericService.find(SharedCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
         assertTrue("user should be able to delete collection", resourceCollection == null);
         resourceCollectionChild = null;
@@ -372,7 +375,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback
     public void testDeleteResourceCollectionWithUser() throws Exception {
-        ResourceCollection resourceCollection = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection resourceCollection = new SharedCollection();
         resourceCollection.setName("a resource collection");
         resourceCollection.setSortBy(SortOption.DATE);
         resourceCollection.setDescription("testing add then remove resources");
@@ -405,7 +408,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         deleteAction.delete();
 
         // now load our resource collection again. the resources should be gone.
-        resourceCollection = genericService.find(ResourceCollection.class, rcid);
+        resourceCollection = genericService.find(SharedCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
         deleteAction = generateNewController(CollectionDeleteAction.class);
@@ -421,7 +424,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         evictCache();
         assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
-        resourceCollection = genericService.find(ResourceCollection.class, rcid);
+        resourceCollection = genericService.find(SharedCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
         assertTrue("user should be able to delete collection", resourceCollection == null);
         evictCache();
@@ -505,17 +508,20 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         logger.debug("------------------------------------------------------------------------------------------------------------------");
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
-        ResourceCollection collection1 = generateResourceCollection("INTERNAL", "", CollectionType.INTERNAL, false, new ArrayList<>(users),
-                new ArrayList<Resource>(), null);
-        ResourceCollection collection2 = generateResourceCollection("SHARED", "", CollectionType.SHARED, false, new ArrayList<>(users),
+        InternalCollection collection1 = new InternalCollection();
+        collection1.setName("INTERNAL");
+        collection1.markUpdated(getUser());
+        collection1.getAuthorizedUsers().addAll(users);
+        genericService.saveOrUpdate(collection1);
+        ResourceCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
         InformationResource testFile = generateDocumentWithUser();
-        ResourceCollection parentCollection = generateResourceCollection("PARENT", "", CollectionType.SHARED, true, new ArrayList<>(users),
+        ResourceCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users),
                 Arrays.asList(testFile), null);
         Long id = parentCollection.getId();
-        ResourceCollection childCollection = generateResourceCollection("CHILD", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
+        ResourceCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
-        ResourceCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
+        ResourceCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
         // genericService.saveOrUpdate(parentCollection);
         Long parentCollectionId = parentCollection.getId();
@@ -557,7 +563,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         assertEquals(1, testFile.getResourceCollections().size());
         parentCollection = genericService.find(ResourceCollection.class, id);
-        assertTrue(parentCollection.isShared());
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
         String slug = parentCollection.getSlug();
@@ -605,9 +610,9 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testHiddenParentVisibleChild() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
 
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, new ArrayList<AuthorizedUser>(),
+        SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), null);
-        ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
+        SharedCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
         evictCache();
         searchIndexService.index(collection1, collection2);
@@ -628,8 +633,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testNestedCollectionEdit() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, new ArrayList<Resource>(), null);
-        ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
+        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", false, users, new ArrayList<Resource>(), null);
+        ResourceCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
 
         evictCache();
@@ -651,10 +656,10 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         // use case 1 -- use owner
-        ResourceCollection collectionWithUserAsOwner = generateResourceCollection(name, description, CollectionType.SHARED, true, null, getBasicUser(),
+        ResourceCollection collectionWithUserAsOwner = generateResourceCollection(name, description, true, null, getBasicUser(),
                 resources, null);
         // use case 2 -- use administrator
-        ResourceCollection collectionWithUserAsAdministrator = generateResourceCollection(name, description, CollectionType.SHARED, true, users,
+        ResourceCollection collectionWithUserAsAdministrator = generateResourceCollection(name, description, true, users,
                 getAdminUser(), resources, null);
 
         evictCache();
@@ -670,7 +675,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollections() throws Exception {
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, null, new ArrayList<Resource>(), null);
+        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
@@ -678,7 +683,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         document.setTitle("test");
         document.setDescription("test");
         document.setDate(1234);
-        ResourceCollection fakeIncoming = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection fakeIncoming = new SharedCollection();
         fakeIncoming.setName(collection1.getName());
         fakeIncoming.setId(collection1.getId());
         controller.setServletRequest(getServletPostRequest());
@@ -694,7 +699,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollectionsWithLocalRights() throws Exception {
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, true, null, new ArrayList<Resource>(), null);
+        SharedCollection collection1 = generateResourceCollection("test 1 private", "", true, null, new ArrayList<Resource>(), null);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
@@ -728,7 +733,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         draftDocument.setStatus(Status.DRAFT);
         genericService.save(draftDocument);
         evictCache();
-        ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true, null,
+        ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true, null,
                 Arrays.asList(draftDocument, activeDocument), null);
         collection.setOwner(getAdminUser());
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
@@ -757,7 +762,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> authList = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.VIEW_ALL)));
 
-        ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", CollectionType.SHARED, true,
+        ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true,
                 authList, null, null);
         collection.setOwner(getAdminUser());
         List<ResourceCollection> findAccessibleResourceCollections = entityService.findAccessibleResourceCollections(testPerson);
@@ -769,11 +774,11 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testRemoveResourceCollectionButMaintainSome() throws Exception {
         Document doc = generateDocumentWithUser();
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(doc.getSubmitter(), GeneralPermissions.ADMINISTER_GROUP)));
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, users, Arrays.asList(doc), null);
-        ResourceCollection collection2 = generateResourceCollection("test 2 public", "", CollectionType.SHARED, true, new ArrayList<AuthorizedUser>(),
+        SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, users, Arrays.asList(doc), null);
+        SharedCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(),
                 Arrays.asList(doc), collection1.getId());
 
-        ResourceCollection fake = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection fake = new SharedCollection();
         fake.setId(collection2.getId());
         fake.setName(collection2.getName());
 
@@ -947,7 +952,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testControllerWithDeletedResourceThatBecomesActive() throws Exception {
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
         Long pid = project.getId();
-        ResourceCollection collection = generateResourceCollection("test collection with deleted", "test", CollectionType.SHARED, true, null, getUser(),
+        ResourceCollection collection = generateResourceCollection("test collection with deleted", "test", true, null, getUser(),
                 Arrays.asList(project), null);
         project = null;
         project = genericService.find(Project.class, pid);

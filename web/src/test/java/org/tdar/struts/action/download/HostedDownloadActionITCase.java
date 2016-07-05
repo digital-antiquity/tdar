@@ -22,6 +22,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
@@ -134,7 +135,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
     @Before
     public void setup() throws InstantiationException, IllegalAccessException {
         doc = generateDocumentWithFileAndUseDefaultUser();
-        ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection collection = new SharedCollection();
         collection.setName("authorized collection");
         collection.setDescription(collection.getName());
         collection.markUpdated(getAdminUser());

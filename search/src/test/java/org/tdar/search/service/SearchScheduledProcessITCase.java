@@ -12,6 +12,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
@@ -52,8 +53,10 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     @Test
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
-        ResourceCollection collection = new ResourceCollection(dataset, getAdminUser());
-        collection.setType(CollectionType.SHARED);
+        ResourceCollection collection = new SharedCollection();
+        collection.getResources().add(dataset);
+        dataset.getResourceCollections().add(collection);
+        collection.markUpdated(getAdminUser());
         AuthorizedUser e = new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL);
         e.setDateExpires(DateTime.now().minusDays(4).toDate());
         collection.setName("test");

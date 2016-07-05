@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.WhiteLabelCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -35,7 +34,7 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
             @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
-        if (getCollection() instanceof WhiteLabelCollection) {
+        if (getCollection().isWhiteLabelCollection()) {
             return SUCCESS;
         }
         try {

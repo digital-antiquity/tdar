@@ -14,8 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.Resource;
@@ -52,7 +51,7 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
     public void execute() {
         DateTime time = DateTime.now().minusDays(7);
         Collection<? extends Resource> resources = new ArrayList<>();
-        ResourceCollection collection = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection collection = new SharedCollection();
         try {
             MessageHelper messageHelper = MessageHelper.getInstance();
             resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);

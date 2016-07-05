@@ -14,6 +14,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -72,7 +73,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     private void setupCollections() throws SolrServerException, IOException {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         for (String collectionName : collectionNames) {
-            ResourceCollection e = new ResourceCollection(collectionName, collectionName, SortOption.TITLE, CollectionType.SHARED, true, getBasicUser());
+            ResourceCollection e = new SharedCollection(collectionName, collectionName, SortOption.TITLE, true, getBasicUser());
             collections.add(e);
             e.markUpdated(getBasicUser());
 
@@ -108,7 +109,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission)
             throws SolrServerException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
-        ResourceCollection e = new ResourceCollection("a test", "a Name", SortOption.TITLE, CollectionType.SHARED, visible, owner);
+        ResourceCollection e = new SharedCollection("a test", "a Name", SortOption.TITLE, visible, owner);
         e.markUpdated(owner);
         genericService.save(e);
         if (user != null) {

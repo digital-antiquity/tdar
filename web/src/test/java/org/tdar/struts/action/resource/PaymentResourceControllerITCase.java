@@ -23,6 +23,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingActivityModel;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
@@ -88,7 +89,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.saveOrUpdate(account);
         genericService.saveOrUpdate(dataset);
         genericService.synchronize();
-        ResourceCollection rCollection = generateResourceCollection("test", "test", CollectionType.SHARED, true,
+        SharedCollection rCollection = generateResourceCollection("test", "test", true,
                 Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
         dataset.getResourceCollections().add(rCollection);

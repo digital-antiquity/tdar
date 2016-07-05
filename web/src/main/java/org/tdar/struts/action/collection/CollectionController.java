@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Project;
@@ -40,7 +41,7 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionController extends AbstractPersistableController<ResourceCollection> implements DataTableResourceDisplay {
+public class CollectionController extends AbstractPersistableController<SharedCollection> implements DataTableResourceDisplay {
 
     /**
      * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
@@ -84,7 +85,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private String parentCollectionName;
     private Long parentId;
-    private ResourceCollection parentCollection;
+    private SharedCollection parentCollection;
 
 
     @Override
@@ -113,12 +114,12 @@ public class CollectionController extends AbstractPersistableController<Resource
 
         // Try to lookup parent collection by ID, then by name.  Name lookup must be unambiguous.
         if(PersistableUtils.isNotNullOrTransient(parentId)) {
-            parentCollection = resourceCollectionService.find(parentId);
+            parentCollection = getGenericService().find(SharedCollection.class, parentId);
             getLogger().debug("lookup parent collection by id:{}  result:{}", parentId, parentCollection);
 
         }
         else if(StringUtils.isNotBlank(parentCollectionName)) {
-            List<ResourceCollection> results = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
+            List<SharedCollection> results = resourceCollectionService.findCollectionsWithName(getAuthenticatedUser(),
                     parentCollectionName);
             getLogger().debug("lookup parent collection by name:{}  results:{}", parentCollectionName, results.size());
 
@@ -133,7 +134,7 @@ public class CollectionController extends AbstractPersistableController<Resource
     }
 
     @Override
-    protected String save(ResourceCollection persistable) {
+    protected String save(SharedCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         
@@ -178,20 +179,20 @@ public class CollectionController extends AbstractPersistableController<Resource
         }
     }
 
-    public ResourceCollection getResourceCollection() {
+    public SharedCollection getResourceCollection() {
         if (getPersistable() == null) {
-            setPersistable(new ResourceCollection());
+            setPersistable(new SharedCollection());
         }
         return getPersistable();
     }
 
-    public void setResourceCollection(ResourceCollection rc) {
+    public void setResourceCollection(SharedCollection rc) {
         setPersistable(rc);
     }
 
     @Override
-    public Class<ResourceCollection> getPersistableClass() {
-        return ResourceCollection.class;
+    public Class<SharedCollection> getPersistableClass() {
+        return SharedCollection.class;
     }
 
     public List<SortOption> getSortOptions() {

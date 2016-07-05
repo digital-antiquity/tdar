@@ -24,7 +24,9 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.Institution;
@@ -95,12 +97,11 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
 		genericService.saveOrUpdate(collection);
 
-		ResourceCollection collectionChild = new ResourceCollection();
+		SharedCollection collectionChild = new SharedCollection();
 		collectionChild.setName("child collection with project");
 		collectionChild.setSortBy(SortOption.RELEVANCE);
 		collectionChild.setParent(collection);
 		collectionChild.setOrientation(DisplayOrientation.GRID);
-		collectionChild.setType(CollectionType.SHARED);
 		collectionChild.setDescription(collectionChild.getTitle());
 		collectionChild.markUpdated(getAdminUser());
 		project.getResourceCollections().add(collectionChild);
@@ -129,7 +130,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		genericService.saveOrUpdate(doc);
 		ResourceCollection collection = createResourceCollectionWithAdminRights();
 		genericService.saveOrUpdate(collection);
-		ResourceCollection internal = new ResourceCollection(CollectionType.INTERNAL);
+		InternalCollection internal = new InternalCollection();
 		internal.setName("internal");
 		internal.setDescription("internal");
 		internal.setSortBy(SortOption.TITLE);
@@ -164,11 +165,10 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 	}
 
 	private ResourceCollection createResourceCollectionWithAdminRights() {
-		ResourceCollection collection = new ResourceCollection();
+		SharedCollection collection = new SharedCollection();
 		collection.setName("parent collection with rights");
 		collection.setSortBy(SortOption.RELEVANCE);
 		collection.setOrientation(DisplayOrientation.GRID);
-		collection.setType(CollectionType.SHARED);
 		collection.setDescription(collection.getTitle());
 		collection.markUpdated(getAdminUser());
 		genericService.saveOrUpdate(collection);
@@ -629,7 +629,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		d.setDescription("desc");
 		d.markUpdated(getUser());
 		d.setDate(1234);
-		ResourceCollection collection = new ResourceCollection();
+		SharedCollection collection = new SharedCollection();
 		collection.setName(collectionname);
 		controller.getResourceCollections().add(collection);
 

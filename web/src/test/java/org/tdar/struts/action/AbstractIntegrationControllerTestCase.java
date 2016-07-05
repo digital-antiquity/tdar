@@ -31,6 +31,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -308,7 +309,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
         ResourceCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
-            internalResourceCollection = new ResourceCollection(CollectionType.INTERNAL);
+            internalResourceCollection = new InternalCollection();
             internalResourceCollection.setOwner(person);
             internalResourceCollection.markUpdated(person);
             resource.getResourceCollections().add(internalResourceCollection);

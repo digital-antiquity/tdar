@@ -28,6 +28,7 @@ import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -156,14 +157,14 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         Assert.assertFalse("should not see resource", seen);
     }
 
-    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
+    public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             List<? extends Resource> resources, Long parentId)
             throws Exception {
-        return generateResourceCollection(name, description, type, visible, users, getUser(), resources, parentId);
+        return generateResourceCollection(name, description, visible, users, getUser(), resources, parentId);
     }
 
     @SuppressWarnings("deprecation")
-    public ResourceCollection generateResourceCollection(String name, String description, CollectionType type, boolean visible, List<AuthorizedUser> users,
+    public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
         CollectionController controller = generateNewInitializedController(CollectionController.class, owner);
         controller.setServletRequest(getServletPostRequest());
@@ -171,10 +172,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         // controller.setSessionData(getSessionData());
         logger.info("{}", getUser());
         assertEquals(owner, controller.getAuthenticatedUser());
-        ResourceCollection resourceCollection = controller.getResourceCollection();
+        SharedCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName(name);
         	
-        resourceCollection.setType(type);
         controller.setAsync(false);
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
@@ -208,7 +208,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         Long id = resourceCollection.getId();
         genericService.evictFromCache(resourceCollection);
         resourceCollection = null;
-        resourceCollection = genericService.find(ResourceCollection.class, id);
+        resourceCollection = genericService.find(SharedCollection.class, id);
         logger.debug("parentId: {}", parentId);
         logger.debug("Resources: {}", resources);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {

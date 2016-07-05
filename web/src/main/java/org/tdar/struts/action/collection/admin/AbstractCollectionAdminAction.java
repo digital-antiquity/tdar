@@ -2,7 +2,7 @@ package org.tdar.struts.action.collection.admin;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
@@ -11,16 +11,13 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 public abstract class AbstractCollectionAdminAction extends AbstractAuthenticatableAction implements Preparable {
 
-    @Autowired
-    private ResourceCollectionService resourceCollectionService;
-    
     private static final long serialVersionUID = -926906661391091555L;
     private Long id;
-    private ResourceCollection collection;
+    private SharedCollection collection;
 
     @Override
     public void prepare() throws Exception {
-        setCollection(resourceCollectionService.find(id));
+        setCollection(getGenericService().find(SharedCollection.class,id));
     }
 
     public Long getId() {
@@ -31,11 +28,11 @@ public abstract class AbstractCollectionAdminAction extends AbstractAuthenticata
         this.id = id;
     }
 
-    public ResourceCollection getCollection() {
+    public SharedCollection getCollection() {
         return collection;
     }
 
-    public void setCollection(ResourceCollection collection) {
+    public void setCollection(SharedCollection collection) {
         this.collection = collection;
     }
 

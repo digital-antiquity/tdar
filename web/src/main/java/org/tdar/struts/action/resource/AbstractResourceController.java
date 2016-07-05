@@ -27,6 +27,7 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -130,7 +131,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
-    private List<ResourceCollection> resourceCollections = new ArrayList<>();
+    private List<SharedCollection> resourceCollections = new ArrayList<>();
     private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
@@ -949,8 +950,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return new ResourceAnnotation(new ResourceAnnotationKey(), "");
     }
 
-    public ResourceCollection getBlankResourceCollection() {
-        return new ResourceCollection(CollectionType.SHARED);
+    public SharedCollection getBlankResourceCollection() {
+        return new SharedCollection();
     }
 
     public SourceCollection getBlankSourceCollection() {
@@ -973,14 +974,14 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(List<SharedCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
     /**
      * @return the resourceCollections
      */
-    public List<ResourceCollection> getResourceCollections() {
+    public List<SharedCollection> getResourceCollections() {
         return resourceCollections;
     }
 

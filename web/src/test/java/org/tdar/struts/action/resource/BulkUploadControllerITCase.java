@@ -33,7 +33,9 @@ import org.tdar.core.bean.citation.Citation;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -600,9 +602,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         bulkUploadController.getResource().setDate(1234);
 
         // specify an adhoc collection
-        ResourceCollection adHocCollection = new ResourceCollection();
+        SharedCollection adHocCollection = new SharedCollection();
         // NEED TO SET THE TYPE OF THE ADHOC COLLECTION
-        adHocCollection.setType(CollectionType.SHARED);
         adHocCollection.setName("collection of bulk-uploaded resource collections");
         bulkUploadController.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.MODIFY_RECORD));
         bulkUploadController.getResourceCollections().add(adHocCollection);
@@ -640,7 +641,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
         for (ResourceCollection col : collections) {
             logger.debug("{} : {}", col, col.getResources());
-            if (col.isInternal()) {
+            if (col instanceof InternalCollection) {
                 assertEquals(1, col.getResources().size());
             } else {
                 assertEquals(2, col.getResources().size());

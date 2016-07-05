@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -71,7 +72,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, true, users, resources, null);
+        SharedCollection collection = generateResourceCollection(name, description, true, users, resources, null);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
@@ -119,7 +120,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile2));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, true, users, getEditorUser(), resources, null);
+        SharedCollection collection = generateResourceCollection(name, description, true, users, getEditorUser(), resources, null);
         Long collectionid = collection.getId();
         logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
@@ -150,7 +151,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         // create a parent collection where basic user has administer groups, and with one resource
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile));
-        ResourceCollection collection = generateResourceCollection("parent", "parent", CollectionType.SHARED, false, users, resources, null);
+        ResourceCollection collection = generateResourceCollection("parent", "parent", false, users, resources, null);
         collection.setOwner(getAdminUser());
         genericService.saveOrUpdate(collection);
         authorizedUserDao.clearUserPermissionsCache();
@@ -189,7 +190,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
         Long id = collection.getId();
         collection = null;
         assertFalse(id.equals(-1L));
@@ -231,8 +232,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         TdarUser testPerson = createAndSaveNewPerson("a@asdaasd.com", "1234");
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
-        ResourceCollection collection = generateResourceCollection("test parent", "test parent", CollectionType.SHARED, false, users, null, null);
-        ResourceCollection child = generateResourceCollection("test child", "test child", CollectionType.SHARED, false, null, null, collection.getId());
+        ResourceCollection collection = generateResourceCollection("test parent", "test parent", false, users, null, null);
+        ResourceCollection child = generateResourceCollection("test child", "test child", false, null, null, collection.getId());
         Long childId = child.getId();
         child = null;
         collection = null;
@@ -279,9 +280,9 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
 
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.SHARED, false, users, null, null);
+        ResourceCollection collection = generateResourceCollection(name, description, false, users, null, null);
         logger.debug("parent: {}", collection);
-        ResourceCollection child = generateResourceCollection(name, description, CollectionType.SHARED, false, null, resources, collection.getId());
+        ResourceCollection child = generateResourceCollection(name, description, false, null, resources, collection.getId());
         Long childId = child.getId();
         logger.info("{}", generateInformationResourceWithFile);
         Long resId = generateInformationResourceWithFile.getId();
@@ -291,7 +292,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollectionsWithoutLocalRights() throws Exception {
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", CollectionType.SHARED, false, null, new ArrayList<Resource>(), null);
+        SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();
@@ -382,8 +383,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         CollectionController controller = generateNewController(CollectionController.class);
         init(controller, getBasicUser());
         controller.add();
-        ResourceCollection resourceCollection = controller.getResourceCollection();
-        resourceCollection.setType(CollectionType.SHARED);
+        SharedCollection resourceCollection = controller.getResourceCollection();
         resourceCollection.setName("tst");
         resourceCollection.setDescription("tst");
         resourceCollection.markUpdated(getBasicUser());
@@ -436,7 +436,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setId(docId);
         controller.prepare();
         controller.getResourceCollections().add(
-                new ResourceCollection("test123", "test123", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getBasicUser()));
+new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
@@ -462,7 +462,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
     @Rollback
     public void testRightsEscalationUserUpsParent() throws Exception {
         List<AuthorizedUser> users = Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
-        ResourceCollection parent = generateResourceCollection("parent", "parent", CollectionType.SHARED, true, users, getBasicUser(), Collections.EMPTY_LIST,
+        ResourceCollection parent = generateResourceCollection("parent", "parent", true, users, getBasicUser(), Collections.EMPTY_LIST,
                 null);
         Long parentId = parent.getId();
         // Create document, add user to it with MODIFY_METADATA, have them edit document and add it to an adhoc collection, then try and add higher rights
@@ -482,7 +482,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setId(docId);
         controller.prepare();
         controller.getResourceCollections().add(
-                new ResourceCollection("test123", "test123", SortOption.RESOURCE_TYPE, CollectionType.SHARED, true, getBasicUser()));
+                new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
