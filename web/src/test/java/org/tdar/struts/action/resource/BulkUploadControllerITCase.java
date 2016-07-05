@@ -35,6 +35,7 @@ import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
@@ -630,7 +631,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<ResourceCollection> resourceCollections = resource.getResourceCollections();
+            Set<RightsBasedResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (ResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);

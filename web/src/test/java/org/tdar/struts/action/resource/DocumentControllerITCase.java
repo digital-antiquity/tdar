@@ -128,7 +128,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		doc.setDescription(doc.getTitle());
 		doc.markUpdated(getAdminUser());
 		genericService.saveOrUpdate(doc);
-		ResourceCollection collection = createResourceCollectionWithAdminRights();
+		SharedCollection collection = createResourceCollectionWithAdminRights();
 		genericService.saveOrUpdate(collection);
 		InternalCollection internal = new InternalCollection();
 		internal.setName("internal");
@@ -164,7 +164,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
 	}
 
-	private ResourceCollection createResourceCollectionWithAdminRights() {
+	private SharedCollection createResourceCollectionWithAdminRights() {
 		SharedCollection collection = new SharedCollection();
 		collection.setName("parent collection with rights");
 		collection.setSortBy(SortOption.RELEVANCE);

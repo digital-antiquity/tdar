@@ -786,7 +786,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testSparseObjectNameLoading() throws SolrServerException, IOException, ParseException {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
-        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
+        SharedCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
         proj.getResourceCollections().add(coll);
         searchIndexService.index(proj);
@@ -960,7 +960,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Test
     @Rollback(true)
     public void testSelectedResourceLookup() throws SolrServerException, IOException, ParseException {
-        ResourceCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getUser());
+        SharedCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getUser());
         collection.markUpdated(getUser());
         Ontology ont = createAndSaveNewInformationResource(Ontology.class);
         genericService.saveOrUpdate(collection);

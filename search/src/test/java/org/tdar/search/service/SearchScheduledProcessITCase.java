@@ -53,7 +53,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     @Test
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
-        ResourceCollection collection = new SharedCollection();
+        SharedCollection collection = new SharedCollection();
         collection.getResources().add(dataset);
         dataset.getResourceCollections().add(collection);
         collection.markUpdated(getAdminUser());

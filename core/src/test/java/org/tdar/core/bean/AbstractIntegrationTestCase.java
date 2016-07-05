@@ -625,7 +625,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
 
     public void addAuthorizedUser(Resource resource, TdarUser person, GeneralPermissions permission) {
         AuthorizedUser authorizedUser = new AuthorizedUser(person, permission);
-        ResourceCollection internalResourceCollection = resource.getInternalResourceCollection();
+        InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
             internalResourceCollection = new InternalCollection();
             internalResourceCollection.setOwner(person);

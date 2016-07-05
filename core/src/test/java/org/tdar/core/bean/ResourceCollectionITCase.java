@@ -18,7 +18,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -69,7 +68,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testMakeActive() throws Exception {
-        ResourceCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getAdminUser());
         collection.markUpdated(getAdminUser());
         boolean seen = false;
         genericService.saveOrUpdate(collection);
@@ -84,7 +83,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         }
         Long collectionId = collection.getId();
         collection = null;
-        collection = genericService.find(ResourceCollection.class, collectionId);
+        collection = genericService.find(SharedCollection.class, collectionId);
         resourceCollectionService.makeResourcesInCollectionActive(collection, getAdminUser());
         for (Resource r : collection.getResources()) {
             assertEquals(Status.ACTIVE,r.getStatus());

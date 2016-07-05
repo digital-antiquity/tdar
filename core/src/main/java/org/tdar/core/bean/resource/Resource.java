@@ -83,6 +83,7 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -415,7 +416,7 @@ public class Resource implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
+    private Set<RightsBasedResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -1231,7 +1232,7 @@ public class Resource implements Persistable,
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<RightsBasedResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
@@ -1253,17 +1254,29 @@ public class Resource implements Persistable,
         @XmlElementRef(name="resourceCollectionRef",type=JAXBPersistableRef.class, required=false)
     })
     @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
-    public Set<ResourceCollection> getResourceCollections() {
+    public Set<RightsBasedResourceCollection> getResourceCollections() {
         if (resourceCollections == null) {
-            resourceCollections = new LinkedHashSet<ResourceCollection>();
+            resourceCollections = new LinkedHashSet<>();
         }
         return resourceCollections;
     }
 
     @Transient
-    public Set<ResourceCollection> getRightsBasedResourceCollections() {
-        Set<ResourceCollection> collections = new HashSet<ResourceCollection>(getResourceCollections());
-        Iterator<ResourceCollection> iter = collections.iterator();
+    @XmlTransient
+    public Set<SharedCollection> getSharedCollections() {
+        HashSet<SharedCollection> shared = new HashSet<>();
+        for (RightsBasedResourceCollection col : getRightsBasedResourceCollections()) {
+            if (col instanceof SharedCollection) {
+                shared.add((SharedCollection)col);
+            }
+        }
+        return shared;
+    }
+
+    @Transient
+    public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
+        Set<RightsBasedResourceCollection> collections = new HashSet<>(getResourceCollections());
+        Iterator<RightsBasedResourceCollection> iter = collections.iterator();
         while (iter.hasNext()) {
             ResourceCollection coll = iter.next();
             if (coll.isPublic()) {

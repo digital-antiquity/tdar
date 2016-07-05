@@ -49,7 +49,7 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
     public void testCloneInternalCollection() throws Exception {
         Document document = genericService.find(Document.class, 4287L);
         Long id = document.getId();
-        ResourceCollection rc = new SharedCollection(document,getAdminUser());
+        SharedCollection rc = new SharedCollection(document,getAdminUser());
         rc.setSortBy(SortOption.TITLE);
         rc.setDescription("test");
         rc.setName("name");

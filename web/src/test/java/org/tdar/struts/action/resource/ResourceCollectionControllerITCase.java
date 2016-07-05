@@ -893,7 +893,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.prepare();
-        ResourceCollection rc = controller.getPersistable();
+        SharedCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
         // not 100% sure why we're using a proxy here, but technically, I think this i closer to what we do in real life
         // Project proxy = new Project(project.getId(), project.getTitle());
@@ -942,7 +942,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Assert.assertFalse("deleted resource should not appear on edit page", results.contains(pid));
 
         // so far so good. but lets make sure that the resource *is* actually in the collection
-        rc = genericService.find(ResourceCollection.class, rcid);
+        rc = genericService.find(SharedCollection.class, rcid);
         assertTrue(rc.getResources().contains(project));
         logger.info("{}", resourceDeleteAction.getPersistable().getResourceCollections());
     }
@@ -952,7 +952,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testControllerWithDeletedResourceThatBecomesActive() throws Exception {
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
         Long pid = project.getId();
-        ResourceCollection collection = generateResourceCollection("test collection with deleted", "test", true, null, getUser(),
+        SharedCollection collection = generateResourceCollection("test collection with deleted", "test", true, null, getUser(),
                 Arrays.asList(project), null);
         project = null;
         project = genericService.find(Project.class, pid);

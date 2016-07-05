@@ -108,7 +108,7 @@ public class AccessConverterITCase extends AbstractIntegrationTestCase {
         ds.setDescription("test");
         ds.markUpdated(getAdminUser());
         ds.setProject(genericService.find(Project.class, TestConstants.PROJECT_ID));
-        ResourceCollection col = new SharedCollection();
+        SharedCollection col = new SharedCollection();
         col.markUpdated(getAdminUser());
         col.setSortBy(SortOption.RELEVANCE);
         col.setName("test");

@@ -36,6 +36,7 @@ import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
@@ -253,10 +254,10 @@ public class BulkUploadService {
         resourceTemplate.setDescription("");
         resourceTemplate.setDate(-1);
 
-        List<ResourceCollection> shared = new ArrayList<>();
-        Iterator<ResourceCollection> iter = resourceTemplate.getResourceCollections().iterator();
+        List<RightsBasedResourceCollection> shared = new ArrayList<>();
+        Iterator<RightsBasedResourceCollection> iter = resourceTemplate.getResourceCollections().iterator();
         while (iter.hasNext()) {
-            ResourceCollection collection = iter.next();
+            RightsBasedResourceCollection collection = iter.next();
             if (collection instanceof InternalCollection) {
                 continue;
             }

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Obfuscatable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -45,7 +45,7 @@ public class ProjectionTransformer<I extends Indexable> {
 
 		// set collections
 		Collection<Long> collectionIds = (Collection<Long>) (Collection) doc.getFieldValues(QueryFieldNames.RESOURCE_COLLECTION_IDS);
-		r_.getResourceCollections().addAll(datasetDao.findAll(ResourceCollection.class,collectionIds));
+		r_.getResourceCollections().addAll(datasetDao.findAll(RightsBasedResourceCollection.class,collectionIds));
 
 		// handle submitter
 		Long submitterId = (Long) doc.getFieldValue(QueryFieldNames.SUBMITTER_ID);

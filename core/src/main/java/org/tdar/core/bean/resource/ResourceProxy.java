@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -128,7 +129,7 @@ public class ResourceProxy implements Serializable {
     @XmlTransient
     //@IndexedEmbedded(depth = 1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<ResourceCollection>();
+    private Set<RightsBasedResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
@@ -269,11 +270,11 @@ public class ResourceProxy implements Serializable {
         return res;
     }
 
-    public Set<ResourceCollection> getResourceCollections() {
+    public Set<RightsBasedResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<RightsBasedResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 

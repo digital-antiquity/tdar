@@ -395,7 +395,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param errorHandling
      */
     @Transactional
-    public void saveSharedResourceCollections(Resource resource, Collection<SharedCollection> incoming, Set<ResourceCollection> current,
+    public void saveSharedResourceCollections(Resource resource, Collection<SharedCollection> incoming, Set<RightsBasedResourceCollection> current,
             TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
 
         logger.debug("incoming ResourceCollections: {} ({})", incoming, incoming.size());

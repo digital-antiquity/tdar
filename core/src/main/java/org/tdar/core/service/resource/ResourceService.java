@@ -502,12 +502,13 @@ public class ResourceService {
                     resource.getResourceCollections().add(newInternal);
                     newInternal.getResources().add(resource);
                 } else if (collection instanceof SharedCollection){
+                    SharedCollection shared = (SharedCollection)collection;
                     logger.info("adding to shared collection : {} ", collection);
                     if (collection.isTransient() && save) {
-                        genericDao.save(collection);
+                        genericDao.save(shared);
                     }
-                    ((SharedCollection)collection).getResources().add(resource);
-                    resource.getResourceCollections().add(collection);
+                    shared.getResources().add(resource);
+                    resource.getResourceCollections().add(shared);
                 } else {
                     throw new TdarRecoverableRuntimeException("resourceService.collectiontype");
                 }
