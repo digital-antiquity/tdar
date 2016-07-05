@@ -49,7 +49,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
     public boolean isAllowedTo(TdarUser person, HasSubmitter resource, GeneralPermissions permission) {
         if (resource instanceof ResourceCollection) {
-            return isAllowedTo(person, (ResourceCollection) resource, permission);
+            return isAllowedTo(person, (RightsBasedResourceCollection) resource, permission);
         } else {
             return isAllowedTo(person, (Resource) resource, permission);
         }

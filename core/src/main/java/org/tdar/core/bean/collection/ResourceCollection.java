@@ -26,7 +26,6 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -47,8 +46,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.LazyCollection;
-import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
@@ -71,7 +68,6 @@ import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Addressable;
-import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
@@ -179,6 +175,18 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
+
+    /**
+     * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
+     * field when it only really needs to get at the Ids for proper logging.
+     * 
+     * @return
+     */
+    @ElementCollection
+    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
+    @Column(name = "resource_id")
+    @Immutable
+    private Set<Long> resourceIds;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     private CollectionDisplayProperties properties;
@@ -464,36 +472,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         return UrlUtils.slugify(getName());
     }
 
-    // FIXME: Move to RightsBasedResourceCollection
-    @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
-    @LazyCollection(LazyCollectionOption.EXTRA)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
-    private Set<Resource> resources = new LinkedHashSet<Resource>();
-
-    /**
-     * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
-     * field when it only really needs to get at the Ids for proper logging.
-     * 
-     * @return
-     */
-    @ElementCollection
-    @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
-    @Column(name = "resource_id")
-    @Immutable
-    private Set<Long> resourceIds;
-
-
-    //if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could crash tDAR if > 100,000)
-    @XmlTransient
-    public Set<Resource> getResources() {
-        return resources;
-    }
-
-
-    public void setResources(Set<Resource> resources) {
-        this.resources = resources;
-    }
 
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
@@ -510,6 +488,5 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Transient
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
-    }
-   
+    }   
 }
