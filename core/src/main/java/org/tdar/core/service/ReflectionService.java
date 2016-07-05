@@ -672,6 +672,8 @@ public class ReflectionService {
             throw new TdarRecoverableRuntimeException("reflectionService.expecting_generic", errorValueList);
         }
     }
+    
+    private Map<Class<?>,List<Pair<Method, Class<? extends Obfuscatable>>>> obfuscatableTypeCache = new HashMap<>();
 
     /**
      * Find all getters of beans that support the @link Obfuscatable interface and any child beans throughout the graph
@@ -684,13 +686,9 @@ public class ReflectionService {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
-        Class<?> actualClass = null;
         Class<?> cls = cls_;
         while (cls.getPackage().getName().startsWith(ORG_TDAR)) {
-            // find first implemented tDAR class (actual class);
-            if (actualClass == null) {
-                actualClass = cls;
-            }
+
             for (Method method : cls.getDeclaredMethods()) {
 
                 if (Modifier.isPublic(method.getModifiers()) && method.getName().startsWith(GET)) {
@@ -698,6 +696,11 @@ public class ReflectionService {
                 }
             }
             cls = cls.getSuperclass();
+        }
+        
+        List<Pair<Method, Class<? extends Obfuscatable>>> cache_ = obfuscatableTypeCache.get(cls);
+        if (cache_ != null) {
+            return cache_;
         }
 
         for (Method method : declaredFields) {
@@ -735,6 +738,7 @@ public class ReflectionService {
                 result.add(new Pair<Method, Class<? extends Obfuscatable>>(method, type));
             }
         }
+        obfuscatableTypeCache.put(cls, result);
         return result;
     }
 
