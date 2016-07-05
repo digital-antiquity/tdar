@@ -82,6 +82,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.InternalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -424,7 +425,7 @@ public class Resource implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
-    private Set<ResourceCollection> unmanagedResourceCollections = new LinkedHashSet<ResourceCollection>();
+    private Set<ListCollection> unmanagedResourceCollections = new LinkedHashSet<>();
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "resource")
     private Set<BookmarkedResource> bookmarkedResources = new LinkedHashSet<>();
@@ -1752,11 +1753,11 @@ public class Resource implements Persistable,
         this.formattedDescription = formattedDescription;
     }
 
-    public Set<ResourceCollection> getUnmanagedResourceCollections() {
+    public Set<ListCollection> getUnmanagedResourceCollections() {
         return unmanagedResourceCollections;
     }
 
-    public void setUnmanagedResourceCollections(Set<ResourceCollection> publicResourceCollections) {
+    public void setUnmanagedResourceCollections(Set<ListCollection> publicResourceCollections) {
         this.unmanagedResourceCollections = publicResourceCollections;
     }
 

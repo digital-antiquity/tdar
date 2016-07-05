@@ -1,14 +1,15 @@
 package org.tdar.core.bean.collection;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -16,66 +17,61 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Document;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
-@DiscriminatorValue(value = "SHARED")
+@DiscriminatorValue(value = "PUBLIC")
 @Entity
-@XmlRootElement(name = "sharedCollection")
-public class SharedCollection extends RightsBasedResourceCollection implements Comparable<SharedCollection>, HierarchicalCollection<SharedCollection> {
-    private static final long serialVersionUID = 7900346272773477950L;
+@XmlRootElement(name = "listCollection")
+public class ListCollection extends ResourceCollection implements HierarchicalCollection<ListCollection>, Comparable<ListCollection> {
 
-    public SharedCollection(String title, String description, SortOption sortBy, boolean visible, TdarUser creator) {
-        setName(title);
-        setDescription(description);
-        setSortBy(sortBy);
-        setHidden(visible);
-        setOwner(creator);
+    private static final long serialVersionUID = 1225586588061994193L;
+
+    @XmlTransient
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "unmanagedResourceCollections", targetEntity = Resource.class)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.unmanagedResources")
+    private Set<Resource> unmanagedResources = new LinkedHashSet<Resource>();
+
+    public Set<Resource> getUnmanagedResources() {
+        return unmanagedResources;
     }
 
-    public SharedCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
-        setId(id);
-        setName(title);
-        setDescription(description);
-        setSortBy(sortBy);
-        setHidden(visible);
-    }
-
-    public SharedCollection(Document document, TdarUser tdarUser) {
-        markUpdated(tdarUser);
-        getResources().add(document);
+    public void setUnmanagedResources(Set<Resource> publicResources) {
+        this.unmanagedResources = publicResources;
     }
 
     @ManyToOne
     @JoinColumn(name = "parent_id")
-    private SharedCollection parent;
+    private ListCollection parent;
 
     @XmlAttribute(name = "parentIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public SharedCollection getParent() {
+    @Override
+    public ListCollection getParent() {
         return parent;
     }
 
-    public void setParent(SharedCollection parent) {
+    @Override
+    public void setParent(ListCollection parent) {
         this.parent = parent;
     }
 
-    public SharedCollection() {
-    }
-
-    private transient Set<SharedCollection> transientChildren = new LinkedHashSet<>();
+    private transient Set<ListCollection> transientChildren = new LinkedHashSet<>();
 
     @XmlTransient
     @Transient
     @Override
-    public Set<SharedCollection> getTransientChildren() {
+    public Set<ListCollection> getTransientChildren() {
         return transientChildren;
     }
 
     @Override
-    public void setTransientChildren(Set<SharedCollection> transientChildren) {
+    public void setTransientChildren(Set<ListCollection> transientChildren) {
         this.transientChildren = transientChildren;
     }
 
@@ -104,10 +100,10 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
     @XmlTransient
     // infinite loop because parentTree[0]==self
     @Override
-    public List<SharedCollection> getHierarchicalResourceCollections() {
-        ArrayList<SharedCollection> parentTree = new ArrayList<>();
+    public List<ListCollection> getHierarchicalResourceCollections() {
+        ArrayList<ListCollection> parentTree = new ArrayList<>();
         parentTree.add(this);
-        SharedCollection collection = this;
+        ListCollection collection = this;
         while (collection.getParent() != null) {
             collection = collection.getParent();
             parentTree.add(0, collection);
@@ -119,7 +115,7 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree
      */
     @Override
-    public int compareTo(SharedCollection o) {
+    public int compareTo(ListCollection o) {
         List<String> tree = getParentNameList();
         List<String> tree_ = o.getParentNameList();
         while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
@@ -138,8 +134,8 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
     @Transient
     @XmlTransient
     @Override
-    public List<SharedCollection> getVisibleParents() {
-        return getVisibleParents(SharedCollection.class);
+    public List<ListCollection> getVisibleParents() {
+        return getVisibleParents(ListCollection.class);
     }
 
     @XmlTransient
