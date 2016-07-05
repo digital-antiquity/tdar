@@ -10,26 +10,22 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockPageContext;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.jdbc.SqlScriptsTestExecutionListener;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.transaction.TransactionalTestExecutionListener;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.web.TdarWebAppConfiguration;
+import org.tdar.core.configuration.TdarBaseWebAppConfiguration;
 
 
 /**
  * This class mostly serves as a workaround for issues that arise when trying to use the StrutsSpringJUnit4TestCase
  * in Struts applications that use the Convention Plugin.
  */
-@ContextConfiguration(classes = TdarWebAppConfiguration.class)
+@ContextConfiguration(classes = TdarBaseWebAppConfiguration.class)
 @RunWith(SpringJUnit4ClassRunner.class)
 @WebAppConfiguration
-@TestExecutionListeners({TransactionalTestExecutionListener.class, SqlScriptsTestExecutionListener.class})
-@Transactional
-public abstract class AbstractTdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T> {
+public abstract class TdarStrutsTestCase<T> extends StrutsSpringJUnit4TestCase<T> {
     @Override
     protected void initServletMockObjects() {
         servletContext = new MockServletContext(applicationContext);
