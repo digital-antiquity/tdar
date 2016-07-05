@@ -289,8 +289,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Rollback
     public void testDeleteResourceCollection() throws Exception {
         SharedCollection resourceCollection = new SharedCollection();
-        ResourceCollection resourceCollectionParent = new SharedCollection();
-        ResourceCollection resourceCollectionChild = new SharedCollection();
+        SharedCollection resourceCollectionParent = new SharedCollection();
+        SharedCollection resourceCollectionChild = new SharedCollection();
         resourceCollectionChild.setName("child collection");
         resourceCollectionParent.setName("parent collection");
         resourceCollection.setName("a resource collection");
@@ -338,7 +338,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
         for (ResourceCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED)) {
-            child.setParent(null);
+            ((SharedCollection)child).setParent(null);
             genericService.saveOrUpdate(child);
         }
         evictCache();
@@ -362,7 +362,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertTrue("user should be able to delete collection", resourceCollection == null);
         resourceCollectionChild = null;
         resourceCollectionParent = null;
-        ResourceCollection child = genericService.find(ResourceCollection.class, childId);
+        SharedCollection child = genericService.find(SharedCollection.class, childId);
         List<ResourceCollection> children = resourceCollectionService.findDirectChildCollections(parentId, null, CollectionType.SHARED);
         logger.info("child: {}", child.getParent());
         logger.info("children: {}", children);
@@ -513,15 +513,15 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         collection1.markUpdated(getUser());
         collection1.getAuthorizedUsers().addAll(users);
         genericService.saveOrUpdate(collection1);
-        ResourceCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users),
+        SharedCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users),
                 new ArrayList<Resource>(), null);
         InformationResource testFile = generateDocumentWithUser();
-        ResourceCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users),
+        SharedCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users),
                 Arrays.asList(testFile), null);
         Long id = parentCollection.getId();
-        ResourceCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(),
+        SharedCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
-        ResourceCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(),
+        SharedCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), id);
         // genericService.saveOrUpdate(parentCollection);
         Long parentCollectionId = parentCollection.getId();
@@ -543,7 +543,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<ResourceCollection> collections_ = controller_.getResults();
         for (ResourceCollection result : collections_) {
             if (result != null) {
-                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(), result.isHidden(), result.isTopLevel());
+                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(), result.isHidden());
             }
             logger.debug("NULL");
         }
@@ -562,7 +562,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertFalse(collections.contains(collection2Id));
 
         assertEquals(1, testFile.getResourceCollections().size());
-        parentCollection = genericService.find(ResourceCollection.class, id);
+        parentCollection = genericService.find(SharedCollection.class, id);
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
         String slug = parentCollection.getSlug();

@@ -63,7 +63,7 @@ public class CollectionController extends AbstractPersistableController<SharedCo
     private transient AuthorizationService authorizationService;
     
     private static final long serialVersionUID = 5710621983240752457L;
-    private List<ResourceCollection> allResourceCollections = new LinkedList<>();
+    private List<SharedCollection> allResourceCollections = new LinkedList<>();
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private List<Resource> fullUserProjects;
@@ -281,8 +281,11 @@ public class CollectionController extends AbstractPersistableController<SharedCo
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         fullUserProjects.removeAll(getAllSubmittedProjects());
-        getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
-
+        for (ResourceCollection c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
+            if (c instanceof SharedCollection) {
+                getAllResourceCollections().add((SharedCollection)c);
+            }
+        }
         // always place current resource collection as the first option
         if (PersistableUtils.isNotTransient(getResourceCollection())) {
             getAllResourceCollections().remove(getResourceCollection());
@@ -367,11 +370,11 @@ public class CollectionController extends AbstractPersistableController<SharedCo
     }
 
     @Override
-    public List<ResourceCollection> getAllResourceCollections() {
+    public List<SharedCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<ResourceCollection> allResourceCollections) {
+    public void setAllResourceCollections(List<SharedCollection> allResourceCollections) {
         this.allResourceCollections = allResourceCollections;
     }
 

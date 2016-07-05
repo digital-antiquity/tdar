@@ -372,13 +372,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         Iterator<ResourceCollection> iterator = potentialCollections.iterator();
         while (iterator.hasNext()) {
             ResourceCollection parent = iterator.next();
+            if (parent instanceof SharedCollection) {
             while (parent != null) {
                 if (parent.equals(collection)) {
                     logger.trace("removing {} from parent list to prevent infinite loops", collection);
                     iterator.remove();
                     break;
                 }
-                parent = parent.getParent();
+                parent = ((SharedCollection)parent).getParent();
+            }
             }
         }
         return potentialCollections;
@@ -504,14 +506,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *         collection.
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
-        List<ResourceCollection> allChildren = getAllChildCollections(collection);
+    public List<SharedCollection> buildCollectionTreeForController(SharedCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
+        List<SharedCollection> allChildren = getAllChildCollections(collection);
         // FIXME: iterate over all children to reconcile tree
-        Iterator<ResourceCollection> iter = allChildren.iterator();
+        Iterator<SharedCollection> iter = allChildren.iterator();
         while (iter.hasNext()) {
-            ResourceCollection child = iter.next();
+            SharedCollection child = iter.next();
             authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
-            ResourceCollection parent = child.getParent();
+            SharedCollection parent = child.getParent();
             if (parent != null) {
                 parent.getTransientChildren().add(child);
                 iter.remove();
@@ -531,8 +533,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return a list containing the provided 'parent' collection and any descendant collections (if any).
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
-        return getDao().findAllChildCollectionsOnly(collection, collectionType);
+    public <E> List<E> findAllChildCollectionsOnly(SharedCollection collection, Class<E> cls) {
+        return getDao().findAllChildCollectionsOnly(collection, cls);
     }
 
     /**
@@ -557,7 +559,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param node
      * @return
      */
-    private ResourceCollection getRootResourceCollection(ResourceCollection node) {
+    private SharedCollection getRootResourceCollection(SharedCollection node) {
         return node.getHierarchicalResourceCollections().get(0);
     };
 
@@ -569,8 +571,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public ResourceCollection getFullyInitializedRootResourceCollection(ResourceCollection anyNode, TdarUser authenticatedUser) {
-        ResourceCollection root = getRootResourceCollection(anyNode);
+    public SharedCollection getFullyInitializedRootResourceCollection(SharedCollection anyNode, TdarUser authenticatedUser) {
+        SharedCollection root = getRootResourceCollection(anyNode);
         buildCollectionTreeForController(getRootResourceCollection(anyNode), authenticatedUser, CollectionType.SHARED);
         return root;
     }
@@ -621,10 +623,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collectionIds
      */
     @Transactional(readOnly = true)
-    public void reconcileCollectionTree(Collection<ResourceCollection> collection, TdarUser authenticatedUser, List<Long> collectionIds) {
-        Iterator<ResourceCollection> iter = collection.iterator();
+    public void reconcileCollectionTree(Collection<SharedCollection> collection, TdarUser authenticatedUser, List<Long> collectionIds) {
+        Iterator<SharedCollection> iter = collection.iterator();
         while (iter.hasNext()) {
-            ResourceCollection rc = iter.next();
+            SharedCollection rc = iter.next();
             List<Long> list = new ArrayList<>(rc.getParentIds());
             list.remove(rc.getId());
             if (CollectionUtils.containsAny(collectionIds, list)) {
@@ -661,14 +663,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void updateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable, ResourceCollection parent) {
+    public void updateCollectionParentTo(TdarUser authorizedUser, SharedCollection persistable, SharedCollection parent) {
         // find all children with me as a parent
         if (!authenticationAndAuthorizationService.canEditCollection(authorizedUser, persistable) ||
                 parent != null && !authenticationAndAuthorizationService.canEditCollection(authorizedUser, parent)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_have_permisssions");
         }
 
-        List<ResourceCollection> children = getAllChildCollections(persistable);
+        List<SharedCollection> children = getAllChildCollections(persistable);
         List<Long> oldParentIds = new ArrayList<>(persistable.getParentIds());
 
         persistable.setParent(parent);
@@ -691,8 +693,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
-        return getDao().getAllChildCollections(persistable);
+    public List<SharedCollection> getAllChildCollections(SharedCollection persistable) {
+        return getDao().getAllChildCollections(persistable,SharedCollection.class);
     }
 
     @Transactional
@@ -701,20 +703,20 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public Set<ResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
-        Set<ResourceCollection> tempSet = new HashSet<>();
-        for (ResourceCollection collection : resource.getSharedResourceCollections()) {
+    public Set<RightsBasedResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
+        Set<RightsBasedResourceCollection> tempSet = new HashSet<>();
+        for (SharedCollection collection : resource.getSharedResourceCollections()) {
             if (collection != null) {
                 tempSet.addAll(collection.getHierarchicalResourceCollections());
             }
         }
-        ResourceCollection internal = resource.getInternalResourceCollection();
+        InternalCollection internal = resource.getInternalResourceCollection();
         if ((internal != null) &&
                 CollectionUtils.isNotEmpty(internal.getAuthorizedUsers())) {
             tempSet.add(internal);
         }
 
-        Iterator<ResourceCollection> iter = tempSet.iterator();
+        Iterator<RightsBasedResourceCollection> iter = tempSet.iterator();
         while (iter.hasNext()) {
             ResourceCollection next = iter.next();
             if (CollectionUtils.isEmpty(next.getAuthorizedUsers())) {
@@ -814,7 +816,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void saveCollectionForController(SharedCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
+    public void saveCollectionForController(SharedCollection persistable, Long parentId, SharedCollection parent, TdarUser authenticatedUser,
             List<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove, List<Long> publicToAdd, List<Long> publicToRemove, boolean shouldSaveResource, FileProxy fileProxy) {
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();

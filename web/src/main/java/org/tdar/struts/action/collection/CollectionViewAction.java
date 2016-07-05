@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +24,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -72,7 +73,7 @@ import org.tdar.web.service.HomepageService;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<ResourceCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
+public class CollectionViewAction extends AbstractPersistableViewableAction<SharedCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
@@ -99,7 +100,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     private Long parentId;
-    private List<ResourceCollection> collections = new LinkedList<>();
+    private List<SharedCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -156,13 +157,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         return getPersistable();
     }
 
-    public void setResourceCollection(ResourceCollection rc) {
+    public void setResourceCollection(SharedCollection rc) {
         setPersistable(rc);
     }
 
     @Override
-    public Class<ResourceCollection> getPersistableClass() {
-        return ResourceCollection.class;
+    public Class<SharedCollection> getPersistableClass() {
+        return SharedCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
@@ -189,16 +190,19 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             return;
         }
         getLogger().trace("child collections: begin");
-        Set<ResourceCollection> findAllChildCollections;
+        Set<SharedCollection> findAllChildCollections = new HashSet<>();
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
-            findAllChildCollections = getPersistable().getTransientChildren();
+            findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            findAllChildCollections = new LinkedHashSet<>(resourceCollectionService.findDirectChildCollections(getId(), false,
-                    CollectionType.SHARED));
+            for (ResourceCollection c : resourceCollectionService.findDirectChildCollections(getId(), false, CollectionType.SHARED)) {
+                if (c instanceof SharedCollection) {
+                    findAllChildCollections.add((SharedCollection)c);
+                }
+            }
         }
-        setCollections(new ArrayList<>(findAllChildCollections));
+        setCollections(new ArrayList<SharedCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
         Collections.sort(collections);
         getLogger().trace("child collections: end");
@@ -302,14 +306,14 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
         this.recordsPerPage = recordsPerPage;
     }
 
-    public void setCollections(List<ResourceCollection> findAllChildCollections) {
+    public void setCollections(List<SharedCollection> findAllChildCollections) {
         if (getLogger().isTraceEnabled()) {
             getLogger().trace("child collections: {}", findAllChildCollections);
         }
         this.collections = findAllChildCollections;
     }
 
-    public List<ResourceCollection> getCollections() {
+    public List<SharedCollection> getCollections() {
         return this.collections;
     }
     

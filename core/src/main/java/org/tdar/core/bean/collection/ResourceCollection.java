@@ -6,10 +6,8 @@
  */
 package org.tdar.core.bean.collection;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -82,6 +80,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
+import com.google.common.base.Objects;
 
 /**
  * @author Adam Brin
@@ -115,7 +114,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 @XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class })
 public abstract class ResourceCollection extends AbstractPersistable
-        implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
+        implements HasName, Updatable, Indexable, Validatable, Addressable, 
         Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, Slugable, OaiDcProvider {
 
     @Transient
@@ -187,16 +186,10 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private ResourceCollection parent;
-
     @ElementCollection()
     @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
-
-    private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
@@ -287,27 +280,9 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.owner = owner;
     }
 
-    @XmlAttribute(name = "parentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public ResourceCollection getParent() {
-        return parent;
-    }
-
-    public void setParent(ResourceCollection parent) {
-        this.parent = parent;
-    }
-
     @XmlAttribute
     public boolean isHidden() {
         return hidden;
-    }
-
-    @XmlTransient
-    public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isHidden() == true)) {
-            return true;
-        }
-        return false;
     }
 
     public void setHidden(boolean visible) {
@@ -379,77 +354,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         return String.format("%s Resource collection %s: %s (creator: %s)", getType(), getId(), getName(), owner);
     }
 
-    @Transient
-    public Long getParentId() {
-        if (getParent() == null) {
-            return null;
-        }
-        return getParent().getId();
-    }
-
-    /*
-     * Default to sorting by name, but grouping by parentId, used for sorting int he tree
-     */
-    @Override
-    public int compareTo(ResourceCollection o) {
-        List<String> tree = getParentNameList();
-        List<String> tree_ = o.getParentNameList();
-        while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
-            tree.remove(0);
-            tree_.remove(0);
-        }
-        if (tree.isEmpty()) {
-            return -1;
-        } else if (tree_.isEmpty()) {
-            return 1;
-        } else {
-            return tree.get(0).compareTo(tree_.get(0));
-        }
-    }
-
-    /*
-     * Get all of the resource collections via a tree (actually list of lists)
-     */
-    @Transient
-    @XmlTransient
-    // infinite loop because parentTree[0]==self
-    public List<ResourceCollection> getHierarchicalResourceCollections() {
-        ArrayList<ResourceCollection> parentTree = new ArrayList<>();
-        parentTree.add(this);
-        ResourceCollection collection = this;
-        while (collection.getParent() != null) {
-            collection = collection.getParent();
-            parentTree.add(0, collection);
-        }
-        return parentTree;
-    }
-
-    @Transient
-    @XmlTransient
-    public List<ResourceCollection> getVisibleParents() {
-        List<ResourceCollection> hierarchicalResourceCollections = getHierarchicalResourceCollections();
-        Iterator<ResourceCollection> iterator = hierarchicalResourceCollections.iterator();
-        while (iterator.hasNext()) {
-            ResourceCollection collection = iterator.next();
-            if (!(collection instanceof SharedCollection) || !collection.isHidden()) {
-                iterator.remove();
-            }
-        }
-        return hierarchicalResourceCollections;
-    }
-
-    /*
-     * Get ordered list of parents (titles) of this resources ... great grandfather, grandfather, father, you.
-     */
-    @Transient
-    @XmlTransient
-    public List<String> getParentNameList() {
-        ArrayList<String> parentNameTree = new ArrayList<String>();
-        for (ResourceCollection collection : getHierarchicalResourceCollections()) {
-            parentNameTree.add(collection.getName());
-        }
-        return parentNameTree;
-    }
 
     @Override
     public boolean isValidForController() {
@@ -533,15 +437,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.updater = updater;
     }
 
-    @XmlTransient
-    @Transient
-    public Set<ResourceCollection> getTransientChildren() {
-        return transientChildren;
-    }
-
-    public void setTransientChildren(Set<ResourceCollection> transientChildren) {
-        this.transientChildren = transientChildren;
-    }
 
     public SortOption getSecondarySortBy() {
         return secondarySortBy;
@@ -600,16 +495,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         return UrlUtils.slugify(getName());
     }
 
-    @XmlTransient
-    public boolean isTopCollection() {
-        return parent == null;
-    }
-
-    @XmlTransient
-    public boolean isSubCollection() {
-        return parent != null;
-    }
-
     public Set<Resource> getUnmanagedResources() {
         return unmanagedResources;
     }
@@ -665,4 +550,5 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
     }
+   
 }

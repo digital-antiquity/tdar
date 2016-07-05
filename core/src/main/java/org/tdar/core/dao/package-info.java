@@ -26,11 +26,10 @@
                         + " rescol.id in (:resourceCollectionIds)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from SharedCollection resCol where resCol.type='SHARED' and lower(trim(resCol.name)) like lower(trim(:name)) "),
+                query = "SELECT distinct resCol from SharedCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
-                query = "SELECT distinct resCol from ResourceCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and"
-                        + " resCol.type!='INTERNAL'"),
+                query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
@@ -204,7 +203,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from ResourceCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL'"
+                query = "select distinct col from SharedCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL'"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,

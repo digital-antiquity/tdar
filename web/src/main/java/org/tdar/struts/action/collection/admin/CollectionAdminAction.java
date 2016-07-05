@@ -17,6 +17,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -61,7 +62,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private Set<ResourceCollection> allChildCollections;
+    private Set<SharedCollection> allChildCollections;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -241,11 +242,11 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public Set<ResourceCollection> getAllChildCollections() {
+    public Set<SharedCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(Set<ResourceCollection> allChildCollections) {
+    public void setAllChildCollections(Set<SharedCollection> allChildCollections) {
         this.allChildCollections = allChildCollections;
     }
 

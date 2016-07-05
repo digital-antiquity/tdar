@@ -142,7 +142,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
-    public List<ResourceCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+    public List<SharedCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
         if (PersistableUtils.isTransient(user)) {
             return Collections.EMPTY_LIST;
         }
@@ -157,25 +157,18 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         Set<ResourceCollection> allCollections = new HashSet<>();
 
         // get all collections that grant explicit edit permissions to person
-        List<ResourceCollection> collections = findInheritedCollections(user, generalPermissions);
+        List<SharedCollection> collections = findInheritedCollections(user, generalPermissions);
 
-        for (ResourceCollection rc : collections) {
-            allCollections.addAll(findAllChildCollectionsOnly(rc, CollectionType.SHARED));
+        for (SharedCollection rc : collections) {
+            allCollections.addAll(findAllChildCollectionsOnly(rc, SharedCollection.class));
             allCollections.add(rc);
         }
 
         return allCollections;
     }
 
-    public List<ResourceCollection> findAllChildCollectionsOnly(ResourceCollection collection, CollectionType collectionType) {
-        List<ResourceCollection> allChildren = getAllChildCollections(collection);
-        Iterator<ResourceCollection> iter = allChildren.iterator();
-        while (iter.hasNext()) {
-            ResourceCollection rc = iter.next();
-            if (!rc.getType().equals(collectionType)) {
-                iter.remove();
-            }
-        }
+    public <E> List<E> findAllChildCollectionsOnly(SharedCollection collection, Class<E> cls) {
+        List<E> allChildren = getAllChildCollections(collection, cls);
         return allChildren;
     }
 
@@ -197,7 +190,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings("unchecked")
-    public List<ResourceCollection> getAllChildCollections(ResourceCollection persistable) {
+    public <E> List<E> getAllChildCollections(ResourceCollection persistable, Class<E> cls) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }

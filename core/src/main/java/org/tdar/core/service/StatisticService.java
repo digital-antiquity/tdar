@@ -167,9 +167,9 @@ public class StatisticService extends ServiceInterface.TypedDaoBase<AggregateSta
             if (CollectionUtils.isNotEmpty(collection.getResources())) {
                 ids.addAll(PersistableUtils.extractIds(collection.getResources()));
             }
-            for (ResourceCollection child : resourceCollectionDao.getAllChildCollections(collection)) {
-                if (child != null && child instanceof SharedCollection && CollectionUtils.isNotEmpty(((SharedCollection)child).getResources())) {
-                    ids.addAll(PersistableUtils.extractIds(((SharedCollection)child).getResources()));
+            for (SharedCollection child : resourceCollectionDao.getAllChildCollections(collection, SharedCollection.class)) {
+                if (child != null && CollectionUtils.isNotEmpty(((SharedCollection)child).getResources())) {
+                    ids.addAll(PersistableUtils.extractIds(child.getResources()));
                 }
             }
         }

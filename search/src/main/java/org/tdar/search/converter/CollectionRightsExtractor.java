@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -13,24 +14,27 @@ import org.tdar.utils.PersistableUtils;
 
 public class CollectionRightsExtractor {
 
-    private ResourceCollection collection;
+    private RightsBasedResourceCollection collection;
 
-    public CollectionRightsExtractor(ResourceCollection collection) {
+    public CollectionRightsExtractor(RightsBasedResourceCollection collection) {
         this.collection = collection;
     }
     
     /*
      * Convenience Method that provides a list of users that match the permission
      */
-    public static Set<TdarUser> getUsersWhoCan(ResourceCollection collection_, GeneralPermissions permission, boolean recurse) {
+    public static Set<TdarUser> getUsersWhoCan(RightsBasedResourceCollection collection_, GeneralPermissions permission, boolean recurse) {
         Set<TdarUser> people = new HashSet<>();
         for (AuthorizedUser user : collection_.getAuthorizedUsers()) {
             if (user.getEffectiveGeneralPermission() >= permission.getEffectivePermissions()) {
                 people.add(user.getUser());
             }
         }
-        if ((collection_.getParent() != null) && recurse) {
-            people.addAll(getUsersWhoCan(collection_.getParent(), permission, recurse));
+        if (collection_ instanceof SharedCollection) {
+            SharedCollection shared = (SharedCollection)collection_;
+            if ((shared.getParent() != null) && recurse) {
+            people.addAll(getUsersWhoCan(shared.getParent(), permission, recurse));
+        }
         }
         return people;
     }

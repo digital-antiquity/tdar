@@ -23,7 +23,6 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -91,7 +90,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		project.setDescription(project.getTitle());
 		project.markUpdated(getAdminUser());
 		genericService.saveOrUpdate(project);
-		ResourceCollection collection = createResourceCollectionWithAdminRights();
+		SharedCollection collection = createResourceCollectionWithAdminRights();
 		genericService.saveOrUpdate(collection);
 		genericService.saveOrUpdate(collection);
 		collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));

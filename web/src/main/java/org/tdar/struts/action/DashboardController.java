@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;
@@ -68,8 +69,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 	private int maxRecentResources = 5;
 	private List<Resource> filteredFullUserProjects;
 	private List<Resource> fullUserProjects;
-	private List<ResourceCollection> allResourceCollections = new ArrayList<ResourceCollection>();
-	private List<ResourceCollection> sharedResourceCollections = new ArrayList<ResourceCollection>();
+	private List<SharedCollection> allResourceCollections = new ArrayList<>();
+	private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
 	private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
 	private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
 	private List<InformationResource> resourcesWithErrors;
@@ -162,9 +163,17 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
 	private void setupResourceCollectionTreesForDashboard() {
 		getLogger().trace("parent/ owner collections");
-		getAllResourceCollections().addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+		for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
+		    if (rc instanceof SharedCollection) {
+		        getAllResourceCollections().add((SharedCollection)rc);
+		    }
+		}
 		getLogger().trace("accessible collections");
-		getSharedResourceCollections().addAll(entityService.findAccessibleResourceCollections(getAuthenticatedUser()));
+        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
+            if (rc instanceof SharedCollection) {
+                getSharedResourceCollections().add((SharedCollection)rc);
+            }
+        }
 		List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
 		collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
 		getLogger().trace("reconcile tree1");
@@ -325,11 +334,11 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 	}
 
 	@DoNotObfuscate(reason = "not needed / performance test")
-	public List<ResourceCollection> getAllResourceCollections() {
+	public List<SharedCollection> getAllResourceCollections() {
 		return allResourceCollections;
 	}
 
-	public void setAllResourceCollections(List<ResourceCollection> resourceCollections) {
+	public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
 		this.allResourceCollections = resourceCollections;
 	}
 
@@ -337,7 +346,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 	 * @return the sharedResourceCollections
 	 */
 	@DoNotObfuscate(reason = "not needed / performance test")
-	public List<ResourceCollection> getSharedResourceCollections() {
+	public List<SharedCollection> getSharedResourceCollections() {
 		return sharedResourceCollections;
 	}
 
@@ -345,7 +354,7 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 	 * @param sharedResourceCollections
 	 *            the sharedResourceCollections to set
 	 */
-	public void setSharedResourceCollections(List<ResourceCollection> sharedResourceCollections) {
+	public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
 		this.sharedResourceCollections = sharedResourceCollections;
 	}
 

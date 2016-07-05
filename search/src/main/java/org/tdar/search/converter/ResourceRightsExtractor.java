@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -48,7 +49,7 @@ public class ResourceRightsExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getResourceCollections()) {
+        for (RightsBasedResourceCollection collection : resource.getResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan(collection, GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
@@ -73,7 +74,7 @@ public class ResourceRightsExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan(collection, GeneralPermissions.VIEW_ALL, true));
         }
         for (TdarUser p : writable) {
@@ -97,7 +98,9 @@ public class ResourceRightsExtractor {
                 directCollectionIds.add(collection.getId());
                 directCollectionNames.add(collection.getName());
                 collectionIds.addAll(collection.getParentIds());
-                collectionNames.addAll(collection.getParentNameList());
+                if (collection instanceof SharedCollection) {
+                collectionNames.addAll(((SharedCollection)collection).getParentNameList());
+                }
             } else if (collection instanceof InternalCollection) {
                 allCollectionIds.add(collection.getId());
             }
