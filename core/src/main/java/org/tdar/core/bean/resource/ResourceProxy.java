@@ -127,7 +127,6 @@ public class ResourceProxy implements Serializable {
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    //@IndexedEmbedded(depth = 1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<RightsBasedResourceCollection> resourceCollections = new LinkedHashSet<>();
 

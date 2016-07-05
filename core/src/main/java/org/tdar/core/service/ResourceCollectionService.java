@@ -487,7 +487,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAllResourceCollections() {
+    public List<SharedCollection> findAllResourceCollections() {
         return getDao().findAllSharedResourceCollections();
     }
 

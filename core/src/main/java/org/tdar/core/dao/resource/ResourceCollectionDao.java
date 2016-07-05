@@ -10,14 +10,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
-import org.hibernate.SQLQuery;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
@@ -98,8 +96,8 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     /**
      * @return
      */
-    public List<ResourceCollection> findAllSharedResourceCollections() {
-        return findByCriteria(getDetachedCriteria().add(Restrictions.eq("type", CollectionType.SHARED)));
+    public List<SharedCollection> findAllSharedResourceCollections() {
+        return findAll(SharedCollection.class);
     }
 
     @SuppressWarnings("unchecked")
