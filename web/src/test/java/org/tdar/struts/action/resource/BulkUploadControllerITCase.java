@@ -625,7 +625,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 
         List<Pair<Long, String>> details = bulkUploadController.getDetails();
         logger.info("{}", details);
-        Set<ResourceCollection> collections = new HashSet<ResourceCollection>();
+        Set<RightsBasedResourceCollection> collections = new HashSet<>();
         evictCache();
         logger.debug("inspecting collections created:");
         for (Pair<Long, String> detail : details) {
@@ -640,7 +640,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             collections.addAll(resourceCollections);
         }
         assertEquals("we should have a total of 3 collections (2 internal +1 shared)", 3, collections.size());
-        for (ResourceCollection col : collections) {
+        for (RightsBasedResourceCollection col : collections) {
             logger.debug("{} : {}", col, col.getResources());
             if (col instanceof InternalCollection) {
                 assertEquals(1, col.getResources().size());

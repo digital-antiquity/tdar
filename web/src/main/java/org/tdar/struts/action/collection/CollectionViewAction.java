@@ -153,7 +153,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
         return false;
     }
 
-    public ResourceCollection getResourceCollection() {
+    public SharedCollection getResourceCollection() {
         return getPersistable();
     }
 

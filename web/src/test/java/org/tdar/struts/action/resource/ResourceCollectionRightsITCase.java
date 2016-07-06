@@ -18,6 +18,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -77,7 +78,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         logger.info("{}", collection.getResources());
         assertFalse(collectionid.equals(-1L));
         collection = null;
-        ResourceCollection foundCollection = genericService.find(ResourceCollection.class, collectionid);
+        SharedCollection foundCollection = genericService.find(SharedCollection.class, collectionid);
         assertNotNull(foundCollection);
         assertEquals(3, foundCollection.getAuthorizedUsers().size());
         assertEquals(2, foundCollection.getResources().size());
@@ -304,7 +305,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
         evictCache();
-        ResourceCollection first = document.getResourceCollections().iterator().next();
+        RightsBasedResourceCollection first = document.getResourceCollections().iterator().next();
         assertEquals(1, document.getResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());

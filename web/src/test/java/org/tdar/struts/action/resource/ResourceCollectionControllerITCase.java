@@ -35,6 +35,7 @@ import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
@@ -689,7 +690,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.setServletRequest(getServletPostRequest());
         controller.getResourceCollections().add(fakeIncoming);
         assertEquals(Action.SUCCESS, controller.save());
-        ResourceCollection first = document.getResourceCollections().iterator().next();
+        RightsBasedResourceCollection first = document.getResourceCollections().iterator().next();
         assertEquals(1, document.getResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
@@ -1092,10 +1093,10 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         // For now we rely on the the init-test and any data created by intervening web tests. In this way this test
         // is brittle. A better idea would be to create our own sample data.
-        List<ResourceCollection> allCollections = resourceCollectionService.findAll();
+        List<SharedCollection> allCollections = genericService.findAll(SharedCollection.class);
         assertThat("sample data set size", allCollections.size(), greaterThan(5));
 
-        for (ResourceCollection collection : allCollections) {
+        for (RightsBasedResourceCollection collection : allCollections) {
             // get map of persisted resources
             Map<Long, Resource> persistedResourceMap = PersistableUtils.createIdMap(collection.getResources());
 
