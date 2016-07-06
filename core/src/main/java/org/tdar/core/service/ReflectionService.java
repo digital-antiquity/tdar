@@ -682,7 +682,7 @@ public class ReflectionService {
      * @return
      */
     @SuppressWarnings("unchecked")
-    public List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls_) {
+    public synchronized List<Pair<Method, Class<? extends Obfuscatable>>> findAllObfuscatableGetters(Class<?> cls_) {
         List<Method> declaredFields = new ArrayList<>();
         List<Pair<Method, Class<? extends Obfuscatable>>> result = new ArrayList<>();
         // iterate up the package hierarchy
