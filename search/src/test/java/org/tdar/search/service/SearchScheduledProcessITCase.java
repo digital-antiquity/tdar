@@ -10,8 +10,6 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.AbstractWithIndexIntegrationTestCase;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -51,6 +49,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     DailyTimedAccessRevokingProcess dtarp;
     
     @Test
+    @Rollback
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = new SharedCollection();
@@ -66,7 +65,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         collection.getResources().add(dataset);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(e);
-        dataset.getResourceCollections().add(collection);
+//        dataset.getResourceCollections().add(collection);
         genericService.saveOrUpdate(dataset);
         
         dtarp.execute();

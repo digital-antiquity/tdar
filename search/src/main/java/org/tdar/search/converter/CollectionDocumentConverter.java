@@ -23,6 +23,8 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.COLLECTION_PARENT, hier.getParentId());
             doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, hier.getParentIds());
             doc.setField(QueryFieldNames.TOP_LEVEL, hier.isTopLevel());
+        } else {
+            doc.setField(QueryFieldNames.TOP_LEVEL, false);
         }
         if (collection instanceof SharedCollection) {
             SharedCollection shared = (SharedCollection)collection;
@@ -38,7 +40,6 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, "0" + CollectionType.PUBLIC.name());
 
         }
-        doc.setField(QueryFieldNames.TOP_LEVEL, false);
         doc.setField(QueryFieldNames.DESCRIPTION, collection.getDescription());
         doc.setField(QueryFieldNames.STATUS, Status.ACTIVE);
         
