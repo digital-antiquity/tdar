@@ -486,7 +486,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
-        resourceCollection.setType(CollectionType.SHARED);
         resourceCollection.setViewable(true);
         resourceCollection.setHidden(false);
         resourceCollection.markUpdated(getUser());

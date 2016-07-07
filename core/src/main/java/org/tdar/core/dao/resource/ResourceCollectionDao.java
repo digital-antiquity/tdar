@@ -321,7 +321,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     public ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
         InternalCollection internalCollection;
         internalCollection = new InternalCollection();
-//        internalCollection.setType(CollectionType.INTERNAL);
         internalCollection.setOwner(owner);
         internalCollection.markUpdated(owner);
         if (resource != null) {

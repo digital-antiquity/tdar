@@ -836,8 +836,10 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.setAuthorizedUsers(authorizedUsers);
         controller.setServletRequest(getServletPostRequest());
         controller.save();
+        genericService.synchronize();
         dataset = datasetService.find(datasetId);
         ResourceCollection internalResourceCollection = dataset.getInternalResourceCollection();
+        logger.debug("{}", dataset.getInternalResourceCollection().getAuthorizedUsers());
         assertEquals(2, internalResourceCollection.getAuthorizedUsers().size());
         Set<Long> seen = new HashSet<>();
         for (AuthorizedUser r : internalResourceCollection.getAuthorizedUsers()) {

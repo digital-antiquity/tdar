@@ -11,4 +11,7 @@ public class InternalCollection extends RightsBasedResourceCollection {
 
     private static final long serialVersionUID = 2238608996291414672L;
 
+    public InternalCollection() {
+        this.setType(CollectionType.INTERNAL);
+    }
 }

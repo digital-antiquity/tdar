@@ -36,6 +36,7 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
         setSortBy(sortBy);
         setHidden(visible);
         setOwner(creator);
+        this.setType(CollectionType.SHARED);
     }
 
     public SharedCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
@@ -44,11 +45,13 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
         setDescription(description);
         setSortBy(sortBy);
         setHidden(visible);
+        this.setType(CollectionType.SHARED);
     }
 
     public SharedCollection(Document document, TdarUser tdarUser) {
         markUpdated(tdarUser);
         getResources().add(document);
+        this.setType(CollectionType.SHARED);
     }
 
     @ManyToOne

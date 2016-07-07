@@ -3,6 +3,7 @@ package org.tdar.search.converter;
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -13,7 +14,9 @@ import org.tdar.search.query.QueryFieldNames;
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument convert(ResourceCollection collection) {
-        
+        if (collection instanceof InternalCollection) {
+            return null;
+        }
         SolrInputDocument doc = convertPersistable(collection);
         doc.setField(QueryFieldNames.NAME, collection.getName());
         doc.setField(QueryFieldNames.SUBMITTER_ID, collection.getOwner().getId());

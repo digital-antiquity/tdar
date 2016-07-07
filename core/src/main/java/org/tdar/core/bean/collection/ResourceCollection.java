@@ -251,7 +251,7 @@ public abstract class ResourceCollection extends AbstractPersistable
         return type;
     }
 
-    public void setType(CollectionType type) {
+    protected void setType(CollectionType type) {
         this.type = type;
     }
 
