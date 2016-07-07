@@ -54,6 +54,9 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
         this.setType(CollectionType.SHARED);
     }
 
+    public SharedCollection() {
+        this.setType(CollectionType.SHARED);
+    }
     @ManyToOne
     @JoinColumn(name = "parent_id")
     private SharedCollection parent;
@@ -91,9 +94,6 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
 
     public void setParent(SharedCollection parent) {
         this.parent = parent;
-    }
-
-    public SharedCollection() {
     }
 
     private transient Set<SharedCollection> transientChildren = new LinkedHashSet<>();

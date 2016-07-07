@@ -25,7 +25,6 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -170,7 +169,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     private List<ResourceAnnotation> resourceAnnotations;
 
-    private List<ResourceCollection> viewableResourceCollections;
+    private List<SharedCollection> viewableResourceCollections;
 
     private void initializeResourceCreatorProxyLists(boolean isViewPage) {
         Set<ResourceCreator> resourceCreators = getPersistable().getResourceCreators();
@@ -1002,17 +1001,17 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
-    public List<ResourceCollection> getViewableResourceCollections() {
+    public List<SharedCollection> getViewableResourceCollections() {
         if (viewableResourceCollections != null) {
             return viewableResourceCollections;
         }
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ResourceCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
+        Set<SharedCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
 
         // if authenticated, also add the collections that the user can modify
         if (isAuthenticated()) {
-            for (ResourceCollection resourceCollection : getResource().getSharedResourceCollections()) {
+            for (SharedCollection resourceCollection : getResource().getSharedResourceCollections()) {
                 if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
                     collections.add(resourceCollection);
                 }
