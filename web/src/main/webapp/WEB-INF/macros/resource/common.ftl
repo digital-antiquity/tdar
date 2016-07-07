@@ -106,7 +106,7 @@ Common macros used in multiple contexts
                         <#list collection_.authorizedUsers as user>
                         <tr>
                             <td>
-                                <#if !collection_.internal>
+                                <#if collection_.topCollection?has_content >
                                     <a href="<@s.url value="${collection_.detailUrl}"/>"> ${collection_.name!"<em>un-named</em>"}</a>
                                 <#else>
                                     Local Resource

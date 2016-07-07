@@ -6,13 +6,16 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -27,7 +30,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @DiscriminatorValue(value = "SHARED")
 @Entity
 @XmlRootElement(name = "sharedCollection")
-public class SharedCollection extends RightsBasedResourceCollection implements Comparable<SharedCollection>, HierarchicalCollection<SharedCollection> {
+public class SharedCollection extends RightsBasedResourceCollection implements Comparable<SharedCollection>, HierarchicalCollection<SharedCollection>, HasDisplayProperties {
     private static final long serialVersionUID = 7900346272773477950L;
 
     public SharedCollection(String title, String description, SortOption sortBy, boolean visible, TdarUser creator) {
@@ -73,6 +76,29 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
 
+    
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    private CollectionDisplayProperties properties;
+
+    public CollectionDisplayProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CollectionDisplayProperties properties) {
+        this.properties = properties;
+    }
+
+    public boolean isWhiteLabelCollection() {
+        return properties != null && properties.isWhitelabel();
+    }
+
+    public boolean isSearchEnabled() {
+        if (properties == null) {
+            return false;
+        }
+        return properties.isSearchEnabled();
+    }
 
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.

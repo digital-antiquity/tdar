@@ -31,7 +31,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 	@Test
 	public void testSubheader() {
 		gotoPage(EDIT);
-		setInput("collection.subtitle", ABCDEF);
+		setInput("collection.properties.subtitle", ABCDEF);
 		submitForm();
 		assertTrue("page contains new subtitle",getPageText().contains(ABCDEF));
 	}
@@ -39,15 +39,15 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 	@Test
 	public void testCustomCss() {
 		gotoPage(EDIT);
-		setInput("collection.css", BODY_FONT_COLOR_RUST);
+		setInput("collection.properties.css", BODY_FONT_COLOR_RUST);
 		submitForm();
 		assertTrue("page contains custom css",getPageCode().contains(BODY_FONT_COLOR_RUST));
 	}
 
 	@Test
 	public void testWhitelabelBooleanSettings() {
-		String[] names = new String[] { "collection.customHeaderEnabled", "collection.customDocumentLogoEnabled",
-				"collection.featuredResourcesEnabled", "collection.searchEnabled", "collection.subCollectionsEnabled" };
+		String[] names = new String[] { "collection.properties.customHeaderEnabled", "collection.properties.customDocumentLogoEnabled",
+				"collection.properties.featuredResourcesEnabled", "collection.properties.searchEnabled", "collection.properties.subCollectionsEnabled" };
 		for (String name : names) {
 			gotoPage(EDIT);
 			setInput(name, "true");

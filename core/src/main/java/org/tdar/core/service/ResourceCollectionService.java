@@ -32,6 +32,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -859,11 +860,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             getLogger().debug("pToRemove: {}", publicResourcesToRemove);
             reconcileIncomingResourcesForCollectionWithoutRights((ListCollection)persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
         }
-        if (persistable.getProperties() == null) {
-            persistable.setProperties(new CollectionDisplayProperties());
-            getDao().saveOrUpdate(persistable.getProperties());
+        
+        if (persistable instanceof HasDisplayProperties) {
+            HasDisplayProperties hasProps = (HasDisplayProperties)persistable;
+            if (hasProps.getProperties() == null) {
+                hasProps.setProperties(new CollectionDisplayProperties());
+                getDao().saveOrUpdate(hasProps.getProperties());
+            }
+            simpleFileProcessingDao.processFileProxyForCreatorOrCollection(hasProps.getProperties(), fileProxy);
         }
-        simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable.getProperties(), fileProxy);
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
 

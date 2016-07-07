@@ -188,44 +188,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Immutable
     private Set<Long> resourceIds;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    private CollectionDisplayProperties properties;
-
-    public CollectionDisplayProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(CollectionDisplayProperties properties) {
-        this.properties = properties;
-    }
-
-    public boolean isWhiteLabelCollection() {
-        return properties != null && properties.isWhitelabel();
-    }
-
-    public boolean isSearchEnabled() {
-        if (properties == null) {
-            return false;
-        }
-        return properties.isSearchEnabled();
-    }
-
-    public ResourceCollection() {
-        setDateCreated(new Date());
-    }
-
-    public ResourceCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
-        this(title, description, sortBy, visible, null);
-        setId(id);
-    }
-
-    public ResourceCollection(String title, String description, SortOption sortBy, boolean visible, TdarUser creator) {
-        setName(title);
-        setDescription(description);
-        setSortBy(sortBy);
-        setHidden(visible);
-        setOwner(creator);
-    }
 
     @Override
     @JsonView(JsonLookupFilter.class)

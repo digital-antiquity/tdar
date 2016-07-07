@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -87,7 +88,7 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, findAllResourceCollections.size(), ""));
         int whitelabelCount = 0;
         for (ResourceCollection c : findAllResourceCollections) {
-            if (c.getProperties() != null && c.getProperties().isWhitelabel()) {
+            if (c instanceof HasDisplayProperties && ((HasDisplayProperties)c).getProperties() != null && ((HasDisplayProperties)c).getProperties().isWhitelabel()) {
                 whitelabelCount++;
             }
         }
