@@ -299,7 +299,7 @@ public class OaiPmhService {
             for (ResourceCollection rc : ((Resource) resource).getSharedResourceCollections()) {
                 header.getSetSpec().add(Long.toString(rc.getId()));
                 if (rc instanceof HierarchicalCollection) {
-                    HierarchicalCollection hc = (HierarchicalCollection)rc;
+                    HierarchicalCollection<?> hc = (HierarchicalCollection<?>)rc;
                     for (Long pid : hc.getParentIds() ) {
                         header.getSetSpec().add(Long.toString(pid));
                     }
