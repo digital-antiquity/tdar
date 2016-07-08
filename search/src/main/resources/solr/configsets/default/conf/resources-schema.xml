@@ -61,7 +61,7 @@
     <field name="collectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="allCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="directSharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
-    <field name="sharedCollectionIds" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="sharedCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
 
     <field name="usersWhoCanModify" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="usersWhoCanView" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
@@ -101,7 +101,7 @@
     <field name="categoryVariable.id" type="long" indexed="true" stored="false" required="false" multiValued="false" />
 
 
-    <field name="activeCultureKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
+    <field name="activeCultureKeywords" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="activeInvestigationTypes" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeMaterialKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />
     <field name="activeGeographicKeywords" type="longs" indexed="true" stored="false" required="false" multiValued="true" />

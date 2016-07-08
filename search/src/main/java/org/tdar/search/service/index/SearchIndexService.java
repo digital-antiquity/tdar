@@ -584,7 +584,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
     @Transactional(readOnly=true)
     @Async
     public void partialIndexAllResourcesInCollectionSubTreeAsync(ResourceCollection persistable) {
-        partialIndexAllResourcesInCollectionSubTree(persistable);
+        indexAllResourcesInCollectionSubTree(persistable);
     }
 
     public void partialIndexProject() {
