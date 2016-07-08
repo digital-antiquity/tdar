@@ -146,7 +146,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Enumerated(EnumType.STRING)
-    // @NotNull
+    @XmlTransient
     @Column(name = "collection_type", updatable = false, insertable = false)
     private CollectionType type;
 
@@ -319,13 +319,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Override
     public boolean isValid() {
         logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName(), getSortBy());
-        if ((getType() == CollectionType.INTERNAL) || isValidForController()) {
-            if ((getType() == CollectionType.SHARED) && (sortBy == null)) {
-                return false;
-            }
-            return ((getOwner() != null) && (getOwner().getId() != null) && (getOwner().getId() > -1));
-        }
-        return false;
+        return PersistableUtils.isNotNullOrTransient(getOwner());
     }
 
     public String getTitleSort() {

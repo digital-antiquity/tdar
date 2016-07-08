@@ -211,4 +211,15 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
         return parent != null;
     }
 
+
+    @Override
+    public boolean isValid() {
+        if (isValidForController()) {
+            if ((getType() == CollectionType.SHARED) && (getSortBy() == null)) {
+                return false;
+            }
+            return super.isValid();
+        }
+        return false;
+    }
 }
