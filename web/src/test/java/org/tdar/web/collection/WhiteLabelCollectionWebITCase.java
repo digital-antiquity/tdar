@@ -32,8 +32,12 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 	public void testSubheader() {
 		gotoPage(EDIT);
 		setInput("collection.properties.subtitle", ABCDEF);
+		setInput("collection.properties.searchEnabled", "true");
 		submitForm();
 		assertTrue("page contains new subtitle",getPageText().contains(ABCDEF));
+        gotoPage(EDIT);
+        setInput("collection.properties.searchEnabled", "false");
+        submitForm();
 	}
 
 	@Test

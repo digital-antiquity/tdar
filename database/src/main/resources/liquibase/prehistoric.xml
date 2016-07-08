@@ -20,4 +20,8 @@
     	<addAutoIncrement tableName="whitelabel_collection" columnName="id"/>	
     	<renameTable newTableName="collection_display_properties" oldTableName="whitelabel_collection" />
     </changeSet>
+    <changeSet id="prehistoric-collections-2" author="abrin">
+        <dropForeignKeyConstraint baseTableName="whitelabel_featured_resource" constraintName="whitelabel_featured_resource_collection_id_collection_fk"/>
+        <addForeignKeyConstraint constraintName="whitelabel_featured_resource_collection_id_collection_fk" referencedTableName="collection_display_properties" baseColumnNames="collection_id" baseTableName="whitelabel_featured_resource" referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>
