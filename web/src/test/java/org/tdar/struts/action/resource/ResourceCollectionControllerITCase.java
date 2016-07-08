@@ -677,6 +677,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Rollback
     public void testDocumentControllerAssigningResourceCollections() throws Exception {
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
+        genericService.refresh(collection1);
+        assertNotNull(collection1.getOwner());
         DocumentController controller = generateNewInitializedController(DocumentController.class);
         controller.prepare();
         controller.add();

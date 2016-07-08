@@ -416,7 +416,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         for (ResourceCollection collection : helper.getToAdd()) {
             logger.debug("adding: {}" , helper.getToAdd());
-            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, (RightsBasedResourceCollection) collection);
+            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection);
         }
         logger.debug("after save: {} ({})", current, current.size());
 
@@ -442,12 +442,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             if (collection.isTransient()) {
                 collectionToAdd = findOrCreateSharedCollection(resource, authenticatedUser, collection);
             } else {
-                collectionToAdd = (SharedCollection)collection;
+                collectionToAdd = (RightsBasedResourceCollection) find(collection.getId());
             }
         } else if (collection instanceof InternalCollection) {
             collectionToAdd = (InternalCollection) collection;
         }
-        logger.trace("{}", collectionToAdd);
+        logger.trace("{}, {}", collectionToAdd, collectionToAdd.isValid());
 
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
