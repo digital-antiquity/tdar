@@ -112,7 +112,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
-<<<<<<< mine
     @SuppressWarnings("unchecked")
     public List<SharedCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
         Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME ,SharedCollection.class);
@@ -143,7 +142,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             return Collections.EMPTY_LIST;
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
-        Query<ResourceCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER, ResourceCollection.class);
+        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER, SharedCollection.class);
         query.setParameter("effectivePermission", permission);
         query.setParameter("userId", user.getId());
         return query.getResultList();

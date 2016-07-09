@@ -79,7 +79,7 @@
             <where>id=1002</where>
         </update>
         <insert tableName="whitelabel_featured_resource">
-            <column name="properties_id" valueNumeric="1"/>
+            <column name="collection_id" valueNumeric="1"/>
             <column name="resource_id" valueNumeric="4230"/>
         </insert>
         <sql>
