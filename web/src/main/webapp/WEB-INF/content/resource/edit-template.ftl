@@ -1,4 +1,4 @@
--<#escape _untrusted as _untrusted?html>
+<#escape _untrusted as _untrusted?html>
 <#--
    This template is designed to try and reduce duplicated code in each of the tDAR resource-edit pages.  As we have almost 10 of them, 
    it becomes a challenge to maintain them in parallel without introducing bugs. The goal and function of this template is to (a) centralize logic
@@ -85,7 +85,7 @@
 
         <div id="spanStatus" data-tooltipcontent="#spanStatusToolTip" class="control-group">
             <#if editor && !administrator>
-                <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to DRAFT</p>
+                <p><b>note:</b> because you are an "editor" we've defaulted your default resource status to draft</p>
             </#if>
             <label class="control-label">Status</label>
 

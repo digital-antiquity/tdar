@@ -32,7 +32,12 @@ public class SiteNameKeyword extends AbstractKeyword<SiteNameKeyword> implements
 
     private static final long serialVersionUID = 60750909588980398L;
 
-
+    public SiteNameKeyword() {}
+    
+    public SiteNameKeyword(String label) {
+        this.setLabel(label);
+    }
+    
     public String getSiteCode() {
         return getLabel();
     }

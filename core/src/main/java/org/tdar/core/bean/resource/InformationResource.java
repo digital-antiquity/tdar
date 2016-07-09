@@ -359,7 +359,7 @@ public abstract class InformationResource extends Resource {
 
     @Transient
     public String getProjectTitle() {
-        return getProject().getTitleSort();
+        return getProject().getTitle();
     }
 
     @Transient
@@ -706,7 +706,12 @@ public abstract class InformationResource extends Resource {
     public Set<GeographicKeyword> getActiveGeographicKeywords() {
         return isProjectVisible() && isInheritingSpatialInformation() ? project.getGeographicKeywords() : getGeographicKeywords();
     }
-
+    
+    @Override
+    public Set<GeographicKeyword> getActiveManagedGeographicKeywords() {
+        return isProjectVisible() && isInheritingSpatialInformation() ? project.getManagedGeographicKeywords() : getManagedGeographicKeywords();
+    }
+    
     @Override
     public Set<LatitudeLongitudeBox> getActiveLatitudeLongitudeBoxes() {
         return isProjectVisible() && isInheritingSpatialInformation() ? project.getLatitudeLongitudeBoxes() : getLatitudeLongitudeBoxes();

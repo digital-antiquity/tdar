@@ -163,6 +163,7 @@ public class ResourceSearchService extends AbstractSearchService {
         q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();
+        reservedSearchParameters.setUseSubmitterContext(look.isUseSubmitterContext());
         initializeReservedSearchParameters(reservedSearchParameters, user);
         q.append(reservedSearchParameters.toQueryPartGroup(support));
         q.appendFilter(reservedSearchParameters.getFilters());

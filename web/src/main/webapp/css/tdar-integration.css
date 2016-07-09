@@ -125,3 +125,7 @@ table.table-modal-results.disabled {
 table#tblPivotData tr, table#tblPreviewData tr {
     border-bottom: 1px solid #AAA;
 }
+
+table#tblPivotData th, table#tblPreviewData th {
+	text-align: left;
+}

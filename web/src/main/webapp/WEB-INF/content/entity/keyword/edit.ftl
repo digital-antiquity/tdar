@@ -35,6 +35,10 @@
                                                 cssClass="url input-xxlarge"/>
                                         </div>
                                         <div class="span2">
+                                          <@s.textfield theme="tdar" name="mappings[${map_index}].label" maxlength=255 
+                                              />
+                                        </div>
+                                        <div class="span2">
                                           <@s.select theme="tdar" name="mappings[${map_index}].relationType"
                                             list="relationTypes" listValue="term" cssClass="input-medium" emptyOption="true"
                                               />

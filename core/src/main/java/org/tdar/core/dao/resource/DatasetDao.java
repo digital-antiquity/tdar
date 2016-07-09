@@ -27,8 +27,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.CacheMode;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
+import org.hibernate.query.Query;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
@@ -131,24 +131,24 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (dataset == null) {
             return false;
         }
-        Query query = getCurrentSession().getNamedQuery(QUERY_DATASET_CAN_LINK_TO_ONTOLOGY);
-        query.setLong("datasetId", dataset.getId());
-        return !query.list().isEmpty();
+        Query query = getCurrentSession().createNamedQuery(QUERY_DATASET_CAN_LINK_TO_ONTOLOGY);
+        query.setParameter("datasetId", dataset.getId());
+        return !query.getResultList().isEmpty();
     }
 
     public long countResourcesForUserAccess(Person user) {
         if (user == null) {
             return 0;
         }
-        Query query = getCurrentSession().getNamedQuery(QUERY_USER_GET_ALL_RESOURCES_COUNT);
-        query.setLong("userId", user.getId());
-        query.setParameterList("resourceTypes", Arrays.asList(ResourceType.values()));
-        query.setParameterList("statuses", Status.values());
+        Query<Number> query = getCurrentSession().createNamedQuery(QUERY_USER_GET_ALL_RESOURCES_COUNT, Number.class);
+        query.setParameter("userId", user.getId());
+        query.setParameter("resourceTypes", Arrays.asList(ResourceType.values()));
+        query.setParameter("statuses", Status.values());
         query.setParameter("allStatuses", true);
         query.setParameter("effectivePermission", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
         query.setParameter("allResourceTypes", true);
         query.setParameter("admin", false);
-        return (Long) query.iterate().next();
+        return  query.getSingleResult().longValue();
     }
 
     /**
@@ -159,9 +159,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
      */
     @SuppressWarnings("unchecked")
     public List<Resource> findRecentlyUpdatedItemsInLastXDays(int days) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_RECENT);
-        query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
-        return query.list();
+        Query query = getCurrentSession().createNamedQuery(QUERY_RECENT);
+        query.setParameter("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
+        return query.getResultList();
     }
 
     /**
@@ -173,14 +173,14 @@ public class DatasetDao extends ResourceDao<Dataset> {
      */
     @SuppressWarnings("unchecked")
     public List<Long> findRecentlyUpdatedItemsInLastXDaysForExternalIdLookup(int days) {
-        Query query = getCurrentSession().getNamedQuery(QUERY_EXTERNAL_ID_SYNC);
-        query.setDate("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
-        return query.list();
+        Query query = getCurrentSession().createNamedQuery(QUERY_EXTERNAL_ID_SYNC);
+        query.setParameter("updatedDate", new Date(System.currentTimeMillis() - (86400000l * days)));
+        return query.getResultList();
     }
     
     public void resetColumnMappings(Project project) {
         String sql = String.format("update information_resource set mappeddatakeyvalue=null,mappeddatakeycolumn_id=null where project_id=%s", project.getId());
-        getCurrentSession().createSQLQuery(sql).executeUpdate();
+        getCurrentSession().createNativeQuery(sql).executeUpdate();
     }
 
     /*
@@ -196,7 +196,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         long timestamp = System.currentTimeMillis();
         String sql = String.format("CREATE TEMPORARY TABLE MATCH%s (id bigserial, primary key(id), key varchar(255),actual varchar(255))", timestamp);
-        SQLQuery create = getCurrentSession().createSQLQuery(sql);
+        NativeQuery create = getCurrentSession().createNativeQuery(sql);
         logger.debug(sql);
         create.executeUpdate();
         int count = 0;
@@ -223,7 +223,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                 String format = String.format("insert into MATCH%s (key,actual) values('%s','%s')", timestamp,
                         org.apache.commons.lang.StringEscapeUtils.escapeSql(match.toLowerCase()),
                         org.apache.commons.lang.StringEscapeUtils.escapeSql(columnValue.toLowerCase()));
-                SQLQuery insert = getCurrentSession().createSQLQuery(format);
+                NativeQuery insert = getCurrentSession().createNativeQuery(format);
                 insert.executeUpdate();
                 if (count % 250 == 0) {
                     logger.trace(format);
@@ -242,7 +242,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
                         "inner join information_resource_file_version irfv on irf.id=irfv.information_resource_file_id " +
                         "WHERE ir.project_id=%s and lower(key)=%s and irfv.internal_type in ('%s') and ir.id=ir_.id and ir.mappedDataKeyValue is null",
                 column.getId(), timestamp, project.getId(), filenameCheck, StringUtils.join(types, "','"));
-        SQLQuery matching = getCurrentSession().createSQLQuery(format);
+        NativeQuery matching = getCurrentSession().createNativeQuery(format);
         logger.debug(format);
         int executeUpdate = matching.executeUpdate();
         logger.debug("{} rows updated", executeUpdate);
@@ -254,26 +254,28 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         String rawsql = NamedNativeQueries.removeDatasetMappings(projectId, columns);
         logger.trace(rawsql);
-        Query query = getCurrentSession().createSQLQuery(rawsql);
+        Query query = getCurrentSession().createNativeQuery(rawsql);
         int executeUpdate = query.executeUpdate();
         logger.debug("{} resources unmapped", executeUpdate);
     }
 
     public Number getAccessCount(Resource resource) {
         String sql = String.format(TdarNamedQueries.RESOURCE_ACCESS_COUNT_SQL, resource.getId(), new Date());
-        return (Number) getCurrentSession().createSQLQuery(sql).uniqueResult();
+        return (Number) getCurrentSession().createNativeQuery(sql).getSingleResult();
     }
 
     @SuppressWarnings("unchecked")
     public List<Long> findAllResourceIdsWithFiles() {
-        Query query = getCurrentSession().getNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
-        return query.list();
+        Query query = getCurrentSession().createNamedQuery(QUERY_INFORMATIONRESOURCES_WITH_FILES);
+        return query.getResultList();
     }
+    
+    
 
     @SuppressWarnings("unchecked")
     public List<Resource> findAllSparseActiveResources() {
-        Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
-        return query.list();
+        Query query = getCurrentSession().createNamedQuery(QUERY_SPARSE_ACTIVE_RESOURCES);
+        return query.getResultList();
     }
 
     @SuppressWarnings("unchecked")
@@ -285,19 +287,19 @@ public class DatasetDao extends ResourceDao<Dataset> {
         // distinct prevents duplicates
         // left join res.informationResourceFiles
         long time = System.currentTimeMillis();
-        Query query = session.getNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
+        Query query = session.createNamedQuery(QUERY_PROXY_RESOURCE_SHORT);
         // if we have more than one ID, then it's faster to do a deeper query (fewer follow-ups)
         if (ids.size() > 1) {
-            query = session.getNamedQuery(QUERY_PROXY_RESOURCE_FULL);
+            query = session.createNamedQuery(QUERY_PROXY_RESOURCE_FULL);
         }
         if (!trustCache) {
             query.setCacheable(false);
             query.setCacheMode(CacheMode.REFRESH);
         }
-        query.setParameterList("ids", ids);
+        query.setParameter("ids", ids);
         query.setResultTransformer(CriteriaSpecification.DISTINCT_ROOT_ENTITY);
 
-        List<ResourceProxy> results = query.list();
+        List<ResourceProxy> results = query.getResultList();
         long queryTime = System.currentTimeMillis() - time;
         time = System.currentTimeMillis();
         List<I> toReturn = new ArrayList<>();
@@ -324,15 +326,15 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public List<Resource> findOld(Long[] ids) {
         Session session = getCurrentSession();
         long time = System.currentTimeMillis();
-        Query query = session.getNamedQuery(QUERY_RESOURCE_FIND_OLD_LIST);
-        query.setParameterList("ids", Arrays.asList(ids));
-        List<Resource> results = query.list();
+        Query query = session.createNamedQuery(QUERY_RESOURCE_FIND_OLD_LIST);
+        query.setParameter("ids", Arrays.asList(ids));
+        List<Resource> results = query.getResultList();
         logger.info("query took: {} ", System.currentTimeMillis() - time);
         return results;
     }
 
     public int findAllResourcesWithPublicImagesForSitemap(GoogleImageSitemapGenerator gisg) {
-        Query query = getCurrentSession().createSQLQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
+        Query query = getCurrentSession().createNativeQuery(SELECT_RAW_IMAGE_SITEMAP_FILES);
         query.setCacheMode(CacheMode.IGNORE);
         int count = 0;
         logger.trace(SELECT_RAW_IMAGE_SITEMAP_FILES);
@@ -377,7 +379,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     public List<Resource> findByTdarYear(SearchResultHandler handler, int year) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
+        Query query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR);
         if (handler.getRecordsPerPage() < 0) {
             handler.setRecordsPerPage(250);
         }
@@ -390,13 +392,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
         DateTime dt = new DateTime(year, 1, 1, 0, 0, 0, 0);
         query.setParameter("year_start", dt.toDate());
         query.setParameter("year_end", dt.plusYears(1).toDate());
-        Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR_COUNT);
+        Query query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_BY_TDAR_YEAR_COUNT);
         query2.setParameter("year_start", dt.toDate());
         query2.setParameter("year_end", dt.plusYears(1).toDate());
-        Number max = (Number) query2.uniqueResult();
+        Number max = (Number) query2.getSingleResult();
         handler.setTotalRecords(max.intValue());
 
-        return query.list();
+        return query.getResultList();
     }
 
     public void deleteRelationships(Set<DataTableRelationship> relationshipsToRemove) {
@@ -405,11 +407,11 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (CollectionUtils.isEmpty(ids)) {
             return;
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS);
-        query.setParameterList("ids", ids);
+        Query query = getCurrentSession().createNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_COLUMN_RELATIONSHIPS);
+        query.setParameter("ids", ids);
         query.executeUpdate();
-        Query query2 = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS);
-        query2.setParameterList("ids", ids);
+        Query query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.DELETE_DATA_TABLE_RELATIONSHIPS);
+        query2.setParameter("ids", ids);
         query2.executeUpdate();
     }
 
@@ -432,21 +434,27 @@ public class DatasetDao extends ResourceDao<Dataset> {
     }
 
     public ScrollableResults findMappedResources(Project p) {
-        Query query = getCurrentSession().getNamedQuery(MAPPED_RESOURCES);
+        Query query = getCurrentSession().createNamedQuery(MAPPED_RESOURCES);
         Long id = null;
         if (PersistableUtils.isNotNullOrTransient(p)) {
             id = p.getId();
-            query.setLong("projectId", id);
+            query.setParameter("projectId", id);
         } else {
-            query.setLong("projectId", -1);
+            query.setParameter("projectId", -1);
         }
         ScrollableResults scroll = query.scroll(ScrollMode.FORWARD_ONLY);
         return scroll;
     }
+    
+    public ScrollableResults findAllResourceWithProjectsScrollable() {
+        Query query = getCurrentSession().createQuery("from InformationResource ir where ir.project is not null");
+        query.scroll(ScrollMode.FORWARD_ONLY);;
+        return query.scroll(ScrollMode.FORWARD_ONLY);
+    }
 
     public Number countMappedResources() {
-        Query query = getCurrentSession().getNamedQuery(COUNT_MAPPED_RESOURCES);
-        return (Number) query.uniqueResult();
+        Query<Number> query = getCurrentSession().createNamedQuery(COUNT_MAPPED_RESOURCES, Number.class);
+        return query.getSingleResult();
     }
 
     public void remapColumns(List<DataTableColumn> columns, Project project) {

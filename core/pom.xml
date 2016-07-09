@@ -134,7 +134,7 @@
         <dependency>
             <groupId>org.apache.ant</groupId>
             <artifactId>ant</artifactId>
-            <version>1.9.6</version>
+            <version>1.9.7</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
@@ -989,6 +989,9 @@
                         <configuration>
                             <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                     <execution>
@@ -999,12 +1002,15 @@
                         <configuration>
                             <finalName>tdar-core-test</finalName>
                             <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
                         </configuration>
                     </execution>
                 </executions>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
+                <version>${maven-jar-version}</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -1038,7 +1044,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.10</version>
+                <version>${maven-eclipse-version}</version>
                 <configuration>
                     <downloadSources>true</downloadSources>
                     <downloadJavadocs>true</downloadJavadocs>

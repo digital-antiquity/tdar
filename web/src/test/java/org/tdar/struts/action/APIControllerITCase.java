@@ -243,9 +243,6 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         if (doc instanceof Ontology) {
             ((Ontology) doc).getOntologyNodes().clear();
         }
-        if (doc instanceof Project) {
-            ((Project) doc).setCachedInformationResources(null);
-        }
     }
 
     @Test
@@ -308,7 +305,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
 
     @Test
     @Rollback
-    @Ignore("not implemented yet")
+//    @Ignore("not implemented yet")
     public void testDatasetWithMappings() throws Exception {
 
         APIController controller = generateNewInitializedController(APIController.class);

@@ -11,12 +11,16 @@
     <tr>
         <th>When</th>
         <th>Who</th>
+        <th>What</th>
+        <th>Duration</th>
         <th>Event</th>
     </tr>
     <#list resourceLogEntries as entry>
         <tr>
             <td>${entry.timestamp}</td>
             <td>${(entry.person.properName)!''}</td>
+            <td>${entry.type!''}</td>
+            <td>${entry.timeInSeconds!'?'}</td>
             <td>${entry.logMessage}</td>
         </tr>
     </#list>
@@ -84,7 +88,7 @@
 		</thead>
 		<tbody>
 			<#list xmlFiles as file>
-				<tr><td><a href="<@s.url value="/resource/admin?id=${id?c}&filename=${file.name}"/>">${file.name}</a></td><td></td><td>${file.totalSpace}</td></tr>
+				<tr><td><a href="<@s.url value="/resource/admin/xml?id=${id?c}&filename=${file.name}"/>">${file.name}</a></td><td></td><td>${file.totalSpace}</td></tr>
 			</#list>
 		</tbody>
 	</table>

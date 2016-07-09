@@ -27,11 +27,11 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.PluralLocalizable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
@@ -163,7 +163,7 @@ public class SearchDao<I extends Indexable> {
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     protected List<Facet> hydrateEnumFacets(TextProvider provider, FacetField field, Class facetClass) {
         List<Facet> facet = new ArrayList<>();
         for (Count c : field.getValues()) {
@@ -179,7 +179,6 @@ public class SearchDao<I extends Indexable> {
                 }
             }
 
-            @SuppressWarnings("rawtypes")
             Enum enum1 = null;
             if (facetClass.equals(ResourceType.class)) {
                 for (CollectionType type : CollectionType.values()) {
@@ -275,9 +274,12 @@ public class SearchDao<I extends Indexable> {
                     }
                     break;
                 case LUCENE_EXPERIMENTAL:
-                    hydrateExperimental(resultHandler, results, toReturn);
-                    break;
-
+                    // if we're stored and projected properly, then use the new projection model, otherwise fall through to hibernate model
+                    if (projectionTransformer.isProjected(results)) {
+                        hydrateExperimental(resultHandler, results, toReturn);
+                        break;
+                    }
+                    logger.debug("fallback projection (hibernate)");
                 case HIBERNATE_DEFAULT:
                     if (groupedSearchMode) {
                         // try to group the results together to improve the DB query

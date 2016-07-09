@@ -46,6 +46,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.ControlledKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.SuggestedKeyword;
+import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.CodingRule;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
@@ -58,6 +59,7 @@ import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -68,6 +70,7 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.APIException;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.exception.TdarValidationException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
@@ -291,6 +294,7 @@ public class ImportService {
                     if (p instanceof ResourceCollection) {
                         isResourceCollection = true;
                     }
+                    
                     Persistable result = processIncoming(p, incomingResource, authorizedUser);
                     if (result instanceof Sequenceable) {
                         ((Sequenceable<?>) result).setSequenceNumber(count);
@@ -320,19 +324,12 @@ public class ImportService {
      * @throws APIException
      */
     private <R extends Resource> void validateInvalidImportFields(R incomingResource) throws APIException {
-        if (incomingResource instanceof Dataset) {
-            Dataset dataset = (Dataset) incomingResource;
-            if (CollectionUtils.isNotEmpty(dataset.getDataTables())) {
-                throw new APIException(MessageHelper.getMessage("importService.dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
-            }
-        }
 
         if (incomingResource instanceof CodingSheet) {
             CodingSheet codingSheet = (CodingSheet) incomingResource;
             if (CollectionUtils.isNotEmpty(codingSheet.getMappedValues()) ||
                     CollectionUtils.isNotEmpty(codingSheet.getAssociatedDataTableColumns()) ||
-                    CollectionUtils.isNotEmpty(codingSheet.getCodingRules()) ||
-                    PersistableUtils.isNotNullOrTransient(codingSheet.getDefaultOntology())) {
+                    CollectionUtils.isNotEmpty(codingSheet.getCodingRules())) {
                 throw new APIException(MessageHelper.getMessage("importService.coding_sheet_mappings_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }
@@ -341,13 +338,6 @@ public class ImportService {
             Ontology ontology = (Ontology) incomingResource;
             if (CollectionUtils.isNotEmpty(ontology.getOntologyNodes())) {
                 throw new APIException(MessageHelper.getMessage("importService.ontology_node_not_supported"), StatusCode.UNKNOWN_ERROR);
-            }
-        }
-
-        if (incomingResource instanceof Project) {
-            Project project = (Project) incomingResource;
-            if (null != project.getCachedInformationResources()) {
-                throw new APIException(MessageHelper.getMessage("importService.cached_data_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
         }
 
@@ -441,7 +431,7 @@ public class ImportService {
 
         rec.getResourceRevisionLog().clear();
         rec = bringObjectOntoSession(rec, user, false);
-        ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user);
+        ResourceRevisionLog rrl = new ResourceRevisionLog(String.format("Cloned Resource from id: %s", resource.getId()), rec, user, RevisionLogType.CREATE);
         genericService.saveOrUpdate(rrl);
         if (rec instanceof Dataset) {
             Dataset dataset = (Dataset) rec;
@@ -527,41 +517,24 @@ public class ImportService {
      * @return
      * @throws APIException
      */
-    @SuppressWarnings("unchecked")
     public <P extends Persistable, R extends Persistable> P processIncoming(P property, R resource, TdarUser authenticatedUser) throws APIException {
         // if we're not transient, find by id...
         if (PersistableUtils.isNotNullOrTransient(property)) {
-            Class<? extends Persistable> cls = property.getClass();
-            Long id = property.getId();
-//            property = null;
-            P toReturn = (P) findById(cls, id);
-            if (toReturn instanceof RightsBasedResourceCollection && resource instanceof Resource) {
-                RightsBasedResourceCollection collection = (RightsBasedResourceCollection) toReturn;
-                // making sure that the collection's creators and other things are on the sessions properly too
-                resetOwnerOnSession(collection);
-                collection.getResources().add((Resource) resource);
-                ((Resource) resource).getResourceCollections().add(collection);
-            }
-            if (toReturn instanceof Person) {
-                Institution inst = ((Person) toReturn).getInstitution();
-                if (PersistableUtils.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
-                    ((Person) toReturn).setInstitution(findById(Institution.class, inst.getId()));
-                }
-            }
-            if (toReturn instanceof TdarUser) {
-                Institution inst = ((TdarUser) toReturn).getProxyInstitution();
-                if (PersistableUtils.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
-                    ((TdarUser) toReturn).setProxyInstitution(findById(Institution.class, inst.getId()));
-                }
-            }
-            return toReturn;
+            return processExistingNonTransientEntity(property, resource);
         }
 
-        P toReturn = property;
+        return processTransientEntity(property, resource, authenticatedUser);
+    }
 
+    @SuppressWarnings("unchecked")
+    private <P extends Persistable, R extends Persistable> P processTransientEntity(P property, R resource, TdarUser authenticatedUser) throws APIException {
+        P toReturn = property;
         if (property instanceof Keyword) {
             Class<? extends Keyword> kwdCls = (Class<? extends Keyword>) property.getClass();
-//            logger.debug(":::> {} ({} [{}])", property, kwdCls, property instanceof ControlledKeyword);
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(":::> {} ({} [{}])", property, kwdCls, property instanceof ControlledKeyword);
+            }
             if (property instanceof ControlledKeyword && !(property instanceof SuggestedKeyword)) {
                 Keyword findByLabel = genericKeywordService.findByLabel(kwdCls, ((Keyword) property).getLabel());
                 if (findByLabel == null) {
@@ -584,6 +557,35 @@ public class ImportService {
             toReturn = (P) entityService.findOrSaveCreator(creator);
             logger.debug("findOrSaveCreator:{}", creator);
         }
+        
+        if (property instanceof DataTable) {
+            DataTable dataTable = (DataTable) property;
+            dataTable.setDataset((Dataset)resource);
+            toReturn = (P) dataTable;
+            for (DataTableColumn dataTableColumn : dataTable.getDataTableColumns()) {
+                dataTableColumn.setDataTable(dataTable);
+                logger.debug("{} {}", dataTableColumn, dataTableColumn.getDataTable());
+                CodingSheet codingSheet = dataTableColumn.getDefaultCodingSheet();
+                CategoryVariable categoryVariable = dataTableColumn.getCategoryVariable();
+                if (PersistableUtils.isNotNullOrTransient(codingSheet ) ) {
+                    dataTableColumn.setDefaultCodingSheet(genericService.find(CodingSheet.class, codingSheet.getId()));
+                    if (PersistableUtils.isNullOrTransient(dataTableColumn.getDefaultCodingSheet())) {
+                        throw new TdarValidationException("importService.invalid_coding_sheet");
+                    }                    
+                }
+                if (PersistableUtils.isNotNullOrTransient(categoryVariable ) ) {
+                    dataTableColumn.setCategoryVariable(genericService.find(CategoryVariable.class, categoryVariable.getId()));
+                    if (PersistableUtils.isNullOrTransient(dataTableColumn.getCategoryVariable())) {
+                        throw new TdarValidationException("importService.invalid_category_variable");
+                    }
+                }
+                
+            }
+        }
+        
+        
+
+
 
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
@@ -614,6 +616,38 @@ public class ImportService {
                 }
             }
         }
+        return toReturn;
+    }
+
+    private <P extends Persistable, R extends Persistable> P processExistingNonTransientEntity(P property, R resource) {
+        Class<? extends Persistable> cls = property.getClass();
+        Long id = property.getId();
+        @SuppressWarnings("unchecked")
+        P toReturn = (P) findById(cls, id);
+        if (toReturn instanceof RightsBasedResourceCollection && resource instanceof Resource) {
+            RightsBasedResourceCollection collection = (RightsBasedResourceCollection) toReturn;
+            // making sure that the collection's creators and other things are on the sessions properly too
+            resetOwnerOnSession(collection);
+            collection.getResources().add((Resource) resource);
+            ((Resource) resource).getResourceCollections().add(collection);
+        }
+        if (toReturn instanceof Person) {
+            Institution inst = ((Person) toReturn).getInstitution();
+            if (PersistableUtils.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
+                ((Person) toReturn).setInstitution(findById(Institution.class, inst.getId()));
+            }
+        }
+        if (toReturn instanceof TdarUser) {
+            Institution inst = ((TdarUser) toReturn).getProxyInstitution();
+            if (PersistableUtils.isNotNullOrTransient(inst) && !genericService.sessionContains(inst)) {
+                ((TdarUser) toReturn).setProxyInstitution(findById(Institution.class, inst.getId()));
+            }
+        }
+        
+        if (toReturn instanceof DataTable && resource instanceof Dataset) {
+            ((Dataset)resource).getDataTables().add((DataTable) toReturn);
+        }
+        
         return toReturn;
     }
 

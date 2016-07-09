@@ -32,6 +32,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -213,7 +214,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         try {
             StringWriter writer = new StringWriter();
             serializationService.convertToXML(dataTable, writer);
-            resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString());
+            resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString(), RevisionLogType.EDIT);
             getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {
             getLogger().error("could not serialize to XML:", e);

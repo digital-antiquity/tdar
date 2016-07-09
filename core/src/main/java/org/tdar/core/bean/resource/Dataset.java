@@ -1,8 +1,11 @@
 package org.tdar.core.bean.resource;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -16,12 +19,15 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.utils.PersistableUtils;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 /**
  * A Dataset information resource can currently be an Excel file, Access MDB file, or plaintext CSV file.
@@ -60,6 +66,20 @@ public class Dataset extends InformationResource {
         return dataTables;
     }
 
+    @XmlTransient
+    @Transient
+    public List<DataTable> getSortedDataTables() {
+        List<DataTable> tables = new ArrayList<>(dataTables);
+        Collections.sort(tables, new Comparator<DataTable>() {
+
+            @Override
+            public int compare(DataTable o1, DataTable o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        return tables;
+    }
+    
     public void setDataTables(Set<DataTable> dataTables) {
         this.dataTables = dataTables;
     }

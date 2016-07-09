@@ -36,6 +36,11 @@ public class ExternalKeywordMapping extends AbstractPersistable implements Valid
     @JsonView(JsonLookupFilter.class)
     private String relation;
 
+    @Column(name = "label", nullable=false)
+    @Length(max = FieldLength.FIELD_LENGTH_255)
+    @JsonView(JsonLookupFilter.class)
+    private String label;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "relation_type", nullable=false)
     @JsonView(JsonLookupFilter.class)
@@ -73,5 +78,13 @@ public class ExternalKeywordMapping extends AbstractPersistable implements Valid
     @Override
     public boolean isValid() {
         return true;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
     }
 }

@@ -78,7 +78,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             }
 
             // FIXME: check this logic
-            if (resourceCreator.getRole() == ResourceCreatorRole.AUTHOR) {
+            if (resourceCreator.getRole() == ResourceCreatorRole.AUTHOR || resourceCreator.getRole() == ResourceCreatorRole.CREATOR) {
                 dc.addCreator(name);
             } else {
                 dc.addContributor(name);

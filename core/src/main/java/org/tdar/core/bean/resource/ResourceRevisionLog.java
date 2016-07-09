@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
@@ -37,11 +39,12 @@ public class ResourceRevisionLog extends AbstractPersistable {
     public ResourceRevisionLog() {
     }
 
-    public ResourceRevisionLog(String message, Resource resource, TdarUser person) {
+    public ResourceRevisionLog(String message, Resource resource, TdarUser person, RevisionLogType type) {
         this.person = person;
         this.timestamp = new Date();
         this.resource = resource;
         this.logMessage = message;
+        this.type = type;
     }
 
     @ManyToOne(optional = true)
@@ -53,6 +56,11 @@ public class ResourceRevisionLog extends AbstractPersistable {
     @Column(nullable = false, name = "timestamp")
     private Date timestamp;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "revision_type", length = FieldLength.FIELD_LENGTH_25, nullable=true)
+    private RevisionLogType type;
+
+    
     // the action taken
     @Column(name = "log_message", length = FieldLength.FIELD_LENGTH_512)
     @Length(max = FieldLength.FIELD_LENGTH_512)
@@ -66,6 +74,9 @@ public class ResourceRevisionLog extends AbstractPersistable {
     @Column(name = "payload", nullable = true)
     private String payload;
 
+    @Column(name="time_seconds", nullable=true)
+    private Long timeInSeconds;
+    
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     @XmlAttribute(name = "resourceRef")
     public Resource getResource() {
@@ -108,6 +119,22 @@ public class ResourceRevisionLog extends AbstractPersistable {
 
     public void setPayload(String payload) {
         this.payload = payload;
+    }
+
+    public RevisionLogType getType() {
+        return type;
+    }
+
+    public void setType(RevisionLogType type) {
+        this.type = type;
+    }
+
+    public Long getTimeInSeconds() {
+        return timeInSeconds;
+    }
+
+    public void setTimeInSeconds(Long timeInSeconds) {
+        this.timeInSeconds = timeInSeconds;
     }
 
 }

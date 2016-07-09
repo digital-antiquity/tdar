@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
@@ -319,7 +318,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
     
     @Override
     public boolean isRightSidebar() {
-        return CollectionUtils.isNotEmpty(getCollections());
+        return true;
     };
 
     @Override

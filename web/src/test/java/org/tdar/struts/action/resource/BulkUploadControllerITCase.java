@@ -527,6 +527,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Image expected = new Image();
         expected.setLicenseType(LicenseType.CREATIVE_COMMONS_ATTRIBUTION);
         expected.setLicenseText("This should be ignored");
+        expected.markUpdated(getAdminUser());
         Image image = resourceService.createResourceFrom(expected, expected.getClass());
         assertTrue(LicenseType.CREATIVE_COMMONS_ATTRIBUTION.equals(image.getLicenseType()));
         assertTrue(image.getLicenseText() == null);

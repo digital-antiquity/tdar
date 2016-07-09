@@ -247,8 +247,55 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         runNextScheduledProcessesInQueue();
     }
 
+    @Transactional(readOnly=false)
+    public List<String> runUpgradeTasks() {
+        List<String> tasksRun = new ArrayList<>();
+        if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
+            Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks() .iterator();
+            while (iterator.hasNext()) {
+                ScheduledProcess process = iterator.next();
+                boolean run = checkIfRun(process.getDisplayName());
+                logger.debug("{} -- enabled:{} startup: {} completed: {}, hasRun: {}", process.getDisplayName(), process.isEnabled(), process.shouldRunAtStartup(), process.isCompleted(), run);
+                if (process.isEnabled() && process.shouldRunAtStartup() && !process.isCompleted() && !run) {
+                    if (process instanceof UpgradeTask && !((UpgradeTask) process).hasRun()) {
+                        iterator.remove();
+                        continue;
+                    }
+                    String threadName = Thread.currentThread().getName();
+                    try {
+                        Thread.currentThread().setPriority(Thread.MIN_PRIORITY);
+                        Thread.currentThread().setName(threadName + "-"+process.getClass().getSimpleName());
+                        process.execute();
+                        tasksRun.add(process.getDisplayName());
+                    } catch (Throwable e) {
+                        logger.error("an error ocurred when running {}", process.getDisplayName(), e);
+                    } finally {
+                        Thread.currentThread().setName(threadName);
+                        Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
+                    }
+
+                    complete(iterator, process);
+                } else {
+                    iterator.remove();
+                }
+            }
+        }
+        return tasksRun;
+    }
+
+    private void complete(Iterator<?> iterator, ScheduledProcess process) {
+        logger.debug("process {} , completed: {} class: {}", process.getDisplayName(), process.isCompleted(), process.getClass().getName());
+        if (process.isCompleted()) {
+            process.cleanup();
+            if (process.isSingleRunProcess()) {
+                completedSuccessfully(process);
+            }
+            iterator.remove();
+        }
+    }
     public void runNextScheduledProcessesInQueue() {
         logger.debug("processes in Queue: {}", getScheduledProcessQueue());
+        runUpgradeTasks();
         if (getScheduledProcessQueue().size() <= 0) {
             return;
         }
@@ -264,8 +311,8 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         }
         // look in upgradeTasks to see what's there, if the task defined is not
         // there, then run the task, and then add it
-        UpgradeTask upgradeTask = checkIfRun(process.getDisplayName());
-        if (process.isSingleRunProcess() && upgradeTask.hasRun()) {
+        boolean run = checkIfRun(process.getDisplayName());
+        if (process.isSingleRunProcess() && run) {
             logger.debug("process has already run once, removing {}", process);
             getScheduledProcessQueue().remove(process.getClass());
             return;
@@ -301,25 +348,24 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
             Thread.currentThread().setPriority(Thread.NORM_PRIORITY);
         }
 
-        if (process.isCompleted()) {
-            process.cleanup();
-            completedSuccessfully(upgradeTask);
-            iterator.remove();
-        }
+        complete(iterator, process);
         logger.trace("processes in Queue: {}", getScheduledProcessQueue());
     }
 
     /**
      * Mark an @link UpgradeTask as having been run successfully
      * 
-     * @param upgradeTask
+     * @param process
      */
-    @Transactional
-    private void completedSuccessfully(UpgradeTask upgradeTask) {
-        upgradeTask.setRun(true);
-        upgradeTask.setRecordedDate(new Date());
-        genericService.save(upgradeTask);
-        logger.info("completed " + upgradeTask.getName());
+    @Transactional(readOnly=false)
+    private void completedSuccessfully(ScheduledProcess process) {
+        UpgradeTask task = new UpgradeTask();
+        task = genericService.markWritable(task);
+        task.setName(process.getDisplayName());
+        task.setRun(true);
+        task.setRecordedDate(new Date());
+        genericService.save(task);
+        logger.info("completed " + task.getName());
     }
 
     /**
@@ -328,18 +374,18 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
      * @param name
      * @return
      */
-    private UpgradeTask checkIfRun(String name) {
+    @Transactional(readOnly=true)
+    public boolean checkIfRun(String name) {
         UpgradeTask upgradeTask = new UpgradeTask();
         upgradeTask.setName(name);
         List<String> ignoreProperties = new ArrayList<String>();
         ignoreProperties.add("recordedDate");
         ignoreProperties.add("run");
-        List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties,
-                FindOptions.FIND_ALL);
+        List<UpgradeTask> tasks = genericService.findByExample(UpgradeTask.class, upgradeTask, ignoreProperties, FindOptions.FIND_ALL);
         if ((tasks.size() > 0) && (tasks.get(0) != null)) {
-            return tasks.get(0);
+            return true;
         } else {
-            return upgradeTask;
+            return false;
         }
     }
 
@@ -381,10 +427,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     @EventListener()
     public void onApplicationEvent(ContextRefreshedEvent event) {
         logger.debug("received app context event: " + event);
-        if (manager != null && CollectionUtils.isNotEmpty(manager.getUpgradeTasks())) {
-            logger.trace("already run startup processes, aborting");
-            return;
-        }
     }
 
     public ProcessManager getManager() {

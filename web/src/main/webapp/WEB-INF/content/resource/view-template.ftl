@@ -196,7 +196,7 @@
                 <form>
                     <label for="table_select">Choose Table:</label>
                     <select id="table_select" name="dataTableId">
-                        <#list resource.dataTables as dataTable_>
+                        <#list resource.sortedDataTables as dataTable_>
                             <option value="${dataTable_.id?c}" <#if dataTable_.id == dataTable.id>selected </#if>
                                     >${dataTable_.displayName}</option>
                         </#list>
@@ -235,7 +235,7 @@
             <div class="span3"><span class="columnSquare integration"></span>Integration Column (has Ontology)</div>
         </div>
     <br/>
-            <#list resource.dataTables as dataTable>
+            <#list resource.sortedDataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <#if dataTable.description?has_content>
 			<p class="tableDescription">${dataTable.description}</p>
@@ -372,30 +372,37 @@
             <div class="span45">
             </#if>
             <#if prop == "activeSiteNameKeywords">
-                <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" />
+                <@_keywordSection "Site Name" resource.activeSiteNameKeywords "siteNameKeywords" resource.inheritingSiteInformation!false />
             </#if>
             <#if prop == "activeSiteTypeKeywords">
-                <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" />
+                <@_keywordSection "Site Type" resource.activeSiteTypeKeywords "uncontrolledSiteTypeKeywords" resource.inheritingSiteInformation!false />
             </#if>
             <#if prop == "activeCultureKeywords">
-                <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" />
+                <@_keywordSection "Culture" resource.activeCultureKeywords "uncontrolledCultureKeywords" resource.inheritingCulturalInformation!false />
             </#if>
             <#if prop == "activeMaterialKeywords">
-                <@_keywordSection "Material" resource.activeMaterialKeywords "query" />
+                <@_keywordSection "Material" resource.activeMaterialKeywords "query" resource.inheritingMaterialInformation!false />
             </#if>
             <#if prop == "activeInvestigationTypes">
-                <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" />
+                <@_keywordSection "Investigation Types" resource.activeInvestigationTypes "query" resource.inheritingInvestigationInformation!false />
             </#if>
             <#if prop == "activeOtherKeywords">
-                <@_keywordSection "General" resource.activeOtherKeywords "query" />
+                <@_keywordSection "General" resource.activeOtherKeywords "query" resource.inheritingOtherInformation!false />
             </#if>
             <#if prop == "activeTemporalKeywords">
-                <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" />
+                <@_keywordSection "Temporal Keywords" resource.activeTemporalKeywords "query" resource.inheritingTemporalInformation!false />
             </#if>
             <#if prop == "activeGeographicKeywords">
-                <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" />
+                <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" resource.inheritingSpatialInformation!false />
             </#if>
         </#list>
+        <#assign mks = (resource.managedGeographicKeywords![])?size />
+		<#if editor && (mks > 0)>
+        <p>
+            <strong>System Managed Geographic Keywords (${mks})</strong><br><span class="show red" onClick="$(this).hide();$('#managedKeywords').show()">show</span><span id="managedKeywords" style="display:none">
+            <@view.keywordSearch resource.managedGeographicKeywords "query"  /></span>
+        </p>
+		</#if>
         <#if (resource.keywordProperties?size > 0)>
         </div>
         </#if>
@@ -404,17 +411,17 @@
     </#if>
 
 
-    <#macro _keywordSection label keywordList searchParam>
+    <#macro _keywordSection label keywordList searchParam inherited=false >
         <#if keywordList?has_content>
         <p>
-            <strong>${label}</strong><br>
+            <strong>${label} <#if editor && inherited><small>(from project)</small></#if> </strong><br>
             <@view.keywordSearch keywordList searchParam false />
         </p>
         </#if>
     </#macro>
 
         <#list resource.activeCoverageDates>
-	    <h2>Temporal Coverage</h2>
+	    <h2>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h2>
 	    <#items as coverageDate>
             <#assign value>
                 <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to
@@ -428,7 +435,7 @@
 
 
     <#if (resource.activeLatitudeLongitudeBoxes?has_content) || (userAbleToViewUnobfuscatedMap && geoJson?has_content)>
-    <h2>Spatial Coverage</h2>
+    <h2>Spatial Coverage <#if editor && resource.inheritingSpatialInformation!false><small>(from project)</small></#if> </h2>
     <div class="title-data">
         <#if (resource.activeLatitudeLongitudeBoxes?has_content) >
             <#assign llb = resource.firstActiveLatitudeLongitudeBox />
@@ -472,13 +479,13 @@
     </#if>
     </#if>
     <#if creditProxies?has_content >
-    <h3>Individual &amp; Institutional Roles</h3>
+    <h3>Individual &amp; Institutional Roles <#if editor && resource.inheritingIndividualAndInstitutionalCredit!false ><small>(from project)</small></#if> </h3>
         <@view.showCreatorProxy proxyList=creditProxies />
     <hr/>
     </#if>
 
         <#list allResourceAnnotationKeys>
-    	<h3>Record Identifiers</h3>
+    	<h3>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h3>
 
 		<#items as key>
             <#assign contents = "" />
@@ -496,7 +503,7 @@
 
 
 	<#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
-    <h2>Notes</h2>
+    <h2>Notes <#if editor && resource.inheritingNoteInformation!false ><small>(from project)</small></#if> </h2>
         <#items as resourceNote>
             <@view.kvp key=resourceNote.type.label val=resourceNote.note />
 		</#items>
@@ -670,15 +677,5 @@
         </table>
         </#list>
     </#macro>
-
-    <#macro _keywordSection label keywordList searchParam>
-        <#if keywordList?has_content>
-        <p>
-            <strong>${label}</strong><br>
-            <@view.keywordSearch keywordList searchParam false />
-        </p>
-        </#if>
-    </#macro>
-
 
 </#escape>

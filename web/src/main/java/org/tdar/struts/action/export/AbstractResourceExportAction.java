@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -22,18 +23,18 @@ import org.tdar.core.service.resource.ResourceExportService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.Validateable;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/export")
-public abstract class AbstractResourceExportAction extends AbstractAuthenticatableAction implements Preparable {
+public abstract class AbstractResourceExportAction extends AbstractAuthenticatableAction implements Preparable, Validateable {
 
     /**
      * 
      */
     private static final long serialVersionUID = 6309093261229203299L;
-    private List<Resource> resources;
     private List<Long> ids;
     private Long collectionId;
     private Long accountId;
@@ -49,48 +50,44 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
     @Autowired
     SerializationService serializationService;
 
+    private String format(HasName item) {
+        return String.format("%s",item.getId());
+    }
+
     @Override
     public void prepare() throws Exception {
         exportProxy = new ResourceExportProxy(getAuthenticatedUser());
-        resources = getGenericService().findAll(Resource.class, ids);
+        getExportProxy().setResources(getGenericService().findAll(Resource.class, ids));
         getExportProxy().setAccount(getGenericService().find(BillingAccount.class, accountId));
         getExportProxy().setCollection(getGenericService().find(SharedCollection.class, collectionId));
+    }
+
+    @Override
+    public void validate() {
         List<String> issues = new ArrayList<>();
+
+        List<Resource> resources = getExportProxy().getResources();
         if (resources != null) {
             for (Resource r : resources) {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), r, GeneralPermissions.MODIFY_METADATA)) {
-                    issues.add(String.format("%s (%s)", r.getTitle(), r.getId()));
+                    issues.add(format(r));
                 }
             }
         }
 
-        if (getExportProxy().getCollection() != null && !authorizationService.canEditCollection(getAuthenticatedUser(), getExportProxy().getCollection())) {
-            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(getExportProxy().getCollection())));
+        ResourceCollection collection = getExportProxy().getCollection();
+        if (collection != null && !authorizationService.canEditCollection(getAuthenticatedUser(), collection)) {
+            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(collection))));
         }
 
-        if (getExportProxy().getAccount() != null && !authorizationService.canEditAccount(getExportProxy().getAccount(), getAuthenticatedUser())) {
-            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(getExportProxy().getAccount())));
+        BillingAccount account = getExportProxy().getAccount();
+        if (account != null && !authorizationService.canEditAccount(account, getAuthenticatedUser())) {
+            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(account))));
         }
 
         if (CollectionUtils.isNotEmpty(resources)) {
-            addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(issues)));
+            addActionError(getText("abstractResourceExportAction.cannot_export"));
         }
-    }
-
-    public List<Long> getIds() {
-        return ids;
-    }
-
-    public void setIds(List<Long> ids) {
-        this.ids = ids;
-    }
-
-    public List<Resource> getResources() {
-        return resources;
-    }
-
-    public void setResources(List<Resource> resources) {
-        this.resources = resources;
     }
 
     public Long getAccountId() {
@@ -111,10 +108,6 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
 
     public ResourceExportProxy getExportProxy() {
         return exportProxy;
-    }
-
-    public void setExportProxy(ResourceExportProxy exportProxy) {
-        this.exportProxy = exportProxy;
     }
 
 }

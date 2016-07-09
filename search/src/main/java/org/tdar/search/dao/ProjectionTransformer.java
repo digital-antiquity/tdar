@@ -3,6 +3,7 @@ package org.tdar.search.dao;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.service.ObfuscationService;
+import org.tdar.search.bean.SolrSearchObject;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
@@ -34,6 +36,20 @@ public class ProjectionTransformer<I extends Indexable> {
 	
 	@Autowired
 	private DatasetDao datasetDao;
+	
+	public boolean isProjected(SolrSearchObject<I> results) {
+	    if (CollectionUtils.isEmpty(results.getDocumentList())) {
+	        return true;
+	    }
+	    SolrDocument doc = results.getDocumentList().get(0);
+
+
+        // we only start storing this properly in obsidian & we only project it in resources
+        if (doc.getFieldValue(QueryFieldNames.SUBMITTER_ID) != null) {
+            return true;
+        }
+	    return false;
+	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
     public I transformResource(SearchResultHandler<I> resultHandler, SolrDocument doc, I r, ObfuscationService obfuscationService) {

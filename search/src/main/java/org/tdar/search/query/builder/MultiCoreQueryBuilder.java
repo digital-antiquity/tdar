@@ -2,7 +2,6 @@ package org.tdar.search.query.builder;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.tdar.search.bean.SearchParameters;
-import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.CoreNames;
 

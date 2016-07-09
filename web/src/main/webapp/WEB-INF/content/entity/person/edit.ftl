@@ -23,7 +23,8 @@
 <body>
 <h1>${pageTitle}</h1>
 
-    <@s.form name='personForm' id='frmPerson'  cssClass="form-vertical"  method='post' enctype='multipart/form-data' action='save'>
+    <@s.form name='personForm' id='frmPerson'  cssClass="form-vertical tdarvalidate"  method='post' enctype='multipart/form-data' action='save'
+            dynamicAttributes={"data-validate-method":"initBasicForm"}>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
     <div class="">
@@ -44,7 +45,6 @@
         $frmPerson = $('#frmPerson');
         TDAR.autocomplete.applyInstitutionAutocomplete($('.institutionAutocomplete'), true);
         TDAR.common.initEditPage($('#frmPerson')[0]);
-        TDAR.common.validateProfileImage();
         //tack on the confirm-password rules
     });
 </script>

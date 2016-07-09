@@ -9,7 +9,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -38,8 +37,6 @@ import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.keyword.GeographicKeyword;
-import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
@@ -47,6 +44,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.ResourceType;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -59,7 +57,6 @@ import org.tdar.core.cache.HomepageResourceCountCache;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.GenericDao;
-import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DataTableDao;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.dao.resource.ProjectDao;
@@ -151,12 +148,7 @@ public class ResourceService {
         if (id == null) {
             return null;
         }
-        ResourceType rt = datasetDao.findResourceType(id);
-        logger.trace("finding resource " + id + " type:" + rt);
-        if (rt == null) {
-            return null;
-        }
-        return (R) datasetDao.find(rt.getResourceClass(), id);
+        return (R) datasetDao.find(Resource.class, id);
     }
 
     /**
@@ -186,8 +178,20 @@ public class ResourceService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message) {
-        logResourceModification(modifiedResource, person, message, null);
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, RevisionLogType type) {
+        logResourceModification(modifiedResource, person, message, null, type);
+    }
+
+    @Transactional
+    public <T extends Resource> void  logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type, Long startTime) {
+        ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
+        log.setTimestamp(new Date());
+        log.setPayload(payload);
+        if (PersistableUtils.isNotNullOrTransient(startTime)) {
+             long milli = System.currentTimeMillis() - startTime.longValue();
+            log.setTimeInSeconds(milli / 1000);
+        }
+        genericDao.save(log);
     }
 
     /**
@@ -199,14 +203,8 @@ public class ResourceService {
      * @param payload
      */
     @Transactional
-    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload) {
-        ResourceRevisionLog log = new ResourceRevisionLog();
-        log.setLogMessage(message);
-        log.setResource(modifiedResource);
-        log.setPerson(person);
-        log.setTimestamp(new Date());
-        log.setPayload(payload);
-        genericDao.save(log);
+    public <T extends Resource> void logResourceModification(T modifiedResource, TdarUser person, String message, String payload, RevisionLogType type) {
+        logResourceModification(modifiedResource, person, message, payload, type, null);
     }
 
     /**
@@ -834,7 +832,7 @@ public class ResourceService {
             reason = "reason not specified";
         }
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
-        logResourceModification(resource, authUser, logMessage);
+        logResourceModification(resource, authUser, logMessage , null, RevisionLogType.DELETE);
         genericDao.delete(resource);
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {

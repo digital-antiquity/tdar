@@ -6,7 +6,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     L.drawLocal.edit.toolbar.buttons.editDisabled = 'No box to edit';
     L.drawLocal.edit.toolbar.buttons.remove = 'Delete';
     L.drawLocal.edit.toolbar.buttons.removeDisabled = 'No boxes to delete';
-    L.Icon.Default.imagePath = TDAR.assetsUri('/components/leaflet/dist/images/');
+    L.Icon.Default.imagePath = TDAR.assetsUri('/components/leaflet/dist/images');
 
     var $body = $('body');
 
@@ -56,7 +56,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
     // -1 -- not initialized ; -2 -- bad rectangle ; 1 -- initialized ; 2 -- rectangle setup
     //fixme: global _inialized unreliable if more than one map on page
-    //fixme: seems like you really want to track two things: 1) initialize status and 2) rectangle validity.  
+    //fixme: seems like you really want to track two things: 1) initialize status and 2) rectangle validity.
     var _initialized = -1;
 
     /**
@@ -70,7 +70,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         var _bdata = $('body').data();
         var _bodyData = {leafletApiKey: _bdata.leafletApiKey, leafletTileProvider: _bdata.leafletTileProvider};
         if (_bdata.centerlat && _bdata.centerlong) {
-            _bodyData.center =  {lat: _bdata.centerlat, lng: _bdata.centerlong} 
+            _bodyData.center =  {lat: _bdata.centerlat, lng: _bdata.centerlong}
         };
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
 
@@ -93,7 +93,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         tile.addTo(map);
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
-        
+
         if (settings.geojson != undefined) {
             var geoJson = $(settings.geojson);
 //            console.log(settings.geojson);
@@ -104,7 +104,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 console.log("loaded");
                 glayer.addTo(map);
                 console.log("added");
-    
+
                 _fitTo(map, glayer);
             }
         }
@@ -120,7 +120,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             var map = _initMap(this);
             var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
             $el.data("markers", markers);
-
+            map.markers = markers;
+            
             var recDefaults = $.extend(_rectangleDefaults, {
                 fillOpacity: 0.08,
                 fitToBounds: true
@@ -131,6 +132,33 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             var infiniteUrl = $el.data("infinite-url");
             if (infiniteUrl) {
                 _dynamicUpdateMap($el, infiniteUrl,0);
+                var zoom = L.control({
+                    position : 'topright'
+                });
+
+                zoom.onAdd = function(map) {
+                    var topRight = L.DomUtil.create('div', 'topright');
+                    var loading = L.DomUtil.create('div', 'mapLoading');
+                    loading.id="mapLoading";
+                    var $loading = $(loading);
+                    $loading.append("<i class='icon-refresh'></i> Loading");
+//                    $loading.hide();
+                    var resetBounds = L.DomUtil.create('div', 'mapResetBounds');
+                    resetBounds.id="mapResetBounds";
+                    var $resetBounds = $(resetBounds);
+                    $resetBounds.append("<i class='icon-map-marker'></i> Fit map to all results");
+                    $resetBounds.hide();
+
+                    $resetBounds.click(function() {
+                        map.fitBounds(map.markers.getBounds());
+                        $resetBounds.hide();
+                    });
+                    topRight.appendChild(resetBounds);
+                    topRight.appendChild(loading);
+                    return topRight;
+                };
+                zoom.addTo(map);
+
             } else {
                 $(".resource-list.MAP .listItem").each(function() {
                     var $t = $(this);
@@ -142,7 +170,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                         var marker = L.marker(new L.LatLng(lat, lng), {title: title.text().trim()});
                         marker.bindPopup(title.html() + "<br><a href='" + title.attr('href') + "'>view</a>");
                         allPoints.push(marker);
-    
+
                     }
                 });
                 markers.clearLayers();
@@ -160,54 +188,72 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         if (!startRecord) {
             startRecord = 0;
         }
+        console.log(baseUrl + " --> " + startRecord);
         $.ajax({
         dataType: "json",
         url: baseUrl + "&startRecord="+startRecord,
         success: function(data) {
-            _update($el, data,startRecord);
+            console.log(data);
+            _update($el.data("map"), $el.data("markers"), data,startRecord, $el.is('[data-fit-bounds]', startRecord === 0));
             var nextPage = data.properties.startRecord + data.properties.recordsPerPage;
+            var $loading = $("#mapLoading");
             if (data.properties && (nextPage) < data.properties.totalRecords) {
                 _dynamicUpdateMap($el, baseUrl, nextPage);
-            }    
-        }
-        }).error(function() {});
-    
-    }
-    
-    function _update($el, data,startRecord) {
-        var layers = new Array();
-        $(data.features).each(function(key, data_) {
-            if (data_.geometry.type) {
-                var title = data_.properties.title;
-                var c = data_.geometry.coordinates;
-                var marker = L.marker(new L.LatLng(c[1],c[0]), {title: title.trim()});
-                marker.bindPopup(title + "<br><a href='" + data_.properties.detailUrl + "'>view</a>");
-                layers.push(marker);
+                $loading.show();
+                $("#mapResetBounds").show();
+            } else {
+                $loading.hide();
             }
+        }
+        }).error(function(e) {
+            console.log("error loading json: ", e);
         });
-        var markers = $el.data("markers");
-        if (startRecord == 0) {
+
+    }
+
+
+    /**
+     * Update the map control associated w/ a specified dom element by appending markers contained in a specified data object
+     * @param map the leaflet map
+     * @param markers clustergroup (jtd: I think) of existing map markers
+     * @param data object containing list of leaflet feature objects (in data.features).  These features represent one "page" of data
+     * @param startRecord record number of the first record in the current page
+     * @param bFitBounds if true, this method tells the map to pan/zoom to fit updated set of markers
+     * @private
+     */
+    function _update(map, markers, data,startRecord, bFitBounds) {
+
+        //translate datapoints to list of markers
+        var layers = data.features
+            .filter(function(feature){return feature.geometry.hasOwnProperty("type");})
+            .map(function(feature){
+                var title = feature.properties.title;
+                var c = feature.geometry.coordinates;
+                var marker = L.marker(new L.LatLng(c[1], c[0]), {title: $.trim(title)});
+                marker.bindPopup(title + "<br><a href='" + feature.properties.detailUrl + "'>view</a>");
+                return marker;
+            });
+
+        // clear any existing layers if starting w/ first page of data
+        if (startRecord === 0) {
             markers.clearLayers();
         }
+
+        // append the markers to the existing leaflet.cluster layer
         markers.addLayers(layers);
+
         // if we fit to bounds...
-        if ($el.data("fit-bounds")) {
-            var map = $el.data("map");
-            if (markers.getBounds().lat) {
-                map.fitBounds(markers.getBounds());
-            }
-            // only zoom out on the first call
-            if (startRecord == 0) {
-                $el.data("map");
-            }
+        // fixme: if user-interaction happens we probably shouldn't call fit-bounds
+        if(bFitBounds && layers.length) {
+            map.fitBounds(markers.getBounds());
         }
     }
-    
+
     function _fitTo(map, layer) {
         map.fitBounds(layer.getBounds());
         map.zoomOut(1);
     }
-    
+
     /**
      * init a "view" only map, binds to data-attribute minx, miny, maxx, maxy
      */
@@ -246,7 +292,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             console.log("fitToBounds:", rectangleSettings.fitToBounds);
             console.log("fitToBounds (rec):", rectangle.getBounds());
             console.log("fitToBounds (map):", map.getBounds());
-            
+
             if (rectangleSettings.fitToBounds) {
                 // Really frustrating race condition whereby map sometimes zoom's wrong, so we need to add a timeout to make this work
                 setTimeout(function() {map.fitBounds(rectangle.getBounds());},1000);
@@ -406,9 +452,12 @@ TDAR.leaflet = (function(console, $, ctx, L) {
              * Assumption of only one bounding box
              */
             map.on('draw:deleted', function(e) {
+                console.log("deleted fired");
                 var layers = e.layers;
+                var size = 1;
                 layers.eachLayer(function(layer) {
                     drawnItems.removeLayer(layer);
+                    size--;
                     // the change() watch deosn't always pay attention to these explicit calls
                     $(".minx", $el).val('');
                     $(".miny", $el).val('');
@@ -419,7 +468,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                     $(".d_maxx", $el).val('');
                     $(".d_maxy", $el).val('');
                 });
-                _enableRectangleCreate($mapDiv);
+
+                if (size == 0 ) {
+                    _enableRectangleCreate($mapDiv);
+                }
             });
 
             //dirty the form if rectangle created, edited, or deleted
@@ -472,7 +524,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         $(".miny", $el).val(bnds.getSouth());
         $(".maxy", $el).val(bnds.getNorth());
         $(".d_miny", $el).val(bnds.getSouth());
-        
+
         console.log("west: " + bnds.getWest() + " east:" + bnds.getEast());
         var x = bnds.getWest();
         x = _correctForWorldWrap(x);
@@ -480,7 +532,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         $(".d_minx", $el).val(x);
         if (x < -180) {
             x = parseFloat(x) + 360.0;
-            
+
             $(".d_minx", $el).val(x );
             $(".minx", $el).val(x );
         }
@@ -492,11 +544,11 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         if (x > 180) {
             // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
             // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY HERE, THE REVERSE AS ABOVE
-            // 
+            //
             x = parseFloat(x) - 360.0 ;
             $(".d_maxx", $el).val(x);
             $(".maxx", $el).val(x);
-        } 
+        }
         console.log("west(set): " + $(".d_minx").val() + " east(set):" + $(".d_maxx").val());
         $(".d_maxy", $el).val(bnds.getNorth());
         return bnds;
@@ -516,7 +568,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         return x;
     }
 
-    
+
     function _isIntialized() {
         return _initialized;
     }
@@ -533,7 +585,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         initialized: _isIntialized,
         defaults: _defaults,
         dynamicUpdateMap: _dynamicUpdateMap,
-        getMaps : _getMaps
+        getMaps : _getMaps,
+        update: _update
     }
 })(console, jQuery, window, L);
 $(function() {

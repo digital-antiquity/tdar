@@ -99,7 +99,7 @@
 
     <div class="">
     <h2>Preferences</h2>
-            <@s.checkbox label='New Resources Default to Draft?' name="persistable.newResourceSavedAsDraft" id="new-as-draft"  />
+            <@s.checkbox label='New Resources Default to draft?' name="persistable.newResourceSavedAsDraft" id="new-as-draft"  />
 
     </div>
 

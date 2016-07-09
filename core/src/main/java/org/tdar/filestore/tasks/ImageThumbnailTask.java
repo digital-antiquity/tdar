@@ -19,6 +19,7 @@ import javax.media.jai.RenderedOp;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.geotools.coverage.grid.GridCoverage2D;
+import org.geotools.data.DataSourceException;
 import org.geotools.factory.Hints;
 import org.geotools.gce.geotiff.GeoTiffReader;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
@@ -120,6 +121,14 @@ public class ImageThumbnailTask extends AbstractTask {
                 RenderedOp renderedImage = (RenderedOp) coverage.getRenderedImage();
                 
                 ijSource = new ImagePlus("", renderedImage.getAsBufferedImage());
+            } catch (DataSourceException dse) {
+                // we get -1 if it's not a geotiff, so ignore
+                if (StringUtils.equals(dse.getMessage(),"-1")) {
+                    //ignore, probably not a GeoTiff
+                } else {
+                    getLogger().error("issue with GeoTiff attempt to process" + sourceFile, dse);
+                    msg = dse.getMessage();
+                }
             } catch (IOException e) {
                 getLogger().error("issue with GeoTiff attempt to process" + sourceFile, e);
                 msg = e.getMessage();

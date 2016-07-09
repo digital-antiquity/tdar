@@ -27,6 +27,14 @@ public abstract class AbstractOntologyViewAction extends AbstractSupportingResou
         return node_;
     }
 
+    
+    protected OntologyNode getNodeBySlug() {
+        String iri_ = getIri();
+        getLogger().trace("id: {} iri: {} slug: {}", getId(), iri_, getSlug());
+        OntologyNode node_ = getOntology().getNodeBySlug(iri_);
+        return node_;
+    }
+
     public OntologyNode getNode() {
         return node;
     }

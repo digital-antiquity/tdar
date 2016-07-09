@@ -52,6 +52,8 @@
     </#macro>
 
     <#macro localJavascript>
-    $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
+    $(document).ready(function() {
+	    $('#fileAsyncUpload').rules('add', 'asyncFilesRequired');
+    });
     </#macro>
 </#escape>

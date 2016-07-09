@@ -14,8 +14,8 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
-import org.hibernate.SQLQuery;
+import org.hibernate.query.Query;
+import org.hibernate.query.NativeQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.DetachedCriteria;
@@ -71,9 +71,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	@SuppressWarnings("unchecked")
 	public Set<Long> findResourcesSubmittedByUser(Person person) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
-		query.setLong("submitterId", person.getId());
-		return new HashSet<Long>(query.list());
+		Query<Long> query = getCurrentSession().getNamedQuery(QUERY_RESOURCES_SUBMITTER);
+		query.setParameter("submitterId", person.getId());
+		return new HashSet<Long>(query.getResultList());
 	}
 
 	public List<E> findByTitle(final String title) {
@@ -106,9 +106,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	@SuppressWarnings("unchecked")
 	public List<ResourceRevisionLog> getLogEntriesForResource(Resource resource) {
-		Query query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
+		Query<ResourceRevisionLog> query = getCurrentSession().getNamedQuery(LOGS_FOR_RESOURCE);
 		query.setParameter("resourceId", resource.getId());
-		return query.list();
+		return query.getResultList();
 	}
 
 	/*
@@ -121,22 +121,22 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	 */
 	@SuppressWarnings("unchecked")
 	public List<E> findSparseResourceBySubmitterType(Person submitter, ResourceType resourceType) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES);
+		Query<E> query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES);
 		if (submitter != null) {
 			query = getCurrentSession().getNamedQuery(QUERY_SPARSE_RESOURCES_SUBMITTER);
-			query.setLong("submitter", submitter.getId());
+			query.setParameter("submitter", submitter.getId());
 		}
-		query.setString("resourceType", resourceType.name());
-		query.setString("status", Status.ACTIVE.name());
+		query.setParameter("resourceType", resourceType);
+		query.setParameter("status", Status.ACTIVE);
 		query.setReadOnly(true);
-		return query.list();
+		return query.getResultList();
 	}
 
 	public boolean hasBeenModifiedSince(Resource resource, Date date) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_MODIFIED_SINCE);
-		query.setLong("id", resource.getId());
-		query.setDate("date", date);
-		int numFound = ((Integer) query.iterate().next()).intValue();
+		Query<Number> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_MODIFIED_SINCE);
+		query.setParameter("id", resource.getId());
+		query.setParameter("date", date);
+		int numFound = query.getSingleResult().intValue();
 		return numFound > 0;
 	}
 
@@ -146,38 +146,38 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public ResourceType findResourceType(Number id) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
-		query.setLong("id", id.longValue());
-		return (ResourceType) query.uniqueResult();
+		Query<ResourceType> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
+		query.setParameter("id", id.longValue());
+		return  query.getSingleResult();
 	}
 
 	public void incrementAccessCounter(Resource r) {
-		Query query = getCurrentSession().createSQLQuery(NamedNativeQueries.incrementAccessCount(r));
+		Query query = getCurrentSession().createNativeQuery(NamedNativeQueries.incrementAccessCount(r));
 		query.executeUpdate();
 	}
 
 	public Number countActiveResources(ResourceType type) {
-		Query query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE,
+		Query<Number> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE,
 				type.getResourceClass().getSimpleName(), type.name()));
-		return (Number) query.uniqueResult();
+		return query.getSingleResult();
 	}
 
 	public Number countActiveResourcesWithFiles(ResourceType type) {
 		if (type == ResourceType.PROJECT) {
 			return 0;
 		}
-		Query query = getCurrentSession().createSQLQuery(
+		Query<Number> query = getCurrentSession().createNativeQuery(
 				String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE_WITH_FILES, type.name()));
-		return (Number) query.uniqueResult();
+		return query.getSingleResult();
 	}
 
 	public List<HomepageGeographicCache> getISOGeographicCounts() {
 		logger.info("executing country count from database");
 
 		List<HomepageGeographicCache> cache = new ArrayList<HomepageGeographicCache>();
-		Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.HOMEPAGE_GEOGRAPHIC);
+		Query query = getCurrentSession().createNativeQuery(TdarNamedQueries.HOMEPAGE_GEOGRAPHIC);
 		Map<String, Integer> totals = new HashMap<String, Integer>();
-		for (Object o : query.list()) {
+		for (Object o : query.getResultList()) {
 			try {
 				Object[] objs = (Object[]) o;
 				if ((objs == null) || (objs[0] == null)) {
@@ -214,7 +214,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		List<ResourceType> types = new ArrayList<ResourceType>(Arrays.asList(ResourceType.values()));
 		types.remove(ResourceType.CODING_SHEET);
 		types.remove(ResourceType.ONTOLOGY);
-		for (Object o : query.list()) {
+		for (Object o : query.getResultList()) {
 			try {
 				Object[] objs = (Object[]) o;
 				if ((objs == null) || (objs[0] == null)) {
@@ -240,24 +240,24 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public Long getResourceCount(ResourceType resourceType, Status status) {
-		Query query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS);
-		query.setString("resourceType", resourceType.toString());
-		query.setString("status", status.toString());
-		Long count = (Long) query.uniqueResult();
+		Query<Long> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS);
+		query.setParameter("resourceType", resourceType);
+		query.setParameter("status", status);
+		Long count = query.getSingleResult();
 		return count;
 	}
 
 	public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> types) {
 		// Query sqlQuery =
 		// getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DASHBOARD);
-		SQLQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
-		sqlQuery.setLong("submitterId", p.getId());
-		sqlQuery.setInteger("effectivePermissions", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
+		NativeQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
+		sqlQuery.setParameter("submitterId", p.getId());
+		sqlQuery.setParameter("effectivePermissions", GeneralPermissions.MODIFY_METADATA.getEffectivePermissions() - 1);
 		Set<Long> ids = new HashSet<Long>();
 		ResourceTypeStatusInfo info = new ResourceTypeStatusInfo();
-		for (Object obj_ : sqlQuery.list()) {
+		for (Object obj_ : sqlQuery.getResultList()) {
 			Object[] objs = (Object[]) obj_;
-			Long id_ = (Long) objs[0];
+			Long id_ = ((Number) objs[0]).longValue();
 			boolean newId = ids.add(id_);
 			if (!newId) {
 				continue;
@@ -317,26 +317,26 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end,
 			Long minCount) {
-		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
-		return query.list();
+		Query<AggregateViewStatistic> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
+		return query.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
-		Query query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
+		Query<AggregateViewStatistic> query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
 		query.setMaxResults(max.intValue());
-		return query.list();
+		return query.getResultList();
 	}
 
 	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getUsageStatsForResource(DateGranularity granularity, Date start, Date end,
 			Long minCount, List<Long> resourceIds) {
-		Query query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
+		Query<AggregateViewStatistic> query = getCurrentSession().getNamedQuery(RESOURCE_ACCESS_HISTORY);
 		query.setParameter("start", start);
 		query.setParameter("end", end);
 		query.setParameter("minCount", minCount);
-		query.setParameterList("resourceIds", resourceIds);
-		return query.list();
+		query.setParameter("resourceIds", resourceIds);
+		return query.getResultList();
 	}
 
 	public enum StatisticsQueryMode {
@@ -346,16 +346,16 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	@SuppressWarnings("unchecked")
 	public List<AggregateDownloadStatistic> getDownloadStatsForFile(DateGranularity granularity, Date start, Date end,
 			Long minCount, Long... irFileIds) {
-		Query query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
+		Query<AggregateDownloadStatistic> query = getCurrentSession().getNamedQuery(FILE_DOWNLOAD_HISTORY);
 		query.setParameter("start", start);
 		query.setParameter("end", end);
 		query.setParameter("minCount", minCount);
-		query.setParameterList("fileIds", Arrays.asList(irFileIds));
-		return query.list();
+		query.setParameter("fileIds", Arrays.asList(irFileIds));
+		return query.getResultList();
 	}
 
-	private Query setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
-		Query query = getCurrentSession().getNamedQuery(ACCESS_BY);
+	private <D> Query<D> setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
+		Query<D> query = getCurrentSession().getNamedQuery(ACCESS_BY);
 		switch (mode) {
 		case ACCESS_DAY:
 			break;
@@ -373,12 +373,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query;
 	}
 
-	@SuppressWarnings("unchecked")
-	public List<AggregateDownloadStatistic> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
+	public <D> List<D> getAggregateDownloadStats(DateGranularity granularity, Date start, Date end,
 			Long minCount) {
-		Query query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
+		Query<D> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.DOWNLOAD_DAY);
 		logger.trace("s:{} e: {} min:{}", start, end, minCount);
-		return query.list();
+		return query.getResultList();
 	}
 
 	public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
@@ -389,9 +388,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		}
 
 		Query query = getCurrentSession().getNamedQuery(SPACE_BY_COLLECTION);
-		query.setParameterList("collectionIds", collectionId);
-		query.setParameterList("statuses", statuses_);
-		List<?> list = query.list();
+		query.setParameter("collectionIds", collectionId);
+		query.setParameter("statuses", statuses_);
+		List<?> list = query.getResultList();
 		for (Object obj_ : list) {
 			Object[] obj = (Object[]) obj_;
 			return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
@@ -409,11 +408,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		}
 
 		Query query = getCurrentSession().getNamedQuery(SPACE_BY_SUBMITTER);
-		query.setParameterList("submitterIds", personId);
+		query.setParameter("submitterIds", personId);
 
-		query.setParameterList("statuses", statuses_);
-		// query.setParameterList("types", types_);
-		List<?> list = query.list();
+		query.setParameter("statuses", statuses_);
+		// query.setParameter("types", types_);
+		List<?> list = query.getResultList();
 		for (Object obj_ : list) {
 			Object[] obj = (Object[]) obj_;
 			return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
@@ -434,18 +433,18 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		Query query = null;
 		if (CollectionUtils.isNotEmpty(resourceId)) {
 			query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);
-			query.setParameterList("resourceIds", resourceId);
+			query.setParameter("resourceIds", resourceId);
 		}
 		if (CollectionUtils.isNotEmpty(projectId)) {
 			query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
-			query.setParameterList("projectIds", projectId);
+			query.setParameter("projectIds", projectId);
 		}
 		if (query == null) {
 			return null;
 		}
-		query.setParameterList("statuses", statuses_);
-		// query.setParameterList("types", types_);
-		List<?> list = query.list();
+		query.setParameter("statuses", statuses_);
+		// query.setParameter("types", types_);
+		List<?> list = query.getResultList();
 		for (Object obj_ : list) {
 			Object[] obj = (Object[]) obj_;
 			return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
@@ -461,11 +460,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		}
 
 		Query query = getCurrentSession().getNamedQuery(SPACE_BY_RESOURCE);
-		query.setParameterList("resourceIds", resourceId);
+		query.setParameter("resourceIds", resourceId);
 
-		query.setParameterList("statuses", statuses_);
-		// query.setParameterList("types", types_);
-		List<?> list = query.list();
+		query.setParameter("statuses", statuses_);
+		// query.setParameter("types", types_);
+		List<?> list = query.getResultList();
 		for (Object obj_ : list) {
 			Object[] obj = (Object[]) obj_;
 			return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
@@ -482,11 +481,11 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		}
 
 		Query query = getCurrentSession().getNamedQuery(SPACE_BY_PROJECT);
-		query.setParameterList("projectIds", Arrays.asList(resourceId));
+		query.setParameter("projectIds", Arrays.asList(resourceId));
 
-		query.setParameterList("statuses", statuses_);
-		// query.setParameterList("types", types_);
-		List<?> list = query.list();
+		query.setParameter("statuses", statuses_);
+		// query.setParameter("types", types_);
+		List<?> list = query.getResultList();
 		for (Object obj_ : list) {
 			Object[] obj = (Object[]) obj_;
 			return new ResourceSpaceUsageStatistic((Number) obj[0], (Number) obj[1], (Number) obj[2]);
@@ -495,7 +494,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	}
 
 	public ScrollableResults findAllActiveScrollableForSitemap() {
-		Query query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
+		Query<Resource> query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
 		return query.setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
 
 	}

@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.hibernate.Query;
+import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
@@ -17,6 +17,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao;
@@ -50,27 +51,25 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
         return findMappedCodingRules(column.getDefaultCodingSheet(), valuesToMatch);
     }
 
-    @SuppressWarnings("unchecked")
     @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH",
             justification = "ignoring null derefernece because findbugs is not paying attention to the null-check above")
     public List<CodingRule> findMappedCodingRules(CodingSheet sheet, List<String> valuesToMatch) {
         if (PersistableUtils.isNullOrTransient(sheet) || CollectionUtils.isEmpty(valuesToMatch)) {
             getLogger().debug("no mapped coding rules available for sheet {} and values {}", sheet, valuesToMatch);
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_MAPPED_CODING_RULES);
+        Query<CodingRule> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_MAPPED_CODING_RULES, CodingRule.class);
         query.setParameter("codingSheetId", sheet.getId());
-        query.setParameterList("valuesToMatch", valuesToMatch);
-        return query.list();
+        query.setParameter("valuesToMatch", valuesToMatch);
+        return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
     public List<DataTableColumn> findOntologyMappedColumns(Dataset dataset) {
         if (dataset == null) {
             return Collections.emptyList();
         }
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY);
-        query.setLong("datasetId", dataset.getId());
-        return query.list();
+        Query<DataTableColumn> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_DATATABLECOLUMN_WITH_DEFAULT_ONTOLOGY, DataTableColumn.class);
+        query.setParameter("datasetId", dataset.getId());
+        return query.getResultList();
     }
 
     public CodingSheet setupGeneratedCodingSheet(DataTableColumn column, Dataset dataset, TdarUser user, TextProvider provider, Ontology ontology) {
@@ -100,7 +99,7 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
             }
         }
         String msg = String.format("genearting coding sheet from datatable column %s (%s) datasetId: %s", column, column.getId(), dataset.getId());
-        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, codingSheet, user);
+        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, codingSheet, user, RevisionLogType.CREATE);
         codingSheet.getResourceRevisionLog().add(rrl);
         saveOrUpdate(codingSheet);
         saveOrUpdate(rrl);

@@ -4,9 +4,15 @@
 <title>Admin Pages - emails </title>
 <@admin.header />
 
-<@s.form name="emailReviewForm" action="changeEmailStatus" >
+<@s.form name="emailReviewForm" action="changeEmailStatus" cssClass="form-inline">
+<div class="row">
+<div class="span2">
 <@s.select name="emailAction" list=emailActions listValue=name label="Change Status To"/>
+</div>
+<div class="span2">
 <@s.submit name="submit" />
+</div>
+</div>
 
 <h3>Emails to be Reviewed</h3>
 
@@ -51,6 +57,7 @@
     <th>Date</th>
     <th>Status</th>
     <th>Subject</th>
+    <th></th>
 </tr>
 </thead>
 <#list emails as email>

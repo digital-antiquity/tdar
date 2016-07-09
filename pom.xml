@@ -33,8 +33,8 @@
 
 
     <properties>
-        <hibernate.version>5.1.0.Final</hibernate.version>
-        <spring.framework.version>4.2.6.RELEASE</spring.framework.version>
+        <hibernate.version>5.2.1.Final</hibernate.version>
+        <spring.framework.version>4.3.0.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4.1208.jre7</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <liquibase.version>3.5.0</liquibase.version>
@@ -47,10 +47,13 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <slf4j.version>1.7.21</slf4j.version>
         <skipTestLiquibase>true</skipTestLiquibase>
+        <exec-maven-version>1.4.0</exec-maven-version>
         <skipUpgradeLiquibase>true</skipUpgradeLiquibase>
         <skipMavenMercurialSetup>false</skipMavenMercurialSetup>
         <indexDir>${basedir}/target</indexDir>
         <asm.version>5.1</asm.version>
+        <maven-jar-version>2.6</maven-jar-version>
+        <maven-eclipse-version>2.10</maven-eclipse-version>
         
         <clover.licenseDir>/home/bamboo</clover.licenseDir>
         <!-- Following points to the profile directory to use for filtering 
@@ -72,6 +75,7 @@
         <url>http://www.tdar.org</url>
     </organization>
     <repositories>
+    <!-- http://snapshots.jboss.org -->
         <repository>
             <id>internal</id>
             <name>Archiva Managed Internal Repository</name>
@@ -338,6 +342,13 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
             <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+        <dependency>
+            <!-- needed by spring for @Transactional calls -->
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.2.2</version>
+            <!-- LICENSE: APACHE 1.1 -->
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
