@@ -26,16 +26,14 @@
                 <tdar:resourceId>4232</tdar:resourceId>
             </tdar:resources>
             <tdar:sortBy>TITLE</tdar:sortBy>
-            <tdar:type>SHARED</tdar:type>
         </tdar:sharedCollection>
-        <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF">
+        <tdar:sharedCollection hidden="true"  parentIdRef="NULL_REF">
             <tdar:description>description</tdar:description>
             <tdar:formattedDescription></tdar:formattedDescription>
             <tdar:name>abcd</tdar:name>
             <tdar:orientation>LIST</tdar:orientation>
             <tdar:sortBy>TITLE</tdar:sortBy>
-            <tdar:type>SHARED</tdar:type>
-        </tdar:resourceCollection>
+        </tdar:sharedCollection>
     </tdar:resourceCollections>
     <tdar:resourceCreators/>
     <tdar:resourceNotes/>

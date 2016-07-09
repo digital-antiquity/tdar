@@ -68,7 +68,8 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 			}
 
 			if (name.contains("featured")) {
-				assertTrue("page contains featured resource", getPageCode().contains("2008 New Philadelphia Archaeology"));
+			    logger.debug(getPageBodyCode());
+				assertTrue("page should contain featured resource", getPageCode().contains("2008 New Philadelphia Archaeology"));
 			}
 			
 			if (name.contains("subCollections")) {
