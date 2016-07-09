@@ -63,4 +63,9 @@
         update  resource_revision_log set revision_type='EDIT' where log_message ilike '%genearting%';
     </sql>
     </changeSet>
+    <changeSet id="obsidian-7" author="abrin">
+        <addColumn tableName="keyword_mapping">
+            <column name="label" type="varchar(255)" />
+        </addColumn>
+    </changeSet>    
 </databaseChangeLog>

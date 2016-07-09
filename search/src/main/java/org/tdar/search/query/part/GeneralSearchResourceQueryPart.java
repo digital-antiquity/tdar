@@ -43,7 +43,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
     @Override
     protected QueryPartGroup getQueryPart(String value) {
         boolean siteCodeSearch = false;
-        if (SiteCodeExtractor.matches(value)) {
+        if (StringUtils.isNotBlank(value) && SiteCodeExtractor.matches(value.toUpperCase())) {
             siteCodeSearch = true;
             setUseProximity(false);
         }
@@ -72,7 +72,7 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
         // we use the original value because we'd be esacping things we don't want to otherwise
         if (siteCodeSearch) {
-            FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString);
+            FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString.toUpperCase());
             queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
         }
         queryPart.append(new ContentQueryPart(cleanedQueryString));

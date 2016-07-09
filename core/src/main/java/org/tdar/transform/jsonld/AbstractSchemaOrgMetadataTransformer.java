@@ -12,6 +12,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.RelationType;
+import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Document;
@@ -62,6 +64,48 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
 
     }
 
+    protected void addGraphSectionSpatial(Set<LatitudeLongitudeBox> llbs) {
+        List<Map<String,Object>> all = new ArrayList<>();
+        llbs.forEach(llb -> {
+        Map<String,Object> js = new HashMap<>();
+            js.put("tdar:id", llb.getId());
+            js.put("schema:longitude", llb.getObfuscatedCenterLongitude());
+            js.put("schema:latitude", llb.getObfuscatedCenterLatitude());
+            js.put("tdar:note", "possibly obfuscated");
+            js.put("tdar:north", llb.getObfuscatedNorth());
+            js.put("tdar:south", llb.getObfuscatedSouth());
+            js.put("tdar:east", llb.getObfuscatedEast());
+            js.put("tdar:west", llb.getObfuscatedWest());
+            js.put(TYPE, "GeoCoordinates");
+        });
+        appendIfNotEmpty("tdar:spatial", all);
+
+    }
+
+    private void appendIfNotEmpty(String nodeName, List<Map<String, Object>> all) {
+        if (all.size() > 0) {
+            Map<String,Object> obj = new HashMap<>();
+            obj.put(nodeName, all);
+            getGraph().add(obj);
+        }
+    }
+
+    
+    protected void addGraphSectionTemporal(Set<CoverageDate> coverages) {
+        List<Map<String,Object>> all = new ArrayList<>();
+        coverages.forEach(coverage -> {
+            Map<String,Object> js = new HashMap<>();
+            js.put("tdar:id", coverage.getId());
+            js.put("tdar:start", coverage.getStartDate());
+            js.put("tdar:end", coverage.getEndDate());
+            js.put("tdar:description", coverage.getDescription());
+            js.put("tdar:type", coverage.getDateType().name());
+            all.add(js);
+        });
+        appendIfNotEmpty("tdar:temporal", all);
+
+    }
+
     /*
      * a JSON LD object can have multiple "graphs" each graph with a unique name.  This section is for a set of similar keywords
      */
@@ -86,11 +130,7 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
             
             all.add(js);
         });
-        if (all.size() > 0) {
-            Map<String,Object> obj = new HashMap<>();
-            obj.put(nodeName, all);
-            getGraph().add(obj);
-        }
+        appendIfNotEmpty(nodeName, all);
         
     }
 

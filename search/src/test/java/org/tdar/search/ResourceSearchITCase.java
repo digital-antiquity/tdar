@@ -155,6 +155,26 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
             assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
         }
     }
+    
+    
+
+    
+    @Test
+    @Rollback
+    public void testSiteCode() throws SolrServerException, IOException, ParseException {
+        SiteNameKeyword snk = new SiteNameKeyword("38-AK-500");
+        genericService.saveOrUpdate(snk);
+        Document doc = createAndSaveNewResource(Document.class);
+        doc.getSiteNameKeywords().add(snk);
+        genericService.saveOrUpdate(doc);
+        SearchParameters sp = new SearchParameters();
+        sp.getAllFields().add("38ak500");
+        SearchResult<Resource> result = doSearch(null,null,sp,null);
+        assertFalse("we should get back at least one hit", result.getResults().isEmpty());
+        for (Indexable resource : result.getResults()) {
+            assertTrue("expecting site name for resource", ((Resource)resource).getSiteNameKeywords().contains(snk));
+        }
+    }
 
 
     @Test
