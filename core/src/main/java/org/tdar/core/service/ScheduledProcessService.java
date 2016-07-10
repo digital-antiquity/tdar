@@ -128,7 +128,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     @Scheduled(cron = "0 15 0 * * *")
     public void cronDailyStats() {
         logger.info("updating Daily stats");
-        queue(OccurranceStatisticsUpdateProcess.class);
+//        queue(OccurranceStatisticsUpdateProcess.class);
         queue(DailyStatisticsUpdate.class);
     }
 
