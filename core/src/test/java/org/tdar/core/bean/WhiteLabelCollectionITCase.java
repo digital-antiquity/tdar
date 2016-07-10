@@ -36,6 +36,10 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testSave() {
+        setup();
+    }
+
+    private Long setup() {
         SharedCollection rc = new SharedCollection();
         rc.setProperties(new CollectionDisplayProperties());
         rc.getProperties().setWhitelabel(true);
@@ -53,6 +57,7 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         assertThat(rc.getId(), not(nullValue()));
         assertThat(rc.getId(), not(-1L));
         logger.debug("collection: {}", rc);
+        return rc.getId();
     }
 
     /**
@@ -61,13 +66,15 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testLoad() {
-        testSave();
+        Long id = setup();
 
         List<SharedCollection> rcs = new ArrayList<>();
         // if configured correctly, hibernate should know to construct sql that includes both ResourceCollection & WhiteLabelCollection objects.
         for (SharedCollection rc : genericService.findAll(SharedCollection.class)) {
             if (rc != null && rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
-                rcs.add(rc);
+                if (id.equals(rc.getId())) {
+                    rcs.add(rc);
+                }
             }
         }
 
