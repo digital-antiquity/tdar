@@ -1,6 +1,6 @@
 package org.tdar.search.collection;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 
@@ -12,7 +12,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Dataset;
@@ -39,7 +39,7 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
         CultureKeyword hittite = new CultureKeyword("hittite");
         ds.getActiveCultureKeywords().add(hittite);
         genericService.saveOrUpdate(ds.getActiveCultureKeywords());
-        ResourceCollection rc = createAndSaveNewResourceCollection("turkey");
+        SharedCollection rc = createAndSaveNewResourceCollection("turkey");
         rc.setHidden(false);
         rc.getResources().add(ds);
         ds.getResourceCollections().add(rc);
