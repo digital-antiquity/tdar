@@ -21,7 +21,19 @@ public enum Language implements HasLabel, Localizable {
     MULTIPLE("Multiple", "-", "mul"),
     CHINESE("Chinese", "cn", "zho"),
     CHEROKEE("Cherokee", "", "chr"),
-    TURKISH("Turkish", "tr", "tur");
+    TURKISH("Turkish", "tr", "tur"),
+    CATALONIAN("Catalonian","ca","cat"),
+    CZECH("Czech","cs","cze"),
+    DANISH("Danish","da","dan"),
+    FINNISH("Finnish","fi","fin"),
+    GREEK("Greek","el","gre"),
+    ITALIAN("Italian","it","ita"),
+    JAPANESE("Japanese","ja","jpn"),
+    LATVIAN("Latvian","lv","lav"),
+    NORWEGIAN("Norwegian","no","nor"),
+    POLISH("Polish","pl","pol"),
+    SLOWAK("Slovak","sk","slo"),
+    SWEDISH("Swedish","sv","swe");
 
     private final String label;
     private final String code;
