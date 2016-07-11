@@ -24,4 +24,9 @@
         <dropForeignKeyConstraint baseTableName="whitelabel_featured_resource" constraintName="whitelabel_featured_resource_collection_id_collection_fk"/>
         <addForeignKeyConstraint constraintName="whitelabel_featured_resource_collection_id_collection_fk" referencedTableName="collection_display_properties" baseColumnNames="collection_id" baseTableName="whitelabel_featured_resource" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="prehistoric-collections-3" author="abrin">
+        <renameColumn tableName="whitelabel_featured_resource" oldColumnName="collection_id" newColumnName="properties_id" />
+        <!-- <sql>update whitelabel_featured_resource wlf set properties_id=c.properties_id from collection c, whitelabel_featured_resource w where wlf.collection_id=c.id and wlf.collection_id=w.collection_id</sql> -->
+    </changeSet>
+    <!--  FIXME: migration script -->
 </databaseChangeLog>

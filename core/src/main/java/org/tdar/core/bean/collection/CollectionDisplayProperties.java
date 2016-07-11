@@ -56,7 +56,7 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     private String subtitle;
 
     @ManyToMany
-    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") },
+    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "properties_id") },
             inverseJoinColumns = { @JoinColumn(
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
