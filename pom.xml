@@ -53,6 +53,7 @@
         <indexDir>${basedir}/target</indexDir>
         <asm.version>5.1</asm.version>
         <maven-jar-version>2.6</maven-jar-version>
+        <maven-war-version>2.6</maven-war-version>
         <maven-eclipse-version>2.10</maven-eclipse-version>
         
         <clover.licenseDir>/home/bamboo</clover.licenseDir>
