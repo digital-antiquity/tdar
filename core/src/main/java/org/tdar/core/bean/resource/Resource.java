@@ -1672,6 +1672,7 @@ public class Resource implements Persistable,
     }
 
     @Override
+    @XmlTransient
     public Boolean getObfuscatedObjectDifferent() {
         return obfuscatedObjectDifferent;
     }
