@@ -366,6 +366,10 @@ public class AuthenticationService {
             personDao.save(institution);
         }
         person.setInstitution(institution);
+        logger.debug("{} : {}", "      username", person.getUsername());
+        logger.debug("{} : {}", "   affiliation", reg.getAffiliation());
+        logger.debug("{} : {}", "contrib access", reg.isRequestingContributorAccess());
+        logger.debug("{} : {}", "contrib reason", reg.getContributorReason());
         person.setAffiliation(reg.getAffiliation());
         person.setContributorReason(reg.getContributorReason());
         AuthenticationResult addResult = getAuthenticationProvider().addUser(person, reg.getPassword());
