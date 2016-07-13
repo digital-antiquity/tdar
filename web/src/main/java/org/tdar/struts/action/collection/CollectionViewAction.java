@@ -230,7 +230,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
     }
 
     public boolean isWhiteLabelCollection() {
-        return getPersistable().isWhiteLabelCollection();
+        if (getPersistable().getProperties() == null) {
+            return false;
+        }
+        return getPersistable().getProperties().isWhitelabel();
     }
 
 
@@ -498,7 +501,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
      * @return
      */
     public boolean isSearchHeaderEnabled() {
-        return getResourceCollection().isSearchEnabled();
+        if (getResourceCollection().getProperties() == null) {
+            return false;
+        }
+        return getResourceCollection().getProperties().isSearchEnabled();
     }
 
     /**

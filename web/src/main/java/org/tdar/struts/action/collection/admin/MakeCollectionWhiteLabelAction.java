@@ -34,7 +34,7 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
             @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
-        if (getCollection().isWhiteLabelCollection()) {
+        if (getCollection().getProperties() != null && getCollection().getProperties().isWhitelabel()) {
             return SUCCESS;
         }
         try {

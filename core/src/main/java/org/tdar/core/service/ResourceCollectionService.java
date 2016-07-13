@@ -916,7 +916,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
-        if (rc.isWhiteLabelCollection()) {
+        if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
             return rc;
         }
         return getDao().convertToWhitelabelCollection(rc);
