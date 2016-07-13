@@ -591,10 +591,10 @@ public class ImportService {
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-            if (collection instanceof SharedCollection) {
+            if (collection instanceof RightsBasedResourceCollection) {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getResourceCollections()),
                         authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (RightsBasedResourceCollection)collection, RightsBasedResourceCollection.class);
             }
             if (collection instanceof ListCollection) {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),

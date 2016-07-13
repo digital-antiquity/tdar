@@ -410,7 +410,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
 
         for (C collection : helper.getToAdd()) {
-            logger.debug("adding: {}" , helper.getToAdd());
+            logger.debug("adding: {} " , collection);
             addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection, cls);
         }
         logger.debug("after save: {} ({})", current, current.size());
@@ -429,8 +429,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional(readOnly = false)
     public <C extends ResourceCollection> void addResourceCollectionToResource(Resource resource, Set<? extends ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
-            ErrorHandling errorHandling,
-            C collection, Class<C> cls) {
+            ErrorHandling errorHandling, C collection, Class<C> cls) {
         C collectionToAdd = null;
         logger.trace("{}", collection);
         if (collection instanceof InternalCollection) {
@@ -441,7 +440,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             } else {
                 collectionToAdd = getDao().find(cls, collection.getId());
             }
-            
         }
         logger.trace("{}, {}", collectionToAdd, collectionToAdd.isValid());
 
@@ -476,11 +474,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     private <C extends ResourceCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
-        C collectionToAdd = null;
         boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
         C potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection, cls);
         if (potential != null) {
-            collectionToAdd = potential;
+            return potential;
         } else {
             collection.setOwner(authenticatedUser);
             collection.markUpdated(resource.getSubmitter());
@@ -489,8 +486,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
             collection.setHidden(false);
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
+            return collection;
         }
-        return collectionToAdd;
     }
 
     /**
