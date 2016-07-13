@@ -32,6 +32,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.collection.InternalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -590,9 +591,16 @@ public class ImportService {
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-            resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getResourceCollections(),
-                    authenticatedUser, true,
-                    ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
+            if (collection instanceof SharedCollection) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getResourceCollections()),
+                        authenticatedUser, true,
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
+            }
+            if (collection instanceof ListCollection) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
+                        authenticatedUser, true,
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (ListCollection)collection, ListCollection.class);
+            }
             toReturn = null;
         }
 

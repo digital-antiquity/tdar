@@ -13,12 +13,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -30,14 +32,14 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.utils.PersistableUtils;
 
+import com.sun.mail.imap.Rights.Right;
+
 public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     ResourceCollectionDao resourceCollectionDao;
 
-
     private static final String TEST_TITLE = "Brookville Reservoir Survey 1991-1992";
-
 
     @Test
     @Rollback(true)
@@ -64,7 +66,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     }
 
-    
     @Test
     @Rollback
     public void testMakeActive() throws Exception {
@@ -72,7 +73,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection.markUpdated(getAdminUser());
         boolean seen = false;
         genericService.saveOrUpdate(collection);
-        for (Resource r  : genericService.findRandom(Resource.class, 20)) {
+        for (Resource r : genericService.findRandom(Resource.class, 20)) {
             r.setStatus(Status.ACTIVE);
             if (seen == false) {
                 r.setStatus(Status.DRAFT);
@@ -86,11 +87,10 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection = genericService.find(SharedCollection.class, collectionId);
         resourceCollectionService.makeResourcesInCollectionActive(collection, getAdminUser());
         for (Resource r : collection.getResources()) {
-            assertEquals(Status.ACTIVE,r.getStatus());
+            assertEquals(Status.ACTIVE, r.getStatus());
         }
     }
 
-    
     /**
      * Make sure that case in-sensitive queries return the same thing
      */
@@ -98,16 +98,16 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testUniqueFind() {
-        ResourceCollection test = new SharedCollection();
+        SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
         test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
 
-        ResourceCollection c1 = new SharedCollection();
+        SharedCollection c1 = new SharedCollection();
         c1.setName(" TEST ");
         boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, getAdminUser());
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1);
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1, SharedCollection.class);
         assertEquals(withName, test);
     }
 
@@ -134,15 +134,15 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS);
+        resourceCollectionService.saveResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         logger.debug("collections: {}", image.getResourceCollections());
 
         List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
         image.getResourceCollections().clear();
-        resourceCollectionService.saveSharedResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
-                ErrorHandling.VALIDATE_SKIP_ERRORS);
+        resourceCollectionService.saveResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
+                ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         logger.debug("collections: {}", image.getResourceCollections());
         extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         logger.debug("{} -> {}", test.getId(), extractIds);
@@ -160,12 +160,12 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
 
-        ResourceCollection c1 = new SharedCollection();
+        SharedCollection c1 = new SharedCollection();
         c1.setName(" TEST ");
-        ResourceCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1);
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1, SharedCollection.class);
         assertEquals(withName, test);
 
-        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1);
+        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1, SharedCollection.class);
         assertNotEquals(withName, test);
     }
 
@@ -175,7 +175,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection resourceCollection = createAndSaveNewResourceCollection("normal collection");
         SharedCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
 
-        assertThat(whitelabelCollection, is( not( nullValue())));
+        assertThat(whitelabelCollection, is(not(nullValue())));
         assertThat(resourceCollection.getId(), is(whitelabelCollection.getId()));
         assertThat(resourceCollection.getTitle(), is(whitelabelCollection.getTitle()));
     }
@@ -191,14 +191,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         props.setWhitelabel(true);
         genericService.saveOrUpdate(c);
     }
-    
+
     @Test
     @Rollback
     public void testConvertToResourceCollection() {
         SharedCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
         ResourceCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
 
-        assertThat(rc, is( not( nullValue())));
+        assertThat(rc, is(not(nullValue())));
         assertThat(rc, hasProperty("title", is("fancy collection")));
     }
 

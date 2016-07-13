@@ -6,36 +6,28 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.utils.PersistableUtils;
 
+public class ResourceCollectionSaveHelper<C extends ResourceCollection> {
 
-public class ResourceCollectionSaveHelper {
+    private Set<C> toDelete = new HashSet<>();
+    private Set<C> toAdd = new HashSet<>();
 
-    private Set<ResourceCollection> toDelete = new HashSet<>();
-    private Set<ResourceCollection> toAdd = new HashSet<>();
-    
-    public ResourceCollectionSaveHelper(Collection<? extends ResourceCollection> incoming,Collection<? extends ResourceCollection> existing_, CollectionType type) {
-        
-        Set<ResourceCollection> existing = new HashSet<>(existing_);
-        if (type != null) {
-            Iterator<ResourceCollection> iterator = existing.iterator();
-            while (iterator.hasNext()) {
-                ResourceCollection c = iterator.next();
-                if (type == CollectionType.SHARED && !(c instanceof SharedCollection)) {
-                    iterator.remove();
-                }
-                if (type == CollectionType.INTERNAL && !(c instanceof InternalCollection)) {
-                    iterator.remove();
-                }
+    @SuppressWarnings("unchecked")
+    public ResourceCollectionSaveHelper(Collection<C> incoming, Collection<? extends ResourceCollection> existing_, Class<C> cls) {
+
+        Set<C> existing = new HashSet<>();
+        Iterator<? extends ResourceCollection> iterator = existing_.iterator();
+        while (iterator.hasNext()) {
+            ResourceCollection c = iterator.next();
+            if (c.getClass().isAssignableFrom(cls)) {
+                existing.add((C)c);
             }
         }
-        
-        Map<Long, ResourceCollection> idMap = PersistableUtils.createIdMap(existing);
-        for (ResourceCollection in : incoming) {
+
+        Map<Long, C> idMap = PersistableUtils.createIdMap(existing);
+        for (C in : incoming) {
             if (in == null) {
                 continue;
             }
@@ -51,19 +43,19 @@ public class ResourceCollectionSaveHelper {
         }
     }
 
-    public Set<ResourceCollection> getToAdd() {
+    public Set<C> getToAdd() {
         return toAdd;
     }
 
-    public void setToAdd(Set<ResourceCollection> toAdd) {
+    public void setToAdd(Set<C> toAdd) {
         this.toAdd = toAdd;
     }
 
-    public Set<ResourceCollection> getToDelete() {
+    public Set<C> getToDelete() {
         return toDelete;
     }
 
-    public void setToDelete(Set<ResourceCollection> toDelete) {
+    public void setToDelete(Set<C> toDelete) {
         this.toDelete = toDelete;
     }
 }

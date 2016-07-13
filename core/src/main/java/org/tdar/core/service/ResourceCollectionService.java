@@ -389,34 +389,29 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return potentialCollections;
     }
 
-    /**
-     * Save the shared @link ResourceCollection entries for a @link Resource (add/remove as needed)
-     * 
-     * @param resource
-     * @param incoming
-     * @param current
-     * @param authenticatedUser
-     * @param shouldSave
-     * @param errorHandling
-     */
-    @Transactional
-    public void saveSharedResourceCollections(Resource resource, Collection<SharedCollection> incoming, Set<RightsBasedResourceCollection> current,
-            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling) {
+    @Transactional(readOnly = false)
+    public <C extends ResourceCollection> void saveResourceCollections(Resource resource, Collection<C> incoming, Set<? extends ResourceCollection> current,
+            TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, Class<C> cls) {
 
-        logger.debug("incoming ResourceCollections: {} ({})", incoming, incoming.size());
-        logger.debug("current ResourceCollections: {} ({})", current, current.size());
+        logger.debug("incoming {}: {} ({})", cls.getSimpleName(), incoming, incoming.size());
+        logger.debug(" current {}: {} ({})", cls.getSimpleName(), current, current.size());
 
-        ResourceCollectionSaveHelper helper = new ResourceCollectionSaveHelper(incoming, current, CollectionType.SHARED);
+        ResourceCollectionSaveHelper<C> helper = new ResourceCollectionSaveHelper<C>(incoming, current, cls);
         logger.info("collections to remove: {}", helper.getToDelete());
-        for (ResourceCollection collection : helper.getToDelete()) {
+        for (C collection : helper.getToDelete()) {
             current.remove(collection);
-            ((RightsBasedResourceCollection) collection).getResources().remove(resource);
-            resource.getResourceCollections().remove(collection);
+            if (collection instanceof RightsBasedResourceCollection) {
+                ((RightsBasedResourceCollection) collection).getResources().remove(resource);
+                resource.getResourceCollections().remove(collection);
+            } else {
+                ((ListCollection) collection).getUnmanagedResources().remove(resource);
+                resource.getUnmanagedResourceCollections().remove((ListCollection) collection);
+            }
         }
 
-        for (ResourceCollection collection : helper.getToAdd()) {
+        for (C collection : helper.getToAdd()) {
             logger.debug("adding: {}" , helper.getToAdd());
-            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection);
+            addResourceCollectionToResource(resource, current, authenticatedUser, shouldSave, errorHandling, collection, cls);
         }
         logger.debug("after save: {} ({})", current, current.size());
 
@@ -433,19 +428,20 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collection
      */
     @Transactional(readOnly = false)
-    public void addResourceCollectionToResource(Resource resource, Set<? extends ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
+    public <C extends ResourceCollection> void addResourceCollectionToResource(Resource resource, Set<? extends ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
             ErrorHandling errorHandling,
-            ResourceCollection collection) {
-        RightsBasedResourceCollection collectionToAdd = null;
+            C collection, Class<C> cls) {
+        C collectionToAdd = null;
         logger.trace("{}", collection);
-        if (collection instanceof SharedCollection) {
+        if (collection instanceof InternalCollection) {
+            collectionToAdd = collection;
+        } else  {
             if (collection.isTransient()) {
-                collectionToAdd = findOrCreateSharedCollection(resource, authenticatedUser, collection);
+                collectionToAdd = findOrCreateCollection(resource, authenticatedUser, collection, cls);
             } else {
-                collectionToAdd = (RightsBasedResourceCollection) find(collection.getId());
+                collectionToAdd = getDao().find(cls, collection.getId());
             }
-        } else if (collection instanceof InternalCollection) {
-            collectionToAdd = (InternalCollection) collection;
+            
         }
         logger.trace("{}, {}", collectionToAdd, collectionToAdd.isValid());
 
@@ -461,8 +457,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
 
             // jtd the following line changes collectionToAdd's hashcode. all sets it belongs to are now corrupt.
-            collectionToAdd.getResources().add(resource);
-            resource.getResourceCollections().add(collectionToAdd);
+            if (collectionToAdd instanceof RightsBasedResourceCollection) {
+                ((RightsBasedResourceCollection) collectionToAdd).getResources().add(resource);
+                resource.getResourceCollections().add((RightsBasedResourceCollection) collectionToAdd);
+            } else {
+                ((ListCollection) collectionToAdd).getUnmanagedResources().add(resource);
+                resource.getUnmanagedResourceCollections().add((ListCollection) collectionToAdd);
+            }
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
                 String collectionName = "null collection";
@@ -474,10 +475,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
-    private RightsBasedResourceCollection findOrCreateSharedCollection(Resource resource, TdarUser authenticatedUser, ResourceCollection collection) {
-        RightsBasedResourceCollection collectionToAdd;
+    private <C extends ResourceCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
+        C collectionToAdd = null;
         boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
-        RightsBasedResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection);
+        C potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection, cls);
         if (potential != null) {
             collectionToAdd = potential;
         } else {
@@ -487,7 +488,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
             }
             collection.setHidden(false);
-            collectionToAdd = (SharedCollection) collection;
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
         }
         return collectionToAdd;
@@ -547,7 +547,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return a list containing the provided 'parent' collection and any descendant collections (if any).
      */
     @Transactional(readOnly = true)
-    public <E> List<E> findAllChildCollectionsOnly(SharedCollection collection, Class<E> cls) {
+    public <E extends ResourceCollection&HierarchicalCollection<?>> List<E> findAllChildCollectionsOnly(E collection, Class<E> cls) {
         return getDao().findAllChildCollectionsOnly(collection, cls);
     }
 
@@ -563,8 +563,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public Set<ResourceCollection> findFlattenedCollections(Person user, GeneralPermissions generalPermissions) {
-        return getDao().findFlattendCollections(user, generalPermissions);
+    public <C extends ResourceCollection&HierarchicalCollection<?>> Set<C> findFlattenedCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
+        return getDao().findFlattendCollections(user, generalPermissions, cls);
     }
 
     /**

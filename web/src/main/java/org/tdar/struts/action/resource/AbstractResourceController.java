@@ -561,8 +561,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveSharedResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
-                    getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS);
+            resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
+                    getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }

@@ -8,6 +8,7 @@ package org.tdar.core.dao.resource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -15,10 +16,9 @@ import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.Criteria;
-import org.hibernate.query.Query;
-import org.hibernate.query.NativeQuery;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +26,10 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.InternalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -99,12 +101,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findAll(SharedCollection.class);
     }
 
-    @SuppressWarnings("unchecked")
-    public SharedCollection findCollectionWithName(TdarUser user, boolean isAdmin, ResourceCollection collection) {
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, SharedCollection.class);
-        query.setString("name", collection.getName());
-        List<SharedCollection> list = query.list();
-        for  (SharedCollection coll : list) {
+    public <C extends ResourceCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, C collection, Class<C> cls) {
+        Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, cls);
+        query.setParameter("name", collection.getName());
+        List<C> list = query.getResultList();
+        for  (C coll : list) {
         	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
         		return coll;
         	}
@@ -112,11 +113,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return null;
     }
 
-    @SuppressWarnings("unchecked")
     public List<SharedCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
         Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME ,SharedCollection.class);
-        query.setString("name", name);
-        List<SharedCollection> list = new ArrayList<>(query.list());
+        query.setParameter("name", name);
+        List<SharedCollection> list = new ArrayList<>(query.getResultList());
         list.removeIf( rc -> (
             !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP)   
         ));
@@ -136,33 +136,37 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.getResultList();
     }
 
-    @SuppressWarnings("unchecked")
-    public List<SharedCollection> findInheritedCollections(Person user, GeneralPermissions generalPermissions) {
+    public <C extends ResourceCollection> List<C> findInheritedCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
         if (PersistableUtils.isTransient(user)) {
             return Collections.EMPTY_LIST;
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER, SharedCollection.class);
+        Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER, cls);
         query.setParameter("effectivePermission", permission);
         query.setParameter("userId", user.getId());
         return query.getResultList();
     }
 
-    public Set<ResourceCollection> findFlattendCollections(Person user, GeneralPermissions generalPermissions) {
-        Set<ResourceCollection> allCollections = new HashSet<>();
+    public <C extends ResourceCollection> Set<C> findFlattendCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
+        Set<C> allCollections = new HashSet<>();
 
         // get all collections that grant explicit edit permissions to person
-        List<SharedCollection> collections = findInheritedCollections(user, generalPermissions);
+        List<C> collections = findInheritedCollections(user, generalPermissions, cls);
 
-        for (SharedCollection rc : collections) {
-            allCollections.addAll(findAllChildCollectionsOnly(rc, SharedCollection.class));
+        for (C rc : collections) {
+            if (rc instanceof SharedCollection) {
+                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((SharedCollection)rc, SharedCollection.class));
+            }
+            if (rc instanceof ListCollection) {
+                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((ListCollection)rc, ListCollection.class));
+            }
             allCollections.add(rc);
         }
 
         return allCollections;
     }
 
-    public <E> List<E> findAllChildCollectionsOnly(SharedCollection collection, Class<E> cls) {
+    public <E extends ResourceCollection&HierarchicalCollection<?>> List<E> findAllChildCollectionsOnly(E collection, Class<E> cls) {
         List<E> allChildren = getAllChildCollections(collection, cls);
         return allChildren;
     }
@@ -185,7 +189,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    public <E> List<E> getAllChildCollections(ResourceCollection persistable, Class<E> cls) {
+    public <E extends ResourceCollection&HierarchicalCollection<?>> List<E> getAllChildCollections(E persistable, Class<E> cls) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
