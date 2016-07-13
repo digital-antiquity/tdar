@@ -108,7 +108,9 @@ public class APIController extends AbstractAuthenticatableAction {
     @PostOnly
     // @WriteableSession
     public String upload() {
-
+        List<String> stackTraces = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
+        String message = "";
         if (StringUtils.isEmpty(getRecord())) {
             getLogger().info("no record defined");
             errorResponse(StatusCode.BAD_REQUEST, null, null, null);
@@ -118,6 +120,7 @@ public class APIController extends AbstractAuthenticatableAction {
         try {
             Resource incoming = (Resource) serializationService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
+
             xmlResultObject.setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             List<FileProxy> fileProxies = new ArrayList<FileProxy>();
@@ -172,14 +175,12 @@ public class APIController extends AbstractAuthenticatableAction {
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
-                List<String> errors = new ArrayList<>(events);
+                errors = new ArrayList<>(events);
 
                 errorResponse(StatusCode.BAD_REQUEST, errors, message, null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
-            List<String> stackTraces = new ArrayList<>();
-            List<String> errors = new ArrayList<>();
             Throwable cause = ExceptionUtils.getRootCause(e);
             if (cause == null) {
             	cause = e;
@@ -194,7 +195,7 @@ public class APIController extends AbstractAuthenticatableAction {
                 return ERROR;
             }
         }
-        errorResponse(StatusCode.UNKNOWN_ERROR, null, null, null);
+        errorResponse(StatusCode.UNKNOWN_ERROR, errors, message, stackTraces);
         return ERROR;
 
     }
