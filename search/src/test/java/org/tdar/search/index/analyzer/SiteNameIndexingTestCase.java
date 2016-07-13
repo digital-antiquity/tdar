@@ -39,6 +39,14 @@ public class SiteNameIndexingTestCase {
         assertMatches(compile, "AZ U:9:1 (ASM)");
     }
 
+    
+    @Test
+    public void testExtractor() {
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("38-AK-500");
+        logger.debug("{}", extractSiteCodeTokens);
+        assertTrue("should have one site code", extractSiteCodeTokens.size() == 1);
+    }
+    
     @Test
     public void testReader() throws IOException {
         String reader = " CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462";
