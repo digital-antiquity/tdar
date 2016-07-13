@@ -167,7 +167,7 @@ public class APIController extends AbstractAuthenticatableAction {
             }
 
             return SUCCESS;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             message = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
@@ -276,7 +276,7 @@ public class APIController extends AbstractAuthenticatableAction {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
             return SUCCESS;
-        } catch (Exception e) {
+        } catch (Throwable e) {
             message = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
