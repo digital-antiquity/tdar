@@ -89,16 +89,16 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
         this.properties = properties;
     }
 
-    public boolean isWhiteLabelCollection() {
-        return properties != null && properties.isWhitelabel();
-    }
+//    public boolean isWhiteLabelCollection() {
+//        return properties != null && properties.isWhitelabel();
+//    }
 
-    public boolean isSearchEnabled() {
-        if (properties == null) {
-            return false;
-        }
-        return properties.isSearchEnabled();
-    }
+//    public boolean isSearchEnabled() {
+//        if (properties == null) {
+//            return false;
+//        }
+//        return properties.isSearchEnabled();
+//    }
 
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
@@ -136,23 +136,6 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
         this.transientChildren = transientChildren;
     }
 
-    @XmlTransient
-    @Override
-    public boolean isTopLevel() {
-        if ((getParent() == null) || (getParent().isHidden() == true)) {
-            return true;
-        }
-        return false;
-    }
-
-    @Transient
-    @Override
-    public Long getParentId() {
-        if (getParent() == null) {
-            return null;
-        }
-        return getParent().getId();
-    }
 
     /*
      * Get all of the resource collections via a tree (actually list of lists)
@@ -162,14 +145,7 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
     // infinite loop because parentTree[0]==self
     @Override
     public List<SharedCollection> getHierarchicalResourceCollections() {
-        ArrayList<SharedCollection> parentTree = new ArrayList<>();
-        parentTree.add(this);
-        SharedCollection collection = this;
-        while (collection.getParent() != null) {
-            collection = collection.getParent();
-            parentTree.add(0, collection);
-        }
-        return parentTree;
+        return getHierarchicalResourceCollections(SharedCollection.class, this);
     }
 
     /*
@@ -177,19 +153,7 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
      */
     @Override
     public int compareTo(SharedCollection o) {
-        List<String> tree = getParentNameList();
-        List<String> tree_ = o.getParentNameList();
-        while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {
-            tree.remove(0);
-            tree_.remove(0);
-        }
-        if (tree.isEmpty()) {
-            return -1;
-        } else if (tree_.isEmpty()) {
-            return 1;
-        } else {
-            return tree.get(0).compareTo(tree_.get(0));
-        }
+        return compareTo(this, o);
     }
 
     @Transient
@@ -198,19 +162,6 @@ public class SharedCollection extends RightsBasedResourceCollection implements C
     public List<SharedCollection> getVisibleParents() {
         return getVisibleParents(SharedCollection.class);
     }
-
-    @XmlTransient
-    @Override
-    public boolean isTopCollection() {
-        return parent == null;
-    }
-
-    @XmlTransient
-    @Override
-    public boolean isSubCollection() {
-        return parent != null;
-    }
-
 
     @Override
     public boolean isValid() {

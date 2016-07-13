@@ -105,7 +105,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
-@XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class })
+@XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class, ListCollection.class })
 public abstract class ResourceCollection extends AbstractPersistable
         implements HasName, Updatable, Indexable, Validatable, Addressable, 
         Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, Slugable, OaiDcProvider {
