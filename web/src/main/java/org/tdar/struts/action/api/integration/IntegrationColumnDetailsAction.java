@@ -14,13 +14,14 @@ import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.IntegrationColumn;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JsonIdNameFilter;
 
 @Namespace("/api/integration")
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class IntegrationColumnDetailsAction extends AbstractIntegrationAction {
+public class IntegrationColumnDetailsAction extends AbstractJsonApiAction {
 
     private static final long serialVersionUID = 6114433438074971363L;
 

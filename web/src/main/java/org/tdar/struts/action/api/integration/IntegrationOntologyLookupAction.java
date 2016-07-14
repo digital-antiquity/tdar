@@ -13,6 +13,7 @@ import org.tdar.core.dao.integration.IntegrationOntologySearchResult;
 import org.tdar.core.dao.integration.search.OntologySearchFilter;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.search.query.SimpleSearchResultHandler;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.opensymphony.xwork2.Preparable;
@@ -21,7 +22,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class IntegrationOntologyLookupAction extends AbstractIntegrationAction implements Preparable, SimpleSearchResultHandler {
+public class IntegrationOntologyLookupAction extends AbstractJsonApiAction implements Preparable, SimpleSearchResultHandler {
 
     private static final long serialVersionUID = -1440176848488485510L;
 //    private Integer startRecord = 0;

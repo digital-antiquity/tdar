@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.service.integration.DataIntegrationService;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
@@ -28,7 +29,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class IntegrationAction extends AbstractIntegrationAction {
+public class IntegrationAction extends AbstractJsonApiAction {
 
     private static final long serialVersionUID = -7897024503696246112L;
 

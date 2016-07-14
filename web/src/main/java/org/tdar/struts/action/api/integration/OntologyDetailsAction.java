@@ -13,13 +13,14 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.dao.integration.OntologyProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 @Namespace("/api/integration")
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class OntologyDetailsAction extends AbstractIntegrationAction {
+public class OntologyDetailsAction extends AbstractJsonApiAction {
 
     private static final long serialVersionUID = -6992574286555315265L;
 

@@ -15,6 +15,7 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.dao.integration.TableDetailsProxy;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 
 import com.opensymphony.xwork2.Validateable;
@@ -23,7 +24,7 @@ import com.opensymphony.xwork2.Validateable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class TableDetailsAction extends AbstractIntegrationAction implements Validateable {
+public class TableDetailsAction extends AbstractJsonApiAction implements Validateable {
 
     private static final long serialVersionUID = 5956429144322203034L;
     private List<Long> dataTableIds = new ArrayList<>();
