@@ -17,6 +17,7 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -49,7 +50,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
 
     public boolean isAllowedTo(TdarUser person, HasSubmitter resource, GeneralPermissions permission) {
         if (resource instanceof ResourceCollection) {
-            return isAllowedTo(person, (RightsBasedResourceCollection) resource, permission);
+            return isAllowedTo(person, (HasDisplayProperties) resource, permission);
         } else {
             return isAllowedTo(person, (Resource) resource, permission);
         }
@@ -87,10 +88,8 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return isAllowedTo(person, permission, ids);
     }
 
-    public boolean isAllowedTo(TdarUser person, RightsBasedResourceCollection collection, GeneralPermissions permission) {
-        if (collection.isPublic()) {
-            return false;
-        }
+    public boolean isAllowedTo(TdarUser person, HasDisplayProperties collection, GeneralPermissions permission) {
+
         if (Objects.equals(collection.getOwner(), person)) {
             return true;
         }

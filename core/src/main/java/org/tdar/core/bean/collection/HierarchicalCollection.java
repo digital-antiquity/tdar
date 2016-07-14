@@ -8,7 +8,7 @@ import java.util.Set;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
-public interface HierarchicalCollection<C extends ResourceCollection> {
+public interface HierarchicalCollection<C extends ResourceCollection&HasDisplayProperties> extends HasDisplayProperties{
 
     public C getParent();
 

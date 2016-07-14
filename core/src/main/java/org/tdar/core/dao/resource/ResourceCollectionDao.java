@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.InternalCollection;
@@ -45,6 +46,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
+import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -102,8 +104,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public <C extends ResourceCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, C collection, Class<C> cls) {
+        if (!(collection instanceof HasDisplayProperties)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionDao.wrong_type");
+        }
         Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, cls);
-        query.setParameter("name", collection.getName());
+        query.setParameter("name", ((HasDisplayProperties)collection).getName());
         List<C> list = query.getResultList();
         for  (C coll : list) {
         	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
@@ -118,7 +123,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setParameter("name", name);
         List<SharedCollection> list = new ArrayList<>(query.getResultList());
         list.removeIf( rc -> (
-            !isAdmin && !authorizedUserDao.isAllowedTo(user, rc, GeneralPermissions.ADMINISTER_GROUP)   
+            !isAdmin && !authorizedUserDao.isAllowedTo(user, (HasDisplayProperties)rc, GeneralPermissions.ADMINISTER_GROUP)   
         ));
         return list;
 
@@ -341,7 +346,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             rc.setProperties(new CollectionDisplayProperties());
         }
         rc.getProperties().setWhitelabel(true);
-        saveOrUpdate(rc.getProperties());
         saveOrUpdate(rc);
         return rc;
     }

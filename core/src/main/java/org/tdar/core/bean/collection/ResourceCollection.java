@@ -25,10 +25,8 @@ import javax.persistence.Index;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -42,38 +40,25 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
-import org.hibernate.annotations.Type;
-import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.DeHydratable;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
-import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.OaiDcProvider;
-import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Updatable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
-import org.tdar.core.bean.resource.Addressable;
-import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-import org.tdar.utils.json.JsonLookupFilter;
-
-import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * @author Adam Brin
@@ -107,8 +92,10 @@ import com.fasterxml.jackson.annotation.JsonView;
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 @XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class, ListCollection.class })
 public abstract class ResourceCollection extends AbstractPersistable
-        implements HasName, Updatable, Indexable, Validatable, Addressable, 
-        Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, Slugable, OaiDcProvider {
+        implements Updatable, Indexable, Validatable, 
+         Viewable, DeHydratable, HasSubmitter, XmlLoggable {
+
+    public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -116,34 +103,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     private transient boolean viewable;
 
     private static final long serialVersionUID = -5308517783896369040L;
-    public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
     private transient Float score;
-
-    @Column
-    @JsonView(JsonLookupFilter.class)
-    @Length(max = FieldLength.FIELD_LENGTH_500)
-    private String name;
-
-    @Lob
-    @Type(type = "org.hibernate.type.TextType")
-    private String description;
-
-    @Lob
-    @Type(type = "org.hibernate.type.TextType")
-    @Column(name = "description_formatted")
-    private String formattedDescription;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
-    private SortOption sortBy = DEFAULT_SORT_OPTION;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
-    private SortOption secondarySortBy;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
-    private DisplayOrientation orientation = DisplayOrientation.LIST;
 
     @Enumerated(EnumType.STRING)
     @XmlTransient
@@ -173,9 +133,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
-    @Column(name = "hidden", nullable = false)
-    private boolean hidden = false;
-
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
      * field when it only really needs to get at the Ids for proper logging.
@@ -187,27 +144,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Column(name = "resource_id")
     @Immutable
     private Set<Long> resourceIds;
-
-
-    @Override
-    @JsonView(JsonLookupFilter.class)
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    @JsonView(JsonLookupFilter.class)
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     public CollectionType getType() {
         return type;
@@ -234,15 +170,6 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     public void setOwner(TdarUser owner) {
         this.owner = owner;
-    }
-
-    @XmlAttribute
-    public boolean isHidden() {
-        return hidden;
-    }
-
-    public void setHidden(boolean visible) {
-        this.hidden = visible;
     }
 
     /*
@@ -277,21 +204,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         return dateCreated;
     }
 
-    /**
-     * @param sortBy
-     *            the sortBy to set
-     */
-    public void setSortBy(SortOption sortBy) {
-        this.sortBy = sortBy;
-    }
-
-    /**
-     * @return the sortBy
-     */
-    @Override
-    public SortOption getSortBy() {
-        return sortBy;
-    }
 
     @Override
     public void setScore(Float score) {
@@ -307,36 +219,13 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @Override
     public String toString() {
-        return String.format("%s Resource collection %s: %s (creator: %s)", getType(), getId(), getName(), owner);
-    }
-
-
-    @Override
-    public boolean isValidForController() {
-        return StringUtils.isNotBlank(getName());
+        return String.format("%s Resource collection %s: %s (creator: %s)", getType(), getId(), owner);
     }
 
     @Override
     public boolean isValid() {
-        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner(), getName(), getSortBy());
+        logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner());
         return PersistableUtils.isNotNullOrTransient(getOwner());
-    }
-
-    public String getTitleSort() {
-        if (getTitle() == null) {
-            return "";
-        }
-        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "");
-    }
-
-    @Override
-    public String getTitle() {
-        return getName();
-    }
-
-    @Override
-    public String getUrlNamespace() {
-        return "collection";
     }
 
     @XmlTransient
@@ -350,22 +239,11 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.viewable = viewable;
     }
 
-    public boolean isPublic() {
-        return type == CollectionType.PUBLIC;
-    }
 
     @Override
     @Transient
     public TdarUser getSubmitter() {
         return owner;
-    }
-
-    public DisplayOrientation getOrientation() {
-        return orientation;
-    }
-
-    public void setOrientation(DisplayOrientation orientation) {
-        this.orientation = orientation;
     }
 
     @Override
@@ -387,22 +265,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.updater = updater;
     }
 
-
-    public SortOption getSecondarySortBy() {
-        return secondarySortBy;
-    }
-
-    public void setSecondarySortBy(SortOption secondarySortBy) {
-        this.secondarySortBy = secondarySortBy;
-    }
-
-    public String getFormattedDescription() {
-        return formattedDescription;
-    }
-
-    public void setFormattedDescription(String adminDescription) {
-        this.formattedDescription = adminDescription;
-    }
     @XmlTransient
     public boolean isChangesNeedToBeLogged() {
         return changesNeedToBeLogged;
@@ -411,23 +273,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setChangesNeedToBeLogged(boolean changesNeedToBeLogged) {
         this.changesNeedToBeLogged = changesNeedToBeLogged;
     }
-
-    @JsonView(JsonLookupFilter.class)
-    public String getDetailUrl() {
-        return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
-    }
-
-    public String getAllFieldSearch() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
-        return sb.toString();
-    }
-
-    @Override
-    public String getSlug() {
-        return UrlUtils.slugify(getName());
-    }
-
 
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
@@ -445,4 +290,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
     }   
+
+    public String getUrlNamespace() {
+        return "collection";
+    }
 }

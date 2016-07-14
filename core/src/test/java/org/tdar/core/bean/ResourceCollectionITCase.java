@@ -19,6 +19,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -45,7 +46,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testSetupCorrect() {
         ResourceCollection collection = resourceCollectionService.find(1575l);
-        assertFalse(collection.isHidden());
+        assertFalse(((HasDisplayProperties) collection).isHidden());
     }
 
     @Test
@@ -152,7 +153,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testFindWithRights() {
-        ResourceCollection test = new SharedCollection();
+        SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
         test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_GROUP));

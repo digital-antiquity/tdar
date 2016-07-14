@@ -45,13 +45,12 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
-        Institution institution = new Institution("Bob's burgers");
+//        Institution institution = new Institution("Bob's burgers");
         genericService.saveOrUpdate(rc);
-        genericService.saveOrUpdate(rc.getProperties());
         // Note: if you remove @Cascade annotation from WhiteLabelCollection.institution, you must also uncomment the next line.
         // genericService.save(institution);
 
-        rc.getProperties().setInstitution(institution);
+//        rc.getProperties().setInstitution(institution);
         genericService.save(rc);
         // todo: see if same is true for genericService.saveOrUpdate()
         assertThat(rc.getId(), not(nullValue()));
@@ -109,7 +108,6 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().getFeaturedResources().add(featuredDocument);
         genericService.save(wlc);
-        genericService.saveOrUpdate(wlc.getProperties());
     }
 
     @SuppressWarnings("unused")
@@ -119,10 +117,9 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
         rc.getProperties().setWhitelabel(true);
         rc.setName("default white label collection");
         rc.markUpdated(getAdminUser());
-        Institution institution = new Institution("Bob's burgers");
-        rc.getProperties().setInstitution(institution);
+//        Institution institution = new Institution("Bob's burgers");
+//        rc.getProperties().setInstitution(institution);
         genericService.save(rc);
-        genericService.saveOrUpdate(rc.getProperties());
         return rc;
     }
 }

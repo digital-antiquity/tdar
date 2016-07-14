@@ -4,51 +4,45 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
 
 import org.hibernate.annotations.Type;
 import org.opengis.annotation.XmlElement;
-import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.HasImage;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 
-@Table(name = "collection_display_properties")
-@Entity
 @XmlElement("collectionDisplayProperties")
-public class CollectionDisplayProperties extends AbstractPersistable implements HasImage {
+public class CollectionDisplayProperties implements HasImage {
     private static final long serialVersionUID = -3972164997710223460L;
-    
+
     private transient Integer maxHeight;
     private transient Integer maxWidth;
     private transient VersionType maxSize;
+    private transient Long id;
 
-    @Column(name = "whitelabel")
-    private boolean whitelabel = false;
-    
-    @Column(name = "custom_header_enabled")
-    private boolean customHeaderEnabled;
+    @Column(name = "whitelabel", nullable = false, columnDefinition = "boolean default false")
+    private Boolean whitelabel = false;
 
-    @Column(name = "custom_doc_logo_enabled")
-    private boolean customDocumentLogoEnabled;
+    @Column(name = "custom_header_enabled", nullable = false)
+    private Boolean customHeaderEnabled = false;
 
-    @Column(name = "featured_resources_enabled")
-    private boolean featuredResourcesEnabled;
+    @Column(name = "custom_doc_logo_enabled", nullable = false)
+    private Boolean customDocumentLogoEnabled = false;
 
-    @Column(name = "search_enabled")
-    private boolean searchEnabled;
+    @Column(name = "featured_resources_enabled", nullable = false)
+    private Boolean featuredResourcesEnabled = false;
 
-    @Column(name = "sub_collections_enabled")
-    private boolean subCollectionsEnabled;
+    @Column(name = "search_enabled", nullable = false)
+    private Boolean searchEnabled = false;
+
+    @Column(name = "sub_collections_enabled", nullable = false)
+    private Boolean subCollectionsEnabled = false;
 
     @Lob
     @Type(type = "org.hibernate.type.TextType")
@@ -58,7 +52,7 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     private String subtitle;
 
     @ManyToMany
-    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "properties_id") },
+    @JoinTable(name = "whitelabel_featured_resource", joinColumns = { @JoinColumn(nullable = false, name = "collection_id") },
             inverseJoinColumns = { @JoinColumn(
                     nullable = false, name = "resource_id") })
     private List<Resource> featuredResources = new ArrayList<>();
@@ -74,6 +68,9 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     private Institution institution;
 
     public boolean isCustomHeaderEnabled() {
+        if (customHeaderEnabled == null) {
+            return false;
+        }
         return customHeaderEnabled;
     }
 
@@ -82,6 +79,9 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     }
 
     public boolean isFeaturedResourcesEnabled() {
+        if (featuredResourcesEnabled == null) {
+            return false;
+        }
         return featuredResourcesEnabled;
     }
 
@@ -94,6 +94,9 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     }
 
     public boolean isSubCollectionsEnabled() {
+        if (subCollectionsEnabled == null) {
+            return false;
+        }
         return subCollectionsEnabled;
     }
 
@@ -134,6 +137,9 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     }
 
     public boolean isCustomDocumentLogoEnabled() {
+        if (customDocumentLogoEnabled == null) {
+            return false;
+        }
         return customDocumentLogoEnabled;
     }
 
@@ -142,17 +148,22 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
     }
 
     public boolean isSearchEnabled() {
+        if (searchEnabled == null) {
+            return false;
+        }
         return searchEnabled;
     }
 
     public boolean isWhitelabel() {
+        if (whitelabel == null) {
+            return false;
+        }
         return whitelabel;
     }
 
     public void setWhitelabel(boolean whitelabel) {
         this.whitelabel = whitelabel;
     }
-
 
     public Integer getMaxHeight() {
         return maxHeight;
@@ -176,6 +187,14 @@ public class CollectionDisplayProperties extends AbstractPersistable implements 
 
     public void setMaxSize(VersionType maxSize) {
         this.maxSize = maxSize;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 }

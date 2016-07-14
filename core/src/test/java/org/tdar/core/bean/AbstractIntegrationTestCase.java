@@ -76,7 +76,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -478,12 +478,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         wlc.setProperties(new CollectionDisplayProperties());
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");
-        genericService.saveOrUpdate(wlc.getProperties());
         init(wlc, name);
         return wlc;
     }
 
-    protected <C extends ResourceCollection> C init(C resourceCollection, String name) {
+    protected <C extends ResourceCollection&HasDisplayProperties> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setViewable(true);

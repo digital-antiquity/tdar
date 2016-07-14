@@ -308,7 +308,6 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         InternalCollection internalResourceCollection = resource.getInternalResourceCollection();
         if (internalResourceCollection == null) {
             internalResourceCollection = new InternalCollection();
-            internalResourceCollection.setName("internal collection");
             internalResourceCollection.setOwner(person);
             internalResourceCollection.markUpdated(person);
             resource.getResourceCollections().add(internalResourceCollection);

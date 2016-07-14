@@ -75,7 +75,7 @@ public abstract class AbstractResourceExportAction extends AbstractAuthenticatab
             }
         }
 
-        ResourceCollection collection = getExportProxy().getCollection();
+        SharedCollection collection = getExportProxy().getCollection();
         if (collection != null && !authorizationService.canEditCollection(getAuthenticatedUser(), collection)) {
             addActionError(getText("abstractResourceExportAction.cannot_export", Arrays.asList(format(collection))));
         }

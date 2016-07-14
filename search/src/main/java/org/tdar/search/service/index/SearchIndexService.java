@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -543,7 +544,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param persistable
      */
     @Transactional(readOnly=true)
-    public void partialIndexAllResourcesInCollectionSubTree(ResourceCollection persistable) {
+    public <C extends ResourceCollection&HierarchicalCollection> void partialIndexAllResourcesInCollectionSubTree(C persistable) {
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(persistable);
         logger.debug("partially indexing {} resources from {} ({})", total, persistable.getName(), persistable.getId());
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(persistable);

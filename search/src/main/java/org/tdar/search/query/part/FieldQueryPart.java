@@ -12,6 +12,7 @@ import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.core.bean.HasLabel;
 import org.tdar.core.bean.Localizable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -282,8 +283,8 @@ public class FieldQueryPart<C> implements QueryPart<C> {
             }
             if (Resource.class.isAssignableFrom(fieldValue.getClass())) {
                 fieldValue = ((Resource) fieldValue).getTitle();
-            } else if (ResourceCollection.class.isAssignableFrom(fieldValue.getClass())) {
-                fieldValue = ((ResourceCollection) fieldValue).getTitle();
+            } else if (HasDisplayProperties.class.isAssignableFrom(fieldValue.getClass())) {
+                fieldValue = ((HasDisplayProperties) fieldValue).getTitle();
             } else if (fieldValue instanceof Localizable) {
                 fieldValue = provider.getText(((Localizable) fieldValue).getLocaleKey());
             } else if (fieldValue instanceof HasLabel) {

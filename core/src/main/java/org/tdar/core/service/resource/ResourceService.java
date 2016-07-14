@@ -485,7 +485,6 @@ public class ResourceService {
                 if (collection instanceof InternalCollection) {
                     logger.info("cloning collection: {}", collection);
                     InternalCollection newInternal = new InternalCollection();
-                    newInternal.setName(collection.getName());
                     TdarUser owner = collection.getOwner();
                     genericDao.refresh(owner);
                     newInternal.markUpdated(owner);

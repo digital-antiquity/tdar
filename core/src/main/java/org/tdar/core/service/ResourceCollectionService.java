@@ -157,13 +157,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> findAllTopLevelCollections() {
-        Set<ResourceCollection> resultSet = new HashSet<ResourceCollection>(getDao().findCollectionsOfParent(null, false, CollectionType.SHARED));
-        resultSet.addAll(getDao().findPublicCollectionsWithHiddenParents());
-        List<ResourceCollection> toReturn = new ArrayList<ResourceCollection>(resultSet);
-        Collections.sort(toReturn, new Comparator<ResourceCollection>() {
+    public <C extends ResourceCollection & HasDisplayProperties> List<C> findAllTopLevelCollections() {
+        Set<C> resultSet = new HashSet<>();
+        resultSet.addAll((List<C>)getDao().findCollectionsOfParent(null, false, CollectionType.SHARED));
+        resultSet.addAll((List<C>)getDao().findPublicCollectionsWithHiddenParents());
+        List<C> toReturn = new ArrayList<>(resultSet);
+        Collections.sort(toReturn, new Comparator<C>() {
             @Override
-            public int compare(ResourceCollection o1, ResourceCollection o2) {
+            public int compare(C o1, C o2) {
                 return o1.getTitle().compareTo(o2.getTitle());
             }
         });
@@ -442,12 +443,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
         logger.trace("{}, {}", collectionToAdd, collectionToAdd.isValid());
-
+        String name = "Internal";
+        if (collectionToAdd instanceof HasDisplayProperties) {
+            name = ((HasDisplayProperties) collection).getName();
+        }
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
                     && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
-                        Arrays.asList(collectionToAdd.getTitle()));
+                        Arrays.asList(name));
             }
             collectionToAdd.markUpdated(authenticatedUser);
             if (collectionToAdd.isTransient()) {
@@ -465,8 +469,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         } else {
             if (errorHandling == ErrorHandling.VALIDATE_WITH_EXCEPTION) {
                 String collectionName = "null collection";
-                if (collectionToAdd != null && StringUtils.isNotBlank(collectionToAdd.getName())) {
-                    collectionName = collectionToAdd.getName();
+                if (collectionToAdd != null && StringUtils.isNotBlank(name)) {
+                    collectionName = name;
                 }
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.invalid", Arrays.asList(collectionName));
             }
@@ -481,10 +485,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         } else {
             collection.setOwner(authenticatedUser);
             collection.markUpdated(resource.getSubmitter());
-            if (collection.getSortBy() == null) {
-                collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
+            if (collection instanceof HasDisplayProperties && ((HasDisplayProperties) collection).getSortBy() == null) {
+                ((HasDisplayProperties) collection).setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
+                ((HasDisplayProperties) collection).setHidden(false);
             }
-            collection.setHidden(false);
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             return collection;
         }

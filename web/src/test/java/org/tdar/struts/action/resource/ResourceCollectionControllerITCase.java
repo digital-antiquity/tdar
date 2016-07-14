@@ -112,7 +112,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
+        SharedCollection collection = generateResourceCollection(name, description, false, users, resources, null);
 
         final Long id = collection.getId();
         String slug = collection.getSlug();
@@ -178,7 +178,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        ResourceCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
+        SharedCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
         fail("public collections not impletented yet");
         final Long id = collection.getId();
         String slug = collection.getSlug();
@@ -437,7 +437,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.prepare();
         controller.add();
 
-        ResourceCollection rc = controller.getResourceCollection();
+        SharedCollection rc = controller.getResourceCollection();
         rc.setName("test delete w/ redundant rights");
         rc.setDescription("a tragedy in three acts");
         rc.setHidden(false);
@@ -462,7 +462,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.prepare();
         vc.view();
 
-        ResourceCollection rc2 = vc.getResourceCollection();
+        SharedCollection rc2 = vc.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
 
@@ -510,7 +510,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         InternalCollection collection1 = new InternalCollection();
-        collection1.setName("INTERNAL");
         collection1.markUpdated(getUser());
         collection1.getAuthorizedUsers().addAll(users);
         genericService.saveOrUpdate(collection1);
@@ -544,7 +543,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<ResourceCollection> collections_ = controller_.getResults();
         for (ResourceCollection result : collections_) {
             if (result != null) {
-                logger.debug("{} {} {} {} ", result.getTitle(), result.getId(), result.isHidden());
+                logger.debug("{} {} {} {} ", result.getId(), result.isHidden());
             }
             logger.debug("NULL");
         }
@@ -676,7 +675,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback
     public void testDocumentControllerAssigningResourceCollections() throws Exception {
-        ResourceCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
+        SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, null, new ArrayList<Resource>(), null);
         genericService.refresh(collection1);
         assertNotNull(collection1.getOwner());
         DocumentController controller = generateNewInitializedController(DocumentController.class);
@@ -736,7 +735,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         draftDocument.setStatus(Status.DRAFT);
         genericService.save(draftDocument);
         evictCache();
-        ResourceCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true, null,
+        SharedCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true, null,
                 Arrays.asList(draftDocument, activeDocument), null);
         collection.setOwner(getAdminUser());
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
@@ -1013,7 +1012,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testDraftResourceVisibleByAuthuser() throws Exception {
         controller = generateNewInitializedController(CollectionController.class, getUser());
         controller.prepare();
-        ResourceCollection rc = controller.getPersistable();
+        SharedCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
         project.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(project);

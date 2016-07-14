@@ -9,7 +9,7 @@ import java.util.Set;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -123,7 +123,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             }
         }
         
-        for (ResourceCollection coll : toSortedList(source.getSharedVisibleResourceCollections())) {
+        for (SharedCollection coll : toSortedList(source.getSharedVisibleResourceCollections())) {
             dc.addIsPartOf(coll.getName());
         }
 

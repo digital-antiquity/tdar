@@ -69,22 +69,21 @@
             <column name="collection_id" valueNumeric="1002"/>
             <column name="parent_id" valueNumeric="1003"/>
         </insert>
-        <insert tableName="collection_display_properties">
-            <column name="id" valueNumeric="1"/>
+        <insert tableName="whitelabel_collection">
+            <column name="id" valueNumeric="1003"/>
             <column name="whitelabel" valueBoolean="true"/>
         </insert>
         <update tableName="collection">
             <column name="parent_id" valueNumeric="1003"/>
-            <column name="properties_id" valueNumeric="1" />
             <where>id=1002</where>
         </update>
         <insert tableName="whitelabel_featured_resource">
-            <column name="properties_id" valueNumeric="1"/>
+            <column name="collection_id" valueNumeric="1003"/>
             <column name="resource_id" valueNumeric="4230"/>
         </insert>
-        <sql>
+<!--         <sql>
             SELECT setval('whitelabel_collection_id_seq', (SELECT MAX(id) FROM collection_display_properties)+1);
         </sql>
-
+ -->
     </changeSet>
 </databaseChangeLog>

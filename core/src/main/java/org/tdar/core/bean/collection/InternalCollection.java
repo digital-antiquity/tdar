@@ -14,9 +14,10 @@ public class InternalCollection extends RightsBasedResourceCollection {
     public InternalCollection() {
         this.setType(CollectionType.INTERNAL);
     }
-    
+
     @Override
-    public String getName() {
-        return "";
+    public boolean isValidForController() {
+        return true;
     }
+    
 }

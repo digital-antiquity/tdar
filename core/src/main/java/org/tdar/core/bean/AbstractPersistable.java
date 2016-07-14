@@ -97,12 +97,4 @@ public abstract class AbstractPersistable implements Persistable {
         return hashCode;
     }
 
-    /**
-     * By default, base the hashcode off of object's inherent hashcode.
-     */
-    @Override
-    @XmlTransient
-    public List<?> getEqualityFields() {
-        return Collections.emptyList();
-    }
 }

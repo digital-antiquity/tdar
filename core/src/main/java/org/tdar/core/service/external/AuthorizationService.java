@@ -27,6 +27,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
@@ -383,8 +384,8 @@ public class AuthorizationService implements Accessible {
     public boolean canView(TdarUser authenticatedUser, Persistable item) {
         if (item instanceof Resource) {
             return canViewResource(authenticatedUser, (Resource) item);
-        } else if (item instanceof ResourceCollection) {
-            return canViewCollection((ResourceCollection) item, authenticatedUser);
+        } else if (item instanceof HasDisplayProperties) {
+            return canViewCollection((HasDisplayProperties) item, authenticatedUser);
         } else {
             return can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser);
         }
@@ -499,7 +500,7 @@ public class AuthorizationService implements Accessible {
      * Visible collections
      */
     @Transactional(readOnly = true)
-    public boolean canViewCollection(ResourceCollection collection, TdarUser person) {
+    public boolean canViewCollection(HasDisplayProperties collection, TdarUser person) {
         if (collection == null) {
             return false;
         }
@@ -540,7 +541,7 @@ public class AuthorizationService implements Accessible {
             boolean viewable = setupViewable(authenticatedUser, item);
             if (item instanceof ResourceCollection) {
                 logger.trace("item is resource collection: {}", p);
-                if (!(((ResourceCollection) item) instanceof InternalCollection) && !((ResourceCollection) item).isHidden()) {
+                if (item instanceof HasDisplayProperties  && !((HasDisplayProperties) item).isHidden()) {
                     viewable = true;
                 }
             }

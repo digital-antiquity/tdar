@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -436,13 +437,12 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getResourceCollections().add(
-new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBasicUser()));
+        controller.getResourceCollections().add(new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
         for (ResourceCollection c : controller.getResourceCollections()) {
-            if (c.getTitle().equals("test123")) {
+            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
                 id = c.getId();
             }
         }
@@ -488,7 +488,7 @@ new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBa
         controller.save();
         Long id = -1L;
         for (ResourceCollection c : controller.getResourceCollections()) {
-            if (c.getTitle().equals("test123")) {
+            if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
                 id = c.getId();
             }
         }

@@ -2,6 +2,7 @@ package org.tdar.search.converter;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -18,7 +19,13 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
             return null;
         }
         SolrInputDocument doc = convertPersistable(collection);
-        doc.setField(QueryFieldNames.NAME, collection.getName());
+        if (collection instanceof HasDisplayProperties) {
+            HasDisplayProperties props = (HasDisplayProperties) collection;
+            doc.setField(QueryFieldNames.NAME, props.getName());
+            doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
+            doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
+            doc.setField(QueryFieldNames.ALL, props.getAllFieldSearch());
+        }        
         doc.setField(QueryFieldNames.SUBMITTER_ID, collection.getOwner().getId());
         doc.setField(QueryFieldNames.RESOURCE_IDS, collection.getResourceIds());
         if (collection instanceof HierarchicalCollection) {
@@ -39,16 +46,13 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
             doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, "0" + CollectionType.SHARED.name());
         }
         if (collection instanceof ListCollection) {
-            doc.setField(QueryFieldNames.RESOURCE_TYPE, CollectionType.PUBLIC.name());
-            doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, "0" + CollectionType.PUBLIC.name());
+            doc.setField(QueryFieldNames.RESOURCE_TYPE, CollectionType.LIST.name());
+            doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, "0" + CollectionType.LIST.name());
 
         }
-        doc.setField(QueryFieldNames.DESCRIPTION, collection.getDescription());
         doc.setField(QueryFieldNames.STATUS, Status.ACTIVE);
         
         doc.setField(QueryFieldNames.TYPE, LookupSource.COLLECTION.name());
-        doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
-        doc.setField(QueryFieldNames.ALL, collection.getAllFieldSearch());
         return doc;
     }
     

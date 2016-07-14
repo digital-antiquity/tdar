@@ -233,7 +233,7 @@ public class CollectionController extends AbstractPersistableController<SharedCo
     @Override
     public String loadAddMetadata() {
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
-            ResourceCollection parent = resourceCollectionService.find(parentId);
+            SharedCollection parent = getGenericService().find(SharedCollection.class,parentId);
             if (parent != null) {
                 parentCollectionName = parent.getName();
             }

@@ -22,6 +22,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -238,7 +239,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
     // create a new project and add it to a collection
     @Rollback
     public void testAddingToExistingCollection() throws Exception {
-        ResourceCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
+        SharedCollection rc = createNewEmptyCollection("testing adding a to collection from resource edit page");
         setIgnoreActionErrors(true);
         evictCache();
         assertNotNull(rc);
@@ -268,7 +269,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         evictCache();
     }
 
-    private ProjectController tryAndSaveCollectionToController(ResourceCollection rc) throws TdarActionException {
+    private ProjectController tryAndSaveCollectionToController(SharedCollection rc) throws TdarActionException {
         ProjectController controller = generateNewInitializedController(ProjectController.class);
         init(controller, getUser());
         controller.setAsync(false);
@@ -333,7 +334,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
         for (ResourceCollection rc : resourceCollections) {
-            names.add(rc.getName());
+            if (rc instanceof HasDisplayProperties)
+            names.add(((HasDisplayProperties) rc).getName());
         }
 
         assertTrue(names.contains(name1));

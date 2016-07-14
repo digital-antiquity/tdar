@@ -1280,12 +1280,10 @@ public class Resource implements Persistable,
 
     @Transient
     public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
-        Set<RightsBasedResourceCollection> collections = new HashSet<>(getResourceCollections());
-        Iterator<RightsBasedResourceCollection> iter = collections.iterator();
-        while (iter.hasNext()) {
-            ResourceCollection coll = iter.next();
-            if (coll.isPublic()) {
-                iter.remove();
+        Set<RightsBasedResourceCollection> collections = new HashSet<>();
+        for (ResourceCollection coll : getResourceCollections()) {
+            if (coll instanceof RightsBasedResourceCollection) {
+                collections.add((RightsBasedResourceCollection) coll);
             }
         }
         return collections;
@@ -1393,7 +1391,7 @@ public class Resource implements Persistable,
     public Set<SharedCollection> getSharedVisibleResourceCollections() {
         Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
         for (ResourceCollection collection : getResourceCollections()) {
-            if (collection instanceof SharedCollection && !collection.isHidden()) {
+            if (collection instanceof SharedCollection && !((SharedCollection) collection).isHidden()) {
                 sharedCollections.add((SharedCollection)collection);
             }
         }
@@ -1769,7 +1767,7 @@ public class Resource implements Persistable,
     public Collection<? extends ResourceCollection> getVisibleUnmanagedResourceCollections() {
         Set<ResourceCollection> collections = new LinkedHashSet<ResourceCollection>();
         for (ResourceCollection collection : getUnmanagedResourceCollections()) {
-            if (collection instanceof SharedCollection && !collection.isHidden()) {
+            if (collection instanceof SharedCollection && !((SharedCollection) collection).isHidden()) {
                 collections.add(collection);
             }
         }

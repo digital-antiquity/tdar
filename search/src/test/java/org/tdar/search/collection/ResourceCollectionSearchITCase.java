@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -32,7 +33,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     public void init() {
         boolean first = true;
         for (String name : collectionNames) {
-            ResourceCollection collection = new SharedCollection(name, name, SortOption.COLLECTION_TITLE, false, getAdminUser());
+            SharedCollection collection = new SharedCollection(name, name, SortOption.COLLECTION_TITLE, false, getAdminUser());
             collection.setDescription(name);
             collection.markUpdated(collection.getOwner());
             genericService.saveOrUpdate(collection);
@@ -139,8 +140,8 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
         result = runQuery(null, csqo);
         for (ResourceCollection c : result.getResults()) {
-            logger.debug("{} {}", c.getId(), c.getTitle());
-            assertTrue("title contains kbp or kintigh", c.getTitle().contains("KBP") || c.getTitle().contains("Kintigh"));
+            logger.debug("{} {}", c.getId(), ((HasDisplayProperties) c).getTitle());
+            assertTrue("title contains kbp or kintigh", ((HasDisplayProperties) c).getTitle().contains("KBP") || ((HasDisplayProperties) c).getTitle().contains("Kintigh"));
         }
     }
 

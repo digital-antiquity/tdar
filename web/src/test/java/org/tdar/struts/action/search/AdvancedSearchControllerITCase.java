@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -334,7 +335,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
 
         // We should now have two terms: within-collection, and all-fields
         assertThat(firstGroup().getFieldTypes(), contains(SearchFieldType.COLLECTION, SearchFieldType.ALL_FIELDS));
-        assertThat(firstGroup().getCollections().get(0).getTitle(), is(collectionTitle));
+        assertThat(((HasDisplayProperties)firstGroup().getCollections().get(0)).getTitle(), is(collectionTitle));
     }
 
     private void updateAndIndex(Indexable doc) throws SolrServerException, IOException {

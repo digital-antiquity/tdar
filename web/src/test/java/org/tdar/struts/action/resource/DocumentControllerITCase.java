@@ -130,9 +130,6 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		SharedCollection collection = createResourceCollectionWithAdminRights();
 		genericService.saveOrUpdate(collection);
 		InternalCollection internal = new InternalCollection();
-		internal.setName("internal");
-		internal.setDescription("internal");
-		internal.setSortBy(SortOption.TITLE);
 		internal.markUpdated(getAdminUser());
 		genericService.saveOrUpdate(internal);
 		internal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));

@@ -168,7 +168,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         assertTrue("field should be inherited", importedRecord.isInheritingNoteInformation());
         assertFalse("field should be inherited", importedRecord.isInheritingCollectionInformation());
         genericService.delete(importedRecord);
-        for (ResourceCollection rc : importedRecord.getSharedResourceCollections()) {
+        for (SharedCollection rc : importedRecord.getSharedResourceCollections()) {
             logger.debug("{} - {}", rc.getName(), rc.isHidden());
             if (rc.getName().equals("hidden")) {
                 assertTrue(rc.isHidden());
