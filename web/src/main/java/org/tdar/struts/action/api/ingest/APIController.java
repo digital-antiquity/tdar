@@ -83,7 +83,6 @@ public class APIController extends AbstractAuthenticatableAction {
 //    private SearchIndexService searchIndexService;
 
     private Resource importedRecord;
-    private String message;
     // private List<String> restrictedFiles = new ArrayList<>();
     // private FileAccessRestriction fileAccessRestriction;
     private Long id;
@@ -93,6 +92,8 @@ public class APIController extends AbstractAuthenticatableAction {
     private Long accountId;
 
     private Long couponNumberOfFiles = -1L;
+
+    private String errorMessage;
     public final static String msg_ = "%s is %s %s (%s): %s";
 
     private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
@@ -110,7 +111,6 @@ public class APIController extends AbstractAuthenticatableAction {
     public String upload() {
         List<String> stackTraces = new ArrayList<>();
         List<String> errors = new ArrayList<>();
-        String message = "";
         if (StringUtils.isEmpty(getRecord())) {
             getLogger().info("no record defined");
             errorResponse(StatusCode.BAD_REQUEST, null, null, null);
@@ -137,14 +137,14 @@ public class APIController extends AbstractAuthenticatableAction {
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
 
-            message = "updated:" + loadedRecord.getId();
+            errorMessage = "updated:" + loadedRecord.getId();
             RevisionLogType type = RevisionLogType.EDIT;
             StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED;
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
                 status = StatusCode.CREATED;
-                message = "created:" + loadedRecord.getId();
+                errorMessage = "created:" + loadedRecord.getId();
                 type = RevisionLogType.CREATE;
                 code = StatusCode.CREATED;
                 getXmlResultObject().setRecordId(loadedRecord.getId());
@@ -163,21 +163,21 @@ public class APIController extends AbstractAuthenticatableAction {
             }
             getXmlResultObject().setStatusCode(statuscode);
             getXmlResultObject().setStatus(code.toString());
-            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle(), type);
-            xmlResultObject.setMessage(message);
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, errorMessage + " " + loadedRecord.getTitle(), type);
+            xmlResultObject.setMessage(errorMessage);
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
 
             return SUCCESS;
         } catch (Throwable e) {
-            message = "";
+            errorMessage = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
                 errors = new ArrayList<>(events);
 
-                errorResponse(StatusCode.BAD_REQUEST, errors, message, null);
+                errorResponse(StatusCode.BAD_REQUEST, errors, errorMessage, null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -195,7 +195,7 @@ public class APIController extends AbstractAuthenticatableAction {
                 return ERROR;
             }
         }
-        errorResponse(StatusCode.UNKNOWN_ERROR, errors, message, stackTraces);
+        errorResponse(StatusCode.UNKNOWN_ERROR, errors, errorMessage, stackTraces);
         return ERROR;
 
     }
@@ -262,7 +262,7 @@ public class APIController extends AbstractAuthenticatableAction {
 
             setImportedRecord(loadedRecord);
 
-            message = "updated:" + loadedRecord.getId();
+            errorMessage = "updated:" + loadedRecord.getId();
             StatusCode code = StatusCode.UPDATED;
             status = StatusCode.UPDATED;
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
@@ -271,18 +271,18 @@ public class APIController extends AbstractAuthenticatableAction {
 
             getXmlResultObject().setStatusCode(statuscode);
             getXmlResultObject().setStatus(code.toString());
-            resourceService.logResourceModification(loadedRecord, authenticatedUser, message + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
-            xmlResultObject.setMessage(message);
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, errorMessage + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
+            xmlResultObject.setMessage(errorMessage);
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
             return SUCCESS;
         } catch (Throwable e) {
-            message = "";
+            errorMessage = "";
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
-                errorResponse(StatusCode.BAD_REQUEST, events, message, null);
+                errorResponse(StatusCode.BAD_REQUEST, events, errorMessage, null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -323,7 +323,7 @@ public class APIController extends AbstractAuthenticatableAction {
         status = statusCode;
         xmlResultObject.setStatus(statusCode.toString());
         xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
-        xmlResultObject.setMessage(message);
+        xmlResultObject.setMessage(errorMessage);
         xmlResultObject.setStackTraces(stackTraces);
         xmlResultObject.setErrors(errors);
         return ERROR;
@@ -400,11 +400,11 @@ public class APIController extends AbstractAuthenticatableAction {
     }
 
     public void setErrorMessage(String errorMessage) {
-        this.message = errorMessage;
+        this.errorMessage = errorMessage;
     }
 
     public String getErrorMessage() {
-        return message;
+        return errorMessage;
     }
 
     public void setId(Long id) {
@@ -440,7 +440,7 @@ public class APIController extends AbstractAuthenticatableAction {
     }
 
     public String getMessage() {
-        return message;
+        return errorMessage;
     }
 
     // the command line tool passes this property in: but we don't need it.
