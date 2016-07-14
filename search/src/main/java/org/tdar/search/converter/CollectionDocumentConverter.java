@@ -22,7 +22,7 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         if (collection instanceof HasDisplayProperties) {
             HasDisplayProperties props = (HasDisplayProperties) collection;
             doc.setField(QueryFieldNames.NAME, props.getName());
-            doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
+            doc.setField(QueryFieldNames.COLLECTION_HIDDEN, ((HasDisplayProperties) collection).isHidden());
             doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
             doc.setField(QueryFieldNames.ALL, props.getAllFieldSearch());
         }        

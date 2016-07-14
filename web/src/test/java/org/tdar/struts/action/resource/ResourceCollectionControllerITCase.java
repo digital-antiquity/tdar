@@ -33,6 +33,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
@@ -543,7 +544,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<ResourceCollection> collections_ = controller_.getResults();
         for (ResourceCollection result : collections_) {
             if (result != null) {
-                logger.debug("{} {} {} {} ", result.getId(), result.isHidden());
+                logger.debug("{} {} {} {} ", result.getId(), ((HasDisplayProperties) result).isHidden());
             }
             logger.debug("NULL");
         }

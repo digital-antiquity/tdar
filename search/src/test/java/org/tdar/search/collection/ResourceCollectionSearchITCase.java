@@ -1,8 +1,6 @@
 package org.tdar.search.collection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 
@@ -48,7 +46,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             first = false;
             logger.debug("{} {} {}", collection.getId(), collection.getTitle(), collection.isHidden());
         }
-        ResourceCollection find = genericService.find(ResourceCollection.class, 1003L);
+        SharedCollection find = genericService.find(SharedCollection.class, 1003L);
         find.setHidden(false);
         genericService.saveOrUpdate(find);
         reindex();
@@ -122,8 +120,12 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
         assertNotEmpty(result.getResults());
         for (ResourceCollection c : result.getResults()) {
-            logger.debug("{} {} {}", c.getId(), c, c.isHidden());
-            assertFalse("should not be hidden", c.isHidden());
+            if (c instanceof HasDisplayProperties) {
+                logger.debug("{} {} {}", c.getId(), c, ((HasDisplayProperties) c).isHidden());
+                assertFalse("should not be hidden", ((HasDisplayProperties) c).isHidden());
+            } else {
+                fail("should not be indexing InternalCollections");
+            }
         }
     }
 
