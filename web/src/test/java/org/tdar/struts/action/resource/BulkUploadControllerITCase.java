@@ -576,7 +576,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     public void testAddingAdHocCollectionToBulkUpload() throws Exception {
         // start by getting the original count of public/private collections
         // int origInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int origSharedCount = getCollectionCount(CollectionType.SHARED);
+        int origSharedCount = getCollectionCount(CollectionType.SHARED, SharedCollection.class);
         int origImageCount = genericService.findAll(Image.class).size();
 
         BulkUploadController bulkUploadController = generateNewInitializedController(BulkUploadController.class);
@@ -617,7 +617,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         assertEquals(new Float(100), bulkUploadController.getPercentDone());
 
         // int newInternalCount = getCollectionCount(CollectionType.INTERNAL);
-        int newSharedCount = getCollectionCount(CollectionType.SHARED);
+        int newSharedCount = getCollectionCount(CollectionType.SHARED, SharedCollection.class);
         int newImageCount = genericService.findAll(Image.class).size();
         Assert.assertNotSame(origImageCount, newImageCount);
         assertTrue((newImageCount - origImageCount) > 0);
@@ -634,7 +634,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
             genericService.refresh(resource);
             Set<RightsBasedResourceCollection> resourceCollections = resource.getResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
-            for (ResourceCollection rc : resourceCollections) {
+            for (RightsBasedResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);
             }
 
@@ -656,8 +656,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
     }
 
-    private int getCollectionCount(CollectionType type) {
-        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null, type);
+    private int getCollectionCount(CollectionType type, Class cls) {
+        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null, type, cls);
         if (type == CollectionType.INTERNAL) {
             logger.info("INTERNAL COLLECTIONS: {} ", col);
         }

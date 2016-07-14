@@ -417,7 +417,7 @@ public class Resource implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<RightsBasedResourceCollection> resourceCollections = new LinkedHashSet<>();
+    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
@@ -1237,7 +1237,7 @@ public class Resource implements Persistable,
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(Set<RightsBasedResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 
@@ -1259,7 +1259,7 @@ public class Resource implements Persistable,
         @XmlElementRef(name="resourceCollectionRef",type=JAXBPersistableRef.class, required=false)
     })
     @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
-    public Set<RightsBasedResourceCollection> getResourceCollections() {
+    public Set<ResourceCollection> getResourceCollections() {
         if (resourceCollections == null) {
             resourceCollections = new LinkedHashSet<>();
         }
@@ -1281,7 +1281,7 @@ public class Resource implements Persistable,
     @Transient
     public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
         Set<RightsBasedResourceCollection> collections = new HashSet<>();
-        for (RightsBasedResourceCollection coll : getResourceCollections()) {
+        for (ResourceCollection coll : getResourceCollections()) {
             if (coll instanceof RightsBasedResourceCollection) {
                 collections.add((RightsBasedResourceCollection) coll);
             }
@@ -1291,7 +1291,7 @@ public class Resource implements Persistable,
 
     @Transient
     public InternalCollection getInternalResourceCollection() {
-        for (RightsBasedResourceCollection collection : getResourceCollections()) {
+        for (ResourceCollection collection : getResourceCollections()) {
             if (collection instanceof InternalCollection) {
                 return (InternalCollection)collection;
             }
@@ -1379,7 +1379,7 @@ public class Resource implements Persistable,
     @Transient
     public Set<SharedCollection> getSharedResourceCollections() {
         Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
-        for (RightsBasedResourceCollection collection : getResourceCollections()) {
+        for (ResourceCollection collection : getResourceCollections()) {
             if (collection instanceof SharedCollection) {
                 sharedCollections.add((SharedCollection)collection);
             }
@@ -1390,7 +1390,7 @@ public class Resource implements Persistable,
     @Transient
     public Set<SharedCollection> getSharedVisibleResourceCollections() {
         Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
-        for (RightsBasedResourceCollection collection : getResourceCollections()) {
+        for (ResourceCollection collection : getResourceCollections()) {
             if (collection instanceof SharedCollection && !((SharedCollection) collection).isHidden()) {
                 sharedCollections.add((SharedCollection)collection);
             }

@@ -21,6 +21,7 @@ import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
@@ -82,7 +83,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         performLuceneQuery();
 
         if (isEditor()) {
-            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED));
+            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED, SharedCollection.class));
             setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 

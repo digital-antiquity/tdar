@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceRevisionLog;
@@ -43,7 +44,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     private List<ResourceRevisionLog> resourceLogEntries;
 
     private List<ResourceRevisionLog> logEntries;
-    private Set<ResourceCollection> effectiveResourceCollections = new HashSet<>();
+    private Set<RightsBasedResourceCollection> effectiveResourceCollections = new HashSet<>();
     private List<File> xmlFiles = new ArrayList<>();
 
     private Resource resource;
@@ -106,11 +107,11 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
         this.resource = resource;
     }
 
-    public Set<ResourceCollection> getEffectiveResourceCollections() {
+    public Set<RightsBasedResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
-    public void setEffectiveResourceCollections(Set<ResourceCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(Set<RightsBasedResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 

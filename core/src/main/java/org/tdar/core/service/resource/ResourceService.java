@@ -31,6 +31,7 @@ import org.tdar.core.bean.HasResource;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -481,7 +482,7 @@ public class ResourceService {
             resource.getManagedGeographicKeywords().addAll(proxy.getManagedGeographicKeywords());
             // CLONE if internal, otherwise just add
 
-            for (ResourceCollection collection : proxy.getResourceCollections()) {
+            for (RightsBasedResourceCollection collection : proxy.getResourceCollections()) {
                 if (collection instanceof InternalCollection) {
                     logger.info("cloning collection: {}", collection);
                     InternalCollection newInternal = new InternalCollection();

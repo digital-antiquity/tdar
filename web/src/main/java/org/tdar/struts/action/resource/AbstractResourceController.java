@@ -26,6 +26,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -132,7 +133,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
     private List<SharedCollection> resourceCollections = new ArrayList<>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -561,7 +562,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, getResource().getResourceCollections(),
+            resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, (Set<? extends ResourceCollection>)getResource().getResourceCollections(),
                     getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
@@ -991,7 +992,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     /**
      * @return the effectiveResourceCollections
      */
-    public List<ResourceCollection> getEffectiveResourceCollections() {
+    public List<RightsBasedResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
@@ -999,7 +1000,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param effectiveResourceCollections
      *            the effectiveResourceCollections to set
      */
-    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<RightsBasedResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 

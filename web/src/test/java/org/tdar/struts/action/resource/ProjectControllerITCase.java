@@ -326,7 +326,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(project.isTransient());
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
-        assertUniqueCollections(loadedProject.getResourceCollections(), name1, name2);
+        assertUniqueCollections((Collection<? extends ResourceCollection>)loadedProject.getResourceCollections(), name1, name2);
 
     }
 

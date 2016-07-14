@@ -6,16 +6,23 @@ import javax.persistence.Entity;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 
 @Entity
-public interface RightsBasedResourceCollection extends Persistable  {
+public interface RightsBasedResourceCollection extends Persistable {
 
 
+    TdarUser getOwner();
+    
+    boolean isTransient();
 
     @XmlTransient
-    public abstract Set<Resource> getResources();
+    Set<Resource> getResources();
 
-    public abstract void setResources(Set<Resource> resources);
+    void setResources(Set<Resource> resources);
+    
+    Set<AuthorizedUser> getAuthorizedUsers();
 
 }

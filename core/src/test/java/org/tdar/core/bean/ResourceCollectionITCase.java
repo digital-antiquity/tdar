@@ -21,7 +21,6 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -32,8 +31,6 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.utils.PersistableUtils;
-
-import com.sun.mail.imap.Rights.Right;
 
 public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
@@ -135,14 +132,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveResourceCollections(image, list, image.getResourceCollections(), getBasicUser(), true,
+        resourceCollectionService.saveResourceCollections(image, list, (Set<? extends ResourceCollection>)image.getResourceCollections(), getBasicUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         logger.debug("collections: {}", image.getResourceCollections());
 
         List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
         image.getResourceCollections().clear();
-        resourceCollectionService.saveResourceCollections(image, list, image.getResourceCollections(), getEditorUser(), true,
+        resourceCollectionService.saveResourceCollections(image, list, (Set<? extends ResourceCollection>)image.getResourceCollections(), getEditorUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         logger.debug("collections: {}", image.getResourceCollections());
         extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());

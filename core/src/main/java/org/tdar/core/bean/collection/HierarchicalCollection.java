@@ -21,25 +21,15 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
-public abstract class  HierarchicalCollection<C extends HasDisplayProperties> extends HasDisplayProperties implements Comparable<C>{
+public abstract class HierarchicalCollection<C extends HasDisplayProperties> extends HasDisplayProperties implements Comparable<C> {
 
     private static final long serialVersionUID = -4518328095223743894L;
 
-    @ManyToOne
-    @JoinColumn(name = "parent_id")
-    private C parent;
-
-    @XmlAttribute(name = "parentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
-    public C getParent() {
-        return parent;
-    }
 
     @ElementCollection()
     @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id"))
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
-
 
     /**
      * Get ordered list of parents (ids) of this resources ... great grandfather, grandfather, father.
@@ -57,12 +47,10 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
         this.parentIds = parentIds;
     }
 
-    public void setParent(C parent) {
-        this.parent = parent;
-    }
-
     private transient Set<C> transientChildren = new LinkedHashSet<>();
 
+    abstract C getParent();
+    
     @XmlTransient
     @Transient
     public Set<C> getTransientChildren() {
@@ -72,7 +60,6 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
     public void setTransientChildren(Set<C> transientChildren) {
         this.transientChildren = transientChildren;
     }
-
 
     @XmlTransient
     @Transient
@@ -85,7 +72,6 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
     public boolean isSubCollection() {
         return getParent() != null;
     }
-
 
     @SuppressWarnings({ "unchecked", "hiding" })
     public <C extends HierarchicalCollection> List<C> getHierarchicalResourceCollections(Class<C> class1, C collection_) {
@@ -109,7 +95,7 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
         return parentNameTree;
     }
 
-   public abstract List<C> getHierarchicalResourceCollections();
+    public abstract List<C> getHierarchicalResourceCollections();
 
     public List<C> getVisibleParents(Class<C> type) {
         List<C> hierarchicalResourceCollections = getHierarchicalResourceCollections();
@@ -123,7 +109,6 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
         return hierarchicalResourceCollections;
     }
 
-
     @XmlTransient
     @Transient
     public boolean isTopLevel() {
@@ -135,7 +120,7 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
 
     @XmlTransient
     @Transient
-    public  Long getParentId() {
+    public Long getParentId() {
         if (getParent() == null) {
             return null;
         }
@@ -145,7 +130,7 @@ public abstract class  HierarchicalCollection<C extends HasDisplayProperties> ex
     /*
      * Default to sorting by name, but grouping by parentId, used for sorting int he tree
      */
-    public  <C extends HierarchicalCollection> int compareTo(C self, C o) {
+    public <C extends HierarchicalCollection> int compareTo(C self, C o) {
         List<String> tree = self.getParentNameList();
         List<String> tree_ = o.getParentNameList();
         while (!tree.isEmpty() && !tree_.isEmpty() && (tree.get(0) == tree_.get(0))) {

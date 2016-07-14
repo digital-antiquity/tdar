@@ -195,7 +195,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            for (ResourceCollection c : resourceCollectionService.findDirectChildCollections(getId(), false, CollectionType.SHARED)) {
+            for (ResourceCollection c : resourceCollectionService.findDirectChildCollections(getId(), false, CollectionType.SHARED, SharedCollection.class)) {
                 if (c instanceof SharedCollection) {
                     findAllChildCollections.add((SharedCollection)c);
                 }

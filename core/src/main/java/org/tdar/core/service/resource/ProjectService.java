@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -155,7 +156,7 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
     @Transactional(readOnly = true)
     public List<Resource> findSparseTitleIdProjectListByPerson(TdarUser person, boolean isAdmin) {
         // get all of the collections (direct/inherited) that bestow modify-metadata rights to the specified user
-        Set<RightsBasedResourceCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA, RightsBasedResourceCollection.class);
+        Set<SharedCollection> collections = resourceCollectionDao.findFlattendCollections(person, GeneralPermissions.MODIFY_METADATA, SharedCollection.class);
 
         // find all of the editable projects for the user (either directly assigned or via the specified collections)
         List<Long> collectionIds = PersistableUtils.extractIds(collections);

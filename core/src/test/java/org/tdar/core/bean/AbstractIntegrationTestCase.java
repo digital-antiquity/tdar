@@ -482,7 +482,7 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return wlc;
     }
 
-    protected <C extends ResourceCollection&HasDisplayProperties> C init(C resourceCollection, String name) {
+    protected <C extends HasDisplayProperties> C init(C resourceCollection, String name) {
         resourceCollection.setName(name);
         resourceCollection.setDescription(name);
         resourceCollection.setViewable(true);

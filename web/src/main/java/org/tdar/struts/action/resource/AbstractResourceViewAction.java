@@ -24,6 +24,7 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -108,7 +109,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private ResourceService resourceService;
 
     private List<ResourceCollection> resourceCollections = new ArrayList<>();
-    private List<ResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
@@ -340,7 +341,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     /**
      * @return the effectiveResourceCollections
      */
-    public List<ResourceCollection> getEffectiveResourceCollections() {
+    public List<RightsBasedResourceCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
     }
 
@@ -348,7 +349,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      * @param effectiveResourceCollections
      *            the effectiveResourceCollections to set
      */
-    public void setEffectiveResourceCollections(List<ResourceCollection> effectiveResourceCollections) {
+    public void setEffectiveResourceCollections(List<RightsBasedResourceCollection> effectiveResourceCollections) {
         this.effectiveResourceCollections = effectiveResourceCollections;
     }
 

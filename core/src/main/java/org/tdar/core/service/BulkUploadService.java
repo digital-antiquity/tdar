@@ -365,7 +365,7 @@ public class BulkUploadService {
             }
             resources.clear();
 
-            Set<ResourceCollection> cols = new HashSet<>();
+            Set<RightsBasedResourceCollection> cols = new HashSet<>();
             for (Resource resource : resources) {
                 receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",

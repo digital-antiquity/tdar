@@ -544,7 +544,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param persistable
      */
     @Transactional(readOnly=true)
-    public <C extends ResourceCollection&HierarchicalCollection> void partialIndexAllResourcesInCollectionSubTree(C persistable) {
+    public <C extends HierarchicalCollection> void partialIndexAllResourcesInCollectionSubTree(C persistable) {
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(persistable);
         logger.debug("partially indexing {} resources from {} ({})", total, persistable.getName(), persistable.getId());
         ScrollableResults results = resourceCollectionDao.findAllResourcesInCollectionAndSubCollectionScrollable(persistable);

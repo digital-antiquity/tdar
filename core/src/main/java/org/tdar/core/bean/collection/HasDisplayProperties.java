@@ -8,6 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Lob;
+import javax.persistence.PrimaryKeyJoinColumn;
+import javax.persistence.SecondaryTable;
 import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +31,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
+@SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 public abstract class HasDisplayProperties extends ResourceCollection implements OaiDcProvider, Sortable, HasName, Slugable, Addressable, Validatable {
 
 

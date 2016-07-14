@@ -142,7 +142,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
         }
     }
 
-    private <T extends ResourceCollection&HierarchicalCollection<?>>  int processCollections(WebSitemapGenerator wsg, ScrollableResults activeCollections) throws MalformedURLException {
+    private <T extends HierarchicalCollection<?>>  int processCollections(WebSitemapGenerator wsg, ScrollableResults activeCollections) throws MalformedURLException {
         int totalCollections = 0;
         while (activeCollections.next()) {
             T collection = (T) activeCollections.get(0);
