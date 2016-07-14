@@ -88,7 +88,8 @@ public interface TdarNamedQueries {
     String QUERY_DASHBOARD = "dashboard.sql";
     String QUERY_RESOURCES_BY_DECADE = "resources.byDecade";
     String QUERY_SPARSE_RESOURCE_LOOKUP = "resource.sparseLookup";
-    String QUERY_SPARSE_COLLECTION_LOOKUP = "resourceCollection.sparseLookup";
+    String QUERY_SPARSE_SHARED_COLLECTION_LOOKUP = "sharedCollection.sparseLookup";
+    String QUERY_SPARSE_LIST_COLLECTION_LOOKUP = "listCollection.sparseLookup";
     String SPACE_BY_PROJECT = "admin.size.project";
     String SPACE_BY_RESOURCE = "admin.size.resource";
     String SPACE_BY_COLLECTION = "admin.size.collection";

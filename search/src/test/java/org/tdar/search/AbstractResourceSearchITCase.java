@@ -192,8 +192,8 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
         return project;
     }
 
-    protected ResourceCollection sparseCollection(Long id) {
-        ResourceCollection collection = new SharedCollection();
+    protected SharedCollection sparseCollection(Long id) {
+        SharedCollection collection = new SharedCollection();
         collection.setId(id);
         return collection;
     }

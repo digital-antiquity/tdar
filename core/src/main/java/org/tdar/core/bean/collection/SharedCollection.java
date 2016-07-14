@@ -31,6 +31,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
@@ -46,7 +47,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 @XmlRootElement(name = "sharedCollection")
 public class SharedCollection extends RightsBasedResourceCollection
-        implements Comparable<SharedCollection>, HierarchicalCollection<SharedCollection>, HasDisplayProperties {
+        implements Comparable<SharedCollection>, HierarchicalCollection<SharedCollection>, HasDisplayProperties, HasName {
     private static final long serialVersionUID = 7900346272773477950L;
 
     public SharedCollection(String title, String description, SortOption sortBy, boolean visible, TdarUser creator) {

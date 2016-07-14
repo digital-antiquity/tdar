@@ -37,6 +37,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.util.UrlUtils;
@@ -50,7 +51,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Entity
 @SecondaryTable(name="whitelabel_collection", pkJoinColumns=@PrimaryKeyJoinColumn(name="id"))
 @XmlRootElement(name = "listCollection")
-public class ListCollection extends ResourceCollection implements HierarchicalCollection<ListCollection>, Comparable<ListCollection>, HasDisplayProperties {
+public class ListCollection extends ResourceCollection implements HierarchicalCollection<ListCollection>, Comparable<ListCollection>, HasDisplayProperties, HasName {
 
     private static final long serialVersionUID = 1225586588061994193L;
 
@@ -63,6 +64,17 @@ public class ListCollection extends ResourceCollection implements HierarchicalCo
     public ListCollection() {
         properties = new CollectionDisplayProperties();
         setType(CollectionType.LIST);
+    }
+    
+    public ListCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
+        setId(id);
+        setName(title);
+        setDescription(description);
+        setSortBy(sortBy);
+        setHidden(visible);
+        this.setType(CollectionType.LIST);
+        properties = new CollectionDisplayProperties();
+
     }
     @Embedded
     @AttributeOverrides({

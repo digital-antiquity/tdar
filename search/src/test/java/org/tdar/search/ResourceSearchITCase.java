@@ -784,7 +784,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     public void testSparseObjectLoading() throws SolrServerException, IOException, ParseException {
         String colname = "my fancy collection";
         Project proj = createAndSaveNewResource(Project.class);
-        ResourceCollection coll = createAndSaveNewResourceCollection(colname);
+        SharedCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
         searchIndexService.index(proj);
 
@@ -798,6 +798,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
 
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
+        logger.debug("c's:{}",sp.getCollections());
         assertEquals(colname, ((HasDisplayProperties)sp.getCollections().get(1)).getName());
     }
 
@@ -878,8 +879,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Rollback
     public void testRefineSearchWithSparseCollection() throws ParseException, SolrServerException, IOException {
 
-        ResourceCollection rc = createAndSaveNewResourceCollection("Mega Collection");
-        ResourceCollection sparseCollection = new SharedCollection();
+        SharedCollection rc = createAndSaveNewResourceCollection("Mega Collection");
+        SharedCollection sparseCollection = new SharedCollection();
         evictCache();
         long collectionId = rc.getId();
         assertThat(collectionId, greaterThan(0L));

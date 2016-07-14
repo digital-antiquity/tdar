@@ -13,7 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -77,41 +78,41 @@ public class SearchParameters {
     private Operator operator = defaultOperator;
 
     // managed keywords. Ultimately we need list of list of id, but struts only knows how to construct list of list of strings
-    private List<List<String>> materialKeywordIdLists = new ArrayList<List<String>>();
-    private List<List<String>> approvedSiteTypeIdLists = new ArrayList<List<String>>();
-    private List<List<String>> approvedCultureKeywordIdLists = new ArrayList<List<String>>();
-    private List<List<String>> investigationTypeIdLists = new ArrayList<List<String>>();
+    private List<List<String>> materialKeywordIdLists = new ArrayList<>();
+    private List<List<String>> approvedSiteTypeIdLists = new ArrayList<>();
+    private List<List<String>> approvedCultureKeywordIdLists = new ArrayList<>();
+    private List<List<String>> investigationTypeIdLists = new ArrayList<>();
 
     // freeform keywords
-    private List<String> otherKeywords = new ArrayList<String>();
-    private List<String> siteNames = new ArrayList<String>();
-    private List<String> uncontrolledCultureKeywords = new ArrayList<String>();
-    private List<String> uncontrolledMaterialKeywords = new ArrayList<String>();
-    private List<String> temporalKeywords = new ArrayList<String>();
-    private List<String> geographicKeywords = new ArrayList<String>();
-    private List<String> uncontrolledSiteTypes = new ArrayList<String>();
+    private List<String> otherKeywords = new ArrayList<>();
+    private List<String> siteNames = new ArrayList<>();
+    private List<String> uncontrolledCultureKeywords = new ArrayList<>();
+    private List<String> uncontrolledMaterialKeywords = new ArrayList<>();
+    private List<String> temporalKeywords = new ArrayList<>();
+    private List<String> geographicKeywords = new ArrayList<>();
+    private List<String> uncontrolledSiteTypes = new ArrayList<>();
     private boolean latScaleUsed = true;
-    private List<String> allFields = new ArrayList<String>();
-    private List<String> titles = new ArrayList<String>();
-    private List<String> contents = new ArrayList<String>();
-    private List<String> filenames = new ArrayList<String>();
+    private List<String> allFields = new ArrayList<>();
+    private List<String> titles = new ArrayList<>();
+    private List<String> contents = new ArrayList<>();
+    private List<String> filenames = new ArrayList<>();
 
     private boolean join = false;
     private ResourceCreatorProxy creatorOwner;
     private Set<ResourceCreatorRole> creatorOwnerRoles = new HashSet<>();
-    private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<ResourceCreatorProxy>();
+    private List<ResourceCreatorProxy> resourceCreatorProxies = new ArrayList<>();
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<ResourceCollection> sparseCollections = new ArrayList<ResourceCollection>();
+    private List<SharedCollection> sparseCollections = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
-    private List<DateRange> registeredDates = new ArrayList<DateRange>();
-    private List<DateRange> updatedDates = new ArrayList<DateRange>();
-    private List<CoverageDate> coverageDates = new ArrayList<CoverageDate>();
-    private List<StringRange> createdDates = new ArrayList<StringRange>();
-    private List<Integer> creationDecades = new ArrayList<Integer>();
+    private List<DateRange> registeredDates = new ArrayList<>();
+    private List<DateRange> updatedDates = new ArrayList<>();
+    private List<CoverageDate> coverageDates = new ArrayList<>();
+    private List<StringRange> createdDates = new ArrayList<>();
+    private List<Integer> creationDecades = new ArrayList<>();
 
     // parameters. don't render these in the form view.
     private String startingLetter;
@@ -394,7 +395,7 @@ public class SearchParameters {
 
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                ResourceCollection.class, getOperator(), getCollections()));
+                SharedCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
@@ -415,7 +416,8 @@ public class SearchParameters {
     private <P extends Persistable> SkeletonPersistableQueryPart constructSkeletonQueryPart(String fieldName, String label, String prefix, Class<P> cls,
             Operator operator, List<P> values) {
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
-        if (HasName.class.isAssignableFrom(cls) && StringUtils.isNotBlank(prefix)) {
+        logger.debug("{} {} {} ", cls, prefix, values);
+        if ((HasName.class.isAssignableFrom(cls) || HasDisplayProperties.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
             tqp.setPrefix(prefix);
             for (Persistable p : values) {
@@ -541,11 +543,11 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<ResourceCollection> getCollections() {
+    public List<SharedCollection> getCollections() {
         return sparseCollections;
     }
 
-    public void setCollections(List<ResourceCollection> resourceCollections) {
+    public void setCollections(List<SharedCollection> resourceCollections) {
         sparseCollections = resourceCollections;
     }
 
