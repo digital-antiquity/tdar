@@ -68,10 +68,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     /**
      * @return
      */
-    public List<ResourceCollection> findCollectionsOfParent(Long parent, Boolean visible, CollectionType ... collectionTypes) {
-        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_PARENT,ResourceCollection.class);
+    public <C  extends HierarchicalCollection> List<C> findCollectionsOfParent(Long parent, Boolean visible, CollectionType type, Class<C> cls) {
+        Query<C> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_PARENT, cls);
         namedQuery.setParameter("parent", parent);
-        namedQuery.setParameter("collectionTypes", Arrays.asList(collectionTypes));
+        namedQuery.setParameter("collectionTypes", Arrays.asList(type));
         namedQuery.setParameter("visible", visible);
         return namedQuery.getResultList();
     }
@@ -171,7 +171,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return allCollections;
     }
 
-    public <E extends ResourceCollection&HierarchicalCollection<?>> List<E> findAllChildCollectionsOnly(E collection, Class<E> cls) {
+    public <E extends HierarchicalCollection<?>> List<E> findAllChildCollectionsOnly(E collection, Class<E> cls) {
         List<E> allChildren = getAllChildCollections(collection, cls);
         return allChildren;
     }
@@ -194,7 +194,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings({"unchecked","rawtypes"})
-    public <E extends ResourceCollection&HierarchicalCollection<?>> List<E> getAllChildCollections(E persistable, Class<E> cls) {
+    public <E extends HierarchicalCollection<?>> List<E> getAllChildCollections(E persistable, Class<E> cls) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }

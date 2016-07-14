@@ -1281,7 +1281,7 @@ public class Resource implements Persistable,
     @Transient
     public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
         Set<RightsBasedResourceCollection> collections = new HashSet<>();
-        for (ResourceCollection coll : getResourceCollections()) {
+        for (RightsBasedResourceCollection coll : getResourceCollections()) {
             if (coll instanceof RightsBasedResourceCollection) {
                 collections.add((RightsBasedResourceCollection) coll);
             }
@@ -1291,7 +1291,7 @@ public class Resource implements Persistable,
 
     @Transient
     public InternalCollection getInternalResourceCollection() {
-        for (ResourceCollection collection : getResourceCollections()) {
+        for (RightsBasedResourceCollection collection : getResourceCollections()) {
             if (collection instanceof InternalCollection) {
                 return (InternalCollection)collection;
             }
@@ -1379,7 +1379,7 @@ public class Resource implements Persistable,
     @Transient
     public Set<SharedCollection> getSharedResourceCollections() {
         Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
-        for (ResourceCollection collection : getResourceCollections()) {
+        for (RightsBasedResourceCollection collection : getResourceCollections()) {
             if (collection instanceof SharedCollection) {
                 sharedCollections.add((SharedCollection)collection);
             }
@@ -1390,7 +1390,7 @@ public class Resource implements Persistable,
     @Transient
     public Set<SharedCollection> getSharedVisibleResourceCollections() {
         Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
-        for (ResourceCollection collection : getResourceCollections()) {
+        for (RightsBasedResourceCollection collection : getResourceCollections()) {
             if (collection instanceof SharedCollection && !((SharedCollection) collection).isHidden()) {
                 sharedCollections.add((SharedCollection)collection);
             }

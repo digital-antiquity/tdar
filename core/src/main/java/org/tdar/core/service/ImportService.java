@@ -415,7 +415,7 @@ public class ImportService {
             irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (ResourceCollection rc : rec.getResourceCollections()) {
+            for (RightsBasedResourceCollection rc : rec.getResourceCollections()) {
                 if (rc instanceof SharedCollection) {
                 ((SharedCollection)rc).getResources().add(rec);
                 }
@@ -591,10 +591,17 @@ public class ImportService {
         if (property instanceof ResourceCollection && resource instanceof Resource) {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
-            if (collection instanceof RightsBasedResourceCollection) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getResourceCollections()),
+            if (collection instanceof SharedCollection) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (Set<? extends ResourceCollection>)(((Resource) resource).getResourceCollections()),
                         authenticatedUser, true,
-                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (RightsBasedResourceCollection)collection, RightsBasedResourceCollection.class);
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
+
+            }
+            if (collection instanceof InternalCollection) {
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (Set<? extends ResourceCollection>)(((Resource) resource).getResourceCollections()),
+                        authenticatedUser, true,
+                        ErrorHandling.VALIDATE_WITH_EXCEPTION, (InternalCollection)collection, InternalCollection.class);
+
             }
             if (collection instanceof ListCollection) {
                 resourceCollectionService.addResourceCollectionToResource((Resource) resource, ((Resource) resource).getUnmanagedResourceCollections(),
@@ -635,7 +642,7 @@ public class ImportService {
         if (toReturn instanceof RightsBasedResourceCollection && resource instanceof Resource) {
             RightsBasedResourceCollection collection = (RightsBasedResourceCollection) toReturn;
             // making sure that the collection's creators and other things are on the sessions properly too
-            resetOwnerOnSession(collection);
+            resetOwnerOnSession((ResourceCollection)collection);
             collection.getResources().add((Resource) resource);
             ((Resource) resource).getResourceCollections().add(collection);
         }

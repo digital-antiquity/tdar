@@ -13,7 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -215,9 +217,9 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
      * @return
      */
     public <E extends Resource> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
-        List<ResourceCollection> collections = null;
+        List<HasDisplayProperties> collections = null;
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            collections = resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED);
+            collections.addAll(resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED, SharedCollection.class));
             return getDao().findRandomFeaturedResourceInCollection(restrictToFiles, collections, maxResults);
         }
         return findRandomFeaturedResource(restrictToFiles, maxResults);

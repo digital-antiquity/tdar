@@ -78,7 +78,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
 
         // // get all of the resource collections and their hierarchical tree, permissions are additive
-        for (ResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             if (collection instanceof SharedCollection) {
                 ids.addAll(((SharedCollection)collection).getParentIds());
             }

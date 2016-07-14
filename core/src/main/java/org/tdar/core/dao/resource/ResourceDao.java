@@ -25,6 +25,7 @@ import org.hibernate.criterion.SimpleExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -277,7 +278,7 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	 * (a) find the random resource.id and (b) retrieve the resource
 	 */
 	@SuppressWarnings({ "hiding", "unchecked" })
-	protected <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, List<ResourceCollection> collections,
+	protected <E> List<E> findRandomFeaturedResource(boolean restrictToFiles, List<HasDisplayProperties> collections,
 			Project project, int maxResults) {
 		logger.trace("find random resource start");
 
