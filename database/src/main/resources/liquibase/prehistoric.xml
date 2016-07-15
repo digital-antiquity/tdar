@@ -8,15 +8,17 @@
     <!-- http://www.liquibase.org/documentation/changes/index.html -->
 
     <changeSet id="prehistoric-collections-1" author="abrin" failOnError="true">
-    	<addColumn tableName="collection">
+<!--     	<addColumn tableName="collection">
     		<column name="properties_id" type="bigint"  />
     	</addColumn>
-    	<addColumn tableName="whitelabel_collection">
+ -->
+     	<addColumn tableName="whitelabel_collection">
     		<column name="whitelabel" type="boolean" defaultValueBoolean="false"><constraints nullable="false" /> </column>
     	</addColumn>
-    	<addForeignKeyConstraint constraintName="collection_properties_fkey" referencedTableName="whitelabel_collection" 
+<!--     	<addForeignKeyConstraint constraintName="collection_properties_fkey" referencedTableName="whitelabel_collection" 
     		baseColumnNames="properties_id" baseTableName="collection" referencedColumnNames="id" />
-   		<dropForeignKeyConstraint baseTableName="whitelabel_collection" constraintName="whitelabel_collection_id_collection_fkey"/>
+    		<dropForeignKeyConstraint baseTableName="whitelabel_collection" constraintName="whitelabel_collection_id_collection_fkey"/>
+ -->
 <!--     	<addAutoIncrement tableName="whitelabel_collection" columnName="id"/>	
  -->
  <!--     	<renameTable newTableName="collection_display_properties" oldTableName="whitelabel_collection" /> -->

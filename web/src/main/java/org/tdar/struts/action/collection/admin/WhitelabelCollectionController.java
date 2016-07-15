@@ -56,7 +56,7 @@ public class WhitelabelCollectionController extends AbstractAuthenticatableActio
                     @Result(name = INPUT, location = "edit.ftl") })
     public String save() throws TdarActionException {
         getGenericService().saveOrUpdate(getCollection());
-        getGenericService().saveOrUpdate(getCollection().getProperties());
+//        getGenericService().saveOrUpdate(getCollection().getProperties());
         getLogger().trace("{} {} {} ", getCollection().getId(), getCollection().getProperties().getSubtitle(), getCollection().getProperties().isWhitelabel());
         return SUCCESS;
     }
