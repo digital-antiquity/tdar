@@ -132,7 +132,7 @@
 		</#if>
 		<div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
 		<#if id?has_content && namespace=="/collection">
-		data-infinite-url="/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
+		data-infinite-url="/api/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
 		</#if>
 		data-fit-bounds="true"
         <#assign map_ = "" />

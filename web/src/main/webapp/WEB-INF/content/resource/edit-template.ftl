@@ -281,7 +281,7 @@
                     <div class="controls">
                         <div class="">
                             <select id="projectId" name="projectId" class="resource-autocomplete input-xxlarge" tabindex="-1" aria-hidden="true"
-                                    data-ajax--url="/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
+                                    data-ajax--url="/api/lookup/resource?resourceTypes=PROJECT&useSubmitterContext=true"
                                     data-allow-clear="false"
                                     data-placeholder="Search for a project..."
                                     data-minimum-input-length="0">

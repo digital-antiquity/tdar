@@ -4,7 +4,7 @@ describe("collection autocomplete", function(){
     
 
     var responses = {
-        "/lookup/collection": {
+        "/api/lookup/collection": {
             "status": {
                 "startRecord": 0,
                 "sortField": "TITLE",
@@ -68,9 +68,9 @@ describe("collection autocomplete", function(){
         //force a lookup
         $elem.autocomplete('search', 'hot dogs');
         var req = jasmine.Ajax.requests.mostRecent()
-        expect(req.url).toContain('/lookup/collection');
+        expect(req.url).toContain('/api/lookup/collection');
 
-        var response  = jsonpEncode(responses["/lookup/collection"], req);
+        var response  = jsonpEncode(responses["/api/lookup/collection"], req);
 
 
         jasmine.Ajax.requests.mostRecent().respondWith({

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.api.search;
 
 import java.io.ByteArrayInputStream;
 
@@ -13,10 +13,11 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.SerializationService;
+import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.json.JsonLookupFilter;
 
-@Namespace("/search")
+@Namespace("/api/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")

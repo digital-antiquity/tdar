@@ -25,7 +25,7 @@ TDAR.datatable = function() {
             requestCallback : doNothingCallback,
             selectableRows : false,
             rowSelectionCallback : doNothingCallback,
-            "sAjaxSource" : TDAR.uri( 'lookup/resource'),
+            "sAjaxSource" : TDAR.uri( 'api/lookup/resource'),
             "sAjaxDataProp" : 'resources',
             "bJQueryUI" : false,
             "sScrollY" : "350px",
@@ -299,7 +299,7 @@ TDAR.datatable = function() {
         var $dataTable = $('#resource_datatable');
         _registerLookupDataTable({
             tableSelector : '#resource_datatable',
-            sAjaxSource : TDAR.uri( 'lookup/resource'),
+            sAjaxSource : TDAR.uri( 'api/lookup/resource'),
             "bLengthChange" : true,
             "bFilter" : false,
             aoColumns : aoColumns_,
@@ -562,7 +562,7 @@ TDAR.datatable = function() {
     function _registerUserLookupDatatable() {
         var settings = {
             tableSelector : '#dataTable',
-            sAjaxSource : TDAR.uri() + 'lookup/person',
+            sAjaxSource : TDAR.uri() + 'api/lookup/person',
             "sDom" : "<'row'<'span6'l><'span6'f>r>t<'row'<'span4'i><'span5'p>>",
             sPaginationType : "bootstrap",
             "bLengthChange" : true,

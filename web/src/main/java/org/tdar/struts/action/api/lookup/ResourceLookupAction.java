@@ -1,4 +1,4 @@
-package org.tdar.struts.action.lookup;
+package org.tdar.struts.action.api.lookup;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -36,7 +36,7 @@ import org.tdar.utils.json.JsonLookupFilter;
  * 
  * @version $Rev$
  */
-@Namespace("/lookup")
+@Namespace("/api/lookup")
 @ParentPackage("default")
 @Component
 @Scope("prototype")
