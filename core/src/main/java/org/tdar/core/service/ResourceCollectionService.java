@@ -914,4 +914,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().changeSubmitter(collection, submitter, authenticatedUser);
     }
 
+    @Transactional(readOnly=false)
+    public void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection) {
+        resource.getResourceCollections().remove(fromCollection);
+        fromCollection.getResources().remove(resource);
+        resource.getResourceCollections().add(toCollection);
+        toCollection.getResources().add(resource);
+        getDao().saveOrUpdate(resource);
+        saveOrUpdate(fromCollection);
+        saveOrUpdate(toCollection);
+        
+    }
+
 }

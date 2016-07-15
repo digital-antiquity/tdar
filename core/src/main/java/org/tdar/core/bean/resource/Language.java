@@ -33,6 +33,7 @@ public enum Language implements HasLabel, Localizable {
     NORWEGIAN("Norwegian","no","nor"),
     POLISH("Polish","pl","pol"),
     SLOVAK("Slovak","sk","slo"),
+    SLOWAK("Slovak","sk","slo"),
     SWEDISH("Swedish","sv","swe");
 
     private final String label;

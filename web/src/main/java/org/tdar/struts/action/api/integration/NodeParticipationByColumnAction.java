@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.OntologyNode;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.service.integration.DataIntegrationService;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.utils.json.JsonIdNameFilter;
 
@@ -29,7 +30,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class NodeParticipationByColumnAction extends AbstractIntegrationAction implements Preparable {
+public class NodeParticipationByColumnAction extends AbstractJsonApiAction implements Preparable {
 
     private static final long serialVersionUID = 499550761252167428L;
     private List<Long> dataTableColumnIds = new ArrayList<>();

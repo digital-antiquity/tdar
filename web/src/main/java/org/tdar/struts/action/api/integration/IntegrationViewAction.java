@@ -16,6 +16,7 @@ import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 
@@ -26,7 +27,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class IntegrationViewAction extends AbstractIntegrationAction implements PersistableLoadingAction<DataIntegrationWorkflow> {
+public class IntegrationViewAction extends AbstractJsonApiAction implements PersistableLoadingAction<DataIntegrationWorkflow> {
 
     private static final long serialVersionUID = -4028463597298660974L;
 

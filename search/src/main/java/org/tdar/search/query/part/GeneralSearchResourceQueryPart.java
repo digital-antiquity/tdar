@@ -1,14 +1,21 @@
 package org.tdar.search.query.part;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 
 public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
+
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     protected static final float TITLE_BOOST = 6f;
     protected static final float CREATOR_BOOST = 5f;
@@ -42,10 +49,11 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
     @Override
     protected QueryPartGroup getQueryPart(String value) {
-        boolean siteCodeSearch = false;
+        Set<String> codes = new HashSet<>();
         if (StringUtils.isNotBlank(value) && SiteCodeExtractor.matches(value.toUpperCase())) {
-            siteCodeSearch = true;
+            codes.addAll(SiteCodeExtractor.extractSiteCodeTokens(value.toUpperCase()));
             setUseProximity(false);
+            logger.trace("Site code search: {}", codes);
         }
 
         QueryPartGroup queryPart = super.getQueryPart(value);
@@ -71,9 +79,10 @@ public class GeneralSearchResourceQueryPart extends GeneralSearchQueryPart {
 
         queryPart.append(creatorPart.setBoost(CREATOR_BOOST));
         // we use the original value because we'd be esacping things we don't want to otherwise
-        if (siteCodeSearch) {
-            FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, cleanedQueryString.toUpperCase());
-            queryPart.append(siteCodePart.setBoost(SITE_CODE_BOOST));
+        if (CollectionUtils.isNotEmpty(codes)) {
+            FieldQueryPart<String> siteCodePart = new FieldQueryPart<String>(QueryFieldNames.SITE_CODE, codes);
+            siteCodePart.setBoost(SITE_CODE_BOOST);
+            queryPart.append(siteCodePart);
         }
         queryPart.append(new ContentQueryPart(cleanedQueryString));
         queryPart.append(new DataValueQueryPart(cleanedQueryString));

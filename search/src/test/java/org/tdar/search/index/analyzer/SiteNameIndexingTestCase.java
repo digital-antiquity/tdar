@@ -1,6 +1,6 @@
 package org.tdar.search.index.analyzer;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -39,6 +39,14 @@ public class SiteNameIndexingTestCase {
         assertMatches(compile, "AZ U:9:1 (ASM)");
     }
 
+    
+    @Test
+    public void testExtractor() {
+        Set<String> extractSiteCodeTokens = SiteCodeExtractor.extractSiteCodeTokens("38-AK-500");
+        logger.debug("{}", extractSiteCodeTokens);
+        assertTrue("should have one site code", extractSiteCodeTokens.size() == 1);
+    }
+    
     @Test
     public void testReader() throws IOException {
         String reader = " CA-AAA-0001 asasd qrqewr 22:22:13-0010 sadas d RI-0090  44:PG:0462";
@@ -48,6 +56,19 @@ public class SiteNameIndexingTestCase {
             String term = iterator.next();
             logger.debug(term);
             assertMatches(SiteCodeExtractor.pattern, term);
+        }
+    }
+
+    @Test
+    public void testNormalization() throws IOException {
+        String reader = " CA-AAA-0001RI-191-0  44:PG:0462";
+        Set<String> found = SiteCodeExtractor.extractSiteCodeTokens(reader);
+        Iterator<String> iterator = found.iterator();
+        while (iterator.hasNext()) {
+            String term = iterator.next();
+            logger.debug(term);
+            assertMatches(SiteCodeExtractor.pattern, term);
+            assertFalse(term.contains("0"));
         }
     }
 
