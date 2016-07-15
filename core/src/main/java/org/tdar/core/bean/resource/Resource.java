@@ -39,6 +39,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -426,11 +427,12 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-//    @Size(min=0,max=1)
+    @Size(min=0,max=1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     @Where(clause="collection_type='INTERNAL'")
     private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
 
+    // MAINTAINED FOR HQL QUERY USE
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
@@ -1817,12 +1819,4 @@ public class Resource implements Persistable,
         this.internalCollections = internalCollections;
     }
 
-//    @XmlTransient
-//    protected Set<ResourceCollection> getResourceCollections() {
-//        return resourceCollections;
-//    }
-//
-//    protected void setResourceCollections(Set<ResourceCollection> resourceCollections) {
-//        this.resourceCollections = resourceCollections;
-//    }
 }

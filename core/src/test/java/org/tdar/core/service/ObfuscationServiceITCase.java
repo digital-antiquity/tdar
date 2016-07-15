@@ -46,6 +46,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("{}", project.getInternalCollections());
         // setup a fake user on the resource collection (just in case)
         InternalCollection internalResourceCollection = project.getInternalResourceCollection();
+        // THIS IS A CASE OF BAD SETUP -- A PREVIOUS TEST IS ADJUSTING THIS PROJECT'S COLLECTION ASSIGNMENTS FROM 1 INTERNAL COLLECTION TO 1 SHARED COLLECTION
         if (internalResourceCollection == null) {
             logger.warn("collection was null");
             internalResourceCollection = new InternalCollection();
