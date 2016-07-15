@@ -1814,6 +1814,11 @@ public class Resource implements Persistable,
 //        return internalCollection;
 //   }
 
+    public void setInternalCollection(InternalCollection ic) {
+        internalCollections.clear();
+        internalCollections.add(ic);
+    }
+
     @XmlElementRefs({
             @XmlElementRef(name = "internalCollection", type = InternalCollection.class, required = false),
             @XmlElementRef(name = "internalCollectionRef", type = JAXBPersistableRef.class, required = false)
