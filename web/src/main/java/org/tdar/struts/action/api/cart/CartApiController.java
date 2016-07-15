@@ -1,4 +1,4 @@
-package org.tdar.struts.action.cart;
+package org.tdar.struts.action.api.cart;
 
 import static com.opensymphony.xwork2.Action.ERROR;
 import static com.opensymphony.xwork2.Action.INPUT;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption;
+import org.tdar.struts.action.AbstractCartController;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -56,7 +57,7 @@ public class CartApiController extends AbstractCartController implements Prepara
      * 
      * @return
      */
-    @Action("api")
+    @Action("quote")
     public String api() {
         if (isNotNullOrZero(lookupFileCount) || isNotNullOrZero(lookupMBCount)) {
             addPricingOption(invoiceService.getCheapestActivityByFiles(lookupFileCount, lookupMBCount, false));

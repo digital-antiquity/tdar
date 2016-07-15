@@ -25,7 +25,7 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetPaymentDao;
 import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionRequestTemplate.NelnetTransactionItem;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.struts.action.cart.CartApiPollingAction;
+import org.tdar.struts.action.api.cart.CartApiPollingAction;
 import org.tdar.struts.action.cart.CartController;
 import org.tdar.struts.action.cart.CartExternalPaymentResponseAction;
 import org.tdar.struts.action.cart.InvoiceController;
