@@ -38,13 +38,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -109,7 +109,9 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.jaxb.converters.JAXBPersistableRef;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
@@ -424,7 +426,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Size(min=0,max=1)
+//    @Size(min=0,max=1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     @Where(clause="collection_type='INTERNAL'")
     private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
@@ -1286,8 +1288,12 @@ public class Resource implements Persistable,
 //        return resourceCollections;
 //    }
 
-    @Transient
-    @XmlTransient
+    @XmlElementWrapper(name = "sharedCollections")
+    @XmlElementRefs({
+            @XmlElementRef(name = "sharedCollection", type = SharedCollection.class, required = false),
+            @XmlElementRef(name = "sharedCollectionRef", type = JAXBPersistableRef.class, required = false)
+    })
+    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<SharedCollection> getSharedCollections() {
         return sharedCollections;
     }
@@ -1794,6 +1800,11 @@ public class Resource implements Persistable,
         internalCollections.add(ic);
     }
     
+    @XmlElementRefs({
+            @XmlElementRef(name = "internalCollection", type = InternalCollection.class, required = false),
+            @XmlElementRef(name = "internalCollectionRef", type = JAXBPersistableRef.class, required = false)
+    })
+    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
     public Set<InternalCollection> getInternalCollections() {
         return internalCollections;
     }
@@ -1802,11 +1813,12 @@ public class Resource implements Persistable,
         this.internalCollections = internalCollections;
     }
 
-    protected Set<ResourceCollection> getResourceCollections() {
+    @XmlTransient
+    public Set<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    protected void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 }
