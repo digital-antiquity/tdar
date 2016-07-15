@@ -183,6 +183,9 @@ public class ReflectionService {
         // logger.debug("calling getter on: {} {} ", obj, field.getName());
         logger.trace("{}", field.getDeclaringClass());
         Method method = ReflectionUtils.findMethod(field.getDeclaringClass(), generateGetterName(field));
+        if (method == null) {
+            return null;
+        }
         if (method.getReturnType() != Void.TYPE) {
             try {
                 return (T) method.invoke(obj);

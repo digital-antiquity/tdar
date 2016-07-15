@@ -1817,12 +1817,12 @@ public class Resource implements Persistable,
         this.internalCollections = internalCollections;
     }
 
-    @XmlTransient
-    protected Set<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
-    }
-
-    protected void setResourceCollections(Set<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
-    }
+//    @XmlTransient
+//    protected Set<ResourceCollection> getResourceCollections() {
+//        return resourceCollections;
+//    }
+//
+//    protected void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+//        this.resourceCollections = resourceCollections;
+//    }
 }

@@ -1,5 +1,7 @@
 package org.tdar.core.bean.collection;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
 import javax.persistence.AttributeOverride;
 import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
@@ -74,6 +76,7 @@ public abstract class HasDisplayProperties extends ResourceCollection implements
             @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
             @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
     })
+    @Access(AccessType.FIELD)
     private CollectionDisplayProperties properties;
 
     @Column(name = "hidden", nullable = false)

@@ -18,8 +18,10 @@ import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
 
 /**
@@ -43,7 +45,17 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         logger.debug("{}", project.getSharedCollections());
         logger.debug("{}", project.getInternalCollections());
         // setup a fake user on the resource collection (just in case)
-        ResourceCollection internalResourceCollection = project.getInternalResourceCollection();
+        InternalCollection internalResourceCollection = project.getInternalResourceCollection();
+        if (internalResourceCollection == null) {
+            logger.warn("collection was null");
+            internalResourceCollection = new InternalCollection();
+            project.setInternalCollection(internalResourceCollection);
+            internalResourceCollection.markUpdated(project.getSubmitter());
+            genericService.saveOrUpdate(internalResourceCollection);
+            internalResourceCollection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+            genericService.saveOrUpdate(internalResourceCollection.getAuthorizedUsers());
+            genericService.saveOrUpdate(internalResourceCollection);
+        }
         logger.debug("{}", internalResourceCollection);
         Long collectionId = internalResourceCollection.getId();
 
@@ -54,6 +66,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
 
         obfuscationService.obfuscate(project, null);
         logger.debug("submitter: {} ", project.getSubmitter());
+        logger.debug("{}", project.getInternalCollections());
         // test that the obfuscation is correct
         assertIsObfuscated(project);
         // remaining assertions occur in verifyPostObfuscationData to ensure that we are in a fresh new transaction.
