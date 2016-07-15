@@ -370,6 +370,7 @@ public class AuthenticationService {
         logger.debug("{} : {}", "   affiliation", reg.getAffiliation());
         logger.debug("{} : {}", "contrib access", reg.isRequestingContributorAccess());
         logger.debug("{} : {}", "contrib reason", reg.getContributorReason());
+        logger.debug("{} : {}", "       browser", request.getHeader("User-Agent"));
         person.setAffiliation(reg.getAffiliation());
         person.setContributorReason(reg.getContributorReason());
         AuthenticationResult addResult = getAuthenticationProvider().addUser(person, reg.getPassword());
