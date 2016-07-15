@@ -75,7 +75,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
         Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
         namedQuery.setParameter("parent", parent);
-        namedQuery.setParameter("collectionTypes", Arrays.asList(type));
         namedQuery.setParameter("visible", visible);
         return namedQuery.getResultList();
     }
