@@ -60,7 +60,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     @Autowired
     AuthorizedUserDao authorizedUserDao;
-    
+
     public ResourceCollectionDao() {
         super(ResourceCollection.class);
     }
@@ -68,8 +68,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     /**
      * @return
      */
-    public <C  extends HierarchicalCollection> List<C> findCollectionsOfParent(Long parent, Boolean visible, CollectionType type, Class<C> cls) {
-        Query<C> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_PARENT, cls);
+    public <C extends HierarchicalCollection> List<C> findCollectionsOfParent(Long parent, Boolean visible, CollectionType type, Class<C> cls) {
+        String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT;
+        if (type == CollectionType.LIST) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_PARENT;
+        }
+        Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
         namedQuery.setParameter("parent", parent);
         namedQuery.setParameter("collectionTypes", Arrays.asList(type));
         namedQuery.setParameter("visible", visible);
@@ -77,7 +81,8 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public List<ResourceCollection> findPublicCollectionsWithHiddenParents() {
-        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT, ResourceCollection.class);
+        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
+                ResourceCollection.class);
         return namedQuery.getResultList();
     }
 
@@ -108,23 +113,22 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             throw new TdarRecoverableRuntimeException("resourceCollectionDao.wrong_type");
         }
         Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, cls);
-        query.setParameter("name", ((HasDisplayProperties)collection).getName());
+        query.setParameter("name", ((HasDisplayProperties) collection).getName());
         List<C> list = query.getResultList();
-        for  (C coll : list) {
-        	if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
-        		return coll;
-        	}
+        for (C coll : list) {
+            if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
+                return coll;
+            }
         }
         return null;
     }
 
     public List<SharedCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME ,SharedCollection.class);
+        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
+                SharedCollection.class);
         query.setParameter("name", name);
         List<SharedCollection> list = new ArrayList<>(query.getResultList());
-        list.removeIf( rc -> (
-            !isAdmin && !authorizedUserDao.isAllowedTo(user, (HasDisplayProperties)rc, GeneralPermissions.ADMINISTER_GROUP)   
-        ));
+        list.removeIf(rc -> (!isAdmin && !authorizedUserDao.isAllowedTo(user, (HasDisplayProperties) rc, GeneralPermissions.ADMINISTER_GROUP)));
         return list;
 
     }
@@ -135,7 +139,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public List<Resource> findAllResourcesWithStatus(ResourceCollection persistable, Status[] statuses) {
-        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_RESOURCES_WITH_STATUS , Resource.class);
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_RESOURCES_WITH_STATUS, Resource.class);
         query.setParameter("ids", Arrays.asList(persistable.getId()));
         query.setParameter("statuses", Arrays.asList(statuses));
         return query.getResultList();
@@ -146,7 +150,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             return Collections.EMPTY_LIST;
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
-        Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER, cls);
+        String q = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER;
+        if (cls.isAssignableFrom(ListCollection.class)) {
+            q = TdarNamedQueries.LIST_COLLECTION_LIST_WITH_AUTHUSER;
+        }
+        Query<C> query = getCurrentSession().createNamedQuery(q, cls);
         query.setParameter("effectivePermission", permission);
         query.setParameter("userId", user.getId());
         return query.getResultList();
@@ -160,10 +168,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
         for (C rc : collections) {
             if (rc instanceof SharedCollection) {
-                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((SharedCollection)rc, SharedCollection.class));
+                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((SharedCollection) rc, SharedCollection.class));
             }
             if (rc instanceof ListCollection) {
-                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((ListCollection)rc, ListCollection.class));
+                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((ListCollection) rc, ListCollection.class));
             }
             allCollections.add(rc);
         }
@@ -193,7 +201,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return result.longValue();
     }
 
-    @SuppressWarnings({"unchecked","rawtypes"})
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public <E extends HierarchicalCollection<?>> List<E> getAllChildCollections(E persistable, Class<E> cls) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
@@ -224,7 +232,8 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         if (CollectionUtils.isEmpty(sharedCollectionIds)) {
             return Collections.EMPTY_LIST;
         }
-        Query<DownloadAuthorization> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION, DownloadAuthorization.class);
+        Query<DownloadAuthorization> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
+                DownloadAuthorization.class);
         query.setParameter("collectionids", sharedCollectionIds);
         query.setParameter("apiKey", apiKey);
         query.setParameter("hostname", referrer.toLowerCase());
@@ -338,6 +347,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     /**
      * Convert a resource collection into a white-label collection.
+     * 
      * @param rc
      * @return
      */

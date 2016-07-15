@@ -1815,7 +1815,7 @@ public class Resource implements Persistable,
         return internalCollections;
     }
 
-    public void setInternalCollections(Set<InternalCollection> internalCollections) {
+    protected void setInternalCollections(Set<InternalCollection> internalCollections) {
         this.internalCollections = internalCollections;
     }
 

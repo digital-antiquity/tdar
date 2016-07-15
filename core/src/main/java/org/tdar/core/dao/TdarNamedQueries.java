@@ -60,7 +60,8 @@ public interface TdarNamedQueries {
     String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     String QUERY_EDITABLE_RESOURCES = "resource.editable";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";
-    String QUERY_COLLECTION_BY_PARENT = "collection.parent";
+    String QUERY_SHARED_COLLECTION_BY_PARENT = "sharedcollection.parent";
+    String QUERY_LIST_COLLECTION_BY_PARENT = "listcollection.parent";
     String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
     String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";
@@ -120,7 +121,8 @@ public interface TdarNamedQueries {
     String QUERY_RESOURCE_FIND_OLD_LIST = "resource.old";
     String FIND_ACCOUNT_FOR_INVOICE = "account.forInvoice";
     String DELETE_INFORMATION_RESOURCE_FILE_VERSION_IMMEDIATELY = "irfv.delete";
-    String COLLECTION_LIST_WITH_AUTHUSER = "collection.idlest.with.authuser";
+    String SHARED_COLLECTION_LIST_WITH_AUTHUSER = "sharedcollection.idlest.with.authuser";
+    String LIST_COLLECTION_LIST_WITH_AUTHUSER = "listcollection.idlest.with.authuser";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED = "query.sparse.editable.sorted.resources.inherited";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED_SORTED = "query.sparse.editable.sorted.resources.inherited.sorted";
     String QUERY_SPARSE_COLLECTION_RESOURCES = "query.sparse.collection.resources";

@@ -191,8 +191,12 @@
                 query = "select count(res.id) as count , res.resourceType as resourceType from Resource as res where res.status='ACTIVE' group by res.resourceType "
         ),
         @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.QUERY_COLLECTION_BY_PARENT,
-                query = "from ResourceCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and col.type in (:collectionTypes) and (hidden=:visible or :visible is NULL)"
+                name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT,
+                query = "from SharedCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL))  and (hidden=:visible or :visible is NULL)"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_PARENT,
+                query = "from ListCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and (hidden=:visible or :visible is NULL)"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
@@ -421,8 +425,12 @@
                 name = TdarNamedQueries.FIND_ACCOUNT_FOR_INVOICE,
                 query = "select account from BillingAccount account join account.invoices as invoice where invoice.id = :id"),
         @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.COLLECTION_LIST_WITH_AUTHUSER,
-                query = "select rescol from ResourceCollection rescol join rescol.authorizedUsers  as authUser where rescol.type !='LIST' and authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
+                name = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER,
+                query = "select rescol from SharedCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
+
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.LIST_COLLECTION_LIST_WITH_AUTHUSER,
+                query = "select rescol from ListCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
 
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED,

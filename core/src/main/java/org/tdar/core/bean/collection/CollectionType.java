@@ -16,6 +16,19 @@ public enum CollectionType implements Localizable, PluralLocalizable {
     public String getLabel() {
         return this.label;
     }
+    
+    public static <C extends ResourceCollection> CollectionType getTypeForClass(Class<C> cls) {
+        if (cls.isAssignableFrom(SharedCollection.class)) {
+            return SHARED;
+        }
+        if (cls.isAssignableFrom(ListCollection.class)) {
+            return LIST;
+        }
+        if (cls.isAssignableFrom(InternalCollection.class)) {
+            return INTERNAL;
+        }
+        return null;
+    }
 
     @Override
     public String getPluralLocaleKey() {
