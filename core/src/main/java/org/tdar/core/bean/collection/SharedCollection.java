@@ -84,9 +84,9 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
 
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "sharedCollections", targetEntity = Resource.class)
     @LazyCollection(LazyCollectionOption.EXTRA)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.SharedCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
 

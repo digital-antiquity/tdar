@@ -3,10 +3,14 @@ package org.tdar.core.bean.collection;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -27,13 +31,16 @@ public class InternalCollection extends ResourceCollection implements RightsBase
 
 
     @XmlTransient
-    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "resourceCollections", targetEntity = Resource.class)
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "internalCollections", targetEntity = Resource.class)
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Size(min=0,max=1)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.resources")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.InternalCollection.resources")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
 
 
+//    @OneToOne(cascade=CascadeType.ALL, mappedBy="internalCollection")
+//    @JoinTable(name="collection_resource",joinColumns=@JoinColumn(name="collection_id"), inverseJoinColumns=@JoinColumn(name="resource_id"))
+//    private Resource resource;
 
     //if you serialize this (even if just a list IDs, hibernate will request all necessary fields and do a traversion of the full resource graph (this could crash tDAR if > 100,000)
     @XmlTransient
@@ -55,5 +62,15 @@ public class InternalCollection extends ResourceCollection implements RightsBase
     public boolean isValidForController() {
         return true;
     }
+
+
+//    public Resource getResource() {
+//        return resource;
+//    }
+//
+//
+//    public void setResource(Resource resource) {
+//        this.resource = resource;
+//    }
     
 }

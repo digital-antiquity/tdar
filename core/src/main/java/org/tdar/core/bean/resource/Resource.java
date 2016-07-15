@@ -31,6 +31,7 @@ import javax.persistence.Lob;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.OrderColumn;
 import javax.persistence.SequenceGenerator;
@@ -419,7 +420,7 @@ public class Resource implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Where(clause="collection_type='SHARED'")
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.sharedCollections")
     private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -428,9 +429,13 @@ public class Resource implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Size(min=0,max=1)
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.internalCollections")
     @Where(clause="collection_type='INTERNAL'")
     private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
+
+//    @OneToOne(cascade=CascadeType.ALL)
+//    @JoinTable(name="collection_resource",joinColumns=@JoinColumn(name="resource_id"), inverseJoinColumns=@JoinColumn(name="collection_id"))
+//    private InternalCollection internalCollection;
 
     // MAINTAINED FOR HQL QUERY USE
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -438,7 +443,6 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     @Where(clause="collection_type!='LIST'")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
@@ -1801,11 +1805,15 @@ public class Resource implements Persistable,
         this.viewConfidential = editable;
     }
 
-    public void setInternalCollection(InternalCollection ic) {
-        internalCollections.clear();
-        internalCollections.add(ic);
-    }
-    
+//    public void setInternalCollection(InternalCollection ic) {
+//        internalCollection = ic;
+//   }
+//
+//    
+//    public InternalCollection getInternalCollection() {
+//        return internalCollection;
+//   }
+
     @XmlElementRefs({
             @XmlElementRef(name = "internalCollection", type = InternalCollection.class, required = false),
             @XmlElementRef(name = "internalCollectionRef", type = JAXBPersistableRef.class, required = false)
