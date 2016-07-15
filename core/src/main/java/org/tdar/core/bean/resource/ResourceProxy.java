@@ -133,6 +133,7 @@ public class ResourceProxy implements Serializable {
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
+    @Where(clause="collection_type='SHARED'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
 
@@ -141,6 +142,7 @@ public class ResourceProxy implements Serializable {
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Size(min=0,max=1)
+    @Where(clause="collection_type='INTERNAL'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
 

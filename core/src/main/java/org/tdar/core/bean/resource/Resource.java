@@ -415,6 +415,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
+    @Where(clause="collection_type='SHARED'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
     private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
 
@@ -425,6 +426,7 @@ public class Resource implements Persistable,
     @XmlTransient
     @Size(min=0,max=1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Where(clause="collection_type='INTERNAL'")
     private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -441,6 +443,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
+    @Where(clause="collection_type='LIST'")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
     private Set<ListCollection> unmanagedResourceCollections = new LinkedHashSet<>();
 
