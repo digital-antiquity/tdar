@@ -47,6 +47,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
+import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
 import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.dataset.DatasetController;
@@ -104,13 +105,17 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
     public void bookmarkResource(Resource r_, boolean ajax, TdarUser user) throws Exception {
         Resource r = r_;
-        BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
-        logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
-        bookmarkController.setResourceId(r.getId());
-        bookmarkController.prepare();
         if (ajax) {
+            BookmarkApiController bookmarkController = generateNewInitializedController(BookmarkApiController .class);
+            logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.bookmarkResourceAjaxAction();
         } else {
+            BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController .class);
+            logger.info("bookmarking " + r.getTitle() + " (" + r.getId() + ")");
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.bookmarkResourceAction();
         }
         r = resourceService.find(r.getId());
@@ -128,7 +133,6 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
     @SuppressWarnings("deprecation")
     public void removeBookmark(Resource r, boolean ajax, TdarUser user_) throws Exception {
         TdarUser user = user_;
-        BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
         boolean seen = false;
         for (BookmarkedResource b : entityService.getBookmarkedResourcesForUser(user)) {
             if (ObjectUtils.equals(b.getResource(), r)) {
@@ -138,11 +142,15 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
         Assert.assertTrue("should have seen resource in bookmark list", seen);
         logger.info("removing bookmark " + r.getTitle() + " (" + r.getId() + ")");
-        bookmarkController.setResourceId(r.getId());
-        bookmarkController.prepare();
         if (ajax) {
+            BookmarkApiController bookmarkController = generateNewInitializedController(BookmarkApiController .class);
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.removeBookmarkAjaxAction();
         } else {
+            BookmarkResourceController bookmarkController = generateNewInitializedController(BookmarkResourceController.class);
+            bookmarkController.setResourceId(r.getId());
+            bookmarkController.prepare();
             bookmarkController.removeBookmarkAction();
         }
         seen = false;

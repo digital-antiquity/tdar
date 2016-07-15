@@ -582,7 +582,7 @@ TDAR.common = function (TDAR, fileupload) {
         }
         var newclass = "tdar-icon-" + newstate;
 
-        $.post(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
+        $.post(TDAR.uri() + "api/resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
                         $(".bookmark-label", $this).text(newtext);
                         $icon.removeClass(oldclass).addClass(newclass).show();
