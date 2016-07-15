@@ -28,6 +28,11 @@
     </rule>
 
     <rule>
+        <from>^/search/rss</from>
+        <to>/api/search/rss</to>
+    </rule>
+
+    <rule>
         <from>^/(document)s?/?$</from>
         <to type="redirect">/search/results?resourceTypes=DOCUMENT&amp;startRecord=0
         </to>

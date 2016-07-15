@@ -10,7 +10,7 @@
     <meta name="lastModifiedDate" content="$Date$"/>
     <#if includeRssAndSearchLinks??>
         <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-        <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${resource.id?c}&groups[0].projects[0].name=${(resource.name!'untitled')?url}">
+        <#assign rssUrl = "/api/search/rss?groups[0].fieldTypes[0]=PROJECT&groups[0].projects[0].id=${resource.id?c}&groups[0].projects[0].name=${(resource.name!'untitled')?url}">
         <@search.rssUrlTag url=rssUrl />
         <@search.headerLinks includeRss=false />
     </#if>
