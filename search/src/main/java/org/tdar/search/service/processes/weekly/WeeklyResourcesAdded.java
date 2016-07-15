@@ -63,7 +63,7 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
             genericService.saveOrUpdate(collection);
             for (Resource r : resources) {
             	collection.getResources().add(r);
-            	r.getResourceCollections().add(collection);
+            	r.getSharedCollections().add(collection);
                 genericService.saveOrUpdate(r);
             }
             collection.getResources().addAll(resources);

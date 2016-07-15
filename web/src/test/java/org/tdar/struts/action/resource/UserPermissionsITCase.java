@@ -131,7 +131,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         evictCache();
 
         genericService.refresh(image);
-        logger.debug("resource collections: {}", image.getResourceCollections());
+        logger.debug("resource collections: {}", image.getSharedCollections());
 
         authUsers = resourceCollectionService.getAuthorizedUsersForResource(image, p);
         assertEquals("expecting authuser list should be empty now", 0, authUsers.size());
@@ -140,7 +140,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         assertNotEquals("submitter and p should not be the same", image.getSubmitter().getId(), p.getId());
         image.markUpdated(getAdminUser());
         genericService.saveOrUpdate(image);
-        image.getResourceCollections().clear();
+        image.getSharedCollections().clear();
         genericService.saveOrUpdate(image);
         image = null;
         evictCache();

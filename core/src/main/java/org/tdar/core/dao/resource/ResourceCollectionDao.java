@@ -326,7 +326,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         internalCollection.setOwner(owner);
         internalCollection.markUpdated(owner);
         if (resource != null) {
-            resource.getResourceCollections().add(internalCollection);
+            resource.getInternalCollections().add(internalCollection);
         }
         // internalCollection.getResources().add(resource); // WATCH -- may cause failure, if so, remove
         if (shouldSave) {

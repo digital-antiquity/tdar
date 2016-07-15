@@ -178,7 +178,7 @@ public class ResourceExportService {
         }
 
         // remove internal
-        resource.getResourceCollections().removeIf(rc -> rc instanceof InternalCollection);
+        resource.getInternalCollections().clear();
         resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
         resource.getSharedResourceCollections().forEach(rc -> {
             clearId(rc);

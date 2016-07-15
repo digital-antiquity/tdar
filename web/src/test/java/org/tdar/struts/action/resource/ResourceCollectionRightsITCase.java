@@ -217,7 +217,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
 
         Long resId = setupResource(testPerson, users);
         InformationResource generateInformationResourceWithFile = genericService.find(InformationResource.class, resId);
-        logger.debug("collections: {}", generateInformationResourceWithFile.getResourceCollections());
+        logger.debug("collections: {}", generateInformationResourceWithFile.getSharedCollections());
         authorizedUserDao.clearUserPermissionsCache();
         assertTrue("user can edit based on parent of parent resource collection",
                 authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
@@ -306,8 +306,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
         evictCache();
-        RightsBasedResourceCollection first = document.getResourceCollections().iterator().next();
-        assertEquals(1, document.getResourceCollections().size());
+        RightsBasedResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
+        assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
         assertEquals(1, first.getResources().size());

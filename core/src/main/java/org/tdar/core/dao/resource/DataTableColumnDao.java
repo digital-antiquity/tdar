@@ -92,9 +92,9 @@ public class DataTableColumnDao extends Dao.HibernateBase<DataTableColumn> {
         save(codingSheet);
         if (dataset != null) {
             codingSheet.setProject(dataset.getProject());
-            for (RightsBasedResourceCollection collection : dataset.getResourceCollections()) {
+            for (RightsBasedResourceCollection collection : dataset.getRightsBasedResourceCollections()) {
                 if (collection instanceof SharedCollection) {
-                    codingSheet.getResourceCollections().add(collection);
+                    codingSheet.getSharedCollections().add((SharedCollection) collection);
                 }
             }
         }

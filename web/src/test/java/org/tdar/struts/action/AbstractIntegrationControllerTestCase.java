@@ -310,7 +310,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
             internalResourceCollection = new InternalCollection();
             internalResourceCollection.setOwner(person);
             internalResourceCollection.markUpdated(person);
-            resource.getResourceCollections().add(internalResourceCollection);
+            resource.getInternalCollections().add(internalResourceCollection);
             genericService.save(internalResourceCollection);
         }
         internalResourceCollection.getAuthorizedUsers().add(authorizedUser);

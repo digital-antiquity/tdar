@@ -184,7 +184,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         genericService.save(testCollection);
 
         // add the resourceCollection to the project (and vice/versa)
-        project_.getResourceCollections().add(testCollection);
+        project_.getSharedResourceCollections().add(testCollection);
         genericService.saveOrUpdate(testCollection);
         genericService.saveOrUpdate(project_);
         List<AuthorizedUser> users2 = new ArrayList<AuthorizedUser>();
@@ -195,7 +195,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         genericService.saveOrUpdate(testCollection);
 
         logger.info("u:{}, r:{}", testModify.getId(), testResource.getId());
-        logger.info("rc:{}", project_.getResourceCollections());
+        logger.info("rc:{}", project_.getRightsBasedResourceCollections());
         assertFalse(authenticationAndAuthorizationService.canEditResource(testOwner, testResource, GeneralPermissions.MODIFY_METADATA));
         assertFalse(authenticationAndAuthorizationService.canEditResource(testView, testResource, GeneralPermissions.MODIFY_METADATA));
 
@@ -263,7 +263,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         Project loadedProject = genericService.find(Project.class, id);
         logger.info("{}", loadedProject);
         // confirm that the controller added the list of resource collections to the project
-        assertTrue("collection list shouldn't be empty", loadedProject.getResourceCollections().size() > 0);
+        assertTrue("collection list shouldn't be empty", loadedProject.getRightsBasedResourceCollections().size() > 0);
 
         logger.debug("resource collection id:{}\t  {}", rc.getId(), rc);
         evictCache();
@@ -326,7 +326,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(project.isTransient());
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
-        assertUniqueCollections((Collection<? extends ResourceCollection>)loadedProject.getResourceCollections(), name1, name2);
+        assertUniqueCollections((Collection<? extends ResourceCollection>)loadedProject.getRightsBasedResourceCollections(), name1, name2);
 
     }
 

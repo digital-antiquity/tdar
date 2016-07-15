@@ -94,8 +94,8 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
             }
         }
         // only add the SAA option if ...
-        if (CollectionUtils.isNotEmpty(resource.getResourceCollections())) {
-            resource.getResourceCollections().forEach(c -> {
+        if (CollectionUtils.isNotEmpty(resource.getSharedCollections())) {
+            resource.getSharedCollections().forEach(c -> {
                 if (TdarConfiguration.getInstance().getSaaCollectionIds().contains(c.getId())) {
                     emailTypes.add(EmailMessageType.SAA);
                 }

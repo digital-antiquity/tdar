@@ -103,7 +103,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		collectionChild.setOrientation(DisplayOrientation.GRID);
 		collectionChild.setDescription(collectionChild.getTitle());
 		collectionChild.markUpdated(getAdminUser());
-		project.getResourceCollections().add(collectionChild);
+		project.getSharedCollections().add(collectionChild);
 		collectionChild.getResources().add(project);
 		resourceCollectionService.updateCollectionParentTo(getAdminUser(), collectionChild, collection);
 		genericService.saveOrUpdate(collectionChild);
@@ -135,8 +135,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		internal.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
 		genericService.saveOrUpdate(internal);
 
-		doc.getResourceCollections().add(collection);
-		doc.getResourceCollections().add(internal);
+		doc.getSharedCollections().add(collection);
+		doc.getInternalCollections().add(internal);
 		internal.getResources().add(doc);
 		collection.getResources().add(doc);
 		genericService.saveOrUpdate(internal);

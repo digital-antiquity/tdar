@@ -42,7 +42,7 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
         SharedCollection rc = createAndSaveNewResourceCollection("turkey");
         rc.setHidden(false);
         rc.getResources().add(ds);
-        ds.getResourceCollections().add(rc);
+        ds.getSharedCollections().add(rc);
         searchIndexService.index(ds);
         searchIndexService.index(rc);
         SolrDocument byId = template.getById(SearchUtils.createKey(ds));

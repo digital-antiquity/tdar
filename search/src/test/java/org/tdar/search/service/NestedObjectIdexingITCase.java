@@ -51,14 +51,14 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         	Image image = createAndSaveNewInformationResource(Image.class);
         	image.setTitle(i + ":"+ image.getTitle() );
         	collection.getResources().add(image);
-        	image.getResourceCollections().add(collection);
+        	image.getSharedCollections().add(collection);
         	genericService.saveOrUpdate(image);
         	genericService.saveOrUpdate(collection);
         }
         genericService.synchronize();
         logger.debug("===================");
         collection.getResources().add(dc);
-        dc.getResourceCollections().add(collection);
+        dc.getSharedCollections().add(collection);
         genericService.synchronize();
         logger.debug("===================");
 
@@ -75,7 +75,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         genericService.synchronize();
         logger.debug("===================");
         collection.getResources().add(image);
-        image.getResourceCollections().add(collection);
+        image.getSharedCollections().add(collection);
         logger.debug("{}", image);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(image);
@@ -99,7 +99,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         assertTrue(result.getResults().contains(image));
 
         collection.getResources().remove(image);
-        image.getResourceCollections().remove(collection);
+        image.getSharedCollections().remove(collection);
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(image);
         genericService.synchronize();

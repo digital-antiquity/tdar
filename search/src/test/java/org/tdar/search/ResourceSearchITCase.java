@@ -810,7 +810,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         Project proj = createAndSaveNewResource(Project.class);
         SharedCollection coll = createAndSaveNewResourceCollection(colname);
         searchIndexService.index(coll);
-        proj.getResourceCollections().add(coll);
+        proj.getSharedCollections().add(coll);
         searchIndexService.index(proj);
 
         // simulate searchParamerters that represents a project at [0] and collection at [1]
@@ -989,7 +989,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         collection.getResources().add(ont);
         // babysitting bidirectional relationshi[
         genericService.saveOrUpdate(collection);
-        ont.getResourceCollections().add(collection);
+        ont.getSharedCollections().add(collection);
         genericService.saveOrUpdate(ont);
         searchIndexService.indexAll(new QuietIndexReciever(),Arrays.asList( LookupSource.RESOURCE), getAdminUser());
         ReservedSearchParameters params = new ReservedSearchParameters();

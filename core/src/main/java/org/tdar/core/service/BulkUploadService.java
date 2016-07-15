@@ -37,6 +37,7 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.InformationResource;
@@ -255,17 +256,12 @@ public class BulkUploadService {
         resourceTemplate.setDescription("");
         resourceTemplate.setDate(-1);
 
-        List<RightsBasedResourceCollection> shared = new ArrayList<>();
-        Iterator<RightsBasedResourceCollection> iter = resourceTemplate.getResourceCollections().iterator();
+        List<SharedCollection> shared = new ArrayList<>();
+        Iterator<SharedCollection> iter = resourceTemplate.getSharedResourceCollections().iterator();
         while (iter.hasNext()) {
-            RightsBasedResourceCollection collection = iter.next();
-            if (collection instanceof InternalCollection) {
-                continue;
-            }
-            iter.remove();
-            shared.add(genericDao.merge(collection));
+            shared.add(genericDao.merge(iter.next()));
         }
-        resourceTemplate.getResourceCollections().addAll(shared);
+        resourceTemplate.getSharedCollections().addAll(shared);
 
         Project project = resourceTemplate.getProject();
         if ((project != null) && !project.equals(Project.NULL)) {
@@ -372,7 +368,7 @@ public class BulkUploadService {
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
                 try {
-                    cols.addAll(resource.getResourceCollections());
+                    cols.addAll(resource.getRightsBasedResourceCollections());
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {

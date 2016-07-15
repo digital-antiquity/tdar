@@ -38,13 +38,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlElementRefs;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
@@ -59,6 +59,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -108,9 +109,7 @@ import org.tdar.core.exception.TdarValidationException;
 import org.tdar.utils.MathUtils;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
-import org.tdar.utils.jaxb.converters.JAXBPersistableRef;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
-import org.tdar.utils.jaxb.converters.JaxbResourceCollectionRefConverter;
 import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 import org.tdar.utils.json.JsonIntegrationSearchResultFilter;
@@ -417,6 +416,24 @@ public class Resource implements Persistable,
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @Size(min=0,max=1)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Where(clause="collection_type!='LIST'")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -1233,13 +1250,13 @@ public class Resource implements Persistable,
         return created;
     }
 
-    /**
-     * @param resourceCollections
-     *            the resourceCollections to set
-     */
-    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
-    }
+//    /**
+//     * @param resourceCollections
+//     *            the resourceCollections to set
+//     */
+//    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+//        this.resourceCollections = resourceCollections;
+//    }
 
     /**
      * @return the resourceCollections
@@ -1253,50 +1270,38 @@ public class Resource implements Persistable,
      *  Note, this is both for terseness as well as performance (large collections). 
      * @return
      */
-    @XmlElementWrapper(name = "resourceCollections")
-    @XmlElementRefs({
-        @XmlElementRef(name="resourceCollection", type=ResourceCollection.class,required=false),
-        @XmlElementRef(name="resourceCollectionRef",type=JAXBPersistableRef.class, required=false)
-    })
-    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
-    public Set<ResourceCollection> getResourceCollections() {
-        if (resourceCollections == null) {
-            resourceCollections = new LinkedHashSet<>();
-        }
-        return resourceCollections;
-    }
+//    @XmlElementWrapper(name = "resourceCollections")
+//    @XmlElementRefs({
+//        @XmlElementRef(name="resourceCollection", type=ResourceCollection.class,required=false),
+//        @XmlElementRef(name="resourceCollectionRef",type=JAXBPersistableRef.class, required=false)
+//    })
+//    @XmlJavaTypeAdapter(JaxbResourceCollectionRefConverter.class)
+//    public Set<ResourceCollection> getResourceCollections() {
+//        if (resourceCollections == null) {
+//            resourceCollections = new LinkedHashSet<>();
+//        }
+//        return resourceCollections;
+//    }
 
     @Transient
     @XmlTransient
     public Set<SharedCollection> getSharedCollections() {
-        HashSet<SharedCollection> shared = new HashSet<>();
-        for (RightsBasedResourceCollection col : getRightsBasedResourceCollections()) {
-            if (col instanceof SharedCollection) {
-                shared.add((SharedCollection)col);
-            }
-        }
-        return shared;
+        return sharedCollections;
     }
 
     @Transient
     public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
-        Set<RightsBasedResourceCollection> collections = new HashSet<>();
-        for (ResourceCollection coll : getResourceCollections()) {
-            if (coll instanceof RightsBasedResourceCollection) {
-                collections.add((RightsBasedResourceCollection) coll);
-            }
-        }
+        Set<RightsBasedResourceCollection> collections = new HashSet<>(getSharedCollections());
+        collections.addAll(internalCollections);
         return collections;
     }
 
     @Transient
     public InternalCollection getInternalResourceCollection() {
-        for (ResourceCollection collection : getResourceCollections()) {
-            if (collection instanceof InternalCollection) {
-                return (InternalCollection)collection;
-            }
+        if (CollectionUtils.isEmpty(internalCollections)) {
+            return null;
         }
-        return null;
+        return internalCollections.iterator().next();
     }
 
     @Override
@@ -1378,24 +1383,18 @@ public class Resource implements Persistable,
 
     @Transient
     public Set<SharedCollection> getSharedResourceCollections() {
-        Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
-        for (ResourceCollection collection : getResourceCollections()) {
-            if (collection instanceof SharedCollection) {
-                sharedCollections.add((SharedCollection)collection);
-            }
-        }
         return sharedCollections;
     }
 
     @Transient
     public Set<SharedCollection> getSharedVisibleResourceCollections() {
-        Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
-        for (ResourceCollection collection : getResourceCollections()) {
-            if (collection instanceof SharedCollection && !((SharedCollection) collection).isHidden()) {
-                sharedCollections.add((SharedCollection)collection);
+        Set<SharedCollection> collections = new LinkedHashSet<>(sharedCollections);
+        for (SharedCollection collection : sharedCollections) {
+            if (!((SharedCollection) collection).isHidden()) {
+                collections.add((SharedCollection)collection);
             }
         }
-        return sharedCollections;
+        return collections;
     }
 
     /**
@@ -1505,7 +1504,8 @@ public class Resource implements Persistable,
         this.setFilesUsed(resource.getPreviousFilesUsed());
         this.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
         this.setFilesUsed(resource.getFilesUsed());
-        this.getResourceCollections().addAll(new ArrayList<>(resource.getResourceCollections()));
+        this.getSharedCollections().addAll(new ArrayList<>(resource.getSharedCollections()));
+        this.internalCollections.add(resource.getInternalResourceCollection());
 
     }
 
@@ -1784,5 +1784,26 @@ public class Resource implements Persistable,
     @Override
     public void setConfidentialViewable(boolean editable) {
         this.viewConfidential = editable;
+    }
+
+    public void setInternalCollection(InternalCollection ic) {
+        internalCollections.clear();
+        internalCollections.add(ic);
+    }
+    
+    public Set<InternalCollection> getInternalCollections() {
+        return internalCollections;
+    }
+
+    public void setInternalCollections(Set<InternalCollection> internalCollections) {
+        this.internalCollections = internalCollections;
+    }
+
+    protected Set<ResourceCollection> getResourceCollections() {
+        return resourceCollections;
+    }
+
+    protected void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+        this.resourceCollections = resourceCollections;
     }
 }

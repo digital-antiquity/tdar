@@ -200,12 +200,12 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         coll.setHidden(true);
         coll.setName("hidden");
         coll.markUpdated(getAdminUser());
-        fake.getResourceCollections().add(coll);
+        fake.getSharedCollections().add(coll);
         SharedCollection coll2 = new SharedCollection();
         coll2.setHidden(false);
         coll2.setName("visible");
         coll2.markUpdated(getAdminUser());
-        fake.getResourceCollections().add(coll2);
+        fake.getSharedCollections().add(coll2);
 
         fake.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 0, 1000));
         // fake.getResourceCollections().clear();

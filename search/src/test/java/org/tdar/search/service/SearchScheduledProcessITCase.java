@@ -78,7 +78,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = new SharedCollection();
         collection.getResources().add(dataset);
-        dataset.getResourceCollections().add(collection);
+        dataset.getSharedCollections().add(collection);
         collection.markUpdated(getAdminUser());
         AuthorizedUser e = new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL);
         e.setDateExpires(DateTime.now().minusDays(4).toDate());

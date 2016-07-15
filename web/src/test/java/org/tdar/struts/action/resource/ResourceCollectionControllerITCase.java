@@ -253,7 +253,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         genericService.saveOrUpdate(resourceCollection);
         for (Document doc : docList) {
-            doc.getResourceCollections().add(resourceCollection);
+            doc.getSharedCollections().add(resourceCollection);
             doc.setSubmitter(owner);
             genericService.saveOrUpdate(doc);
         }
@@ -537,7 +537,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // WHY DOES THE SYNCHRONIZE ON THE INDEX CALL DO ANYTHING HERE VS THE
         // SYNCHRONIZE ABOVE
         testFile = genericService.find(Document.class, fileId);
-        logger.info("{} : {}", testFile, testFile.getResourceCollections());
+        logger.info("{} : {}", testFile, testFile.getRightsBasedResourceCollections());
 
         controller_.setRecordsPerPage(1000);
         assertEquals(Action.SUCCESS, controller_.browseCollections());
@@ -562,7 +562,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertFalse(collections.contains(collection1Id));
         assertFalse(collections.contains(collection2Id));
 
-        assertEquals(1, testFile.getResourceCollections().size());
+        assertEquals(1, testFile.getRightsBasedResourceCollections().size());
         parentCollection = genericService.find(SharedCollection.class, id);
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
@@ -692,8 +692,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.setServletRequest(getServletPostRequest());
         controller.getResourceCollections().add(fakeIncoming);
         assertEquals(Action.SUCCESS, controller.save());
-        RightsBasedResourceCollection first = document.getResourceCollections().iterator().next();
-        assertEquals(1, document.getResourceCollections().size());
+        RightsBasedResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
+        assertEquals(1, document.getRightsBasedResourceCollections().size());
         assertEquals(collection1, first);
         assertEquals(getUser(), first.getOwner());
         assertEquals(1, first.getResources().size());
@@ -715,8 +715,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
 
-        assertEquals(2, document.getResourceCollections().size());
-        assertTrue(document.getResourceCollections().contains(collection1));
+        assertEquals(2, document.getRightsBasedResourceCollections().size());
+        assertTrue(document.getRightsBasedResourceCollections().contains(collection1));
         assertEquals(1, collection1.getResources().size());
         searchIndexService.index(document);
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
@@ -923,7 +923,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.view();
         assertEquals("okay, we should have one resource in this collection now", 1, vc.getResults().size());
         project = genericService.find(Project.class, pid);
-        project.getResourceCollections().add(rc);
+        project.getSharedCollections().add(rc);
         genericService.saveOrUpdate(project);
         evictCache();
         // okay now lets delete the resource
@@ -949,7 +949,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // so far so good. but lets make sure that the resource *is* actually in the collection
         rc = genericService.find(SharedCollection.class, rcid);
         assertTrue(rc.getResources().contains(project));
-        logger.info("{}", resourceDeleteAction.getPersistable().getResourceCollections());
+        logger.info("{}", resourceDeleteAction.getPersistable().getRightsBasedResourceCollections());
     }
 
     @Test
@@ -962,7 +962,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         project = null;
         project = genericService.find(Project.class, pid);
         project.setStatus(Status.DELETED);
-        project.getResourceCollections().add(collection);
+        project.getSharedCollections().add(collection);
         genericService.saveOrUpdate(project);
         Long rcid = collection.getId();
         String slug = collection.getSlug();
@@ -987,8 +987,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         searchIndexService.index(project2);
 
-        logger.info("{}", project2.getResourceCollections());
-        assertTrue(PersistableUtils.extractIds(project2.getResourceCollections()).contains(rcid));
+        logger.info("{}", project2.getRightsBasedResourceCollections());
+        assertTrue(PersistableUtils.extractIds(project2.getRightsBasedResourceCollections()).contains(rcid));
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(rcid);
         vc.setSlug(slug);

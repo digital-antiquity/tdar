@@ -141,7 +141,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         collection.markUpdated(getAdminUser());
         collection.getResources().add(doc);
         genericService.saveOrUpdate(collection);
-        doc.getResourceCollections().add(collection);
+        doc.getSharedCollections().add(collection);
         genericService.saveOrUpdate(doc);
         DownloadAuthorization downloadAuthorization = new DownloadAuthorization();
         downloadAuthorization.setApiKey("test");

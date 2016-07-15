@@ -632,7 +632,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         for (Pair<Long, String> detail : details) {
             Resource resource = resourceService.find(detail.getFirst());
             genericService.refresh(resource);
-            Set<RightsBasedResourceCollection> resourceCollections = resource.getResourceCollections();
+            Set<RightsBasedResourceCollection> resourceCollections = resource.getRightsBasedResourceCollections();
             logger.debug("\t resource:{}\t  resourceCollections:{}", resource.getTitle(), resourceCollections.size());
             for (RightsBasedResourceCollection rc : resourceCollections) {
                 logger.debug("\t\t {}", rc);

@@ -285,7 +285,7 @@ public class InvoiceDao extends Dao.HibernateBase<Invoice>{
                     rc = new InternalCollection();
                     rc.markUpdated(invoice.getOwner());
                     saveOrUpdate(rc);
-                    res.getResourceCollections().add(rc);
+                    res.getInternalCollections().add(rc);
                 }
                 rc = markWritableOnExistingSession(rc);
                 rc.getResources().add(res);

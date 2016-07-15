@@ -49,7 +49,7 @@ public class ResourceRightsExtractor {
         HashSet<TdarUser> writable = new HashSet<>();
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
-        for (RightsBasedResourceCollection collection : resource.getResourceCollections()) {
+        for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan(collection, GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
@@ -91,7 +91,7 @@ public class ResourceRightsExtractor {
     }
 
     public void extract() {
-        Set<RightsBasedResourceCollection> collections = new HashSet<>(resource.getResourceCollections());
+        Set<RightsBasedResourceCollection> collections = new HashSet<>(resource.getRightsBasedResourceCollections());
         for (RightsBasedResourceCollection collection : collections) {
             if (collection instanceof SharedCollection) {
                 directCollectionIds.add(collection.getId());

@@ -43,7 +43,7 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         Project project = genericService.find(Project.class, 3805l);
         assertNotObfuscated(project);
         logger.debug("submitter: {} ", project.getSubmitter());
-        logger.debug("{}", project.getResourceCollections());
+        logger.debug("{}", project.getSharedCollections());
 
         // setup a fake user on the resource collection (just in case)
         ResourceCollection internalResourceCollection = project.getInternalResourceCollection();

@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.OneToMany;
+import javax.persistence.criteria.CriteriaBuilder.In;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -408,17 +409,16 @@ public class ImportService {
             for (LatitudeLongitudeBox latLong : rec.getLatitudeLongitudeBoxes()) {
                 latLong.obfuscate();
             }
-            rec.getResourceCollections().clear();
+            rec.getSharedCollections().clear();
+            rec.setInternalCollection(null);
             if (informationResource != null) {
                 informationResource.setProject(Project.NULL);
             }
             irc = null;
         } else {
             // if user does have rights; clone the collections, but reset the Internal ResourceCollection
-            for (RightsBasedResourceCollection rc : rec.getResourceCollections()) {
-                if (rc instanceof SharedCollection) {
-                ((SharedCollection)rc).getResources().add(rec);
-                }
+            for (SharedCollection rc : rec.getSharedCollections()) {
+                rc.getResources().add(rec);
             }
         }
         genericService.detachFromSession(rec);
@@ -592,13 +592,13 @@ public class ImportService {
             ResourceCollection collection = (ResourceCollection) property;
             collection = reconcilePersistableChildBeans(authenticatedUser, collection);
             if (collection instanceof SharedCollection) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (Set<? extends ResourceCollection>)(((Resource) resource).getResourceCollections()),
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource,(((Resource) resource).getSharedCollections()),
                         authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
 
             }
             if (collection instanceof InternalCollection) {
-                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (Set<? extends ResourceCollection>)(((Resource) resource).getResourceCollections()),
+                resourceCollectionService.addResourceCollectionToResource((Resource) resource, (((Resource) resource).getInternalCollections()),
                         authenticatedUser, true,
                         ErrorHandling.VALIDATE_WITH_EXCEPTION, (InternalCollection)collection, InternalCollection.class);
 
@@ -644,7 +644,12 @@ public class ImportService {
             // making sure that the collection's creators and other things are on the sessions properly too
             resetOwnerOnSession((ResourceCollection)collection);
             collection.getResources().add((Resource) resource);
-            ((Resource) resource).getResourceCollections().add(collection);
+            if (collection instanceof SharedCollection) {
+                ((Resource) resource).getSharedCollections().add((SharedCollection)collection);
+            } else if (collection instanceof InternalCollection) {
+                ((Resource) resource).getInternalCollections().add((InternalCollection)collection);
+                
+            }
         }
         if (toReturn instanceof Person) {
             Institution inst = ((Person) toReturn).getInstitution();

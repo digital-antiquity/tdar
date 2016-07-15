@@ -92,7 +92,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         SharedCollection rCollection = generateResourceCollection("test", "test", true,
                 Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_METADATA)),
                 getAdminUser(), Arrays.asList(dataset), null);
-        dataset.getResourceCollections().add(rCollection);
+        dataset.getSharedCollections().add(rCollection);
         dataset.setSubmitter(getBasicUser());
         genericService.saveOrUpdate(rCollection);
 
@@ -103,7 +103,7 @@ public class PaymentResourceControllerITCase extends AbstractResourceControllerI
         genericService.refresh(ds);
         accountService.updateTransientAccountInfo(ds);
         logger.debug("accnt:{}", ds.getAccount());
-        assertNotEmpty(ds.getResourceCollections());
+        assertNotEmpty(ds.getSharedCollections());
         ds = null;
         DatasetController dc = generateNewInitializedController(DatasetController.class, getBasicUser());
         dc.setId(id);

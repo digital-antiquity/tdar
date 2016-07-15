@@ -76,7 +76,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
             if (seen == false) {
                 r.setStatus(Status.DRAFT);
             }
-            r.getResourceCollections().add(collection);
+            r.getSharedCollections().add(collection);
             genericService.saveOrUpdate(r);
             collection.getResources().add(r);
         }
@@ -132,16 +132,16 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         trns.setName(TEST_TITLE);
         trns.setId(-1L);
         list.add(trns);
-        resourceCollectionService.saveResourceCollections(image, list, (Set<? extends ResourceCollection>)image.getResourceCollections(), getBasicUser(), true,
+        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getBasicUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
-        logger.debug("collections: {}", image.getResourceCollections());
+        logger.debug("collections: {}", image.getSharedCollections());
 
         List<Long> extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         assertFalse(extractIds.contains(test.getId()));
-        image.getResourceCollections().clear();
-        resourceCollectionService.saveResourceCollections(image, list, (Set<? extends ResourceCollection>)image.getResourceCollections(), getEditorUser(), true,
+        image.getSharedCollections().clear();
+        resourceCollectionService.saveResourceCollections(image, list, image.getSharedCollections(), getEditorUser(), true,
                 ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
-        logger.debug("collections: {}", image.getResourceCollections());
+        logger.debug("collections: {}", image.getSharedCollections());
         extractIds = PersistableUtils.extractIds(image.getSharedResourceCollections());
         logger.debug("{} -> {}", test.getId(), extractIds);
         assertTrue(extractIds.contains(test.getId()));

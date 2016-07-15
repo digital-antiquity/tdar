@@ -125,7 +125,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");
-        geos.getResourceCollections().add(new SharedCollection("test collection", "test description", SortOption.RESOURCE_TYPE, true, getAdminUser()));
+        geos.getSharedCollections().add(new SharedCollection("test collection", "test description", SortOption.RESOURCE_TYPE, true, getAdminUser()));
         geos.setDescription("test map");
         geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
         geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
@@ -154,7 +154,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         SharedCollection collection = createAndSaveNewResourceCollection(NABATAEAN);
         for (Resource r : genericService.findRandom(Resource.class, 10)) {
             collection.getResources().add(r);
-            r.getResourceCollections().add(collection);
+            r.getSharedCollections().add(collection);
         }
         genericService.saveOrUpdate(collection);
         genericService.synchronize();
@@ -253,7 +253,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         Project project = genericService.find(Project.class, 3805l);
         SharedCollection collection = createAndSaveNewResourceCollection(BEDOUIN);
         collection.getResources().add(project);
-        project.getResourceCollections().add(collection);
+        project.getSharedCollections().add(collection);
         genericService.saveOrUpdate(project);
         genericService.saveOrUpdate(collection);
         final int totalShared = project.getSharedResourceCollections().size();
@@ -272,7 +272,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
                     newProject = (Project) serializationService.parseXml(new StringReader(xml));
                     newProject.markUpdated(getAdminUser());
                     newProject = importService.bringObjectOntoSession(newProject, getAdminUser(), true);
-                    logger.debug("collections:{}",newProject.getResourceCollections());
+                    logger.debug("collections:{}",newProject.getSharedCollections());
                      size = newProject.getSharedResourceCollections().size();
                 } catch (Exception e) {
                     exception = true;

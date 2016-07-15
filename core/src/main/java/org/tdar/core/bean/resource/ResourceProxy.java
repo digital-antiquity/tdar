@@ -7,6 +7,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import javax.persistence.Cacheable;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,6 +26,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.hibernate.annotations.Cache;
@@ -32,13 +34,17 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.Where;
 import org.hibernate.validator.constraints.Length;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -128,8 +134,26 @@ public class ResourceProxy implements Serializable {
             nullable = false, name = "collection_id") })
     @XmlTransient
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
-    private Set<RightsBasedResourceCollection> resourceCollections = new LinkedHashSet<>();
+    private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @Size(min=0,max=1)
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
+
+    @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
+    @LazyCollection(LazyCollectionOption.EXTRA)
+    @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
+            nullable = false, name = "collection_id") })
+    @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCollections")
+    @Where(clause="collection_type!='LIST'")
+    private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
+
+    
     @OneToMany(fetch = FetchType.EAGER, targetEntity = ResourceCreator.class)
     @JoinColumn(name = "resource_id")
     @Immutable
@@ -264,16 +288,32 @@ public class ResourceProxy implements Serializable {
         res.setDateUpdated(this.getDateUpdated());
         res.setId(this.getId());
         logger.trace("recursing down");
-        res.setResourceCollections(getResourceCollections());
+        res.getSharedCollections().addAll(getSharedCollections());
         logger.trace("done generation");
         return res;
     }
 
-    public Set<RightsBasedResourceCollection> getResourceCollections() {
+    public Set<SharedCollection> getSharedCollections() {
+        return sharedCollections;
+    }
+
+    public void setSharedCollections(Set<SharedCollection> resourceCollections) {
+        this.sharedCollections = resourceCollections;
+    }
+
+    public Set<InternalCollection> getInternalCollections() {
+        return internalCollections;
+    }
+
+    public void setInternalCollections(Set<InternalCollection> internalCollections) {
+        this.internalCollections = internalCollections;
+    }
+
+    public Set<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(Set<RightsBasedResourceCollection> resourceCollections) {
+    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 

@@ -482,7 +482,7 @@ public class ResourceService {
             resource.getManagedGeographicKeywords().addAll(proxy.getManagedGeographicKeywords());
             // CLONE if internal, otherwise just add
 
-            for (RightsBasedResourceCollection collection : proxy.getResourceCollections()) {
+            for (RightsBasedResourceCollection collection : proxy.getRightsBasedResourceCollections()) {
                 if (collection instanceof InternalCollection) {
                     logger.info("cloning collection: {}", collection);
                     InternalCollection newInternal = new InternalCollection();
@@ -497,7 +497,7 @@ public class ResourceService {
                                 proxyAuthorizedUser.getGeneralPermission());
                         newInternal.getAuthorizedUsers().add(newAuthorizedUser);
                     }
-                    resource.getResourceCollections().add(newInternal);
+                    resource.getInternalCollections().add(newInternal);
                     newInternal.getResources().add(resource);
                 } else if (collection instanceof SharedCollection){
                     SharedCollection shared = (SharedCollection)collection;
@@ -506,7 +506,7 @@ public class ResourceService {
                         genericDao.save(shared);
                     }
                     shared.getResources().add(resource);
-                    resource.getResourceCollections().add(shared);
+                    resource.getSharedCollections().add(shared);
                 } else {
                     throw new TdarRecoverableRuntimeException("resourceService.collectiontype");
                 }
