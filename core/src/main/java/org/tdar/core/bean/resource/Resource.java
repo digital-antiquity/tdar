@@ -1310,7 +1310,11 @@ public class Resource implements Persistable,
         if (CollectionUtils.isEmpty(internalCollections)) {
             return null;
         }
-        return internalCollections.iterator().next();
+        Iterator<InternalCollection> iterator = internalCollections.iterator();
+        if (iterator.hasNext()) {
+            return iterator.next();
+        }
+        return null;
     }
 
     @Override
@@ -1814,11 +1818,11 @@ public class Resource implements Persistable,
     }
 
     @XmlTransient
-    public Set<ResourceCollection> getResourceCollections() {
+    protected Set<ResourceCollection> getResourceCollections() {
         return resourceCollections;
     }
 
-    public void setResourceCollections(Set<ResourceCollection> resourceCollections) {
+    protected void setResourceCollections(Set<ResourceCollection> resourceCollections) {
         this.resourceCollections = resourceCollections;
     }
 }
