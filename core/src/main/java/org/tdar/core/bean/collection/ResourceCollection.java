@@ -219,7 +219,7 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     @Override
     public String toString() {
-        return String.format("%s Resource collection %s: %s (creator: %s)", getType(), getId(), owner);
+        return String.format("%s collection %s  (creator: %s %s)", getType(), getId(), owner.getProperName(), owner.getId());
     }
 
     @Override

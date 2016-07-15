@@ -6,10 +6,7 @@
  */
 package org.tdar.core.service;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +41,10 @@ public class ObfuscationServiceITCase extends AbstractIntegrationTestCase {
         assertNotObfuscated(project);
         logger.debug("submitter: {} ", project.getSubmitter());
         logger.debug("{}", project.getSharedCollections());
-
+        logger.debug("{}", project.getResourceCollections());
         // setup a fake user on the resource collection (just in case)
         ResourceCollection internalResourceCollection = project.getInternalResourceCollection();
+        logger.debug("{}", internalResourceCollection);
         Long collectionId = internalResourceCollection.getId();
 
         for (AuthorizedUser user : internalResourceCollection.getAuthorizedUsers()) {
