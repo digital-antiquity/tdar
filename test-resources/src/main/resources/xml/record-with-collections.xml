@@ -17,10 +17,18 @@
     <tdar:previousStatus>ACTIVE</tdar:previousStatus>
     <tdar:relatedComparativeCollections/>
     <tdar:resourceAnnotations/>
-    <tdar:resourceCollections>
+    <tdar:sharedCollections>
         <tdar:sharedCollection hidden="false">
             <tdar:name>1234</tdar:name>
             <tdar:orientation>LIST</tdar:orientation>
+		    <tdar:properties>
+		        <tdar:customDocumentLogoEnabled>false</tdar:customDocumentLogoEnabled>
+		        <tdar:customHeaderEnabled>false</tdar:customHeaderEnabled>
+		        <tdar:featuredResourcesEnabled>false</tdar:featuredResourcesEnabled>
+		        <tdar:searchEnabled>false</tdar:searchEnabled>
+		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
+		        <tdar:whitelabel>false</tdar:whitelabel>
+		    </tdar:properties>
             <tdar:resources>
                 <tdar:resourceId>4232</tdar:resourceId>
             </tdar:resources>
@@ -31,9 +39,17 @@
             <tdar:formattedDescription></tdar:formattedDescription>
             <tdar:name>abcd</tdar:name>
             <tdar:orientation>LIST</tdar:orientation>
+		    <tdar:properties>
+		        <tdar:customDocumentLogoEnabled>false</tdar:customDocumentLogoEnabled>
+		        <tdar:customHeaderEnabled>false</tdar:customHeaderEnabled>
+		        <tdar:featuredResourcesEnabled>false</tdar:featuredResourcesEnabled>
+		        <tdar:searchEnabled>false</tdar:searchEnabled>
+		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
+		        <tdar:whitelabel>false</tdar:whitelabel>
+		    </tdar:properties>
             <tdar:sortBy>TITLE</tdar:sortBy>
         </tdar:sharedCollection>
-    </tdar:resourceCollections>
+    </tdar:sharedCollections>
     <tdar:resourceCreators/>
     <tdar:resourceNotes/>
     <tdar:resourceType>PROJECT</tdar:resourceType>
