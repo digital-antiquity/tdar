@@ -83,7 +83,7 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         performLuceneQuery();
 
         if (isEditor()) {
-            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, CollectionType.SHARED, SharedCollection.class));
+            List<Long> collectionIds = PersistableUtils.extractIds(resourceCollectionService.findDirectChildCollections(getId(), null, SharedCollection.class));
             setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));
         }
 

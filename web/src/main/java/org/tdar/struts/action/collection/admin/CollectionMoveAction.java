@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
@@ -29,7 +31,7 @@ public class CollectionMoveAction extends AbstractCollectionAdminAction {
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    private List<ResourceCollection> tree;
+    private List<SharedCollection> tree;
     
     @Override
     @WriteableSession
@@ -37,17 +39,17 @@ public class CollectionMoveAction extends AbstractCollectionAdminAction {
             @Result(name = SUCCESS, type = FREEMARKER, location = "../move.ftl"),
     })
     public String execute() throws Exception {
-        setTree(resourceCollectionService.findAllChildCollectionsOnly(getCollection(), CollectionType.SHARED));
-        getTree().add(getCollection());
-        resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()));
+        setTree(resourceCollectionService.findAllChildCollectionsOnly((SharedCollection)getCollection(), SharedCollection.class));
+        getTree().add((SharedCollection)getCollection());
+        resourceCollectionService.reconcileCollectionTree(getTree(), getAuthenticatedUser(), PersistableUtils.extractIds(getTree()), SharedCollection.class);
         return SUCCESS;
     }
 
-    public List<ResourceCollection> getTree() {
+    public List<SharedCollection> getTree() {
         return tree;
     }
 
-    public void setTree(List<ResourceCollection> tree) {
+    public void setTree(List<SharedCollection> tree) {
         this.tree = tree;
     }
 

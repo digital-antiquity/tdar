@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -36,6 +37,8 @@ import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
+
+import com.fasterxml.jackson.annotation.JsonFormat.Shape;
 
 @Component
 @Scope("prototype")
@@ -101,9 +104,9 @@ public class CollectionController extends AbstractPersistableController<SharedCo
      * 
      * @return
      */
-    public List<ResourceCollection> getCandidateParentResourceCollections() {
-        List<ResourceCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable());
+    public List<SharedCollection> getCandidateParentResourceCollections() {
+        List<SharedCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
+                getPersistable(), SharedCollection.class);
         return publicResourceCollections;
     }
 
@@ -160,7 +163,7 @@ public class CollectionController extends AbstractPersistableController<SharedCo
             return INPUT;
         }
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), toAdd,
-                toRemove, publicToAdd, publicToRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()));
+                toRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -281,10 +284,8 @@ public class CollectionController extends AbstractPersistableController<SharedCo
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
         fullUserProjects = new ArrayList<Resource>(projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
         fullUserProjects.removeAll(getAllSubmittedProjects());
-        for (ResourceCollection c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
-            if (c instanceof SharedCollection) {
-                getAllResourceCollections().add((SharedCollection)c);
-            }
+        for (SharedCollection c : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), SharedCollection.class)) {
+            getAllResourceCollections().add(c);
         }
         // always place current resource collection as the first option
         if (PersistableUtils.isNotTransient(getResourceCollection())) {

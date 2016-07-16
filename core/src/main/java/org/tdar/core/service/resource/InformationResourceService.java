@@ -219,7 +219,7 @@ public class InformationResourceService extends ServiceInterface.TypedDaoBase<In
     public <E extends Resource> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, Long collectionId, int maxResults) {
         List<HasDisplayProperties> collections = null;
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-            collections.addAll(resourceCollectionDao.findCollectionsOfParent(collectionId, false, CollectionType.SHARED, SharedCollection.class));
+            collections.addAll(resourceCollectionDao.findCollectionsOfParent(collectionId, false, SharedCollection.class));
             return getDao().findRandomFeaturedResourceInCollection(restrictToFiles, collections, maxResults);
         }
         return findRandomFeaturedResource(restrictToFiles, maxResults);

@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
@@ -61,373 +62,372 @@ import org.tdar.utils.PersistableUtils;
 @Scope("prototype")
 public class DashboardController extends AbstractAuthenticatableAction implements DataTableResourceDisplay {
 
-	private static final long serialVersionUID = -2959809512424441740L;
-	private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
-	private List<Project> emptyProjects = new ArrayList<Project>();
-	private List<Resource> bookmarkedResources;
-	private Integer activeResourceCount = 0;
-	private int maxRecentResources = 5;
-	private List<Resource> filteredFullUserProjects;
-	private List<Resource> fullUserProjects;
-	private List<SharedCollection> allResourceCollections = new ArrayList<>();
-	private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
-	private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
-	private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
-	private List<InformationResource> resourcesWithErrors;
+    private static final long serialVersionUID = -2959809512424441740L;
+    private List<Resource> recentlyEditedResources = new ArrayList<Resource>();
+    private List<Project> emptyProjects = new ArrayList<Project>();
+    private List<Resource> bookmarkedResources;
+    private Integer activeResourceCount = 0;
+    private int maxRecentResources = 5;
+    private List<Resource> filteredFullUserProjects;
+    private List<Resource> fullUserProjects;
+    private List<SharedCollection> allResourceCollections = new ArrayList<>();
+    private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
+    private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
+    private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
+    private List<InformationResource> resourcesWithErrors;
 
-	@Autowired
-	private transient AuthorizationService authorizationService;
+    @Autowired
+    private transient AuthorizationService authorizationService;
 
-	@Autowired
-	private transient ResourceCollectionService resourceCollectionService;
-	@Autowired
-	private transient ProjectService projectService;
-	@Autowired
-	private transient BookmarkedResourceService bookmarkedResourceService;
-	@Autowired
-	private transient InformationResourceFileService informationResourceFileService;
-	@Autowired
-	private transient BillingAccountService accountService;
-	@Autowired
-	private transient SearchService<?> searchService;
-	@Autowired
-	private transient EntityService entityService;
-	@Autowired
-	private transient ResourceService resourceService;
-	@Autowired
-	private transient SerializationService serializationService;
-	@Autowired
-	private transient UserNotificationService userNotificationService;
+    @Autowired
+    private transient ResourceCollectionService resourceCollectionService;
+    @Autowired
+    private transient ProjectService projectService;
+    @Autowired
+    private transient BookmarkedResourceService bookmarkedResourceService;
+    @Autowired
+    private transient InformationResourceFileService informationResourceFileService;
+    @Autowired
+    private transient BillingAccountService accountService;
+    @Autowired
+    private transient SearchService<?> searchService;
+    @Autowired
+    private transient EntityService entityService;
+    @Autowired
+    private transient ResourceService resourceService;
+    @Autowired
+    private transient SerializationService serializationService;
+    @Autowired
+    private transient UserNotificationService userNotificationService;
 
-	private List<Project> allSubmittedProjects;
-	private List<Resource> featuredResources = new ArrayList<Resource>();
-	private List<Resource> recentResources = new ArrayList<Resource>();
-	private List<UserNotification> currentNotifications;
-	private String statusData;
-	private String resourceTypeData;
-	
-	@Override
-	public void validate() {
-		if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
-			addActionError(getText("dashboardController.user_must_login"));
-		}
-		super.validate();
-	}
+    private List<Project> allSubmittedProjects;
+    private List<Resource> featuredResources = new ArrayList<Resource>();
+    private List<Resource> recentResources = new ArrayList<Resource>();
+    private List<UserNotification> currentNotifications;
+    private String statusData;
+    private String resourceTypeData;
 
-	// remove when we track down what exactly the perf issue is with the
-	// dashboard;
-	// toggles let us turn off specific queries / parts of homepage
+    @Override
+    public void validate() {
+        if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
+            addActionError(getText("dashboardController.user_must_login"));
+        }
+        super.validate();
+    }
 
-	private void setupRecentResources() throws SolrServerException, IOException {
-		int count = 10;
-		try {
-			getFeaturedResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
-		} catch (ParseException pe) {
-			getLogger().debug("parse exception", pe);
-		}
-		// note, in rare occasions, a cache hit might mean that the resource's
-		// status has changed
-		getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
+    // remove when we track down what exactly the perf issue is with the
+    // dashboard;
+    // toggles let us turn off specific queries / parts of homepage
 
-	}
+    private void setupRecentResources() throws SolrServerException, IOException {
+        int count = 10;
+        try {
+            getFeaturedResources().addAll(searchService.findMostRecentResources(count, getAuthenticatedUser(), this));
+        } catch (ParseException pe) {
+            getLogger().debug("parse exception", pe);
+        }
+        // note, in rare occasions, a cache hit might mean that the resource's
+        // status has changed
+        getFeaturedResources().addAll(resourceService.getWeeklyPopularResources(count));
 
-	@Override
-	@Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })
-	public String execute() throws SolrServerException, IOException {
-		setupRecentResources();
-		setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
-		getLogger().trace("find recently edited resources");
-		setRecentlyEditedResources(
-				projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
-		getLogger().trace("find empty projects");
-		setEmptyProjects(projectService.findEmptyProjects(getAuthenticatedUser()));
-		getLogger().trace("counts for graphs");
-		setupResourceCollectionTreesForDashboard();
-		setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(
-				getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT),
-				Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
-		getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE,
-				Status.FLAGGED_ACCOUNT_BALANCE));
-		for (BillingAccount account : getAccounts()) {
-			if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
-				overdrawnAccounts.add(account);
-			}
-		}
+    }
 
-		prepareProjectStuff();
-		setupBookmarks();
-		initCounts();
-
-		return SUCCESS;
-	}
-
-	private void setupResourceCollectionTreesForDashboard() {
-		getLogger().trace("parent/ owner collections");
-		for (ResourceCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser())) {
-		    if (rc instanceof SharedCollection) {
-		        getAllResourceCollections().add((SharedCollection)rc);
-		    }
-		}
-		getLogger().trace("accessible collections");
-        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof SharedCollection) {
-                getSharedResourceCollections().add((SharedCollection)rc);
+    @Override
+    @Action(value = "dashboard", results = { @Result(name = SUCCESS, location = "dashboard/dashboard.ftl") })
+    public String execute() throws SolrServerException, IOException {
+        setupRecentResources();
+        setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
+        getLogger().trace("find recently edited resources");
+        setRecentlyEditedResources(
+                projectService.findRecentlyEditedResources(getAuthenticatedUser(), maxRecentResources));
+        getLogger().trace("find empty projects");
+        setEmptyProjects(projectService.findEmptyProjects(getAuthenticatedUser()));
+        getLogger().trace("counts for graphs");
+        setupResourceCollectionTreesForDashboard();
+        setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(
+                getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT),
+                Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
+        getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE,
+                Status.FLAGGED_ACCOUNT_BALANCE));
+        for (BillingAccount account : getAccounts()) {
+            if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
+                overdrawnAccounts.add(account);
             }
         }
-		List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
-		collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-		getLogger().trace("reconcile tree1");
-		resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-				collectionIds);
-		getLogger().trace("reconcile tree2");
-		resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-				collectionIds);
 
-		getLogger().trace("removing duplicates");
-		getSharedResourceCollections().removeAll(getAllResourceCollections());
-		getLogger().trace("sorting");
-		Collections.sort(allResourceCollections);
-		Collections.sort(sharedResourceCollections);
-		getLogger().trace("done sort");
-	}
+        prepareProjectStuff();
+        setupBookmarks();
+        initCounts();
 
-	/**
-	 * @param activeResourceCount
-	 *            the activeResourceCount to set
-	 */
-	public void setActiveResourceCount(Integer activeResourceCount) {
-		this.activeResourceCount = activeResourceCount;
-	}
+        return SUCCESS;
+    }
 
-	/**
-	 * @return the activeResourceCount
-	 */
-	public Integer getActiveResourceCount() {
-		return activeResourceCount;
-	}
+    private void setupResourceCollectionTreesForDashboard() {
+        getLogger().trace("parent/ owner collections");
+        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
+                SharedCollection.class)) {
+            getAllResourceCollections().add((SharedCollection) rc);
+        }
+        getLogger().trace("accessible collections");
+        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
+            if (rc instanceof SharedCollection) {
+                getSharedResourceCollections().add((SharedCollection) rc);
+            }
+        }
+        List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
+        collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
+        getLogger().trace("reconcile tree1");
+        resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
+                collectionIds, SharedCollection.class);
+        getLogger().trace("reconcile tree2");
+        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
+                collectionIds, SharedCollection.class);
 
-	private void initCounts() {
-		ResourceTypeStatusInfo info = resourceService.getResourceCountAndStatusForUser(getAuthenticatedUser(),
-				Arrays.asList(ResourceType.values()));
-		activeResourceCount = info.getTotal();
-		try {
-			setStatusData(serializationService.convertToJson(info.getStatusData()));
-			setResourceTypeData(serializationService.convertToJson(info.getResourceTypeData()));
-		} catch (IOException e) {
-			getLogger().error("e", e);
-		}
+        getLogger().trace("removing duplicates");
+        getSharedResourceCollections().removeAll(getAllResourceCollections());
+        getLogger().trace("sorting");
+        Collections.sort(allResourceCollections);
+        Collections.sort(sharedResourceCollections);
+        getLogger().trace("done sort");
+    }
 
-	}
+    /**
+     * @param activeResourceCount
+     *            the activeResourceCount to set
+     */
+    public void setActiveResourceCount(Integer activeResourceCount) {
+        this.activeResourceCount = activeResourceCount;
+    }
 
-	/**
-	 * @param recentlyEditedResources
-	 *            the recentlyEditedResources to set
-	 */
-	public void setRecentlyEditedResources(List<Resource> recentlyEditedResources) {
-		this.recentlyEditedResources = recentlyEditedResources;
-	}
+    /**
+     * @return the activeResourceCount
+     */
+    public Integer getActiveResourceCount() {
+        return activeResourceCount;
+    }
 
-	/**
-	 * @return the recentlyEditedResources
-	 */
-	public List<Resource> getRecentlyEditedResources() {
-		return recentlyEditedResources;
-	}
+    private void initCounts() {
+        ResourceTypeStatusInfo info = resourceService.getResourceCountAndStatusForUser(getAuthenticatedUser(),
+                Arrays.asList(ResourceType.values()));
+        activeResourceCount = info.getTotal();
+        try {
+            setStatusData(serializationService.convertToJson(info.getStatusData()));
+            setResourceTypeData(serializationService.convertToJson(info.getResourceTypeData()));
+        } catch (IOException e) {
+            getLogger().error("e", e);
+        }
 
-	/**
-	 * @param emptyProjects
-	 *            the emptyProjects to set
-	 */
-	public void setEmptyProjects(List<Project> emptyProjects) {
-		this.emptyProjects = emptyProjects;
-	}
+    }
 
-	/**
-	 * @return the emptyProjects
-	 */
-	public List<Project> getEmptyProjects() {
-		return emptyProjects;
-	}
+    /**
+     * @param recentlyEditedResources
+     *            the recentlyEditedResources to set
+     */
+    public void setRecentlyEditedResources(List<Resource> recentlyEditedResources) {
+        this.recentlyEditedResources = recentlyEditedResources;
+    }
 
-	public List<Resource> getBookmarkedResources() {
-		return bookmarkedResources;
-	}
+    /**
+     * @return the recentlyEditedResources
+     */
+    public List<Resource> getRecentlyEditedResources() {
+        return recentlyEditedResources;
+    }
 
-	public void setBookmarkedResource(List<Resource> bookmarks) {
-		this.bookmarkedResources = bookmarks;
-	}
+    /**
+     * @param emptyProjects
+     *            the emptyProjects to set
+     */
+    public void setEmptyProjects(List<Project> emptyProjects) {
+        this.emptyProjects = emptyProjects;
+    }
 
-	private void setupBookmarks() {
-		if (bookmarkedResources == null) {
-			bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
-					Arrays.asList(Status.ACTIVE, Status.DRAFT));
-		}
+    /**
+     * @return the emptyProjects
+     */
+    public List<Project> getEmptyProjects() {
+        return emptyProjects;
+    }
 
-		for (Resource res : bookmarkedResources) {
-			authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
-		}
-	}
+    public List<Resource> getBookmarkedResources() {
+        return bookmarkedResources;
+    }
 
-	public List<Project> getAllSubmittedProjects() {
-		return allSubmittedProjects;
-	}
+    public void setBookmarkedResource(List<Resource> bookmarks) {
+        this.bookmarkedResources = bookmarks;
+    }
 
-	public List<Resource> getFullUserProjects() {
-		return fullUserProjects;
-	}
+    private void setupBookmarks() {
+        if (bookmarkedResources == null) {
+            bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
+                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
+        }
 
-	public void setFullUserProjects(List<Resource> projects) {
-		fullUserProjects = projects;
-	}
+        for (Resource res : bookmarkedResources) {
+            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
+        }
+    }
 
-	public void setAllSubmittedProjects(List<Project> projects) {
-		allSubmittedProjects = projects;
-	}
+    public List<Project> getAllSubmittedProjects() {
+        return allSubmittedProjects;
+    }
 
-	public void setFilteredFullUserProjects(List<Resource> projects) {
-		filteredFullUserProjects = projects;
-	}
+    public List<Resource> getFullUserProjects() {
+        return fullUserProjects;
+    }
 
-	public void setEditableProjects(Set<Resource> projects) {
-		editableProjects = projects;
-	}
+    public void setFullUserProjects(List<Resource> projects) {
+        fullUserProjects = projects;
+    }
 
-	public List<Resource> getFilteredFullUserProjects() {
-		return filteredFullUserProjects;
-	}
+    public void setAllSubmittedProjects(List<Project> projects) {
+        allSubmittedProjects = projects;
+    }
 
-	private Set<Resource> editableProjects = new HashSet<>();
+    public void setFilteredFullUserProjects(List<Resource> projects) {
+        filteredFullUserProjects = projects;
+    }
 
-	private void prepareProjectStuff() {
-		boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
-		editableProjects = new TreeSet<Resource>(
-				projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+    public void setEditableProjects(Set<Resource> projects) {
+        editableProjects = projects;
+    }
 
-		fullUserProjects = new ArrayList<Resource>(
-				projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
-		Collections.sort(fullUserProjects);
-		allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
-		Collections.sort(allSubmittedProjects);
-		fullUserProjects.removeAll(getAllSubmittedProjects());
-		filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
-		filteredFullUserProjects.removeAll(getAllSubmittedProjects());
+    public List<Resource> getFilteredFullUserProjects() {
+        return filteredFullUserProjects;
+    }
 
-	}
+    private Set<Resource> editableProjects = new HashSet<>();
 
-	public Set<Resource> getEditableProjects() {
-		return editableProjects;
-	}
+    private void prepareProjectStuff() {
+        boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
+        editableProjects = new TreeSet<Resource>(
+                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
 
-	public void prepare() {
-	}
+        fullUserProjects = new ArrayList<Resource>(
+                projectService.findSparseTitleIdProjectListByPerson(getAuthenticatedUser(), canEditAnything));
+        Collections.sort(fullUserProjects);
+        allSubmittedProjects = projectService.findBySubmitter(getAuthenticatedUser());
+        Collections.sort(allSubmittedProjects);
+        fullUserProjects.removeAll(getAllSubmittedProjects());
+        filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
+        filteredFullUserProjects.removeAll(getAllSubmittedProjects());
 
-	public List<Status> getStatuses() {
-		return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
-	}
+    }
 
-	public List<ResourceType> getResourceTypes() {
-		return resourceService.getAllResourceTypes();
-	}
+    public Set<Resource> getEditableProjects() {
+        return editableProjects;
+    }
 
-	public List<SortOption> getResourceDatatableSortOptions() {
-		return SortOption.getOptionsForContext(Resource.class);
-	}
+    public void prepare() {
+    }
 
-	@DoNotObfuscate(reason = "not needed / performance test")
-	public List<SharedCollection> getAllResourceCollections() {
-		return allResourceCollections;
-	}
+    public List<Status> getStatuses() {
+        return new ArrayList<Status>(authorizationService.getAllowedSearchStatuses(getAuthenticatedUser()));
+    }
 
-	public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
-		this.allResourceCollections = resourceCollections;
-	}
+    public List<ResourceType> getResourceTypes() {
+        return resourceService.getAllResourceTypes();
+    }
 
-	/**
-	 * @return the sharedResourceCollections
-	 */
-	@DoNotObfuscate(reason = "not needed / performance test")
-	public List<SharedCollection> getSharedResourceCollections() {
-		return sharedResourceCollections;
-	}
+    public List<SortOption> getResourceDatatableSortOptions() {
+        return SortOption.getOptionsForContext(Resource.class);
+    }
 
-	/**
-	 * @param sharedResourceCollections
-	 *            the sharedResourceCollections to set
-	 */
-	public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
-		this.sharedResourceCollections = sharedResourceCollections;
-	}
+    @DoNotObfuscate(reason = "not needed / performance test")
+    public List<SharedCollection> getAllResourceCollections() {
+        return allResourceCollections;
+    }
 
-	public Set<BillingAccount> getAccounts() {
-		return accounts;
-	}
+    public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
+        this.allResourceCollections = resourceCollections;
+    }
 
-	public void setAccounts(Set<BillingAccount> accounts) {
-		this.accounts = accounts;
-	}
+    /**
+     * @return the sharedResourceCollections
+     */
+    @DoNotObfuscate(reason = "not needed / performance test")
+    public List<SharedCollection> getSharedResourceCollections() {
+        return sharedResourceCollections;
+    }
 
-	public Set<BillingAccount> getOverdrawnAccounts() {
-		return overdrawnAccounts;
-	}
+    /**
+     * @param sharedResourceCollections
+     *            the sharedResourceCollections to set
+     */
+    public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
+        this.sharedResourceCollections = sharedResourceCollections;
+    }
 
-	public void setOverdrawnAccounts(Set<BillingAccount> overdrawnAccounts) {
-		this.overdrawnAccounts = overdrawnAccounts;
-	}
+    public Set<BillingAccount> getAccounts() {
+        return accounts;
+    }
 
-	public List<InformationResource> getResourcesWithErrors() {
-		return resourcesWithErrors;
-	}
+    public void setAccounts(Set<BillingAccount> accounts) {
+        this.accounts = accounts;
+    }
 
-	public void setResourcesWithErrors(List<InformationResource> resourcesWithErrors) {
-		this.resourcesWithErrors = resourcesWithErrors;
-	}
+    public Set<BillingAccount> getOverdrawnAccounts() {
+        return overdrawnAccounts;
+    }
 
-	public List<Resource> getRecentResources() {
-		return recentResources;
-	}
+    public void setOverdrawnAccounts(Set<BillingAccount> overdrawnAccounts) {
+        this.overdrawnAccounts = overdrawnAccounts;
+    }
 
-	public void setRecentResources(List<Resource> recentResources) {
-		this.recentResources = recentResources;
-	}
+    public List<InformationResource> getResourcesWithErrors() {
+        return resourcesWithErrors;
+    }
 
-	public List<Resource> getFeaturedResources() {
-		return featuredResources;
-	}
+    public void setResourcesWithErrors(List<InformationResource> resourcesWithErrors) {
+        this.resourcesWithErrors = resourcesWithErrors;
+    }
 
-	public void setFeaturedResources(List<Resource> featuredResources) {
-		this.featuredResources = featuredResources;
-	}
+    public List<Resource> getRecentResources() {
+        return recentResources;
+    }
 
-	public List<UserNotification> getCurrentNotifications() {
-		return currentNotifications;
-	}
+    public void setRecentResources(List<Resource> recentResources) {
+        this.recentResources = recentResources;
+    }
 
-	public void setCurrentNotifications(List<UserNotification> currentNotifications) {
-		this.currentNotifications = currentNotifications;
-	}
+    public List<Resource> getFeaturedResources() {
+        return featuredResources;
+    }
 
-	public String getResourceTypeData() {
-		return resourceTypeData;
-	}
+    public void setFeaturedResources(List<Resource> featuredResources) {
+        this.featuredResources = featuredResources;
+    }
 
-	public void setResourceTypeData(String resourceTypeData) {
-		this.resourceTypeData = resourceTypeData;
-	}
+    public List<UserNotification> getCurrentNotifications() {
+        return currentNotifications;
+    }
 
-	public String getStatusData() {
-		return statusData;
-	}
+    public void setCurrentNotifications(List<UserNotification> currentNotifications) {
+        this.currentNotifications = currentNotifications;
+    }
 
-	public void setStatusData(String statusData) {
-		this.statusData = statusData;
-	}
+    public String getResourceTypeData() {
+        return resourceTypeData;
+    }
 
-	public List<Person> getUserSuggestions() {
-	    return entityService.findSimilarPeople(getAuthenticatedUser());
-	}
+    public void setResourceTypeData(String resourceTypeData) {
+        this.resourceTypeData = resourceTypeData;
+    }
 
-	@Override
-	public boolean isRightSidebar() {
-	    return true;
-	}
+    public String getStatusData() {
+        return statusData;
+    }
+
+    public void setStatusData(String statusData) {
+        this.statusData = statusData;
+    }
+
+    public List<Person> getUserSuggestions() {
+        return entityService.findSimilarPeople(getAuthenticatedUser());
+    }
+
+    @Override
+    public boolean isRightSidebar() {
+        return true;
+    }
 }

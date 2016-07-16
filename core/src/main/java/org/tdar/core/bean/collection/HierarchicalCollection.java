@@ -12,13 +12,8 @@ import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.Transient;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 @Entity
 public abstract class HierarchicalCollection<C extends HasDisplayProperties> extends HasDisplayProperties implements Comparable<C> {
@@ -49,8 +44,10 @@ public abstract class HierarchicalCollection<C extends HasDisplayProperties> ext
 
     private transient Set<C> transientChildren = new LinkedHashSet<>();
 
-    abstract C getParent();
-    
+    public abstract C getParent();
+
+    public abstract void setParent(C c);
+
     @XmlTransient
     @Transient
     public Set<C> getTransientChildren() {

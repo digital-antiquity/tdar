@@ -105,7 +105,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		collectionChild.markUpdated(getAdminUser());
 		project.getSharedCollections().add(collectionChild);
 		collectionChild.getResources().add(project);
-		resourceCollectionService.updateCollectionParentTo(getAdminUser(), collectionChild, collection);
+		resourceCollectionService.updateCollectionParentTo(getAdminUser(), collectionChild, collection, SharedCollection.class);
 		genericService.saveOrUpdate(collectionChild);
 		genericService.saveOrUpdate(project);
 		DocumentController dc = generateNewInitializedController(DocumentController.class, getBasicUser());

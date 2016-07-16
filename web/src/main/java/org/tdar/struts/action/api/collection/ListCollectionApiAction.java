@@ -14,7 +14,10 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
@@ -35,7 +38,7 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
     private static final long serialVersionUID = 8858444149054259631L;
 
     private Long id;
-    private ResourceCollection collection;
+    private HierarchicalCollection collection;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
@@ -43,7 +46,7 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
 
     @Override
     public void prepare() {
-        collection = getGenericService().find(ResourceCollection.class, getId());
+        collection = getGenericService().find(HierarchicalCollection.class, getId());
     }
 
     @Override
@@ -64,15 +67,15 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
     @Action("tree")
     @Override
     public String execute() throws Exception {
-        List<ResourceCollection> allChildCollections  = new ArrayList<>();
+        List<HierarchicalCollection> allChildCollections  = new ArrayList<>();
         if (collection != null) {
-            allChildCollections = resourceCollectionService.getAllChildCollections(collection);
+            allChildCollections = resourceCollectionService.getAllChildCollections(collection, HierarchicalCollection.class);
         } else {
-            allChildCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser()));
+            allChildCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), HierarchicalCollection.class));
         }
         getLogger().trace("accessible collections");
         List<Long> collectionIds = PersistableUtils.extractIds(allChildCollections);
-        resourceCollectionService.reconcileCollectionTree(allChildCollections, getAuthenticatedUser(), collectionIds);
+        resourceCollectionService.reconcileCollectionTree(allChildCollections, getAuthenticatedUser(), collectionIds, HierarchicalCollection.class);
         getLogger().trace("reconcile tree2");
         Collections.sort(allChildCollections);
         List<Map<String,Object>> result = new ArrayList<>();
@@ -86,8 +89,8 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
      * @param allChildCollections
      * @param result
      */
-    private void processCollectionTree(Collection<ResourceCollection> allChildCollections, List<Map<String, Object>> root) {
-        for (ResourceCollection col : allChildCollections) {
+    private void processCollectionTree(Collection<HierarchicalCollection> allChildCollections, List<Map<String, Object>> root) {
+        for (HierarchicalCollection col : allChildCollections) {
             Map<String, Object> result = new HashMap<>();
             root.add(result);
             result.put("id", col.getId());

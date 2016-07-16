@@ -81,10 +81,10 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        resourceCollectionService.buildCollectionTreeForController(getCollection(), getAuthenticatedUser(), CollectionType.SHARED);
-        setAllChildCollections(getCollection().getTransientChildren());
+        resourceCollectionService.buildCollectionTreeForController((SharedCollection)getCollection(), getAuthenticatedUser(), SharedCollection.class);
+        setAllChildCollections(((SharedCollection)getCollection()).getTransientChildren());
 
-        List<Long> collectionIds = PersistableUtils.extractIds(getCollection().getTransientChildren());
+        List<Long> collectionIds = PersistableUtils.extractIds(getAllChildCollections());
         collectionIds.add(getId());
 
         setUploadedResourceAccessStatistic(resourceService.getSpaceUsageForCollections(collectionIds, Arrays.asList(Status.ACTIVE, Status.DRAFT)));

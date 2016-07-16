@@ -250,7 +250,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param collectionToReindex
      */
     @Transactional
-    public void indexAllResourcesInCollectionSubTree(ResourceCollection collectionToReindex) {
+    public void indexAllResourcesInCollectionSubTree(HierarchicalCollection collectionToReindex) {
         logger.trace("indexing collection async");
         Long total = resourceCollectionDao.countAllResourcesInCollectionAndSubCollection(collectionToReindex);
         ScrollableResults results = resourceCollectionDao
@@ -267,7 +267,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      */
     @Async
     @Transactional
-    public void indexAllResourcesInCollectionSubTreeAsync(final ResourceCollection collectionToReindex) {
+    public void indexAllResourcesInCollectionSubTreeAsync(final HierarchicalCollection collectionToReindex) {
         indexAllResourcesInCollectionSubTree(collectionToReindex);
     }
 
@@ -583,7 +583,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
 
     @Transactional(readOnly=true)
     @Async
-    public void partialIndexAllResourcesInCollectionSubTreeAsync(ResourceCollection persistable) {
+    public void partialIndexAllResourcesInCollectionSubTreeAsync(HierarchicalCollection persistable) {
         indexAllResourcesInCollectionSubTree(persistable);
     }
 

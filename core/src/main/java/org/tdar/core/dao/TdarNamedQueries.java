@@ -129,7 +129,8 @@ public interface TdarNamedQueries {
     String COLLECTION_VIEW = "collection.views";
     String CREATOR_VIEW = "creator.views";
     String QUERY_COLLECTION_CHILDREN = "resourceCollection.allChildren";
-    String QUERY_COLLECTION_CHILDREN_RESOURCES = "resourceCollection.allChildrenResources";
+    String QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES = "sharedCollection.allChildrenResources";
+    String QUERY_LIST_COLLECTION_CHILDREN_RESOURCES = "listCollection.allChildrenResources";
     String QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT = "resourceCollection.allChildrenResources_count";
     String QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION = "versions.verify";
     String QUERY_CLEAR_REFERENCED_ONTOLOGYNODE_RULES = "update.clearOntologyNodeReferences";

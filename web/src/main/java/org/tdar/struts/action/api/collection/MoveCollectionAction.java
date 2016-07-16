@@ -10,6 +10,7 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
@@ -39,9 +40,9 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     private Long collectionId;
     private Long fromCollectionId;
     private Long toCollectionId;
-    private ResourceCollection collection;
-    private ResourceCollection fromCollection;
-    private ResourceCollection toCollection;
+    private HierarchicalCollection collection;
+    private HierarchicalCollection fromCollection;
+    private HierarchicalCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -73,7 +74,7 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     @PostOnly
     @Action(value="moveCollection")
     public String execute() throws Exception {
-        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection);
+        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection, HierarchicalCollection.class);
         searchIndexService.indexAllResourcesInCollectionSubTreeAsync(toCollection);
         setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
         return super.execute();
@@ -86,9 +87,9 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     @Override
     public void prepare() throws Exception {
-        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
-        this.fromCollection = getGenericService().find(ResourceCollection.class, fromCollectionId);
-        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
+        this.collection = getGenericService().find(HierarchicalCollection.class, collectionId);
+        this.fromCollection = getGenericService().find(HierarchicalCollection.class, fromCollectionId);
+        this.toCollection = getGenericService().find(HierarchicalCollection.class, toCollectionId);
         
     }
 

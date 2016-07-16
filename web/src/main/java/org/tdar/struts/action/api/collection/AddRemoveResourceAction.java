@@ -8,7 +8,10 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
@@ -37,7 +40,7 @@ public class AddRemoveResourceAction extends AbstractJsonApiAction implements Pr
     private Long resourceId;
     private Long collectionId;
     private Resource resource;
-    private ResourceCollection collection;
+    private HasDisplayProperties collection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -62,7 +65,12 @@ public class AddRemoveResourceAction extends AbstractJsonApiAction implements Pr
     @PostOnly
     @Action(value="addResource")
     public String add() throws Exception {
-        resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, collection);
+        if (collection instanceof SharedCollection) {
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getSharedCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)collection, SharedCollection.class);
+        }
+        if (collection instanceof ListCollection) {
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, (ListCollection)collection, ListCollection.class);            
+        }
         setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
         return super.execute();
     }
@@ -71,14 +79,14 @@ public class AddRemoveResourceAction extends AbstractJsonApiAction implements Pr
     @Action(value="removeResource")
     public String remove() throws Exception {
         resourceCollectionService.removeResourceFromCollection(resource, collection, getAuthenticatedUser());
-               setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
+        setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
         return super.execute();
     }
 
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.collection = getGenericService().find(ResourceCollection.class, collectionId);
+        this.collection = getGenericService().find(HasDisplayProperties.class, collectionId);
         
     }
 

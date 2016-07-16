@@ -657,7 +657,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
     }
 
     private int getCollectionCount(CollectionType type, Class cls) {
-        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null, type, cls);
+        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null, cls);
         if (type == CollectionType.INTERNAL) {
             logger.info("INTERNAL COLLECTIONS: {} ", col);
         }

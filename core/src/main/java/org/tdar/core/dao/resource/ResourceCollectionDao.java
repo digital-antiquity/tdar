@@ -68,9 +68,9 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     /**
      * @return
      */
-    public <C extends HierarchicalCollection> List<C> findCollectionsOfParent(Long parent, Boolean visible, CollectionType type, Class<C> cls) {
+    public <C extends HierarchicalCollection> List<C> findCollectionsOfParent(Long parent, Boolean visible, Class<C> cls) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT;
-        if (type == CollectionType.LIST) {
+        if (CollectionType.getTypeForClass(cls) == CollectionType.LIST) {
             q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_PARENT;
         }
         Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
@@ -85,13 +85,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return namedQuery.getResultList();
     }
 
-    public List<ResourceCollection> findParentOwnerCollections(Person person, List<CollectionType> types) {
-        Query<ResourceCollection> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER, ResourceCollection.class);
+    public <C extends HierarchicalCollection> List<C> findParentOwnerCollections(Person person, Class<C> cls) {
+        Query<C> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER, cls);
         namedQuery.setParameter("authOwnerId", person.getId());
-        namedQuery.setParameter("collectionTypes", types);
+        namedQuery.setParameter("collectionTypes", Arrays.asList(CollectionType.getTypeForClass(cls)));
         namedQuery.setParameter("equivPerm", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         try {
-            List<ResourceCollection> list = namedQuery.getResultList();
+            List<C> list = namedQuery.getResultList();
             logger.trace("{}", list);
             return list;
         } catch (Exception e) {
@@ -201,7 +201,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-    public <E extends HierarchicalCollection<?>> List<E> getAllChildCollections(E persistable, Class<E> cls) {
+    public <E extends HierarchicalCollection> List<E> getAllChildCollections(E persistable, Class<E> cls) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return Collections.EMPTY_LIST;
         }
@@ -239,11 +239,15 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.getResultList();
     }
 
-    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(ResourceCollection persistable) {
+    public ScrollableResults findAllResourcesInCollectionAndSubCollectionScrollable(HierarchicalCollection persistable) {
         if (PersistableUtils.isNullOrTransient(persistable)) {
             return null;
         }
-        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES, Resource.class);
+        String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES;
+        if (persistable instanceof ListCollection) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTION_CHILDREN_RESOURCES;
+        }
+        Query<Resource> query = getCurrentSession().createNamedQuery(q, Resource.class);
         query.setParameter("id", persistable.getId());
         return query.scroll();
     }
@@ -350,7 +354,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param rc
      * @return
      */
-    public SharedCollection convertToWhitelabelCollection(SharedCollection rc) {
+    public <C extends HasDisplayProperties> C convertToWhitelabelCollection(C rc) {
         if (rc.getProperties() == null) {
             rc.setProperties(new CollectionDisplayProperties());
         }
@@ -365,7 +369,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param wlc
      * @return
      */
-    public ResourceCollection convertToResourceCollection(SharedCollection wlc) {
+    public <C extends HasDisplayProperties> C convertToResourceCollection(C wlc) {
         if (wlc.getProperties() == null) {
             return wlc;
         }

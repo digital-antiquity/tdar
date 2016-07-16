@@ -127,9 +127,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
      * 
      * @return
      */
-    public List<ResourceCollection> getCandidateParentResourceCollections() {
-        List<ResourceCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable());
+    public List<SharedCollection> getCandidateParentResourceCollections() {
+        List<SharedCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
+                getPersistable(), SharedCollection.class);
         return publicResourceCollections;
     }
 
@@ -192,13 +192,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
         Set<SharedCollection> findAllChildCollections = new HashSet<>();
 
         if (isAuthenticated()) {
-            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
+            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), SharedCollection.class);
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            for (ResourceCollection c : resourceCollectionService.findDirectChildCollections(getId(), false, CollectionType.SHARED, SharedCollection.class)) {
-                if (c instanceof SharedCollection) {
-                    findAllChildCollections.add((SharedCollection)c);
-                }
+            for (SharedCollection c : resourceCollectionService.findDirectChildCollections(getId(), false, SharedCollection.class)) {
+                findAllChildCollections.add((SharedCollection)c);
             }
         }
         setCollections(new ArrayList<SharedCollection>(findAllChildCollections));

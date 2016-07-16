@@ -339,7 +339,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         resourceCollection = genericService.find(SharedCollection.class, rcid);
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
-        for (SharedCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, CollectionType.SHARED, SharedCollection.class)) {
+        for (SharedCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, SharedCollection.class)) {
             ((SharedCollection)child).setParent(null);
             genericService.saveOrUpdate(child);
         }
@@ -365,7 +365,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         resourceCollectionChild = null;
         resourceCollectionParent = null;
         SharedCollection child = genericService.find(SharedCollection.class, childId);
-        List<SharedCollection> children = resourceCollectionService.findDirectChildCollections(parentId, null, CollectionType.SHARED, SharedCollection.class);
+        List<SharedCollection> children = resourceCollectionService.findDirectChildCollections(parentId, null, SharedCollection.class);
         logger.info("child: {}", child.getParent());
         logger.info("children: {}", children);
         assertTrue(child.getParent() == null);
