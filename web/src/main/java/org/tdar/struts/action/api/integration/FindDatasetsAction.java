@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
 import org.tdar.core.dao.integration.search.DatasetSearchFilter;
 import org.tdar.core.service.resource.DataTableService;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
 import com.opensymphony.xwork2.Preparable;
@@ -19,7 +20,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @Component
 @Scope("prototype")
-public class FindDatasetsAction extends AbstractIntegrationAction implements Preparable {
+public class FindDatasetsAction extends AbstractJsonApiAction implements Preparable {
 
     private static final long serialVersionUID = 6908759745526760734L;
 

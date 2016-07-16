@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -55,6 +55,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.api.ingest.APIController;
 import org.tdar.utils.TestConfiguration;
 
@@ -135,6 +136,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         controller.setUploadFile(Arrays.asList(new File(TestConstants.TEST_DOCUMENT)));
         controller.setUploadFileFileName(Arrays.asList(TestConstants.TEST_DOCUMENT_NAME));
         String uploadStatus = controller.upload();
+        logger.debug(controller.getErrorMessage());
         assertTrue(controller.getErrorMessage().contains("updated"));
         assertEquals(Action.SUCCESS, uploadStatus);
         assertEquals(StatusCode.UPDATED, controller.getStatus());

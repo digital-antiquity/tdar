@@ -5,7 +5,9 @@ Disallow: /search/
 Disallow: /search/results
 Disallow: /login
 Disallow: /logout
+Disallow: /api
 Disallow: /search/rss
+Disallow: /api/search/rss
 Disallow: /search/download
 Disallow: /filestore/
 Disallow: /cart/review

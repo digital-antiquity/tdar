@@ -506,7 +506,7 @@ TDAR.autocomplete = (function () {
      */
     function _applyKeywordAutocomplete(selector, lookupType, extraData, newOption) {
         var options = {};
-        options.url = "lookup/" + lookupType;
+        options.url = "api/lookup/" + lookupType;
         options.enhanceRequestData = function (requestData) {
             $.extend(requestData, extraData);
         };
@@ -529,7 +529,7 @@ TDAR.autocomplete = (function () {
      */
     function _applyPersonAutoComplete($elements, usersOnly, showCreate) {
         var options = {
-            url: "lookup/person",
+            url: "api/lookup/person",
             dataPath: "people",
             retainInputValueOnSelect: true,
             showCreate: showCreate,
@@ -577,7 +577,7 @@ TDAR.autocomplete = (function () {
             $.extend(requestData, extraData);
         };
 
-        defaults.url = "lookup/collection";
+        defaults.url = "api/lookup/collection";
         defaults.dataPath = "collections";
         defaults.sortField = 'TITLE';
         defaults.showCreate = false;
@@ -613,7 +613,7 @@ TDAR.autocomplete = (function () {
      */
     function _applyResourceAutocomplete($elements, type) {
         var options = {};
-        options.url = "lookup/resource";
+        options.url = "api/lookup/resource";
         options.dataPath = "resources";
         options.sortField = 'TITLE';
         options.enhanceRequestData = function (requestData) {
@@ -647,7 +647,7 @@ TDAR.autocomplete = (function () {
     function _applyInstitutionAutocomplete($elements, newOption) {
 
         var options = {};
-        options.url = "lookup/institution";
+        options.url = "api/lookup/institution";
         options.dataPath = "institutions";
         options.sortField = 'RELEVANCY';
         options.enhanceRequestData = function (requestData) {
@@ -753,7 +753,7 @@ TDAR.autocomplete = (function () {
     var _delegateAnnotationKey = function (id, prefix, delim) {
         $(id).delegate("." + prefix + "AutoComplete", "focusin", function () {
             _applyGenericAutocomplete($("." + prefix + "AutoComplete"), {
-                url: "lookup/" + delim,
+                url: "api/lookup/" + delim,
                 dataPath: "items",
                 sortField: 'LABEL',
                 minLength: 2,

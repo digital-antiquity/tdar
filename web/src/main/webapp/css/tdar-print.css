@@ -32,4 +32,6 @@
         display: none !important;
         visbility: hidden;
     }
+    
+    .tableFormat th {color: #FFFFFF !Important;}
 }

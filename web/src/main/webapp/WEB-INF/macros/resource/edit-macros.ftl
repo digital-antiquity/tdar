@@ -93,7 +93,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <label class="control-label">${title}</label>
         <div class="controls">
             <select class="keyword-autocomplete form-control select2-hidden-accessible input-xxlarge" multiple="multiple" tabindex="-1" aria-hidden="true"
-                name="${prefix}" data-ajax--url="/lookup/keyword?keywordType=${type?url}" id="${prefix}select2" style="width:100%">
+                name="${prefix}" data-ajax--url="/api/lookup/keyword?keywordType=${type?url}" id="${prefix}select2" style="width:100%">
                 <#list array![] as term>
                     <#if term?has_content><option value="${term?xhtml}" data-label="${term?xhtml}" selected="selected">${term}</option></#if>
                 </#list>

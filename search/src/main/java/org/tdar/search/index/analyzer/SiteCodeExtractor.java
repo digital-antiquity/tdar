@@ -41,7 +41,7 @@ public final class SiteCodeExtractor {
     	Matcher matcher = pattern.matcher(str);
     	while (matcher.find()) {
     		String group = matcher.group(0);
-    		toReturn.add(group.replaceAll("[\\s\\,\\:\\-]", ""));
+    		toReturn.add(group.replaceAll(SEP, ""));
     	}
     	return toReturn;
     }

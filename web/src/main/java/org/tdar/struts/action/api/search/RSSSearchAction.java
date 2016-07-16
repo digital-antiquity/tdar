@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action.api.search;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -16,11 +16,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
+import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
-@Namespace("/search")
+@Namespace("/api/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")

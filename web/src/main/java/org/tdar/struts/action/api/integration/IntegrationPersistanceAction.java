@@ -23,6 +23,7 @@ import org.tdar.core.service.integration.IntegrationWorkflowService;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.core.service.integration.dto.v1.IntegrationWorkflowData;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.action.PersistableLoadingAction;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -36,7 +37,7 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/api/integration")
 @Component
 @Scope("prototype")
-public class IntegrationPersistanceAction extends AbstractIntegrationAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>,
+public class IntegrationPersistanceAction extends AbstractJsonApiAction implements Preparable, PersistableLoadingAction<DataIntegrationWorkflow>,
         Validateable {
 
     private static final long serialVersionUID = 9053098961621133695L;

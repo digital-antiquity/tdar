@@ -6,6 +6,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Test;
 import org.tdar.core.bean.SortOption;
 import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts.action.api.search.RSSSearchAction;
 
 import com.opensymphony.xwork2.interceptor.annotations.Before;
 

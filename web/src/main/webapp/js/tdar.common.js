@@ -582,7 +582,7 @@ TDAR.common = function (TDAR, fileupload) {
         }
         var newclass = "tdar-icon-" + newstate;
 
-        $.post(TDAR.uri() + "resource/" + action + "?resourceId=" + resourceId, function (data) {
+        $.post(TDAR.uri() + "api/resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
                         $(".bookmark-label", $this).text(newtext);
                         $icon.removeClass(oldclass).addClass(newclass).show();
@@ -803,7 +803,7 @@ TDAR.common = function (TDAR, fileupload) {
         var $subCategoryIdSelect = $(subCategoryIdSelect);
         $subCategoryIdSelect.empty();
         $categoryIdSelect.siblings(".waitingSpinner").show();
-        $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
+        $.get(TDAR.uri() + "api/resource/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
         }, function (data, textStatus) {
             var result = "";

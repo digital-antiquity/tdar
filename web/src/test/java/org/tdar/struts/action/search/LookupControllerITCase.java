@@ -7,12 +7,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
-import org.tdar.struts.action.lookup.CollectionLookupAction;
-import org.tdar.struts.action.lookup.InstitutionLookupAction;
-import org.tdar.struts.action.lookup.KeywordLookupAction;
-import org.tdar.struts.action.lookup.PersonLookupAction;
-import org.tdar.struts.action.lookup.ResourceAnnotationKeyLookupAction;
-import org.tdar.struts.action.lookup.ResourceLookupAction;
+import org.tdar.struts.action.api.lookup.CollectionLookupAction;
+import org.tdar.struts.action.api.lookup.InstitutionLookupAction;
+import org.tdar.struts.action.api.lookup.KeywordLookupAction;
+import org.tdar.struts.action.api.lookup.PersonLookupAction;
+import org.tdar.struts.action.api.lookup.ResourceAnnotationKeyLookupAction;
+import org.tdar.struts.action.api.lookup.ResourceLookupAction;
 
 public class LookupControllerITCase extends AbstractIntegrationControllerTestCase {
 

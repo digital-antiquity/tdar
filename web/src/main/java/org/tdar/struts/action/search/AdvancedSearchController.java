@@ -56,6 +56,7 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.search.service.query.ResourceSearchService;
+import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;

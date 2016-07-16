@@ -1,4 +1,4 @@
-package org.tdar.struts.action.api.integration;
+package org.tdar.struts.action.api;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -15,7 +15,7 @@ import org.tdar.struts.action.TdarActionSupport;
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
 })
-public class AbstractIntegrationAction extends AbstractAuthenticatableAction {
+public class AbstractJsonApiAction extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -1603470633052691056L;
     private InputStream jsonInputStream;

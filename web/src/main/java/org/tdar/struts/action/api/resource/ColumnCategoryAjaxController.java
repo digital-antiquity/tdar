@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource.ajax;
+package org.tdar.struts.action.api.resource;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -30,8 +30,8 @@ import org.tdar.utils.PersistableUtils;
 @Component
 @ParentPackage("secured")
 @Scope("prototype")
-@Namespace("/resource/ajax")
-public class AjaxController extends TdarActionSupport {
+@Namespace("/api/resource")
+public class ColumnCategoryAjaxController extends TdarActionSupport {
 
     private static final long serialVersionUID = -1202795099371942148L;
 

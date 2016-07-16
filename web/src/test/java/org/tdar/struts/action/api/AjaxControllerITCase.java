@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import static org.junit.Assert.assertEquals;
 
@@ -10,17 +10,18 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.service.resource.CategoryVariableService;
-import org.tdar.struts.action.resource.ajax.AjaxController;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
+import org.tdar.struts.action.api.resource.ColumnCategoryAjaxController;
 
 public class AjaxControllerITCase extends AbstractAdminControllerITCase {
-    private AjaxController controller;
+    private ColumnCategoryAjaxController controller;
 
     @Autowired
     private CategoryVariableService categoryVariableService;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(AjaxController.class);
+        controller = generateNewInitializedController(ColumnCategoryAjaxController.class);
     }
 
     @Test

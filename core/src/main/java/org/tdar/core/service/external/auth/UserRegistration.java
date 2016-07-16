@@ -201,4 +201,13 @@ public class UserRegistration extends UserAuthData {
     public void setAffiliations(List<UserAffiliation> affiliations) {
         this.affiliations = affiliations;
     }
+
+    public void trace(String header) {
+        getLogger().trace("{} : {}", "      username", getPerson().getUsername());
+        getLogger().trace("{} : {}", "   affiliation", getAffiliation());
+        getLogger().trace("{} : {}", "contrib access", isRequestingContributorAccess());
+        getLogger().trace("{} : {}", "contrib reason", getContributorReason());
+        getLogger().trace("{} : {}", "       browser", header);
+        
+    }
 }

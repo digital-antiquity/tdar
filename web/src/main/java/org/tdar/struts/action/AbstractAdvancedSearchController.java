@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -42,9 +42,6 @@ import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.struts.action.AbstractLookupController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 

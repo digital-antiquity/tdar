@@ -9,7 +9,7 @@
     
 <title>${keyword.label}</title>
     <@view.canonical keyword />
-<#--    <#assign rssUrl = "/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
+<#--    <#assign rssUrl = "/api/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl /> -->
     <@search.headerLinks includeRss=false />
 

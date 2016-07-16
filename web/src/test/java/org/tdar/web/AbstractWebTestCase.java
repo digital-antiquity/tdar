@@ -1259,7 +1259,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
             toReturn.put(INVOICE_ID, getValue(INVOICE_ID));
             assertCurrentUrlContains("process-payment-request");
             clickLinkWithText("Click Here To Begin Payment Process");
-            URL polingUrl = new URL(getBaseUrl() + "/cart/" + toReturn.get(INVOICE_ID) + "/polling-check");
+            URL polingUrl = new URL(getBaseUrl() + "/api/cart/" + toReturn.get(INVOICE_ID) + "/polling-check");
             String response = getAccountPollingRequest(polingUrl);
             assertTrue(response.contains(TransactionStatus.PENDING_TRANSACTION.name()));
             checkInput(NelnetTransactionItem.getInvoiceIdKey(), toReturn.get(INVOICE_ID));

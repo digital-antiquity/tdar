@@ -441,7 +441,7 @@ table td {font-family: "ff-tisa-web-pro",  serif !important;}
 
 <script>
     $(document).ready(function () {
-        TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/cart/api"/>");
+        TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/api/cart/quote"/>");
         TDAR.autocomplete.applyPersonAutoComplete($(".userAutoComplete"), true, false);
     });
 </script>

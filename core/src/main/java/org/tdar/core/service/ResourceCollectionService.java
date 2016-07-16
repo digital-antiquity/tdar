@@ -791,6 +791,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove", ineligibleToRemove);
         }
     }
+    
+    @Transactional(readOnly=false)
+    public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser) {
+        if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
+                authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collection)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.cannot_remove");
+        } else {
+            resource.getResourceCollections().remove(collection);
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+        }
+
+    }
 
     private void removeFromCollection(Resource resource, RightsBasedResourceCollection persistable) {
         if (persistable instanceof SharedCollection) {
@@ -963,6 +975,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public void changeSubmitter(ResourceCollection collection, TdarUser submitter, TdarUser authenticatedUser) {
         getDao().changeSubmitter(collection, submitter, authenticatedUser);
+    }
+
+    @Transactional(readOnly=false)
+    public void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection) {
+        resource.getResourceCollections().remove(fromCollection);
+        fromCollection.getResources().remove(resource);
+        resource.getResourceCollections().add(toCollection);
+        toCollection.getResources().add(resource);
+        getDao().saveOrUpdate(resource);
+        saveOrUpdate(fromCollection);
+        saveOrUpdate(toCollection);
+        
     }
 
 }
