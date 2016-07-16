@@ -793,12 +793,17 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
     
     @Transactional(readOnly=false)
-    public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser) {
+    public void removeResourceFromCollection(Resource resource, HasDisplayProperties collection, TdarUser authenticatedUser) {
         if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
                 authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collection)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.cannot_remove");
         } else {
-            resource.getResourceCollections().remove(collection);
+            if (collection instanceof SharedCollection) {
+                resource.getSharedCollections().remove(collection);
+            } else if (collection instanceof ListCollection) {
+                resource.getUnmanagedResourceCollections().remove(collection);
+                
+            }
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
 
@@ -978,11 +983,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly=false)
-    public void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection) {
-        resource.getResourceCollections().remove(fromCollection);
-        fromCollection.getResources().remove(resource);
-        resource.getResourceCollections().add(toCollection);
-        toCollection.getResources().add(resource);
+    public <C extends HasDisplayProperties> void moveResource(Resource resource, C fromCollection, C toCollection) {
+        if (fromCollection instanceof SharedCollection) {
+            resource.getSharedCollections().remove(fromCollection);
+            ((SharedCollection)fromCollection).getResources().remove(resource);
+            resource.getSharedCollections().add((SharedCollection) toCollection);
+            ((SharedCollection) toCollection).getResources().add(resource);
+        }
+        if (fromCollection instanceof ListCollection) {
+            resource.getUnmanagedResourceCollections().remove(fromCollection);
+            ((ListCollection)fromCollection).getUnmanagedResources().remove(resource);
+            resource.getUnmanagedResourceCollections().add((ListCollection) toCollection);
+            ((ListCollection) toCollection).getUnmanagedResources().add(resource);
+        }
         getDao().saveOrUpdate(resource);
         saveOrUpdate(fromCollection);
         saveOrUpdate(toCollection);
