@@ -761,6 +761,18 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove", ineligibleToRemove);
         }
     }
+    
+    @Transactional(readOnly=false)
+    public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser) {
+        if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
+                authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collection)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.cannot_remove");
+        } else {
+            resource.getResourceCollections().remove(collection);
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+        }
+
+    }
 
     @Transactional(readOnly = false)
     public void reconcileIncomingResourcesForCollectionWithoutRights(ResourceCollection persistable, TdarUser authenticatedUser, List<Resource> resourcesToAdd,
