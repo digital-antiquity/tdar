@@ -32,7 +32,7 @@ import org.tdar.utils.json.JsonLookupFilter;
  */
 @Component
 @Scope("prototype")
-@Namespace("/cart")
+@Namespace("/api/cart")
 @ParentPackage("secured")
 @Results({
         @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }),

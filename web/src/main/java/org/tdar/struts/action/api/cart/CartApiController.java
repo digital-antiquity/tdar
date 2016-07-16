@@ -36,7 +36,7 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = ERROR, type = JSONRESULT, params = { "streamhttp", "resultJson", "status", "500" }),
 })
 @ParentPackage("default")
-@Namespace("/cart")
+@Namespace("/api/cart")
 public class CartApiController extends AbstractCartController implements Preparable {
 
     private static final long serialVersionUID = -1870193105271895297L;
