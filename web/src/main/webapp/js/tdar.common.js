@@ -803,7 +803,7 @@ TDAR.common = function (TDAR, fileupload) {
         var $subCategoryIdSelect = $(subCategoryIdSelect);
         $subCategoryIdSelect.empty();
         $categoryIdSelect.siblings(".waitingSpinner").show();
-        $.get(TDAR.uri() + "resource/ajax/column-metadata-subcategories", {
+        $.get(TDAR.uri() + "api/resource/column-metadata-subcategories", {
             "categoryVariableId": $categoryIdSelect.val()
         }, function (data, textStatus) {
             var result = "";
