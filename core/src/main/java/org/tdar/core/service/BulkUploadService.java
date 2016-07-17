@@ -231,7 +231,13 @@ public class BulkUploadService {
         logger.info("bulk: applying account: {}", accountId);
         updateAccountQuotas(accountId, remainingResources, updateReciever, submitter);
 
+        try {
         logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
+        } catch (Throwable t) {
+            logger.error("erorr in persist", t);
+            logger.error("erorr in persist", t.getCause());
+            
+        }
         completeBulkUpload(accountId, manifestProxy.getAsyncUpdateReceiver(), excelManifest, ticketId);
 
 //        reindexProject(projectId, updateReciever);
@@ -361,14 +367,14 @@ public class BulkUploadService {
             }
             resources.clear();
 
-            Set<RightsBasedResourceCollection> cols = new HashSet<>();
+//            Set<RightsBasedResourceCollection> cols = new HashSet<>();
             for (Resource resource : resources) {
                 receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
                 try {
-                    cols.addAll(resource.getRightsBasedResourceCollections());
+//                    cols.addAll(resource.getRightsBasedResourceCollections());
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
@@ -546,6 +552,7 @@ public class BulkUploadService {
                 createResourceAndAddToProxyList(image, proxy, fileName, suggestTypeForFile);
             } catch (Exception e) {
                 logger.error("something happend", e);
+                logger.error("something happend", e.getCause());
                 proxy.getAsyncUpdateReceiver().addError(e);
             }
         }
