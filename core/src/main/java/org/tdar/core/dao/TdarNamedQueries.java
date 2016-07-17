@@ -64,7 +64,8 @@ public interface TdarNamedQueries {
     String QUERY_LIST_COLLECTION_BY_PARENT = "listcollection.parent";
     String QUERY_COLLECTIONS_PUBLIC_ACTIVE = "collection.activeId";
     String QUERY_COLLECTION_RESOURCES_WITH_STATUS = "collection.resourcesWithStatus";
-    String QUERY_COLLECTION_BY_AUTH_OWNER = "collection.authOwnerId_name";
+    String QUERY_SHARED_COLLECTION_BY_AUTH_OWNER = "sharedCollection.authOwnerId_name";
+    String QUERY_LIST_COLLECTION_BY_AUTH_OWNER = "listCollection.authOwnerId_name";
     String QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT = "collection.hiddenParent";
     String QUERY_EXTERNAL_ID_SYNC = "resource.externalId";
     String QUERY_KEYWORD_COUNT_CULTURE_KEYWORD_CONTROLLED = "adminStats.cultureKeywordControlled";

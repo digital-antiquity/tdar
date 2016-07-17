@@ -204,8 +204,13 @@
         ),
 
         @org.hibernate.annotations.NamedQuery(
-                name = TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER,
-                query = "select distinct col from ResourceCollection as col left join col.authorizedUsers as authorizedUser where "
+                name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER,
+                query = "select distinct col from SharedCollection as col left join col.authorizedUsers as authorizedUser where "
+                        + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
+        ),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER,
+                query = "select distinct col from ListCollection as col left join col.authorizedUsers as authorizedUser where "
                         + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
         ),
         @org.hibernate.annotations.NamedQuery(

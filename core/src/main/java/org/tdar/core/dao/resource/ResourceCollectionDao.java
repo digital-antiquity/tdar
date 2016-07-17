@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.poi.xssf.usermodel.ListAutoNumber;
 import org.hibernate.Criteria;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
@@ -86,7 +87,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public <C extends HierarchicalCollection> List<C> findParentOwnerCollections(Person person, Class<C> cls) {
-        Query<C> namedQuery = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTION_BY_AUTH_OWNER, cls);
+        String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER;
+        if (CollectionType.getTypeForClass(cls) == CollectionType.LIST) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER;
+        }
+        Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
         namedQuery.setParameter("authOwnerId", person.getId());
         namedQuery.setParameter("collectionTypes", Arrays.asList(CollectionType.getTypeForClass(cls)));
         namedQuery.setParameter("equivPerm", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
