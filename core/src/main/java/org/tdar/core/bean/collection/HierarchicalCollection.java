@@ -13,8 +13,14 @@ import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+
+@XmlType(name = "hierCollBase")
 @Entity
 public abstract class HierarchicalCollection<C extends VisibleCollection> extends VisibleCollection implements Comparable<C> {
 
@@ -34,6 +40,7 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
      */
     @Transient
     @ElementCollection
+    @XmlTransient
     public Set<Long> getParentIds() {
         return parentIds;
     }
@@ -44,6 +51,8 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
 
     private transient Set<C> transientChildren = new LinkedHashSet<>();
 
+    @XmlAttribute(name = "parentIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public abstract C getParent();
 
     public abstract void setParent(C c);

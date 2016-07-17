@@ -72,8 +72,6 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
     @JoinColumn(name = "parent_id")
     private SharedCollection parent;
 
-    @XmlAttribute(name = "parentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public SharedCollection getParent() {
         return parent;
     }

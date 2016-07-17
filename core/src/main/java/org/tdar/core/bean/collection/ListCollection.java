@@ -36,8 +36,6 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
     @JoinColumn(name = "parent_id")
     private ListCollection parent;
 
-    @XmlAttribute(name = "parentIdRef")
-    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
     public ListCollection getParent() {
         return parent;
     }

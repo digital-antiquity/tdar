@@ -17,8 +17,14 @@
     <tdar:previousStatus>ACTIVE</tdar:previousStatus>
     <tdar:relatedComparativeCollections/>
     <tdar:resourceAnnotations/>
+    <tdar:resourceCreators/>
+    <tdar:resourceNotes/>
+    <tdar:resourceType>PROJECT</tdar:resourceType>
     <tdar:sharedCollections>
         <tdar:sharedCollection hidden="false">
+            <tdar:resources>
+                <tdar:resourceId>4232</tdar:resourceId>
+            </tdar:resources>
             <tdar:name>1234</tdar:name>
             <tdar:orientation>LIST</tdar:orientation>
 		    <tdar:properties>
@@ -29,9 +35,6 @@
 		        <tdar:subCollectionsEnabled>false</tdar:subCollectionsEnabled>
 		        <tdar:whitelabel>false</tdar:whitelabel>
 		    </tdar:properties>
-            <tdar:resources>
-                <tdar:resourceId>4232</tdar:resourceId>
-            </tdar:resources>
             <tdar:sortBy>TITLE</tdar:sortBy>
         </tdar:sharedCollection>
         <tdar:sharedCollection hidden="true"  parentIdRef="NULL_REF">
@@ -50,9 +53,6 @@
             <tdar:sortBy>TITLE</tdar:sortBy>
         </tdar:sharedCollection>
     </tdar:sharedCollections>
-    <tdar:resourceCreators/>
-    <tdar:resourceNotes/>
-    <tdar:resourceType>PROJECT</tdar:resourceType>
     <tdar:siteNameKeywords/>
     <tdar:siteTypeKeywords/>
     <tdar:sortBy>RESOURCE_TYPE</tdar:sortBy>
