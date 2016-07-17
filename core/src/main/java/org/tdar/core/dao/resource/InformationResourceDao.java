@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
@@ -44,7 +44,7 @@ public class InformationResourceDao extends ResourceDao<InformationResource> {
         return findRandomFeaturedResource(restrictToFiles, null, project, maxResults);
     }
 
-    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, List<HasDisplayProperties> collections, int maxResults) {
+    public <E> List<E> findRandomFeaturedResourceInCollection(boolean restrictToFiles, List<VisibleCollection> collections, int maxResults) {
         return findRandomFeaturedResource(restrictToFiles, collections, null, maxResults);
     }
 

@@ -16,7 +16,7 @@ import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlTransient;
 
 @Entity
-public abstract class HierarchicalCollection<C extends HasDisplayProperties> extends HasDisplayProperties implements Comparable<C> {
+public abstract class HierarchicalCollection<C extends VisibleCollection> extends VisibleCollection implements Comparable<C> {
 
     private static final long serialVersionUID = -4518328095223743894L;
 

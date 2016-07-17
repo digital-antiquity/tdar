@@ -1,7 +1,7 @@
 package org.tdar.struts.action.collection.admin;
 
 import org.springframework.context.annotation.Scope;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 
 import com.opensymphony.xwork2.Preparable;
@@ -11,11 +11,11 @@ public abstract class AbstractCollectionAdminAction extends AbstractAuthenticata
 
     private static final long serialVersionUID = -926906661391091555L;
     private Long id;
-    private HasDisplayProperties collection;
+    private VisibleCollection collection;
 
     @Override
     public void prepare() throws Exception {
-        setCollection(getGenericService().find(HasDisplayProperties.class,id));
+        setCollection(getGenericService().find(VisibleCollection.class,id));
     }
 
     public Long getId() {
@@ -26,11 +26,11 @@ public abstract class AbstractCollectionAdminAction extends AbstractAuthenticata
         this.id = id;
     }
 
-    public HasDisplayProperties getCollection() {
+    public VisibleCollection getCollection() {
         return collection;
     }
 
-    public void setCollection(HasDisplayProperties collection) {
+    public void setCollection(VisibleCollection collection) {
         this.collection = collection;
     }
 

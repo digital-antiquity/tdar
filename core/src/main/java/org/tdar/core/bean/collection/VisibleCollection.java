@@ -13,6 +13,7 @@ import javax.persistence.Lob;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
@@ -20,11 +21,13 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Slugable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.resource.Addressable;
 import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.PersistableUtils;
@@ -34,10 +37,11 @@ import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
-public abstract class HasDisplayProperties extends ResourceCollection implements OaiDcProvider, Sortable, HasName, Slugable, Addressable, Validatable {
+public abstract class VisibleCollection extends ResourceCollection implements OaiDcProvider, Sortable, HasName, Slugable, Addressable, Validatable, Indexable, Viewable {
 
 
     private static final long serialVersionUID = -8963749030250029536L;
+    private transient boolean viewable;
 
     @Column
     @JsonView(JsonLookupFilter.class)
@@ -205,5 +209,17 @@ public abstract class HasDisplayProperties extends ResourceCollection implements
     public String getSlug() {
         return UrlUtils.slugify(getName());
     }
+
+    @XmlTransient
+    @Override
+    public boolean isViewable() {
+        return viewable;
+    }
+
+    @Override
+    public void setViewable(boolean viewable) {
+        this.viewable = viewable;
+    }
+
 
 }

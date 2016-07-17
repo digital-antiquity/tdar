@@ -12,7 +12,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -33,14 +33,14 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
         for (ResourceCollection collection : results.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
-                assertFalse(((HasDisplayProperties) collection).getTitle().equals("Kleis"));
+                assertFalse(((VisibleCollection) collection).getTitle().equals("Kleis"));
             }
         }
         results = search(null, null, "Kintigh - C");
         for (ResourceCollection collection : results.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
-                assertTrue(((HasDisplayProperties) collection).getTitle().contains("Kintigh - C"));
+                assertTrue(((VisibleCollection) collection).getTitle().contains("Kintigh - C"));
             }
         }
 
@@ -64,7 +64,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
         for (ResourceCollection collection : result.getResults()) {
             logger.info("{}", collection);
             if (collection != null) {
-                assertTrue(((HasDisplayProperties) collection).getTitle().contains("Kintigh - C"));
+                assertTrue(((VisibleCollection) collection).getTitle().contains("Kintigh - C"));
             }
         }
 

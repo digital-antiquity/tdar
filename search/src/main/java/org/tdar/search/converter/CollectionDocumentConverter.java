@@ -2,7 +2,7 @@ package org.tdar.search.converter;
 
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
@@ -19,10 +19,10 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
             return null;
         }
         SolrInputDocument doc = convertPersistable(collection);
-        if (collection instanceof HasDisplayProperties) {
-            HasDisplayProperties props = (HasDisplayProperties) collection;
+        if (collection instanceof VisibleCollection) {
+            VisibleCollection props = (VisibleCollection) collection;
             doc.setField(QueryFieldNames.NAME, props.getName());
-            doc.setField(QueryFieldNames.COLLECTION_HIDDEN, ((HasDisplayProperties) collection).isHidden());
+            doc.setField(QueryFieldNames.COLLECTION_HIDDEN, ((VisibleCollection) collection).isHidden());
             doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
             doc.setField(QueryFieldNames.ALL, props.getAllFieldSearch());
         }        

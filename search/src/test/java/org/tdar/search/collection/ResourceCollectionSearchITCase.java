@@ -12,7 +12,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -120,9 +120,9 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         SearchResult<ResourceCollection> result = runQuery(getAdminUser(), csqo);
         assertNotEmpty(result.getResults());
         for (ResourceCollection c : result.getResults()) {
-            if (c instanceof HasDisplayProperties) {
-                logger.debug("{} {} {}", c.getId(), c, ((HasDisplayProperties) c).isHidden());
-                assertFalse("should not be hidden", ((HasDisplayProperties) c).isHidden());
+            if (c instanceof VisibleCollection) {
+                logger.debug("{} {} {}", c.getId(), c, ((VisibleCollection) c).isHidden());
+                assertFalse("should not be hidden", ((VisibleCollection) c).isHidden());
             } else {
                 fail("should not be indexing InternalCollections");
             }
@@ -142,8 +142,8 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
         result = runQuery(null, csqo);
         for (ResourceCollection c : result.getResults()) {
-            logger.debug("{} {}", c.getId(), ((HasDisplayProperties) c).getTitle());
-            assertTrue("title contains kbp or kintigh", ((HasDisplayProperties) c).getTitle().contains("KBP") || ((HasDisplayProperties) c).getTitle().contains("Kintigh"));
+            logger.debug("{} {}", c.getId(), ((VisibleCollection) c).getTitle());
+            assertTrue("title contains kbp or kintigh", ((VisibleCollection) c).getTitle().contains("KBP") || ((VisibleCollection) c).getTitle().contains("Kintigh"));
         }
     }
 

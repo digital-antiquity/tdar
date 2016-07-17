@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -40,7 +40,7 @@ public class AddRemoveResourceAction extends AbstractJsonApiAction implements Pr
     private Long resourceId;
     private Long collectionId;
     private Resource resource;
-    private HasDisplayProperties collection;
+    private VisibleCollection collection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -86,7 +86,7 @@ public class AddRemoveResourceAction extends AbstractJsonApiAction implements Pr
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.collection = getGenericService().find(HasDisplayProperties.class, collectionId);
+        this.collection = getGenericService().find(VisibleCollection.class, collectionId);
         
     }
 

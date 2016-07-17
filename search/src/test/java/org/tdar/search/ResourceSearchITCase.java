@@ -38,7 +38,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -799,7 +799,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // skeleton lists should have been loaded w/ sparse records...
         assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
         logger.debug("c's:{}",sp.getCollections());
-        assertEquals(colname, ((HasDisplayProperties)sp.getCollections().get(1)).getName());
+        assertEquals(colname, ((VisibleCollection)sp.getCollections().get(1)).getName());
     }
 
     @Test
@@ -824,7 +824,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         
         // skeleton lists should have been loaded w/ sparse records...
         // assertEquals(proj.getTitle(), sp.getProjects().get(0).getTitle());
-        assertEquals(colname, ((HasDisplayProperties)sp.getCollections().get(0)).getName());
+        assertEquals(colname, ((VisibleCollection)sp.getCollections().get(0)).getName());
         assertTrue(result.getResults().contains(proj));
         // assertEquals(proj.getId(), sp.getProjects().get(0).getId());
         // assertEquals(coll.getId(), sp.getCollections().get(1).getId());
@@ -889,7 +889,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         sp.getCollections().add(sparseCollection);
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
-        assertThat(((HasDisplayProperties)sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
+        assertThat(((VisibleCollection)sp.getCollections().get(0)).getTitle(), is("Mega Collection"));
     }
 
     private void assertOnlyResultAndProject(SearchResult<Resource> result, InformationResource informationResource) {

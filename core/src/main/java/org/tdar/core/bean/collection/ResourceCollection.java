@@ -1,4 +1,15 @@
 /**
+    @XmlTransient
+    @Override
+    public boolean isViewable() {
+        return viewable;
+    }
+
+    @Override
+    public void setViewable(boolean viewable) {
+        this.viewable = viewable;
+    }
+
  * $Id$
  * 
  * @author $Author$
@@ -92,15 +103,13 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 @XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class, ListCollection.class })
 public abstract class ResourceCollection extends AbstractPersistable
-        implements Updatable, Indexable, Validatable, 
-         Viewable, DeHydratable, HasSubmitter, XmlLoggable {
+        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private transient boolean changesNeedToBeLogged = false;
-    private transient boolean viewable;
 
     private static final long serialVersionUID = -5308517783896369040L;
     private transient Float score;
@@ -227,18 +236,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         logger.trace("type: {} owner: {} name: {} sort: {}", getType(), getOwner());
         return PersistableUtils.isNotNullOrTransient(getOwner());
     }
-
-    @XmlTransient
-    @Override
-    public boolean isViewable() {
-        return viewable;
-    }
-
-    @Override
-    public void setViewable(boolean viewable) {
-        this.viewable = viewable;
-    }
-
 
     @Override
     @Transient

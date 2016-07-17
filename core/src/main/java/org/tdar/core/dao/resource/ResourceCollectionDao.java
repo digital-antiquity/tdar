@@ -26,7 +26,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HomepageFeaturedCollections;
 import org.tdar.core.bean.collection.InternalCollection;
@@ -108,11 +108,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     }
 
     public <C extends ResourceCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, C collection, Class<C> cls) {
-        if (!(collection instanceof HasDisplayProperties)) {
+        if (!(collection instanceof VisibleCollection)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionDao.wrong_type");
         }
         Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, cls);
-        query.setParameter("name", ((HasDisplayProperties) collection).getName());
+        query.setParameter("name", ((VisibleCollection) collection).getName());
         List<C> list = query.getResultList();
         for (C coll : list) {
             if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
@@ -127,7 +127,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
                 SharedCollection.class);
         query.setParameter("name", name);
         List<SharedCollection> list = new ArrayList<>(query.getResultList());
-        list.removeIf(rc -> (!isAdmin && !authorizedUserDao.isAllowedTo(user, (HasDisplayProperties) rc, GeneralPermissions.ADMINISTER_GROUP)));
+        list.removeIf(rc -> (!isAdmin && !authorizedUserDao.isAllowedTo(user, (VisibleCollection) rc, GeneralPermissions.ADMINISTER_GROUP)));
         return list;
 
     }
@@ -354,7 +354,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param rc
      * @return
      */
-    public <C extends HasDisplayProperties> C convertToWhitelabelCollection(C rc) {
+    public <C extends VisibleCollection> C convertToWhitelabelCollection(C rc) {
         if (rc.getProperties() == null) {
             rc.setProperties(new CollectionDisplayProperties());
         }
@@ -369,7 +369,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param wlc
      * @return
      */
-    public <C extends HasDisplayProperties> C convertToResourceCollection(C wlc) {
+    public <C extends VisibleCollection> C convertToResourceCollection(C wlc) {
         if (wlc.getProperties() == null) {
             return wlc;
         }

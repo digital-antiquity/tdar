@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -365,9 +365,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
         // if authenticated, also add the collections that the user can modify
         if (isAuthenticated()) {
-            Set<HasDisplayProperties> all = new HashSet<>(getResource().getSharedResourceCollections());
+            Set<VisibleCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
             all.addAll(getResource().getUnmanagedResourceCollections());
-            for (HasDisplayProperties resourceCollection : all) {
+            for (VisibleCollection resourceCollection : all) {
                 if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
                     collections.add((ResourceCollection)resourceCollection);
                 }

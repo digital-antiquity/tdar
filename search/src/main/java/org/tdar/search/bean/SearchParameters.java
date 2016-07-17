@@ -13,7 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -417,7 +417,7 @@ public class SearchParameters {
             Operator operator, List<P> values) {
         SkeletonPersistableQueryPart q = new SkeletonPersistableQueryPart(fieldName, label, cls, values);
         logger.debug("{} {} {} ", cls, prefix, values);
-        if ((HasName.class.isAssignableFrom(cls) || HasDisplayProperties.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
+        if ((HasName.class.isAssignableFrom(cls) || VisibleCollection.class.isAssignableFrom(cls)) && StringUtils.isNotBlank(prefix)) {
             TitleQueryPart tqp = new TitleQueryPart();
             tqp.setPrefix(prefix);
             for (Persistable p : values) {

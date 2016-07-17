@@ -22,7 +22,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -334,8 +334,8 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         // the collections should appear in the list, though we aren't sure of the order.
         ArrayList<String> names = new ArrayList<String>();
         for (ResourceCollection rc : resourceCollections) {
-            if (rc instanceof HasDisplayProperties)
-            names.add(((HasDisplayProperties) rc).getName());
+            if (rc instanceof VisibleCollection)
+            names.add(((VisibleCollection) rc).getName());
         }
 
         assertTrue(names.contains(name1));

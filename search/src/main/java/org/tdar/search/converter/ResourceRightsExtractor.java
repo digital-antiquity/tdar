@@ -7,7 +7,7 @@ import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.collection.HasDisplayProperties;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -95,8 +95,8 @@ public class ResourceRightsExtractor {
         for (RightsBasedResourceCollection collection : collections) {
             if (collection instanceof SharedCollection) {
                 directCollectionIds.add(collection.getId());
-                if (collection instanceof HasDisplayProperties) {
-                    directCollectionNames.add(((HasDisplayProperties) collection).getName());
+                if (collection instanceof VisibleCollection) {
+                    directCollectionNames.add(((VisibleCollection) collection).getName());
                 }
                 if (collection instanceof SharedCollection) {
                 SharedCollection shared = (SharedCollection)collection;
