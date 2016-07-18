@@ -796,7 +796,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void removeResourceFromCollection(Resource resource, VisibleCollection collection, TdarUser authenticatedUser) {
         if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
                 authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collection)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.cannot_remove");
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove");
         } else {
             if (collection instanceof SharedCollection) {
                 resource.getSharedCollections().remove(collection);
