@@ -31,9 +31,8 @@
     <script>TDAR_jsErrorDelim = "ɹǝʇıɯıןǝp?js_string";</script>
     <script type="text/javascript" src="${host}/js/tdar.errorutils.js?build10029"></script>
     <script src="${host}/includes/modernizr-custom-2.6.2.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="${host}//www.google.com/jsapi"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 <meta name="google-site-verification" content="rd6Iv58lPY7jDqfNvOLe9-WXRpAEpwLZCCndxR64nSg"/>
 <meta name="msvalidate.01" content="121771274977CEA348D5B098DE1F823F"/>
 <meta name="msvalidate.01" content="128653025DF7FC6B55A50F268FE1DEA0" />
