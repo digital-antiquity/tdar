@@ -69,6 +69,8 @@
             </ul>
 				<@rlist.displayWidget />
             <form>
+        <@search.facetBy facetlist=typeFacets currentValues=types label="Object Type(s)" facetParam="types" />
+        <@search.facetBy facetlist=collectionTypeFacets currentValues=collectionTypes label="Collection Type(s)" facetParam="collectionTypes" />
         <@search.facetBy facetlist=resourceTypeFacets currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" />
         <@search.facetBy facetlist=documentTypeFacets currentValues=documentType label="Document Type(s)" facetParam="documentType" />
         <@search.facetBy facetlist=integratableOptionFacets currentValues=integratableOptions label="Integratable" facetParam="integratableOptions" />
@@ -118,15 +120,8 @@
     </div>
 
     <div class="tdarresults">
-
-    <#list results>
-        <#items as result>
-        <#if result?has_content>
-            <div><p><b>${result.title!'no title'}</b> (${result.class.simpleName}: ${result.id?c})<br/>
-            ${result.description!''}</p><br/><hr></div>
-        </#if>
-        </#items>
-    </#list>
+                <@rlist.listResources resourcelist=results sortfield=sortField listTag="span" itemTag="span" titleTag="h3" orientation=orientation mapPosition="top" mapHeight="450"/>
+        
 
     </div>
         <@search.pagination ""/>

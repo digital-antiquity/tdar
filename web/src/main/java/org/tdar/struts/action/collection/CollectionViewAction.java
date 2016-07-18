@@ -572,5 +572,8 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
         this.homepageGraphs = homepageGraphs;
     }
 
+    public List<DisplayOrientation> getAvailableOrientations() {
+        return Arrays.asList(DisplayOrientation.values());
+    }
 
 }

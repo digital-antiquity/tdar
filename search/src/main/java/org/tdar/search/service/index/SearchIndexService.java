@@ -31,7 +31,7 @@ import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.keyword.Keyword;
@@ -40,7 +40,6 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
-import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -67,7 +66,6 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.SearchUtils;
-import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
 @Service
@@ -228,8 +226,8 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (item instanceof Resource) {
             document = ResourceDocumentConverter.convert((Resource) item);
         }
-        if (item instanceof ResourceCollection) {
-            document = CollectionDocumentConverter.convert((ResourceCollection) item);
+        if (item instanceof VisibleCollection) {
+            document = CollectionDocumentConverter.convert((VisibleCollection) item);
         }
         if (item instanceof Keyword) {
             document = KeywordDocumentConverter.convert((Keyword) item);

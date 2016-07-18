@@ -60,7 +60,7 @@ public interface QueryFieldNames {
 	String LAST_NAME_SORT = "lastName_sort";
 	String CREATOR_NAME_SORT = "creator_name_sort";
 
-	String COLLECTION_TYPE = RESOURCE_TYPE;
+	String COLLECTION_TYPE = "collectionType";
 	String RESOURCE_USERS_WHO_CAN_VIEW = "usersWhoCanView";
 	String RESOURCE_USERS_WHO_CAN_MODIFY = "usersWhoCanModify";
 	String COLLECTION_USERS_WHO_CAN_ADMINISTER = "usersWhoCanAdminister";
@@ -98,7 +98,7 @@ public interface QueryFieldNames {
 	String FIRST_NAME_AUTO = "firstName_autocomplete";
 	String NAME_AUTOCOMPLETE = "name_autocomplete";
 	String NAME_SORT = "name_sort";
-	String TYPE = "type";
+	String OBJECT_TYPE = "type";
 	String REGISTERED = "registered";
 	String CONTIRBUTOR = "contributor";
 	String INSTITUTION_NAME = "institution.name";

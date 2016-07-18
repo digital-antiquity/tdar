@@ -442,26 +442,13 @@ bookmark indicator, etc..
 	<#macro displayWidget>
                 <h3>View Options</h3>
                 <ul class="tools media-list">
+                    <#list availableOrientations as orientation>
                     <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">LIST</@s.param>
+	                    <@s.param name="orientation">${orientation}</@s.param>
 	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_list"></use></svg>
-                    <@s.text name="DisplayOrientation.LIST"/></a></li>
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">LIST_FULL</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_list"></use></svg>
-                     <@s.text name="DisplayOrientation.LIST_FULL"/></a></li>
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">GRID</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_gallery"></use></svg>
-                    <@s.text name="DisplayOrientation.GRID"/></a></li>
-                    <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">MAP</@s.param>
-	                </@s.url>">
-                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_map"></use></svg>
-                    <@s.text name="DisplayOrientation.MAP"/></a></li>
+                    <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>
+                    <@s.text name="${orientation.localeKey}"/></a></li>
+                    </#list>
                 </ul>
 	</#macro>
 

@@ -1,6 +1,7 @@
 package org.tdar.struts.action.project;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -260,5 +261,9 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
 	public DisplayOrientation getOrientation() {
 		return getPersistable().getOrientation();
 	}
+
+    public List<DisplayOrientation> getAvailableOrientations() {
+        return Arrays.asList(DisplayOrientation.values());
+    }
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.Lob;
@@ -18,6 +19,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
 
 @XmlElement("collectionDisplayProperties")
+@Embeddable
 public class CollectionDisplayProperties implements HasImage {
     private static final long serialVersionUID = -3972164997710223460L;
 

@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
+import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
@@ -29,16 +31,18 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
-import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+
+import com.healthmarketscience.jackcess.impl.ColumnImpl.SortOrder;
 
 /**
  * Eventual replacement for LuceneSearchController. extending
@@ -57,11 +61,8 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
 
     private static final String SIMPLE_FTL = "simple.ftl";
     private static final long serialVersionUID = -7767557393006858614L;
-    private static final String SEARCH_RSS = "/search/rss";
+    private static final String SEARCH_RSS = "/api/search/rss";
     private FacetWrapper facetWrapper = new FacetWrapper();
-
-    @Autowired
-    private transient ResourceSearchService resourceSearchService;
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -83,12 +84,14 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
         // FIME: for whatever reason this is not being processed by the SessionSecurityInterceptor and thus
         // needs manual care, but, when the TdarActionException is processed, it returns a blank page instead of
         // not_found
-        
-        	setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
-        
+
+        setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
+
         getAsqo().setMultiCore(true);
         try {
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
+            getFacetWrapper().facetBy(QueryFieldNames.COLLECTION_TYPE, CollectionType.class);
+            getFacetWrapper().facetBy(QueryFieldNames.OBJECT_TYPE, LookupSource.class);
             getFacetWrapper().facetBy(QueryFieldNames.INTEGRATABLE, IntegratableOptions.class);
             getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_ACCESS_TYPE, ResourceAccessType.class);
             getFacetWrapper().facetBy(QueryFieldNames.DOCUMENT_TYPE, DocumentType.class);
@@ -136,6 +139,7 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
         searchBoxVisible = false;
         return SUCCESS;
     }
+
 
     public List<ResourceCreatorRole> getAllResourceCreatorRoles() {
         ArrayList<ResourceCreatorRole> roles = new ArrayList<ResourceCreatorRole>();
@@ -194,15 +198,44 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_TYPE);
     }
 
+    public List<Facet> getTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.OBJECT_TYPE);
+    }
+
+    public List<Facet> getCollectionTypeFacets() {
+        return getFacetWrapper().getFacetResults().get(QueryFieldNames.COLLECTION_TYPE);
+    }
+
     public List<Facet> getIntegratableOptionFacets() {
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.INTEGRATABLE);
     }
+
     public List<Facet> getDocumentTypeFacets() {
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.DOCUMENT_TYPE);
     }
 
     public List<Facet> getFileAccessFacets() {
         return getFacetWrapper().getFacetResults().get(QueryFieldNames.RESOURCE_ACCESS_TYPE);
+    }
+
+    public List<LookupSource> getTypes() {
+        return getReservedSearchParameters().getTypes();
+    }
+
+    public void setTypes(List<LookupSource> types) {
+        getReservedSearchParameters().setTypes(types);
+    }
+
+    public List<CollectionType> getCollectionTypes() {
+        return getReservedSearchParameters().getCollectionTypes();
+    }
+
+    public void setCollectionTypes(List<CollectionType> types) {
+        getReservedSearchParameters().setCollectionTypes(types);
+    }
+
+    public List<LookupSource> getAvailableTypes() {
+        return Arrays.asList(LookupSource.COLLECTION, LookupSource.RESOURCE);
     }
 
     @Override
@@ -266,4 +299,33 @@ public class MultiCoreSearchAction extends AbstractAdvancedSearchController impl
         this.facetWrapper = facetWrapper;
     }
 
+    public List<DisplayOrientation> getAvailableOrientations() {
+        List<String> keys = getObjectTypes();
+
+        if (keys.size() == 1) {
+            return DisplayOrientation.getOrientationsFor(keys.get(0));
+        }
+
+        if (keys.size() == 2) {
+            return DisplayOrientation.getCommonOrientations();
+        }
+        
+        return new ArrayList<>();
+    }
+
+    private List<String> getObjectTypes() {
+        List<String> keys = new ArrayList<>();
+        getTypeFacets().forEach(facet -> keys.add(facet.getRaw()));
+        return keys;
+    }
+
+    @Override
+    public List<SortOption> getSortOptions() {
+        List<String> keys = getObjectTypes();
+        List<SortOption> sortOptions = super.getSortOptions();
+        if (keys.size() == 1 && keys.contains(LookupSource.COLLECTION.name())) {
+            sortOptions.remove(SortOption.PROJECT);
+        }
+        return sortOptions;
+    }
 }

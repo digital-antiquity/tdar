@@ -80,7 +80,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     private static final String ADVANCED_FTL = "advanced.ftl";
     private static final long serialVersionUID = -2615014247540428072L;
-    private static final String SEARCH_RSS = "/search/rss";
+    private static final String SEARCH_RSS = "/api/search/rss";
     private boolean hideFacetsAndSort = false;
     private FacetWrapper facetWrapper = new FacetWrapper();
 
@@ -456,4 +456,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         this.facetWrapper = facetWrapper;
     }
 
+    public List<DisplayOrientation> getAvailableOrientations() {
+        return Arrays.asList(DisplayOrientation.values());
+    }
 }

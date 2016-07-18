@@ -219,7 +219,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     private static void addRequiredField(Resource resource, SolrInputDocument doc) {
         doc.setField(QueryFieldNames.RESOURCE_TYPE, resource.getResourceType().name());
         doc.setField(QueryFieldNames.RESOURCE_TYPE_SORT, resource.getResourceType().getSortName());
-        doc.setField(QueryFieldNames.TYPE, LookupSource.RESOURCE.name());
+        doc.setField(QueryFieldNames.OBJECT_TYPE, LookupSource.RESOURCE.name());
     }
 
     private static HashSet<String> extractSiteCodeTokens(Resource resource) {

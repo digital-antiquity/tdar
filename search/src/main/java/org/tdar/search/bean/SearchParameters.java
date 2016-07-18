@@ -13,8 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.search.index.LookupSource;
 import org.tdar.search.index.analyzer.SiteCodeExtractor;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.ContentQueryPart;
@@ -123,6 +125,8 @@ public class SearchParameters {
     // as well by selecting a faceted search.
     private List<LatitudeLongitudeBox> latitudeLongitudeBoxes = new ArrayList<LatitudeLongitudeBox>();
     private List<ResourceType> resourceTypes = new ArrayList<ResourceType>();
+    private List<CollectionType> collectionTypes = new ArrayList<CollectionType>();
+    private List<LookupSource> types = new ArrayList<>();
     private List<IntegratableOptions> integratableOptions = new ArrayList<IntegratableOptions>();
     private List<DocumentType> documentTypes = new ArrayList<DocumentType>();
     private List<ResourceAccessType> resourceAccessTypes = new ArrayList<ResourceAccessType>();
@@ -314,7 +318,8 @@ public class SearchParameters {
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
-
+        queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.OBJECT_TYPE,support_.getText("searchParameter.object_type"), Operator.OR, getTypes()));
+        queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
 
@@ -636,6 +641,22 @@ public class SearchParameters {
 
     public void setCreatorOwnerRoles(Set<ResourceCreatorRole> creatorOwnerRoles) {
         this.creatorOwnerRoles = creatorOwnerRoles;
+    }
+
+    public List<LookupSource> getTypes() {
+        return types;
+    }
+
+    public void setTypes(List<LookupSource> types) {
+        this.types = types;
+    }
+
+    public List<CollectionType> getCollectionTypes() {
+        return collectionTypes;
+    }
+
+    public void setCollectionTypes(List<CollectionType> collectionTypes) {
+        this.collectionTypes = collectionTypes;
     }
 
 }

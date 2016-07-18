@@ -221,5 +221,8 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
         this.viewable = viewable;
     }
 
+    public boolean isSupportsThumbnails() {
+        return false;
+    }
 
 }

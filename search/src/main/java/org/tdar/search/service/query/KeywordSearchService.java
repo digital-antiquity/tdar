@@ -60,7 +60,7 @@ public class KeywordSearchService<I extends Keyword> extends AbstractSearchServi
        }
 
         // refine search to the correct keyword type
-        group.append(new FieldQueryPart<String>(QueryFieldNames.TYPE, keywordType));
+        group.append(new FieldQueryPart<String>(QueryFieldNames.OBJECT_TYPE, keywordType));
         subgroup.append(group);
         q.append(subgroup);
         q.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.ACTIVE));

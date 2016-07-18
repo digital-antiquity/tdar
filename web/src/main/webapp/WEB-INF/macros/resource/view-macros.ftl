@@ -731,7 +731,12 @@ View freemarker macros
                      title="${resource_.title!''}" alt="${_imageDescription(resource_.primaryThumbnail resource_)}"
                      onError="this.src = '<@s.url value="/images/image_unavailable_t.gif"/>';"/><#t>
         <#else>
-            <#t><i class="${resource_.resourceType?lower_case}-125"></i><#t>
+            <#if resource_.resourceType?has_content>
+                <#t><i class="${resource_.resourceType?lower_case}-125"></i><#t>
+            </#if>
+            <#if resource_.type?has_content>
+                <#t><i class="collection-125 ${resource_.type?lower_case}-125"></i><#t>
+            </#if>
         </#if>
         <#t>                </span><#t>
     </#macro>
