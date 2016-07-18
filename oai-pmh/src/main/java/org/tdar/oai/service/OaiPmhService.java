@@ -23,10 +23,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.bean.collection.HasDisplayProperties;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.GenericDao;
@@ -506,10 +506,10 @@ public class OaiPmhService {
             List<? extends OaiDcProvider> results = oaiDao.handleSearch(null, search, effectiveFrom, effectiveUntil, null);
             total = search.getTotalRecords();
             for (OaiDcProvider i : results) {
-                if (i instanceof HasDisplayProperties) {
+                if (i instanceof VisibleCollection) {
                     logger.debug("{}, {}", i, ((Viewable) i).isViewable());
                     SetType set = new SetType();
-                    HasDisplayProperties coll = (HasDisplayProperties) i;
+                    VisibleCollection coll = (VisibleCollection) i;
                     set.setSetName(coll.getName());
                     DescriptionType descr = new DescriptionType();
                     DublinCoreDocument dcdoc = new DublinCoreDocument();
