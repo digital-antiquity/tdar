@@ -37,10 +37,8 @@ import com.opensymphony.xwork2.Preparable;
 public class MoveCollectionAction extends AbstractJsonApiAction implements Preparable {
 
     private Long collectionId;
-    private Long fromCollectionId;
     private Long toCollectionId;
     private ResourceCollection collection;
-    private ResourceCollection fromCollection;
     private ResourceCollection toCollection;
 
     @Autowired
@@ -61,9 +59,6 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
         if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canEdit(getAuthenticatedUser(), collection)) {
             addActionError("cannot edit collection");
         }
-        if (PersistableUtils.isNullOrTransient(fromCollection) || !authorizationService.canEdit(getAuthenticatedUser(), fromCollection)) {
-            addActionError("cannot edit from colection");
-        }
         if (PersistableUtils.isNullOrTransient(toCollection) || !authorizationService.canEdit(getAuthenticatedUser(), toCollection)) {
             addActionError("cannot edit to colection");
         }
@@ -75,7 +70,7 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     public String execute() throws Exception {
         resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection);
         searchIndexService.indexAllResourcesInCollectionSubTreeAsync(toCollection);
-        setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
+        setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
     }
 
@@ -87,7 +82,6 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     @Override
     public void prepare() throws Exception {
         this.collection = getGenericService().find(ResourceCollection.class, collectionId);
-        this.fromCollection = getGenericService().find(ResourceCollection.class, fromCollectionId);
         this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
         
     }
@@ -98,14 +92,6 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
 
     public void setCollectionId(Long resourceId) {
         this.collectionId = resourceId;
-    }
-
-    public Long getFromCollectionId() {
-        return fromCollectionId;
-    }
-
-    public void setFromCollectionId(Long fromCollectionId) {
-        this.fromCollectionId = fromCollectionId;
     }
 
     public Long getToCollectionId() {

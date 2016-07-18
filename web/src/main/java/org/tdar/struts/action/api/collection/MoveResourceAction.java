@@ -71,7 +71,7 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     @Action(value="moveResource")
     public String execute() throws Exception {
         resourceCollectionService.moveResource(resource, fromCollection, toCollection, getAuthenticatedUser());
-        setJsonInputStream(new ByteArrayInputStream("SUCCESS".getBytes()));
+        setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
     }
 
