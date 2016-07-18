@@ -508,7 +508,7 @@ public class ResourceService {
                     shared.getResources().add(resource);
                     resource.getSharedCollections().add(shared);
                 } else {
-                    throw new TdarRecoverableRuntimeException("resourceService.collectiontype");
+                    throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
                 }
             }
 
