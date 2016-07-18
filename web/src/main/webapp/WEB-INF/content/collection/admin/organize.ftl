@@ -4,6 +4,9 @@
 </head>
 
 <body>
+<h1>Organize ${collection.name} and its contents</h1>
+<p>Drag resources and collections in the tree to reorganize collections and their contents.</p>
+<p><b>Note:</b> Changes are made immediately.</p>
 <div id="jstree">
 <#list tree>
 <ul >
@@ -85,8 +88,7 @@ var revert = false;
             }
 
         }
-        });
-   // });
+    });
 });
 </script>
 </body>

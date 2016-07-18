@@ -62,7 +62,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient AuthorizationService authenticationAndAuthorizationService;
+    private transient AuthorizationService authorizationService;
     @Autowired
     private transient SimpleFileProcessingDao simpleFileProcessingDao;
     @Autowired
@@ -116,7 +116,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public List<AuthorizedUser> getAuthorizedUsersForResource(Resource resource, TdarUser authenticatedUser) {
         List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         if (resource.getInternalResourceCollection() != null) {
-            boolean canModify = authenticationAndAuthorizationService.canUploadFiles(authenticatedUser, resource);
+            boolean canModify = authorizationService.canUploadFiles(authenticatedUser, resource);
             ResourceCollection resourceCollection = resource.getInternalResourceCollection();
             applyTransientEnabledPermission(authenticatedUser, resourceCollection, canModify);
             authorizedUsers.addAll(resourceCollection.getAuthorizedUsers());
@@ -244,7 +244,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (comparator.rightsDifferent()) {
             logger.debug("{} - {} ({})", actor, source.getSubmitter(), resourceCollection.getOwner());
 
-            if (!authenticationAndAuthorizationService.canAdminiserUsersOn(source, actor)) {
+            if (!authorizationService.canAdminiserUsersOn(source, actor)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
             }
                 
@@ -291,7 +291,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private void checkSelfEscalation(TdarUser actor, TdarUser transientUser, HasSubmitter source, GeneralPermissions generalPermission) {
         // specifically checking for rights escalation
         if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
-            if (!authenticationAndAuthorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, generalPermission)) {
+            if (!authorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, generalPermission)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
                         generalPermission));
             }
@@ -428,7 +428,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         ResourceCollection collectionToAdd = null;
         logger.trace("{}", collection);
         if (collection.isTransient() && !collection.isInternal()) {
-            boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
+            boolean isAdmin = authorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
             ResourceCollection potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection);
             if (potential != null) {
                 collectionToAdd = potential;
@@ -452,7 +452,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
-                    && !authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
+                    && !authorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(collectionToAdd.getTitle()));
             }
@@ -508,7 +508,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         Iterator<ResourceCollection> iter = allChildren.iterator();
         while (iter.hasNext()) {
             ResourceCollection child = iter.next();
-            authenticationAndAuthorizationService.applyTransientViewableFlag(child, authenticatedUser);
+            authorizationService.applyTransientViewableFlag(child, authenticatedUser);
             ResourceCollection parent = child.getParent();
             if (parent != null) {
                 parent.getTransientChildren().add(child);
@@ -606,7 +606,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public List<AuthorizedUser> getAuthorizedUsersForCollection(ResourceCollection persistable, TdarUser authenticatedUser) {
         List<AuthorizedUser> users = new ArrayList<>(persistable.getAuthorizedUsers());
         applyTransientEnabledPermission(authenticatedUser, persistable,
-                authenticationAndAuthorizationService.canEditCollection(authenticatedUser, persistable));
+                authorizationService.canEditCollection(authenticatedUser, persistable));
         return users;
     }
 
@@ -661,8 +661,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public void updateCollectionParentTo(TdarUser authorizedUser, ResourceCollection persistable, ResourceCollection parent) {
         // find all children with me as a parent
-        if (!authenticationAndAuthorizationService.canEditCollection(authorizedUser, persistable) ||
-                parent != null && !authenticationAndAuthorizationService.canEditCollection(authorizedUser, parent)) {
+        if (!authorizationService.canEditCollection(authorizedUser, persistable) ||
+                parent != null && !authorizationService.canEditCollection(authorizedUser, parent)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_have_permisssions");
         }
 
@@ -731,7 +731,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         for (Resource resource : resourcesToAdd) {
             if (!persistable.isPublic()
-                    && !authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
+                    && !authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
                 ineligibleToAdd.add(resource);
             } else {
                 resource.getResourceCollections().add(persistable);
@@ -742,7 +742,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         for (Resource resource : resourcesToRemove) {
             if (!persistable.isPublic()
-                    && !authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
+                    && !authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
                 ineligibleToAdd.add(resource);
             } else {
                 resource.getResourceCollections().remove(persistable);
@@ -844,7 +844,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional(readOnly = false)
     public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person) {
-        if (!authenticationAndAuthorizationService.canEditCollection(person, col)) {
+        if (!authorizationService.canEditCollection(person, col)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.make_active_permissions");
         }
         getDao().makeResourceInCollectionActive(col, person);
@@ -876,7 +876,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @return
      */
     public List<ResourceCollection> findCollectionsWithName(TdarUser user, String name) {
-        boolean isAdmin = authenticationAndAuthorizationService.isEditor(user);
+        boolean isAdmin = authorizationService.isEditor(user);
         return getDao().findCollectionsWithName(user, isAdmin, name);
     }
 
@@ -912,7 +912,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly=false)
-    public void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection) {
+    public void moveResource(Resource resource, ResourceCollection fromCollection, ResourceCollection toCollection, TdarUser tdarUser) {
+        if (!authorizationService.canEdit(tdarUser, resource) || !authorizationService.canEdit(tdarUser, fromCollection) || !authorizationService.canEdit(tdarUser, toCollection)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");            
+        }
         resource.getResourceCollections().remove(fromCollection);
         fromCollection.getResources().remove(resource);
         resource.getResourceCollections().add(toCollection);
