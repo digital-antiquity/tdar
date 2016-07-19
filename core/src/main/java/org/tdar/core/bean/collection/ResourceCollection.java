@@ -110,7 +110,6 @@ public abstract class ResourceCollection extends AbstractPersistable
     private transient boolean changesNeedToBeLogged = false;
 
     private static final long serialVersionUID = -5308517783896369040L;
-    private transient Float score;
 
     @Enumerated(EnumType.STRING)
     @XmlTransient
@@ -211,18 +210,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         return dateCreated;
     }
 
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public Float getScore() {
-        return this.score;
-    }
 
     @Override
     public String toString() {

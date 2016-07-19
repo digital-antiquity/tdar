@@ -318,8 +318,12 @@ public class SearchParameters {
         }
         QueryPartGroup queryPartGroup = new QueryPartGroup(getOperator());
         queryPartGroup.append(new FieldQueryPart<Long>(QueryFieldNames.ID, support.getText("searchParameter.id"), Operator.OR, getResourceIds()));
-        queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.OBJECT_TYPE,support_.getText("searchParameter.object_type"), Operator.OR, getTypes()));
-        queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+        if (CollectionUtils.isNotEmpty(getTypes())) {
+            queryPartGroup.append(new FieldQueryPart<LookupSource>(QueryFieldNames.OBJECT_TYPE,support_.getText("searchParameter.object_type"), Operator.OR, getTypes()));
+        }
+        if (CollectionUtils.isNotEmpty(getCollectionTypes())) {
+            queryPartGroup.append(new FieldQueryPart<CollectionType>(QueryFieldNames.COLLECTION_TYPE, support_.getText("searchParameter.collection_type"), Operator.OR, getCollectionTypes()));
+        }
         queryPartGroup.append(new GeneralSearchResourceQueryPart(this.getAllFields(), getOperator()));
         queryPartGroup.append(new TitleQueryPart(this.getTitles(), getOperator()));
 

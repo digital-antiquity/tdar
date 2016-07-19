@@ -76,8 +76,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         return UrlUtils.slugify(getLabel());
     }
 
-    private transient Float score = -1f;
-
     @Override
     public int compareTo(T o) {
         return this.getLabel().compareTo(o.getLabel());
@@ -107,18 +105,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
     @Override
     public String toString() {
         return getLabel();
-    }
-
-    @Transient
-    @Override
-    @XmlTransient
-    public Float getScore() {
-        return score;
-    }
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
     }
 
     @Override

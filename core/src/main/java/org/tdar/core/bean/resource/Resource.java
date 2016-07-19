@@ -470,8 +470,6 @@ public class Resource implements Persistable,
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String externalId;
 
-    private transient Float score = -1f;
-
     @XmlElementWrapper(name = "cultureKeywords")
     @XmlElement(name = "cultureKeyword")
     public Set<CultureKeyword> getCultureKeywords() {
@@ -1361,18 +1359,6 @@ public class Resource implements Persistable,
     @XmlTransient
     public String getName() {
         return getTitle();
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public Float getScore() {
-        return score;
-    }
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
     }
 
     @Override

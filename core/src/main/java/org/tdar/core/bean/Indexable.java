@@ -10,17 +10,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 public interface Indexable extends Persistable {
 
-    /**
-     * The Lucene Scoring for the relevance of the item
-     * 
-     * @param score
-     */
-    void setScore(Float score);
-
-    @Transient
-    @XmlTransient
-    Float getScore();
-
     @Override
     Long getId();
 

@@ -69,8 +69,6 @@ public class ResourceAnnotationKey extends AbstractPersistable implements Indexa
     @Length(max = FieldLength.FIELD_LENGTH_128)
     private String formatString;
 
-    private transient Float score = -1f;
-
     @XmlAttribute
     public ResourceAnnotationType getResourceAnnotationType() {
         return resourceAnnotationType;
@@ -119,18 +117,6 @@ public class ResourceAnnotationKey extends AbstractPersistable implements Indexa
     public List<?> getEqualityFields() {
         // ab probably okay as not nullable fields
         return Arrays.asList(key);
-    }
-
-    @Transient
-    @XmlTransient
-    @Override
-    public Float getScore() {
-        return score;
-    }
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
     }
 
     @Transient

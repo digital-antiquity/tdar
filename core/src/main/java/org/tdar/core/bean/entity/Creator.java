@@ -207,7 +207,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<Address> addresses = new LinkedHashSet<>();
 
-    private transient Float score = -1f;
     private transient Integer maxHeight;
     private transient Integer maxWidth;
     private transient VersionType maxSize;
@@ -318,18 +317,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     @Override
     public String getDescription() {
         return description;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public Float getScore() {
-        return score;
-    }
-
-    @Override
-    public void setScore(Float score) {
-        this.score = score;
     }
 
     @Transient

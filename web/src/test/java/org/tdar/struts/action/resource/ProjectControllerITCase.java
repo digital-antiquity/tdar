@@ -42,6 +42,7 @@ import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.search.converter.CollectionDataExtractor;
 import org.tdar.search.converter.ResourceRightsExtractor;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.project.ProjectController;
@@ -157,7 +158,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         Long id = project.getId();
         project = null;
         Project project_ = genericService.find(Project.class, id);
-        ResourceRightsExtractor extractor = new ResourceRightsExtractor(project_);
+        CollectionDataExtractor  extractor = new CollectionDataExtractor(project_);
         assertTrue(extractor.getUsersWhoCanModify().contains(getBasicUser().getId()));
         assertNotNull(project_.getInternalResourceCollection());
         Set<AuthorizedUser> authorizedUsers = project_.getInternalResourceCollection().getAuthorizedUsers();

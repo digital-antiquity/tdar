@@ -27,18 +27,6 @@ public class DataTableRow implements Indexable {
 	}
 
 	@Override
-	public void setScore(Float score) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Float getScore() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Long getId() {
 		return id;
 	}
