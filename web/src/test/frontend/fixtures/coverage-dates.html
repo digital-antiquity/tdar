@@ -1,0 +1,20 @@
+<form class="tdarvalidate" data-validate-method="initBasicForm" id="coverage">
+<div id="coverageDateRepeatable">
+    <div class="controls controls-row repeat-row" id="divCoverageDate1">
+        <select name="coverageDates[0].dateType" class="coverageTypeSelect input-medium">
+            <option value="NONE">Date Type</option>
+            <option value="CALENDAR_DATE">Calendar Date</option>
+            <option value="RADIOCARBON_DATE">Radiocarbon Date</option>
+        </select>
+        <input type="text" name="coverageDates[0].startDate" maxlength="10" value=""
+               id="metadataForm_coverageDates_0__startDate" class="coverageStartYear input-small trim"
+               placeholder="Start Year">
+        <input type="text" name="coverageDates[0].endDate" maxlength="10" value=""
+               id="metadataForm_coverageDates_0__endDate" class="coverageEndYear input-small trim" placeholder="End Year">
+        <input type="text" name="coverageDates[0].description" maxlength="255" value=""
+               id="metadataForm_coverageDates_0__description" class="coverageDescription input-xlarge trim">
+        <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list">
+            <i class="icon-trash"></i></button>
+    </div>
+</div>
+</form>

@@ -1,0 +1,15 @@
+Core
+Tool
+	Projectile Point (clovis; folsom; vulpine)
+		Scraper (Adz; Scratcher; Scrimmer)
+Flake
+	Utilized
+	Unutilized
+End Scraper
+	Unutilized
+		Unknown Tool (Other Tool;Miscellaneous Tool; Toolish; Toolosity   ; Tool of May )
+Axe
+	Double Headed Axe
+	Golden Axe
+
+
