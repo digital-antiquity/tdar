@@ -174,7 +174,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.PUBLIC, false, users, testPerson, resources, null);
+        ResourceCollection collection = generateResourceCollection(name, description, CollectionType.LIST, false, users, testPerson, resources, null);
 
         final Long id = collection.getId();
         String slug = collection.getSlug();

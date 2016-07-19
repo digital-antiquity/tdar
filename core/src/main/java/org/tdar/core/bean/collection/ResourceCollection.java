@@ -524,7 +524,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     }
 
     public boolean isPublic() {
-        return type == CollectionType.PUBLIC;
+        return type == CollectionType.LIST;
     }
 
     @Override

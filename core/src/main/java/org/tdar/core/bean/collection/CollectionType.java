@@ -1,7 +1,7 @@
 package org.tdar.core.bean.collection;
 
 public enum CollectionType {
-    INTERNAL("Internal"), SHARED("Shared"), PUBLIC("Public");
+    INTERNAL("Internal"), SHARED("Shared"), LIST("List");
 
     private String label;
 
