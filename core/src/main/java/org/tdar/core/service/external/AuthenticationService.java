@@ -46,6 +46,7 @@ import org.tdar.utils.PersistableUtils;
 @Service
 public class AuthenticationService {
 
+    private static final String USER_AGENT = "User-Agent";
     private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
     public static final String LEGACY_USERNAME_VALID_REGEX = "^\\w[a-zA-Z0-9+@._\\-\\s]{0,253}\\w$";
     public static final String USERNAME_VALID_REGEX = "^[a-zA-Z0-9+@\\.\\-_]{5,255}$";
@@ -189,7 +190,7 @@ public class AuthenticationService {
         }
 
         setupAuthenticatedUser(tdarUser, sessionData, request);
-        personDao.registerLogin(tdarUser);
+        personDao.registerLogin(tdarUser, getUserAgent(request));
         result.setStatus(AuthenticationStatus.AUTHENTICATED);
         return result;
     }
@@ -208,8 +209,12 @@ public class AuthenticationService {
         }
 
         logger.debug(String.format("%s (%s) logged in from %s using: %s", tdarUser.getUsername(), tdarUser.getEmail(), request.getRemoteAddr(),
-                request.getHeader("User-Agent")));
+                getUserAgent(request)));
         createAuthenticationToken(tdarUser, sessionData);
+    }
+
+    private String getUserAgent(HttpServletRequest request) {
+        return request.getHeader(USER_AGENT);
     }
 
     /**
@@ -366,7 +371,7 @@ public class AuthenticationService {
             personDao.save(institution);
         }
         person.setInstitution(institution);
-        reg.trace(request.getHeader("User-Agent"));
+        reg.trace(getUserAgent(request));
         person.setAffiliation(reg.getAffiliation());
         person.setContributorReason(reg.getContributorReason());
         AuthenticationResult addResult = getAuthenticationProvider().addUser(person, reg.getPassword());
@@ -400,7 +405,7 @@ public class AuthenticationService {
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), reg.getPassword());
         if (result.getType().isValid()) {
             logger.debug("Authenticated successfully with auth service, registering login and creating authentication token");
-            personDao.registerLogin(person);
+            personDao.registerLogin(person, getUserAgent(request));
             createAuthenticationToken(person, sessionData);
         }
         result.setPerson(person);

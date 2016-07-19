@@ -397,8 +397,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
      * @param authenticatedUser
      */
     @Transactional(readOnly = false)
-    public void registerLogin(TdarUser authenticatedUser) {
-        getDao().registerLogin(authenticatedUser);
+    public void registerLogin(TdarUser authenticatedUser, String userAgent) {
+        getDao().registerLogin(authenticatedUser, userAgent);
     }
 
     /**
