@@ -1,12 +1,13 @@
 (function($, angular, console){
     "use strict";
-    console.debug("IntegrationController::");
-    
+
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$rootScope', '$scope',  'IntegrationService', 'DataService', 'ValidationService',
-        function($rootScope, $scope, integration, dataService, validationService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService',
+        function($rootScope, $scope, $log,  integration, dataService, validationService){
+        $log.info("IntegrationController::");
+
         var self = this;
         var _openModal;
         var _processAddedIntegrationColumns;
@@ -26,7 +27,6 @@
             kind: "default",
             message: ""
         };
-
 
         // controller public methods
         self.setTab  = function(idx) {
