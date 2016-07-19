@@ -21,8 +21,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
@@ -72,7 +72,7 @@ import org.tdar.web.service.HomepageService;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction extends AbstractPersistableViewableAction<SharedCollection> implements FacetedResultHandler<Resource>, SlugViewAction,
+public class CollectionViewAction<C extends HierarchicalCollection> extends AbstractPersistableViewableAction<C> implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
@@ -127,10 +127,17 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
      * 
      * @return
      */
-    public List<SharedCollection> getCandidateParentResourceCollections() {
-        List<SharedCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable(), SharedCollection.class);
-        return publicResourceCollections;
+    public List<C> getCandidateParentResourceCollections() {
+        Class<C> cls = getActualClass();
+        return resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(), getPersistable(), cls);
+    }
+
+    private Class<C> getActualClass() {
+        Class cls = SharedCollection.class;
+        if (getPersistable() instanceof ListCollection) {
+            cls = ListCollection.class;
+        }
+        return (Class<C>)cls;
     }
 
     @Override
@@ -152,17 +159,17 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
         return false;
     }
 
-    public SharedCollection getResourceCollection() {
+    public HierarchicalCollection getResourceCollection() {
         return getPersistable();
     }
 
-    public void setResourceCollection(SharedCollection rc) {
-        setPersistable(rc);
+    public void setResourceCollection(HierarchicalCollection rc) {
+        setPersistable((C)rc);
     }
 
     @Override
-    public Class<SharedCollection> getPersistableClass() {
-        return SharedCollection.class;
+    public Class<C> getPersistableClass() {
+        return (Class<C>)HierarchicalCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
@@ -192,10 +199,10 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
         Set<SharedCollection> findAllChildCollections = new HashSet<>();
 
         if (isAuthenticated()) {
-            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), SharedCollection.class);
+            resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), getActualClass());
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
-            for (SharedCollection c : resourceCollectionService.findDirectChildCollections(getId(), false, SharedCollection.class)) {
+            for (C c : resourceCollectionService.findDirectChildCollections(getId(), false, getActualClass())) {
                 findAllChildCollections.add((SharedCollection)c);
             }
         }
@@ -428,7 +435,11 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Shar
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        if (getPersistable() instanceof SharedCollection) {
+        return (((SharedCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        } else {
+            return (((ListCollection) getPersistable()).getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        }
     }
 
     public Long getViewCount() {

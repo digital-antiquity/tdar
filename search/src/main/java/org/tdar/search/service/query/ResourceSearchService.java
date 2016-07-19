@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.TdarUser;
@@ -130,14 +129,17 @@ public class ResourceSearchService extends AbstractSearchService {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
         List<Long> ids = new ArrayList<>();
         ids.add(indexable.getId());
+        QueryPartGroup idGroup = new QueryPartGroup(Operator.OR);
         if (indexable instanceof ListCollection) {
             ListCollection listCollection = (ListCollection) indexable;
             if (PersistableUtils.isNotNullOrTransient(listCollection.getIncludedCollection())) {
                 ids.add(listCollection.getIncludedCollection().getId());
+                idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
             }
-            
-            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
+
         }
+        idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
+        qb.append(idGroup);
         runContainedInQuery(term, user, result, provider, qb);
         return result;
     }

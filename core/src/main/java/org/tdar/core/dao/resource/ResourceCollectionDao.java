@@ -92,7 +92,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER;
         }
         Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
-        namedQuery.setParameter("authOwnerId", person.getId());
+        Long id = -1L;
+        if (PersistableUtils.isNotNullOrTransient(person)) {
+            id = person.getId();
+        }
+        namedQuery.setParameter("authOwnerId", id);
         namedQuery.setParameter("collectionTypes", Arrays.asList(CollectionType.getTypeForClass(cls)));
         namedQuery.setParameter("equivPerm", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
         try {

@@ -1,10 +1,10 @@
 package org.tdar.struts.action.resource;
 
-import static org.hamcrest.Matchers.lessThan;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -32,12 +32,12 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Viewable;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -463,7 +463,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.prepare();
         vc.view();
 
-        SharedCollection rc2 = vc.getResourceCollection();
+        HierarchicalCollection rc2 = vc.getResourceCollection();
         assertEquals(rc.getName(), rc2.getName());
         assertEquals("2 redundant authusers should have been normalized", 2, rc2.getAuthorizedUsers().size());
 
@@ -989,12 +989,12 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         logger.info("{}", project2.getRightsBasedResourceCollections());
         assertTrue(PersistableUtils.extractIds(project2.getRightsBasedResourceCollections()).contains(rcid));
-        CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);
+        CollectionViewAction<SharedCollection> vc = generateNewInitializedController(CollectionViewAction.class);
         vc.setId(rcid);
         vc.setSlug(slug);
         vc.prepare();
         vc.view();
-        logger.info("{}", vc.getResourceCollection().getResources().iterator().next().getStatus());
+        logger.info("{}", ((SharedCollection)vc.getResourceCollection()).getResources().iterator().next().getStatus());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page

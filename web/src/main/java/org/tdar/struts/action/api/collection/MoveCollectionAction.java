@@ -31,10 +31,6 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("secured")
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-@Results(value = {
-        @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
-        @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
-})
 public class MoveCollectionAction extends AbstractJsonApiAction implements Preparable {
 
     private Long collectionId;
