@@ -11,10 +11,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
@@ -35,19 +35,17 @@ import com.opensymphony.xwork2.Preparable;
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
 })
-public class MoveCollectionAction extends AbstractJsonApiAction implements Preparable {
+public class RemoveResourceFromCollectionAction extends AbstractJsonApiAction implements Preparable {
 
+    private static final long serialVersionUID = -4463769039427602490L;
+    private Long resourceId;
     private Long collectionId;
-    private Long toCollectionId;
+    private Resource resource;
     private ResourceCollection collection;
-    private ResourceCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
-
-    @Autowired
-    protected transient SearchIndexService searchIndexService;
-
+    
     @Autowired
     protected transient ResourceCollectionService resourceCollectionService;
 
@@ -57,51 +55,46 @@ public class MoveCollectionAction extends AbstractJsonApiAction implements Prepa
     @Override
     public void validate() {
         super.validate();
-        if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canEdit(getAuthenticatedUser(), collection)) {
-            addActionError("cannot edit collection");
+        if (PersistableUtils.isNullOrTransient(resource) || !authorizationService.canEdit(getAuthenticatedUser(), resource)) {
+            addActionError("cannot edit resource");
         }
-        if (PersistableUtils.isNullOrTransient(toCollection) || !authorizationService.canEdit(getAuthenticatedUser(), toCollection)) {
+        if (PersistableUtils.isNullOrTransient(collection) || !authorizationService.canEdit(getAuthenticatedUser(), collection)) {
             addActionError("cannot edit to colection");
         }
     }
     
     @Override
-    @PostOnly
     @WriteableSession
-    @Action(value="moveCollection")
+    @PostOnly
+    @Action(value="removeResource")
     public String execute() throws Exception {
-        resourceCollectionService.updateCollectionParentTo(getAuthenticatedUser(), collection, toCollection);
-        searchIndexService.indexAllResourcesInCollectionSubTreeAsync(toCollection);
+        resourceCollectionService.removeResourceFromCollection(getAuthenticatedUser(), resource, collection);
         setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
     }
 
-    /**
-     * 
-     */
-    private static final long serialVersionUID = 2137331107886327060L;
 
     @Override
     public void prepare() throws Exception {
+        this.resource = getGenericService().find(Resource.class, resourceId);
         this.collection = getGenericService().find(ResourceCollection.class, collectionId);
-        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
         
+    }
+
+    public Long getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(Long resourceId) {
+        this.resourceId = resourceId;
     }
 
     public Long getCollectionId() {
         return collectionId;
     }
 
-    public void setCollectionId(Long resourceId) {
-        this.collectionId = resourceId;
-    }
-
-    public Long getToCollectionId() {
-        return toCollectionId;
-    }
-
-    public void setToCollectionId(Long toCollectionId) {
-        this.toCollectionId = toCollectionId;
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
     }
     
 }
