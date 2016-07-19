@@ -20,6 +20,7 @@ import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -67,6 +68,7 @@ public class MoveResourceAction extends AbstractJsonApiAction implements Prepara
     }
     
     @Override
+    @WriteableSession
     @PostOnly
     @Action(value="moveResource")
     public String execute() throws Exception {

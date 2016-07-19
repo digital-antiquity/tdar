@@ -96,7 +96,7 @@ var revert = false;
             } else if (data.node.data.collectionid  != undefined) {
                 var cid = data.node.data.collectionid;
                 var toid = $parent.data.collectionid;
-                console.log(rid + " --> "+ toid); 
+                console.log(cid + " --> "+ toid); 
                 $.post("/api/collection/moveCollection?collectionId="+cid + "&toCollectionId="+toid).done(function(response) {
                     console.log( " success" );
                 }).fail(function(response) {

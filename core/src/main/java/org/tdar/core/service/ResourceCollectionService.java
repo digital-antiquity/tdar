@@ -668,7 +668,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         List<ResourceCollection> children = getAllChildCollections(persistable);
         List<Long> oldParentIds = new ArrayList<>(persistable.getParentIds());
-
+        logger.debug("updating parent for {} from {} to {}", persistable.getId(), persistable.getParent(), parent);
         persistable.setParent(parent);
         List<Long> parentIds = new ArrayList<>();
         if (PersistableUtils.isNotNullOrTransient(parent)) {
