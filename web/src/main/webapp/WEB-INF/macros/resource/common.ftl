@@ -558,7 +558,7 @@ Common macros used in multiple contexts
                         </tr>
                         <#items as missing>
                         <tr>
-                            <td class="red">${missing}</td>
+                            <td class="red">${missing}<#if missing?ends_with(" ")>(Note: this code has trailing spaces)</#if></td>
                             <td></td>
                             <td></td>
                             <td></td>
