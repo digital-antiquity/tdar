@@ -38,11 +38,6 @@ var revert = false;
  var $jstree = $tree.jstree({
  
   "types" : {
-    "#" : {
-      "max_children" : 1,
-      "max_depth" : 4,
-      "valid_children" : ["root"]
-    },
     "file" : {
       "icon" : "glyphicon glyphicon-file icon-file",
       "valid_children" : []
@@ -52,19 +47,31 @@ var revert = false;
   "core" : { "check_callback" :  function (operation, node, parent, position, more) {
           
       if(operation === "move_node") {
+      
         // if we're a resource
         if(node.data.resourceid) {
-            if (parent.resourceid != undefined || (parent.data != undefined && parent.data.resourceid != undefined) || parent.id == node.parent) {
+            console.log("checking move from " + node.parent + " --> " + parent.id + "  for " + node.id); 
+
+            if (parent.resourceid != undefined) {
+//                console.log("parent is a resource");
+                return false;
+            }
+            if (parent.data != undefined && parent.data.resourceid != undefined) {
+//                console.log("parent appears to be a resource");
                 return false; // prevent moving a child above or below the root
             }
         } else if (node.data.collectionid) {
-            if (parent.collectionid == undefined && (parent.data != undefined && parent.data.collectionid == undefined) || parent.id == node.parent) {
+            if (parent.collectionid == undefined && (parent.data != undefined && parent.data.collectionid == undefined)) {
                 return false; // prevent moving a child above or below the root
             }
         }
       }
       // ignore reorder
-      if(more && more.dnd && more.pos !== "i") { return false; }
+      if(more && more.dnd && more.pos !== "i") { 
+  //      console.log("reorder??");
+        return false;
+         }
+//        console.log ("returning true");
       return true; // allow everything else
     } }, // so that operations work
   "plugins" : ["dnd","types"]
@@ -78,6 +85,7 @@ var revert = false;
         }
         var $parent = $jstree.jstree(true).get_node(data.parent);
         if (data.old_parent != data.parent) {
+            console.log("moving from " + data.old_parent + " to " + data.parent);
             if (data.node.data.resourceid != undefined) {
                 var rid = data.node.data.resourceid;
                 var fromid = $jstree.jstree(true).get_node(data.old_parent).data.collectionid;
@@ -110,6 +118,7 @@ var revert = false;
 
         }
     });
+    TDAR.common.registerAjaxStatusContainer();
 });
 </script>
 </body>
