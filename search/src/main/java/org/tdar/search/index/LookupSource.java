@@ -33,8 +33,8 @@ public enum LookupSource implements HasLabel,Localizable {
 			CultureKeyword.class, GeographicKeyword.class, InvestigationType.class, MaterialKeyword.class,
 			OtherKeyword.class, TemporalKeyword.class, SiteNameKeyword.class,
 			SiteTypeKeyword.class), 
-	RESOURCE("Resources", Resource.class), 
-	COLLECTION("Collections",SharedCollection.class, ListCollection.class), 
+	RESOURCE("resources", Resource.class), 
+	COLLECTION("collections",SharedCollection.class, ListCollection.class), 
 	RESOURCE_ANNOTATION_KEY("annotationKeys", ResourceAnnotationKey.class),
 	CONTENTS("content",InformationResourceFile.class),
 	DATA("data",DataTableRow.class);
