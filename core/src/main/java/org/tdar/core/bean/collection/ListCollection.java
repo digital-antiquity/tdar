@@ -10,6 +10,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -44,6 +45,9 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
         this.parent = parent;
     }
 
+    @ManyToOne
+    @JoinColumn(name="include_id")
+    private SharedCollection includedCollection;
 
     
     @XmlTransient
@@ -109,6 +113,16 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
             return super.isValid();
         }
         return false;
+    }
+
+    @XmlAttribute(name = "includedIdRef")
+    @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
+    public SharedCollection getIncludedCollection() {
+        return includedCollection;
+    }
+
+    public void setIncludedCollection(SharedCollection includedCollection) {
+        this.includedCollection = includedCollection;
     }
 
 }
