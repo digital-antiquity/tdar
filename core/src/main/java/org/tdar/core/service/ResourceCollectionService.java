@@ -926,4 +926,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         
     }
 
+    @Transactional(readOnly=false)
+    public void removeResourceFromCollection(TdarUser authenticatedUser, Resource resource, ResourceCollection collection) {
+        if (!authorizationService.canEdit(authenticatedUser, resource) || !authorizationService.canEdit(authenticatedUser, collection)) {
+            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");            
+        }
+        resource.getResourceCollections().remove(collection);
+        collection.getResources().remove(resource);
+        saveOrUpdate(collection);
+        
+    }
+
 }

@@ -46,7 +46,7 @@ var revert = false;
     "file" : {
       "icon" : "glyphicon glyphicon-file icon-file",
       "valid_children" : []
-    }
+    },
   },
  
   "core" : { "check_callback" :  function (operation, node, parent, position, more) {
