@@ -185,8 +185,9 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return ids;
     }
 
-    public void registerLogin(TdarUser authenticatedUser) {
+    public void registerLogin(TdarUser authenticatedUser, String userAgent) {
         authenticatedUser.setLastLogin(new Date());
+        authenticatedUser.setUserAgent(userAgent);
         authenticatedUser.incrementLoginCount();
         logger.trace("login {} {}", authenticatedUser.getLastLogin(), authenticatedUser.getTotalLogins());
         saveOrUpdate(authenticatedUser);

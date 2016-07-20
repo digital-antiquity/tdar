@@ -67,5 +67,11 @@
         <addColumn tableName="keyword_mapping">
             <column name="label" type="varchar(255)" />
         </addColumn>
-    </changeSet>    
+    </changeSet>
+    <changeSet id="obsidian-8" author="abrin">
+        <addColumn tableName="tdar_user">
+            <column name="user_agent" type="varchar(512)" />
+        </addColumn>
+    </changeSet>
+    
 </databaseChangeLog>

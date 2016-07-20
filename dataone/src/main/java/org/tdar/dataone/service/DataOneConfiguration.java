@@ -38,8 +38,8 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     }
 
     String TDAR_DOI = "doi:10.6067";
-    String MN_NAME = "urn:node:tdar";
-    String MN_NAME_TEST = "urn:node:tdarTest";
+    String MN_NAME = "urn:node:TDAR";
+    String MN_NAME_TEST = "urn:node:TestTDAR";
 
     public String getMemberNodeIdentifier() {
         return assistant.getStringProperty("member.node.id", MN_NAME);
@@ -76,7 +76,7 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     }
 
     public String getSubject() {
-        return assistant.getStringProperty("dataone.subject", "CN=urn:node:mnTDAR,DC=dataone,DC=org");
+        return assistant.getStringProperty("dataone.subject", "CN="+getMemberNodeIdentifier()+",DC=dataone,DC=org");
     }
 
     public boolean isProduction() {

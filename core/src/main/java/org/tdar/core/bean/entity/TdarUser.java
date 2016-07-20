@@ -74,6 +74,10 @@ public class TdarUser extends Person {
     @Length(max = FieldLength.FIELD_LENGTH_512)
     private String contributorReason;
 
+    @Column(name = "user_agent", length = FieldLength.FIELD_LENGTH_512)
+    @Length(max = FieldLength.FIELD_LENGTH_512)
+    private String userAgent;
+
     // version of the latest TOS that the user has accepted
     @Column(name = "tos_version", nullable = false, columnDefinition = "int default 0")
     private Integer tosVersion = 0;
@@ -257,6 +261,14 @@ public class TdarUser extends Person {
 
     public void setTotalDownloads(Long totalDownloads) {
         this.totalDownloads = totalDownloads;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
 }

@@ -49,7 +49,7 @@
 
     </#if>
 
-
+    <#if (dataset.dataTables?size > 1) >
         <div class="well">
             <p>
                 There are multiple tables in this dataset. To switch between, click
@@ -64,8 +64,8 @@
                     <option value="${table.id?c}" <#if table?? && table.id == dataTable.id>selected</#if>>${count}. ${table.displayName}</option>
                 </@s.iterator>
             </select>
-
         </div>
+    </#if>
 
     <@s.form method='post' id="edit-metadata-form" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"}  action='save-column-metadata'>
         <@common.jsErrorLog />
@@ -148,7 +148,7 @@
 
         <#macro paginationLink startRecord path linkText>
         <span class="paginationLink">
-    	<a href="<@s.url value="?startRecord=${startRecord?c}&amp;recordsPerPage=${recordsPerPage}&amp;id=${id?c}"/><#if dataTableId?has_content>&amp;dataTableId=${dataTableId?c}</#if>">${linkText}</a>
+    	<a href="<@s.url includeParams="none" value="${actionName}?startRecord=${startRecord?c}&recordsPerPage=${recordsPerPage}&id=${id?c}"/><#if dataTableId?has_content>&dataTableId=${dataTableId?c}</#if>">${linkText}</a>
     </span>
         </#macro>
 
