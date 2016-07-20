@@ -133,6 +133,17 @@ public class CollectionController extends AbstractPersistableController<SharedCo
                 parentCollection = results.get(0);
             }
         }
+        
+        setupOwnerField();
+        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
+            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
+            getPersistable().setOwner(uploader);
+        }
+
+        if(parentCollection != null) {
+            parentId = parentCollection.getId();
+        }
+
     }
     
     @Override
@@ -153,31 +164,7 @@ public class CollectionController extends AbstractPersistableController<SharedCo
     protected String save(SharedCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
-        
-        // ** MOVE TO PREPARE **//
-        setupOwnerField();
-        if (PersistableUtils.isNotNullOrTransient(getOwner())) {
-            TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
-            getPersistable().setOwner(uploader);
-        }
 
-//        lookupParent();
-        if(parentCollection != null) {
-            parentId = parentCollection.getId();
-        }
-
-        // ** MOVE TO VALIDATE **//
-        if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parentCollection)
-                && (parentCollection.getParentIds().contains(persistable.getId()) || parentCollection.getId().equals(persistable.getId()))) {
-            addActionError(getText("collectionController.cannot_set_self_parent"));
-        }
-
-        //FIXME: this section is necessary because our prepare code is here, but we can't put it in prepare() because dozens of our tests will break because they do not correctly mock their controllers and assume that prepare() is never called.
-        if(hasActionErrors()) {
-            return INPUT;
-        }
-
-        // END
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), toAdd,
                 toRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
