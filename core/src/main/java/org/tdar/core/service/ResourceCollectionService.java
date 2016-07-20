@@ -764,8 +764,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     
     @Transactional(readOnly=false)
     public void removeResourceFromCollection(Resource resource, ResourceCollection collection, TdarUser authenticatedUser) {
-        if (!authenticationAndAuthorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
-                authenticationAndAuthorizationService.canEditCollection(authenticatedUser, collection)) {
+        if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
+                authorizationService.canEditCollection(authenticatedUser, collection)) {
             throw new TdarRecoverableRuntimeException("resourceCollectionService.cannot_remove");
         } else {
             resource.getResourceCollections().remove(collection);
