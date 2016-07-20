@@ -117,6 +117,10 @@ public final class WorkflowContext implements Serializable {
     public File getWorkingDirectory() {
         if (workingDirectory == null) {
             workingDirectory = TdarConfiguration.getInstance().getTempDirectory();
+            workingDirectory = new File(workingDirectory, "workflow");
+            if (!workingDirectory.exists()) {
+                workingDirectory.mkdir();
+            }
             workingDirectory = new File(workingDirectory, Thread.currentThread().getName() + "-" + System.currentTimeMillis());
             workingDirectory.mkdirs();
         }
