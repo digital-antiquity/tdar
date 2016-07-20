@@ -136,10 +136,11 @@ public class ResourceSearchService extends AbstractSearchService {
                 ids.add(listCollection.getIncludedCollection().getId());
                 idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS, Operator.OR, ids));
             }
-
+            idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
+            qb.append(idGroup);
+        } else {
+            qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, indexable.getId()s));
         }
-        idGroup.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, Operator.OR, ids));
-        qb.append(idGroup);
         runContainedInQuery(term, user, result, provider, qb);
         return result;
     }
