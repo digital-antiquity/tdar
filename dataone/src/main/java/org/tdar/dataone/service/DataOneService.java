@@ -150,7 +150,7 @@ public class DataOneService implements DataOneConstants {
 //        node.getContactSubjectList().add(getSystemUserLdap());
         sync.setLastHarvested(new Date());
         Schedule schedule = new Schedule();
-        schedule.setHour("2");
+        schedule.setHour("20");
         schedule.setMday("*");
         schedule.setMin("*");
         schedule.setMon("*");
