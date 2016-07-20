@@ -115,7 +115,7 @@ public class UserRegistration extends UserAuthData {
             errors.getActionErrors().add("userAccountController.error_passwords_dont_match");
         }
 
-        checkForSpammers(errors, false, recaptchService,remoteHost);
+        checkForSpammers(errors, false, recaptchService,remoteHost, contributorReason, requestingContributorAccess);
         return errors;
     }
 
