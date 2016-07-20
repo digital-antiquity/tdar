@@ -177,7 +177,7 @@ public class FaimsExportService {
                         Ontology defaultOntology = cs.getDefaultOntology();
                         if (defaultOntology != null) {
                             Ontology ont_ = new Ontology();
-                            makeFake(codingSheetMap, defaultOntology, ont_);
+                            makeFake(ontologyMap, defaultOntology, ont_);
                             cs.setDefaultOntology(ont_);
                         }
                         try {

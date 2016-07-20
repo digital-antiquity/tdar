@@ -20,7 +20,7 @@
         <h4>External Relationships</h4>
         <ul>
             <#items as item>
-                <li><a href="${item.relation}">${item.relation}</a> (${item.relationType.term})</li>
+                <li><a href="${item.relation}">${item.label!item.relation}</a> (${item.relationType.term})</li>
             </#items>        
         </ul>
         <#else>
