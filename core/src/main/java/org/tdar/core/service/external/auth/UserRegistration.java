@@ -61,7 +61,9 @@ public class UserRegistration extends UserAuthData {
                 errors.addFieldError(getPrefix() + "person.username", "userAccountController.username_invalid");
             }
 
+            logger.debug("testing valid email");
             if (!authService.isValidEmail(getPerson().getEmail())) {
+                logger.debug("NOT valid email");
                 errors.addFieldError(getPrefix() + "person.email", "userAccountController.email_invalid");
             }
         }

@@ -422,6 +422,10 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
                 this.addFieldError(field, getText(error));
             }
         }
+        
+        if (fieldErrors.size() > 0 && !hasActionErrors()) {
+            addActionError(getText("tdarActionSupport.error_occurred"));
+        }
 
         for (String msg : errors.getActionMessages()) {
             this.addActionMessage(getText(msg));
