@@ -17,6 +17,7 @@ module.exports = function(config) {
     files: [
         'src/main/webapp/components/jquery/dist/jquery.js',
         'node_modules/angular/angular.js',
+        'node_modules/angular-mocks/angular-mocks.js',
         'src/main/webapp/js/data-integration/**/*.js',
         'src/test/frontend/spec-integrate/**/*.js',
         {pattern: 'src/test/frontend/fixtures/integrate/*.json', watched:true, served:true, included:false}

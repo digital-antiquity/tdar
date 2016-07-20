@@ -13,12 +13,8 @@ describe("sanity checks for angular integration testing", function() {
 
     it("loads json fixtures", function() {
         //more info on overloading http backend here:
-        // http://stackoverflow.com/questions/17370427/loading-a-mock-json-file-within-karmaangularjs-test
-        jasmine.getJSONFixtures().fixturesPath="base/src/test/frontend/fixtures/integrate";
         var obj = getJSONFixture("sanity.json");
         expect(obj.foo).toBe("bar");
-
     });
-
 
 });

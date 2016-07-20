@@ -11,7 +11,7 @@
         var self = this;
         var _openModal;
         var _processAddedIntegrationColumns;
-        var _isReadOnly = $("#divIntegrationMain").data("read-only");
+        var _isReadOnly = !!$("#divIntegrationMain").data("read-only");
         var _isBusy =false;
 
         // controller public fields
