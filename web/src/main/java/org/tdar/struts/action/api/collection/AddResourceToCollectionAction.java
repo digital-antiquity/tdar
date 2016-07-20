@@ -10,7 +10,10 @@ import org.apache.struts2.convention.annotation.Results;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.SerializationService;
@@ -42,7 +45,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     private Long resourceId;
     private Long toCollectionId;
     private Resource resource;
-    private ResourceCollection toCollection;
+    private VisibleCollection toCollection;
 
     @Autowired
     protected transient SerializationService serializationService;
@@ -69,7 +72,13 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     @PostOnly
     @Action(value="addResource")
     public String execute() throws Exception {
-        resourceCollectionService.addResourceCollectionToResource(resource, resource.getResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, toCollection);
+        if (toCollection instanceof SharedCollection) {
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getSharedCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, (SharedCollection)toCollection, SharedCollection.class);
+        }
+        if (toCollection instanceof VisibleCollection) {
+            resourceCollectionService.addResourceCollectionToResource(resource, resource.getUnmanagedResourceCollections(), getAuthenticatedUser(), true, ErrorHandling.VALIDATE_WITH_EXCEPTION, (ListCollection)toCollection, ListCollection.class);
+        }
+        
         setJsonInputStream(new ByteArrayInputStream("{\"status\":\"success\"}".getBytes()));
         return super.execute();
     }
@@ -78,7 +87,7 @@ public class AddResourceToCollectionAction extends AbstractJsonApiAction impleme
     @Override
     public void prepare() throws Exception {
         this.resource = getGenericService().find(Resource.class, resourceId);
-        this.toCollection = getGenericService().find(ResourceCollection.class, toCollectionId);
+        this.toCollection = getGenericService().find(VisibleCollection.class, toCollectionId);
         
     }
 

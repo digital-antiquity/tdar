@@ -390,7 +390,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public <C extends ResourceCollection> void saveResourceCollections(Resource resource, Collection<C> incoming, Set<? extends ResourceCollection> current,
+    public <C extends ResourceCollection> void saveResourceCollections(Resource resource, Collection<C> incoming, Set<C> current,
             TdarUser authenticatedUser, boolean shouldSave, ErrorHandling errorHandling, Class<C> cls) {
 
         logger.debug("incoming {}: {} ({})", cls.getSimpleName(), incoming, incoming.size());
@@ -432,7 +432,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param collection
      */
     @Transactional(readOnly = false)
-    public <C extends ResourceCollection> void addResourceCollectionToResource(Resource resource, Set<? extends ResourceCollection> current, TdarUser authenticatedUser, boolean shouldSave,
+    public <C extends ResourceCollection> void addResourceCollectionToResource(Resource resource, Set<C> current, TdarUser authenticatedUser, boolean shouldSave,
             ErrorHandling errorHandling, C collection, Class<C> cls) {
         C collectionToAdd = null;
         logger.trace("{}", collection);
