@@ -18,7 +18,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -38,7 +37,7 @@ import org.tdar.struts.action.DataTableResourceDisplay;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
-import com.fasterxml.jackson.annotation.JsonFormat.Shape;
+import com.google.common.base.Objects;
 
 @Component
 @Scope("prototype")
@@ -135,12 +134,27 @@ public class CollectionController extends AbstractPersistableController<SharedCo
             }
         }
     }
+    
+    @Override
+    public void validate() {
+        super.validate();
+        if(parentCollection != null) {
+            parentId = parentCollection.getId();
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(getPersistable()) && PersistableUtils.isNotNullOrTransient(parentCollection)
+                && (parentCollection.getParentIds().contains(getPersistable().getId()) || Objects.equal(parentId, getPersistable().getId()))) {
+            addActionError(getText("collectionController.cannot_set_self_parent"));
+        }
+
+    }
 
     @Override
     protected String save(SharedCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
         
+        // ** MOVE TO PREPARE **//
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
@@ -152,7 +166,7 @@ public class CollectionController extends AbstractPersistableController<SharedCo
             parentId = parentCollection.getId();
         }
 
-        // FIXME: this section smells like validation.  Consider overriding validate() and moving it there.
+        // ** MOVE TO VALIDATE **//
         if (PersistableUtils.isNotNullOrTransient(persistable) && PersistableUtils.isNotNullOrTransient(parentCollection)
                 && (parentCollection.getParentIds().contains(persistable.getId()) || parentCollection.getId().equals(persistable.getId()))) {
             addActionError(getText("collectionController.cannot_set_self_parent"));
@@ -162,6 +176,8 @@ public class CollectionController extends AbstractPersistableController<SharedCo
         if(hasActionErrors()) {
             return INPUT;
         }
+
+        // END
         resourceCollectionService.saveCollectionForController(getPersistable(), parentId, parentCollection, getAuthenticatedUser(), getAuthorizedUsers(), toAdd,
                 toRemove, shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class);
         setSaveSuccessPath(getPersistable().getUrlNamespace());

@@ -100,10 +100,12 @@ public class CollectionDataExtractor {
                 directCollectionNames.add(shared.getName());
                 collectionNames.addAll(shared.getParentNameList());
                 collectionIds.addAll(shared.getParentIds());
+                collectionIds.add(shared.getId());
             } else if (collection instanceof InternalCollection) {
                 allCollectionIds.add(collection.getId());
             }
         }
+        allCollectionIds.addAll(collectionIds);
         for (ListCollection collection : resource.getUnmanagedResourceCollections()) {
             if (collection instanceof ListCollection) {
                 ListCollection list = (ListCollection)collection;

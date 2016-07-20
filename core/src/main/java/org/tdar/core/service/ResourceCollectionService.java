@@ -858,9 +858,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
         }
-        // if (persistable.getType() == null) {
-        // persistable.setType(CollectionType.SHARED);
-        // }
 
 
         if (!Objects.equals(parentId, persistable.getParentId())) {
@@ -871,16 +868,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         List<Resource> resourcesToAdd = getDao().findAll(Resource.class, toAdd);
         getLogger().debug("toAdd: {}", resourcesToAdd);
         getLogger().debug("toRemove: {}", resourcesToRemove);
+
         if (persistable instanceof SharedCollection) {
             SharedCollection shared = (SharedCollection) persistable;
             reconcileIncomingResourcesForCollection(shared, authenticatedUser, resourcesToAdd, resourcesToRemove);
             saveAuthorizedUsersForResourceCollection(shared, shared, authorizedUsers, shouldSaveResource, authenticatedUser);
-
         }
+
         if (persistable instanceof ListCollection) {
             getLogger().debug("pToAdd: {}", resourcesToAdd);
             getLogger().debug("pToRemove: {}", resourcesToRemove);
-            reconcileIncomingResourcesForCollectionWithoutRights((ListCollection)persistable, authenticatedUser, resourcesToAdd, resourcesToRemove);
+            ListCollection list = (ListCollection)persistable;
+            reconcileIncomingResourcesForCollectionWithoutRights(list, authenticatedUser, resourcesToAdd, resourcesToRemove);
+            saveAuthorizedUsersForResourceCollection(list, list, authorizedUsers, shouldSaveResource, authenticatedUser);
         }
         
         if (persistable instanceof VisibleCollection) {
@@ -989,15 +989,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private void removeFromCollection(Resource resource, ResourceCollection collection) {
         if (collection instanceof InternalCollection) {
             resource.getInternalCollections().remove(collection);
-            ((InternalCollection) collection).getResources().remove(resource);
+//            ((InternalCollection) collection).getResources().remove(resource);
         }
         if (collection instanceof SharedCollection) {
             resource.getSharedCollections().remove(collection);
-            ((SharedCollection)collection).getResources().remove(resource);
+//            ((SharedCollection)collection).getResources().remove(resource);
         }
         if (collection instanceof ListCollection) {
             resource.getUnmanagedResourceCollections().remove(collection);
-            ((ListCollection)collection).getUnmanagedResources().remove(resource);
+//            ((ListCollection)collection).getUnmanagedResources().remove(resource);
         }
 
     }

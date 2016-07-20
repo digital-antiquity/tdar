@@ -27,11 +27,10 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.HasUsers;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.collection.DownloadAuthorization;
-import org.tdar.core.bean.collection.VisibleCollection;
-import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -534,7 +533,7 @@ public class AuthorizationService implements Accessible {
          */
 
         // FIXME: it'd be nice if this took an array and could handle multiple lookups at once
-        logger.trace("applying transient viewable flag to : {}", p);
+        logger.debug("applying transient viewable flag to : {}", p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': {}", p);
             Viewable item = (Viewable) p;
