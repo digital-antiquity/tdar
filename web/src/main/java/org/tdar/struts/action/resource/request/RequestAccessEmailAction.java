@@ -127,7 +127,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
     @Override
     public void prepare() {
     	super.prepare();
-        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost());
+        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost(), null, false);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);
     }
