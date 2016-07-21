@@ -33,7 +33,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "user"+ System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
-        testRegister(personmap, TERMS.BOTH);
+        testRegister(personmap, TERMS.BOTH, true);
         assertTextPresent("Start a new Project");
 
         gotoPage(URLConstants.CART_ADD);
@@ -59,7 +59,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<>();
         setupBasicUser(personmap, "user1124" + System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
-        testRegister(personmap, TERMS.BOTH);
+        testRegister(personmap, TERMS.BOTH, true);
         assertTextPresent("Start a new Project");
 
         gotoPage(URLConstants.CART_ADD);
@@ -94,7 +94,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw123" + System.currentTimeMillis());
         personmap.remove("reg.contributorReason");
-        testRegister(personmap, TERMS.BOTH);
+        testRegister(personmap, TERMS.BOTH, true);
 
         gotoPage(URLConstants.CART_ADD);
         setInput("invoice.numberOfMb", "20");
@@ -131,7 +131,7 @@ public class AccountUsageWebITCase extends AbstractWebTestCase {
         Map<String, String> personmap = new HashMap<String, String>();
         setupBasicUser(personmap, "bobloblaw234" + System.currentTimeMillis());
         // personmap.remove("reg.contributorReason");
-        testRegister(personmap, TERMS.BOTH);
+        testRegister(personmap, TERMS.BOTH, true);
         // the 2nd account is not used. We only add it to ensure the edit renders a select dropdown which more faithfully recreates the precondition described
         // in the ticket
         int acct1Id = createNewAccountWithInvoice("test account one", 10, spaceNeeded);

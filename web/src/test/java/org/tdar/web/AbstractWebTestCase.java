@@ -1387,7 +1387,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         BOTH;
     }
 
-    public void testRegister(Map<String, String> values, TERMS terms) {
+    public void testRegister(Map<String, String> values, TERMS terms, boolean valid) {
 
         @SuppressWarnings("unused")
         String username = values.get("registration.person.username");
@@ -1417,17 +1417,14 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
             }
         }
 
-        setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
-        submitForm("Register");
-//        evictCache();
-//        setSessionUser(entityService.findByUsername(username));
+        if (valid) {
+            setInput("h.timeCheck", Long.toString(System.currentTimeMillis() - 10000));
+            submitForm("Register");
+        } else {
+            submitFormWithoutErrorCheck("Register");
+        }
     }
 
-//    public void deleteUser(String username) {
-//        TdarUser p = new TdarUser();
-//        p.setUsername(username);
-//        authService.getAuthenticationProvider().deleteUser(p);
-//    }
 
     public void setupBasicUser(Map<String, String> personmap, String prefix) {
         setupBasicUser(personmap, prefix, "registration");
