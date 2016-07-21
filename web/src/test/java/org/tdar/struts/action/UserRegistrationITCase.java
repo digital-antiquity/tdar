@@ -121,6 +121,35 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
                 .iterator().next());
     }
 
+
+    @Test
+    @Rollback
+    public void testEmailWithSpace() {
+        setIgnoreActionErrors(true);
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+        TdarUser p = new TdarUser();
+        p.setUsername("roseannt62");
+        p.setFirstName("Allen");
+        p.setLastName("lee");
+
+        p.setEmail("roseannde groot58@de.salazza.com");
+        controller.getRegistration().setConfirmEmail(p.getEmail());
+        controller.getRegistration().setPassword(p.getEmail());
+        controller.getRegistration().setConfirmPassword(p.getEmail());
+        controller.getRegistration().setPerson(p);
+        controller.setServletRequest(getServletPostRequest());
+        controller.getRegistration().setAcceptTermsOfUse(true);
+        controller.getRegistration().getH().setTimeCheck(System.currentTimeMillis() - 5000);
+        controller.validate();
+//        String execute = controller.create();
+//        assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
+        logger.info(" messages: {}", controller.getActionMessages());
+        logger.info(" errors  : {}", controller.getActionErrors());
+        logger.info("field err: {}", controller.getFieldErrors());
+        assertEquals(1, controller.getFieldErrors().size() );
+        assertTrue(controller.getActionErrors().size() > 0);
+    }
+
     @SuppressWarnings("deprecation")
     @Test
     @Rollback
@@ -188,6 +217,7 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         controller.getRegistration().setPerson(p);
         controller.setServletRequest(getServletPostRequest());
         controller.setServletResponse(getServletResponse());
+        controller.validate();
         String execute = controller.create();
         assertEquals(success, execute);
 
@@ -233,6 +263,24 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
             logger.info("errors:{}", controller.getActionErrors());
             assertTrue(controller.getFieldErrors().size() > 0);
         }
+    }
+
+    
+    @SuppressWarnings("unused")
+    @Test
+    @Rollback
+    public void testSpammerWithContributor() {
+        setIgnoreActionErrors(true);
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+            String email = "sdfdasdf@1234.com";
+            logger.info("TRYING =======> {}", email);
+            controller.getH().setTimeCheck(System.currentTimeMillis() - 10000);
+            TdarUser user = new TdarUser("a", "b",email);
+            controller.getRegistration().setContributorReason("abasd");
+            String execute = setupValidUserInController(controller, user, "test");
+            // assertFalse("user " + email + " succeeded??", TdarActionSupport.SUCCESS.equals(execute));
+            logger.info("errors:{}", controller.getActionErrors());
+            assertTrue(controller.getFieldErrors().size() > 0);
     }
 
     @SuppressWarnings("unused")

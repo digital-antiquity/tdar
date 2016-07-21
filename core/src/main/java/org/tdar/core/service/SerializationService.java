@@ -225,6 +225,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
         return sw.toString();
     }
 
+    private File schemaFile = null;
     /**
      * Generate the XSD schema for tDAR
      * 
@@ -233,6 +234,9 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
      * @throws JAXBException
      */
     public File generateSchema() throws IOException, JAXBException {
+        if (schemaFile != null) {
+            return schemaFile;
+        }
         final File tempFile = File.createTempFile(TDAR_SCHEMA, XSD, CONFIG.getTempDirectory());
         JAXBContext jc = JAXBContext.newInstance(rootClasses);
 
@@ -244,8 +248,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
                 return new StreamResult(tempFile);
             }
         });
-
-        return tempFile;
+        schemaFile = tempFile;
+        return schemaFile;
     }
 
     /**

@@ -113,7 +113,7 @@ public class DataOneService implements DataOneConstants {
     @Transactional(readOnly = true)
     public Node getNodeResponse() {
         Node node = new Node();
-        node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
+        node.setBaseURL(D1CONFIG.getBaseSecureUrl() + DATAONE);
         node.setDescription(CONFIG.getSystemDescription());
         node.setIdentifier(getTdarNodeReference());
         node.setName(CONFIG.getRepositoryName());
@@ -150,7 +150,7 @@ public class DataOneService implements DataOneConstants {
 //        node.getContactSubjectList().add(getSystemUserLdap());
         sync.setLastHarvested(new Date());
         Schedule schedule = new Schedule();
-        schedule.setHour("2");
+        schedule.setHour("20");
         schedule.setMday("*");
         schedule.setMin("*");
         schedule.setMon("*");

@@ -123,7 +123,7 @@ public class EmailController extends AbstractAuthenticatableAction implements Pr
 
     @Override
     public void prepare() throws Exception {
-        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost());
+        h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost(),null, false);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);
         resource = genericService.find(Resource.class, resourceId);

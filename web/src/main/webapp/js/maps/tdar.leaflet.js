@@ -60,7 +60,10 @@ TDAR.leaflet = (function(console, $, ctx, L) {
     var _initialized = -1;
 
     /**
-     * Init the leaflet map, and bind it to the element
+     * Initialize a map,  bind it to the specified element,  and return a promise of the map object.
+     * @param elem the init function binds the map to the specified element via  data-attribute named 'map'
+     * @returns {*} promise of the initialized, loaded map object.
+     * @private
      */
     function _initMap(elem) {
         // create effective settings from defaults, then body data-attrs, then elem data-attrs.
@@ -73,10 +76,16 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             _bodyData.center =  {lat: _bdata.centerlat, lng: _bdata.centerlong}
         };
         var settings = $.extend({}, _defaults, _bodyData, _elemData);
+        var deferred = $.Deferred();
 
 
-//        console.log('creating L.map:', settings);
-        var map = L.map(elem, settings).setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
+        var map = new L.map(elem, settings);
+        // setView implicitly triggers 'load' event, so register the listener beforehand
+        map.on('load', function _mapLoaded(){
+            console.log("map loaded");
+            deferred.resolve(map);
+        });
+        map.setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
         map.setMaxBounds(settings.maxBounds);
         //console.log('setting map obj on', $elem)
 		$elem.data("map",map);
@@ -111,75 +120,77 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         if (settings.search) {
             L.Control.geocoder({}).addTo(map);
         }
-        return map;
+
+        return deferred.promise();
     }
 
     function _initResultsMaps() {
         $(".leaflet-map-results").each(function() {
             var $el = $(this);
-            var map = _initMap(this);
-            var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
-            $el.data("markers", markers);
-            map.markers = markers;
-            
-            var recDefaults = $.extend(_rectangleDefaults, {
-                fillOpacity: 0.08,
-                fitToBounds: true
-            });
-            _initFromDataAttr($el, map, recDefaults);
-            var hasBounds = false;
-            var allPoints = new Array();
-            var infiniteUrl = $el.data("infinite-url");
-            if (infiniteUrl) {
-                _dynamicUpdateMap($el, infiniteUrl,0);
-                var zoom = L.control({
-                    position : 'topright'
+            _initMap(this).done(function(map){
+                var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
+                $el.data("markers", markers);
+                map.markers = markers;
+
+                var recDefaults = $.extend(_rectangleDefaults, {
+                    fillOpacity: 0.08,
+                    fitToBounds: true
                 });
-
-                zoom.onAdd = function(map) {
-                    var topRight = L.DomUtil.create('div', 'topright');
-                    var loading = L.DomUtil.create('div', 'mapLoading');
-                    loading.id="mapLoading";
-                    var $loading = $(loading);
-                    $loading.append("<i class='icon-refresh'></i> Loading");
-//                    $loading.hide();
-                    var resetBounds = L.DomUtil.create('div', 'mapResetBounds');
-                    resetBounds.id="mapResetBounds";
-                    var $resetBounds = $(resetBounds);
-                    $resetBounds.append("<i class='icon-map-marker'></i> Fit map to all results");
-                    $resetBounds.hide();
-
-                    $resetBounds.click(function() {
-                        map.fitBounds(map.markers.getBounds());
-                        $resetBounds.hide();
+                _initFromDataAttr($el, map, recDefaults);
+                var hasBounds = false;
+                var allPoints = new Array();
+                var infiniteUrl = $el.data("infinite-url");
+                if (infiniteUrl) {
+                    _dynamicUpdateMap($el, infiniteUrl,0);
+                    var zoom = L.control({
+                        position : 'topright'
                     });
-                    topRight.appendChild(resetBounds);
-                    topRight.appendChild(loading);
-                    return topRight;
-                };
-                zoom.addTo(map);
 
-            } else {
-                $(".resource-list.MAP .listItem").each(function() {
-                    var $t = $(this);
-                    var title = $(".resourceLink", $t);
-                    var lat = $t.data("lat");
-                    var lng = $t.data("long");
-                    if (!isNaN(lat) && !isNaN(lng)) {
-                        hasBounds = true;
-                        var marker = L.marker(new L.LatLng(lat, lng), {title: title.text().trim()});
-                        marker.bindPopup(title.html() + "<br><a href='" + title.attr('href') + "'>view</a>");
-                        allPoints.push(marker);
+                    zoom.onAdd = function(map) {
+                        var topRight = L.DomUtil.create('div', 'topright');
+                        var loading = L.DomUtil.create('div', 'mapLoading');
+                        loading.id="mapLoading";
+                        var $loading = $(loading);
+                        $loading.append("<i class='icon-refresh'></i> Loading");
+//                    $loading.hide();
+                        var resetBounds = L.DomUtil.create('div', 'mapResetBounds');
+                        resetBounds.id="mapResetBounds";
+                        var $resetBounds = $(resetBounds);
+                        $resetBounds.append("<i class='icon-map-marker'></i> Fit map to all results");
+                        $resetBounds.hide();
 
+                        $resetBounds.click(function() {
+                            map.fitBounds(map.markers.getBounds());
+                            $resetBounds.hide();
+                        });
+                        topRight.appendChild(resetBounds);
+                        topRight.appendChild(loading);
+                        return topRight;
+                    };
+                    zoom.addTo(map);
+
+                } else {
+                    $(".resource-list.MAP .listItem").each(function() {
+                        var $t = $(this);
+                        var title = $(".resourceLink", $t);
+                        var lat = $t.data("lat");
+                        var lng = $t.data("long");
+                        if (!isNaN(lat) && !isNaN(lng)) {
+                            hasBounds = true;
+                            var marker = L.marker(new L.LatLng(lat, lng), {title: title.text().trim()});
+                            marker.bindPopup(title.html() + "<br><a href='" + title.attr('href') + "'>view</a>");
+                            allPoints.push(marker);
+
+                        }
+                    });
+                    markers.clearLayers();
+                    markers.addLayers(allPoints);
+                    if (hasBounds) {
+                        _fitTo(map, markers);
                     }
-                });
-                markers.clearLayers();
-                markers.addLayers(allPoints);
-                if (hasBounds) {
-                    _fitTo(map, markers);
                 }
-            }
-            map.addLayer(markers);
+                map.addLayer(markers);
+            });
         });
     }
 
@@ -261,8 +272,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         $(".leaflet-map").each(
             function() {
                 var $el = $(this);
-                var map = _initMap(this);
-                _initFromDataAttr($el, map, _rectangleDefaults);
+                _initMap(this).done(function(map){
+                    _initFromDataAttr($el, map, _rectangleDefaults);
+                });
             });
     }
 
@@ -295,7 +307,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
             if (rectangleSettings.fitToBounds) {
                 // Really frustrating race condition whereby map sometimes zoom's wrong, so we need to add a timeout to make this work
-                setTimeout(function() {map.fitBounds(rectangle.getBounds());},1000);
+                map.fitBounds(rectangle.getBounds());
             }
             _initialized = 2;
             return rectangle;
@@ -370,119 +382,120 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             if ($mapDiv.height() == 0) {
                 $mapDiv.height(400);
             }
-            var map = _initMap(div);
+            _initMap(div).done(function(map){
+                var drawnItems = new L.FeatureGroup();
 
-            var drawnItems = new L.FeatureGroup();
+                // bind ids
+                var $dmx = $(".d_maxx", $el);
+                var $dix = $(".d_minx", $el);
+                var $dmy = $(".d_maxy", $el);
+                var $diy = $(".d_miny", $el);
 
-            // bind ids
-            var $dmx = $(".d_maxx", $el);
-            var $dix = $(".d_minx", $el);
-            var $dmy = $(".d_maxy", $el);
-            var $diy = $(".d_miny", $el);
+                // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
+                $dmx.change(function() {
+                    $(".maxx", $el).val(Geo.parseDMS($dmx.val()));
+                });
+                $dmy.change(function() {
+                    $(".maxy", $el).val(Geo.parseDMS($dmy.val()));
+                });
+                $dix.change(function() {
+                    $(".minx", $el).val(Geo.parseDMS($dix.val()));
+                });
+                $diy.change(function() {
+                    $(".miny", $el).val(Geo.parseDMS($diy.val()));
+                });
 
-            // handling text based formats too    Geo.parseDMS("51°33′39″N" ); ...
-            $dmx.change(function() {
-                $(".maxx", $el).val(Geo.parseDMS($dmx.val()));
-            });
-            $dmy.change(function() {
-                $(".maxy", $el).val(Geo.parseDMS($dmy.val()));
-            });
-            $dix.change(function() {
-                $(".minx", $el).val(Geo.parseDMS($dix.val()));
-            });
-            $diy.change(function() {
-                $(".miny", $el).val(Geo.parseDMS($diy.val()));
-            });
-
-            // create a toolbar with just the rectangle and edit tool
-            var options = {
-                position: 'topleft',
-                draw: {
-                    polyline: false,
-                    polygon: false,
-                    circle: false, // Turns off this drawing tool
-                    rectangle: {
-                        shapeOptions: {
-                            clickable: true
+                // create a toolbar with just the rectangle and edit tool
+                var options = {
+                    position: 'topleft',
+                    draw: {
+                        polyline: false,
+                        polygon: false,
+                        circle: false, // Turns off this drawing tool
+                        rectangle: {
+                            shapeOptions: {
+                                clickable: true
+                            },
+                            repeatMode: false
                         },
-                        repeatMode: false
+                        marker: false
                     },
-                    marker: false
-                },
-                edit: {
-                    featureGroup: drawnItems,
-                    remove: true
-                }
-            };
+                    edit: {
+                        featureGroup: drawnItems,
+                        remove: true
+                    }
+                };
 
-            // Initialise the draw control and pass it the FeatureGroup of editable layers
-            var drawControl = new L.Control.Draw(options);
-            map.addControl(drawControl);
-            $(div).data('drawControl', drawControl);
-            _updateLayerFromFields($el, map, drawnItems, $mapDiv);
-            map.addLayer(drawnItems);
+                // Initialise the draw control and pass it the FeatureGroup of editable layers
+                var drawControl = new L.Control.Draw(options);
+                map.addControl(drawControl);
+                $(div).data('drawControl', drawControl);
+                _updateLayerFromFields($el, map, drawnItems, $mapDiv);
+                map.addLayer(drawnItems);
 
-            /**
-             * Assumption of only one bounding box
-             */
-            map.on('draw:created', function(e) {
-                var type = e.layerType,
-                    layer = e.layer;
-                drawnItems.addLayer(layer);
-                var b = layer.getBounds();
-                var bnds = _setValuesFromBounds($el, b);
-                layer.setBounds(bnds);
-                map.addLayer(layer);
-                _disableRectangleCreate($mapDiv);
-            });
-
-            /**
-             * Assumption of only one bounding box
-             */
-            map.on('draw:edited', function(e) {
-                var layers = e.layers;
-                layers.eachLayer(function(layer) {
+                /**
+                 * Assumption of only one bounding box
+                 */
+                map.on('draw:created', function(e) {
+                    var type = e.layerType,
+                        layer = e.layer;
+                    drawnItems.addLayer(layer);
                     var b = layer.getBounds();
                     var bnds = _setValuesFromBounds($el, b);
                     layer.setBounds(bnds);
+                    map.addLayer(layer);
+                    _disableRectangleCreate($mapDiv);
+                });
+
+                /**
+                 * Assumption of only one bounding box
+                 */
+                map.on('draw:edited', function(e) {
+                    var layers = e.layers;
+                    layers.eachLayer(function(layer) {
+                        var b = layer.getBounds();
+                        var bnds = _setValuesFromBounds($el, b);
+                        layer.setBounds(bnds);
+                    });
+                });
+
+                /**
+                 * Assumption of only one bounding box
+                 */
+                map.on('draw:deleted', function(e) {
+                    console.log("deleted fired");
+                    var layers = e.layers;
+                    var size = 1;
+                    layers.eachLayer(function(layer) {
+                        drawnItems.removeLayer(layer);
+                        size--;
+                        // the change() watch deosn't always pay attention to these explicit calls
+                        $(".minx", $el).val('');
+                        $(".miny", $el).val('');
+                        $(".maxx", $el).val('');
+                        $(".maxy", $el).val('');
+                        $(".d_minx", $el).val('');
+                        $(".d_miny", $el).val('');
+                        $(".d_maxx", $el).val('');
+                        $(".d_maxy", $el).val('');
+                    });
+
+                    if (size == 0 ) {
+                        _enableRectangleCreate($mapDiv);
+                    }
+                });
+
+                //dirty the form if rectangle created, edited, or deleted
+                map.on('draw:created draw:edited draw:deleted', function(e){
+                    $mapDiv.closest('form').FormNavigate('dirty');
+                });
+
+
+                $(".locateCoordsButton", $el).click(function() {
+                    var rec = _updateLayerFromFields($el, map, drawnItems, $mapDiv);
                 });
             });
 
-            /**
-             * Assumption of only one bounding box
-             */
-            map.on('draw:deleted', function(e) {
-                console.log("deleted fired");
-                var layers = e.layers;
-                var size = 1;
-                layers.eachLayer(function(layer) {
-                    drawnItems.removeLayer(layer);
-                    size--;
-                    // the change() watch deosn't always pay attention to these explicit calls
-                    $(".minx", $el).val('');
-                    $(".miny", $el).val('');
-                    $(".maxx", $el).val('');
-                    $(".maxy", $el).val('');
-                    $(".d_minx", $el).val('');
-                    $(".d_miny", $el).val('');
-                    $(".d_maxx", $el).val('');
-                    $(".d_maxy", $el).val('');
-                });
-
-                if (size == 0 ) {
-                    _enableRectangleCreate($mapDiv);
-                }
-            });
-
-            //dirty the form if rectangle created, edited, or deleted
-            map.on('draw:created draw:edited draw:deleted', function(e){
-                $mapDiv.closest('form').FormNavigate('dirty');
-            });
-
-
-            $(".locateCoordsButton", $el).click(function() {
-                var rec = _updateLayerFromFields($el, map, drawnItems, $mapDiv);
-            });
 
         });
     }
