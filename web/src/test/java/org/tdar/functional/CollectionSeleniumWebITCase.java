@@ -167,7 +167,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage(url);
         Assert.assertTrue(getText().contains(TITLE));
         gotoPage("/");
-        find(".searchbox").val("test").sendKeys(Keys.RETURN);
+        find(".searchbox").val("Selenium").sendKeys(Keys.RETURN);
         waitForPageload();
         clearPageCache();
         logger.debug(getText());
