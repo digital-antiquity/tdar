@@ -13,8 +13,8 @@ public class KeywordSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
     private static final String url = "/browse/temporal-keyword/78/basketmaker-iii";
     private static final String LABEL = "Basketmaker 3";
     private static final String DESCRIPTION = "test description";
-    private static final String url1 = "http://www.tdar.org";
-    private static final String url2 = "http://www.digitalantiquity.org";
+    private static final String url1 = "http://www.keyword1.org";
+    private static final String url2 = "http://www.keyword2.org";
 
     @Test
     public void testKeywordEdit() {
