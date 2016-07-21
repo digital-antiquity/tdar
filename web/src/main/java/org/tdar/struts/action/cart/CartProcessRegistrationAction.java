@@ -1,6 +1,7 @@
 package org.tdar.struts.action.cart;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -55,7 +56,8 @@ public class CartProcessRegistrationAction extends AbstractCartController {
 
     @WriteableSession
     @DoNotObfuscate(reason = "not needed")
-    @Action("process-registration")
+    @Action(value="process-registration",
+            interceptorRefs = { @InterceptorRef("registrationStack")} )
     @PostOnly
     public String processRegistration() {
         getLogger().debug("processing registration for person {} {}", registrationInfo.getPerson(), registrationInfo.isRequestingContributorAccess());
