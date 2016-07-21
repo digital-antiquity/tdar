@@ -226,7 +226,7 @@ public class ResourceExportService {
 
             if (resource instanceof Dataset) {
                 Dataset dataset = (Dataset) resource;
-                dataset.setDataTables(null);
+//                dataset.setDataTables(null);
                 dataset.setRelationships(null);
             }
 
@@ -234,7 +234,7 @@ public class ResourceExportService {
                 CodingSheet codingSheet = (CodingSheet) resource;
                 codingSheet.setCodingRules(null);
                 codingSheet.setAssociatedDataTableColumns(null);
-                codingSheet.setDefaultOntology(null);
+//                codingSheet.setDefaultOntology(null);
             }
 
             if (resource instanceof Ontology) {
