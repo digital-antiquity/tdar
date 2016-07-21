@@ -269,6 +269,27 @@
             </div>
         </div>
     </form>
+
+    <script type="application/json" id="jsondata">
+    ${workflowJson!"{}"}
+    </script>
+
+    <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
+    <!-- FIXME: too much crap - we just need ID and title and submitterId -->
+    <script type="application/json" id="allProjects">
+    ${fullUserProjectsJson}
+    </script>
+
+    <script type="application/json" id="allCollections">
+    ${allResourceCollectionsJson}
+    </script>
+
+    <script type="application/json" id="allCategories">
+    ${categoriesJson}
+    </script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
+
+
 </div>
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>
@@ -403,24 +424,6 @@
         </div>
     </div>
 </script>
-<script type="application/json" id="jsondata">
-${workflowJson!"{}"}
-</script>
-
-<!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
-<!-- FIXME: too much crap - we just need ID and title and submitterId -->
-<script type="application/json" id="allProjects">
-${fullUserProjectsJson}
-</script>
-
-<script type="application/json" id="allCollections">
-${allResourceCollectionsJson}
-</script>
-
-<script type="application/json" id="allCategories">
-${categoriesJson}
-</script>
-<script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
 
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>

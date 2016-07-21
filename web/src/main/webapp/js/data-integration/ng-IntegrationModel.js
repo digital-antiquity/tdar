@@ -55,8 +55,8 @@
 
     // Our integration model
     function Integration(dataService) {
-        console.debug("Integration()::");
-        console.debug(dataService);
+        //console.debug("Integration()::");
+        //console.debug(dataService);
 
         var self = this;
         var _sharedOntologyIds = null;
@@ -226,7 +226,7 @@
          * @private
          */
         self.removeDataTables = function _removeDataTables(dataTables) {
-            console.debug("removeDataTables::");
+            //console.debug("removeDataTables::");
 
             if (!dataTables) {
                 return;
@@ -281,7 +281,7 @@
 
         // update derived properties when user removes a dataTable
         function _dataTablesRemoved(removedDataTables) {
-            console.debug("_dataTablesRemoved::");
+            //console.debug("_dataTablesRemoved::");
             var removedDataTableColumnIds = [];
             removedDataTables.forEach(function(dataTable) {
                 dataTable.dataTableColumns.forEach(function(column) {
@@ -325,7 +325,7 @@
         }
 
         function _dataTablesAdded(addedDataTables) {
-            console.debug("_dataTablesAdded::");
+            //console.debug("_dataTablesAdded::");
 
             // Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the dataTables
             // Calculate the new list of shared ontologies, find out if any ontologies should
@@ -352,7 +352,7 @@
          * @private
          */
         function _sharedOntologiesUpdated(newSharedOntologyIds, oldSharedOntologyIds) {
-            console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
+            //console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
             var invalidIntegrationColumns = self.getIntegrationColumns().filter(function(column) {
                 return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
             });

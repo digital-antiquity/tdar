@@ -54,7 +54,7 @@
         };
 
         self.saveAsClicked = function() {
-            console.log("Saving.");
+            //console.log("Saving.");
             self.integration.id = -1;
             self.updateStatus("Saving...");
 
@@ -126,7 +126,7 @@
                     }
                 },
                 function(err) {
-                    console.log("load failed - error information follows");
+                    //console.log("load failed - error information follows");
                     console.error(err);
                 });
          };
@@ -154,14 +154,14 @@
 
         // add and initialize an integration column associated with with the specified ontology ID
         _processAddedIntegrationColumns = function(ontologies) {
-            console.debug("_processAddedIntegrationColumns ::");
+            //console.debug("_processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
         };
 
         self.addDatasetsClicked = function(arg) {
-            console.debug('Add Datasets clicked');
+            //console.debug('Add Datasets clicked');
             _openModal({
                 title: "Add Datasets",
                 searchType: "dataset",
@@ -173,7 +173,7 @@
         };
 
         self.addIntegrationColumnsClicked = function(arg) {
-            console.debug('Add Integration Columns Clicked');
+            //console.debug('Add Integration Columns Clicked');
             _openModal({
                 title: "Add Ontologies",
                 searchType: "ontology",
@@ -348,10 +348,10 @@
                     },
                     ticketId: data.ticket.id
                 };
-                console.debug(data);
+                //console.debug(data);
             }, function(err) {
                 _isBusy = false;
-                console.debug("submitIntegration:: failed:%s", err);
+                //console.debug("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });
 

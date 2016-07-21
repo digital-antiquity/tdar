@@ -166,7 +166,11 @@
                 data = null;
             }
             return data;
-        }
+        };
+
+        this.setDocumentData = function(name, data) {
+            documentData[name] = data;
+        };
 
         /**
          * Create a subset of a specified array that does not contain duplicates (using object identity for equality)
@@ -192,8 +196,8 @@
             if (parseInt(integration.id) > -1) {
                 path += "/" + integration.id;
             }
-            console.log("savePath:" + path + " -- " + integration.id);
-            console.log(jsonData);
+            //console.log("savePath:" + path + " -- " + integration.id);
+            //console.log(jsonData);
             var httpPromise = $http({
                 method : "POST",
                 url : TDAR.uri(path),
@@ -222,7 +226,7 @@
          * Load Integration with specified ID into the specified integration object.
          */
         function _loadIntegrationById(id, integration) {
-            console.log(id);
+            //console.log(id);
             var futureData = $q.defer();
 
             var httpPromise = $http({
@@ -231,7 +235,7 @@
             });
 
             httpPromise.success(function(data) {
-                console.log(data);
+                //console.log(data);
                 _loadIntegration(data, integration).then(
                         function(){futureData.resolve()},
                         function(){futureData.reject()});
@@ -254,7 +258,7 @@
             integration.title = json.title;
             integration.description = json.description;
             integration.id = json.id;
-            console.log("starting...");
+            //console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
                 //These woods are lovely, dark, and deep
@@ -370,7 +374,7 @@
         self._loadDisplayIntegrationColumns = function(ids, col) {
 
             col.dataTableColumnSelections.forEach(function(selection) {
-                console.log(selection);
+                //console.log(selection);
                 selection.dataTable.dataTableColumns.forEach(function(dtc) {
                     ids.forEach(function(id) {
                         if (dtc.id == id) {
@@ -480,7 +484,7 @@
          */
         this.loadOntologyDetails = function(ontologyIds) {
             var futureData = $q.defer();
-            console.log("loading info for ontologies from server:", ontologyIds);
+            //console.log("loading info for ontologies from server:", ontologyIds);
             // only load tables that aren't already in the cache
             var missingOntologyIds = ontologyIds.filter(function(ontologyId) {
                 return !ontologyCache.get(ontologyId)
@@ -494,7 +498,7 @@
                 }, true)));
 
                 httpPromise.success(function(data) {
-                    console.log(data);
+                    //console.log(data);
                     // add this new data to our caches
                     data.forEach(function(proxy) {
                         proxy.ontology.nodes = [];
@@ -528,7 +532,7 @@
          */
         this.performIntegration = function(integration) {
             var futureData = $q.defer();
-            console.log("starting integration:");
+            //console.log("starting integration:");
             var integrationJson = self._dumpObject(integration);
             
             var httpPromise = $http.get(TDAR.uri('/api/integration/integrate?' + $.param({
@@ -595,7 +599,7 @@
          * @returns {*}
          */
         this.findDatasets = function(searchFilter) {
-            console.debug(searchFilter);
+            //console.debug(searchFilter);
             var transformer = function(data) {
                 return data.map(function(item) {
                     var d = new Date(0);
