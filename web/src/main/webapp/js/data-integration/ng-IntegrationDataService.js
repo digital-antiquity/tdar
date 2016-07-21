@@ -119,17 +119,6 @@
         return out;
     }
 
-    function _loadDocumentData() {
-        var dataElements = $('[type="application/json"][id]').toArray();
-        var map = {};
-        dataElements.forEach(function(elem) {
-            var key = elem.id;
-            var val = JSON.parse(elem.innerHTML);
-            map[key] = val;
-        });
-        return map;
-    }
-
     function _dedupe(items) {
         var uniqueItems = [];
         items.forEach(function(item) {
@@ -142,7 +131,7 @@
 
     function DataService($http, $cacheFactory, $q) {
         var self = this;
-        var documentData = _loadDocumentData();
+        var documentData = {};
         var ontologyCache = $cacheFactory('ontologyCache');
         var dataTableCache = $cacheFactory('dataTableCache');
         var ontologyNodeCache = $cacheFactory('ontologyNodeCache');

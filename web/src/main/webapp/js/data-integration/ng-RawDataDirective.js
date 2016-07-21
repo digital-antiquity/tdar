@@ -13,7 +13,7 @@
                     var json = element[0].innerHTML;
                     var key = attrs.id;
                     console.log("adding to dataservice:: %s", key);
-                    //dataService.setDocumentData(key, JSON.parse(json));
+                    dataService.setDocumentData(key, JSON.parse(json));
                 }
 
             }

@@ -270,21 +270,21 @@
         </div>
     </form>
 
-    <script type="application/json" id="jsondata">
+    <script type="application/json" id="jsondata" raw-data>
     ${workflowJson!"{}"}
     </script>
 
     <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
     <!-- FIXME: too much crap - we just need ID and title and submitterId -->
-    <script type="application/json" id="allProjects">
+    <script type="application/json" id="allProjects" raw-data>
     ${fullUserProjectsJson}
     </script>
 
-    <script type="application/json" id="allCollections">
+    <script type="application/json" id="allCollections" raw-data>
     ${allResourceCollectionsJson}
     </script>
 
-    <script type="application/json" id="allCategories">
+    <script type="application/json" id="allCategories" raw-data>
     ${categoriesJson}
     </script>
     <script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
