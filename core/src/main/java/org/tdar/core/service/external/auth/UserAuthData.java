@@ -17,6 +17,11 @@ public abstract class UserAuthData implements Serializable {
     private TdarUser person = new TdarUser();
 
     protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, RecaptchaService recaptchaService, String remoteHost) {
+        checkForSpammers(errors, ignoreTimecheck, recaptchaService, remoteHost, null, false);
+    }
+
+    protected void checkForSpammers(ErrorTransferObject errors, boolean ignoreTimecheck, RecaptchaService recaptchaService, String remoteHost,
+            String contributorReason, boolean requestingContributorAccess) {
         // SPAM CHECKING
         // 1 - check for whether the "bogus" comment field has data
         // 2 - check whether someone is adding characters that should not be there
@@ -25,7 +30,7 @@ public abstract class UserAuthData implements Serializable {
             if (getPerson() != null) {
                 getH().setPerson(getPerson());
             }
-            getH().checkForSpammers(recaptchaService, ignoreTimecheck, remoteHost);
+            getH().checkForSpammers(recaptchaService, ignoreTimecheck, remoteHost, contributorReason, requestingContributorAccess);
         } catch (TdarRecoverableRuntimeException tre) {
             errors.getActionErrors().add(tre.getMessage());
         }

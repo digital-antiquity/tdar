@@ -20,10 +20,11 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
+import org.tdar.core.bean.resource.ResourceAnnotationKey;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
-import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
@@ -139,6 +140,10 @@ public class FaimsExportService {
         List<File> files = new ArrayList<>();
         logger.debug("{} -- {} ({})", id, resource.getTitle(), (resource instanceof CodingSheet));
 
+        addFaimsId(resource);
+        if (resource.getActiveInformationResourceFiles().size() > 100) {
+            return null;
+        }
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
             InformationResourceFileVersion version = file.getLatestUploadedVersion();
             // logger.debug(" - ({}/{}) --> {}", version.getPath(), version.getFilename(), version);
@@ -172,7 +177,7 @@ public class FaimsExportService {
                         Ontology defaultOntology = cs.getDefaultOntology();
                         if (defaultOntology != null) {
                             Ontology ont_ = new Ontology();
-                            makeFake(codingSheetMap, defaultOntology, ont_);
+                            makeFake(ontologyMap, defaultOntology, ont_);
                             cs.setDefaultOntology(ont_);
                         }
                         try {
@@ -236,6 +241,8 @@ public class FaimsExportService {
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
+            addFaimsId(resource);
+
             String output = export(resource, null);
             if (skip) {
                 genericService.clearCurrentSession();
@@ -256,6 +263,10 @@ public class FaimsExportService {
             genericService.clearCurrentSession();
         }
         return projectIdMap;
+    }
+
+    private void addFaimsId(Resource resource) {
+        resource.getResourceAnnotations().add(new ResourceAnnotation(new ResourceAnnotationKey("FAIMS ID"), "repo.fedarch.org/" + resource.getUrlNamespace() + "/" + resource.getId()));
     }
 
     private String export(Resource resource, Long projectId) {
@@ -279,7 +290,7 @@ public class FaimsExportService {
             CodingSheet codingSheet = (CodingSheet) resource;
             codingSheet.setCodingRules(null);
             codingSheet.setAssociatedDataTableColumns(null);
-            codingSheet.setDefaultOntology(null);
+//            codingSheet.setDefaultOntology(null);
         }
 
         if (resource instanceof Ontology) {

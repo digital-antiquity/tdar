@@ -3196,7 +3196,9 @@ L.EditToolbar.Edit = L.Handler.extend({
 				.on('mousemove', this._onMouseMove, this)
 				.on('touchmove', this._onMouseMove, this)
 				.on('MSPointerMove', this._onMouseMove, this)
-				.on('click', this._editStyle, this)
+				//fixme jtd: commenting out bug per leaflet ticket #555  (https://github.com/Leaflet/Leaflet.draw/issues/555)
+				// fixme: jtd: hack:  this workaround will go away upon the next npm update
+				//.on('click', this._editStyle, this)
                 .on('draw:editvertex', this._updateTooltip, this);
 		}
 	},

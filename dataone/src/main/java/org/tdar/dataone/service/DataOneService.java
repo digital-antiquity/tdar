@@ -113,7 +113,7 @@ public class DataOneService implements DataOneConstants {
     @Transactional(readOnly = true)
     public Node getNodeResponse() {
         Node node = new Node();
-        node.setBaseURL(CONFIG.getBaseSecureUrl() + DATAONE);
+        node.setBaseURL(D1CONFIG.getBaseSecureUrl() + DATAONE);
         node.setDescription(CONFIG.getSystemDescription());
         node.setIdentifier(getTdarNodeReference());
         node.setName(CONFIG.getRepositoryName());
@@ -150,7 +150,7 @@ public class DataOneService implements DataOneConstants {
 //        node.getContactSubjectList().add(getSystemUserLdap());
         sync.setLastHarvested(new Date());
         Schedule schedule = new Schedule();
-        schedule.setHour("2");
+        schedule.setHour("20");
         schedule.setMday("*");
         schedule.setMin("*");
         schedule.setMon("*");
@@ -266,7 +266,7 @@ public class DataOneService implements DataOneConstants {
         list.setStart(start);
 
         List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list);
-        logger.debug("{}", resources);
+        logger.trace("{}", resources);
         // for each entry we find in the database, create a packaged response
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
@@ -397,6 +397,7 @@ public class DataOneService implements DataOneConstants {
         try {
             logger.debug("looking for Id: {}", id_);
             String doi = StringUtils.substringBefore(id_, D1_SEP);
+            // switching back DOIs to have / in them.
             doi = doi.replace(D1CONFIG.getDoiPrefix() + ":", D1CONFIG.getDoiPrefix() + "/");
             String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
             InformationResource ir = informationResourceService.findByDoi(doi);

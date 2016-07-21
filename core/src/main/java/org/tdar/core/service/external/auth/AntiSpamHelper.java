@@ -90,7 +90,7 @@ public class AntiSpamHelper implements Serializable {
         return true;
     }
 
-    public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck, String remoteHost) {
+    public boolean checkForSpammers(RecaptchaService recaptchaService, boolean ignoreTimecheck, String remoteHost, String contributorReason, boolean requestingContributorAccess) {
         long now = System.currentTimeMillis();
         checkUserInfo();
         if (StringUtils.isNotBlank(TdarConfiguration.getInstance().getRecaptchaPrivateKey())) {
@@ -102,6 +102,13 @@ public class AntiSpamHelper implements Serializable {
             throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
         }
 
+
+        if (StringUtils.isNotBlank(contributorReason) && requestingContributorAccess == false) {
+            logger.debug(String.format("we think this user was a spammer, contributor was false, but  had contributor reason of: %s", contributorReason));
+            throw new TdarRecoverableRuntimeException("userAccountController.could_not_authenticate_at_this_time");
+        }
+
+        
         if (!ignoreTimecheck) {
             logger.debug("timcheck:{}", getTimeCheck());
             if (getTimeCheck() == null) {
