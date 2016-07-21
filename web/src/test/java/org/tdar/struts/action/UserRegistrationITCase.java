@@ -150,6 +150,36 @@ public class UserRegistrationITCase extends AbstractControllerITCase {
         assertTrue(controller.getActionErrors().size() > 0);
     }
 
+    @Test
+    @Rollback
+    public void testSpammerContributor() {
+        setIgnoreActionErrors(true);
+        UserAccountController controller = generateNewInitializedController(UserAccountController.class);
+        TdarUser p = new TdarUser();
+        p.setUsername("roseannt62");
+        p.setFirstName("Allen");
+        p.setLastName("lee");
+
+        p.setEmail("roseanndegroot58@de.szzzzza.com");
+        controller.getRegistration().setConfirmEmail(p.getEmail());
+        controller.getRegistration().setPassword(p.getEmail());
+        controller.getRegistration().setConfirmPassword(p.getEmail());
+        controller.getRegistration().setPerson(p);
+        controller.getRegistration().setContributorReason("1");
+        
+        controller.setServletRequest(getServletPostRequest());
+        controller.getRegistration().setAcceptTermsOfUse(true);
+        controller.getRegistration().getH().setTimeCheck(System.currentTimeMillis() - 5000);
+        controller.validate();
+//        String execute = controller.create();
+//        assertEquals("Expected controller to return an error, email exists", Action.INPUT, execute);
+        logger.info(" messages: {}", controller.getActionMessages());
+        logger.info(" errors  : {}", controller.getActionErrors());
+        logger.info("field err: {}", controller.getFieldErrors());
+        assertEquals(0, controller.getFieldErrors().size() );
+        assertTrue(controller.getActionErrors().size() > 0);
+    }
+
     @SuppressWarnings("deprecation")
     @Test
     @Rollback

@@ -177,7 +177,7 @@ public class FaimsExportService {
                         Ontology defaultOntology = cs.getDefaultOntology();
                         if (defaultOntology != null) {
                             Ontology ont_ = new Ontology();
-                            makeFake(codingSheetMap, defaultOntology, ont_);
+                            makeFake(ontologyMap, defaultOntology, ont_);
                             cs.setDefaultOntology(ont_);
                         }
                         try {
@@ -290,7 +290,7 @@ public class FaimsExportService {
             CodingSheet codingSheet = (CodingSheet) resource;
             codingSheet.setCodingRules(null);
             codingSheet.setAssociatedDataTableColumns(null);
-            codingSheet.setDefaultOntology(null);
+//            codingSheet.setDefaultOntology(null);
         }
 
         if (resource instanceof Ontology) {

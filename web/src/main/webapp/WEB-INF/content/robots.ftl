@@ -1,5 +1,5 @@
 User-agent: *
-<#if production>
+<#if production && !hostName?contains("alpha") >
 Disallow: /search/*
 Disallow: /search/
 Disallow: /search/results

@@ -117,6 +117,7 @@ public class ListObjectEntry implements Serializable {
     }
     
     public static String webSafeDoi(String identfier) {
+        // switching back DOIs to have : in them instead of /.
         return identfier.replace("/", ":");
     }
 
