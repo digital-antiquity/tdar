@@ -290,7 +290,7 @@ public class FaimsExportService {
             CodingSheet codingSheet = (CodingSheet) resource;
             codingSheet.setCodingRules(null);
             codingSheet.setAssociatedDataTableColumns(null);
-            codingSheet.setDefaultOntology(null);
+//            codingSheet.setDefaultOntology(null);
         }
 
         if (resource instanceof Ontology) {
