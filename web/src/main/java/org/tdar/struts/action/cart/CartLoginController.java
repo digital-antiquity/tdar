@@ -1,6 +1,7 @@
 package org.tdar.struts.action.cart;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -56,7 +57,7 @@ public class CartLoginController extends AbstractCartController implements Valid
 
     // FIXME: is this still needed? revisit
     @Action(value = "process-cart-login",
-            // interceptorRefs = { @InterceptorRef("csrfDefaultStack") },
+            interceptorRefs = { @InterceptorRef("registrationStack") },
             results = {
                     @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.CART_REVIEW_PURCHASE),
                     @Result(name = INPUT, type = HTTPHEADER, params = { "error", BAD_REQUEST, "errorMessage",

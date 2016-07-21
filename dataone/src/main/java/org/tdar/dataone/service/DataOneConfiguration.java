@@ -81,7 +81,7 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     }
 
     public boolean isProduction() {
-        return false;
+        return assistant.getBooleanProperty("dataone.production", false);
     }
 
     public String getBaseSecureUrl() {

@@ -5,6 +5,7 @@ import org.apache.cxf.common.util.UrlUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Actions;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -101,6 +102,7 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
     @Actions(
     {
             @Action(value = "login/process",
+                    interceptorRefs = { @InterceptorRef("registrationStack") },
                     results = {
                             @Result(name = TdarActionSupport.NEW, type = TDAR_REDIRECT, location = "/account/new"),
                             @Result(name = TDAR_REDIRECT, type = TDAR_REDIRECT, location = "${internalReturnUrl}"),
