@@ -267,6 +267,7 @@ public class BulkUploadService {
         while (iter.hasNext()) {
             shared.add(genericDao.merge(iter.next()));
         }
+        resourceTemplate.getSharedCollections().clear();
         resourceTemplate.getSharedCollections().addAll(shared);
 
         Project project = resourceTemplate.getProject();
