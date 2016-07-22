@@ -75,7 +75,7 @@ public class SearchWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testBasicSearchView() {
-        gotoPage("/search/simple");
+        gotoPage("/search/advanced");
         assertTextPresentInPage("Search");
         submitForm("Search");
         assertNoErrorTextPresent();

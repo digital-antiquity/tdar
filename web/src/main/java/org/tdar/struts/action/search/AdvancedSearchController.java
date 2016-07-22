@@ -103,8 +103,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
 
     @Action(value = "results", results = {
             @Result(name = SUCCESS, location = "results.ftl"),
-            @Result(name = INPUT, location = ADVANCED_FTL) ,
-            @Result(name = SUCCESS, location = "multi.ftl"),
+            @Result(name = INPUT, location = ADVANCED_FTL)
             })
     public String search() throws TdarActionException {
         String result = SUCCESS;
