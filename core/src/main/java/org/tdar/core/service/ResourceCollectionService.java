@@ -443,7 +443,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (collection instanceof SharedCollection) {
                     collectionToAdd = (C) findOrCreateCollection(resource, authenticatedUser, (SharedCollection)collection, SharedCollection.class);
                 }
-                if (collection instanceof HierarchicalCollection) {
+                if (collection instanceof ListCollection) {
                     collectionToAdd = (C) findOrCreateCollection(resource, authenticatedUser, (ListCollection)collection, ListCollection.class);
                 }
             } else {
