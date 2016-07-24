@@ -7,7 +7,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.DataTableResourceDisplay;
@@ -15,13 +15,16 @@ import org.tdar.struts.action.DataTableResourceDisplay;
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/collection")
-public class CollectionController extends AbstractCollectionController<SharedCollection> implements DataTableResourceDisplay {
+@Namespace("/listcollection")
+public class ListCollectionController extends AbstractCollectionController<ListCollection> implements DataTableResourceDisplay {
 
-    private static final long serialVersionUID = 1169442990022630650L;
+    private static final long serialVersionUID = 5657142152922902051L;
 
     /**
-     * Threshold that defines a "big" collection.
+     * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
+     * refers to the combined count of authorized users +the count of resources associated with a collection. Big
+     * collections may adversely affect save/load times as well as cause rendering problems on the client, and so the
+     * system may choose to mitigate these effects (somehow)
      */
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
@@ -35,20 +38,20 @@ public class CollectionController extends AbstractCollectionController<SharedCol
      * 
      * @return
      */
-    public List<SharedCollection> getCandidateParentResourceCollections() {
-        List<SharedCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable(), SharedCollection.class);
+    public List<ListCollection> getCandidateParentResourceCollections() {
+        List<ListCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
+                getPersistable(), ListCollection.class);
         return publicResourceCollections;
     }
 
 
     @Override
-    protected String save(SharedCollection persistable) {
+    protected String save(ListCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
 
         resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getAuthorizedUsers(), getToAdd(),
-                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class);
+                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), ListCollection.class);
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -67,20 +70,20 @@ public class CollectionController extends AbstractCollectionController<SharedCol
         }
     }
 
-    public SharedCollection getResourceCollection() {
+    public ListCollection getResourceCollection() {
         if (getPersistable() == null) {
-            setPersistable(new SharedCollection());
+            setPersistable(new ListCollection());
         }
         return getPersistable();
     }
 
-    public void setResourceCollection(SharedCollection rc) {
+    public void setResourceCollection(ListCollection rc) {
         setPersistable(rc);
     }
 
     @Override
-    public Class<SharedCollection> getPersistableClass() {
-        return SharedCollection.class;
+    public Class<ListCollection> getPersistableClass() {
+        return ListCollection.class;
     }
 
     /**
@@ -91,6 +94,6 @@ public class CollectionController extends AbstractCollectionController<SharedCol
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 }

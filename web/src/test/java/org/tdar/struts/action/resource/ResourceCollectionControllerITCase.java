@@ -10,7 +10,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -157,47 +156,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertTrue(vc.getResults().contains(normal));
         assertTrue(vc.getResults().contains(draft));
         genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
-    }
-
-    @SuppressWarnings("unused")
-    @Test
-    @Rollback(true)
-    public void testPublicCollection() throws Exception {
-        String email = "a243@basda.com";
-        entityService.delete(entityService.findByEmail(email));
-
-        final TdarUser testPerson = createAndSaveNewPerson(email, "1234");
-        String name = "test collection";
-        String description = "test description";
-
-        InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
-        InformationResource draft = generateDocumentWithFileAndUseDefaultUser();
-        final Long normalId = normal.getId();
-        final Long draftId = draft.getId();
-        draft.setStatus(Status.DRAFT);
-        genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
-        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        SharedCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null);
-        fail("public collections not impletented yet");
-        final Long id = collection.getId();
-        String slug = collection.getSlug();
-        collection = null;
-
-        controller = generateNewInitializedController(CollectionController.class, getAdminUser());
-        controller.setId(id);
-        controller.prepare();
-        controller.edit();
-        controller.setServletRequest(getServletPostRequest());
-        controller.getAuthorizedUsers().add(new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD));
-        controller.setAsync(false);
-        controller.save();
-
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
-        assertFalse(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_RECORD));
-        assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
-        assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
     }
 
     @SuppressWarnings("unused")

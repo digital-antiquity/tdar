@@ -13,15 +13,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Image;
@@ -105,7 +104,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection c1 = new SharedCollection();
         c1.setName(" TEST ");
         boolean isAdmin = authenticationAndAuthorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, getAdminUser());
-        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1, SharedCollection.class);
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getAdminUser(), true, c1.getName(), SharedCollection.class);
         assertEquals(withName, test);
     }
 
@@ -160,10 +159,10 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         SharedCollection c1 = new SharedCollection();
         c1.setName(" TEST ");
-        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1, SharedCollection.class);
+        SharedCollection withName = resourceCollectionDao.findCollectionWithName(getBillingUser(), false, c1.getName(), SharedCollection.class);
         assertEquals(withName, test);
 
-        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1, SharedCollection.class);
+        withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1.getName(), SharedCollection.class);
         assertNotEquals(withName, test);
     }
 

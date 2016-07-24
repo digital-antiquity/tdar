@@ -134,6 +134,6 @@ public interface QueryFieldNames {
     String RESOURCE_ID = "resource.id";
 	String CORE = "_core";
     String ACTIVE_GEOGRAPHIC_ISO = "geographic.ISO";
-    String RESOURCE_LIST_COLLECTION_NAME = "listCollectionNames";
+    String RESOURCE_LIST_COLLECTION_NAME = "listCollections.name";
     String RESOURCE_LIST_COLLECTION_IDS = "listCollectionIds";
 }

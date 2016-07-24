@@ -440,7 +440,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             collectionToAdd = collection;
         } else  {
             if (collection.isTransient()) {
-                collectionToAdd = findOrCreateCollection(resource, authenticatedUser, collection, cls);
+                if (collection instanceof SharedCollection) {
+                    collectionToAdd = (C) findOrCreateCollection(resource, authenticatedUser, (SharedCollection)collection, SharedCollection.class);
+                }
+                if (collection instanceof HierarchicalCollection) {
+                    collectionToAdd = (C) findOrCreateCollection(resource, authenticatedUser, (ListCollection)collection, ListCollection.class);
+                }
             } else {
                 collectionToAdd = getDao().find(cls, collection.getId());
             }
@@ -489,9 +494,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         ((RightsBasedResourceCollection) collectionToAdd).getResources().add(resource);
     }
 
-    private <C extends ResourceCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
+    private <C extends VisibleCollection> C findOrCreateCollection(Resource resource, TdarUser authenticatedUser, C collection, Class<C> cls) {
         boolean isAdmin = authorizationService.can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, authenticatedUser);
-        C potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection, cls);
+        C potential = getDao().findCollectionWithName(authenticatedUser, isAdmin, collection.getName(), cls);
         if (potential != null) {
             return potential;
         } else {
@@ -927,9 +932,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            name that the method will use when filtering by exact name
      * @return
      */
-    public List<SharedCollection> findCollectionsWithName(TdarUser user, String name) {
+    public <C extends HierarchicalCollection> C findCollectionsWithName(TdarUser user, String name, Class<C> cls) {
         boolean isAdmin = authorizationService.isEditor(user);
-        return getDao().findCollectionsWithName(user, isAdmin, name);
+        return getDao().findCollectionWithName(user, isAdmin, name, cls);
     }
 
     @Transactional

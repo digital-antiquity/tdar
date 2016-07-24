@@ -27,8 +27,11 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -50,6 +53,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.collection.AbstractCollectionController;
 import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
@@ -171,16 +175,22 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         return generateResourceCollection(name, description, visible, users, getUser(), resources, parentId);
     }
 
-    @SuppressWarnings("deprecation")
     public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
-        CollectionController controller = generateNewInitializedController(CollectionController.class, owner);
+        return generateResourceCollection(name, description, visible, users, owner, resources, parentId,CollectionController.class, SharedCollection.class);
+    }
+
+
+    @SuppressWarnings("deprecation")
+    public <C extends HierarchicalCollection, D extends AbstractCollectionController> C generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
+            TdarUser owner, List<? extends Resource> resources, Long parentId, Class<D> ctlClss,Class<C> cls) throws Exception {
+        D controller = generateNewInitializedController(ctlClss, owner);
         controller.setServletRequest(getServletPostRequest());
         
         // controller.setSessionData(getSessionData());
         logger.info("{}", getUser());
         assertEquals(owner, controller.getAuthenticatedUser());
-        SharedCollection resourceCollection = controller.getResourceCollection();
+        C resourceCollection = (C) controller.getResourceCollection();
         resourceCollection.setName(name);
         	
         controller.setAsync(false);
@@ -216,14 +226,19 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         Long id = resourceCollection.getId();
         genericService.evictFromCache(resourceCollection);
         resourceCollection = null;
-        resourceCollection = genericService.find(SharedCollection.class, id);
+        resourceCollection = genericService.find(cls, id);
         logger.debug("parentId: {}", parentId);
         logger.debug("Resources: {}", resources);
         if (PersistableUtils.isNotNullOrTransient(parentId)) {
             assertEquals(parentId, resourceCollection.getParent().getId());
         }
         if (CollectionUtils.isNotEmpty(resources)) {
-            assertThat(resourceCollection.getResources(), containsInAnyOrder(resources.toArray()));
+            if (resourceCollection instanceof SharedCollection) {
+                assertThat(((SharedCollection) resourceCollection).getResources(), containsInAnyOrder(resources.toArray()));
+            } 
+            if (resourceCollection instanceof ListCollection) {
+                assertThat(((ListCollection) resourceCollection).getUnmanagedResources(), containsInAnyOrder(resources.toArray()));
+            }
         }
         return resourceCollection;
     }

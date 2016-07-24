@@ -57,6 +57,7 @@ public interface TdarNamedQueries {
     String QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER = "dashboard.resourceByPerson";
     String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO = "rescol.accessible";
     String QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.accessibleName";
+    String QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME = "rescol.listAccessibleName";
     String QUERY_SPARSE_EDITABLE_RESOURCES = "resource.editable.sparse";
     String QUERY_EDITABLE_RESOURCES = "resource.editable";
     String QUERY_SPARSE_EDITABLE_SORTED_RESOURCES = "resource.editable.sorted.sparse";

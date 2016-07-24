@@ -116,12 +116,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return findAll(SharedCollection.class);
     }
 
-    public <C extends ResourceCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, C collection, Class<C> cls) {
-        if (!(collection instanceof VisibleCollection)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionDao.wrong_type");
+    public <C extends VisibleCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, String name, Class<C> cls) {
+        String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
+        if (cls.isAssignableFrom(ListCollection.class)) {
+            q = TdarNamedQueries.QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
         }
-        Query<C> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME, cls);
-        query.setParameter("name", ((VisibleCollection) collection).getName());
+        Query<C> query = getCurrentSession().createNamedQuery(q, cls);
+        query.setParameter("name", name);
         List<C> list = query.getResultList();
         for (C coll : list) {
             if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
@@ -129,16 +130,6 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             }
         }
         return null;
-    }
-
-    public List<SharedCollection> findCollectionsWithName(TdarUser user, boolean isAdmin, String name) {
-        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                SharedCollection.class);
-        query.setParameter("name", name);
-        List<SharedCollection> list = new ArrayList<>(query.getResultList());
-        list.removeIf(rc -> (!isAdmin && !authorizedUserDao.isAllowedTo(user, (VisibleCollection) rc, GeneralPermissions.ADMINISTER_GROUP)));
-        return list;
-
     }
 
     public List<Long> findAllPublicActiveCollectionIds() {
