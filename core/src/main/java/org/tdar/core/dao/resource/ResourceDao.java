@@ -133,8 +133,9 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean hasBeenModifiedSince(Resource resource, Date date) {
-		Query<Number> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_MODIFIED_SINCE);
+        Query<Number> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_MODIFIED_SINCE);
 		query.setParameter("id", resource.getId());
 		query.setParameter("date", date);
 		int numFound = query.getSingleResult().intValue();
@@ -146,23 +147,27 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return "title";
 	}
 
+    @SuppressWarnings("unchecked")
 	public ResourceType findResourceType(Number id) {
 		Query<ResourceType> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_RESOURCETYPE);
 		query.setParameter("id", id.longValue());
 		return  query.getSingleResult();
 	}
 
+    @SuppressWarnings("rawtypes")
 	public void incrementAccessCounter(Resource r) {
-		Query query = getCurrentSession().createNativeQuery(NamedNativeQueries.incrementAccessCount(r));
+        Query query = getCurrentSession().createNativeQuery(NamedNativeQueries.incrementAccessCount(r));
 		query.executeUpdate();
 	}
 
+    @SuppressWarnings("unchecked")
 	public Number countActiveResources(ResourceType type) {
 		Query<Number> query = getCurrentSession().createQuery(String.format(TdarNamedQueries.QUERY_SQL_COUNT_ACTIVE_RESOURCE,
 				type.getResourceClass().getSimpleName(), type.name()));
 		return query.getSingleResult();
 	}
 
+    @SuppressWarnings("unchecked")
 	public Number countActiveResourcesWithFiles(ResourceType type) {
 		if (type == ResourceType.PROJECT) {
 			return 0;
@@ -172,7 +177,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.getSingleResult();
 	}
 
-	public List<HomepageGeographicCache> getISOGeographicCounts() {
+	@SuppressWarnings("rawtypes")
+    public List<HomepageGeographicCache> getISOGeographicCounts() {
 		logger.info("executing country count from database");
 
 		List<HomepageGeographicCache> cache = new ArrayList<HomepageGeographicCache>();
@@ -207,7 +213,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 	/**
 	 * @return
 	 */
-	public List<HomepageResourceCountCache> getResourceCounts() {
+	@SuppressWarnings("rawtypes")
+    public List<HomepageResourceCountCache> getResourceCounts() {
 		logger.info("executing resource count from database");
 		List<HomepageResourceCountCache> resourceTypeCounts = new ArrayList<HomepageResourceCountCache>();
 		Query query = getCurrentSession().getNamedQuery(QUERY_ACTIVE_RESOURCE_TYPE_COUNT);
@@ -240,7 +247,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return resourceTypeCounts;
 	}
 
-	public Long getResourceCount(ResourceType resourceType, Status status) {
+	@SuppressWarnings("unchecked")
+    public Long getResourceCount(ResourceType resourceType, Status status) {
 		Query<Long> query = getCurrentSession().getNamedQuery(QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS);
 		query.setParameter("resourceType", resourceType);
 		query.setParameter("status", status);
@@ -248,7 +256,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return count;
 	}
 
-	public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> types) {
+	@SuppressWarnings("rawtypes")
+    public ResourceTypeStatusInfo getResourceCountAndStatusForUser(Person p, List<ResourceType> types) {
 		// Query sqlQuery =
 		// getCurrentSession().getNamedQuery(TdarNamedQueries.QUERY_DASHBOARD);
 		NativeQuery sqlQuery = NamedNativeQueries.generateDashboardGraphQuery(getCurrentSession());
@@ -315,14 +324,12 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return (List<E>) findAll(ids);
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getAggregateUsageStats(DateGranularity granularity, Date start, Date end,
 			Long minCount) {
 		Query<AggregateViewStatistic> query = setupStatsQuery(start, end, minCount, StatisticsQueryMode.ACCESS_DAY);
 		return query.getResultList();
 	}
 
-	@SuppressWarnings("unchecked")
 	public List<AggregateViewStatistic> getOverallUsageStats(Date start, Date end, Long max) {
 		Query<AggregateViewStatistic> query = setupStatsQuery(start, end, 1L, StatisticsQueryMode.ACCESS_OVERALL);
 		query.setMaxResults(max.intValue());
@@ -355,7 +362,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.getResultList();
 	}
 
-	private <D> Query<D> setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
+	@SuppressWarnings("unchecked")
+    private <D> Query<D> setupStatsQuery(Date start, Date end, Long minCount, StatisticsQueryMode mode) {
 		Query<D> query = getCurrentSession().getNamedQuery(ACCESS_BY);
 		switch (mode) {
 		case ACCESS_DAY:
@@ -381,7 +389,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.getResultList();
 	}
 
-	public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
+	@SuppressWarnings("rawtypes")
+    public ResourceSpaceUsageStatistic getSpaceUsageForCollections(List<Long> collectionId, List<Status> statuses) {
 		List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
 
 		if (CollectionUtils.isNotEmpty(statuses)) {
@@ -400,7 +409,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 
 	}
 
-	public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> personId,
+	@SuppressWarnings("rawtypes")
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForUser(List<Long> personId,
 			List<Status> status) {
 		List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
 
@@ -421,7 +431,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return null;
 	}
 
-	public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Long> projectId,
+	@SuppressWarnings("rawtypes")
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Long> projectId,
 			List<Status> statuses) {
 		List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
 
@@ -453,7 +464,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return null;
 	}
 
-	public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> statuses) {
+	@SuppressWarnings("rawtypes")
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatistics(List<Long> resourceId, List<Status> statuses) {
 		List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
 
 		if (CollectionUtils.isNotEmpty(statuses)) {
@@ -473,7 +485,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return null;
 	}
 
-	public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long resourceId,
+	@SuppressWarnings("rawtypes")
+    public ResourceSpaceUsageStatistic getResourceSpaceUsageStatisticsForProject(Long resourceId,
 			List<Status> statuses) {
 		List<Status> statuses_ = new ArrayList<Status>(Arrays.asList(Status.values()));
 
@@ -494,7 +507,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return null;
 	}
 
-	public ScrollableResults findAllActiveScrollableForSitemap() {
+	@SuppressWarnings("unchecked")
+    public ScrollableResults findAllActiveScrollableForSitemap() {
 		Query<Resource> query = getCurrentSession().getNamedQuery(SCROLLABLE_SITEMAP);
 		return query.setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
 

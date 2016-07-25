@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.ontology.OntModel;
+import org.apache.jena.rdf.model.ModelFactory;
 import org.semanticweb.owlapi.apibinding.OWLManager;
 import org.semanticweb.owlapi.model.OWLOntologyManager;
 import org.slf4j.Logger;
@@ -39,8 +41,6 @@ import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 import org.tdar.core.service.resource.ontology.OwlOntologyConverter;
 import org.tdar.filestore.FilestoreObjectType;
 
-import com.hp.hpl.jena.ontology.OntModel;
-import com.hp.hpl.jena.rdf.model.ModelFactory;
 
 /**
  * Transactional service providing persistence access to OntologyS as well as OWL access to Ontology files.

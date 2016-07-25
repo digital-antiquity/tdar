@@ -33,6 +33,7 @@ public class InstitutionDao extends Dao.HibernateBase<Institution> {
         return getCriteria().add(Restrictions.like("name", addWildCards(name))).list();
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Institution findAuthorityFromDuplicate(Institution dup) {
         Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         List<Number> result = query.getResultList();

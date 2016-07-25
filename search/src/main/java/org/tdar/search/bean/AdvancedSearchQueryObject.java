@@ -87,15 +87,6 @@ public class AdvancedSearchQueryObject implements Serializable {
     public void setCollectionSearchBoxVisible(boolean collectionSearchBoxVisible) {
         this.collectionSearchBoxVisible = collectionSearchBoxVisible;
     }
-
-    public List<String> getAllGeneralQueryFields() {
-        return allGeneralQueryFields;
-    }
-
-    public void setAllGeneralQueryFields(List<String> getAllGeneralQueryFields) {
-        this.allGeneralQueryFields = getAllGeneralQueryFields;
-    }
-
     public boolean isMultiCore() {
         return multiCore;
     }
@@ -104,4 +95,12 @@ public class AdvancedSearchQueryObject implements Serializable {
         this.multiCore = multiCore;
     }
 
+    public List<String> getAllGeneralQueryFields() {
+        return allGeneralQueryFields;
+    }
+    
+    public void setAllGeneralQueryFields(List<String> getAllGeneralQueryFields) {
+        this.allGeneralQueryFields = getAllGeneralQueryFields;
+    }
+    
 }

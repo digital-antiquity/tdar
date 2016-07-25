@@ -116,6 +116,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return new HashSet<Person>(criteria.list());
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Person findAuthorityFromDuplicate(Creator<?> dup) {
         Query query = getCurrentSession().createNativeQuery(String.format(QUERY_CREATOR_MERGE_ID, dup.getId()));
         List<Number> result = query.getResultList();
@@ -262,6 +263,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return toReturn;
     }
 
+    @SuppressWarnings("rawtypes")
     public Map<AgreementTypes, Long> getAgreementCounts() {
         HashMap<AgreementTypes, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AGREEMENT_COUNTS);
@@ -271,6 +273,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return toReturn;
     }
 
+    @SuppressWarnings("rawtypes")
     public Map<UserAffiliation, Long> getAffiliationCounts(boolean b) {
         HashMap<UserAffiliation, Long> toReturn = new HashMap<>();
         Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.AFFILIATION_COUNTS);

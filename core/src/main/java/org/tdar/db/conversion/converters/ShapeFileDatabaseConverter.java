@@ -194,6 +194,7 @@ public class ShapeFileDatabaseConverter extends DatasetConverter.Base {
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private void dumpToGeoJson(final FeatureCollection<?, ?> collection_) {
         FeatureJSON fjson = new FeatureJSON();
         FeatureCollection<?, ?> collection = collection_;
