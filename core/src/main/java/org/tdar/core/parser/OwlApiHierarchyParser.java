@@ -186,7 +186,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             logger.trace("skipping: {}", displayName);
             return index;
         }
-        logger.debug("{} --> {}", owlClass, displayName);
+
         EntitySearcher.getEquivalentClasses(owlClass, owlOntology).forEach(equiv -> {
             // making the assumption that we see the "real" node before we see the synonyms
             for (OWLClass syn : equiv.getClassesInSignature()) {
@@ -245,16 +245,22 @@ public class OwlApiHierarchyParser implements OntologyParser {
         while (iterator.hasNext()) {
             OWLAnnotation ann = iterator.next();
             if (ann.getProperty().isLabel()) {
-                OWLAnnotationValue value = ann.getValue();
-                String annTxt = value.toString();
-                if (value instanceof OWLLiteral) {
-                    annTxt = ((OWLLiteral) value).getLiteral();
-                }
-                
-                annTxt = annTxt.replaceAll("^\"", "");
-                txt = annTxt.replaceAll("\"$", "");
+                txt = extractStringValue(ann);
             }
         }
+        return txt;
+    }
+
+    private String extractStringValue(OWLAnnotation ann) {
+        String txt;
+        OWLAnnotationValue value = ann.getValue();
+        String annTxt = value.toString();
+        if (value instanceof OWLLiteral) {
+            annTxt = ((OWLLiteral) value).getLiteral();
+        }
+        
+        annTxt = annTxt.replaceAll("^\"", "");
+        txt = annTxt.replaceAll("\"$", "");
         return txt;
     }
 
@@ -280,10 +286,7 @@ public class OwlApiHierarchyParser implements OntologyParser {
             OWLAnnotation ann = iterator.next();
             if (ann.getProperty().isComment()) {
                 logger.trace("{}", ann.getValue());
-                String annTxt = ann.getValue().toString();
-                annTxt = StringUtils.replace(annTxt, "\"", ""); // owl parser
-                // adds quotes
-
+                String annTxt = extractStringValue(ann);
                 if (annTxt.startsWith(key)) {
                     return annTxt.substring(key.length());
                 }

@@ -61,6 +61,7 @@ public class GenericKeywordDao extends GenericDao {
         return findByPropertyIgnoreCase(cls, LABEL, StringUtils.trim(label));
     }
 
+    @SuppressWarnings("rawtypes")
     @Transactional
     protected <T extends Keyword> List<Pair<T, Integer>> getKeywordStats(String namedQuery) {
         List<Pair<T, Integer>> list = new ArrayList<Pair<T, Integer>>();
@@ -144,6 +145,7 @@ public class GenericKeywordDao extends GenericDao {
         }
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     @Transactional
     public Keyword findAuthority(Keyword kwd) {
         Table table = AnnotationUtils.findAnnotation(kwd.getClass(), Table.class);
