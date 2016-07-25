@@ -31,22 +31,22 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName {
     private static final long serialVersionUID = 7900346272773477950L;
 
-    public SharedCollection(String title, String description, SortOption sortBy, boolean visible, TdarUser creator) {
+    public SharedCollection(String title, String description, SortOption sortBy, boolean hidden, TdarUser creator) {
         super.setProperties(new CollectionDisplayProperties());
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
-        setHidden(visible);
+        setHidden(hidden);
         setOwner(creator);
         this.setType(CollectionType.SHARED);
     }
 
-    public SharedCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
+    public SharedCollection(Long id, String title, String description, SortOption sortBy, boolean hidden) {
         setId(id);
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
-        setHidden(visible);
+        setHidden(hidden);
         this.setType(CollectionType.SHARED);
         super.setProperties(new CollectionDisplayProperties());
     }

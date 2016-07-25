@@ -325,6 +325,11 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         return ir;
     }
 
+    public Document generateDocumentAndUseDefaultUser() throws InstantiationException, IllegalAccessException {
+        Document ir = createAndSaveNewInformationResource(Document.class, false);
+        return ir;
+    }
+
     public Document generateDocumentWithFileAndUser() throws InstantiationException, IllegalAccessException {
         Document ir = createAndSaveNewInformationResource(Document.class, true);
         assertTrue(ir.getResourceType() == ResourceType.DOCUMENT);

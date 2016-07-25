@@ -1167,10 +1167,14 @@ public class Resource implements Persistable,
         setUpdatedBy(p);
         setUpdated(true);
         setDateUpdated(new Date());
-        if ((dateCreated == null) || (submitter == null)) {
-            setDateCreated(new Date());
+        if (submitter == null) {
             setSubmitter(p);
+        }
+        if (uploader == null) {
             setUploader(p);
+        }
+        if (dateCreated == null) {
+            setDateCreated(new Date());
         }
     }
 

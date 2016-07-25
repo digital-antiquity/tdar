@@ -22,6 +22,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
@@ -60,13 +61,23 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
         setType(CollectionType.LIST);
     }
     
-    public ListCollection(Long id, String title, String description, SortOption sortBy, boolean visible) {
+    public ListCollection(Long id, String title, String description, SortOption sortBy, boolean hidden) {
         setId(id);
         setName(title);
         setDescription(description);
         setSortBy(sortBy);
-        setHidden(visible);
+        setHidden(hidden);
         this.setType(CollectionType.LIST);
+        setProperties(new CollectionDisplayProperties());
+    }
+
+    public ListCollection(String name, String description, SortOption sort, boolean hidden, TdarUser basicUser) {
+        setName(name);
+        setDescription(description);
+        setSortBy(sort);
+        setHidden(hidden);
+        this.setType(CollectionType.LIST);
+        setOwner(basicUser);
         setProperties(new CollectionDisplayProperties());
     }
 

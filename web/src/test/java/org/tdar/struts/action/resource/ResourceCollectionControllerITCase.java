@@ -103,8 +103,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
-        InformationResource draft = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource normal = generateDocumentAndUseDefaultUser();
+        InformationResource draft = generateDocumentAndUseDefaultUser();
         final Long normalId = normal.getId();
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
@@ -158,6 +158,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
     }
 
+
     @SuppressWarnings("unused")
     @Test
     @Rollback(true)
@@ -169,7 +170,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         String name = "test collection";
         String description = "test description";
 
-        InformationResource normal = generateDocumentWithFileAndUseDefaultUser();
+        InformationResource normal = generateDocumentAndUseDefaultUser();
         final Long normalId = normal.getId();
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_METADATA)));

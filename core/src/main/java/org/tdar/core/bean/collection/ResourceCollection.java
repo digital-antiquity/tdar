@@ -185,10 +185,11 @@ public abstract class ResourceCollection extends AbstractPersistable
      */
     @Override
     public void markUpdated(TdarUser p) {
-        if ((getDateCreated() == null) || (getOwner() == null)) {
-            setDateCreated(new Date());
+        if (getOwner() == null) {
             setOwner(p);
-            setUpdater(p);
+        }
+        if (getDateCreated() == null) {
+            setDateCreated(new Date());
         }
         setUpdater(p);
         setDateUpdated(new Date());
