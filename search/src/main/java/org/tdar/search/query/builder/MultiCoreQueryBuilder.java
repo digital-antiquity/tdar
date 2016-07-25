@@ -1,6 +1,7 @@
 package org.tdar.search.query.builder;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.service.CoreNames;
@@ -15,7 +16,7 @@ import com.opensymphony.xwork2.TextProvider;
  * @version $Rev$
  * 
  */
-public class MultiCoreQueryBuilder extends QueryBuilder {
+public class MultiCoreQueryBuilder extends ResourceQueryBuilder {
 
     public MultiCoreQueryBuilder() {
 //        setTypeLimit(LookupSource.RESOURCE.name());
@@ -25,19 +26,6 @@ public class MultiCoreQueryBuilder extends QueryBuilder {
     @Override
     public String getCoreName() {
         return CoreNames.RESOURCES;
-    }
-
-    public void appendIfNotEmpty(SearchParameters params, TextProvider support_) {
-        if (params != null) {
-            QueryPartGroup queryPartGroup = params.toQueryPartGroup(support_);
-            if (!queryPartGroup.isEmpty()) {
-                append(queryPartGroup);
-            }
-        }
-        if (CollectionUtils.isNotEmpty(params.getFilters())) {
-            appendFilter(params.getFilters());
-        }
-        
     }
 
 }

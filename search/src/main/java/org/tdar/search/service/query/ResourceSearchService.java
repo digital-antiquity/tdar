@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -28,6 +30,7 @@ import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
@@ -166,6 +169,7 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedSearchParameters.setUseSubmitterContext(look.isUseSubmitterContext());
         initializeReservedSearchParameters(reservedSearchParameters, user);
         q.append(reservedSearchParameters.toQueryPartGroup(support));
+
         q.appendFilter(reservedSearchParameters.getFilters());
 
         searchService.handleSearch(q, result, MessageHelper.getInstance());
@@ -190,7 +194,7 @@ public class ResourceSearchService extends AbstractSearchService {
     @Transactional(readOnly = true)
     public LuceneSearchResultHandler<Resource> buildAdvancedSearch(AdvancedSearchQueryObject asqo, TdarUser authenticatedUser,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws SolrServerException, IOException, ParseException {
-        QueryBuilder queryBuilder = new ResourceQueryBuilder();
+        ResourceQueryBuilder queryBuilder = new ResourceQueryBuilder();
         if (asqo.isMultiCore()) {
             queryBuilder = new MultiCoreQueryBuilder();
         }
@@ -223,10 +227,12 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedQueryPart = processReservedTerms(asqo.getReservedParams(), authenticatedUser, provider);
         asqo.setRefinedBy(reservedQueryPart.getDescription(provider));
         queryBuilder.append(reservedQueryPart);
-        // TODO Auto-generated method stub
+
+        queryBuilder.setDeemphasizeSupporting(true);
         searchService.handleSearch(queryBuilder, result, provider);
         return result;
     }
+
 
     // deal with the terms that correspond w/ the "narrow your search" section
     // and from facets

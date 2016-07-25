@@ -1,6 +1,9 @@
 package org.tdar.search.query.builder;
 
+import java.util.Set;
+
 import org.apache.commons.collections4.CollectionUtils;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.search.bean.SearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.part.QueryPartGroup;
@@ -40,5 +43,25 @@ public class ResourceQueryBuilder extends QueryBuilder {
         }
         
     }
+
+    private boolean deemphasizeSupporting = true;
+    private Set<String> boostType = null;
+    
+    public boolean isDeemphasizeSupporting() {
+        return deemphasizeSupporting;
+    }
+
+    public void setDeemphasizeSupporting(boolean deemphasizeSupporting) {
+        this.deemphasizeSupporting = deemphasizeSupporting;
+    }
+
+    public Set<String> getBoostType() {
+        return boostType;
+    }
+
+    public void setBoostType(Set<String> matches) {
+        this.boostType = matches;
+    }
+
 
 }
