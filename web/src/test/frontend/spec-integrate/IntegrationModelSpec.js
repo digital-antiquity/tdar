@@ -3,20 +3,18 @@
 describe("DataService", function() {
     "use strict";
 
-    var dataService;
+    var integrationService;
 
     beforeEach(module('integrationApp'));
-    beforeEach(inject(function(_DataService_){
-        dataService = _DataService_;
+    beforeEach(inject(function(_IntegrationService_){
+        integrationService = _IntegrationService_;
     }));
 
     describe("dataservice tests", function() {
 
-        it("should be defined", function(){
-            expect(dataService).toBeDefined();
-
+        it("should not be null", function() {
+            expect(integrationService).toBeDefined();
         });
-
 
 
     });

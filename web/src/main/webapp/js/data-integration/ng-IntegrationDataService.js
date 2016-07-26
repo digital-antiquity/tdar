@@ -129,7 +129,7 @@
         return uniqueItems;
     }
 
-    function DataService($http, $cacheFactory, $q) {
+    function DataService($http, $cacheFactory, $q, $log) {
         var self = this;
         var documentData = {};
         var ontologyCache = $cacheFactory('ontologyCache');
@@ -424,11 +424,12 @@
             missingTableIds = _dedupe(missingTableIds);
 
             if (missingTableIds.length > 0) {
-                var httpPromise = $http.get(TDAR.uri('/api/integration/table-details?' + $.param({
+                var httpPromise = $http.get('/api/integration/table-details?' + $.param({
                     dataTableIds : missingTableIds
-                }, true)));
+                }, true));
 
                 httpPromise.success(function(data) {
+                    $log.debug("success");
 
                     // add this new data to our caches
                     data.dataTables.forEach(function(dataTable) {
@@ -452,6 +453,7 @@
                     futureData.resolve(self.getCachedDataTables(dataTableIds));
 
                 }).error(function(err){
+                    $log.debug('failed');
                     futureData.reject(err);
                 });
 
@@ -724,7 +726,7 @@
 
     }
 
-    app.service("DataService", [ '$http', '$cacheFactory', '$q', DataService ]);
+    app.service("DataService", [ '$http', '$cacheFactory', '$q', '$log', DataService ]);
 
     /* global angular */
 })(angular);
