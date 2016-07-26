@@ -937,4 +937,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         
     }
 
+    public String getSchemaOrgJsonLD(ResourceCollection resource) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
