@@ -138,7 +138,6 @@
          */
         self.addDatasets = function(dataTableIds) {
             if(dataTableIds.length === 0) return;
-
             var tableDetailsPromise =  dataService.loadTableDetails(dataTableIds);
             self.promiseStatus(tableDetailsPromise, "Loading table details");
             

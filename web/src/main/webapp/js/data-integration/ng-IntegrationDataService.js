@@ -252,7 +252,6 @@
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
                 //These woods are lovely, dark, and deep
                 var promisesToKeep = [];
-
                 self.addDataTables(integration, dataTables);
                 var result = self.loadUpdatedParticipationInformation(integration);
                 result.then(function() {
@@ -430,9 +429,9 @@
 
                 httpPromise.success(function(data) {
                     $log.debug("success");
-
                     // add this new data to our caches
                     data.dataTables.forEach(function(dataTable) {
+                        console.log('hi')
                         dataTableCache.put(dataTable.id, dataTable);
                         dataTable.dataTableColumns.forEach(function(dtc) {
                             dataTableColumnCache.put(dtc.id, dtc);
@@ -682,7 +681,7 @@
 
             var httpPromise = $http({
                 method: 'POST',
-                url: TDAR.uri('/api/integration/node-participation'),
+                url: '/api/integration/node-participation',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 data: postData
             });

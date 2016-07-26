@@ -7,26 +7,48 @@ describe('IntegrationController', function() {
 
 
     // this request just spits out the details of the request
-    function _logRequestHandler(method, url, data, headers, params){
-        console.log('method:', method);
-        console.log('url:', url);
-        console.log('data:', data);
-        console.log('headers:', headers);
-        console.log('params:', params);
-        return [500, {foo: 'bar'}]
+    function logAndRespond(respondArgs) {
+        return function _logRequestHandler(method, url, data, headers, params){
+            console.log('method:', method);
+            console.log('url:', url);
+            console.log('data:', data);
+            console.log('headers:', headers);
+            console.log('params:', params);
+            return respondArgs;
+        }
     }
 
     beforeEach(module('integrationApp'));
     beforeEach(inject(function(_$controller_, _$httpBackend_){
         $controller = _$controller_;
         $httpBackend = _$httpBackend_;
+        var data = {
+            tableDetails: {
+                '1': {
+                    dataTables:[{
+                        displayName: 'table one',
+                        datasetTitle: 'dataset one',
+                        id: '1',
+                        dataTableColumns:[
+                            {
+                                "name": "other_human_modification",
+                                "displayName": "Other Human Modification",
+                                "columnEncodingType": "CODED_VALUE",
+                                "mappedOntologyId": 111,
+                                "id": 222
+                            }
+                        ]
+                    }],
+                    mappedOntologies:[]
+
+                }
+            }
+        };
 
         //let's mock some of the requests that we know dataservice will make  (some of these tests should probably move to dataservice spec)
-        $httpBackend.whenGET(/api\/integration\/table-details/).respond(_logRequestHandler);
-        $httpBackend.whenGET(/api\/integration\/node-participation/).respond(_logRequestHandler);
-        $httpBackend.whenGET(/api\/integration\/ontology-details/).respond(_logRequestHandler);
-
-
+        $httpBackend.whenPOST(/api\/integration\/node-participation/).respond(logAndRespond([200, []]));
+        $httpBackend.whenGET(/api\/integration\/ontology-details/).respond(logAndRespond([200, {}]));
+        $httpBackend.whenGET(/api\/integration\/table-details/).respond(logAndRespond([200, data.tableDetails['1']]));
     }));
 
     describe('basic fields', function() {
