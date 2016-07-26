@@ -157,7 +157,9 @@ public class FaimsExportService {
             if (resource instanceof Dataset) {
                 Dataset ds = (Dataset) resource;
                 for (DataTable dt : ds.getDataTables()) {
+                    dt.setId(null);
                     for (DataTableColumn dtc : dt.getDataTableColumns()) {
+                        dtc.setId(null);
                         CodingSheet cs = dtc.getDefaultCodingSheet();
                         if (cs != null) {
                             // set the coding sheet to a reference to the new coding sheet
