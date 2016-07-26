@@ -31,12 +31,20 @@ describe('IntegrationController', function() {
                         id: '1',
                         dataTableColumns:[
                             {
-                                "name": "other_human_modification",
-                                "displayName": "Other Human Modification",
+                                "name": "t1c1",
+                                "displayName": "column one",
                                 "columnEncodingType": "CODED_VALUE",
-                                "mappedOntologyId": 111,
-                                "id": 222
+                                "mappedOntologyId": 1,
+                                "id": 1
+                            },
+                            {
+                                "name": "t1c2",
+                                "displayName": "column two",
+                                "columnEncodingType": "CODED_VALUE",
+                                "mappedOntologyId": 2,
+                                "id": 2
                             }
+                            
                         ]
                     }],
                     mappedOntologies:[]
