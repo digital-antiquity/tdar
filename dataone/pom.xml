@@ -196,7 +196,7 @@
 			<!-- declared dependency with excludes for DataOne and maven version management -->
 			<artifactId>foresite</artifactId>
 			<groupId>org.digitalantiquity.foresite-toolkit</groupId>
-			<version>0.2</version>
+			<version>0.2.1</version>
 			<exclusions>
 				<exclusion>
 					<artifactId>jena</artifactId>
