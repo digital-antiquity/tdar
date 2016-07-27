@@ -13,9 +13,10 @@ import org.tdar.core.service.UrlService;
  * @author abrin
  *
  */
-public class SchemaOrgCollectionConverter extends AbstractSchemaOrgMetadataTransformer {
+public class SchemaOrgCollectionTransformer extends AbstractSchemaOrgMetadataTransformer {
 
-    private static final long serialVersionUID = 8735863754368415427L;
+
+    private static final long serialVersionUID = -1871001958288643018L;
 
     public String convert(SerializationService serializationService, ResourceCollection collection) throws IOException {
         Map<String,Object> jsonLd = new HashMap<>();
