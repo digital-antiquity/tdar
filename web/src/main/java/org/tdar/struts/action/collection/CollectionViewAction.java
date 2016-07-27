@@ -456,7 +456,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
 
             try {
                 setSchemaOrgJsonLD(resourceCollectionService.getSchemaOrgJsonLD(getPersistable()));
-            } catch (IOException ioe) {
+            } catch (Exception ioe) {
                 getLogger().warn("issues creating json",ioe);
             }
             if (isKeywordSectionVisible()) {
