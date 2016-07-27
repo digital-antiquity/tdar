@@ -1,5 +1,7 @@
 package org.tdar.core.bean.coverage;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.Set;
@@ -33,6 +35,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+
 /**
  * $Id$
  * 
@@ -61,7 +64,8 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public static final double MIN_LONGITUDE = -180d;
     public static final int LATITUDE = 1;
     public static final int LONGITUDE = 2;
-
+    @Transient
+    private transient int hash = -1;
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
 
     @Transient
@@ -75,13 +79,13 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     private boolean isOkayToShowExactLocation = false;
 
     @Column(name = "min_obfuscated_lat")
-    private Double obfuscatedSouth = null;
+    private Double obfuscatedSouth;
     @Column(name = "min_obfuscated_long")
-    private Double obfuscatedWest = null;
+    private Double obfuscatedWest;
     @Column(name = "max_obfuscated_lat")
-    private Double obfuscatedNorth = null;
+    private Double obfuscatedNorth;
     @Column(name = "max_obfuscated_long")
-    private Double obfuscatedEast = null;
+    private Double obfuscatedEast;
 
     // ranges from -90 (South) to +90 (North)
     @Column(nullable = false, name = "minimum_latitude")
@@ -131,6 +135,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public Double getObfuscatedCenterLatitude() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return getCenterLat(getObfuscatedNorth(), getObfuscatedSouth());
     }
 
@@ -139,6 +146,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public Double getObfuscatedCenterLongitude() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return getCenterLong(getObfuscatedWest(), getObfuscatedEast());
     }
 
@@ -310,53 +320,30 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return result;
     }
 
-    private void setObfuscatedSouth() {
-        obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
-    }
-
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
     public Double getObfuscatedSouth() {
-        if (obfuscatedSouth == null) {
-            setObfuscatedSouth();
-        }
-        return getProtectedResult(obfuscatedSouth, south);
+        return obfuscatedSouth;
     }
 
-    private void setObfuscatedNorth() {
-        obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
-    }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
     public Double getObfuscatedNorth() {
-        if (obfuscatedNorth == null) {
-            setObfuscatedNorth();
-        }
-        return getProtectedResult(obfuscatedNorth, north);
+        return obfuscatedNorth;
     }
 
-    private void setObfuscatedWest() {
-        obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
-    }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
      */
     @JsonView(JsonLookupFilter.class)
     public Double getObfuscatedWest() {
-        if (obfuscatedWest == null) {
-            setObfuscatedWest();
-        }
-        return getProtectedResult(obfuscatedWest, west);
-    }
-
-    private void setObfuscatedEast() {
-        obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
+        return obfuscatedWest;
     }
 
     /**
@@ -364,10 +351,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      */
     @JsonView(JsonLookupFilter.class)
     public Double getObfuscatedEast() {
-        if (obfuscatedEast == null) {
-            setObfuscatedEast();
-        }
-        return getProtectedResult(obfuscatedEast, east);
+        return obfuscatedEast;
     }
 
     /**
@@ -377,13 +361,12 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new minimum latitude
      */
     public void setSouth(Double minimumLatitude) {
-        setMiny(minimumLatitude);
+        south = minimumLatitude;
     }
 
     @Transient
     public void setMiny(Double minY) {
         this.south = minY;
-        setObfuscatedSouth();
     }
 
     @Deprecated
@@ -401,13 +384,34 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new maximum latitude
      */
     public void setNorth(Double maximumLatitude) {
-        setMaxy(maximumLatitude);
+        north = maximumLatitude;
+    }
+
+    public void obfuscateAll() {
+        if (north != null && south != null) {
+            List<Double> dbls = Arrays.asList(north,south,east,west);
+            int hashCode = dbls.hashCode();
+            if (hash != hashCode) {
+                hash = hashCode;
+                if (isOkayToShowExactLocation) {
+                    obfuscatedNorth = north;
+                    obfuscatedWest = west;
+                    obfuscatedEast = east;
+                    obfuscatedSouth = south;
+                    return;
+                }
+
+                obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
+                obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
+                obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
+                obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
+            }
+        }
     }
 
     @Transient
     public void setMaxy(Double maxY) {
         this.north = maxY;
-        setObfuscatedNorth();
     }
 
     @Deprecated
@@ -425,7 +429,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new minimum longitude
      */
     public void setWest(Double minimumLongitude) {
-        setMinx(minimumLongitude);
+        west = minimumLongitude;
     }
 
     /**
@@ -437,7 +441,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     @Transient
     public void setMinx(Double minX) {
         this.west = minX;
-        setObfuscatedWest();
     }
 
     @Deprecated
@@ -455,7 +458,7 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      *            the new maximum longitude
      */
     public void setEast(Double maximumLongitude) {
-        setMaxx(maximumLongitude);
+        east = maximumLongitude;
     }
 
     /**
@@ -467,7 +470,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     @Transient
     public void setMaxx(Double maxX) {
         this.east = maxX;
-        setObfuscatedEast();
     }
 
     @Transient
@@ -497,8 +499,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
-    private boolean isValidLongitudeSpan(double min, double max_) {
+    boolean isValidLongitudeSpan(double min, double max_) {
         double max = max_;
+        if (Objects.equals(min, max)) {
+            return true;
+        }
         if (max < 0 && min > 0) {
             // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
@@ -524,18 +529,30 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public double getObfuscatedAbsoluteLatLength() {
+        if (getObfuscatedNorth() == null) {
+            obfuscateAll();
+        }
         return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
     }
 
     public double getObfuscatedAbsoluteLongLength() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
 
     public double getAbsoluteLatLength() {
+        if (getObfuscatedNorth() == null) {
+            obfuscateAll();
+        }
         return Math.abs(getObfuscatedNorth() - getObfuscatedSouth());
     }
 
     public double getAbsoluteLongLength() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return Math.abs(getObfuscatedEast() - getObfuscatedWest());
     }
 
@@ -547,10 +564,16 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
      * @return
      */
     public boolean crossesDateline() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return LatitudeLongitudeBox.crossesDateline(getObfuscatedWest(), getObfuscatedEast());
     }
 
     public boolean crossesPrimeMeridian() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return LatitudeLongitudeBox.crossesPrimeMeridian(getObfuscatedWest(), getObfuscatedEast());
     }
 
@@ -609,6 +632,10 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         // set directly, as we don't want to reset the obfuscated values
         obfuscatedObjectDifferent = false;
         logger.trace("obfuscating latLong");
+        if (getObfuscatedNorth() == null ) {
+            obfuscateAll();
+        }
+
         Double val = getObfuscatedNorth();
         if (ObjectUtils.notEqual(val, getNorth())) {
             setNorth(val);
@@ -755,6 +782,22 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     @Deprecated
     public void setMaximumLongitude(Double val) {
         this.east = val;
+    }
+
+    public void setObfuscatedNorth(Double obfuscatedNorth) {
+        this.obfuscatedNorth = obfuscatedNorth;
+    }
+
+    public void setObfuscatedWest(Double obfuscatedWest) {
+        this.obfuscatedWest = obfuscatedWest;
+    }
+
+    public void setObfuscatedSouth(Double obfuscatedSouth) {
+        this.obfuscatedSouth = obfuscatedSouth;
+    }
+
+    public void setObfuscatedEast(Double obfuscatedEast) {
+        this.obfuscatedEast = obfuscatedEast;
     }
 
 }

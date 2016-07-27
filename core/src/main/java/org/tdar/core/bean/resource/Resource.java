@@ -694,26 +694,25 @@ public class Resource implements Persistable,
         return join(getSiteTypeKeywords());
     }
 
-    /**
-     * If null or invalid, clears the existing lat-long box. Otherwise, replaces
-     * its lat-long values with those from the incoming {@link LatitudeLongitudeBox}
-     * 
-     * @param latitudeLongitudeBox
-     */
-    public void setLatitudeLongitudeBox(
-            LatitudeLongitudeBox latitudeLongitudeBox) {
-        logger.debug("calling lat setter");
-        if ((latitudeLongitudeBox == null) || !latitudeLongitudeBox.isValid()) {
-            getLatitudeLongitudeBoxes().clear();
-            return;
-        }
-        LatitudeLongitudeBox currentLatitudeLongitudeBox = getFirstLatitudeLongitudeBox();
-        if (currentLatitudeLongitudeBox == null) {
-            getLatitudeLongitudeBoxes().add(latitudeLongitudeBox);
-        } else {
-            currentLatitudeLongitudeBox.copyValuesFrom(latitudeLongitudeBox);
-        }
-    }
+//    /**
+//     * If null or invalid, clears the existing lat-long box. Otherwise, replaces
+//     * its lat-long values with those from the incoming {@link LatitudeLongitudeBox}
+//     * 
+//     * @param latitudeLongitudeBox
+//     */
+//    public void setLatitudeLongitudeBox(LatitudeLongitudeBox latitudeLongitudeBox) {
+//        logger.debug("calling lat setter");
+//        if ((latitudeLongitudeBox == null) || !latitudeLongitudeBox.isValid()) {
+//            getLatitudeLongitudeBoxes().clear();
+//            return;
+//        }
+//        LatitudeLongitudeBox currentLatitudeLongitudeBox = getFirstLatitudeLongitudeBox();
+//        if (currentLatitudeLongitudeBox == null) {
+//            getLatitudeLongitudeBoxes().add(latitudeLongitudeBox);
+//        } else {
+//            currentLatitudeLongitudeBox.copyValuesFrom(latitudeLongitudeBox);
+//        }
+//    }
 
     @XmlElementWrapper(name = "latitudeLongitudeBoxes")
     @XmlElement(name = "latitudeLongitudeBox")

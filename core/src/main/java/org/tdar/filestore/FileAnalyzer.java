@@ -74,6 +74,10 @@ public class FileAnalyzer {
                 }
             }
         }
+        if (type == ResourceType.GEOSPATIAL) {
+            toReturn.add("jpg");
+            toReturn.add("tif");
+        }
         return toReturn;
     }
 

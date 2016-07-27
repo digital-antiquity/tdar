@@ -73,5 +73,38 @@
             <column name="user_agent" type="varchar(512)" />
         </addColumn>
     </changeSet>
-    
+    <changeSet id="obsidian9" author="abrin">
+        <createIndex tableName="culture_keyword" indexName="culture_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="geographic_keyword" indexName="geographic_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="material_keyword" indexName="material_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="site_name_keyword" indexName="site_name_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="site_type_keyword" indexName="site_type_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="temporal_keyword" indexName="temporal_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="investigation_type" indexName="investigation_type_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+        <createIndex tableName="other_keyword" indexName="other_keyword_synonym">
+            <column name="merge_keyword_id" />
+            <column name="id" />
+        </createIndex>
+    </changeSet>
 </databaseChangeLog>
