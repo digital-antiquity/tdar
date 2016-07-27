@@ -171,17 +171,17 @@
             });
         };
 
-        self.addIntegrationColumnsClicked = function(arg) {
-            //console.debug('Add Integration Columns Clicked');
-            _openModal({
-                title: "Add Ontologies",
-                searchType: "ontology",
-                categoryFilter: true,
-                close: function(data) {
-                    self.addIntegrationColumns(data);
-                }
-            });
-        };
+        // self.addIntegrationColumnsClicked = function(arg) {
+        //     //console.debug('Add Integration Columns Clicked');
+        //     _openModal({
+        //         title: "Add Ontologies",
+        //         searchType: "ontology",
+        //         categoryFilter: true,
+        //         close: function(data) {
+        //             self.addIntegrationColumns(data);
+        //         }
+        //     });
+        // };
 
         self.addDisplayColumnClicked = function(arg) {
             integration.addDisplayColumn("display column");

@@ -431,7 +431,6 @@
                     $log.debug("success");
                     // add this new data to our caches
                     data.dataTables.forEach(function(dataTable) {
-                        console.log('hi')
                         dataTableCache.put(dataTable.id, dataTable);
                         dataTable.dataTableColumns.forEach(function(dtc) {
                             dataTableColumnCache.put(dtc.id, dtc);
