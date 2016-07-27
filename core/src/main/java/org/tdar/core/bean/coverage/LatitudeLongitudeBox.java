@@ -135,6 +135,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public Double getObfuscatedCenterLatitude() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return getCenterLat(getObfuscatedNorth(), getObfuscatedSouth());
     }
 
@@ -143,6 +146,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     public Double getObfuscatedCenterLongitude() {
+        if (getObfuscatedEast() == null) {
+            obfuscateAll();
+        }
         return getCenterLong(getObfuscatedWest(), getObfuscatedEast());
     }
 

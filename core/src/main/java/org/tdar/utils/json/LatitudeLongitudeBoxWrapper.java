@@ -38,12 +38,12 @@ public class LatitudeLongitudeBoxWrapper implements Serializable {
             if (llb != null) {
                 if (helper.isOverrideAndObfuscate() == true || resource.isLatLongVisible()) {
                     setSpatial(true);
+                    this.centerLatitude = llb.getObfuscatedCenterLatitude();
+                    this.centerLongitude = llb.getObfuscatedCenterLongitude();
                     this.south = llb.getObfuscatedSouth();
                     this.west = llb.getObfuscatedWest();
                     this.north = llb.getObfuscatedNorth();
                     this.east = llb.getObfuscatedEast();
-                    this.centerLatitude = llb.getObfuscatedCenterLatitude();
-                    this.centerLongitude = llb.getObfuscatedCenterLongitude();
                 }
                 
                 if (helper.isOverrideAndObfuscate() == false && resource.isConfidentialViewable()) {
