@@ -71,8 +71,7 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
         Map<String,Object> js = new HashMap<>();
             js.put("tdar:id", llb.getId());
             if (llb.getObfuscatedNorth() == null ) {
-                llb.obfuscateNorthSouth();
-                llb.obfuscateEastWest();
+                llb.obfuscateAll();
             }
             js.put("schema:longitude", llb.getObfuscatedCenterLongitude());
             js.put("schema:latitude", llb.getObfuscatedCenterLatitude());
