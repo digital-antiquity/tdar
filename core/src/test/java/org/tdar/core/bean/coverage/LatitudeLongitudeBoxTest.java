@@ -15,6 +15,23 @@ public class LatitudeLongitudeBoxTest {
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    @Test
+    public void testValidity() {
+        LatitudeLongitudeBox llb = new LatitudeLongitudeBox();
+        llb.setEast(-107.78792202517137);
+        llb.setWest(-107.78792202517137);
+        llb.setNorth(36.08765565625065);
+        llb.setSouth(36.08765565625065);
+        assertTrue("valid north: {}", llb.isValidLatitude(llb.getNorth()));
+        assertTrue("valid south: {}", llb.isValidLatitude(llb.getSouth()));
+        assertTrue("valid west: {}", llb.isValidLongitude(llb.getWest()));
+        assertTrue("valid east: {}", llb.isValidLongitude(llb.getEast()));
+        assertTrue("valid n>s: {}", llb.getNorth() >= llb.getSouth());
+        assertTrue("valid span: {}", llb.isValidLongitudeSpan(llb.getWest(),llb.getEast()));
+        assertTrue("valid n/s span: {}", Math.abs(llb.getNorth() - llb.getSouth()) < 180);
+        assertTrue(llb.isValid());
+    }
+    
     /**
      * Should always be true.
      */

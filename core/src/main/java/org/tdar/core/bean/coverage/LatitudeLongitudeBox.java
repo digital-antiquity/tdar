@@ -497,8 +497,11 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     }
 
     // this logic assumes no span greater than 180°, and that zero-length span is invalid.
-    private boolean isValidLongitudeSpan(double min, double max_) {
+    boolean isValidLongitudeSpan(double min, double max_) {
         double max = max_;
+        if (Objects.equals(min, max)) {
+            return true;
+        }
         if (max < 0 && min > 0) {
             // when spanning IDL, pretend that flat map repeats as it extends past 180°E, e.g. 170°W is now 190°E
             max += 360;
