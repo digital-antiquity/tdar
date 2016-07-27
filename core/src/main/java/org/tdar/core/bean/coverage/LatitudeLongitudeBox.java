@@ -320,15 +320,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return result;
     }
 
-    private void setObfuscatedSouth() {
-        if (isOkayToShowExactLocation) {
-            obfuscatedSouth = south;
-            return;
-        }
-
-        obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
-    }
-
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLatitude, depending on the setting of the isOkayToShowExactLocation switch
      */
@@ -337,14 +328,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return obfuscatedSouth;
     }
 
-    private void setObfuscatedNorth() {
-        if (isOkayToShowExactLocation) {
-            obfuscatedNorth = north;
-            return;
-        }
-
-        obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
-    }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual maximumLatitude, depending on the setting of the isOkayToShowExactLocation switch
@@ -354,14 +337,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
         return obfuscatedNorth;
     }
 
-    private void setObfuscatedWest() {
-        if (isOkayToShowExactLocation) {
-            obfuscatedWest = west;
-            return;
-        }
-
-        obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
-    }
 
     /**
      * @return <b>either</b> the obfuscated value <b>or</b> the actual minimumLongitude, depending on the setting of the isOkayToShowExactLocation switch
@@ -369,14 +344,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     @JsonView(JsonLookupFilter.class)
     public Double getObfuscatedWest() {
         return obfuscatedWest;
-    }
-
-    private void setObfuscatedEast() {
-        if (isOkayToShowExactLocation) {
-            obfuscatedEast = east;
-            return;
-        }
-        obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
     }
 
     /**
@@ -426,10 +393,18 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
             int hashCode = dbls.hashCode();
             if (hash != hashCode) {
                 hash = hashCode;
-                setObfuscatedNorth();
-                setObfuscatedSouth();
-                setObfuscatedEast();
-                setObfuscatedWest();
+                if (isOkayToShowExactLocation) {
+                    obfuscatedNorth = north;
+                    obfuscatedWest = west;
+                    obfuscatedEast = east;
+                    obfuscatedSouth = south;
+                    return;
+                }
+
+                obfuscatedWest = randomizeIfNeedBe(west, east, LONGITUDE, true);
+                obfuscatedNorth = randomizeIfNeedBe(north, south, LATITUDE, false);
+                obfuscatedEast = randomizeIfNeedBe(east, west, LONGITUDE, false);
+                obfuscatedSouth = randomizeIfNeedBe(south, north, LATITUDE, true);
             }
         }
     }
@@ -807,14 +782,6 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     @Deprecated
     public void setMaximumLongitude(Double val) {
         this.east = val;
-    }
-
-    public void setObfuscatedValues() {
-        getObfuscatedNorth();
-        getObfuscatedSouth();
-        getObfuscatedEast();
-        getObfuscatedWest();
-        
     }
 
     public void setObfuscatedNorth(Double obfuscatedNorth) {

@@ -116,7 +116,7 @@ public abstract class AbstractSearchControllerITCase extends AbstractControllerI
         latLong.setEast(-117.101);
         latLong.setNorth(35.791);
         latLong.setSouth(33.354);
-        img.setLatitudeLongitudeBox(latLong);
+        img.getLatitudeLongitudeBoxes().add(latLong);
         assertNotNull(label.getId());
         img.getCultureKeywords().add(label);
         img.getCultureKeywords().add(label2);

@@ -78,4 +78,9 @@
 			<column name="resource_id" valueNumeric="4230"/>
         </insert>
 	</changeSet>
+	<changeSet id="lat_long_obfuscation_fix" author="abrin">
+		<sql>update latitude_longitude set max_obfuscated_lat=maximum_latitude , max_obfuscated_long=maximum_longitude , 
+			min_obfuscated_lat=minimum_latitude , min_obfuscated_long=minimum_longitude </sql>
+		<sql>update latitude_longitude set max_obfuscated_lat=max_obfuscated_lat + .2, max_obfuscated_long= max_obfuscated_long+ .2 where id=6701</sql>
+	</changeSet>
 </databaseChangeLog>
