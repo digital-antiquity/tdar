@@ -32,6 +32,7 @@ import org.tdar.utils.PersistableUtils;
  */
 public abstract class AbstractSchemaOrgMetadataTransformer implements Serializable {
 
+    private static final String SCHEMA_URL = "schema:url";
     static final String SCHEMA = "schema";
     static final String LOCAL_PREFIX = "tdar";
     static final String HTTP_SCHEMA_ORG = "http://schema.org";
@@ -176,9 +177,9 @@ public abstract class AbstractSchemaOrgMetadataTransformer implements Serializab
         }
 
         if (StringUtils.isNotBlank(r.getUrl())) {
-            add(jsonLd, "schema:url", r.getUrl());
+            add(jsonLd, SCHEMA_URL, r.getUrl());
         } else {
-            add(jsonLd, "schema:url", UrlService.absoluteUrl(r));
+            add(jsonLd, SCHEMA_URL, UrlService.absoluteUrl(r));
         }
 
         if (r instanceof InformationResource) {

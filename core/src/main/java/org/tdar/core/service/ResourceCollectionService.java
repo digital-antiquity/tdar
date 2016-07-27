@@ -6,6 +6,7 @@
  */
 package org.tdar.core.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,6 +48,7 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
+import org.tdar.transform.jsonld.SchemaOrgCollectionConverter;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -67,6 +69,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private transient SimpleFileProcessingDao simpleFileProcessingDao;
     @Autowired
     private ApplicationEventPublisher publisher;
+    @Autowired
+    private SerializationService serializationService;
 
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
@@ -937,9 +941,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         
     }
 
-    public String getSchemaOrgJsonLD(ResourceCollection resource) {
-        // TODO Auto-generated method stub
-        return null;
+    @Transactional(readOnly=false)
+    public String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException {
+        SchemaOrgCollectionConverter transformer = new SchemaOrgCollectionConverter();
+        return transformer.convert(serializationService, resource);
     }
 
 }
