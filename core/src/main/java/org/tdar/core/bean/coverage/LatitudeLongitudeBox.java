@@ -64,7 +64,9 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     public static final double MIN_LONGITUDE = -180d;
     public static final int LATITUDE = 1;
     public static final int LONGITUDE = 2;
-    private int hash = -1;
+    @Transient
+    @XmlTransient
+    private transient int hash = -1;
     public static final double ONE_MILE_IN_DEGREE_MINUTES = 0.01472d;
 
     @Transient
