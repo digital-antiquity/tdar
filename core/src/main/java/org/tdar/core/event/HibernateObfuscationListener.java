@@ -19,9 +19,7 @@ public class HibernateObfuscationListener extends EmptyInterceptor implements Sa
     public void onSaveOrUpdate(SaveOrUpdateEvent event) throws HibernateException {
         if (event.getEntity() instanceof LatitudeLongitudeBox) {
             LatitudeLongitudeBox entity = (LatitudeLongitudeBox) event.getEntity();
-            entity.obfuscateNorthSouth();
-            entity.obfuscateEastWest();
-//            logger.debug("saveorupdate: {}", event.getEntity());
+            entity.obfuscateAll();
         }
     }
 
