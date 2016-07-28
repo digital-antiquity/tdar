@@ -74,35 +74,35 @@
         </addColumn>
     </changeSet>
     <changeSet id="obsidian9" author="abrin">
-        <createIndex tableName="culture_keyword" indexName="culture_keyword_synonym">
+        <createIndex tableName="culture_keyword" indexName="idx_culture_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="geographic_keyword" indexName="geographic_keyword_synonym">
+        <createIndex tableName="geographic_keyword" indexName="idx_geographic_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="material_keyword" indexName="material_keyword_synonym">
+        <createIndex tableName="material_keyword" indexName="idx_material_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="site_name_keyword" indexName="site_name_keyword_synonym">
+        <createIndex tableName="site_name_keyword" indexName="idx_site_name_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="site_type_keyword" indexName="site_type_keyword_synonym">
+        <createIndex tableName="site_type_keyword" indexName="idx_site_type_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="temporal_keyword" indexName="temporal_keyword_synonym">
+        <createIndex tableName="temporal_keyword" indexName="idx_temporal_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="investigation_type" indexName="investigation_type_keyword_synonym">
+        <createIndex tableName="investigation_type" indexName="idx_investigation_type_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
-        <createIndex tableName="other_keyword" indexName="other_keyword_synonym">
+        <createIndex tableName="other_keyword" indexName="idx_other_keyword_synonym">
             <column name="merge_keyword_id" />
             <column name="id" />
         </createIndex>
