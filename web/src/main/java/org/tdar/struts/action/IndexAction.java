@@ -77,7 +77,9 @@ public class IndexAction extends AbstractAuthenticatableAction {
         setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
         featuredResources.forEach(r->{
-            r.getFirstLatitudeLongitudeBox().obfuscateAll();
+            if (r.getFirstLatitudeLongitudeBox() != null) {
+                r.getFirstLatitudeLongitudeBox().obfuscateAll();
+            }
         });
         try {
             setFeaturedCollection(resourceCollectionService.getRandomFeaturedCollection());
