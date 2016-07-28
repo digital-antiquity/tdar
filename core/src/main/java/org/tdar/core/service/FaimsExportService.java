@@ -142,6 +142,34 @@ public class FaimsExportService {
 
         addFaimsId(resource);
         if (resource.getActiveInformationResourceFiles().size() > 100) {
+            // break groups of images into single images
+            for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
+                File retrieveFile = null;
+                InformationResourceFileVersion version = file.getLatestUploadedVersion();
+                try {
+                    retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                } catch (FileNotFoundException e) {
+                    logger.error("cannot find file: {}", e, e);
+                }
+                resource.setTitle(retrieveFile.getName());
+                // logger.debug(" --> {}", files);
+                String output = export(resource, projectIdMap.get(resource.getProjectId()));
+    
+                try {
+                    ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, retrieveFile);
+                    if (uploadRecord != null) {
+                        projectIdMap.put(id, uploadRecord.getTdarId());
+                        if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+                                && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+                            logger.warn(uploadRecord.getBody());
+                        }
+                        logger.debug("status: {}", uploadRecord.getStatusLine());
+                        return uploadRecord.getTdarId();
+                    }
+                } catch (IOException e) {
+                    logger.error("error uploading", e);
+                }
+            }
             return null;
         }
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
