@@ -306,6 +306,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         List<Integer> scales = new ArrayList<>();
         List<Long> llibId = new ArrayList<>();
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
+            if (llb.getObfuscatedNorth() == null) {
+                llb.obfuscateAll();
+            }
             Envelope env = new Envelope(llb.getObfuscatedWest(), llb.getObfuscatedEast(), llb.getObfuscatedSouth(),
                     llb.getObfuscatedNorth());
             llibId.add(llb.getId());
