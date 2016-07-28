@@ -129,6 +129,10 @@ public class HomepageSupportingController extends AbstractAuthenticatableAction 
     @SkipValidation
     public String featuredItems() {
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));
+        featuredResources.forEach(r->{
+            r.getFirstLatitudeLongitudeBox().obfuscateAll();
+        });
+
         return SUCCESS;
     }
 
