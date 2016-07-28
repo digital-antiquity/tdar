@@ -19,7 +19,7 @@ import org.tdar.core.bean.keyword.ExternalKeywordMapping;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.transform.jsonld.SchemaOrgCreatorTransformer;
-import org.tdar.transform.jsonld.SchemaOrgKeywordConverter;
+import org.tdar.transform.jsonld.SchemaOrgKeywordTransformer;
 import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 
 public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
@@ -87,7 +87,7 @@ public class JSONLDTransformerITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testKeywords() throws IOException, ClassNotFoundException {
-        SchemaOrgKeywordConverter transformer = new SchemaOrgKeywordConverter();
+        SchemaOrgKeywordTransformer transformer = new SchemaOrgKeywordTransformer();
         CultureKeyword random = genericService.find(CultureKeyword.class, 4L);
         ExternalKeywordMapping assertion = new ExternalKeywordMapping(HTTP_WWW_TEST_COM, RelationType.DCTERMS_IS_REPLACED_BY);
         random.getAssertions().add(assertion );

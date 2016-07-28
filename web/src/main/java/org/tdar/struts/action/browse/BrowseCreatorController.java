@@ -211,7 +211,7 @@ public class BrowseCreatorController extends AbstractLookupController<Resource> 
         }
 
         try {
-            setSchemaOrgJsonLD(entityService.createSchemaOrgJson(getCreator(), logoUrl));
+            setSchemaOrgJsonLD(entityService.getSchemaOrgJson(getCreator(), logoUrl));
         } catch (Exception e) {
             getLogger().error("error converting to json-ld", e);
         }

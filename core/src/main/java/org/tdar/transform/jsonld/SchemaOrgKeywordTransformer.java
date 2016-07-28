@@ -14,7 +14,7 @@ import org.tdar.core.service.SerializationService;
  * @author abrin
  *
  */
-public class SchemaOrgKeywordConverter extends AbstractSchemaOrgMetadataTransformer {
+public class SchemaOrgKeywordTransformer extends AbstractSchemaOrgMetadataTransformer {
 
     private static final long serialVersionUID = 8735863754368415427L;
 

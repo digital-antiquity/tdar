@@ -1,5 +1,6 @@
 package org.tdar.struts.action.collection;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -121,6 +122,8 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
 	private DisplayOrientation orientation;
 
     private HomepageDetails homepageGraphs;
+
+    private String schemaOrgJsonLD;
     
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
@@ -466,15 +469,21 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     public void prepare() throws TdarActionException {
         super.prepare();
         if (!isRedirectBadSlug() && PersistableUtils.isNotTransient(getPersistable())) {
+
+            try {
+                setSchemaOrgJsonLD(resourceCollectionService.getSchemaOrgJsonLD(getPersistable()));
+            } catch (Exception ioe) {
+                getLogger().warn("issues creating json",ioe);
+            }
             if (isKeywordSectionVisible()) {
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, TemporalKeyword.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, GeographicKeyword.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_OTHER_KEYWORDS, OtherKeyword.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, SiteTypeKeyword.class);
-            getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_INVESTIGATION_TYPES, InvestigationType.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_MATERIAL_KEYWORDS, MaterialKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_TEMPORAL_KEYWORDS, TemporalKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_GEOGRAPHIC_KEYWORDS, GeographicKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_OTHER_KEYWORDS, OtherKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_TYPE_KEYWORDS, SiteTypeKeyword.class);
+                getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_SITE_NAME_KEYWORDS, SiteNameKeyword.class);
             }
             try {
                 buildLuceneSearch();
@@ -585,6 +594,14 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
 
     public List<DisplayOrientation> getAvailableOrientations() {
         return Arrays.asList(DisplayOrientation.values());
+    }
+
+    public String getSchemaOrgJsonLD() {
+        return schemaOrgJsonLD;
+    }
+
+    public void setSchemaOrgJsonLD(String schemaOrgJsonLD) {
+        this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
 }

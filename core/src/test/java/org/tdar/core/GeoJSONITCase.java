@@ -53,6 +53,7 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
     @Rollback
     public void testJsonSearchExport() throws Exception {
         Resource[] setupDocs = setupDocs();
+        genericService.synchronize();
         FeedSearchHelper feedHelper = setupTest(null, setupDocs);
         String result = serializationService.createGeoJsonFromResourceList(feedHelper);
         logger.info(result);
@@ -91,7 +92,7 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
     private Resource[] setupDocs() throws InstantiationException, IllegalAccessException {
         Resource[] resources = new Resource[2];
         Document document = generateDocumentWithFileAndUseDefaultUser();
-        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
+//        document.getProject().getCultureKeywords().add(new CultureKeyword(NABATAEAN));
         document.setInheritingCulturalInformation(true);
         // PROJECT LAT/LONG should be obfuscated
         Project project = genericService.find(Project.class, 3805l);
@@ -99,6 +100,8 @@ public class GeoJSONITCase extends AbstractIntegrationTestCase {
         llb.setNorth(llb.getSouth());
         llb.setEast(llb.getWest());
         project.getCultureKeywords().add(new CultureKeyword(BEDOUIN));
+        genericService.saveOrUpdate(project.getCultureKeywords());
+        genericService.saveOrUpdate(project, document);
         resources[1] = project;
         resources[0] = document;
         return resources;

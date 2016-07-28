@@ -205,7 +205,7 @@ public class ImportService {
             for (FileProxy proxy : proxies) {
                 String ext = FilenameUtils.getExtension(proxy.getFilename()).toLowerCase();
                 if (!extensionsForType.contains(ext)) {
-                    throw new APIException("importService.invalid_file_type", Arrays.asList(ext, StringUtils.join(extensionsForType, ", ")),
+                    throw new APIException("importService.invalid_file_type", Arrays.asList("\"" +ext + "\"", StringUtils.join(extensionsForType, ", ")),
                             StatusCode.FORBIDDEN);
                 }
             }

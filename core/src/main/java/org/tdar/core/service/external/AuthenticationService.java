@@ -443,17 +443,24 @@ public class AuthenticationService {
         if ((resultOfLookup != null) && PersistableUtils.isNullOrTransient(incoming)) {
             switch (resultOfLookup.getStatus()) {
                 default:
-                    logger.debug("user is not valid");
-                    throw new TdarRecoverableRuntimeException(error);
+                    if (StringUtils.isBlank(resultOfLookup.getUsername())) {
+                        resultOfLookup.setUsername(incoming.getUsername());
+                    } else {
+                        logger.debug("user is not valid");
+                        throw new TdarRecoverableRuntimeException(error);
+                    }
                 case DRAFT:
                 case DUPLICATE:
                     incoming.setStatus(Status.ACTIVE);
                     resultOfLookup.setStatus(Status.ACTIVE);
             }
-
-            incoming.setId(resultOfLookup.getId());
-            logger.debug("existing user: {} ", incoming);
-            return personDao.merge(incoming);
+            resultOfLookup.setFirstName(incoming.getFirstName());
+            resultOfLookup.setLastName(incoming.getLastName());
+            resultOfLookup.setAffiliation(incoming.getAffiliation());
+            resultOfLookup.setInstitution(incoming.getInstitution());
+            resultOfLookup.setPhone(incoming.getPhone());
+            logger.debug("existing user: {} ", resultOfLookup);
+            return resultOfLookup;
         }
         return incoming;
     }
