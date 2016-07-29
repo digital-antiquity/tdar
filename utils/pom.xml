@@ -141,5 +141,48 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>llbfix</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-remote-resources-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <id>process-search-resources</id>
+                                <goals>
+                                    <goal>process</goal>
+                                </goals>
+                                <configuration>
+                                    <attachToTest>true</attachToTest>
+                                    <attachToMain>true</attachToMain>
+                                    <resourceBundles>
+                                        <resourceBundle>org.tdar:search:${project.version}</resourceBundle>
+                                    </resourceBundles>
+                                    <outputDirectory>target/solr</outputDirectory>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>${exec-maven-version}</version>
+                        <executions>
+                            <execution>
+                                <phase>compile</phase>
+                                <goals>
+                                    <goal>java</goal>
+                                </goals>
+                                <configuration>
+                                    <mainClass>org.tdar.utils.LatLongObfuscationCleanup</mainClass>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
     </profiles>
 </project>

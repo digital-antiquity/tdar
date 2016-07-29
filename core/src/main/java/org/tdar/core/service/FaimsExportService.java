@@ -22,6 +22,8 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -141,7 +143,38 @@ public class FaimsExportService {
         logger.debug("{} -- {} ({})", id, resource.getTitle(), (resource instanceof CodingSheet));
 
         addFaimsId(resource);
-        if (resource.getActiveInformationResourceFiles().size() > 100) {
+
+        // only pull images from the two projects that have galleries in them.
+        if (resource.getActiveInformationResourceFiles().size() > 5 && (resource.getProjectId() == 7292 || resource.getProjectId() == 7293)) {
+            // break groups of images into single images
+            resource.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, resource.getTitle()));
+            for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
+                File retrieveFile = null;
+                InformationResourceFileVersion version = file.getLatestUploadedVersion();
+                try {
+                    retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                } catch (FileNotFoundException e) {
+                    logger.error("cannot find file: {}", e, e);
+                }
+                resource.setTitle(retrieveFile.getName());
+                // logger.debug(" --> {}", files);
+                String output = export(resource, projectIdMap.get(resource.getProjectId()));
+    
+                try {
+                    ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, retrieveFile);
+                    if (uploadRecord != null) {
+                        projectIdMap.put(id, uploadRecord.getTdarId());
+                        if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+                                && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+                            logger.warn(uploadRecord.getBody());
+                        }
+                        logger.debug("status: {}", uploadRecord.getStatusLine());
+                        return uploadRecord.getTdarId();
+                    }
+                } catch (IOException e) {
+                    logger.error("error uploading", e);
+                }
+            }
             return null;
         }
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {

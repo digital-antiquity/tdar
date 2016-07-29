@@ -89,12 +89,14 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
             // DataTableColumn column = tempTable.getDataTableColumns().get(resultSetPosition);
             String value = initializeDefaultValue(resultSetPosition);
             final String rawStringValue = (String) row[resultSetPosition];
+            DataTableColumn realColumn = integrationColumn.getColumnForTable(table);
+
             // set count value if needed
             if (integrationColumn.isCountColumn()) {
                 // we go back to original version as initialized value may have been set
                 value = rawStringValue;
                 // if we're mapping to a "count" column that doesn't exist (e.g. a table where each row has an implict count of 1) then force to be 1.
-                if (integrationColumn.getColumnForTable(table) == null) {
+                if (realColumn == null) {
                     countVal = 1d;
                 } else {
                     try {
@@ -135,14 +137,15 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 }
 
                 values.add(value);
-                DataTableColumn realColumn = integrationColumn.getColumns().get(0);
+                
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
+                // if we use the special rules
                 if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
                     Map<String, OntologyNode> nodeMap = realColumn.getDefaultCodingSheet().getTermToOntologyNodeMap();
+                    // if type "not" OK, ie. we need a special term
                     if (!StringUtils.equals(OK, type)) {
                         // if type == NULL || MISSING, try and get value:
                         mappedOntologyNode = nodeMap.get(mappedVal);
-
                     } else if (mappedOntologyNode == null) {
                         mappedVal = CodingRule.UNMAPPED.getTerm();
                         type = CodingRule.UNMAPPED.getTerm();
