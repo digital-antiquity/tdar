@@ -59,6 +59,12 @@
 
         <@search.basicPagination "Results"/>
 
+<#if geoJson?has_content><#noescape>
+<script id="geoJson"  type="application/json">
+${geoJson}
+</script>
+</#noescape></#if>
+
 <script type='text/javascript'>
     $(document).ready(function () {
         TDAR.common.initializeView();

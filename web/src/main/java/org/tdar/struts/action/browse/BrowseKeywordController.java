@@ -120,7 +120,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             GeographicKeyword kwd = (GeographicKeyword) keyword;
             if (kwd.getLevel() != null) {
                 try {
-                setGeoJson(geoSearchService.toGeoJson(kwd));
+                    setGeoJson(geoSearchService.toGeoJson(kwd));
                 } catch (Throwable t) {
                     getLogger().warn("issue with geographic keyword geojson conversion", t);
                 }
