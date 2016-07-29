@@ -8,6 +8,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.keyword.AbstractKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
@@ -32,7 +33,7 @@ public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implement
     
     @Override
     public void prepare() throws Exception {
-        Keyword resource = genericService.find(Keyword.class, id); 
+        Keyword resource = genericService.find(AbstractKeyword.class, id); 
         String message = keywordService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }

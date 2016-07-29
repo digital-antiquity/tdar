@@ -18,7 +18,8 @@
     <#noescape>
     ${googleScholarTags}
     </#noescape>
-    
+
+    <link rel="alternate" href="/api/lod/resource/${id}" type="application/ld+json" />    
     <@view.canonical resource />
 
     <#if local_.head?? && local_.head?is_macro>

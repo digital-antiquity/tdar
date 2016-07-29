@@ -13,6 +13,8 @@
     <@search.rssUrlTag url=rssUrl /> -->
     <@search.headerLinks includeRss=false />
 
+    <link rel="alternate" href="/api/lod/keyword/${id}" type="application/ld+json" />    
+
 </head>
 <div id="sidebar-right" parse="true">
     <div class="sidebar-spacer">

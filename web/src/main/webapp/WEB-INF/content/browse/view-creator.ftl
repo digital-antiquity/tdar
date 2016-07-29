@@ -9,6 +9,8 @@
 <#-- @search.initResultPagination/ -->
     <@search.headerLinks includeRss=false />
 
+    <link rel="alternate" href="/api/lod/creator/${id}" type="application/ld+json" />    
+
 	<#if creator.creatorType.person >
     	<#assign rssUrl = "/search/rss?groups[0].creatorOwner.person.id=${creator.id?c}&groups[0].creatorOwner.person.lastName=${creator.lastName}&groups[0].creatorOwner.person.firstName=${creator.firstName}">
 	<#else>
