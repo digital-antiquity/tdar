@@ -21,7 +21,7 @@
     $.validator.addMethod("reasonableDate", function (value, element) {
         var intVal = parseInt(value);
         // allow -1 for internal management of things that don't have dates
-        return (intVal == value && (intVal == -1 || intVal > 1000 && intVal < 3000));
+        return (intVal == value && (intVal == -1 || intVal == 3000 || (intVal > 1000 && intVal < 2050)));
     }, "a date in the last millenia is expected");
 
     //FIXME: not used
