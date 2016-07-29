@@ -8,7 +8,7 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
@@ -32,7 +32,7 @@ public class CollectionLinkedOpenDataAction extends AbstractJsonApiAction implem
     
     @Override
     public void prepare() throws Exception {
-        ResourceCollection resource = genericService.find(ResourceCollection.class, id); 
+        VisibleCollection resource = genericService.find(VisibleCollection.class, id); 
         String message = collectionService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }

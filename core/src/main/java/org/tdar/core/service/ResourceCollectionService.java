@@ -1012,7 +1012,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly=false)
-    public String getSchemaOrgJsonLD(ResourceCollection resource) throws IOException {
+    public String getSchemaOrgJsonLD(VisibleCollection resource) throws IOException {
         SchemaOrgCollectionTransformer transformer = new SchemaOrgCollectionTransformer();
         return transformer.convert(serializationService, resource);
     }
