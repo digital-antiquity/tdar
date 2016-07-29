@@ -306,7 +306,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         List<Integer> scales = new ArrayList<>();
         List<Long> llibId = new ArrayList<>();
         for (LatitudeLongitudeBox llb : resource.getActiveLatitudeLongitudeBoxes()) {
-            if (llb.getObfuscatedNorth() == null) {
+            if (llb.getObfuscatedNorth() == null || llb.getObfuscatedEast() == null) {
                 logger.error("LLB is null... shouldn't be for tDAR Id {}", resource.getId());
                 llb.obfuscateAll();
             }
