@@ -59,8 +59,8 @@ public class FAIMSTransferTool {
         applicationContext.register(TdarAppConfiguration.class, FAIMSTransferTool.class);
         applicationContext.refresh();
         applicationContext.start();
-        username = "adam.brin@asu.edu";
-        password = "brin";
+        username = System.getProperty("username","adam.brin@asu.edu");
+        password = System.getProperty("password", "brin");
         FAIMSTransferTool transfer = new FAIMSTransferTool();
         applicationContext.getAutowireCapableBeanFactory().autowireBean(transfer);
         try {
