@@ -187,16 +187,20 @@ Common macros used in multiple contexts
  that lie within the selected country -->
 <#-- @param forceAddSchemeHostAndPort:boolean if true, clickhandler always includes hostname and port when bulding
             the redirect url.  If false,   the clickhandler builds a url based on the current hostname and port -->
-    <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal">
+    <#macro renderWorldMap forceAddSchemeHostAndPort=false mode="horizontal" extra="">
     <div class=" <#if mode == 'vertical'>span7<#elseif mode == 'horizontal'>span6 map mapcontainer<#else> mapcontainer</#if> ${mode}">
             <h3>${siteAcronym} Worldwide</h3>
+        <#if (homepageGraphs.mapJson)?has_content>
         <script type="application/json" data-mapdata>
 			<#noescape>${homepageGraphs.mapJson}</#noescape>
         </script>
+        </#if>
+        <#nested />
+		<#if (homepageGraphs.localesJson)?has_content>
         <script type="application/json" data-locales>
 			<#noescape>${homepageGraphs.localesJson}</#noescape>
         </script>
-
+		</#if>
              <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="">
              </div>
         <#if mode =='vertical'></div></#if>
@@ -209,7 +213,7 @@ Common macros used in multiple contexts
         <#if mode !='vertical'></div></#if>
 	<script>
 	$(function() {
-    	TDAR.worldmap.initWorldMap("worldmap","${mode}");
+    	TDAR.worldmap.initWorldMap("worldmap","${mode}", "${extra}");
 	});
 	</script>
     </#macro>

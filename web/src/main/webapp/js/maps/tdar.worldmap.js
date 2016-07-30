@@ -29,6 +29,7 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     // Intialize the Geodata based on the JSON
     function _initializeGeoData(mapdata) {
+        console.log(mapdata);
         var data = mapdata["geographic.ISO,resourceType"];
         if (data && data.length > 0) {
             for (var i = 0; i < data.length; i++) {
@@ -49,11 +50,17 @@ TDAR.worldmap = (function(console, $, ctx) {
      */
     function _getMapdata(containerElem) {
         var json = $(containerElem).find('script[data-mapdata]').text() || 'null';
+        if (json == 'null') {
+            return undefined;
+        }
         return JSON.parse(json);
     }
 
     function _getLocaleData(containerElem) {
         var json = $(containerElem).find('script[data-locales]').text() || 'null';
+        if (json == 'null') {
+            return undefined;
+        }
         return JSON.parse(json);
     }
 
@@ -99,7 +106,7 @@ TDAR.worldmap = (function(console, $, ctx) {
     /**
      * Init the world map passing in the DIV id
      */
-    function _initWorldMap(mapId_, mode) {
+    function _initWorldMap(mapId_, mode, extraGeoJson) {
         if (mapId_ != undefined) {
             mapId = mapId_;
         }
@@ -143,11 +150,24 @@ TDAR.worldmap = (function(console, $, ctx) {
             dragging:canPan
         });
         var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
+
         _initializeGeoData(mapdata);
         locales = _getLocaleData($parent);
+
         if (mode != 'mini') {
             _setupLegend(map, grades, _getColor, max);
         }
+        
+        if (extraGeoJson.length > 0) {
+            var gj = JSON.parse($("" + extraGeoJson).html());
+            var glayer = L.geoJson(gj, {
+                style: {fillColor:"#7a1501",strokeColor:"#7a1501",fillOpacity:1}
+            });
+            glayer.addTo(map);
+            map.fitBounds(glayer.getBounds());
+            map.zoomOut(1);
+        }
+
         _resetView();
 
         // load map data
