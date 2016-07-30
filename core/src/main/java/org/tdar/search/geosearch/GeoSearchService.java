@@ -6,6 +6,8 @@
  */
 package org.tdar.search.geosearch;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
@@ -14,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,7 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.utils.PersistableUtils;
@@ -35,6 +39,8 @@ import org.tdar.utils.PersistableUtils;
  */
 @Service
 public class GeoSearchService {
+
+    private static final String GEO_JSON_FOLDER = "geoJson";
 
     @Autowired
     GeoSearchDao geoSearchDao;
@@ -159,7 +165,7 @@ public class GeoSearchService {
         return geoSearchDao.isEnabled();
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly = false)
     public void processManagedGeographicKeywords(Resource resource, Collection<LatitudeLongitudeBox> allLatLongBoxes) {
         // needed in cases like the APIController where the collection is not properly initialized
         if (resource.getManagedGeographicKeywords() == null) {
@@ -175,11 +181,10 @@ public class GeoSearchService {
                             FindOptions.FIND_FIRST_OR_CREATE));
         }
         PersistableUtils.reconcileSet(resource.getManagedGeographicKeywords(), kwds);
-        
+
     }
-    
-    
-    @Transactional(readOnly=true)
+
+    @Transactional(readOnly = true)
     public String toGeoJson(GeographicKeyword kwd) {
         if (StringUtils.isBlank(kwd.getCode())) {
             return null;
@@ -188,8 +193,26 @@ public class GeoSearchService {
         if (kwd.getLevel() == null) {
             return null;
         }
-        return geoSearchDao.toGeoJson(kwd);
-    }
 
+        File path = new File(TdarConfiguration.getInstance().getTempDirectory(), GEO_JSON_FOLDER);
+        if (!path.exists()) {
+            path.mkdir();
+        }
+        File jsonFile = new File(path, String.format("%s.%s", kwd.getCode(), "json"));
+        try {
+            if (jsonFile.exists()) {
+                return FileUtils.readFileToString(jsonFile);
+            }
+        } catch (IOException e) {
+            logger.error("error reading jsonFile", e);
+        }
+        String json = geoSearchDao.toGeoJson(kwd);
+        try {
+            FileUtils.writeStringToFile(jsonFile, json);
+        } catch (IOException e) {
+            logger.error("error writing jsonFile", e);
+        }
+        return json;
+    }
 
 }
