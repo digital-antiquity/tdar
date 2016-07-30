@@ -158,7 +158,7 @@ TDAR.worldmap = (function(console, $, ctx) {
             _setupLegend(map, grades, _getColor, max);
         }
         
-        if (extraGeoJson.length > 0) {
+        if (extraGeoJson != undefined && extraGeoJson.length > 0) {
             var gj = JSON.parse($("" + extraGeoJson).html());
             var glayer = L.geoJson(gj, {
                 style: {fillColor:"#7a1501",strokeColor:"#7a1501",fillOpacity:1}
