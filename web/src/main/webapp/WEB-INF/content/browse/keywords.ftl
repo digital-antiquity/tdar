@@ -14,7 +14,7 @@
     <@search.rssUrlTag url=rssUrl /> -->
     <@search.headerLinks includeRss=false />
 
-    <link rel="alternate" href="/api/lod/keyword/${id?c}" type="application/ld+json" />    
+    <link rel="alternate" href="/api/lod/keyword/${id?c}?type=${keywordType}" type="application/ld+json" />    
 
 </head>
 <div id="sidebar-right" parse="true">
