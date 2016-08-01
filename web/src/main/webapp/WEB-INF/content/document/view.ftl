@@ -53,6 +53,10 @@
                 <#if showParen >(</#if>
             ${resource.totalNumberOfPages}
                 <#if showParen >)</#if>
+            <#if resource.numberOfPages?? >
+                <#if showParen >(</#if>
+            ${resource.numberOfPages}
+                <#if showParen >)</#if>
             </li>
             </#if>
 
