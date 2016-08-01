@@ -239,7 +239,7 @@ Common macros used in multiple contexts
         <#if persistable.resourceType?has_content><#t>
         ${persistable.resourceType?replace("_", " ")?upper_case} <#t>
         <#elseif persistable.type?has_content><#t>
-        COLLECTION<#t>
+        COLLECTION <#if persistable.type == "LIST">(User-generated)</#if><#t>
         <#else> <#t>
         PERSISTABLE<#t>
         </#if>

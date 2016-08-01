@@ -23,6 +23,7 @@ import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -116,7 +117,8 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies;
     private ResourceCitationFormatter resourceCitation;
 
-    private List<ResourceCollection> viewableResourceCollections;
+    private List<SharedCollection> viewableResourceCollections;
+    private List<ListCollection> viewableListCollections;
 
     private String schemaOrgJsonLD;
 
@@ -355,27 +357,51 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
-    public List<ResourceCollection> getViewableResourceCollections() {
+    public List<SharedCollection> getViewableResourceCollections() {
         if (viewableResourceCollections != null) {
             return viewableResourceCollections;
         }
 
         // if nobody logged in, just get the shared+visible collections
-        Set<ResourceCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
-        collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
+        Set<SharedCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
         // if authenticated, also add the collections that the user can modify
         if (isAuthenticated()) {
-            Set<VisibleCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
-            all.addAll(getResource().getUnmanagedResourceCollections());
-            for (VisibleCollection resourceCollection : all) {
+            Set<SharedCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
+            for (SharedCollection resourceCollection : all) {
                 if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
-                    collections.add((ResourceCollection)resourceCollection);
+                    collections.add(resourceCollection);
                 }
             }
         }
 
         viewableResourceCollections = new ArrayList<>(collections);
         return viewableResourceCollections;
+    }
+
+    
+    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
+    // shared+invisible+canEdit
+    public List<ListCollection> getViewableListResourceCollections() {
+        if (viewableListCollections != null) {
+            return viewableListCollections;
+        }
+
+        // if nobody logged in, just get the shared+visible collections
+        Set<ListCollection> collections = new HashSet<ListCollection>();
+        collections.addAll(getResource().getVisibleUnmanagedResourceCollections());
+        // if authenticated, also add the collections that the user can modify
+        if (isAuthenticated()) {
+            Set<ListCollection> all = new HashSet<>();
+            all.addAll(getResource().getUnmanagedResourceCollections());
+            for (ListCollection resourceCollection : all) {
+                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
+                    collections.add(resourceCollection);
+                }
+            }
+        }
+
+        viewableListCollections = new ArrayList<>(collections);
+        return viewableListCollections;
     }
 
     public boolean isUserAbleToReTranslate() {

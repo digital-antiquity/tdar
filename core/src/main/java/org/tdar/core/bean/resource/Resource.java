@@ -1772,10 +1772,10 @@ public class Resource implements Persistable,
         this.unmanagedResourceCollections = publicResourceCollections;
     }
 
-    public Collection<? extends ResourceCollection> getVisibleUnmanagedResourceCollections() {
-        Set<ResourceCollection> collections = new LinkedHashSet<ResourceCollection>();
-        for (ResourceCollection collection : getUnmanagedResourceCollections()) {
-            if (collection instanceof SharedCollection && !((SharedCollection) collection).isHidden()) {
+    public Collection<ListCollection> getVisibleUnmanagedResourceCollections() {
+        Set<ListCollection> collections = new LinkedHashSet<ListCollection>();
+        for (ListCollection collection : getUnmanagedResourceCollections()) {
+            if (!collection.isHidden()) {
                 collections.add(collection);
             }
         }

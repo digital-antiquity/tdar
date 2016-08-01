@@ -545,6 +545,20 @@
     <#if local_.afterFileInfo?? && local_.afterFileInfo?is_macro>
         <@local_.afterFileInfo />
     </#if>
+
+    <#list viewableListResourceCollections![]>
+    <h3>This Resource is Part of the Following User-Generated Collections</h3>
+    <p>
+    <ul class="inline">
+        <#items as collection>
+    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+        <#sep>&nbsp;&nbsp;&bull;</#sep></li>
+</#items>
+</ul>
+</p>
+<hr>
+</#list>
+
     <@view.accessRights>
     <div>
         <#if resource.embargoedFiles?? && !resource.embargoedFiles>

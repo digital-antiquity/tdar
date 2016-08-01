@@ -143,14 +143,14 @@
 
 	<!--  The following rules are designed to TRUMP the Struts URL Routing - they allow an action to be placed after the ID, but not be treated as a SLUG -->
     <rule>
-        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(edit|mapping)$
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|listcollection|archive|geospatial)/([0-9]+)/(edit|mapping)$
         </from>
         <to>/$1/$3?id=$2</to>
         <!-- was &amp;$3 aat end -->
     </rule>
 
     <outbound-rule>
-        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/(edit|mapping)\?id=([0-9]+)$
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|listcollection|archive|geospatial)/(edit|mapping)\?id=([0-9]+)$
         </from>
         <to>/$1/$3/$2</to>
     </outbound-rule>

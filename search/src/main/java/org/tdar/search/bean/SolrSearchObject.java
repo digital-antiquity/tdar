@@ -100,7 +100,7 @@ public class SolrSearchObject<I extends Indexable> {
 //                boosts.add(String.format("{!boost b=\"if(exists(query({!v='resourceType:(%s)'})),10,1)\"}", StringUtils.join(qb.getBoostType(), " ")));
 //            }
             if (qb.isDeemphasizeSupporting()) {
-                boosts.add("{!boost b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\"}");
+                boosts.add("{!boost b=\"if(exists(query({!v='resourceType:(ONTOLOGY CODING_SHEET)'})),-10,1)\"} ");
             }
             
         }
