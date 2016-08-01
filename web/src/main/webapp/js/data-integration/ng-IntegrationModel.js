@@ -158,9 +158,6 @@
             return mappedTables;
         };
 
-        // self.sharedOntologyPolicy = "relaxed";
-        self.sharedOntologyPolicy = "strict";
-
         /**
          * Append an 'integration column' to the columns list.
          * 
@@ -330,6 +327,7 @@
             // Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the dataTables
             // Calculate the new list of shared ontologies, find out if any ontologies should
             var currentSharedOntologyIds = self.ontologies.map(function(ontology) {
+                console.log('shared ontology id:{}', ontology.id);
                 return ontology.id
             });
             var newSharedOntologyIds = self.getSharedOntologyIds();
@@ -387,24 +385,15 @@
                     return c.mappedOntologyId;
                 }));
 
-            if(self.sharedOntologyPolicy === "strict") {
-                ids  = mappedOntologyIds.filter(function(ontologyId) {
-                    return self.dataTables.every(function(dataTable) {
-                        return dataTable.dataTableColumns.some(function(dtc) {
-                            return ontologyId === dtc.mappedOntologyId
-                        });
-                    });
-                });
-            } else {
                 ids = mappedOntologyIds.filter(function(ontologyId) {
                     var participatingDataTables = self.dataTables.filter(function(dataTable){
                         return dataTable.dataTableColumns.some(function(dtc){
+                            //console.log('ontologyId === dtc.mappedOntologyId: {}', ontologyId === dtc.mappedOntologyId);
                             return ontologyId === dtc.mappedOntologyId;
                         });
                     });
-                    return participatingDataTables.length > 1;
+                    return participatingDataTables.length > 0;
                 });
-            }
 
             // We now have a deduped list of all mapped ontology id's,
             // Now we remove the ids that do not appear in at least two data tables.

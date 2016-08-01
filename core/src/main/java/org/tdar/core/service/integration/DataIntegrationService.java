@@ -387,9 +387,6 @@ public class DataIntegrationService {
         for (IntegrationColumn col : context.getIntegrationColumns()) {
             if (col.isIntegrationColumn()) {
                 for (DataTableColumn c : col.getColumns()) {
-                    if (col.getColumns().size() != context.getDataTables().size()) {
-                        throw new TdarRecoverableRuntimeException("dataIntegrationService.not_all_columns_mapped");
-                    }
                     if (c == null || c.getDefaultCodingSheet() == null || c.getDefaultCodingSheet().getDefaultOntology() == null) {
                         bad.add(c.getDisplayName());
                     }
