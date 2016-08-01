@@ -14,7 +14,9 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.postgis.PGbox2d;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
 import org.slf4j.Logger;
@@ -299,6 +301,32 @@ public class GeoSearchDao {
             logger.warn("exception in getting json", e);
         }
         return null;
+    }
+
+    public LatitudeLongitudeBox extractEnvelopeForCountry(List<String> countries) {
+        String list = "";
+        for (int i=0;i< countries.size();i++) {
+            if (i != 0) {
+                list += " OR ";
+            }
+            list += String.format("cntry_name ilike '%s'", "%"+StringEscapeUtils.escapeSql(countries.get(i))+"%");
+        }
+        String sql = String.format("select st_extent(the_geom) as polygon from (select the_geom from country_wgs84 where %s ) as the_geom;", list);
+        logger.debug(sql);
+        Map<String, Object> fipsResults = findFirst(sql);
+        PGbox2d poly = (PGbox2d) fipsResults.get(POLYGON);
+        logger.trace(poly.toString());
+        Point firstPoint = poly.getLLB();
+        Point thirdPoint = poly.getURT();
+        logger.trace(firstPoint + " " + firstPoint.getX());
+        LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
+        // NOTE: ASSUMES THAT BELOW IS result of an envelope
+        latLong.setSouth(firstPoint.getY());
+        latLong.setWest(firstPoint.getX());
+        latLong.setNorth(thirdPoint.getY());
+        latLong.setEast(thirdPoint.getX());
+        logger.trace(latLong.toString());
+        return latLong;
     }
 
 }

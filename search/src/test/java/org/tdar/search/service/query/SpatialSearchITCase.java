@@ -63,8 +63,9 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         assertTrue("latlongbox is not valid", llb.isValid());
         doc.setStatus(Status.ACTIVE);
         logger.debug("creating document w/latLong: {}", llb);
-        doc.setLatitudeLongitudeBox(llb);
-        genericService.save(doc);
+        doc.getLatitudeLongitudeBoxes().add(llb);
+        genericService.saveOrUpdate(doc);
+        genericService.synchronize();
         searchIndexService.index(doc);
         return doc;
     }
@@ -278,7 +279,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
             throws InstantiationException,
             IllegalAccessException, SolrServerException, IOException, ParseException {
         Document file = createAndSaveNewInformationResource(Document.class);
-        file.setLatitudeLongitudeBox(latitudeLongitudeBoxOfItem);
+        file.getLatitudeLongitudeBoxes().add(latitudeLongitudeBoxOfItem);
         genericService.saveOrUpdate(file);
         genericService.saveOrUpdate(latitudeLongitudeBoxOfItem);
         searchIndexService.index(file);

@@ -545,7 +545,7 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     }
 
     @Transactional(readOnly=true)
-    public String createSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException {
+    public String getSchemaOrgJson(Creator<?> creator, String logoUrl) throws IOException {
         SchemaOrgCreatorTransformer transformer = new SchemaOrgCreatorTransformer();
         return transformer.convert(serializationService, creator, logoUrl);
     }

@@ -22,6 +22,8 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.ResourceNote;
+import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
@@ -93,7 +95,6 @@ public class FaimsExportService {
             }
         }
 
-        
         for (Long id : genericService.findAllIds(CodingSheet.class)) {
             try {
                 Long newId = processResource(id, projectIdMap, null, ontologyMap, skip, client, accountId);
@@ -130,7 +131,8 @@ public class FaimsExportService {
         }
     }
 
-    private Long processResource(Long id, Map<Long, Long> projectIdMap, Map<Long, Long> codingSheetMap, Map<Long, Long> ontologyMap, boolean skip, APIClient client, Long accountId) {
+    private Long processResource(Long id, Map<Long, Long> projectIdMap, Map<Long, Long> codingSheetMap, Map<Long, Long> ontologyMap, boolean skip,
+            APIClient client, Long accountId) {
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
         InformationResource resource = genericService.find(InformationResource.class, id);
@@ -141,7 +143,41 @@ public class FaimsExportService {
         logger.debug("{} -- {} ({})", id, resource.getTitle(), (resource instanceof CodingSheet));
 
         addFaimsId(resource);
-        if (resource.getActiveInformationResourceFiles().size() > 100) {
+
+        // only pull images from the two projects that have galleries in them.
+        if (resource.getActiveInformationResourceFiles().size() > 5 && (resource.getProjectId() == 7292 || resource.getProjectId() == 7293)) {
+            // break groups of images into single images
+            resource.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, resource.getTitle()));
+            List<InformationResourceFile> irfs = new ArrayList<>(resource.getActiveInformationResourceFiles());
+            for (InformationResourceFile file : irfs) {
+                resource.getActiveInformationResourceFiles().clear();
+                try {
+                    resource.getInformationResourceFiles().add(file);
+                    File retrieveFile = null;
+                    InformationResourceFileVersion version = file.getLatestUploadedVersion();
+                    try {
+                        retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+                    } catch (FileNotFoundException e) {
+                        logger.error("cannot find file: {}", e, e);
+                    }
+                    resource.setTitle(retrieveFile.getName());
+                    // logger.debug(" --> {}", files);
+                    String output = export(resource, projectIdMap.get(resource.getProjectId()));
+
+                    ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, retrieveFile);
+                    if (uploadRecord != null) {
+                        projectIdMap.put(id, uploadRecord.getTdarId());
+                        if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+                                && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+                            logger.warn(uploadRecord.getBody());
+                        }
+                        logger.debug("status: {}", uploadRecord.getStatusLine());
+                        return uploadRecord.getTdarId();
+                    }
+                } catch (IOException e) {
+                    logger.error("error uploading", e);
+                }
+            }
             return null;
         }
         for (InformationResourceFile file : resource.getActiveInformationResourceFiles()) {
@@ -175,7 +211,7 @@ public class FaimsExportService {
                 if (file.getCurrentVersion(VersionType.UPLOADED_TEXT) != null) {
                     version = file.getCurrentVersion(VersionType.UPLOADED_TEXT);
                     if (resource instanceof CodingSheet) {
-                        CodingSheet cs = (CodingSheet)resource;
+                        CodingSheet cs = (CodingSheet) resource;
                         Ontology defaultOntology = cs.getDefaultOntology();
                         if (defaultOntology != null) {
                             Ontology ont_ = new Ontology();
@@ -268,7 +304,8 @@ public class FaimsExportService {
     }
 
     private void addFaimsId(Resource resource) {
-        resource.getResourceAnnotations().add(new ResourceAnnotation(new ResourceAnnotationKey("FAIMS ID"), "repo.fedarch.org/" + resource.getUrlNamespace() + "/" + resource.getId()));
+        resource.getResourceAnnotations()
+                .add(new ResourceAnnotation(new ResourceAnnotationKey("FAIMS ID"), "repo.fedarch.org/" + resource.getUrlNamespace() + "/" + resource.getId()));
     }
 
     private String export(Resource resource, Long projectId) {
@@ -292,7 +329,7 @@ public class FaimsExportService {
             CodingSheet codingSheet = (CodingSheet) resource;
             codingSheet.setCodingRules(null);
             codingSheet.setAssociatedDataTableColumns(null);
-//            codingSheet.setDefaultOntology(null);
+            // codingSheet.setDefaultOntology(null);
         }
 
         if (resource instanceof Ontology) {
