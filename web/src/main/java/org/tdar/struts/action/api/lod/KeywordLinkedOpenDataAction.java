@@ -34,7 +34,11 @@ public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implement
     
     @Override
     public void prepare() throws Exception {
-        Keyword resource = genericService.find(type.getKeywordClass(), id); 
+        if (type == null) {
+            addActionError("error.object_does_not_exist");
+        }
+        Keyword resource = genericService.find(type.getKeywordClass(), id);
+        
         String message = keywordService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
