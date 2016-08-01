@@ -215,4 +215,8 @@ public class GeoSearchService {
         return json;
     }
 
+    public LatitudeLongitudeBox extractEnvelopeForCountries(List<String> countries) {
+        return geoSearchDao.extractEnvelopeForCountry(countries);
+    }
+
 }
