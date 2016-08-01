@@ -42,7 +42,7 @@
             <li>
                 <strong>Pages</strong><br>
                 <#assign showParen = false/>
-                <#if resource.documentType.partOfLargerDocument>
+                <#if resource.documentType.partOfLargerDocument || resource.documentType == 'CONFERENCE_PRESENTATION'>
                     <#if resource.startPage?has_content && resource.endPage?has_content>
                     ${resource.startPage} - ${resource.endPage}
                     </#if>
