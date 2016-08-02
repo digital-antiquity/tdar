@@ -43,12 +43,11 @@
             <li>
                 <strong>Pages</strong><br>
                 <#assign showParen = false/>
-                <#if resource.documentType.partOfLargerDocument || resource.documentType == 'CONFERENCE_PRESENTATION'>
-                    <#if resource.startPage?has_content && resource.endPage?has_content>
+                <#if resource.startPage?has_content && resource.endPage?has_content>
                     ${resource.startPage} - ${resource.endPage}
-                    </#if>
+                </#if>
                     <#assign showParen = true/>
-	            <#elseif resource.numberOfPages?has_content >
+	            <#if resource.numberOfPages?has_content >
 		            ${resource.numberOfPages}
 				<#elseif  resource.totalNumberOfPages?has_content >
 		            ${resource.totalNumberOfPages}
