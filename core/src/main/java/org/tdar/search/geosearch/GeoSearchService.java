@@ -60,6 +60,8 @@ public class GeoSearchService {
 
     private static final String COL_CODE = "tdar_code";
 
+    private static final String COL_ADMIN_NAME = "admin_name";
+
     /*
      * extracts all geographic keywords from a lat-long-box, if however, the area of the box is deemed too large, it will not add county information. This is
      * beacuse you don't want to show county info if you're provided with an entire country
@@ -127,7 +129,7 @@ public class GeoSearchService {
      */
     public Set<GeographicKeyword> extractAdminInfo(LatitudeLongitudeBox latLong) {
         List<Map<String, Object>> findAllAdminMatching = geoSearchDao.findAllAdminMatching(latLong);
-        return extractCols(findAllAdminMatching, COL_COUNTRY_LONG_NAME, Level.STATE);
+        return extractCols(findAllAdminMatching, COL_ADMIN_NAME, Level.STATE);
     }
 
     /*

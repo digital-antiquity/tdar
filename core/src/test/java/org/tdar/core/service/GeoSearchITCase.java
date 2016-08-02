@@ -99,69 +99,6 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback(true)
-    @Ignore("FIXME: indexing")
-    // FIXME: This test tests too many pointless things, but it's the only thing that covers processManagedKeywords. Remove this
-    // once we have a proper test for processManagedKeywords.
-    public void testPersistedManagedKeyword() {
-        Project project = genericService.find(Project.class, 3738L);
-        Set<LatitudeLongitudeBox> latitudeLongitudeBoxes = project.getLatitudeLongitudeBoxes();
-        project.getManagedGeographicKeywords().clear();
-        genericService.save(project);
-        assertNotNull(latitudeLongitudeBoxes);
-        assertEquals("managed keywords (expected 0)", 0, project.getManagedGeographicKeywords().size());
-        resourceService.processManagedKeywords(project, latitudeLongitudeBoxes);
-        LatitudeLongitudeBox latLong = latitudeLongitudeBoxes.iterator().next();
-        assertNotNull(latLong);
-        Set<GeographicKeyword> extractedGeoInfo = project.getManagedGeographicKeywords();
-        if (!geoSearchService.isEnabled()) {
-            assertTrue(0 == extractedGeoInfo.size());
-            return;
-        }
-        assertFalse(0 == extractedGeoInfo.size());
-        int fnd = 0;
-        logger.info("{}", extractedGeoInfo);
-        for (GeographicKeyword kwd : extractedGeoInfo) {
-            assertFalse(kwd.getLabel().contains("Asia"));
-
-            if (kwd.getLabel().contains("Virginia") || kwd.getLabel().contains("Alexandria")) {
-                fnd++;
-            }
-        }
-        assertEquals("expected 3 (1 for US, Virginia, Alexandria) " + fnd, 2, fnd);
-        genericService.saveOrUpdate(project);
-        project = null;
-
-//        Project project2 = genericService.find(Project.class, 3738L);
-//        logger.info("{}", project2.getManagedGeographicKeywords());
-//        assertEquals("managed keywords (expected " + extractedGeoInfo.size() + ")", extractedGeoInfo.size(), project2.getManagedGeographicKeywords().size());
-//        searchIndexService.flushToIndexes();
-//        QueryBuilder q = new ResourceQueryBuilder();
-//
-//        FieldQueryPart<ResourceType> qp = new FieldQueryPart<ResourceType>("resourceType", ResourceType.PROJECT);
-//        q.append(qp);
-//
-//        GeneralSearchResourceQueryPart ft = new GeneralSearchResourceQueryPart("Virginia");
-//        q.append(ft);
-//
-//        FullTextQuery ftq = searchService.search(q);
-//        int totalRecords = ftq.getResultSize();
-//        ftq.setFirstResult(0);
-//        ftq.setMaxResults(100);
-//        List<Project> projects = ftq.list();
-//        logger.info("found: " + totalRecords);
-//        boolean found = false;
-//        for (Project p : projects) {
-//            logger.info("{}", p);
-//            if (p.getId().equals(project2.getId())) {
-//                found = true;
-//            }
-//        }
-//        assertTrue("managed geo keywords found in index", found);
-
-    }
-
-    @Test
     @Rollback
     public void testFipsSearch() {
         String fips = "02090";
@@ -279,6 +216,24 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
             for (GeographicKeyword kwd : adminInfo) {
                 logger.debug("{}", kwd);
                 if (kwd.getLabel().contains("California")) {
+                    found = true;
+                }
+            }
+            assertTrue("country search found item not in California", found);
+        }
+    }
+
+    
+    @Test
+    @Rollback
+    public void testCountySearch() {
+        if (geoSearchService.isEnabled()) {
+            LatitudeLongitudeBox latLongBox = constructLatLongBox();
+            Set<GeographicKeyword> adminInfo = geoSearchService.extractCountyInfo(latLongBox);
+            boolean found = false;
+            for (GeographicKeyword kwd : adminInfo) {
+                logger.debug("{}", kwd);
+                if (kwd.getLabel().contains("Alameda")) {
                     found = true;
                 }
             }
