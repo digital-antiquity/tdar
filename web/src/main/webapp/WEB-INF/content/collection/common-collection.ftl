@@ -12,6 +12,7 @@
     <@view.canonical resourceCollection />
     <#assign rssUrl = "/api/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl />
+    <link rel="alternate" href="/api/lod/collection/${id?c}" type="application/ld+json" />    
 
 </#macro>
 

@@ -1353,3 +1353,10 @@ hr.light {
     height: 1px;
     background-color: #eee;
 }
+
+.keywordHighlight {
+    color: #7a1501;
+    fill:  #7a1501;
+    stroke:#7a1501;
+    fill-opacity:1 !important;	
+}
