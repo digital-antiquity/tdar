@@ -161,13 +161,13 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (extraGeoJson != undefined && extraGeoJson.length > 0) {
             var gj = JSON.parse($("" + extraGeoJson).html());
             var glayer = L.geoJson(gj, {
-                style: {fillColor:"#7a1501",strokeColor:"#7a1501",stroke:"#7a1501",fillOpacity:1}
+                style: {"className": "keywordHighlight"}
             });
             glayer.addTo(map);
-            glayer.bringToFront();
             glayer.setZIndex(1000);
             map.fitBounds(glayer.getBounds());
             map.zoomOut(1);
+            glayer.bringToFront();
         }
 
         _resetView();
