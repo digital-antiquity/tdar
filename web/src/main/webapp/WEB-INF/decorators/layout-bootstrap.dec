@@ -100,6 +100,9 @@ ${head}
       <#if authenticatedUser?has_content>data-currentTime="1" </#if>
       <#if ngApplicationName?has_content>ng-cloak</#if>
     >
+    <#if hostName?contains("alpha") >
+    <div class="ribbon-green">ALPHA</div>
+    </#if>
     <@header.outdatedBrowserWarning />
 
     <div class="container">
