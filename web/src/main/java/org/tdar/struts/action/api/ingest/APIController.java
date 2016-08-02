@@ -187,7 +187,11 @@ public class APIController extends AbstractAuthenticatableAction {
             }
             stackTraces.add(ExceptionUtils.getFullStackTrace(cause));
             if (cause.getLocalizedMessage() != null) {
-            	errors.add(cause.getLocalizedMessage());
+                try {
+                    errors.add(cause.getLocalizedMessage());
+                } catch (Exception ex) {
+                    errors.add(cause.getMessage());
+                }
             }
 
             if (e instanceof APIException) {

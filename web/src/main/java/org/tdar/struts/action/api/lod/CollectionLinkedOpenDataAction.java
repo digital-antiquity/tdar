@@ -16,7 +16,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
-@Namespace("/api/lod/resource")
+@Namespace("/api/lod/collection")
 @Component
 @Scope("prototype")
 @ParentPackage("default")

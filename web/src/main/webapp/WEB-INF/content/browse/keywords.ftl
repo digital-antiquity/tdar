@@ -8,14 +8,25 @@
 <head>
     
 <title>${keyword.label}</title>
+
     <@view.canonical keyword />
 <#--    <#assign rssUrl = "/api/search/rss?groups[0].fieldTypes[0]=COLLECTION&groups[0].collections[0].id=${resourceCollection.id?c}&groups[0].collections[0].name=${(resourceCollection.name!'untitled')?url}">
     <@search.rssUrlTag url=rssUrl /> -->
     <@search.headerLinks includeRss=false />
 
+    <link rel="alternate" href="/api/lod/keyword/${id?c}?type=${keywordType}" type="application/ld+json" />    
+
 </head>
 <div id="sidebar-right" parse="true">
     <div class="sidebar-spacer">
+       <#if geoJson?has_content>
+           <@common.renderWorldMap mode="mini" extra="#localGeoJson">
+        <script type="application/json" data-mapdata>
+            <#noescape>{"geographic.ISO,resourceType":[]}</#noescape>
+        </script>
+           </@common.renderWorldMap>
+      </#if>
+
         <#list keyword.assertions>
         <h4>External Relationships</h4>
         <ul>
@@ -56,6 +67,12 @@
     </#if>
 
         <@search.basicPagination "Results"/>
+
+<#if geoJson?has_content><#noescape>
+<script id="localGeoJson"  type="application/json">
+${geoJson}
+</script>
+</#noescape></#if>
 
 <script type='text/javascript'>
     $(document).ready(function () {
