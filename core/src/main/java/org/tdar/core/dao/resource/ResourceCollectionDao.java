@@ -394,4 +394,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         query.setParameter("resourceId", id);
         return query.list();
     }
+
+    public List<Long> getAllChildResources(ResourceCollection collection) {
+        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.COLLECTION_CONTENTS_SQL);
+        query.setParameter("collectionId", collection.getId());
+        return query.list();
+    }
 }
