@@ -1,6 +1,8 @@
 package org.tdar.struts.action.api.lod;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -31,13 +33,21 @@ public class KeywordLinkedOpenDataAction extends AbstractJsonApiAction implement
     private GenericService genericService;
     @Autowired
     private GenericKeywordService keywordService;
-    
+    private Map<String,String> error = new HashMap<>();
     @Override
     public void prepare() throws Exception {
+        error.put("status", getText("error.object_does_not_exist"));
         if (type == null) {
             addActionError("error.object_does_not_exist");
+            setJsonObject(error);
+            return;
         }
         Keyword resource = genericService.find(type.getKeywordClass(), id);
+        if (resource == null) {
+            addActionError("error.object_does_not_exist");
+            setJsonObject(error);
+            return;
+        }
         
         String message = keywordService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));

@@ -5,11 +5,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
 import java.util.Set;
 
 import javax.sql.DataSource;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -19,7 +19,6 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword.Level;
-import org.tdar.core.bean.resource.Project;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.geosearch.GeoSearchDao;
 import org.tdar.search.geosearch.GeoSearchService;
@@ -252,7 +251,7 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    @Ignore
+//    @Ignore
     /* THIS TEST IS NOT VALID BECAUSE OF THE VALIDATION RULES ON LATLONGBOX, but it is, nonetheless, a good test to document */
     public void testMicronesia() {
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox(-171.142, -14.602, 146.154, 20.617);
@@ -266,5 +265,13 @@ public class GeoSearchITCase extends AbstractIntegrationTestCase {
             }
         }
         assertEquals("Should not find africa for search for Micronesia", 0, found);
+    }
+    
+    @Test
+    @Rollback
+    public void testGeoReverseExtract() {
+        LatitudeLongitudeBox extractEnvelopeForCountries = geoSearchService.extractEnvelopeForCountries(Arrays.asList("England","Scotland","Wales","Northern Ireland"));
+        logger.debug("{}", extractEnvelopeForCountries);
+        assertNotNull(extractEnvelopeForCountries);
     }
 }
