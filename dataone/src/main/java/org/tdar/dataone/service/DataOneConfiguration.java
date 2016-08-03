@@ -87,4 +87,8 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     public String getBaseSecureUrl() {
         return assistant.getStringProperty("base.url", TdarConfiguration.getInstance().getBaseSecureUrl());
     }
+
+    public boolean isLimited() {
+        return assistant.getBooleanProperty("dataone.limited", false);
+    }
 }
