@@ -29,9 +29,10 @@
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
 <i class="icon-document-red"></i>
         </#if>
-        <h3>Child Collections</h3>
-        <@common.listCollections collections=collections showOnlyVisible=true />
-
+        <#if collections?has_content && !collections.empty > 
+            <h3>Child Collections</h3>
+            <@common.listCollections collections=collections showOnlyVisible=true />
+        </#if>
 		<@list.displayWidget />
     </div>
 </#macro>
