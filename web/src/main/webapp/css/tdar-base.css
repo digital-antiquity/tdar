@@ -1365,15 +1365,6 @@ hr.light {
 
 
 
-.ribbon-wrapper-green {
-  width: 85px;
-  height: 88px;
-  overflow: hidden;
-  position: absolute;
-  top: -4px;
-  left: -4px;
-}
-
 .ribbon-green {
   z-index:1000;
   font: bold 15px Sans-Serif;
@@ -1384,7 +1375,7 @@ hr.light {
   -moz-transform:    rotate(-45deg);
   -ms-transform:     rotate(-45deg);
   -o-transform:      rotate(-45deg);
-  position: absolute;
+  position: fixed;
   padding: 7px 0;
   left: -34px;
   top: 11px;
