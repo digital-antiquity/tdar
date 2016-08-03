@@ -88,10 +88,12 @@
             <div class="span12 subnav">
                 <ul class="subnav-lft">
                     <li><a href="<@s.url value="/search"/>"><@s.text name="menu.search"/></a></li>
-                    <li><a href="<@s.url value="/search/results"/>"><@s.text name="menu.browse"/></a></li>
                     <li><a href="<@s.url value="/browse/explore"/>"><@s.text name="menu.explore"/></a></li>
                     <#if sessionData?? && sessionData.authenticated>
                         <li><a href="<@s.url value="/dashboard"/>"><@s.text name="menu.dashboard"/></a></li>
+                        <li><a href="<@s.url value="/organize"/>"><@s.text name="menu.organize"/></a></li>
+                        <li><a href="<@s.url value="/manage"/>"><@s.text name="menu.manage"/></a></li>
+                        <li><a href="<@s.url value="/billing"/>"><@s.text name="menu.billing"/></a></li>
                         <li><a href="<@s.url value="/workspace/list"/>"><@s.text name="menu.integrate"/></a></li>
                         <#if editor>
                             <li><a href="<@s.url value="/admin"/>"><@s.text name="menu.admin"/></a></li>

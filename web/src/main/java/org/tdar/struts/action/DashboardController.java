@@ -12,6 +12,7 @@ import java.util.TreeSet;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -20,7 +21,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
@@ -70,8 +70,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     private List<Resource> filteredFullUserProjects;
     private List<Resource> fullUserProjects;
     private List<SharedCollection> allResourceCollections = new ArrayList<>();
-    private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
-    private Set<BillingAccount> accounts = new HashSet<BillingAccount>();
     private Set<BillingAccount> overdrawnAccounts = new HashSet<BillingAccount>();
     private List<InformationResource> resourcesWithErrors;
 
@@ -146,16 +144,13 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         setResourcesWithErrors(informationResourceFileService.findInformationResourcesWithFileStatus(
                 getAuthenticatedUser(), Arrays.asList(Status.ACTIVE, Status.DRAFT),
                 Arrays.asList(FileStatus.PROCESSING_ERROR, FileStatus.PROCESSING_WARNING)));
-        getAccounts().addAll(accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE,
-                Status.FLAGGED_ACCOUNT_BALANCE));
-        for (BillingAccount account : getAccounts()) {
+        for (BillingAccount account : accountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE, Status.FLAGGED_ACCOUNT_BALANCE)) {
             if (account.getStatus() == Status.FLAGGED_ACCOUNT_BALANCE) {
                 overdrawnAccounts.add(account);
             }
         }
 
         prepareProjectStuff();
-        setupBookmarks();
         initCounts();
 
         return SUCCESS;
@@ -167,27 +162,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
                 SharedCollection.class)) {
             getAllResourceCollections().add((SharedCollection) rc);
         }
-        getLogger().trace("accessible collections");
-        for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof SharedCollection) {
-                getSharedResourceCollections().add((SharedCollection) rc);
-            }
-        }
-        List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
-        collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
-        getLogger().trace("reconcile tree1");
-        resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
-        getLogger().trace("reconcile tree2");
-        resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
-
-        getLogger().trace("removing duplicates");
-        getSharedResourceCollections().removeAll(getAllResourceCollections());
-        getLogger().trace("sorting");
-        Collections.sort(allResourceCollections);
-        Collections.sort(sharedResourceCollections);
-        getLogger().trace("done sort");
     }
 
     /**
@@ -256,16 +230,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
         this.bookmarkedResources = bookmarks;
     }
 
-    private void setupBookmarks() {
-        if (bookmarkedResources == null) {
-            bookmarkedResources = bookmarkedResourceService.findBookmarkedResourcesByPerson(getAuthenticatedUser(),
-                    Arrays.asList(Status.ACTIVE, Status.DRAFT));
-        }
-
-        for (Resource res : bookmarkedResources) {
-            authorizationService.applyTransientViewableFlag(res, getAuthenticatedUser());
-        }
-    }
 
     public List<Project> getAllSubmittedProjects() {
         return allSubmittedProjects;
@@ -339,30 +303,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
     public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
-    }
-
-    /**
-     * @return the sharedResourceCollections
-     */
-    @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getSharedResourceCollections() {
-        return sharedResourceCollections;
-    }
-
-    /**
-     * @param sharedResourceCollections
-     *            the sharedResourceCollections to set
-     */
-    public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
-        this.sharedResourceCollections = sharedResourceCollections;
-    }
-
-    public Set<BillingAccount> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(Set<BillingAccount> accounts) {
-        this.accounts = accounts;
     }
 
     public Set<BillingAccount> getOverdrawnAccounts() {

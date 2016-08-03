@@ -78,7 +78,6 @@
 
         </div>
         </#if>
-        <@collectionsSection />
     </div>
 </div>
 
@@ -119,10 +118,8 @@
     </#if>
     </#if>
 <hr/>
-    <@accountSection />
+    <#-- <@accountSection /> -->
 <hr/>
-
-    <@bookmarksSection />
 
 
 <#macro searchSection>
@@ -251,23 +248,6 @@
         </#if>
     </#macro>
 
-    <#macro collectionsSection>
-
-    <div class="" id="collection-section">
-        <h2>Collections</h2>
-        <@common.listCollections collections=allResourceCollections>
-            <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
-        </@common.listCollections>
-    </div>
-    <br>
-        <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
-        <div class="">
-            <h2>Collections Shared With You</h2>
-            <@common.listCollections collections=sharedResourceCollections />
-        </div>
-        </#if>
-
-    </#macro>
 
     <#macro accountSection>
     <div id="accountSection" class="row">
@@ -281,26 +261,9 @@
             <a href="<@s.url value='/export/request'/>">Export</a>
         </div>
 
-        <div class="span5" id="billing">
-            <@common.billingAccountList accounts />
-        </div>
     </div>
     </#macro>
 
-
-    <#macro bookmarksSection>
-    <div class="row">
-        <div class="span9" id="bookmarks">
-            <#if ( bookmarkedResources?size > 0)>
-            <h2 >Bookmarks</h2>
-                <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' listTag='ol' headerTag="h3" />
-            <#else>
-            <h3>Bookmarked resources appear in this section</h3>
-            Bookmarks are a quick and useful way to access resources from your dashboard. To bookmark a resource, click on the star <i class="icon-star"></i> icon next to any resource's title.
-            </#if>
-        </div>
-    </div>
-    </#macro>
 
 <script>
     $(document).ready(function () {
