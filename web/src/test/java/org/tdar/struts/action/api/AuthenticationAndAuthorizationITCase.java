@@ -1,4 +1,4 @@
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasItem;
@@ -24,6 +24,8 @@ import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractIntegrationControllerTestCase;
+import org.tdar.struts.action.UserAgreementController;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.utils.PersistableUtils;
 
