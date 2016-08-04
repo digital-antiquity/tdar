@@ -197,7 +197,7 @@
                                                                 <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
+                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns track by $index">
                                                             <div class="text-center">
                                                                 <i class="icon-ok" id="cbx-{{::dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
