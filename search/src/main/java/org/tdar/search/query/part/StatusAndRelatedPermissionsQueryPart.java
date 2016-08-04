@@ -13,6 +13,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
+import org.tdar.search.service.CoreNames;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -39,7 +40,9 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
             if (!ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), getTdarGroup())) {
                 permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, person.getId()));
                 permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
-                draftSubgroup.append(permissionsSubgroup);
+//                CrossCoreFieldJoinQueryPart permissions = new CrossCoreFieldJoinQueryPart(QueryFieldNames.RESOURCE_IDS, QueryFieldNames._ID, permissionsSubgroup, CoreNames.COLLECTIONS);
+                CrossCoreFieldJoinQueryPart permissions = new CrossCoreFieldJoinQueryPart(QueryFieldNames.RESOURCE_IDS, QueryFieldNames.ID, permissionsSubgroup, CoreNames.COLLECTIONS);
+                draftSubgroup.append(permissions);
             }
         }
 
