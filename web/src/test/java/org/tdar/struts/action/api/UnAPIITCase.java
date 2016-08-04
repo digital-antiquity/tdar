@@ -4,11 +4,14 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
+import org.tdar.struts.action.AbstractControllerITCase;
+import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts.action.UnapiController;
 
 /**
  * @author Adam Brin

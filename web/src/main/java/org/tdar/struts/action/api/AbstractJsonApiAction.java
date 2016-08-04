@@ -11,11 +11,13 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.TdarActionSupport;
 
+import com.opensymphony.xwork2.Preparable;
+
 @Results(value = {
         @Result(name = TdarActionSupport.SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream" }),
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.JSONRESULT, params = { "stream", "jsonInputStream", "statusCode", "500" })
 })
-public class AbstractJsonApiAction extends AbstractAuthenticatableAction {
+public abstract class AbstractJsonApiAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = -1603470633052691056L;
     private InputStream jsonInputStream;
@@ -57,4 +59,5 @@ public class AbstractJsonApiAction extends AbstractAuthenticatableAction {
         setJsonObject(obj, null);
     }
 
+    public void prepare() throws Exception {};
 }

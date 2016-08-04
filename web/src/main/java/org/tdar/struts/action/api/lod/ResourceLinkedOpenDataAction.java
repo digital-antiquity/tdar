@@ -1,6 +1,8 @@
 package org.tdar.struts.action.api.lod;
 
 import java.io.ByteArrayInputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -29,10 +31,18 @@ public class ResourceLinkedOpenDataAction extends AbstractJsonApiAction implemen
     private GenericService genericService;
     @Autowired
     private ResourceService resourceService;
+    private Map<String,String> error = new HashMap<>();
+
     
     @Override
     public void prepare() throws Exception {
+        error.put("status", getText("error.object_does_not_exist"));
         Resource resource = genericService.find(Resource.class, id); 
+        if (resource == null) {
+            addActionError("error.object_does_not_exist");
+            setJsonObject(error);
+            return;
+        }
         String message = resourceService.getSchemaOrgJsonLD(resource);
         setJsonInputStream(new ByteArrayInputStream(message.getBytes()));
     }
