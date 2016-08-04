@@ -38,25 +38,20 @@
         </#if>
 
         <#if resource.documentType?has_content>
-            <#if (resource.startPage?has_content) || (resource.endPage?has_content) || (resource.totalNumberOfPages?has_content)>
+            <#if (resource.startPage?has_content) || (resource.endPage?has_content)
+             || (resource.totalNumberOfPages?has_content) || (resource.numberOfPages?has_content)>
             <li>
                 <strong>Pages</strong><br>
                 <#assign showParen = false/>
-                <#if resource.documentType.partOfLargerDocument || resource.documentType == 'CONFERENCE_PRESENTATION'>
-                    <#if resource.startPage?has_content && resource.endPage?has_content>
+                <#if resource.startPage?has_content && resource.endPage?has_content>
                     ${resource.startPage} - ${resource.endPage}
-                    </#if>
-                    <#assign showParen = true/>
                 </#if>
-            </#if>
-            <#if resource.totalNumberOfPages?? >
-                <#if showParen >(</#if>
-            ${resource.totalNumberOfPages}
-                <#if showParen >)</#if>
-            <#if resource.numberOfPages?? >
-                <#if showParen >(</#if>
-            ${resource.numberOfPages}
-                <#if showParen >)</#if>
+                    <#assign showParen = true/>
+	            <#if resource.numberOfPages?has_content >
+		            ${resource.numberOfPages}
+				<#elseif  resource.totalNumberOfPages?has_content >
+		            ${resource.totalNumberOfPages}
+                </#if>
             </li>
             </#if>
 

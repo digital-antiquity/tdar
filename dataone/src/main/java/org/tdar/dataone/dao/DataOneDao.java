@@ -22,6 +22,7 @@ import org.tdar.core.dao.GenericDao;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
+import org.tdar.dataone.service.DataOneConfiguration;
 
 @Component
 public class DataOneDao {
@@ -52,7 +53,11 @@ public class DataOneDao {
         List<ListObjectEntry> toReturn = new ArrayList<>();
         for (Object wrap : query.list()) {
             Object[] obj = (Object[])wrap;
-            toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], ((BigInteger)obj[2]).longValue(), (Date)obj[3],null,null,null,null));
+            long longValue = ((BigInteger)obj[2]).longValue();
+            if (DataOneConfiguration.getInstance().isLimited() && longValue > 2000) {
+                continue;
+            }
+            toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], longValue, (Date)obj[3],null,null,null,null));
         }
         return toReturn;
     }

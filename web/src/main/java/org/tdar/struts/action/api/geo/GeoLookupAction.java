@@ -1,7 +1,9 @@
 package org.tdar.struts.action.api.geo;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -31,7 +33,7 @@ public class GeoLookupAction extends AbstractJsonApiAction implements Preparable
     @Autowired
     private GeoSearchService geoSearchService;
     private List<String> countries = new ArrayList<String>();
-
+    private Map<String,Object> err = new HashMap<>();
     public List<String> getCountries() {
         return countries;
     }
@@ -42,9 +44,16 @@ public class GeoLookupAction extends AbstractJsonApiAction implements Preparable
 
     @Override
     public void prepare() throws Exception {
-        if (!CollectionUtils.isEmpty(countries)) {
+        err.put("status", "no countries");
+        if (CollectionUtils.isEmpty(countries)) {
+            setJsonObject(err);
+            return;
         }
         LatitudeLongitudeBox box = geoSearchService.extractEnvelopeForCountries(countries);
+        if (box.getEast() == null || box.getNorth() == null) {
+            setJsonObject(err);
+            return;
+        }
         setJsonObject(box);
     }
 
