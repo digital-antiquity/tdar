@@ -216,6 +216,10 @@
             return col.columnEncodingType === 'COUNT';
         };
 
+        /**
+         * Return a compatible columns for an ontology, grouped by Dataset. The exact structure is a list of objects that contain 
+         * a 'dataTable' property and a 'compatCols' property  
+         */
         $scope.lookupCompatibleColumns = function(id) {
             return self.integration.mappedDataTables[id];
             // FIXME: angular doesn't like my getter functions - apparently they cause endless loop of detected changes (or something?)

@@ -60,12 +60,13 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome_without_security', '--remote-debugging-port=9222'],
+    // browsers: ['Chrome_without_security', '--remote-debugging-port=9222'],
+    browsers: ['PhantomJS'],
 
   customLaunchers: {
         Chrome_without_security: {
           base: 'Chrome',
-          flags: ['--disable-web-security']
+          flags: ['--disable-web-security', '--remote-debugging-port=9222']
         }
       },
 

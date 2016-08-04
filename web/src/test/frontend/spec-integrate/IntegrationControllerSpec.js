@@ -4,6 +4,7 @@ describe('IntegrationController', function() {
     "use strict";
 
     var $controller, $httpBackend, dataService;
+    var integrationModel;
 
 
     // this request just spits out the details of the request
@@ -19,10 +20,11 @@ describe('IntegrationController', function() {
     }
 
     beforeEach(module('integrationApp'));
-    beforeEach(inject(function(_$controller_, _$httpBackend_, _DataService_){
+    beforeEach(inject(function(_$controller_, _$httpBackend_, _DataService_, _IntegrationService_){
         $controller = _$controller_;
         $httpBackend = _$httpBackend_;
         dataService = _DataService_;
+        integrationModel = _IntegrationService_;
         var _responseData = {
             tableDetails: {
                 '1': {
@@ -102,7 +104,7 @@ describe('IntegrationController', function() {
                         id: '2',
                         dataTableColumns:[
                             {
-                                "name": "t1c1",
+                                "name": "t2c1",
                                 "displayName": "column one",
                                 "columnEncodingType": "CODED_VALUE",
                                 "mappedOntologyId": 1,
@@ -236,17 +238,36 @@ describe('IntegrationController', function() {
             //fixme: possible bug: after adding tables, then adding integration column, shouldn't ontology-details have been called by now?
             //fixme: could be that we need to simulate the "add datasets" modal close callback?
             expect(dataService.getCachedOntologies(['1'])).toBeDefined();
-            var o1 = dataService.getCachedOntologies(['1']);
+            var o1 = dataService.getCachedOntologies(['1'])[0];
             ctrl.addIntegrationColumnsMenuItemClicked(o1);
-            $httpBackend.flush();
-
 
             // check to make sure that lookupCompatibleColumns(o1.id) has two columns in it (dataset 1, dataset 2)
+            var compatColsByTable = $scope.lookupCompatibleColumns(o1.id);
+            expect(compatColsByTable.length).toBe(2);
+            expect(compatColsByTable[0].dataTable.displayName).toBe('table one');
+            expect(compatColsByTable[1].dataTable.displayName).toBe('table two');
+
+            //each data table should have one column compatible with the 'o1' ontology
+            var compatCols = compatColsByTable[0].compatCols;
+            expect(compatCols.length).toBe(1);
+            expect(compatCols[0].name).toBe('t1c1')
+            
+            compatCols = compatColsByTable[1].compatCols;
+            expect(compatCols.length).toBe(1);
+            expect(compatCols[0].name).toBe('t2c1')
 
 
-            // add integration column for o2
+            // add integration column for o2. This should only have one participating column (aka compatible columns)
+            var o2 = dataService.getCachedOntologies(['2'])[0];
+            ctrl.addIntegrationColumnsMenuItemClicked(o2);
+            var compatColsByTable = $scope.lookupCompatibleColumns(o2.id);
+            // number of tables will still be two, even though one of the tables has no compatible columns
+            expect(compatColsByTable.length).toBe(2); 
+            expect(compatColsByTable[0].dataTable.displayName).toBe('table one');
+            expect(compatColsByTable[1].dataTable.displayName).toBe('table two');
 
-            // check to make sure that lookupCompatibleColumns(02.id) has *one* column in it (dataset1);
+            expect(compatColsByTable[0].compatCols.length).toBe(1);
+            expect(compatColsByTable[1].compatCols.length).toBe(0);
 
         });
 
