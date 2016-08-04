@@ -1,4 +1,4 @@
-package org.tdar.search.query.part;
+package org.tdar.search;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,7 +18,6 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.search.AbstractResourceSearchITCase;
 import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.SearchResult;
