@@ -221,14 +221,19 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
         builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
-            logger.trace("table:" + table + " column: " + integrationColumn);
+            boolean isIntColumn = integrationColumn.isIntegrationColumn();
             DataTableColumn column = integrationColumn.getColumnForTable(table);
+            logger.trace("table: {} column: {} type: {} ", table , column, isIntColumn);
             if (column == null) {
                 builder.getColumns().add(null);
+                if (isIntColumn) {
+                    builder.getColumns().add(null);
+                }
             } else {
                 builder.getColumns().add(column.getName());
-                // pull the column name thrice if an integration column so we have mapped and unmapped values, and sort
-                if (integrationColumn.isIntegrationColumn()) {
+                // pull the column name twice if an integration column so we have mapped and unmapped values, and sort
+                if (isIntColumn) {
+                    logger.debug("Is integration column");
                     builder.getColumns().add(column.getName());
 
                     WhereCondition cond = new WhereCondition(column.getName());

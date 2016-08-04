@@ -197,6 +197,9 @@ public class IntegrationColumn implements Serializable, Sequenceable<Integration
     public OntologyNode getMappedOntologyNode(String value, DataTableColumn column) {
         // Find the node that matches the string from the select statement
         OntologyNode child = null;
+        if (column == null) { // || column.getDefaultCodingSheet() == null
+            return null;
+        }
         Map<String, OntologyNode> termToNodeMap = column.getDefaultCodingSheet().getTermToOntologyNodeMap();
         OntologyNode node = termToNodeMap.get(value);
         if (node == null) {
