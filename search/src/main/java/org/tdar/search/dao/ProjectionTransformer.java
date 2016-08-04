@@ -67,8 +67,6 @@ public class ProjectionTransformer<I extends Indexable> {
 		// set collections
 		r_.getResourceCollections().addAll(collectionDao.findSharedCollectionHiearchy(r_.getId()));
 		Collection<Long> collectionIds = PersistableUtils.extractIds(r_.getResourceCollections());
-		logger.debug("{} {}", r_.getId(), collectionIds);
-		
 		// handle submitter
 		Long submitterId = (Long) doc.getFieldValue(QueryFieldNames.SUBMITTER_ID);
 		r_.setSubmitter(datasetDao.find(TdarUser.class, submitterId));
