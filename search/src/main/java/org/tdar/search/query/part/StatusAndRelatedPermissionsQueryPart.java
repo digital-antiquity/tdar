@@ -8,12 +8,14 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.search.query.QueryFieldNames;
-import org.tdar.search.service.CoreNames;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.TextProvider;
@@ -22,8 +24,10 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
 
     private Person person;
     private TdarGroup tdarGroup;
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    public StatusAndRelatedPermissionsQueryPart(Collection<Status> statuses, Person person, TdarGroup tdarGroup) {
+    
+    public StatusAndRelatedPermissionsQueryPart(Collection<Status> statuses, TdarUser person, TdarGroup tdarGroup) {
         this.setPerson(person);
         this.setTdarGroup(tdarGroup);
         add(statuses.toArray(new Status[0]));
@@ -32,17 +36,18 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
     @Override
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
+//        logger.debug("{} {} ({})", person.getProperName(), tdarGroup, localStatuses);
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
+//        logger.debug("{} {}", PersistableUtils.isNotNullOrTransient(person), localStatuses.contains(Status.DRAFT));
         if (PersistableUtils.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
             draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
-            QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
             draftSubgroup.setOperator(Operator.AND);
             if (!ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), getTdarGroup())) {
-                permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, person.getId()));
-                permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
-//                CrossCoreFieldJoinQueryPart permissions = new CrossCoreFieldJoinQueryPart(QueryFieldNames.RESOURCE_IDS, QueryFieldNames._ID, permissionsSubgroup, CoreNames.COLLECTIONS);
-                CrossCoreFieldJoinQueryPart permissions = new CrossCoreFieldJoinQueryPart(QueryFieldNames.RESOURCE_IDS, QueryFieldNames.ID, permissionsSubgroup, CoreNames.COLLECTIONS);
-                draftSubgroup.append(permissions);
+                logger.debug("appending permissions query part");
+                PermissionsQueryPart q = new PermissionsQueryPart(person);
+                draftSubgroup.append(q);
+                logger.debug(draftSubgroup.generateQueryString());
+                
             }
         }
 

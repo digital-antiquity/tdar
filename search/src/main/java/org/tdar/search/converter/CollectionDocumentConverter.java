@@ -1,5 +1,7 @@
 package org.tdar.search.converter;
 
+import java.util.List;
+
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -8,10 +10,11 @@ import org.tdar.search.query.QueryFieldNames;
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument convert(ResourceCollection collection, ResourceCollectionDao resourceCollectionDao) {
-        
         SolrInputDocument doc = convertPersistable(collection);
         doc.setField(QueryFieldNames.NAME, collection.getName());
-        doc.setField(QueryFieldNames.RESOURCE_IDS, resourceCollectionDao.getAllChildResources(collection));
+        List<Long> ids = resourceCollectionDao.getAllChildResources(collection);
+//        logger.debug("{} {} [{}]", collection.getId(), collection.getType(), ids);
+        doc.setField(QueryFieldNames.RESOURCE_IDS, ids);
         doc.setField(QueryFieldNames.RESOURCE_OWNER, collection.getOwner().getId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT, collection.getParentId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, collection.getParentIds());
