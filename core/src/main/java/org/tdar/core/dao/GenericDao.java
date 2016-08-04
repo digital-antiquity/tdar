@@ -1,6 +1,7 @@
 package org.tdar.core.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -47,7 +48,6 @@ import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 /**
  * $Id$

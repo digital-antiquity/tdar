@@ -26,6 +26,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao;
@@ -291,6 +292,14 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         }
         toReturn.put(UserAffiliation.NO_RESPONSE, noAnswer);
         return toReturn;
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<UserInvite> checkInvite(TdarUser person) {
+        Query<UserInvite> query = getCurrentSession().createQuery(TdarNamedQueries.CHECK_INVITES);
+        query.setParameter("email", person.getEmail());
+        return query.getResultList();
+        
     }
 
 }

@@ -32,7 +32,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.exception.TdarRuntimeException;
 import org.tdar.utils.MessageHelper;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 public interface Filestore {
 

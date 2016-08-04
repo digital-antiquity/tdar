@@ -15,19 +15,28 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserInvite;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.entity.InstitutionDao;
@@ -35,6 +44,9 @@ import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
+import org.tdar.core.dao.resource.ResourceCollectionDao;
+import org.tdar.core.event.EventType;
+import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.external.auth.UserLogin;
@@ -54,10 +66,11 @@ public class AuthenticationService {
     private static final String EMAIL_WELCOME_TEMPLATE = "email-welcome.ftl";
 
     public enum AuthenticationStatus {
-        AUTHENTICATED,
-        ERROR,
-        NEW;
+        AUTHENTICATED, ERROR, NEW;
     }
+
+    @Autowired
+    private ApplicationEventPublisher publisher;
 
     /*
      * we use a weak hashMap of the group permissions to prevent tDAR from constantly hammering the auth system with the group permissions. The hashMap will
@@ -391,7 +404,7 @@ public class AuthenticationService {
         // add user to Crowd
         person.setStatus(Status.ACTIVE);
         personDao.saveOrUpdate(person);
-
+        updatePersonWithInvites(person);
         logger.debug("Trying to add user to auth service...");
 
         sendWelcomeEmail(person);
@@ -399,7 +412,7 @@ public class AuthenticationService {
         logger.info("Added user to auth service successfully.");
         // } else {
         // // we assume that the add operation failed because user was already in crowd. Common scenario for dev/alpha, but not prod.
-        // logger.error("user {} already existed in auth service.  Not unusual unless it happens in prod context ", person);
+        // logger.error("user {} already existed in auth service. Not unusual unless it happens in prod context ", person);
         // }
         // log person in.
         AuthenticationResult result = getAuthenticationProvider().authenticate(request, response, person.getUsername(), reg.getPassword());
@@ -410,6 +423,31 @@ public class AuthenticationService {
         }
         result.setPerson(person);
         return result;
+    }
+
+    @Transactional(readOnly = false)
+    public void updatePersonWithInvites(TdarUser person) {
+        List<UserInvite> invites = personDao.checkInvite(person);
+        for (UserInvite invite : invites) {
+            AuthorizedUser user = new AuthorizedUser(person, invite.getPermissions());
+            if (invite.getResourceCollection() != null) {
+                invite.getResourceCollection().getAuthorizedUsers().add(user);
+                personDao.saveOrUpdate(invite.getResourceCollection());
+                personDao.saveOrUpdate(user);
+            }
+            //FIXME: REMOVE if rights changes work
+            if (invite.getResourceCollection() instanceof RightsBasedResourceCollection) {
+                for (Resource r : ((RightsBasedResourceCollection) invite.getResourceCollection()).getResources()) {
+                    publisher.publishEvent(new TdarEvent(r, EventType.CREATE_OR_UPDATE));
+                }
+            } else {
+                for (Resource r : ((ListCollection) invite.getResourceCollection()).getUnmanagedResources()) {
+                    publisher.publishEvent(new TdarEvent(r, EventType.CREATE_OR_UPDATE));
+                }
+
+            }
+        }
+
     }
 
     public AuthenticationResult checkToken(String token, SessionData sessionData, HttpServletRequest request) {
@@ -465,7 +503,7 @@ public class AuthenticationService {
         return incoming;
     }
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     @Qualifier("AuthenticationProvider")
     public void setProvider(AuthenticationProvider provider) {
         this.provider = provider;
@@ -486,7 +524,7 @@ public class AuthenticationService {
         String token = getSsoTokenFromRequest(servletRequest);
         getAuthenticationProvider().logout(servletRequest, servletResponse, token, user);
     }
-    
+
     public String getSsoTokenFromRequest(HttpServletRequest request) {
         String token = request.getParameter(CONFIG.getRequestTokenName());
         if (StringUtils.isNotBlank(token)) {
@@ -502,8 +540,6 @@ public class AuthenticationService {
         }
         return null;
     }
-
-
 
     /**
      * Provides access to the configured @link AuthenticationProvider -- CROWD or LDAP, for example. Consider making private.
@@ -593,17 +629,17 @@ public class AuthenticationService {
         return normalizedUsername;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public void requestPasswordReset(String usernameOrEmail) {
         TdarUser user = personDao.findByUsername(usernameOrEmail);
         if (user == null) {
             user = personDao.findUserByEmail(usernameOrEmail);
         }
-        
+
         if (user != null) {
             getAuthenticationProvider().requestPasswordReset(user);
         }
-        
+
     }
-    
+
 }

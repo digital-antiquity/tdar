@@ -28,7 +28,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.BaseSearchResult;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
+import java.util.Arrays;
 
 public class GeoJSONITCase extends AbstractIntegrationTestCase {
 

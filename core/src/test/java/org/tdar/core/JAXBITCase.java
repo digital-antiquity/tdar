@@ -71,7 +71,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 
 public class JAXBITCase extends AbstractIntegrationTestCase {

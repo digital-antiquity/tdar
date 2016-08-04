@@ -41,7 +41,25 @@
  		<addForeignKeyConstraint constraintName="collection_include_fkey" referencedTableName="collection" 
     		baseColumnNames="include_id" baseTableName="collection" referencedColumnNames="id" />
     </changeSet>
-    
+
+    <changeSet id="prehistoric-collections-5" author="abrin">
+        <createTable tableName="user_invite">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="email" type="varchar(255)" />
+            <column name="permission" type="varchar(255)" />
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="collection_id" type='bigint'>
+                <constraints nullable="false" references="collection" foreignKeyName="fk_user_invite_collection" />
+            </column>
+            <column name="authorizer_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user" foreignKeyName="fk_user_invite_authorizer" />
+            </column>
+        </createTable>
+    </changeSet>    
 
     <!--  FIXME: migration script -->
 </databaseChangeLog>
