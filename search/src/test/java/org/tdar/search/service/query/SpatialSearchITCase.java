@@ -71,7 +71,7 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
         return doc;
     }
 
-    private SearchResult<Resource> performGeoSearch(double west, double south, double east, double north)
+    private SearchResult<Resource> performGeoSearch(double south, double west, double north, double east)
             throws ParseException, SolrServerException, IOException {
         searchBox = new LatitudeLongitudeBox(west, south, east, north);
         ResourceQueryBuilder rqb = new ResourceQueryBuilder();
@@ -113,14 +113,14 @@ public class SpatialSearchITCase extends AbstractWithIndexIntegrationTestCase {
 
 
     
-    @Test
-    @Rollback
-    public void testSearchScientificNotation() throws SolrServerException, IOException, ParseException {
-        // if we get scientific notation into a lat/long, then this will throw an exception
-        assertEquals(36.2265501474709, Double.parseDouble("3.62265501474709E14"), .1);
-        SpatialQueryPart sqp = new SpatialQueryPart(new LatitudeLongitudeBox(21.68701171875, 3.62265501474709E14, 24.32373046875, 40.3130432088809));
-        logger.debug(sqp.generateQueryString());
-    }
+//    @Test
+//    @Rollback
+//    public void testSearchScientificNotation() throws SolrServerException, IOException, ParseException {
+//        // if we get scientific notation into a lat/long, then this will throw an exception
+//        assertEquals(36.2265501474709, Double.parseDouble("3.62265501474709E14"), .1);
+//        SpatialQueryPart sqp = new SpatialQueryPart(new LatitudeLongitudeBox(21.68701171875, 3.62265501474709E14, 24.32373046875, 40.3130432088809));
+//        logger.debug(sqp.generateQueryString());
+//    }
 
     @Test
     @Rollback
