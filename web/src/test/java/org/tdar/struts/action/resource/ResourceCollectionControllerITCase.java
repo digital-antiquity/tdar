@@ -1049,7 +1049,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         controller.save();
         evictCache();
         genericService.synchronize();
-//         searchIndexService.index(controller.getResourceCollection());
+        // searchIndexService.indexAll();
         // registered user is now authuser of the collection, and should be able to see the resource
         vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
         vc.setId(rcid);

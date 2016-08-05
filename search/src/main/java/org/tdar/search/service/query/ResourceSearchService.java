@@ -43,13 +43,11 @@ import org.tdar.search.query.builder.ResourceCollectionQueryBuilder;
 import org.tdar.search.query.builder.ResourceQueryBuilder;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.query.part.CategoryTermQueryPart;
-import org.tdar.search.query.part.CrossCoreFieldJoinQueryPart;
 import org.tdar.search.query.part.FieldQueryPart;
 import org.tdar.search.query.part.GeneralSearchResourceQueryPart;
 import org.tdar.search.query.part.HydrateableKeywordQueryPart;
 import org.tdar.search.query.part.ProjectIdLookupQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
-import org.tdar.search.service.CoreNames;
 import org.tdar.utils.MessageHelper;
 import org.tdar.utils.PersistableUtils;
 
@@ -127,9 +125,7 @@ public class ResourceSearchService extends AbstractSearchService {
     public LuceneSearchResultHandler<Resource> buildResourceContainedInSearch(ResourceCollection indexable, String term, TdarUser user,
             LuceneSearchResultHandler<Resource> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceQueryBuilder qb = new ResourceQueryBuilder();
-        FieldQueryPart<Long> query = new FieldQueryPart<>(QueryFieldNames.ID, indexable.getId());
-        CrossCoreFieldJoinQueryPart shared = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_IDS,  query, CoreNames.COLLECTIONS);
-        qb.append(shared);
+        qb.append(new FieldQueryPart<>(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, indexable.getId()));
         runContainedInQuery(term, user, result, provider, qb);
         return result;
     }

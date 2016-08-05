@@ -388,16 +388,4 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             saveOrUpdate(resource);
         }
     }
-
-    public List<ResourceCollection> findSharedCollectionHiearchy(Long id) {
-        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.COLLECTION_TREE_FOR_RESOURCE);
-        query.setParameter("resourceId", id);
-        return query.list();
-    }
-
-    public List<Long> getAllChildResources(ResourceCollection collection) {
-        Query query = getCurrentSession().createSQLQuery(TdarNamedQueries.COLLECTION_CONTENTS_SQL);
-        query.setParameter("collectionId", collection.getId());
-        return query.list();
-    }
 }

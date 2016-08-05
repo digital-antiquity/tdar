@@ -10,7 +10,6 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.query.part.FieldQueryPart;
-import org.tdar.search.query.part.PermissionsQueryPart;
 import org.tdar.search.query.part.QueryPartGroup;
 import org.tdar.search.query.part.StatusAndRelatedPermissionsQueryPart;
 import org.tdar.utils.MessageHelper;
@@ -50,7 +49,7 @@ public class ReservedSearchParameters extends SearchParameters {
             if (PersistableUtils.isNullOrTransient(getAuthenticatedUser())) {
                 throw new TdarRecoverableRuntimeException(support.getText("reservedSearchParameter.logged_in"));
             }
-            FieldQueryPart<Long> fqp = new PermissionsQueryPart(getAuthenticatedUser());
+            FieldQueryPart<Long> fqp = new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, getAuthenticatedUser().getId());
             fqp.setDisplayName("User Id");
             queryPartGroup.append(fqp);
         }

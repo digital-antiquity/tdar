@@ -1,20 +1,16 @@
 package org.tdar.search.converter;
 
-import java.util.List;
-
 import org.apache.solr.common.SolrInputDocument;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.search.query.QueryFieldNames;
 
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
-    public static SolrInputDocument convert(ResourceCollection collection, ResourceCollectionDao resourceCollectionDao) {
+    public static SolrInputDocument convert(ResourceCollection collection) {
+        
         SolrInputDocument doc = convertPersistable(collection);
         doc.setField(QueryFieldNames.NAME, collection.getName());
-        List<Long> ids = resourceCollectionDao.getAllChildResources(collection);
-//        logger.debug("{} {} [{}]", collection.getId(), collection.getType(), ids);
-        doc.setField(QueryFieldNames.RESOURCE_IDS, ids);
+        doc.setField(QueryFieldNames.RESOURCE_IDS, collection.getResourceIds());
         doc.setField(QueryFieldNames.RESOURCE_OWNER, collection.getOwner().getId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT, collection.getParentId());
         doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, collection.getParentIds());
@@ -27,9 +23,6 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
         doc.setField(QueryFieldNames.ALL, collection.getAllFieldSearch());
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}",doc);
-        }
         return doc;
     }
     

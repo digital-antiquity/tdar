@@ -39,6 +39,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotationKey;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -65,6 +66,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.CoreNames;
 import org.tdar.search.service.SearchUtils;
+import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
 @Service
@@ -226,7 +228,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
             document = ResourceDocumentConverter.convert((Resource) item);
         }
         if (item instanceof ResourceCollection) {
-            document = CollectionDocumentConverter.convert((ResourceCollection) item, resourceCollectionDao);
+            document = CollectionDocumentConverter.convert((ResourceCollection) item);
         }
         if (item instanceof Keyword) {
             document = KeywordDocumentConverter.convert((Keyword) item);

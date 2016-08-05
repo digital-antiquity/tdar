@@ -194,9 +194,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 // coding rules?
             }
         }
-        if (logger.isTraceEnabled()) {
-            logger.trace("{}",doc);
-        }
+
         return doc;
     }
 
@@ -354,8 +352,8 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
     public static Map<String,Object> indexCollectionInformation(SolrInputDocument doc, Resource resource) {
         Map<String, Object> map = new HashMap<>();
         ResourceRightsExtractor rightsExtractor = new ResourceRightsExtractor(resource);
-//        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
-//        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());
+        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, rightsExtractor.getUsersWhoCanModify());
+        map.put(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, rightsExtractor.getUsersWhoCanView());
 
         map.put(QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS, rightsExtractor.getDirectCollectionIds());
         map.put(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS, rightsExtractor.getCollectionIds());
