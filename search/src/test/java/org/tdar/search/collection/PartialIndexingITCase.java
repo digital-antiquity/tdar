@@ -23,7 +23,7 @@ import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
 
-public class PartialIndexingITCase extends AbstractResourceSearchITCase {
+public class PartialIx`xndexingITCase extends AbstractResourceSearchITCase {
 
     @Autowired
     private SolrClient template;
@@ -32,7 +32,6 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
     ResourceSearchService resourceSearchService;
     
     @Test
-    @Ignore
     @Rollback
     public void testPartialIndexing() throws SolrServerException, IOException, ParseException {
         Dataset ds = createAndSaveNewDataset();

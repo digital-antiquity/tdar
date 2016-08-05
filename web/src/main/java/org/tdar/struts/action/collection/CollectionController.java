@@ -172,9 +172,9 @@ public class CollectionController extends AbstractPersistableController<Resource
          * (b) visibility changes
          */
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTreeAsync(getPersistable());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
 
