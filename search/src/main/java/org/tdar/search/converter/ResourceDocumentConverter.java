@@ -194,7 +194,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
                 // coding rules?
             }
         }
-
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}",doc);
+        }
         return doc;
     }
 

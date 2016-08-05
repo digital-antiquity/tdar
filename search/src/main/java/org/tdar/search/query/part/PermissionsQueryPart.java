@@ -25,9 +25,8 @@ public class PermissionsQueryPart extends FieldQueryPart<Long> {
         QueryPartGroup permissionsSubgroup = new QueryPartGroup(Operator.OR);
         permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, person.getId()));
         permissionsSubgroup.append(new FieldQueryPart<Long>(QueryFieldNames.RESOURCE_USERS_WHO_CAN_VIEW, person.getId()));
-        CrossCoreFieldJoinQueryPart permissions = new CrossCoreFieldJoinQueryPart(QueryFieldNames.RESOURCE_IDS, QueryFieldNames.ID, permissionsSubgroup,
+        CrossCoreFieldJoinQueryPart permissions = new CrossCoreFieldJoinQueryPart(QueryFieldNames.ID, QueryFieldNames.RESOURCE_IDS, permissionsSubgroup,
                 CoreNames.COLLECTIONS);
-        logger.debug("{}", permissionsSubgroup);
         
         QueryPartGroup resourceGroup = new QueryPartGroup(Operator.OR, permissions, new FieldQueryPart(QueryFieldNames.SUBMITTER_ID, person.getId()));
         return resourceGroup.generateQueryString();

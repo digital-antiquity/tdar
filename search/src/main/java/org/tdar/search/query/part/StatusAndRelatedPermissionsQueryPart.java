@@ -36,17 +36,13 @@ public class StatusAndRelatedPermissionsQueryPart extends FieldQueryPart<Status>
     @Override
     public String generateQueryString() {
         List<Status> localStatuses = new ArrayList<Status>(getFieldValues());
-//        logger.debug("{} {} ({})", person.getProperName(), tdarGroup, localStatuses);
         QueryPartGroup draftSubgroup = new QueryPartGroup(Operator.AND);
-//        logger.debug("{} {}", PersistableUtils.isNotNullOrTransient(person), localStatuses.contains(Status.DRAFT));
         if (PersistableUtils.isNotNullOrTransient(getPerson()) && localStatuses.contains(Status.DRAFT)) {
             draftSubgroup.append(new FieldQueryPart<Status>(QueryFieldNames.STATUS, Status.DRAFT));
             draftSubgroup.setOperator(Operator.AND);
             if (!ArrayUtils.contains(InternalTdarRights.SEARCH_FOR_DRAFT_RECORDS.getPermittedGroups(), getTdarGroup())) {
-                logger.debug("appending permissions query part");
                 PermissionsQueryPart q = new PermissionsQueryPart(person);
                 draftSubgroup.append(q);
-                logger.debug(draftSubgroup.generateQueryString());
                 
             }
         }

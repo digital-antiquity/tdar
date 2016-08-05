@@ -119,7 +119,6 @@ import com.opensymphony.xwork2.TextProvider;
          resultHandler.setTotalRecords(ftq.getTotalResults());
          logger.trace("completed hibernate hydration ");
          String queryText = ftq.getQueryString();
-         logger.trace(queryText);
          Object searchMetadata[] = { resultHandler.getMode(), ftq.getLuceneTime(), ftq.getHydrationTime(), ftq.getTotalResults(), resultHandler.getStartRecord() };
          logger.trace("query: {} ", queryText);
          logger.debug("{}: LUCENE: {} | HYDR: {} | # RSLTS: {} | START #: {}", searchMetadata);

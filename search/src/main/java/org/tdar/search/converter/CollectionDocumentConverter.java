@@ -27,6 +27,9 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
         doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
         doc.setField(QueryFieldNames.ALL, collection.getAllFieldSearch());
+        if (logger.isTraceEnabled()) {
+            logger.trace("{}",doc);
+        }
         return doc;
     }
     
