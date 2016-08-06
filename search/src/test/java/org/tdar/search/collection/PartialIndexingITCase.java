@@ -23,7 +23,7 @@ import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.utils.MessageHelper;
 
-public class PartialIx`xndexingITCase extends AbstractResourceSearchITCase {
+public class PartialIndexingITCase extends AbstractResourceSearchITCase {
 
     @Autowired
     private SolrClient template;
