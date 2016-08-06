@@ -1,11 +1,11 @@
 package org.tdar.struts.action.api;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 
 import org.apache.commons.io.IOUtils;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.tdar.struts.action.AbstractControllerITCase;
 import org.tdar.struts.action.api.geo.GeoLookupAction;
@@ -34,7 +34,6 @@ public class GeoAPIITCase extends AbstractControllerITCase {
     }
 
     @Test
-    @Ignore
     public void testGeoAPIValid() throws Exception {
         GeoLookupAction gla = generateNewInitializedController(GeoLookupAction.class);
         gla.setCountries(Arrays.asList("Georgia"));
