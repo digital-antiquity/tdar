@@ -225,7 +225,16 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         find("#cbInheritingCreditRoles").click();
         waitFor(ExpectedConditions.elementToBeSelected(By.id("cbInheritingCreditRoles")));
         // this project should have about four contributors.
-        waitFor("#creditTable > :nth-child(4)");
+        waitFor(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(By.id("creditTableAddAnotherButton"))));
+        find("#cbInheritingCreditRoles").click();
+        waitFor(ExpectedConditions.not(ExpectedConditions.elementToBeSelected(By.id("cbInheritingCreditRoles"))));
+        clearPageCache();
+        String val = find("#metadataForm_creditProxies_2__institution_name").val();
+        logger.debug(val);
+//        Thread.sleep(1000000);
+        
+        assertTrue("should have Illinois", val.contains("Illinois"));
+        find("#dateCreated").val("2013");
         find("#submitButton").click();
     }
 
