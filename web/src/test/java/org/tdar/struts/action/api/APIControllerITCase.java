@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.struts.action;
+package org.tdar.struts.action.api;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -54,6 +54,7 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
+import org.tdar.struts.action.AbstractAdminControllerITCase;
 import org.tdar.struts.action.api.ingest.APIController;
 import org.tdar.utils.TestConfiguration;
 
