@@ -31,8 +31,10 @@ public class DataOneDao {
 	private static final String D1_PREFIX = " external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
 	private static final String TDAR_PREFIX = " external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
     private static final String LIST_OBJECT_QUERY = "select " + D1_PREFIX + " " + D1_SUFFIX + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX;
-
+    private static final String LIMIT = " and res.id < 2000";
+    private static final String LIST_OBJECT_QUERY_LIMITED = "select " + D1_PREFIX + " " + D1_SUFFIX + LIMIT + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX + LIMIT;
     private static final String LIST_OBJECT_QUERY_COUNT =  "select ((select count(res.id) " + D1_SUFFIX + " ) + ( " + "select count(res.id) " + TDAR_SUFFIX +" ))";
+    private static final String LIST_OBJECT_QUERY_COUNT_LIMITED =  "select ((select count(res.id) " + D1_SUFFIX + LIMIT + " ) + ( " + "select count(res.id) " + TDAR_SUFFIX + LIMIT +" ))";
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -42,21 +44,25 @@ public class DataOneDao {
 
     public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list) {
         SQLQuery query = setupListObjectQuery(LIST_OBJECT_QUERY_COUNT, start, end, formatId, identifier);
+        if (DataOneConfiguration.getInstance().isLimited()) {
+            query = setupListObjectQuery(LIST_OBJECT_QUERY_COUNT_LIMITED, start, end, formatId, identifier);
+        }
+        
         list.setTotal(((Number)query.uniqueResult()).intValue());
         if (list.getCount() == 0) {
             return new ArrayList<>();
         }
 
         query = setupListObjectQuery(LIST_OBJECT_QUERY, start, end, formatId, identifier);
+        if (DataOneConfiguration.getInstance().isLimited()) {
+            query = setupListObjectQuery(LIST_OBJECT_QUERY_LIMITED, start, end, formatId, identifier);
+        }
         query.setMaxResults(list.getCount());
         query.setFirstResult(list.getStart());
         List<ListObjectEntry> toReturn = new ArrayList<>();
         for (Object wrap : query.list()) {
             Object[] obj = (Object[])wrap;
             long longValue = ((BigInteger)obj[2]).longValue();
-            if (DataOneConfiguration.getInstance().isLimited() && longValue > 2000) {
-                continue;
-            }
             toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], longValue, (Date)obj[3],null,null,null,null));
         }
         return toReturn;

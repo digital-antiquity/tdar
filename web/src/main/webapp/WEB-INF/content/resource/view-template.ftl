@@ -397,11 +397,11 @@
                 <@_keywordSection "Geographic Keywords" resource.activeGeographicKeywords "query" resource.inheritingSpatialInformation!false />
             </#if>
         </#list>
-        <#assign mks = (resource.managedGeographicKeywords![])?size />
+        <#assign mks = (resource.activeManagedGeographicKeywords![])?size />
 		<#if editor && (mks > 0)>
         <p>
             <strong>System Managed Geographic Keywords (${mks})</strong><br><span class="show red" onClick="$(this).hide();$('#managedKeywords').show()">show</span><span id="managedKeywords" style="display:none">
-            <@view.keywordSearch resource.managedGeographicKeywords "query"  /></span>
+            <@view.keywordSearch resource.activeManagedGeographicKeywords "query"  /></span>
         </p>
 		</#if>
         <#if (resource.keywordProperties?size > 0)>

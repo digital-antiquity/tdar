@@ -107,4 +107,7 @@
             <column name="id" />
         </createIndex>
     </changeSet>
+    <changeSet id="obsidian-9" author="abrin">
+        <modifyDataType tableName="geographic_keyword" columnName="code" newDataType="varchar(10)"/>
+    </changeSet>
 </databaseChangeLog>

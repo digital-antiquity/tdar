@@ -45,12 +45,13 @@ public class GeoLookupAction extends AbstractJsonApiAction implements Preparable
     @Override
     public void prepare() throws Exception {
         err.put("status", "no countries");
-        setJsonObject(err);
-        if (!CollectionUtils.isEmpty(countries)) {
+        if (CollectionUtils.isEmpty(countries)) {
+            setJsonObject(err);
             return;
         }
         LatitudeLongitudeBox box = geoSearchService.extractEnvelopeForCountries(countries);
         if (box.getEast() == null || box.getNorth() == null) {
+            setJsonObject(err);
             return;
         }
         setJsonObject(box);
