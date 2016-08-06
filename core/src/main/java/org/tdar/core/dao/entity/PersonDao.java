@@ -296,7 +296,7 @@ public class PersonDao extends Dao.HibernateBase<Person> {
 
     @SuppressWarnings("unchecked")
     public List<UserInvite> checkInvite(TdarUser person) {
-        Query<UserInvite> query = getCurrentSession().createQuery(TdarNamedQueries.CHECK_INVITES);
+        Query<UserInvite> query = getCurrentSession().createNamedQuery(TdarNamedQueries.CHECK_INVITES);
         query.setParameter("email", person.getEmail());
         return query.getResultList();
         
