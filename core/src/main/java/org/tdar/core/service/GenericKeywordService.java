@@ -337,4 +337,9 @@ public class GenericKeywordService {
         return null;
     }
 
+    @Transactional(readOnly=true)
+    public GeographicKeyword findGeographicKeywordByCode(String code) {
+        return genericKeywordDao.findByProperty(GeographicKeyword.class, "code",StringUtils.upperCase(code ));
+    }
+
 }
