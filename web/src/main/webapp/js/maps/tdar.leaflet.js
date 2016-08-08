@@ -125,11 +125,9 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         // _logEventedClass(map, 'map');
         // _logEventedClass(tile, 'tile')
-        map.once('load', function _mapLoaded(){
-            tile.once('load', function _tileLoaded(){
-                console.log("map loaded");
-                deferred.resolve(map);
-            });
+        tile.once('load', function _mapLoaded(){
+            console.log("map loaded");
+            deferred.resolve(map);
         });
         tile.addTo(map);
         map.setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
