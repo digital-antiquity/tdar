@@ -155,7 +155,10 @@ TDAR.worldmap = (function(console, $, ctx) {
             sleepOpacity : 1,
             zoomControl: showZoom,
             minZoom : -1,
-            dragging:canPan
+            dragging:canPan,
+            scrollWheelZoom:canPan,
+            touchZoom: canPan,
+            doubleClickZoom: canPan
         });
         var grades = [ 0, 1, 2, 5, 10, 20, 100, 1000 ];
 
@@ -166,17 +169,6 @@ TDAR.worldmap = (function(console, $, ctx) {
             _setupLegend(map, grades, _getColor, max);
         }
         
-        if (extraGeoJson != undefined && extraGeoJson.length > 0) {
-            var gj = JSON.parse($("" + extraGeoJson).html());
-            var glayer = L.geoJson(gj, {
-                style: {"className": "keywordHighlight"}
-            });
-            glayer.addTo(map);
-            glayer.setZIndex(1000);
-            map.fitBounds(glayer.getBounds());
-            map.zoomOut(1);
-            glayer.bringToFront();
-        }
 
         _resetView();
 
@@ -190,6 +182,23 @@ TDAR.worldmap = (function(console, $, ctx) {
             console.error("Failed to load world.json file. XHR result follows this line.", xhr);
         });
         map.on('click', _resetView);
+        if (extraGeoJson != undefined && extraGeoJson.length > 0) {
+            var gj = JSON.parse($("" + extraGeoJson).html());
+            var glayer = L.geoJson(gj, {
+                style: {"className": "keywordHighlight"}
+            });
+            var code = $("worldmap").data('code');
+            if (code && code != 'USA') {
+                map.fitBounds(glayer.getBounds());
+                map.zoomOut(1);
+            } else {
+                map.setZoom(1);
+                map.panTo([39.50,-98.35]);
+            }
+            glayer.addTo(map);
+            glayer.bringToFront();
+            glayer.setZIndex(1000);
+        }
         return map;
     }
 
