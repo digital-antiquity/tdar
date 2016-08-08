@@ -72,6 +72,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             InformationResource ir = (InformationResource) resource;
             Map<String, Object> indexProjectInformation = indexProjectInformation(doc, ir);
             indexAll(doc, indexProjectInformation);
+            if (ir.getPublisher() != null) {
+                doc.setField(QueryFieldNames.PUBLISHER_ID, ir.getPublisher().getId());
+            }
             doc.setField(QueryFieldNames.DATE, ir.getDate());
 
             doc.setField(QueryFieldNames.DATE_CREATED_DECADE, ir.getDateNormalized());
@@ -118,8 +121,15 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
             }
             doc.setField(QueryFieldNames.DEGREE, doc_.getDegree());
             doc.setField(QueryFieldNames.SERIES_NAME, doc_.getSeriesName());
+            doc.setField(QueryFieldNames.SERIES_NUMBER, doc_.getSeriesNumber());
+            doc.setField(QueryFieldNames.PUBLISHER_LOCATION, doc_.getPublisherLocation());
+            doc.setField(QueryFieldNames.COPY_LOCATION, doc_.getCopyLocation());
+            doc.setField(QueryFieldNames.START_PAGE, doc_.getStartPage());
+            doc.setField(QueryFieldNames.END_PAGE, doc_.getEndPage());
+            
             doc.setField(QueryFieldNames.BOOK_TITLE, doc_.getBookTitle());
             doc.setField(QueryFieldNames.JOURNAL_NAME, doc_.getJournalName());
+            doc.setField(QueryFieldNames.JOURNAL_NUMBER, doc_.getJournalNumber());
             doc.setField(QueryFieldNames.ISBN, doc_.getIsbn());
             doc.setField(QueryFieldNames.ISSN, doc_.getIssn());
         }

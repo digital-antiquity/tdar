@@ -134,4 +134,12 @@ public interface QueryFieldNames {
     String RESOURCE_ID = "resource.id";
 	String CORE = "_core";
     String ACTIVE_GEOGRAPHIC_ISO = "geographic.ISO";
+    String SERIES_NUMBER = "series.number";
+    String PUBLISHER_LOCATION = "publisher.location";
+    String PUBLISHER_ID = "publisher.id";
+    String COPY_LOCATION = "copy.location";
+    String START_PAGE = "page.start";
+    String END_PAGE = "page.end";
+    String JOURNAL_NUMBER = "journal.nymber";
+    
 }

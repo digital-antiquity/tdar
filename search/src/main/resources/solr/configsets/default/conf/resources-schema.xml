@@ -37,8 +37,17 @@
     <field name="subType" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="degree" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="seriesName" type="string" indexed="true"  required="false" multiValued="false" />
+    <field name="seriesNumber" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="bookTitle" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="journalName" type="string" indexed="true"  required="false" multiValued="false" />
+    <field name="publisher.location" type="string" indexed="true"  required="false" multiValued="false" />
+    <field name="copy.location" type="string" indexed="true"  required="false" multiValued="false" />
+    <field name="publisher.id" type="long" indexed="true"  required="false" multiValued="false" />
+
+    <field name="pages.end" type="long" indexed="true"  required="false" multiValued="false" />
+    <field name="pages.start" type="long" indexed="true"  required="false" multiValued="false" />
+    <field name="journal.number" type="string" indexed="true"  required="false" multiValued="false" />
+    
     <field name="issn" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="isbn" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="doi" type="string" indexed="true"  required="false" multiValued="false" />
