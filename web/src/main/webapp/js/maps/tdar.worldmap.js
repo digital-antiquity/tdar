@@ -187,13 +187,12 @@ TDAR.worldmap = (function(console, $, ctx) {
             var glayer = L.geoJson(gj, {
                 style: {"className": "keywordHighlight"}
             });
-            var code = $("worldmap").data('code');
-            if (code && code != 'USA') {
-                map.fitBounds(glayer.getBounds());
-                map.zoomOut(1);
-            } else {
+            if ($("#worldmap").data('code') == 'USA') {
                 map.setZoom(1);
                 map.panTo([39.50,-98.35]);
+            } else {
+                map.fitBounds(glayer.getBounds());
+                map.zoomOut(1);
             }
             glayer.addTo(map);
             glayer.bringToFront();
