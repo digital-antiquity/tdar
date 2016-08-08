@@ -573,7 +573,7 @@ TDAR.autocomplete = (function () {
             _options = options;
         }
         var defaults = {};
-        options.enhanceRequestData = function (requestData) {
+        _options.enhanceRequestData = function (requestData) {
             $.extend(requestData, extraData);
         };
 
