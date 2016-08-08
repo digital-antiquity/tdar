@@ -101,8 +101,10 @@
             return promise;
         }
 
-        self.loadJSON = function() {
-            var jsonData = dataService.getDocumentData("jsondata");
+        $scope.$on('dataReceived', function(e, name, jsonData) {
+            if(name !== 'jsondata') return;
+
+            //var jsonData = dataService.getDocumentData("jsondata");
             if(!jsonData) return;
 
             //validate the embedded json first
@@ -129,7 +131,7 @@
                     //console.log("load failed - error information follows");
                     console.error(err);
                 });
-         };
+         });
         
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.

@@ -129,7 +129,7 @@
         return uniqueItems;
     }
 
-    function DataService($http, $cacheFactory, $q, $log) {
+    function DataService($http, $cacheFactory, $q, $log, $rootScope) {
         var self = this;
         var documentData = {};
         var ontologyCache = $cacheFactory('ontologyCache');
@@ -159,6 +159,7 @@
 
         this.setDocumentData = function(name, data) {
             documentData[name] = data;
+            $rootScope.$broadcast('dataReceived', name, data);
         };
 
         /**
@@ -724,7 +725,7 @@
 
     }
 
-    app.service("DataService", [ '$http', '$cacheFactory', '$q', '$log', DataService ]);
+    app.service("DataService", [ '$http', '$cacheFactory', '$q', '$log', '$rootScope',  DataService ]);
 
     /* global angular */
 })(angular);
