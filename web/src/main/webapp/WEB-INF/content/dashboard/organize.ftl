@@ -19,6 +19,19 @@
 
 <div class="row">
 <div class="span9">
+<div class="well">
+<p ><b>I want to be able to:</b>
+<ul>
+    <li>View all my collections</li>
+    <li>delete collections?</li>
+    <li>organize collections?</li>
+    <li>add resources to a collection? (maybe)?</li>
+    <li>Should bookmarks be a "special" collection in your library? or a dedicated section?</li>
+    <li>how to show "shared" libraries?</li>
+    <li>two pane layout could work, either top/bottom or right /left where "top" or "right" was dedicated to creation, and other part was for viewing</li>
+</ul>
+</div>
+
     <@collectionsSection />
 </div>
 <div class="span3">
@@ -31,6 +44,12 @@
     <div class="" id="collection-section">
         <h2>My Collections</h2>
         <@common.listCollections collections=allResourceCollections>
+            <li><i class="icon-star"></i> My Bookmarks
+                <ul>
+                    <#list bookmarkedResources as book>
+                        <li><a href="${book.detailUrl}">${book.title}</a></li>
+                    </#list>
+                </ul></li>
             <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
         </@common.listCollections>
     </div>
@@ -43,25 +62,6 @@
         </#if>
 
     </#macro>
-
-    <#macro accountSection>
-    <div id="accountSection" class="row">
-        <div id="divAccountInfo" class="<#if payPerIngestEnabled>span4<#else>span9</#if>">
-            <h2>About ${authenticatedUser.firstName}</h2>
-            <strong>Full Name: </strong>${authenticatedUser.properName}<#if authenticatedUser.institution??>, ${authenticatedUser.institution.name}</#if><br>
-            <#if authenticatedUser.penultimateLogin??>
-                <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br>
-            </#if>
-            <a href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a><br>
-            <a href="<@s.url value='/export/request'/>">Export</a>
-        </div>
-
-        <div class="span5" id="billing">
-            <@common.billingAccountList accounts />
-        </div>
-    </div>
-    </#macro>
-
 
     <#macro bookmarksSection>
         <div id="bookmarks">

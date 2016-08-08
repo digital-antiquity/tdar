@@ -5,10 +5,12 @@
   "dependencies": {
     "angular-modal-service": "0.4.0",
     "bootstrap": "~2.3.2",
+    "bootstrap-datepicker-eyecon": "~1.0.0",
     "c3": "~0.4.11",
     "d3": "~3.5.17",
     "DataTables": "~1.9.4",
     "DataTablesPlugins": "https://github.com/DataTables/Plugins.git#1.0.1",
+    "eonasdan-bootstrap-datetimepicker": "~4.17.37",
     "jquery": "~1.11.3",
     "jquery-file-upload": "8.6.1",
     "jquery.treeview": "~1.4.1",
@@ -20,12 +22,12 @@
     "select2": "~4.0.3",
     "svgxuse": "~1.1.17"
   },
-  "dependencies-cdn" : {
-      "README":"local dependency management, not managed by bower (see layout-bootstrap.dec)",
-      "jquery-validation": "~1.8.1",
-      "jquery": "~1.11.3",
-      "angular-js": "~1.5.5",
-      "jquery-ui": "~1.11.4"
+  "dependencies-cdn": {
+    "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",
+    "jquery-validation": "~1.8.1",
+    "jquery": "~1.11.3",
+    "angular-js": "~1.5.5",
+    "jquery-ui": "~1.11.4"
   },
   "homepage": "https://bitbucket.org/tdar/tdar.src",
   "ignore": [

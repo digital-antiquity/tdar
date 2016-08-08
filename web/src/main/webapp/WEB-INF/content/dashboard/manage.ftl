@@ -10,13 +10,60 @@
     <title>${authenticatedUser.properName}'s Dashboard</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <@edit.resourceDataTableJavascript />
+    <script src="/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js"></script>
+    <link href="/components/bootstrap-datepicker-eyecon/css/datepicker.css" rel="stylesheet">
 </head>
 
 <div id="titlebar" parse="true">
     <h1>Manage Rights &amp; Permissions</h1>
 </div>
+    <form class="form">
 <div class="row">
-<div class="span8">
+<div class="span12">
+    <h4>Grant Access</h4>
+    <div class="row">
+          <div class="control-group span4">
+            <label class="control-label" for="inputEmail">User or email:</label>
+            <div class="controls">
+              <input type="text" id="inputEmail" placeholder="Email">
+            </div>
+          </div>
+          <div class="control-group span4">
+            <label class="control-label" for="inputPassword">Permission</label>
+            <div class="controls">
+                <select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span3">
+                    <option value="VIEW_ALL" selected="selected">View and Download</option>
+                    <option value="MODIFY_METADATA">Modify Metadata</option>
+                    <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
+                    <option value="ADMINISTER_GROUP">Add/Remove Items from Collection</option>
+                
+                
+                </select>
+            </div>
+          </div>
+        
+          <div class="control-group span4">
+            <label class="control-label" for="inputPassword">Expire?</label>
+            <div class="controls">
+                <div class="input-append">
+                  <input class="span2 datepicker" size="16" type="text" value="12-02-2016" id="dp3" data-date-format="mm-dd-yyyy" >
+                  <span class="add-on"><i class="icon-th"></i></span>
+                </div>
+            </div>
+            <script>
+            $(".datepicker").datepicker();
+            </script>
+         </div>
+    </div>
+    <div class="row">
+        <div class="span12">
+        
+        </div>
+    </div>
+</div>
+</form>
+<div class="row">
+<div class="span12">
         <@collectionsSection />
 </div>
 <div class="span4">
