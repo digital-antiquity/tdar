@@ -44,8 +44,8 @@
     <field name="copy.location" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="publisher.id" type="long" indexed="true"  required="false" multiValued="false"  stored="true"/>
 
-    <field name="pages.end" type="long" indexed="true"  required="false" multiValued="false"  stored="true"/>
-    <field name="pages.start" type="long" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="page.end" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="page.start" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="journal.number" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     
     <field name="issn" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
