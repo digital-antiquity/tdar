@@ -106,6 +106,8 @@
 
             //var jsonData = dataService.getDocumentData("jsondata");
             if(!jsonData) return;
+            if($.isEmptyObject(jsonData)) return;
+
 
             //validate the embedded json first
             validationService.validateJson(jsonData);

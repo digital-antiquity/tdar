@@ -266,6 +266,9 @@
                         column.dataTableColumns.forEach(function(col) {
                             if (col != undefined && col.id != undefined && dataTableColumnCache.get(col.id) != undefined) {
                                 ids.push(col.id);
+                            } else {
+                                //some dataTableColumns will be null when restoring a partial integration
+                                ids.push(undefined);
                             }
                         });
 
