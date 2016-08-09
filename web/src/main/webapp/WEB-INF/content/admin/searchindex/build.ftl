@@ -5,7 +5,7 @@
         var $buildStatus, $buildLog, $progressbar;
         var production = ${production?string('true', 'false')};
         function updateProgressBar(valeur) {
-			  $('#progressbar').attr('aria-valuenow', valeur);
+			  $(".progress-bar").attr('aria-valuenow', valeur);
 			  $(".progress-bar").html(valeur + "%");
 			  $(".progress-bar").css("width",valeur+'%');
 		  }    
@@ -84,10 +84,10 @@
 <h1>Rebuild Search Indexes</h1>
 <@s.checkboxlist id="sources" name='indexesToRebuild' list='allSources'  spanClass="span4" numColumns="3"  />
 <div>
-    <div class="progress"  id="progressbar">
-  		<div class="progress-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:60%"> 0% </div>
+
+    <div class="progress progress-success"  id="progressbar">
+  		<div class="progress-bar bar progress-bar-success" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:60%"> 0% </div>
   </div>
-</div>
     
     <br/>
     <#if reindexing!false>

@@ -17,7 +17,7 @@
     };
 
     var _updateProgressBar = function(valeur) {
-        $('#progressbar').attr('aria-valuenow', valeur);
+        $(".progress-bar").attr('aria-valuenow', valeur);
         $(".progress-bar").html(valeur + "%");
         $(".progress-bar").css("width",valeur+'%');
     }
