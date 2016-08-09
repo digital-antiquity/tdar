@@ -130,8 +130,8 @@ TDAR.advancedSearch = (function () {
             TDAR.autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
         }
 
-        $('.datepicker', containerElem).datepicker({
-            dateFormat: 'm/d/y'
+        $('.datepicker', containerElem).datepicker().on('changeDate', function(ev){
+            $(ev.target).datepicker('hide');
         });
 
         // collection, project combo boxes

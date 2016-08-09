@@ -819,7 +819,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <#if (fileProxies[0].fileCreatedDate)?has_content>
                     <#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
                 </#if>
-                Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
+                Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                 Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
             </div>
@@ -975,7 +975,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <#if (proxy.fileCreatedDate)?has_content>
                         <#local val = proxy.fileCreatedDate?string("MM/dd/yyyy")>
                     </#if>
-                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" />
+                <@s.textfield name="fileProxies[${rowId}].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                 <@s.textarea class="input-block-level" name="fileProxies[${rowId}].description" rows="1" placeholder="Enter a description here" cols="80" />
 
             </td>
@@ -1305,7 +1305,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <label class="control-label" for="">Date Created</label>
                     <div class="controls controls-row">
                          <div class="span5">
-                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}">
+                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}" data-date-format="mm/dd/yy" >
                          </div>
                     </div>
 
@@ -1530,7 +1530,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#if date?has_content>
             <#local val = date?string(format)>
         </#if>
-        <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" />
+        <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" dynamicAttributes={"data-date-format":"${placehoder}"}/>
     </#macro>
 
 <#--emit x-tmpl template for use when rendering results menu for person autocomplete fields -->

@@ -10,8 +10,6 @@
     <title>${authenticatedUser.properName}'s Dashboard</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <@edit.resourceDataTableJavascript />
-    <script src="/components/bootstrap-datepicker-eyecon/js/bootstrap-datepicker.js"></script>
-    <link href="/components/bootstrap-datepicker-eyecon/css/datepicker.css" rel="stylesheet">
 </head>
 
 <div id="titlebar" parse="true">
@@ -51,7 +49,9 @@
                 </div>
             </div>
             <script>
-            $(".datepicker").datepicker();
+	        $('.datepicker').datepicker().on('changeDate', function(ev){
+	            $(ev.target).datepicker('hide');
+	        });
             </script>
          </div>
     </div>

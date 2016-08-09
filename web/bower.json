@@ -10,7 +10,6 @@
     "d3": "~3.5.17",
     "DataTables": "~1.9.4",
     "DataTablesPlugins": "https://github.com/DataTables/Plugins.git#1.0.1",
-    "eonasdan-bootstrap-datetimepicker": "~4.17.37",
     "jquery": "~1.11.3",
     "jquery-file-upload": "8.6.1",
     "jquery.treeview": "~1.4.1",

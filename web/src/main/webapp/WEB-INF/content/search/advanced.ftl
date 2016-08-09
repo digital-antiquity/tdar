@@ -210,17 +210,17 @@
             <#elseif fieldType?starts_with("DATE_")>
             <div class="term retain ${fieldType} controls-row">
                 <div class="span3">
-                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"/>
+                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].start" label="From"
+                    	 dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                 </div>
                 <div class="span3">
-                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"/>
+                    <@s.textfield cssClass="placeholdered datepicker" theme="tdar" placeholder="m/d/yy" labelposition="left" name="groups[${groupid}].${fieldType.fieldName}[${fieldIndex}].end" label ="Until"
+                    dynamicAttributes={"data-date-format":"mm/dd/yy"} />
                 </div>
             </div>
             <#elseif fieldType="PROJECT">
-            <!-- FIXME: refactor to not repeat the same block -->
                 <@templateProject fieldIndex groupid />
             <#elseif fieldType="COLLECTION">
-            <!-- FIXME: refactor to not repeat the same block -->
                 <@templateCollection fieldIndex groupid />
 
             </#if>
