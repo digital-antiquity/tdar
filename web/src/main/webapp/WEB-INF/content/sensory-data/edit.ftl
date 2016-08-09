@@ -281,8 +281,8 @@
 
         <div class="conditional-scantype phase_based time_of_flight triangulation">
             <div data-tiplabel="Survey Date(s)" data-tooltipcontent="Date of survey, or date range of survey.">
-                <@edit.datefield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" date=sensoryData.surveyDateBegin!'' cssClass="shortfield date datepicker" placeholder="mm/dd/yyyy" format="MM/dd/yyyy" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
-            <@edit.datefield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" date=sensoryData.surveyDateEnd!'' cssClass="right-shortfield date datepicker" placeholder="mm/dd/yyyy" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+            <@edit.datefield label="Survey Begin" id="txtSurveyDateBegin" name="sensoryData.surveyDateBegin" date=sensoryData.surveyDateBegin!'' cssClass="shortfield date datepicker" placeholder="mm/dd/yyyy" format="MM/dd/yyyy" />
+            <@edit.datefield label="Survey End" id="txtSurveyDateEnd" name="sensoryData.surveyDateEnd" date=sensoryData.surveyDateEnd!'' cssClass="right-shortfield date datepicker" placeholder="mm/dd/yyyy"  />
             </div>
         <span data-tiplabel="Survey Conditions" data-tooltipcontent="The overall weather trend during survey (sunny, overcast, indoors, etc.)">
             <@s.textfield maxLength="255" name="sensoryData.surveyConditions"

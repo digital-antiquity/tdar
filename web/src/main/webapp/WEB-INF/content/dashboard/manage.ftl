@@ -19,14 +19,17 @@
 <div class="row">
 <div class="span12">
     <h4>Grant Access</h4>
+    <div class="well">
     <div class="row">
-          <div class="control-group span4">
+        <div class="span6">
+        <div class="row">
+          <div class="control-group span3">
             <label class="control-label" for="inputEmail">User or email:</label>
             <div class="controls">
               <input type="text" id="inputEmail" placeholder="Email">
             </div>
           </div>
-          <div class="control-group span4">
+          <div class="control-group span3">
             <label class="control-label" for="inputPassword">Permission</label>
             <div class="controls">
                 <select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span3">
@@ -39,7 +42,10 @@
                 </select>
             </div>
           </div>
-        
+    </div>
+    </div>
+    <div class="span5">
+
           <div class="control-group span4">
             <label class="control-label" for="inputPassword">Expire?</label>
             <div class="controls">
@@ -48,75 +54,65 @@
                   <span class="add-on"><i class="icon-th"></i></span>
                 </div>
             </div>
-            <script>
-	        $('.datepicker').datepicker().on('changeDate', function(ev){
-	            $(ev.target).datepicker('hide');
-	        });
-            </script>
          </div>
+
+
     </div>
+          </div>
     <div class="row">
         <div class="span12">
-        
+    <h5>To what:</h5>
+    
+   
+        <div id="authorshipRow_0_" class="repeat-row control-group">
+            <!-- fixme: careful with this styling -->
+            <div class="control-label">
+                <div class="btn-group creator-toggle-button" data-toggle="buttons-radio">
+                    <button type="button" class="btn btn-small personButton btn-active active" data-toggle="button">Resource</button>
+                    <button type="button" class="btn btn-small institutionButton " data-toggle="button">Collection</button>
+            </div>
+            <div class="controls controls-row">
+                <div class="span6">
+                    <div id="authorshipProxiesRow_0_p" class="creatorPerson active ">
+                       <div class="controls-row">
+                        <@common.combobox name="resource" target="#columnDiv_0"
+                                placeholder="select a resource"
+                                autocompleteParentElement="#divResource_0"
+                                autocompleteIdElement="#resource_0_oid"
+                                cssClass="input-xxlarge-combo " />
+                            <hidden name="resource.id" id="resource_0_oid" />
+                        </div>
+                    </div>
+                <div id="authorshipProxiesRow_0_i" class="creatorInstitution hidden">
+                      <div class="controls-row">
+                                    <@common.combobox name="resource" target="#columnDiv_0"
+                                            placeholder="select a resource"
+                                            autocompleteParentElement="#divResource_0"
+                                            autocompleteIdElement="#resource_0_oid"
+                                            cssClass="input-xxlarge-combo " />
+                                        <hidden name="resource.id" id="resource_0_oid" />
+                    </div>
+                </div>
+                    </div>
+                </div>
+                </div>
+            </div>
+                
+<p>
+  <button class="btn btn-primary" type="button">Submit</button>
+<!--  <button class="btn" type="button"><i class="icon-cog"></i> more options</button> -->
+</p>                
+                
+</div>
         </div>
     </div>
+</div>
 </div>
 </form>
 <div class="row">
 <div class="span12">
         <@collectionsSection />
 </div>
-<div class="span4">
-    <div>
-    
-        <h4>Grant Access</h4>
-        <p><b>Grant access to the following users:</b></p>
-        <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="#divCollectionAccessRightsTips" data-original-title="" title="">
-        <div id="accessRightsRecords" class="repeatLastRow" data-addanother="add another user">
-            <div class="control-group">
-                <div class="controls">
-                            <div class="controls-row repeat-row" id="authorizedUsersRow_0_">
-                                <div class="span6">
-
-
-    <div id="authorizedUsersRow_0_p" class="creatorPerson  ">
-<input type="hidden" name="authorizedUsers[0].user.id" value="139906" id="authorizedUsersId__id_0_p" autocompleteparentelement="#authorizedUsersRow_0_p">        <div class="controls-row">
-            
-<input type="text" name="authorizedUsersFullNames[0]" maxlength="255" value="Ruth Van Dyke" id="metadataForm_authorizedUsersFullNames_0_" class="span3 userAutoComplete notValidIfIdEmpty  " autocompleteparentelement="#authorizedUsersRow_0_p" data-msg-notvalidifidempty="Invalid user name.  Please type a name (or partial name) and choose one of the options from the menu that appears below." autocomplete="off" placeholder="Name" autocompletename="properName" autocompleteidelement="#authorizedUsersId__id_0_p">
-<select name="authorizedUsers[0].generalPermission" id="metadataForm_authorizedUsers_0__generalPermission" class="creator-rights-select span3">
-    <option value="VIEW_ALL" selected="selected">View and Download</option>
-    <option value="MODIFY_METADATA">Modify Metadata</option>
-    <option value="MODIFY_RECORD">Modify Files &amp; Metadata</option>
-    <option value="ADMINISTER_GROUP">Add/Remove Items from Collection</option>
-
-
-</select>
-<input type="hidden" name="authorizedUsers[0].generalPermission" value="VIEW_ALL" id="authorizedUsers[0]hdnGeneralPermission" class="repeat-row-remove">        </div>
-    </div>
-                                </div>
-                                <div class="span1">
-    <button class="btn btn-mini repeat-row-delete" type="button" tabindex="-1" title="delete this item from the list"><i class="icon-trash"></i></button>
-                                </div>
-                            </div>
-                </div>
-            </div>
-        </div><div class="control-group add-another-control"><div class="controls"><button class="btn addanother" id="accessRightsRecordsAddAnotherButton" type="button"><i class="icon-plus-sign"></i>add another</button></div></div>
-
-
-
-    </div>
-        
-                
-        <p><b>To:</b></p>
-    <div class="" id="project-list">
-        <div>
-            <@edit.resourceDataTable />
-        </div>
-    </div>
-        
-        
-        
-    </div>
 
 </div>
 </div>
@@ -129,8 +125,14 @@
 
     <#macro collectionsSection>
 
-    <div class="" id="collection-section">
-        <h2>Rights Groups</h2>
+<ul class="nav nav-tabs" id="myTab">
+  <li class="active"><a href="#groups">Groups</a></li>
+  <li><a href="#shared">Shared With Me</a></li>
+  <li><a href="#individual">Individual Resources</a></li>
+</ul>
+ 
+<div class="tab-content">
+  <div class="tab-pane active" id="groups">
         <table class="table">
             <thead>
                 <th>Name</th>
@@ -146,18 +148,43 @@
                 <td>${collection.authorizedUsers?size}</td>
                 <td>edit | delete | details</td>
                 </tr>
-                </#list>
+            </#list>
             </tbody>
         </table>
         <a href="<@s.url value="/collection/add"/>">create one</a>
-    </div>
-    <br>
+  
+  </div>
+  <div class="tab-pane" id="shared">
         <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
         <div class="">
             <h2>Collections Shared With You</h2>
             <@common.listCollections collections=sharedResourceCollections />
         </div>
         </#if>
+  </div>
+
+  <div class="tab-pane" id="individual">
+        <table class="table">
+            <thead>
+                <th>Name</th>
+                <th># of users</th>
+                <th>action</th>
+            </thead>
+            <tbody>
+            <#list internalCollections![] as collection>
+                <tr>
+                <td>${collection.resources[0].title}</td>
+                <td>${collection.authorizedUsers?size}</td>
+                <td>edit | delete | details</td>
+                </tr>
+            </#list>
+            </tbody>
+        </table>
+
+  </div>
+</div>
+
+
 
     </#macro>
 
@@ -276,5 +303,14 @@
     </#list>
 
 </#macro>
+            <script>
+            $(document).ready(function() {
+                var picker = $('.datepicker').datepicker();
+                picker.on('changeDate', function(ev){
+                    $(ev.target).datepicker('hide');
+                });
+                
+            });
+            </script>
 
 </#escape>
