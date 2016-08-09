@@ -787,3 +787,8 @@ kbd {
     border-radius: 5px;
     vertical-align: middle;
 }
+
+
+.bookmark-menu .btn {
+	background:none !important;
+}

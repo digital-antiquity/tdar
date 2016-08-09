@@ -283,5 +283,50 @@ ${head}
 <script id="c3colors">
  [<#list barColors as color><#if color_index != 0>,</#if>"${color}"</#list>] 
 </script>
+<script>
+
+function _buildCollectionTree(data) {
+	var items = [];
+	  $.each( data, function( key, val ) {
+		var children;
+	  	if (val.children) {
+	  	 var _child = _buildCollectionTree(val.children);
+	  	  children = $( "<ul/>", {
+		    html: _child.join( "" )
+		  })
+	  	}
+	  	var item = "<li id='" + val.id + "' class='extra'><a href='#'>" + val.name + "</a>";
+	  	if (children != undefined) {
+	  		item += children.html();
+  		}
+  		item  += "</li>" 
+	    items.push( item);
+	  });
+	return items;
+}
+
+$(document).ready(function() {
+    $('.bookmark-menu .dropdown-toggle').data('open', false);
+
+    $('.bookmark-menu .dropdown-toggle').click(function() {
+    	var $menu = $(this);
+        if($menu.data('open')) {
+            $menu.data('open', false);
+			$menu.children(".extra").remove();
+            console.log("close");
+        } else {
+			$.getJSON( "/api/collection/tree", function( data ) {
+			  var items = _buildCollectionTree(data);
+			  console.log($menu);
+				$menu.next("ul.dropdown-menu").append(items);
+			});
+            $menu.data('open', true);
+        }
+    });
+
+
+
+});
+</script>
 </body>
 </html>

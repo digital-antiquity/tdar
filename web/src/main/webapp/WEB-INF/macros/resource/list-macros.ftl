@@ -269,6 +269,7 @@ bookmark indicator, etc..
  -->
     <#macro searchResultTitleSection result titleTag >
         <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
+        <@bookmark result false/>
         <#if titleTag?has_content>
             <${titleTag} class="${titleCssClass}">
         </#if>
@@ -286,7 +287,6 @@ bookmark indicator, etc..
         <#if isMapLayout && result.latLongVisible><i class="icon-map-marker" title="click to highlight on map" alt="click to highlight on map"></i></#if>
         <#if titleTag?has_content>
         </${titleTag}>
-        <@bookmark result false/>
         </#if>
     </#macro>
 
@@ -349,7 +349,7 @@ bookmark indicator, etc..
                     <#assign status = "bookmark" />
                 </#if>
 
-                <div class="btn-group">
+                <div class="btn-group pull-right bookmark-menu">
                   <button class="btn bookmark-link" resource-id="${_resource.id?c}" bookmark-state="<#if _resource.bookmarked>bookmarked<#else>bookmark</#if>">
                         <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
                   </button>
@@ -357,35 +357,18 @@ bookmark indicator, etc..
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu">
-                    <!-- dropdown menu links -->
+                    	<li><a href="">new collection</a></li>
+<!--                    	<li><form class="form-search">
+  <input type="text" class="input-medium search-query">
+  <button type="submit" class="btn">Search</button>
+</form></li> -->
+						<li class="divider"></li>
                   </ul>
                 </div>
                 <#if useListItem>
                 <li class="${status}">
                 </#if>
 
-                <#if _resource.deleted?? && _resource.deleted>
-                    <#if showLabel>
-                        <span class="disabled" title='Deleted items cannot be bookmarked.'>
-            	<i title="disabled boomkark" class="bookmark-icon tdar-icon-bookmark-disabled"></i>
-                bookmark</span><#t>
-                    </#if>
-                <#elseif _resource.bookmarked>
-                    <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
-                       bookmark-state="bookmarked">
-                        <#if showLabel>
-                            <span class="bookmark-label">un-bookmark</span><#t>
-                        </#if>
-                    </a><#t>
-                <#else>
-                    <a href="<@s.url value='/resource/bookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
-                       bookmark-state="bookmark">
-                        <i title="bookmark or unbookmark" class="bookmark-icon tdar-icon-bookmark"></i>
-                        <#if showLabel>
-                            <span class="bookmark-label"> bookmark</span><#t>
-                        </#if>
-                    </a><#t>
-                </#if>
 
                 <#if useListItem>
                 </li>
