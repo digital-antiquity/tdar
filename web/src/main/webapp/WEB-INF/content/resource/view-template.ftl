@@ -3,6 +3,7 @@
     <#import "/WEB-INF/content/${resource.urlNamespace}/view.ftl" as local_ />
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/macros/resource/list-macros.ftl" as list>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
 
 <head>
@@ -56,7 +57,7 @@
 
     <@view.pageStatusCallout />
 
-<h1 class="view-page-title">${resource.title!"No Title"}</h1>
+<h1 class="view-page-title">${resource.title!"No Title"}<@list.bookmark resource false false/></h1>
     <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
     <div id="subtitle">

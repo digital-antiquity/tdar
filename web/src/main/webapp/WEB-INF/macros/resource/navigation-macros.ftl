@@ -34,7 +34,6 @@ navigation freemarker macros
 			            <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
 			            <@makeLink "resource" "delete?id=${resource.id}" "delete" "delete" current true _deleteable />
 			        </#if>
-			        <@list.bookmark resource true true />
 			        <#if resource.resourceType.project >
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add new resource to project" "add" "" false false "hidden-tablet hidden-phone"/>
 			            <@makeLink "resource" "add?projectId=${resource.id?c}" "add item" "add" "" false false "hidden-desktop"/>

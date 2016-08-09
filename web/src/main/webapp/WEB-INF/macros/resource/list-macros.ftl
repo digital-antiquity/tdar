@@ -349,6 +349,17 @@ bookmark indicator, etc..
                     <#assign status = "bookmark" />
                 </#if>
 
+                <div class="btn-group">
+                  <button class="btn bookmark-link" resource-id="${_resource.id?c}" bookmark-state="<#if _resource.bookmarked>bookmarked<#else>bookmark</#if>">
+                        <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
+                  </button>
+                  <button class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    <!-- dropdown menu links -->
+                  </ul>
+                </div>
                 <#if useListItem>
                 <li class="${status}">
                 </#if>
@@ -362,7 +373,6 @@ bookmark indicator, etc..
                 <#elseif _resource.bookmarked>
                     <a href="<@s.url value='/resource/removeBookmark' resourceId='${_resource.id?c}'/>" class="bookmark-link" resource-id="${_resource.id?c}"
                        bookmark-state="bookmarked">
-                        <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
                         <#if showLabel>
                             <span class="bookmark-label">un-bookmark</span><#t>
                         </#if>
