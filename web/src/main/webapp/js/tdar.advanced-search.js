@@ -130,7 +130,8 @@ TDAR.advancedSearch = (function () {
             TDAR.autocomplete.applyInstitutionAutocomplete($institutionAutoFields, false);
         }
 
-        $('.datepicker', containerElem).datepicker().on('changeDate', function(ev){
+        var picker = $('.datepicker', containerElem).datepicker();
+        picker.on('changeDate', function(ev){
             $(ev.target).datepicker('hide');
         });
 

@@ -196,7 +196,7 @@ describe("TDAR.common: edit page tests", function () {
             expect($j(".treeview")).toHaveLength(1);
         });
     
-        it("initializes a the search box on view page", function () {
+        xit("initializes a the search box on view page", function () {
             loadFixtures('searchheader.html');
             var result = TDAR.common.initializeView();
             $expect('.active').not.toBeInDOM();
