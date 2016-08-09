@@ -284,9 +284,9 @@ bookmark indicator, etc..
             <#if (result.date?has_content && (result.date > 0 || result.date < -1) )>(${result.date?c})</#if>
         </a><#lt>
         <#if isMapLayout && result.latLongVisible><i class="icon-map-marker" title="click to highlight on map" alt="click to highlight on map"></i></#if>
-        <@bookmark result false/>
         <#if titleTag?has_content>
         </${titleTag}>
+        <@bookmark result false/>
         </#if>
     </#macro>
 

@@ -1530,7 +1530,7 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
         <#if date?has_content>
             <#local val = date?string(format)>
         </#if>
-        <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" dynamicAttributes={"data-date-format":"${placehoder}"}/>
+        <@s.textfield name="${name}" id="${id}" cssClass="${cssClass}" label="${label}" placeholder="${placeholder}" value="${val}" dynamicAttributes={"data-date-format":"${placeholder}"}/>
     </#macro>
 
 <#--emit x-tmpl template for use when rendering results menu for person autocomplete fields -->

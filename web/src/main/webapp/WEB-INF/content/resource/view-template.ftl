@@ -57,7 +57,7 @@
 
     <@view.pageStatusCallout />
 
-<h1 class="view-page-title">${resource.title!"No Title"}<@list.bookmark resource false false/></h1>
+<@list.bookmark resource false false/><h1 class="view-page-title">${resource.title!"No Title"}</h1>
     <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
     <div id="subtitle">
