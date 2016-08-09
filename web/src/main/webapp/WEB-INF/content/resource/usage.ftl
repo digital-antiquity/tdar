@@ -19,9 +19,9 @@ ${graphJson!'[]'}
 </#noescape>
 </#if>
 
-<@statTable allByYear yearLabels "Year" />
+<@statTable allByYear yearLabels "Overall" />
 
-<@statTable allByMonth monthLabels "Last Month" />
+<@statTable allByMonth monthLabels "Last Year" />
 
 <@statTable allByDay dayLabels "Last Week" />
 

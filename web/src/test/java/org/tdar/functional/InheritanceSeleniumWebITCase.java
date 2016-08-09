@@ -187,6 +187,8 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // now create a document and inherit everything.
         gotoPage("/document/add");
+        setupBasics();
+
         logger.debug("expecting to be on document add page: {}", getDriver().getCurrentUrl());
         find("#projectId").toSelect().selectByVisibleText(project.getTitle());
 
@@ -206,19 +208,33 @@ public class InheritanceSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         takeScreenshot("before checking other keyword");
         find("#metadataForm_otherKeywords_0_").click();
         assertTrue("other keywords should be set", StringUtils.isNotBlank(find("#metadataForm_otherKeywords_0_").val()));
+        find("#submitButton").click();
+    }
+
+    private void setupBasics() {
+        find("#resourceRegistrationTitle").val("my fancy document");
+        find("#resourceDescription").val("this test took me 8 hours to write. a lot of trial and error was involved.");
+        find("#dateCreated").val("2012");
     }
 
     @Test
     public void testInheritCreditSection() throws InterruptedException {
         gotoPage("/document/add");
-        find("#resourceRegistrationTitle").val("my fancy document");
-        find("#resourceDescription").val("this test took me 8 hours to write. a lot of trial and error was involved.");
-        find("#dateCreated").val("2012");
+        setupBasics();
         find("#projectId").val("3805");
         find("#cbInheritingCreditRoles").click();
         waitFor(ExpectedConditions.elementToBeSelected(By.id("cbInheritingCreditRoles")));
         // this project should have about four contributors.
-        waitFor("#creditTable > :nth-child(4)");
+        waitFor(ExpectedConditions.not(ExpectedConditions.elementToBeClickable(By.id("creditTableAddAnotherButton"))));
+        find("#cbInheritingCreditRoles").click();
+        waitFor(ExpectedConditions.not(ExpectedConditions.elementToBeSelected(By.id("cbInheritingCreditRoles"))));
+        clearPageCache();
+        String val = find("#metadataForm_creditProxies_2__institution_name").val();
+        logger.debug(val);
+//        Thread.sleep(1000000);
+        
+        assertTrue("should have Illinois", val.contains("Illinois"));
+        find("#dateCreated").val("2013");
         find("#submitButton").click();
     }
 

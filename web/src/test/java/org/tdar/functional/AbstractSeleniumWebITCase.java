@@ -431,7 +431,7 @@ public abstract class AbstractSeleniumWebITCase {
             driver.quit();
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
-            driver.switchTo().alert().dismiss();
+            driver.switchTo().alert().accept();
             driver.close();
             driver.quit();
         } catch (Exception ex) {

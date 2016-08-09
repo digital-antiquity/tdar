@@ -54,6 +54,34 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         fitToBounds: true
     };
 
+
+    /**
+     * Wire up an Evented object to every freaking event we can think of.  Log the name of the event when it fires.
+     * @param object eventedd object
+     * @param object tag  tag to help  differentiate event messages
+     */
+    function _logEventedClass(object, tag) {
+        var eventNames = [
+           'baselayerchange','overlayadd','overlayremove','layeradd','layerremove','zoomlevelschange','resize','unload','viewreset','load','zoomstart',
+            'movestart','zoom','move','zoomend','moveend','popupopen','popupclose','autopanstart','locationerror'
+        ];
+
+        if(!!object['on']) {
+            eventNames.forEach(function(s) {
+                object.on(s, function(evt) {
+                    console.log("event: %s\t tag:", evt.type, tag);
+                });
+            });
+        } else {
+            console.warn("logEventedClass: can't add events because object has no 'on' method", tag)
+            return;
+
+        }
+
+
+    }
+
+
     // -1 -- not initialized ; -2 -- bad rectangle ; 1 -- initialized ; 2 -- rectangle setup
     //fixme: global _inialized unreliable if more than one map on page
     //fixme: seems like you really want to track two things: 1) initialize status and 2) rectangle validity.
@@ -81,12 +109,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         var map = new L.map(elem, settings);
         // setView implicitly triggers 'load' event, so register the listener beforehand
-        map.on('load', function _mapLoaded(){
-            console.log("map loaded");
-            deferred.resolve(map);
-        });
-        map.setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
-        map.setMaxBounds(settings.maxBounds);
+
         //console.log('setting map obj on', $elem)
 		$elem.data("map",map);
 
@@ -98,8 +121,20 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             id: settings.id,
             apiKey:settings.leafletApiKey
         });
-        //console.log('adding tile to map');
+
+
+        // _logEventedClass(map, 'map');
+        // _logEventedClass(tile, 'tile')
+        tile.once('load', function _mapLoaded(){
+            console.log("map loaded");
+            deferred.resolve(map);
+        });
         tile.addTo(map);
+        map.setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
+        map.setMaxBounds(settings.maxBounds);
+        //console.log('adding tile to map');
+
+
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
 
@@ -128,6 +163,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         $(".leaflet-map-results").each(function() {
             var $el = $(this);
             _initMap(this).done(function(map){
+                console.log('_initResultsMaps');
                 var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
                 $el.data("markers", markers);
                 map.markers = markers;
@@ -273,6 +309,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             function() {
                 var $el = $(this);
                 _initMap(this).done(function(map){
+                    console.log('_initLeafletMaps')
                     _initFromDataAttr($el, map, _rectangleDefaults);
                 });
             });
@@ -383,6 +420,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 $mapDiv.height(400);
             }
             _initMap(div).done(function(map){
+                console.log('_initEditableMaps');
                 var drawnItems = new L.FeatureGroup();
 
                 // bind ids

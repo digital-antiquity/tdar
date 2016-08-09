@@ -1358,6 +1358,7 @@ hr.light {
     color: #7a1501;
     fill:  #7a1501;
     stroke:#7a1501;
+    stroke-width:1px;
     fill-opacity:1 !important;	
 }
 
