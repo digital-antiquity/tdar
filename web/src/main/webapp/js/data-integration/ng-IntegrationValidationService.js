@@ -50,7 +50,7 @@
                     //exclude  display columns (which are allowed to have null dataTableColumns)
                     .filter(function(c){return TYPE_INTEGRATION === c.type })
                     //exclude valid dataTableColumns
-                    .filter(function(ic){return ic.dataTableColumns.some(function(col){return col == null})})
+                    .filter(function(ic){return ic.dataTableColumns.every(function(col){return col == null})})
                     //convert invalid columns  to error messages
                     .map(function(invalidColumn){return "The following integration column is invalid:" + invalidColumn.name;}));
 
@@ -93,7 +93,14 @@
             _addErrors(jsonData.columns
                         //get one big list of all the dtc ids
                         .reduce(function(dtclist,c){
-                            return dtclist.concat(c.dataTableColumns.map(function(dtc){if(dtc) {return dtc.id} else {return -1;}}))
+                            return dtclist
+                                    .concat(
+                                        c.dataTableColumns
+                                            // get list of ids (in partial integration, some might be undefined
+                                            .map(function(dtc){if(dtc) {return dtc.id}})
+                                            // filter out undefined ids
+                                            .filter(function(id){return !!id})
+                                    )
                         }, [])
                         //then include only the ones that arent' found in dtc cache
                         .filter(function(dtcid){
