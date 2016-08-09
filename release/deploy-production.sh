@@ -83,7 +83,7 @@ mvn clean install -DskipTests -Djetty.skip=true -pl database,locales,core,base,s
 handleError;hr
 mvn clean compile war:war -Pminify-web-resources -pl tag,web,oai-pmh,dataone -DskipTests
 handleError;hr
-mvn process-resources -Pliquibase -pl web -DskipTests
+mvn process-resources -Pliquibase -pl web -DskipTests -DskipKarma -DskipNode
 
 if [ $? -ne 0 ] 
   then
