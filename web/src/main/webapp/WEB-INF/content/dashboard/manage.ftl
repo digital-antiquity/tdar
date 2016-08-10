@@ -126,12 +126,12 @@
     <#macro collectionsSection>
 
 <ul class="nav nav-tabs" id="myTab">
-  <li class="active"><a href="#groups">Groups</a></li>
-  <li><a href="#shared">Shared With Me</a></li>
-  <li><a href="#individual">Individual Resources</a></li>
+  <li class="active" data-toggle="tab"><a href="#groups">Groups</a></li>
+  <li><a href="#shared" data-toggle="tab">Shared With Me</a></li>
+  <li><a href="#individual" data-toggle="tab">Individual Resources</a></li>
 </ul>
  
-<div class="tab-content">
+<div class="tab-content" >
   <div class="tab-pane active" id="groups">
         <table class="table">
             <thead>
@@ -171,9 +171,11 @@
                 <th>action</th>
             </thead>
             <tbody>
-            <#list internalCollections![] as collection>
+            <#list intenralCollections![] as collection>
                 <tr>
-                <td>${collection.resources[0].title}</td>
+                <td><#if (collection.resources?size > 0 )>
+					<#list collection.resources as resource>
+						${resource.title}</#list></#if></td>
                 <td>${collection.authorizedUsers?size}</td>
                 <td>edit | delete | details</td>
                 </tr>

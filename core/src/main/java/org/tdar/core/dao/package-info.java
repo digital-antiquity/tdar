@@ -574,8 +574,10 @@
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.CHECK_INVITES,
-                query = "from UserInvite where lower(emailAddress) like lower(:email)")
-        
+                query = "from UserInvite where lower(emailAddress) like lower(:email)"),
+        @org.hibernate.annotations.NamedQuery(
+                name = TdarNamedQueries.ALL_INTERNAL_COLLECTIONS,
+                query = " from InternalCollection ic right join ic.authorizedUsers as user right join ic.resources as res where (owner.id=:owner) ")
 })
 package org.tdar.core.dao;
 

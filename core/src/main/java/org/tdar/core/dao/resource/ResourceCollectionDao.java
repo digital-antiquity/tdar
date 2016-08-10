@@ -14,6 +14,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.poi.xssf.usermodel.ListAutoNumber;
 import org.hibernate.Criteria;
@@ -389,4 +396,21 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             saveOrUpdate(resource);
         }
     }
+
+    public List<InternalCollection> findCollectionByOwner(TdarUser authenticatedUser) {
+        Query<InternalCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.ALL_INTERNAL_COLLECTIONS, InternalCollection.class);
+
+        query.setParameter("owner", authenticatedUser.getId());
+        return query.getResultList();
+//        CriteriaBuilder builder = getCurrentSession().getCriteriaBuilder();
+//        CriteriaQuery<C> query = builder.createQuery(class1);
+//        Root<C> root = query.from(class1);
+//        Join<Object, Object> owner = root.join("owner");
+//        Join<Object, Object> users = root.join("authorizedUsers");
+//        query.where(builder.equal(owner.get("id"), authenticatedUser.getId()));
+//        return getCurrentSession().createQuery(query).getResultList();
+    }
+
+
+    
 }

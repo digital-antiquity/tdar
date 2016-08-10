@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.notification.UserNotification;
@@ -56,6 +57,7 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
     private List<Resource> fullUserProjects;
     private List<SharedCollection> allResourceCollections = new ArrayList<>();
     private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
+    private List<InternalCollection> internalCollections = new ArrayList<>();
 
     @Autowired
     private transient AuthorizationService authorizationService;
@@ -163,7 +165,6 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
         fullUserProjects.removeAll(getAllSubmittedProjects());
         filteredFullUserProjects = new ArrayList<Resource>(getFullUserProjects());
         filteredFullUserProjects.removeAll(getAllSubmittedProjects());
-
     }
 
     public Set<Resource> getEditableProjects() {
@@ -173,7 +174,8 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
     public void prepare() {
         setCurrentNotifications(userNotificationService.getCurrentNotifications(getAuthenticatedUser()));
         setupResourceCollectionTreesForDashboard();
-        prepareProjectStuff();
+//        prepareProjectStuff();
+        internalCollections = resourceCollectionService.findAllInternalCollections(getAuthenticatedUser());
     }
 
     public List<Status> getStatuses() {
@@ -242,4 +244,13 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
     public boolean isRightSidebar() {
         return true;
     }
+
+    public List<InternalCollection> getInternalCollections() {
+        return internalCollections;
+    }
+
+    public void setInternalCollections(List<InternalCollection> internalCollections) {
+        this.internalCollections = internalCollections;
+    }
+
 }

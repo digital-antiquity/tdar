@@ -165,6 +165,7 @@ public interface TdarNamedQueries {
     String COUNT_MAPPED_RESOURCES = "query.count_mapped_resources";
     String ALL_RESOURCES_IN_COLLECTION = "query.non_deleted_in_collection";
     String CHECK_INVITES = "check.invites";
+    String ALL_INTERNAL_COLLECTIONS = "all.internalCollections";
     // raw SQL/HQL queries
 
     /**

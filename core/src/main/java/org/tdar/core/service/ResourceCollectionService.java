@@ -1011,10 +1011,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
-    @Transactional(readOnly=false)
+    @Transactional(readOnly=true)
     public String getSchemaOrgJsonLD(VisibleCollection resource) throws IOException {
         SchemaOrgCollectionTransformer transformer = new SchemaOrgCollectionTransformer();
         return transformer.convert(serializationService, resource);
+    }
+
+    @Transactional(readOnly=true)
+    public List<InternalCollection> findAllInternalCollections(TdarUser authenticatedUser) {
+        return getDao().findCollectionByOwner(authenticatedUser, InternalCollection.class);
     }
 
 }
