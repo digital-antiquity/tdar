@@ -295,9 +295,11 @@ function _buildCollectionTree(data) {
 		    html: _child.join( "" )
 		  })
 	  	}
-	  	var item = "<li id='" + val.id + "' class='extra'><a href='#'>" + val.name + "</a>";
+	  	var item = "<li id='" + val.id + "' class='extra'><a href='#'>" + TDAR.common.htmlEncode(TDAR.ellipsify(val.name, 80))+ "</a>";
 	  	if (children != undefined) {
-	  		item += children.html();
+	  	//http://stackoverflow.com/questions/9758587/twitter-bootstrap-multilevel-dropdown-menu
+	  	//https://vsn4ik.github.io/bootstrap-submenu/
+//	  		item += children.html();
   		}
   		item  += "</li>" 
 	    items.push( item);

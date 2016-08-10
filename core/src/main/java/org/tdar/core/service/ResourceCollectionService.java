@@ -1019,7 +1019,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional(readOnly=true)
     public List<InternalCollection> findAllInternalCollections(TdarUser authenticatedUser) {
-        return getDao().findCollectionByOwner(authenticatedUser, InternalCollection.class);
+        return getDao().findCollectionByOwner(authenticatedUser);
     }
 
 }

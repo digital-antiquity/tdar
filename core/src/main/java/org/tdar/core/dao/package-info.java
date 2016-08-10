@@ -577,7 +577,7 @@
                 query = "from UserInvite where lower(emailAddress) like lower(:email)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ALL_INTERNAL_COLLECTIONS,
-                query = " from InternalCollection ic right join ic.authorizedUsers as user right join ic.resources as res where (owner.id=:owner) ")
+                query = "select distinct ic from InternalCollection ic right join ic.authorizedUsers as user right join ic.resources as res where ic.owner.id=:owner or res.submitter.id=:owner and res.status in ('ACTIVE','DRAFT') order by res.title")
 })
 package org.tdar.core.dao;
 
