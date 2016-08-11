@@ -7,7 +7,7 @@
     <#import "/${themeDir}/settings.ftl" as settings>
 
 <head>
-    <title>${authenticatedUser.properName}'s Dashboard</title>
+    <title>Billing Accounts</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <@edit.resourceDataTableJavascript />
 </head>
@@ -19,14 +19,53 @@
     <div id="accountSection" class="row">
     <div class="span9">
         <div id="divAccountInfo">
-                    <@common.billingAccountList accounts />
-        
+            <#list accounts>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Resources</th>
+                            <th>Latest Activity</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <#items as account>
+                        <tr>
+                            <td>${account.name}</td>
+                            <td >
+                                ${account.invoices?size} invoices,
+                                ${account.totalNumberOfFiles} files,
+                                ${account.totalSpaceInBytes} bytes
+                            </td>
+                            <td>${account.resources?size}</td>
+                            <td>
+                                <#--fixme: work to obtain aggregate info like this is best left to action or service layer -->
+                                <#if account.resourceList?has_content>
+                                    <#assign resource = account.resourceList?sort_by('dateCreated')?reverse?first>
+                                    <em>${resource.title}</em>
+                                    created on ${resource.dateCreated?date?string.short}
+                                <#else>
+                                   <em class="disabled">n/a</em>
+                                </#if>
+                            </td>
+                            <td>details | edit | reports</td>
+                        </tr>
+                        </#items>
+
+                    </tbody>
+                </table>
+            <#else>
+                <em>You do not have any billing accounts.</em>
+            </#list>
+            <@common.billingAccountList accounts />
+
         </div>
 
     </div>
     <div class="span3">
     <h5>Add Space</h5>
-
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
                 <table class="table pTable">
                     <tbody>

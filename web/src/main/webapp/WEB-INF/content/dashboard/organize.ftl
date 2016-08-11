@@ -17,20 +17,67 @@
 
 </div>
 
+
+
+
+
+
 <div class="row">
 <div class="span9">
-<div class="well">
-<p ><b>I want to be able to:</b>
-<ul>
-    <li>View all my collections</li>
-    <li>delete collections?</li>
-    <li>organize collections?</li>
-    <li>add resources to a collection? (maybe)?</li>
-    <li>Should bookmarks be a "special" collection in your library? or a dedicated section?</li>
-    <li>how to show "shared" libraries?</li>
-    <li>two pane layout could work, either top/bottom or right /left where "top" or "right" was dedicated to creation, and other part was for viewing</li>
-</ul>
-</div>
+    <#list summaryItems>
+        <div class="table">
+            <h2>Collections</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name & Description</th>
+                        <th>Size</th>
+                        <th>Contents</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <#items as collection>
+                        <tr>
+                            <td>
+                                <div class="organize-summary-name">
+                                    <b>${collection.name}</b>
+                                    <#if collection.description?has_content>
+                                    <#-- fixme: ellipsify this-->
+                                        - ${collection.description}
+                                    </#if>
+                                </div>
+                            </td>
+                            <td>
+                                <#-- fixme: get actual total including child collections -->
+                                ${(collection.resources?size)!0}
+                            </td>
+                            <td>
+                                <em>Intelligent summary of collection contents goes here</em>
+                            </td>
+                            <td>view | share | edit</td>
+                        </tr>
+                    </#items>
+                </tbody>
+            </table>
+        </div>
+    <#else>
+        <p>If you're reading this,  Jim screwed something up.</p>
+    </#list>
+
+
+    <div class="well">
+        <b>I want to be able to:</b>
+        <ul>
+            <li>View all my collections</li>
+            <li>delete collections?</li>
+            <li>organize collections?</li>
+            <li>add resources to a collection? (maybe)?</li>
+            <li>Should bookmarks be a "special" collection in your library? or a dedicated section?</li>
+            <li>how to show "shared" libraries?</li>
+            <li>two pane layout could work, either top/bottom or right /left where "top" or "right" was dedicated to creation, and other part was for viewing</li>
+        </ul>
+    </div>
 
     <@collectionsSection />
 </div>

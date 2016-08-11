@@ -48,6 +48,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
     private List<ListCollection> allResourceCollections = new ArrayList<>();
     private List<ListCollection> sharedResourceCollections = new ArrayList<>();
 
+
     @Autowired
     private transient AuthorizationService authorizationService;
     @Autowired
@@ -169,5 +170,34 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    //fixme: a bookmark collection won't have child collections.  However, if we add the ability to bookmark a collection, the idea of BookmarkCollection becomes less viable
+    /**
+     * Return the current user's bookmarks as though it were a collection (which it isn't, but it's useful to treat it like one for certain tasks)
+     * @return
+     */
+    public ListCollection getBookmarkCollection() {
+        //maybe cache this, though I don't see it being called a lot by ftl
+        ListCollection lc = new ListCollection();
+        lc.setName(getText("organize.bookmark_collection_name", "My Bookmarks"));
+        //todo: other ideas for description:
+        // - dynamic description e.g. "You have bookmarked 12 documents, 6 datasets, and 1 coding sheet",  or "No bookmarked resources yet"
+        // - ???
+        lc.setDescription(getText("organize.bookmark_collection_description", "Resources that you've collected go here"));
+        lc.getUnmanagedResources().addAll(getBookmarkedResources());
+        lc.setId(-2L);
+        return lc;
+    }
+
+    /***
+     * Get the collections we wish to display in the 'summary' section (including shared collections & the bookmarks 'collection')
+     * @return
+     */
+    public List<ListCollection> getSummaryItems() {
+        List<ListCollection> items = new ArrayList<>();
+        items.add(getBookmarkCollection());
+        items.addAll(getSharedResourceCollections());
+        return items;
     }
 }
