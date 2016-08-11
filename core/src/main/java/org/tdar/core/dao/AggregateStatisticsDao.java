@@ -196,7 +196,7 @@ public class AggregateStatisticsDao extends GenericDao {
             int year = start.getYear();
             downloadSubQuerypart.append(", ");
             viewSubQuerypart.append(String.format(TdarNamedQueries.MONTH_VIEW_PART, month, year));
-            downloadSubQuerypart.append(String.format(TdarNamedQueries.MONTH_DOWNLAOD_PART, month, year));
+            downloadSubQuerypart.append(String.format(TdarNamedQueries.MONTH_DOWNLOAD_PART, month, year));
             labelKeys.add(provider.getText("statisticsService.view_count_month", Arrays.asList(month, year)));
             labelDownloadKeys.add(provider.getText("statisticsService.download_count_month", Arrays.asList(month, year)));
             start = start.plusMonths(1);
@@ -228,7 +228,7 @@ public class AggregateStatisticsDao extends GenericDao {
             }
             downloadSubQuerypart.append(", ");
             viewSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_VIEW_PART, i));
-            downloadSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_DOWNLAOD_PART, i));
+            downloadSubQuerypart.append(String.format(TdarNamedQueries.ANNUAL_DOWNLOAD_PART, i));
             labelKeys.add(provider.getText("statisticsService.view_count_annual", Arrays.asList(i)));
             labelDownloadKeys.add(provider.getText("statisticsService.download_count_annual", Arrays.asList(i)));
             i++;

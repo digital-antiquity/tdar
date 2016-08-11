@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,35 +79,65 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     private SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
     Set<String> keys = new HashSet<>();
     private String graphJson;
-    
+
     protected void setupAggregateStats() {
         Map<Integer, Map<String, Long>> byYear = new HashMap<>();
         Map<String, Map<String, Long>> byMonth = new HashMap<>();
         Map<String, Map<String, Long>> byDay = new HashMap<>();
         String viewsText = getText("resourceStatisticsController.views");
-        DateTime lastYear = DateTime.now().minusDays(255);
+        DateTime lastYear = DateTime.now().minusDays(255).withDayOfMonth(1);
         DateTime lastWeek = DateTime.now().minusDays(7);
         Map<Date, Map<String, Object>> map = new HashMap<>();
-        for (AggregateViewStatistic stat : getUsageStatsForResources()) {
-            incrementKey(byYear, stat.getYear(), stat.getCount(), viewsText);
-            
-            Date date = stat.getAggregateDate();
-            if (!map.containsKey(date)) {
-                map.put(date, new HashMap<String,Object>());
-            }
-            Map<String,Object> submap = map.get(date);
-            submap.put(viewsText, stat.getCount());
-            submap.put("date", date);
-            
-            if (lastYear.isBefore(date.getTime())) {
-                incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), viewsText);
-            }
-            if (lastWeek.isBefore(date.getTime())) {
-                incrementKey(byDay, format.format(date), stat.getCount(), viewsText);
-            }
-            keys.add(viewsText);
+
+
+        setupLabels(byMonth, byDay, lastYear, lastWeek);
+
+        incrementViewStatistics(byYear, byMonth, byDay, viewsText, lastYear, lastWeek, map);
+        incrementDownloadStatistics(byYear, byMonth, byDay, lastYear, lastWeek, map);
+
+        try {
+            setGraphJson(serializationService.convertToJson(map.values()));
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
 
+        sortAndSetupForViewLayer(byYear, byMonth, byDay);
+
+    }
+
+    /**
+     * Sort the labels alphabetically, and then pass them to the "unwrap" function so they're sorted alphabetically there too
+     * @param byYear
+     * @param byMonth
+     * @param byDay
+     */
+    private void sortAndSetupForViewLayer(Map<Integer, Map<String, Long>> byYear, Map<String, Map<String, Long>> byMonth, Map<String, Map<String, Long>> byDay) {
+        keys.addAll(getDownloadStats().keySet());
+
+        yearLabels = new ArrayList<>(byYear.keySet());
+        monthLabels = new ArrayList<>(byMonth.keySet());
+        dayLabels = new ArrayList<>(byDay.keySet());
+        Collections.sort(yearLabels);
+        Collections.sort(monthLabels);
+        Collections.sort(dayLabels);
+
+        allByYear = unwrapByKey(byYear, yearLabels);
+        allByMonth = unwrapByKey(byMonth, monthLabels);
+        allByDay = unwrapByKey(byDay, dayLabels);
+    }
+
+    /**
+     * build a map that has the view statistics ordered properly
+     * @param byYear
+     * @param byMonth
+     * @param byDay
+     * @param lastYear
+     * @param lastWeek
+     * @param map
+     */
+    private void incrementDownloadStatistics(Map<Integer, Map<String, Long>> byYear, Map<String, Map<String, Long>> byMonth, Map<String, Map<String, Long>> byDay,
+            DateTime lastYear, DateTime lastWeek, Map<Date, Map<String, Object>> map) {
         for (Entry<String, List<AggregateDownloadStatistic>> entry : getDownloadStats().entrySet()) {
             for (AggregateDownloadStatistic stat : entry.getValue()) {
                 Date aggregateDate = stat.getAggregateDate();
@@ -119,42 +150,79 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
                 }
                 incrementKey(byYear, stat.getYear(), stat.getCount(), entry.getKey());
                 if (lastYear.isBefore(aggregateDate.getTime())) {
-                    incrementKey(byMonth, stat.getYear() + "-" + stat.getMonth(), stat.getCount(), entry.getKey());
+                    incrementKey(byMonth, formatMonth(stat.getYear(), stat.getMonth()), stat.getCount(), entry.getKey());
                 }
                 if (lastWeek.isBefore(aggregateDate.getTime())) {
                     incrementKey(byDay, format.format(aggregateDate), stat.getCount(), entry.getKey());
                 }
             }
         }
-        try {
-           setGraphJson(serializationService.convertToJson(map.values()));
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        keys.addAll(getDownloadStats().keySet());
-
-        allByYear = unwrapByKey(byYear);
-        yearLabels = new ArrayList<>(byYear.keySet());
-        monthLabels = new ArrayList<>(byMonth.keySet());
-        dayLabels = new ArrayList<>(byDay.keySet());
-        allByMonth = unwrapByKey(byMonth);
-        allByDay = unwrapByKey(byDay);
-
     }
 
-    private <T> Map<String, List<Long>> unwrapByKey(Map<T, Map<String, Long>> by) {
+    private void incrementViewStatistics(Map<Integer, Map<String, Long>> byYear, Map<String, Map<String, Long>> byMonth, Map<String, Map<String, Long>> byDay,
+            String viewsText, DateTime lastYear, DateTime lastWeek, Map<Date, Map<String, Object>> map) {
+        for (AggregateViewStatistic stat : getUsageStatsForResources()) {
+            incrementKey(byYear, stat.getYear(), stat.getCount(), viewsText);
+
+            Date date = stat.getAggregateDate();
+            if (!map.containsKey(date)) {
+                map.put(date, new HashMap<String, Object>());
+            }
+            Map<String, Object> submap = map.get(date);
+            submap.put(viewsText, stat.getCount());
+            submap.put("date", date);
+
+            if (lastYear.isBefore(date.getTime())) {
+                
+                incrementKey(byMonth, formatMonth(stat.getYear(), stat.getMonth()), stat.getCount(), viewsText);
+            }
+            if (lastWeek.isBefore(date.getTime())) {
+                incrementKey(byDay, format.format(date), stat.getCount(), viewsText);
+            }
+            keys.add(viewsText);
+        }
+    }
+
+    private void setupLabels(Map<String, Map<String, Long>> byMonth, Map<String, Map<String, Long>> byDay, DateTime lastYear, DateTime lastWeek) {
+        // ** setup with all months and days ** 
+        DateTime dt = lastWeek;
+        while (dt.isBeforeNow()) {
+            String key = format.format(dt.toDate());
+            byDay.put(key, new HashMap<>());
+            dayLabels.add(key);
+            dt = dt.plusDays(1);
+        }
+
+        dt = lastYear;
+        while (dt.isBeforeNow()) {
+            String key = formatMonth(dt.getYear(), dt.getMonthOfYear());
+            byMonth.put(key, new HashMap<>());
+            monthLabels.add(key);
+            dt = dt.plusMonths(1);
+        }
+    }
+
+    private String formatMonth(Integer year, Integer month) {
+        return String.format("%s-%02d",year, month);
+    }
+
+    private <T> Map<String, List<Long>> unwrapByKey(Map<T, Map<String, Long>> by, List<T> order) {
         Map<String, List<Long>> toReturn = new HashMap<>();
         for (String key : keys) {
             List<Long> list = new ArrayList<>();
-            for (T year : by.keySet()) {
-                Map<String, Long> map = by.get(year);
-                Long val = 0L;
-                if (map.containsKey(key)) {
-                    val = map.get(key);
+            for (T itm : order) {
+                for (T year : by.keySet()) {
+                    if (itm != year) {
+                        continue;
+                    }
+                    Map<String, Long> map = by.get(year);
+                    Long val = 0L;
+                    if (map.containsKey(key)) {
+                        val = map.get(key);
+                    }
+                    list.add(val);
                 }
-                list.add(val);
+
             }
             toReturn.put(key, list);
         }
@@ -182,14 +250,15 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
                 Arrays.asList(getResource().getId())));
         if (getResource() instanceof InformationResource) {
             for (InformationResourceFile file : ((InformationResource) getResource()).getInformationResourceFiles()) {
-                getDownloadStats().put(file.getFilename(), resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
+                getDownloadStats().put(file.getFilename(),
+                        resourceService.getAggregateDownloadStatsForFile(DateGranularity.WEEK, new Date(0L), new Date(), 1L, file.getId()));
             }
         }
         setupAggregateStats();
     }
 
     public String getCategoryKeys() {
-        return StringUtils.join(keys,",");
+        return StringUtils.join(keys, ",");
     }
 
     public List<AggregateViewStatistic> getUsageStatsForResources() {
@@ -304,7 +373,5 @@ public class ResourceUsageAction extends AbstractAuthenticatableAction implement
     public void setGraphJson(String graphJson) {
         this.graphJson = graphJson;
     }
-    
-    
 
 }
