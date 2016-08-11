@@ -202,7 +202,7 @@ Common macros used in multiple contexts
 			<#noescape>${homepageGraphs.localesJson}</#noescape>
         </script>
 		</#if>
-             <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="">
+             <div id="worldmap" style="height:<#if mode == 'mini'>150<#else>350</#if>px" data-max="" <#if (keyword.code)?has_content>data-code="${(keyword.code)!""}"</#if>>
              </div>
         <#if mode =='vertical'></div></#if>
              <div id="mapgraphdata"  <#if mode == 'vertical'>data-mode="vertical" class="span4 offset1"<#else>style="width:100%"</#if>>

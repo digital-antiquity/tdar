@@ -1135,6 +1135,49 @@
                 </plugins>
             </build>
         </profile>
+        <profile>
+            <id>copy</id>
+            <build>
+                <plugins>
+                     <plugin>
+                       <groupId>org.apache.maven.plugins</groupId>
+                       <artifactId>maven-dependency-plugin</artifactId>
+                       <version>2.10</version>
+                       <executions>
+                         <execution>
+                           <id>copy</id>
+                           <phase>package</phase>
+                           <goals>
+                             <goal>copy</goal>
+                           </goals>
+                           <configuration>
+                             <artifactItems>
+                                 <artifactItem>
+                                   <groupId>org.liquibase</groupId>
+                                   <artifactId>liquibase-core</artifactId>
+                                   <version>${liquibase.version}</version>
+                                   <type>jar</type>
+                                   <overWrite>true</overWrite>
+                                   <outputDirectory>target/extra/</outputDirectory>
+                                   <destFileName>liquibase.jar</destFileName>
+                                 </artifactItem>
+                                 <artifactItem>
+                                     <groupId>org.postgresql</groupId>
+                                     <artifactId>postgresql</artifactId>
+                                     <version>${postgresql.jdbc.version}</version>
+                                   <type>jar</type>
+                                   <overWrite>true</overWrite>
+                                   <outputDirectory>target/extra/</outputDirectory>
+                                   <destFileName>postgresql.jar</destFileName>
+                                 </artifactItem>
+                             </artifactItems>
+                             <!-- other configurations here -->
+                           </configuration>
+                         </execution>
+                       </executions>
+                     </plugin>
+                   </plugins>
+            </build>
+        </profile>
     </profiles>
-
 </project>

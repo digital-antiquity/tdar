@@ -54,6 +54,34 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         fitToBounds: true
     };
 
+
+    /**
+     * Wire up an Evented object to every freaking event we can think of.  Log the name of the event when it fires.
+     * @param object eventedd object
+     * @param object tag  tag to help  differentiate event messages
+     */
+    function _logEventedClass(object, tag) {
+        var eventNames = [
+           'baselayerchange','overlayadd','overlayremove','layeradd','layerremove','zoomlevelschange','resize','unload','viewreset','load','zoomstart',
+            'movestart','zoom','move','zoomend','moveend','popupopen','popupclose','autopanstart','locationerror'
+        ];
+
+        if(!!object['on']) {
+            eventNames.forEach(function(s) {
+                object.on(s, function(evt) {
+                    console.log("event: %s\t tag:", evt.type, tag);
+                });
+            });
+        } else {
+            console.warn("logEventedClass: can't add events because object has no 'on' method", tag)
+            return;
+
+        }
+
+
+    }
+
+
     // -1 -- not initialized ; -2 -- bad rectangle ; 1 -- initialized ; 2 -- rectangle setup
     //fixme: global _inialized unreliable if more than one map on page
     //fixme: seems like you really want to track two things: 1) initialize status and 2) rectangle validity.
@@ -81,12 +109,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
         var map = new L.map(elem, settings);
         // setView implicitly triggers 'load' event, so register the listener beforehand
-        map.on('load', function _mapLoaded(){
-            console.log("map loaded");
-            deferred.resolve(map);
-        });
-        map.setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
-        map.setMaxBounds(settings.maxBounds);
+
         //console.log('setting map obj on', $elem)
 		$elem.data("map",map);
 
@@ -98,8 +121,20 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             id: settings.id,
             apiKey:settings.leafletApiKey
         });
-        //console.log('adding tile to map');
+
+
+        // _logEventedClass(map, 'map');
+        // _logEventedClass(tile, 'tile')
+        tile.once('load', function _mapLoaded(){
+            console.log("map loaded");
+            deferred.resolve(map);
+        });
         tile.addTo(map);
+        map.setView([settings.center.lat, settings.center.lng], settings.zoomLevel);
+        map.setMaxBounds(settings.maxBounds);
+        //console.log('adding tile to map');
+
+
         //FIXME: WARN if DIV DOM HEIGHT IS EMPTY
         _initialized = 0;
 
@@ -124,10 +159,18 @@ TDAR.leaflet = (function(console, $, ctx, L) {
         return deferred.promise();
     }
 
+    /**
+     * Initialize any 'results style' maps and return a list of promises equal in size to the number of maps.  Each promise resolves when leaflet
+     * completes loading.
+     *
+     * @returns {Array|*}
+     * @private
+     */
     function _initResultsMaps() {
-        $(".leaflet-map-results").each(function() {
+        return $(".leaflet-map-results").map(function() {
             var $el = $(this);
-            _initMap(this).done(function(map){
+            return _initMap(this).done(function(map){
+                console.log('_initResultsMaps');
                 var markers = new L.MarkerClusterGroup({maxClusterRadius:150, removeOutsideVisibleBounds:true, chunkedLoading: true});
                 $el.data("markers", markers);
                 map.markers = markers;
@@ -191,6 +234,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
                 }
                 map.addLayer(markers);
             });
+           // return deferred.promise();
         });
     }
 
@@ -267,12 +311,15 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
     /**
      * init a "view" only map, binds to data-attribute minx, miny, maxx, maxy
+     *
+     * Return list of promises (one for each map on page).  Promise resolves when leaflet finishes loading the map.
      */
     function _initLeafletMaps() {
-        $(".leaflet-map").each(
+        return $(".leaflet-map").map(
             function() {
                 var $el = $(this);
-                _initMap(this).done(function(map){
+                return _initMap(this).done(function(map){
+                    console.log('_initLeafletMaps')
                     _initFromDataAttr($el, map, _rectangleDefaults);
                 });
             });
@@ -280,6 +327,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
 
 
     function _initFromDataAttr($el, map, rectangleSettings) {
+        console.log('$el is ', $el);
         var $minx = parseFloat($el.data("minx"));
         var $miny = parseFloat($el.data("miny"));
         var $maxx = parseFloat($el.data("maxx"));
@@ -292,6 +340,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      * create the rectangle based on the bounds
      */
     function _initRectangle(map, minx, miny, maxx, maxy, rectangleSettings) {
+
         if (minx != undefined && miny != undefined && maxx != undefined && maxy != undefined && !isNaN(minx) && !isNaN(miny) && !isNaN(maxy) && !isNaN(maxx)) {
             // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
             // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY ADD 360
@@ -354,9 +403,11 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      * .locateCoordsButton for the locate button
      *
      * this will create the map just before the element specified
+     *
+     * Returns list of promises with size equal to number of maps on page.  Each promise resolves after leaflet loads and initializes the map.
      */
     function _initEditableMaps() {
-        $(".leaflet-map-editable").each(function() {
+        return $(".leaflet-map-editable").map(function() {
             var $el = $(this);
             // we create a div just before the div and copy the styles from the container. This is so that we can bind to class seletion for the fields.
             // Currently, this is a bit of overkill but it would enable multiple forms on the same page
@@ -382,7 +433,8 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             if ($mapDiv.height() == 0) {
                 $mapDiv.height(400);
             }
-            _initMap(div).done(function(map){
+            return _initMap(div).done(function(map){
+                console.log('_initEditableMaps');
                 var drawnItems = new L.FeatureGroup();
 
                 // bind ids
