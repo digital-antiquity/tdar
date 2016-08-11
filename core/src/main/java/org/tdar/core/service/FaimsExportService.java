@@ -166,9 +166,9 @@ public class FaimsExportService {
                     File retrieveFile = getFile(filestore, file);
                     fileList.add(retrieveFile);
                     // try to add the r/f together
-                    if (file.getFilename().contains("_f.jpg")) {
-                        String prefix = StringUtils.substringBefore(file.getFilename(), "_f.jpg");
-                        InformationResourceFile rear = filenameMap.get(prefix + "_r.jpg");
+                    if (file.getFilename().endsWith("f.jpg")) {
+                        String prefix = StringUtils.substringBefore(file.getFilename(), "f.jpg");
+                        InformationResourceFile rear = filenameMap.get(prefix + "r.jpg");
                         if (rear != null) {
                             toSkip.add(rear.getFilename());
                             fileList.add(getFile(filestore, rear));

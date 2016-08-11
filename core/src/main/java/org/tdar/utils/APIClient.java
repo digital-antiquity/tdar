@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.Consts;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
@@ -20,6 +21,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 public class APIClient {
 
@@ -75,6 +77,16 @@ public class APIClient {
 
     public ApiClientResponse uploadRecord(String docXml, Long tdarId, Long accountId, File... files) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_UPLOAD);
+        List<File> errors = new ArrayList<>();
+        for (File f : files) {
+            if (!f.exists()) {
+                errors.add(f);
+            }
+        }
+        
+        if (!CollectionUtils.isEmpty(errors)) {
+            logger.error(">>>> Files don't exist for: {} -- {}", tdarId, files);
+        }
         // post.setHeader(new BasicHeader("Accept-Charset:","utf-8"));
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
         builder.addTextBody(RECORD, docXml, ContentType.create("application/xml", Consts.UTF_8));
