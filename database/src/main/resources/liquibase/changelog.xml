@@ -5,8 +5,8 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-  <include file="target/liquibase/lithic.xml"/> 
-  <include file="target/liquibase/munsell.xml"/> 
-  <include file="target/liquibase/neolithic.xml"/> 
-  <include file="target/liquibase/obsidian.xml"/> 
+  <include file="lithic.xml" relativeToChangelogFile="true"/> 
+  <include file="munsell.xml"  relativeToChangelogFile="true"/> 
+  <include file="neolithic.xml"  relativeToChangelogFile="true"/> 
+  <include file="obsidian.xml"  relativeToChangelogFile="true"/> 
 </databaseChangeLog>
