@@ -5,11 +5,11 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 	<!-- setup the test database -->
-	<include file="target/liquibase-test/changelog-test-base.xml"/>
-	<include file="target/liquibase-test/reset-sequences.xml"/>
+	<include file="changelog-test-base.xml" relativeToChangelogFile="true"/>
+	<include file="reset-sequences.xml" relativeToChangelogFile="true"/>
 	<!-- load the production updates -->
-	<include file="target/liquibase/changelog.xml" />
-	<include file="target/liquibase-test/additional-munsell-test-setup.xml"/>
-	<include file="target/liquibase-test/additional-obsidian-test-setup.xml"/>
+	<include file="../liquibase/changelog.xml" relativeToChangelogFile="true"/>
+	<include file="../liquibase-test/additional-munsell-test-setup.xml" relativeToChangelogFile="true"/>
+	<include file="../liquibase-test/additional-obsidian-test-setup.xml" relativeToChangelogFile="true"/>
 	<!-- make sure similar changes get pushed to liquibase-test/changelog-integration.xml -->
 </databaseChangeLog>
