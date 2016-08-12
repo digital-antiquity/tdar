@@ -82,6 +82,10 @@ public class ErrorTransferObject implements Serializable {
 
     @Override
     public String toString() {
+        // toString on hash ==> {} which gets passed to the MessageFormatter which throws an error as missing a numeric placeholder eg not {0}
+        if (getFieldErrors() == null || CollectionUtils.isEmpty(getFieldErrors().keySet())) {
+            return String.format("actionErrors: %s ; fieldErrors: none ", getActionErrors());
+        }
         return String.format("actionErrors: %s ; fieldErrors: %s", getActionErrors(), getFieldErrors());
     }
 }
