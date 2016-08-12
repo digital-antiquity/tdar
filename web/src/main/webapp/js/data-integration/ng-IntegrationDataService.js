@@ -252,7 +252,6 @@
             //console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
-                var promisesToKeep = [];
                 self.addDataTables(integration, dataTables);
                 //load  the participation information + ontology details,  then reconstitute  the columns in the integration
                 var futureParticipation = self.loadUpdatedParticipationInformation(integration);
@@ -269,70 +268,37 @@
                             name = "column";
                         }
 
-                        var ids = [];
-                        column.dataTableColumns.forEach(function(col) {
-                            if (col != undefined && col.id != undefined && dataTableColumnCache.get(col.id) != undefined) {
-                                ids.push(col.id);
+                        var ids = column.dataTableColumns.map(function(col){
+                            if(col != undefined && col.id != undefined && !!dataTableColumnCache.get(col.id)) {
+                                return col.id;
                             } else {
-                                //some dataTableColumns will be null when restoring a partial integration
-                                ids.push(undefined);
+                                return undefined;
                             }
                         });
 
-                        if (column.type == 'DISPLAY') {
-                            integration.addDisplayColumn(name);
-                            self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
+                        if (column.type === 'DISPLAY') {
+                            var displayColumn = integration.addDisplayColumn(name);
+                            self._loadDisplayIntegrationColumns(ids, displayColumn);
                         }
-                        if (column.type == 'COUNT') {
-                            integration.addCountColumn(name);
-                            self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
+                        if (column.type === 'COUNT') {
+                            var countColumn = integration.addCountColumn(name);
+                            self._loadDisplayIntegrationColumns(ids, countColumn);
                         }
-                        if (column.type == 'INTEGRATION') {
-                            var ontology = undefined;
-                            var ontologyIds = new Array();
+                        if (column.type === 'INTEGRATION') {
+                            var ontology = ontologyCache.get(column.ontology.id);
+                            var integrationColumn = integration.addIntegrationColumn(name, ontology);
+                            integrationColumn.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
 
-                            integration.ontologies.forEach(function(ont) {
-                                if (column.ontology.id == ont.id) {
-                                    ontology = ont;
-                                } else {
-                                    ontologyIds.push(ont.id);
-                                }
+                            integrationColumn.nodeSelections.forEach(function(node) {
+                                node.selected = column.nodeSelection.some(function(nodeRef){
+                                    return nodeRef.id == node.node.id;
+                                });
                             });
-                            promisesToKeep.push(
-                                self.loadOntologyDetails(ontologyIds).then(function() {
-                                    if (ontology == undefined) {
-                                        ontology = ontologyCache.get(column.ontology.id);
-                                        integration.ontologies.push(ontology);
-                                        _rebuildSharedOntologies(integration);
-                                    }
-                                    // FIXME: if not loaded, then need to go to the server for ontology details
-                                    integration.addIntegrationColumn(name, ontology);
-                                    var col = integration.columns[integration.columns.length - 1];
-
-                                    // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
-                                    col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
-                                    col.nodeSelections.forEach(function(node) {
-                                        column.nodeSelection.forEach(function(nodeRef) {
-                                            if (nodeRef.id == node.node.id) {
-                                                node.selected = true;
-                                            }
-                                        });
-                                    });
-                                })
-                            );
                         }
                     });
-                    $q.all(promisesToKeep).then(
-                        function() {
-                            futureData.resolve();},
-                        function(reason) {
-                            console.warn("loadTableDetails:: one or more of the loadOntologyDetails ajax calls failed");
-                            futureData.reject(reason);
-                        }
-                    )
-                },
-                    //fixme: this is getting repetitive - consider writing a defaultRejectHandler callback
-                    function(reason) {
+                    futureData.resolve();
+
+                }, function(reason) {
                         console.warn("loadParticipationInformation ajax call failed");
                         futureData.reject(reason);
                     }

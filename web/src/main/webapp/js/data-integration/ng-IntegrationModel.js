@@ -423,10 +423,11 @@
                 var selection = {
                     dataTable : table,
                     dataTableColumn : null
-                }
+                };
                 displayColumn.dataTableColumnSelections.push(selection);
             });
             self.columns.push(displayColumn);
+            return displayColumn;
         };
 
         /**
@@ -448,6 +449,7 @@
                 countColumn.dataTableColumnSelections.push(selection);
             });
             self.columns.push(countColumn);
+            return countColumn;
         };
 
         self.isCountColumnEnabled = function() {
