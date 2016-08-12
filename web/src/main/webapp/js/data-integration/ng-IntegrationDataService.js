@@ -119,14 +119,14 @@
         return out;
     }
 
+
     function _dedupe(items) {
-        var uniqueItems = [];
-        items.forEach(function(item) {
-            if (uniqueItems.indexOf(item) === -1) {
-                uniqueItems.push(item);
+        return items.reduce(function(a,b){
+            if(a.indexOf(b) < 0){
+                a.push(b);
             }
-        })
-        return uniqueItems;
+            return a;
+        }, []);
     }
 
     function DataService($http, $cacheFactory, $q, $log, $rootScope) {
@@ -234,6 +234,7 @@
             return futureData.promise;
         }
 
+
         /**
          * Based on the specified JSON representation of a data object, try and rebuild the integration
          */
@@ -251,11 +252,17 @@
             //console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
-                //These woods are lovely, dark, and deep
                 var promisesToKeep = [];
                 self.addDataTables(integration, dataTables);
-                var result = self.loadUpdatedParticipationInformation(integration);
-                result.then(function() {
+                //load  the participation information + ontology details,  then reconstitute  the columns in the integration
+                var futureParticipation = self.loadUpdatedParticipationInformation(integration);
+
+                //fixme: table details always(?) include ontology details, so calling loadOntologyDetails may be unnecessary. Consider removing this promise
+               var futureOntologyDetails = self.loadOntologyDetails(json.columns
+                        .filter(function(c){return c.type ==='INTEGRATION';})
+                        .map(function(c){return c.ontology.id;}));
+
+                $q.all([futureParticipation, futureOntologyDetails]).then(function() {
                     json.columns.forEach(function(column) {
                         var name = column.name;
                         if (name == undefined) {
@@ -468,6 +475,7 @@
             return futureData.promise;
         };
 
+
         /**
          * Returns httpPromise of an object containing: ontology objects corresponding to the specified array of ontologyId's
          * 
@@ -479,15 +487,17 @@
             var futureData = $q.defer();
             //console.log("loading info for ontologies from server:", ontologyIds);
             // only load tables that aren't already in the cache
-            var missingOntologyIds = ontologyIds.filter(function(ontologyId) {
+
+            // not sure if dupe tableIds will ever occur, but dedupe anyway.
+            var uniqueIds = _dedupe(ontologyIds);
+
+            var missingOntologyIds = uniqueIds.filter(function(ontologyId) {
                 return !ontologyCache.get(ontologyId)
             });
-            // not sure if dupe tableIds will ever occur, but dedupe anyway.
-            ontologyIds = _dedupe(ontologyIds);
 
-            if (ontologyIds.length > 0) {
+            if (missingOntologyIds.length > 0) {
                 var httpPromise = $http.get(TDAR.uri('/api/integration/ontology-details?' + $.param({
-                    ontologyIds : ontologyIds
+                    ontologyIds : missingOntologyIds
                 }, true)));
 
                 httpPromise.success(function(data) {
