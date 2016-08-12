@@ -10,7 +10,7 @@
 	<include file="changelog-integration-data.xml"  relativeToChangelogFile="true"/>
 	<include file="reset-sequences.xml" relativeToChangelogFile="true"/>
 	<!-- load the production updates -->
-	<include file="target/liquibase/changelog.xml"  relativeToChangelogFile="true"/>
+	<include file="../liquibase/changelog.xml"  relativeToChangelogFile="true"/>
 	<include file="additional-munsell-test-setup.xml" relativeToChangelogFile="true"/>
 	<include file="additional-obsidian-test-setup.xml" relativeToChangelogFile="true"/>
 	<!-- make sure similar changes get pushed to liquibase-test/changelog.xml -->
