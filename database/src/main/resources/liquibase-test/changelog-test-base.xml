@@ -5,7 +5,7 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
 	<!-- setup the test database -->
-    <include file="target/liquibase/db-schema.xml" />
-	<include file="target/liquibase-test/changelog-setup.xml" />
-    <include file="target/liquibase/db-keys-and-indexes.xml"/>
+    <include file="../liquibase/db-schema.xml" relativeToChangelogFile="true"/>
+	<include file="../liquibase-test/changelog-setup.xml" relativeToChangelogFile="true"/>
+    <include file="../liquibase/db-keys-and-indexes.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>
