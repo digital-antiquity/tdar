@@ -1,5 +1,6 @@
 <#escape _untrusted as _untrusted?html>
 <#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
 <#import "../common-collection.ftl" as commonCollection>
 <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
 
@@ -17,26 +18,23 @@
 </div>
 <div class="row">
     <div class="span12">
-        
-        <table class="table tableformat">
-            <thead>
-                <tr> <th>id</th><th>status</th><th>type</th><th>title</th><th>files</th></tr>
-            </thead>
-            <tbody>
-            <#list collection.resources>
-                <#items as res>
-                   <tr class="${res.status}" >
-                    <td>${res.id?c}</td>
-                    <td>${res.status}</td>
-                    <td>${res.resourceType}</td>
-                    <td><a href="${res.detailUrl}">${res.title}</a></td>
-                    <td>${(res.totalNumberOfActiveFiles!0)?c}</td>
-                   </tr>
-                </#items>
-            </#list>
-            </tbody>
-        </table>
-    
+        <@s.form cssClass="form-horizontal" action="save" >
+
+		<@s.hidden name="id" />
+
+        <#list collection.resources>
+            <#items as res>
+                <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType})</p>
+                <@s.hidden name="ids[${res_index}]" value="${res.id?c}" /> 
+
+                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8" /> 
+                <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
+                <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8" /> 
+               </tr>
+            </#items>
+        </#list>
+        <@edit.submit fileReminder=false />
+    	</@s.form>
     </div>
 
 </div>
