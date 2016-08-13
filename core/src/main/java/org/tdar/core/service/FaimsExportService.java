@@ -137,6 +137,7 @@ public class FaimsExportService {
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
         InformationResource resource = genericService.find(InformationResource.class, id);
+        genericService.markReadOnly(resource);
         if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
             return null;
         }
@@ -156,7 +157,7 @@ public class FaimsExportService {
             }
             List<String> toSkip = new ArrayList<>();
             for (InformationResourceFile file : irfs) {
-                resource.getActiveInformationResourceFiles().clear();
+                resource.getInformationResourceFiles().clear();
                 if (toSkip.contains(file.getFilename())) {
                     continue;
                 }
