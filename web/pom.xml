@@ -600,6 +600,24 @@
             <build>
                 <defaultGoal>run</defaultGoal>
                 <plugins>
+                     <plugin>
+                       <groupId>org.codehaus.mojo</groupId>
+                       <artifactId>properties-maven-plugin</artifactId>
+                       <version>1.0.0</version>
+                       <executions>
+                         <execution>
+                           <phase>validate</phase>
+                           <goals>
+                             <goal>read-project-properties</goal>
+                           </goals>
+                           <configuration>
+                             <files>
+                               <file>target/hg.properties</file>
+                             </files>
+                           </configuration>
+                         </execution>
+                       </executions>
+                     </plugin>
                     <plugin>
                         <groupId>ro.isdc.wro4j</groupId>
                         <artifactId>wro4j-maven-plugin</artifactId>
@@ -615,7 +633,7 @@
                         <configuration>
                             <targetGroups>default,ng-integrate</targetGroups>
                             <minimize>true</minimize>
-                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}</destinationFolder>
+                            <destinationFolder>${project.build.directory}/generated/webapp/wro/${hg.version}</destinationFolder>
                             <contextFolder>${basedir}/src/main/webapp/</contextFolder>
                             <wroFile>${basedir}/src/main/resources/wro.xml</wroFile>
                             <wroManagerFactory>ro.isdc.wro.maven.plugin.manager.factory.ConfigurableWroManagerFactory</wroManagerFactory>
@@ -640,7 +658,7 @@
                                         <copy
                                             todir="${project.build.directory}/generated/webapp/wro/">
                                             <fileset
-                                                dir="${project.build.directory}/generated/webapp/wro/${hg.version.as_dir}" />
+                                                dir="${project.build.directory}/generated/webapp/wro/${hg.version}" />
                                         </copy>
                                     </target>
                                 </configuration>
