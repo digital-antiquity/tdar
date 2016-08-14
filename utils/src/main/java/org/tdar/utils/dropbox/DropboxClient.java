@@ -7,20 +7,30 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.dropbox.core.DbxAppInfo;
 import com.dropbox.core.DbxAuthFinish;
+import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.DbxRequestConfig;
 import com.dropbox.core.DbxRequestConfig.Builder;
 import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.v2.DbxClientV2;
+import com.dropbox.core.v2.files.DownloadErrorException;
+import com.dropbox.core.v2.files.FileMetadata;
+import com.dropbox.core.v2.files.ListFolderBuilder;
+import com.dropbox.core.v2.files.ListFolderErrorException;
+import com.dropbox.core.v2.files.ListFolderResult;
+import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxClient {
@@ -32,9 +42,11 @@ public class DropboxClient {
     private File propertiesFile;
     private DbxClientV2 client;
     private Properties props;
+    private Boolean debug = Boolean.TRUE;
 
     public DropboxClient() throws URISyntaxException, FileNotFoundException, IOException, DbxException {
         props = loadProperties();
+        this.setDebug(Boolean.parseBoolean(props.getProperty("debug", "true")));
         String accessToken = props.getProperty(DROPBOX_TOKEN);
         if (accessToken == null) {
             DbxAppInfo appInfo = new DbxAppInfo(props.getProperty(APP_KEY), props.getProperty(APP_SECRET));
@@ -90,6 +102,66 @@ public class DropboxClient {
         logger.debug("cursor:{}",cursor);
         writePropertiesToFile(propertiesFile, props);
         
+    }
+
+    public void list(String path,String cursor, MetadataListener listener) throws ListFolderErrorException, DbxException {
+        ListFolderResult result = null;
+        if (cursor == null) {
+            ListFolderBuilder listFolderBuilder = client.files().listFolderBuilder(path);
+            result = listFolderBuilder.withRecursive(true).withIncludeDeleted(false).start();
+        } else {
+            result = client.files().listFolderContinue(cursor);
+        }
+        
+
+        while (true) {
+            for (Metadata metadata : result.getEntries()) {
+                if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
+                    continue;
+                }
+                DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
+                if (listener != null) {
+                    try {
+                        listener.consume(fileWrapper);
+                    } catch (Exception e) {
+                        logger.error("{}",e,e);
+                    }
+                }
+            }
+
+            if (!result.getHasMore()) {
+                break;
+            }
+
+            result = client.files().listFolderContinue(result.getCursor());
+        }
+        
+    }
+
+    public BasicAccount getAccount(String accountId) {
+        if (accountId != null) {
+            try {
+                return client.users().getAccount(accountId);
+            } catch (DbxException e) {
+                logger.error("{}",e,e);
+            }
+        }
+        return null;
+    }
+
+    public FileMetadata getFile(String path, OutputStream os) throws DownloadErrorException, DbxException, IOException {
+        DbxDownloader<FileMetadata> download = client.files().download(path);
+        FileMetadata fileMetadata = download.download(os);
+        return fileMetadata;
+        
+    }
+
+    public Boolean getDebug() {
+        return debug;
+    }
+
+    public void setDebug(Boolean debug) {
+        this.debug = debug;
     }
 
 }

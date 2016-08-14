@@ -129,6 +129,10 @@ public class UrlService {
         return String.format("%s/schema/current schema.xsd", getBaseUrl());
     }
 
+    public static String getProductionSchemaUrl() {
+        return "http://core.tdar.org/schema/current schema.xsd";
+    }
+
     /**
      * return the path + queryString for the specified request as originally requested by the client
      * 

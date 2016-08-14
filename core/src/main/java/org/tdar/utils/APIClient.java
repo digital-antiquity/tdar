@@ -1,10 +1,14 @@
 package org.tdar.utils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.Consts;
@@ -38,13 +42,53 @@ public class APIClient {
     private static final String UPLOAD_FILE = "uploadFile";
     private String baseUrl;
     private CloseableHttpClient httpClient = SimpleHttpUtils.createClient(3500);
-
+    private Properties props;
+    
+    /**
+     * configure with specified base url
+     * @param baseSecureUrl
+     */
     public APIClient(String baseSecureUrl) {
         this.baseUrl = baseSecureUrl;
     }
 
+    /**
+     * configure using apiClient.properties
+     * 
+     * @throws URISyntaxException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public APIClient() throws URISyntaxException, FileNotFoundException, IOException {
+        File propertiesFile = new File(getClass().getClassLoader().getResource("apiClient.properties").toURI());
+        props = new Properties();
+        props.load(new FileInputStream(propertiesFile));
+
+        this.baseUrl = props.getProperty("base.url");
+    }
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    /**
+     * Login with Username/password from apiClient.properties
+     * 
+     * @return
+     * @throws IllegalStateException
+     * @throws Exception
+     */
+    public ApiClientResponse apiLogin() throws IllegalStateException, Exception {
+        return apiLogin(props.getProperty("username"),props.getProperty("password"));
+    }
+    
+    /**
+     * Login with specified usename / password
+     * 
+     * @param username
+     * @param password
+     * @return
+     * @throws IllegalStateException
+     * @throws Exception
+     */
     public ApiClientResponse apiLogin(String username, String password) throws IllegalStateException, Exception {
         HttpPost post = new HttpPost(baseUrl + API_LOGIN);
         List<NameValuePair> postNameValuePairs = new ArrayList<>();
@@ -75,6 +119,31 @@ public class APIClient {
         this.httpClient = httpClient;
     }
 
+    /**
+     * get the account id from apiClient.properties
+     * 
+     * @param docXml
+     * @param tdarId
+     * @param files
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
+    public ApiClientResponse uploadRecord(String docXml, Long tdarId, File... files) throws ClientProtocolException, IOException {
+        return uploadRecord(docXml, tdarId, (Long)props.get("accountId"), files);
+    }
+
+    /**
+     * upload with the specified account
+     * 
+     * @param docXml
+     * @param tdarId
+     * @param accountId
+     * @param files
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     */
     public ApiClientResponse uploadRecord(String docXml, Long tdarId, Long accountId, File... files) throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_UPLOAD);
         List<File> errors = new ArrayList<>();
