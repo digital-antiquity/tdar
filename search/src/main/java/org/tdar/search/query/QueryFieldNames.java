@@ -110,9 +110,9 @@ public interface QueryFieldNames {
 	String ACRONYM = "acronym";
 	String DOCUMENT_SUB_TYPE = "subType";
 	String DEGREE = "degree";
-	String SERIES_NAME = "seriesName";
+	String SERIES_NAME = "series.name";
 	String BOOK_TITLE = "bookTitle";
-	String JOURNAL_NAME = "journalName";
+	String JOURNAL_NAME = "journal.name";
 	String ISSN = "issn";
 	String ISBN = "isbn";
 	String RESOURCE_LANGUAGE = "resourceLanguage";
@@ -136,4 +136,11 @@ public interface QueryFieldNames {
     String ACTIVE_GEOGRAPHIC_ISO = "geographic.ISO";
     String RESOURCE_LIST_COLLECTION_NAME = "listCollections.name";
     String RESOURCE_LIST_COLLECTION_IDS = "listCollectionIds";
+    String SERIES_NUMBER = "series.number";
+    String PUBLISHER_LOCATION = "publisher.location";
+    String PUBLISHER_ID = "publisher.id";
+    String COPY_LOCATION = "copy.location";
+    String START_PAGE = "page.start";
+    String END_PAGE = "page.end";
+    String JOURNAL_NUMBER = "journal.number";
 }

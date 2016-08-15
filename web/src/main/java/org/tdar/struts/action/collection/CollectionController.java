@@ -61,9 +61,9 @@ public class CollectionController extends AbstractCollectionController<SharedCol
          * (b) visibility changes
          */
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTreeAsync(getPersistable());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
 

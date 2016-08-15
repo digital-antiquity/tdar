@@ -32,7 +32,6 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
     ResourceSearchService resourceSearchService;
     
     @Test
-    @Ignore
     @Rollback
     public void testPartialIndexing() throws SolrServerException, IOException, ParseException {
         Dataset ds = createAndSaveNewDataset();

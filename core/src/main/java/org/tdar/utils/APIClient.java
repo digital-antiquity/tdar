@@ -79,7 +79,7 @@ public class APIClient {
         HttpPost post = new HttpPost(baseUrl + API_INGEST_UPLOAD);
         List<File> errors = new ArrayList<>();
         for (File f : files) {
-            if (!f.exists()) {
+            if (f == null || !f.exists()) {
                 errors.add(f);
             }
         }
