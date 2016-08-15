@@ -6,12 +6,8 @@ import java.net.URISyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.utils.APIClient;
 
 import com.dropbox.core.DbxException;
-import com.dropbox.core.v2.DbxClientV2;
-import com.dropbox.core.v2.files.ListFolderResult;
-import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.FullAccount;
 
 //@Component
@@ -42,29 +38,16 @@ public class Dropbox {
         logger.debug("account: {}", account.getName().getDisplayName());
 
         // Get files and folder metadata from Dropbox root directory
-        DbxClientV2 dbclient = client.getDbClient();
-        ListFolderResult result = dbclient.files().listFolder("/client data");
-        while (true) {
-            for (Metadata metadata : result.getEntries()) {
-                logger.debug(metadata.getPathLower());
-            }
-
-            if (!result.getHasMore()) {
-                break;
-            }
-
-            result = dbclient.files().listFolderContinue(result.getCursor());
-        }
 
         logger.debug("-----------------  latest  --------------------");
         String cursor = client.getStoredCursor();
-        if (cursor != null) {
+//        if (cursor != null) {
             logger.debug("latest cursor:{}", cursor);
-            client.list(DEFAULT_PATH, cursor, null);
-        }
-        logger.debug("-----------------  all  --------------------");
-        client.list(DEFAULT_PATH, null, new TdarUploadListener(client.getDebug()));
-        client.updateCursor(result.getCursor());
+            client.list(DEFAULT_PATH, null, new TdarUploadListener(client.getDebug()));
+//        }
+        client.updateCursor(client.getCurrentCursor());
+//        logger.debug("-----------------  all  --------------------");
+//        client.list(DEFAULT_PATH, null, null);
     }        
 
 }

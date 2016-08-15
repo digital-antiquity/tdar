@@ -18,7 +18,7 @@
 </div>
 <div class="row">
     <div class="span12">
-        <@s.form cssClass="form-horizontal" action="save" >
+        <@s.form cssClass="form-horizontal" action="save" method="POST">
 
 		<@s.hidden name="id" />
 
@@ -28,7 +28,11 @@
                 <@s.hidden name="ids[${res_index}]" value="${res.id?c}" /> 
 
                 <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8" /> 
-                <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
+                <#if res.resourceType.project>
+                    <@s.textfield name="dates[${res_index}]" value="-1" label="Date" cssClass="input" /> 
+                <#else>
+                    <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
+                </#if>
                 <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8" /> 
                </tr>
             </#items>

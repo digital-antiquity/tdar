@@ -35,6 +35,8 @@ import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxClient {
 
+    final String DEBUG2 = "debug";
+    final String DROPBOX_CURSOR = "dropbox.cursor";
     final String APP_KEY = "dropbox.key";
     final String APP_SECRET = "dropbox.secret";
     final String DROPBOX_TOKEN = "dropbox.token";
@@ -43,10 +45,11 @@ public class DropboxClient {
     private DbxClientV2 client;
     private Properties props;
     private Boolean debug = Boolean.TRUE;
+    private String currentCursor;
 
     public DropboxClient() throws URISyntaxException, FileNotFoundException, IOException, DbxException {
         props = loadProperties();
-        this.setDebug(Boolean.parseBoolean(props.getProperty("debug", "true")));
+        this.setDebug(Boolean.parseBoolean(props.getProperty(DEBUG2, "true")));
         String accessToken = props.getProperty(DROPBOX_TOKEN);
         if (accessToken == null) {
             DbxAppInfo appInfo = new DbxAppInfo(props.getProperty(APP_KEY), props.getProperty(APP_SECRET));
@@ -94,12 +97,12 @@ public class DropboxClient {
     }
 
     public String getStoredCursor() {
-        return (String) props.get("dropbox.cursor");
+        return (String) props.get(DROPBOX_CURSOR);
     }
 
     public void updateCursor(String cursor) throws FileNotFoundException, IOException {
-        props.put("dropbox.cursor", cursor);
-        logger.debug("cursor:{}",cursor);
+        props.put(DROPBOX_CURSOR, cursor);
+        logger.debug("new cursor:{}",cursor);
         writePropertiesToFile(propertiesFile, props);
         
     }
@@ -119,6 +122,9 @@ public class DropboxClient {
                 if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
                     continue;
                 }
+                if (StringUtils.containsIgnoreCase(metadata.getPathDisplay(), "srp")) {
+                    continue;
+                }
                 DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
                 if (listener != null) {
                     try {
@@ -135,7 +141,7 @@ public class DropboxClient {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-        
+        setCurrentCursor(client.files().listFolderGetLatestCursor(path).getCursor());
     }
 
     public BasicAccount getAccount(String accountId) {
@@ -162,6 +168,14 @@ public class DropboxClient {
 
     public void setDebug(Boolean debug) {
         this.debug = debug;
+    }
+
+    public String getCurrentCursor() {
+        return currentCursor;
+    }
+
+    public void setCurrentCursor(String currentCursor) {
+        this.currentCursor = currentCursor;
     }
 
 }

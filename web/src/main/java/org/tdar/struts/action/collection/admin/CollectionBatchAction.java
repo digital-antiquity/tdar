@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.InterceptorRef;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
@@ -93,13 +94,14 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     }
 
     
-    @Action(value = "save", results = {
-            @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
+    @Action(value = "save", 
+            interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
+            results = {
+                    @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     @PostOnly
     @WriteableSession
     public String save() throws Exception {
-
         resourceService.updateBatch(project,account, ids, dates, titles, descriptions, getAuthenticatedUser());
         return SUCCESS;
     }

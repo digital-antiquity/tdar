@@ -946,12 +946,12 @@ public class ResourceService {
     public void updateBatch(Project project,BillingAccount account, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
-            Long id = ids.get(0);
+            Long id = ids.get(i);
             Integer date = dates.get(i);
             String title = titles.get(i);
             String description = descriptions.get(i);
             Resource r = genericDao.find(Resource.class, id);
-//            r = genericDao.markWritable(r);
+            r = genericDao.markWritableOnExistingSession(r);
             resources.add(r);
             r.setTitle(title);
             r.setDescription(description);
@@ -962,7 +962,7 @@ public class ResourceService {
             }
             r.markUpdated(authenticatedUser);
             genericDao.saveOrUpdate(r);
-
+            logger.debug("processed: {}", r);
         }
         if (PersistableUtils.isNotNullOrTransient(account)) {
             accountDao.updateQuota(account, resources, authenticatedUser);
