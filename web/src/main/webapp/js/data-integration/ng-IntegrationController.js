@@ -201,10 +201,14 @@
             dataService.removeDataTables(integration, $scope.selectedDataTables);
         };
 
+        self.removeDatatableClicked = function(dt) {
+            dataService.removeDataTables(integration, [dt])
+        };
+
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
             self.integration.addIntegrationColumn(ontology.title, ontology);
             self.setTab(integration.columns.length -1);
-        }
+        };
 
         self.isCountColumnDisabled = function() {
             return !self.integration.isCountColumnEnabled();

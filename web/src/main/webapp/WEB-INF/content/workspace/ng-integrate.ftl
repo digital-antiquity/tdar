@@ -62,9 +62,15 @@
                             <div class="span4">
                                 <label><b>Selected Datasets</b></label>
                                 <div>
-                                    <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
-                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
+                                    <ol>
+                                        <li ng-repeat="dt in ctrl.integration.dataTables">
+                                            <div class="pull-right">
+                                                <a href="#" ng-click="ctrl.removeDatatableClicked(dt)">X</a>
+                                            </div>
+                                            <span>{{dt|dtDisplayName|titleCase}}</span>
+                                            <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
+                                        </li>
+                                    </ol>
                                 </div>
                                 
                                 
@@ -72,17 +78,17 @@
                                 <div class="btn-group">
                                     <button type="button" class="btn"  id="btnAddDataset" ng-disabled="isReadOnly()"
                                             ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
-                                    
-                                    <button type="button" class="btn" id="rmDatasetBtn"  ng-disabled="isReadOnly()"
-                                            ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
                                 </div>
                         </div>
                         </div>
                             <div class="span4">
-                                <label><b>Shared Ontologies</b></label>
-                                <ul>
-                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
-                                </ul>
+                                <label><b>Available Ontologies</b></label>
+                                <ol>
+                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">
+                                        <span>{{ontology | ontDisplayName}}</span>
+                                        <a href="/ontology/{{ontology.id}}" target="_blank">({{ontology.id}})</a>
+                                    </li>
+                                </ol>
                             </div>
                         </div>
                     </div>
@@ -149,7 +155,7 @@
 
                                             <div ng-switch-when="integration" class=".integration-pane-content">
                                                 <div class="alert" ng-hide="outputColumn.isValidMapping">
-                                                    <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to a shared ontology.
+                                                    <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to an available ontology.
                                                 </div>
                                                 <table class="table table-bordered table-condensed table-hover">
                                                     <thead>
