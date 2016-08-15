@@ -195,8 +195,7 @@ public class ResourceExportService {
             clearId(ra.getResourceAnnotationKey());
         });
 
-        resource.getResourceAnnotations()
-                .add(new ResourceAnnotation(new ResourceAnnotationKey("TDAR ID"), id.toString()));
+        resource.getResourceAnnotations().add(new ResourceAnnotation(new ResourceAnnotationKey("TDAR ID"), id.toString()));
 
         if (resource instanceof InformationResource) {
             InformationResource ir = (InformationResource) resource;

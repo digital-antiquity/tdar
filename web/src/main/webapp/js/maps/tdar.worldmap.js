@@ -24,7 +24,6 @@ TDAR.worldmap = (function(console, $, ctx) {
         "fillOpacity" : 1
     }
 
-    var oldNew = {"USA01":"USAAL","USA02":"USAAK","USA04":"USAAZ","USA05":"USAAR","USA06":"USACA","USA08":"USACO","USA09":"USACT","USA10":"USADE","USA11":"USADC","USA12":"USAFL","USA13":"USAGA","USA15":"USAHI","USA16":"USAID","USA17":"USAIL","USA18":"USAIN","USA19":"USAIA","USA20":"USAKS","USA21":"USAKY","USA22":"USALA","USA23":"USAME","USA24":"USAMD","USA25":"USAMA","USA26":"USAMI","USA27":"USAMN","USA28":"USAMS","USA29":"USAMO","USA30":"USAMT","USA31":"USANE","USA32":"USANV","USA33":"USANH","USA34":"USANJ","USA35":"USANM","USA36":"USANY","USA37":"USANC","USA38":"USAND","USA39":"USAOH","USA40":"USAOK","USA41":"USAOR","USA42":"USAPA","USA44":"USARI","USA45":"USASC","USA46":"USASD","USA47":"USATN","USA48":"USATX","USA49":"USAUT","USA50":"USAVT","USA51":"USAVA","USA53":"USAWA","USA54":"USAWV","USA55":"USAWI","USA56":"USAWY"};
     var c3colors = [];
     var max = 0;
 
@@ -81,11 +80,6 @@ TDAR.worldmap = (function(console, $, ctx) {
             if (feature) {
                 if (geodata[feature.id]) {
                     return geodata[feature.id];
-                }
-                
-                if (oldNew[feature.id]) {
-                    var old = oldNew[feature.id];
-                    return geodata[old];
                 }
             }
             return 0;
@@ -349,7 +343,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         if (id != undefined) {
             // find the set of data associated with this id
             filter = data.filter(function(d) {
-                return d.value == id || d.value == oldNew[id]
+                return d.value == id
             });
 
             // go through the results and get the pivot values from the SOLR json
@@ -521,9 +515,6 @@ TDAR.worldmap = (function(console, $, ctx) {
     function _getDataValue(id) {
         if (geodata[id] != undefined) {
             return geodata[id];
-        }
-        if (oldNew[id] != undefined && geodata[oldNew[id]] != undefined) {
-            return geodata[oldNew[id]];
         }
         
         return 0;

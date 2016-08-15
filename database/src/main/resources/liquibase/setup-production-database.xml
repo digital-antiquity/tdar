@@ -5,10 +5,10 @@
   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
 
-    <include file="target/liquibase/db-schema.xml" />
-    <include file="target/liquibase/controlled-keywords.xml" />    
-    <include file="target/liquibase/db-keys-and-indexes.xml"/>
-    <include file="target/liquibase-test/reset-sequences.xml"/>
+    <include file="db-schema.xml"  relativeToChangelogFile="true"/>
+    <include file="controlled-keywords.xml"  relativeToChangelogFile="true"/>    
+    <include file="db-keys-and-indexes.xml" relativeToChangelogFile="true"/>
+    <include file="../liquibase-test/reset-sequences.xml" relativeToChangelogFile="true"/>
     <!-- load the production updates -->
-    <include file="target/liquibase/changelog.xml" />
+    <include file="changelog.xml"  relativeToChangelogFile="true"/>
 </databaseChangeLog>

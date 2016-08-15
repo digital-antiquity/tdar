@@ -78,19 +78,24 @@ public class ApiClientResponse {
         this.statusCode = statusCode;
     }
 
+    private Long id = null;
+
     public Long getTdarId() {
+        if (id != null) {
+            return id;
+        }
         try {
             Document document = getXmlDocument();
             String id_ = null;
             if (document.getElementsByTagName("tdar:id").getLength() > 0) {
                 id_ = document.getElementsByTagName("tdar:id").item(0).getTextContent();
             }
-            if (document.getElementsByTagName("tdar:recordId").getLength() > 0 ){
+            if (document.getElementsByTagName("tdar:recordId").getLength() > 0) {
                 id_ = document.getElementsByTagName("tdar:recordId").item(0).getTextContent();
             }
             logger.debug("ID:: {}", id_);
             if (id_ != null) {
-            Long id = Long.parseLong(id_);
+                id = Long.parseLong(id_);
                 return id;
             } else {
                 return null;

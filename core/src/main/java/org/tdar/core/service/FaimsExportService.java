@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,7 +89,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(30000);
+                Thread.sleep(3);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -104,7 +105,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(30000);
+                Thread.sleep(3);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -123,7 +124,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(30000);
+                Thread.sleep(3);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -136,6 +137,7 @@ public class FaimsExportService {
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
         InformationResource resource = genericService.find(InformationResource.class, id);
+        genericService.markReadOnly(resource);
         if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
             return null;
         }
@@ -149,22 +151,37 @@ public class FaimsExportService {
             // break groups of images into single images
             resource.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, resource.getTitle()));
             List<InformationResourceFile> irfs = new ArrayList<>(resource.getActiveInformationResourceFiles());
+            Map<String,InformationResourceFile> filenameMap = new HashMap<>();
+            for (InformationResourceFile irf : irfs) {
+                filenameMap.put(irf.getFilename(), irf);
+            }
+            List<String> toSkip = new ArrayList<>();
             for (InformationResourceFile file : irfs) {
-                resource.getActiveInformationResourceFiles().clear();
+                resource.getInformationResourceFiles().clear();
+                if (toSkip.contains(file.getFilename())) {
+                    continue;
+                }
                 try {
                     resource.getInformationResourceFiles().add(file);
-                    File retrieveFile = null;
-                    InformationResourceFileVersion version = file.getLatestUploadedVersion();
-                    try {
-                        retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
-                    } catch (FileNotFoundException e) {
-                        logger.error("cannot find file: {}", e, e);
+                    resource.getFileProxies().clear();
+                    List<File> fileList = new ArrayList<>();
+                    File retrieveFile = getFile(filestore, file);
+                    fileList.add(retrieveFile);
+                    // try to add the r/f together
+                    if (file.getFilename().endsWith("f.jpg")) {
+                        String prefix = StringUtils.substringBefore(file.getFilename(), "f.jpg");
+                        InformationResourceFile rear = filenameMap.get(prefix + "r.jpg");
+                        if (rear != null) {
+                            resource.getInformationResourceFiles().add(rear);
+                            toSkip.add(rear.getFilename());
+                            fileList.add(getFile(filestore, rear));
+                        }
                     }
                     resource.setTitle(retrieveFile.getName());
                     // logger.debug(" --> {}", files);
                     String output = export(resource, projectIdMap.get(resource.getProjectId()));
-
-                    ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, retrieveFile);
+                    logger.debug(output);
+                    ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, fileList.toArray(new File[0]));
                     if (uploadRecord != null) {
                         projectIdMap.put(id, uploadRecord.getTdarId());
                         if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
@@ -248,6 +265,7 @@ public class FaimsExportService {
             return null;
         }
         try {
+            logger.debug(output);
             ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
             if (uploadRecord != null) {
                 projectIdMap.put(id, uploadRecord.getTdarId());
@@ -265,6 +283,17 @@ public class FaimsExportService {
 
     }
 
+    private File getFile(Filestore filestore, InformationResourceFile file) {
+        File retrieveFile = null;
+        InformationResourceFileVersion version = file.getLatestUploadedVersion();
+        try {
+            retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+        } catch (FileNotFoundException e) {
+            logger.error("cannot find file: {}", e, e);
+        }
+        return retrieveFile;
+    }
+
     private void makeFake(Map<Long, Long> map, Resource cs, Resource cs_) {
         Long csid = map.get(cs.getId());
         cs_.setId(csid);
@@ -279,6 +308,7 @@ public class FaimsExportService {
             if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
                 continue;
             }
+            resource.setStatus(Status.DRAFT);
             addFaimsId(resource);
 
             String output = export(resource, null);
@@ -313,6 +343,7 @@ public class FaimsExportService {
         resource.getInvestigationTypes().clear();
         // we mess with IDs, so just in case
         Resource r = resourceExportService.setupResourceForReImport(resource);
+
         if (r instanceof InformationResource && projectId != null) {
             InformationResource informationResource = (InformationResource) r;
             informationResource.setProject(new Project(projectId, null));
