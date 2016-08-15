@@ -89,7 +89,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(30000);
+                Thread.sleep(3);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -105,7 +105,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(30000);
+                Thread.sleep(3);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -124,7 +124,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(30000);
+                Thread.sleep(3);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -137,6 +137,7 @@ public class FaimsExportService {
         Filestore filestore = TdarConfiguration.getInstance().getFilestore();
 
         InformationResource resource = genericService.find(InformationResource.class, id);
+        genericService.markReadOnly(resource);
         if (resource.getStatus() != Status.ACTIVE && resource.getStatus() != Status.DRAFT) {
             return null;
         }
@@ -156,12 +157,13 @@ public class FaimsExportService {
             }
             List<String> toSkip = new ArrayList<>();
             for (InformationResourceFile file : irfs) {
-                resource.getActiveInformationResourceFiles().clear();
+                resource.getInformationResourceFiles().clear();
                 if (toSkip.contains(file.getFilename())) {
                     continue;
                 }
                 try {
                     resource.getInformationResourceFiles().add(file);
+                    resource.getFileProxies().clear();
                     List<File> fileList = new ArrayList<>();
                     File retrieveFile = getFile(filestore, file);
                     fileList.add(retrieveFile);
@@ -170,6 +172,7 @@ public class FaimsExportService {
                         String prefix = StringUtils.substringBefore(file.getFilename(), "f.jpg");
                         InformationResourceFile rear = filenameMap.get(prefix + "r.jpg");
                         if (rear != null) {
+                            resource.getInformationResourceFiles().add(rear);
                             toSkip.add(rear.getFilename());
                             fileList.add(getFile(filestore, rear));
                         }
@@ -177,7 +180,7 @@ public class FaimsExportService {
                     resource.setTitle(retrieveFile.getName());
                     // logger.debug(" --> {}", files);
                     String output = export(resource, projectIdMap.get(resource.getProjectId()));
-
+                    logger.debug(output);
                     ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, fileList.toArray(new File[0]));
                     if (uploadRecord != null) {
                         projectIdMap.put(id, uploadRecord.getTdarId());
@@ -262,6 +265,7 @@ public class FaimsExportService {
             return null;
         }
         try {
+            logger.debug(output);
             ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
             if (uploadRecord != null) {
                 projectIdMap.put(id, uploadRecord.getTdarId());

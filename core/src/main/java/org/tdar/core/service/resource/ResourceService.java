@@ -937,4 +937,31 @@ public class ResourceService {
         return null;
     }
 
+    @Transactional(readOnly=false)
+    public void updateBatch(Project project,BillingAccount account, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+        List<Resource> resources = new ArrayList<>();
+        for (int i=0; i< ids.size(); i++) {
+            Long id = ids.get(0);
+            Integer date = dates.get(i);
+            String title = titles.get(i);
+            String description = descriptions.get(i);
+            Resource r = genericDao.find(Resource.class, id);
+//            r = genericDao.markWritable(r);
+            resources.add(r);
+            r.setTitle(title);
+            r.setDescription(description);
+            if (r instanceof InformationResource) {
+                InformationResource ir = (InformationResource) r;
+                ir.setDate(date);
+                ir.setProject(project);
+            }
+            r.markUpdated(authenticatedUser);
+            genericDao.saveOrUpdate(r);
+
+        }
+        if (PersistableUtils.isNotNullOrTransient(account)) {
+            accountDao.updateQuota(account, resources, authenticatedUser);
+        }
+    }
+
 }

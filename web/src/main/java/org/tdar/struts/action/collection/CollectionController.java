@@ -66,6 +66,7 @@ public class CollectionController extends AbstractPersistableController<Resource
 
     private List<Long> selectedResourceIds = new ArrayList<>();
     private List<Resource> fullUserProjects;
+    private List<Project> allSubmittedProjects;
     private List<ResourceCollection> collections = new LinkedList<>();
 
     private Long viewCount = 0L;
@@ -75,7 +76,6 @@ public class CollectionController extends AbstractPersistableController<Resource
     private List<Long> toAdd = new ArrayList<>();
     private List<Long> publicToRemove = new ArrayList<>();
     private List<Long> publicToAdd = new ArrayList<>();
-    private List<Project> allSubmittedProjects;
     private File file;
     private String fileContentType;
     private String fileFileName;
@@ -172,9 +172,9 @@ public class CollectionController extends AbstractPersistableController<Resource
          * (b) visibility changes
          */
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTreeAsync(getPersistable());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
 
