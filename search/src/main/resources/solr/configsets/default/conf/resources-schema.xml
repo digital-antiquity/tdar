@@ -38,8 +38,8 @@
     <field name="date" type="int" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="decadeCreated" type="int" indexed="true"  required="false" multiValued="false"  stored="true" />
 
-    <field name="resourceType" type="string" indexed="true"  required="true" multiValued="false"  stored="true"/>
-    <field name="resourceTypeSort" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="resourceType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="resourceTypeSort" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="documentType" type="string" indexed="true"  required="false" multiValued="false" />
     <field name="subType" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="degree" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
