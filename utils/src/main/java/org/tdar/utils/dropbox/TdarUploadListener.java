@@ -67,7 +67,7 @@ public class TdarUploadListener implements MetadataListener {
             getMap().put(fileWrapper.getId(), new FolderContainer(fileWrapper));
         } else {
             File file = fileWrapper.getFile();
-
+            logger.debug(fileWrapper.getModifiedBy());
             String docXml = makeXml(file, fileWrapper.getExtension(), StringUtils.join(tree,"/"));
             logger.debug(docXml);
             if (debug == false) {

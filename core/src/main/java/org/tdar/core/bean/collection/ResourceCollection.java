@@ -80,6 +80,8 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -110,6 +112,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ResourceCollection extends AbstractPersistable implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
 
@@ -119,6 +122,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private transient boolean viewable;
     private transient Integer maxHeight;
     private transient Integer maxWidth;
+    private transient boolean created = false;
     private transient VersionType maxSize;
 
     private static final long serialVersionUID = -5308517783896369040L;
@@ -271,7 +275,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     public Set<Resource> getResources() {
         return resources;
     }
-
 
     public void setResources(Set<Resource> resources) {
         this.resources = resources;
@@ -700,6 +703,25 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     public void setUnmanagedResources(Set<Resource> publicResources) {
         this.unmanagedResources = publicResources;
+    }
+
+    public boolean isCreated() {
+        return created;
+    }
+
+    public void setCreated(boolean created) {
+        this.created = created;
+    }
+
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
+        this.setDateCreated(resource.getDateCreated());
+        this.setOwner(resource.getOwner());
+        this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
+        this.setType(resource.getType());
+        this.setParent(resource.getParent());
+        // set previous, then set current
+        this.getResources().addAll(new ArrayList<>(resource.getResources()));
+
     }
 
 }
