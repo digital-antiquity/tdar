@@ -304,7 +304,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
         final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector( TypeFactory.defaultInstance() );
-        ObjectMapper mapper = JacksonUtils.initializeObjectMapper().setAnnotationIntrospector( jaxbIntrospector );
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();//.setAnnotationIntrospector( jaxbIntrospector );
         return mapper.readValue(json, cls);
     }
 
