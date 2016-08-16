@@ -13,6 +13,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.query.LuceneSearchResultHandler;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
@@ -47,7 +48,7 @@ public class SimpleKeywordViewAction extends AbstractKeywordController implement
         }
         try {
             setSortField(SortOption.TITLE);
-            resourceSearchService.buildKeywordQuery(getKeyword(), getKeywordType(), this, this, getAuthenticatedUser());
+            resourceSearchService.buildKeywordQuery(getKeyword(), getKeywordType(), new ReservedSearchParameters(), this, this, getAuthenticatedUser());
         } catch (Exception e) {
             addActionErrorWithException(getText("collectionController.error_searching_contents"), e);
         }
