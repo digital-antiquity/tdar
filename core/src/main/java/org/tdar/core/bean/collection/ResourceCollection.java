@@ -705,6 +705,8 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         this.unmanagedResources = publicResources;
     }
 
+    @Transient
+    @XmlTransient
     public boolean isCreated() {
         return created;
     }
