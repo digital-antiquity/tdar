@@ -122,9 +122,7 @@ public class DropboxClient {
                 if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
                     continue;
                 }
-                if (StringUtils.containsIgnoreCase(metadata.getPathDisplay(), "srp")) {
-                    continue;
-                }
+
                 DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
                 if (listener != null) {
                     try {
