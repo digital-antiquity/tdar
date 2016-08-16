@@ -25,7 +25,6 @@
         <hr class="light"/>
         <@common.renderWorldMap mode="mini" />
         <hr class="light"/>
-<!--            <h3>Contents</h3> -->
             <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
 <i class="icon-document-red"></i>
         </#if>
@@ -49,6 +48,17 @@
             includeResourceId=false
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
+
+        <#if editor>
+            <@nav.makeLink
+            namespace="collection/admin/batch"
+            action="${id?c}"
+            label="batch title (beta)"
+            name="batch"
+            current=current
+            disabled=disabled
+            extraClass="hidden-tablet hidden-phone"/>
+        </#if>
         </@nav.collectionToolbar>
     </#if>
 
