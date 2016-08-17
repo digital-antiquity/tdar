@@ -274,7 +274,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
         }
-        // setSaveSuccessSuffix("/" + getResource().getSlug());
         return super.save();
     }
 
@@ -508,19 +507,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (PersistableUtils.isNotNullOrTransient(getSubmitter())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
-            // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
-            // if (uploader.equals(getAuthenticatedUser())) {
-            // boolean found = false;
-            // for (AuthorizedUser user : getAuthorizedUsers()) {
-            // if (user.getUser().equals(uploader)) {
-            // found = true;
-            // }
-            // }
-            // // if we're setting the sbumitter
-            // if (!found) {
-            // getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
-            // }
-            // }
         }
 
         // only modify these permissions if the user has the right to
