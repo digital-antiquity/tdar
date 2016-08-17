@@ -22,7 +22,7 @@
 
 		<@s.hidden name="id" />
 
-        <#list collection.resources>
+        <#list resources>
             <#items as res>
                 <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType})</p>
                 <@s.hidden name="ids[${res_index}]" value="${res.id?c}" /> 
@@ -34,7 +34,6 @@
                     <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
                 </#if>
                 <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8" /> 
-               </tr>
             </#items>
         </#list>
         <@edit.submit fileReminder=false />

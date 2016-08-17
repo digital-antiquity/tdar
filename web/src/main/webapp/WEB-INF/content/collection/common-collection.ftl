@@ -49,7 +49,7 @@
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
 
-        <#if editor>
+        <#if editor && (resourceCollection.resources?size > 0) >
             <@nav.makeLink
             namespace="collection/admin/batch"
             action="${id?c}"

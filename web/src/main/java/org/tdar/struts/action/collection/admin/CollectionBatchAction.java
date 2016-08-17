@@ -2,6 +2,7 @@ package org.tdar.struts.action.collection.admin;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Action;
@@ -52,7 +53,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     private List<Integer> dates = new ArrayList<>();
     private List<Resource> fullUserProjects;
     private List<Project> allSubmittedProjects;
-    
+    private List<Resource> resources = new ArrayList<>();
     @Autowired
     private GenericService genericService;
     @Autowired
@@ -69,6 +70,13 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     @Override
     public void prepare() throws Exception {
         super.prepare();
+        setResources(new ArrayList<>(getCollection().getResources()));
+        Collections.sort(resources , new Comparator<Resource>() {
+            @Override
+            public int compare(Resource o1, Resource o2) {
+                return PersistableUtils.compareIds(o1,o2);
+            }
+        });
         setAllSubmittedProjects(projectService.findBySubmitter(getAuthenticatedUser()));
         Collections.sort(getAllSubmittedProjects());
         boolean canEditAnything = authorizationService.can(InternalTdarRights.EDIT_ANYTHING, getAuthenticatedUser());
@@ -193,6 +201,14 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
 
     public void setAvailableAccounts(List<BillingAccount> availableAccounts) {
         this.availableAccounts = availableAccounts;
+    }
+
+    public List<Resource> getResources() {
+        return resources;
+    }
+
+    public void setResources(List<Resource> resources) {
+        this.resources = resources;
     }
 
 }
