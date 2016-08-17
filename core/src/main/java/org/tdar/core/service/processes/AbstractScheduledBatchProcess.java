@@ -22,7 +22,7 @@ import org.tdar.utils.Pair;
  * 
  * @param <P>
  */
-public abstract class AbstractScheduledBatchProcess<P extends Persistable> extends AbstractPersistableScheduledProcess<P> {
+public abstract class AbstractScheduledBatchProcess<P extends Persistable> extends AbstractPersistableScheduledProcess<P> implements BatchProcess {
 
     private static final int DEFAULT_PROCESS_END_ID = 1_000_000;
 
@@ -153,19 +153,9 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
      * @return
      */
     public List<Long> findAllIds() {
-        if (getTdarConfiguration().getScheduledProcessStartId() != -1) {
-            setProcessStartId(getTdarConfiguration().getScheduledProcessStartId());
-        }
-        if (getTdarConfiguration().getScheduledProcessEndId() != -1) {
-            setProcessStartId(getTdarConfiguration().getScheduledProcessEndId());
-        }
-
-        if (getProcessStartId() == -1 && getProcessEndId() == -1) {
+        if (shouldRunAll()) {
             return genericDao.findAllIds(getPersistentClass());
         } else {
-            if (getProcessEndId() == -1) {
-                setProcessEndId(DEFAULT_PROCESS_END_ID);
-            }
             return genericDao.findAllIds(getPersistentClass(), getProcessStartId(), getProcessEndId());
         }
     }
@@ -201,18 +191,22 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
         this.allIds = allIds;
     }
 
+    @Override
     public int getProcessStartId() {
         return processStartId;
     }
 
+    @Override
     public void setProcessStartId(int processStartId) {
         this.processStartId = processStartId;
     }
 
+    @Override
     public int getProcessEndId() {
         return processEndId;
     }
 
+    @Override
     public void setProcessEndId(int processEndId) {
         this.processEndId = processEndId;
     }
