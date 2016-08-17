@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -29,6 +32,8 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderBuilder;
 import com.dropbox.core.v2.files.ListFolderErrorException;
 import com.dropbox.core.v2.files.ListFolderResult;
+import com.dropbox.core.v2.files.ListRevisionsErrorException;
+import com.dropbox.core.v2.files.ListRevisionsResult;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
@@ -122,6 +127,10 @@ public class DropboxClient {
                 if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
                     continue;
                 }
+                
+                if (StringUtils.containsIgnoreCase(metadata.getPathLower(), "/VCP/") || StringUtils.containsIgnoreCase(metadata.getPathLower(), "augusta")) {
+                    continue;
+                }
 
                 DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
                 if (listener != null) {
@@ -142,10 +151,17 @@ public class DropboxClient {
         setCurrentCursor(client.files().listFolderGetLatestCursor(path).getCursor());
     }
 
+    private Map<String,BasicAccount> cachedUsers = new HashMap<>();
+
     public BasicAccount getAccount(String accountId) {
         if (accountId != null) {
+            if (cachedUsers.containsKey(accountId)) {
+                return cachedUsers.get(accountId);
+            }
             try {
-                return client.users().getAccount(accountId);
+                BasicAccount account = client.users().getAccount(accountId);
+                cachedUsers.put(accountId, account);
+                return account;
             } catch (DbxException e) {
                 logger.error("{}",e,e);
             }
@@ -174,6 +190,12 @@ public class DropboxClient {
 
     public void setCurrentCursor(String currentCursor) {
         this.currentCursor = currentCursor;
+    }
+
+    public List<FileMetadata> getRevisions(String path) throws ListRevisionsErrorException, DbxException {
+        ListRevisionsResult listRevisions = client.files().listRevisions(path);
+        return listRevisions.getEntries();
+        
     }
 
 }

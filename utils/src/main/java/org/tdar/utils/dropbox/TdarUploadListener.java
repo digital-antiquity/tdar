@@ -71,6 +71,7 @@ public class TdarUploadListener implements MetadataListener {
             String docXml = makeXml(file, fileWrapper.getExtension(), StringUtils.join(tree,"/"));
             logger.trace(docXml);
             if (debug == false) {
+                logger.debug("uploading: {}", file);
                 apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
             }
             getMap().put(fileWrapper.getId(), new FileContainer(fileWrapper));

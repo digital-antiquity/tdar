@@ -53,7 +53,7 @@ public class DropboxItemWrapper {
      */
     public DropboxItemWrapper(DropboxClient client, Metadata metadata) {
         this.client = client;
-        this.metadata = metadata;
+        this.setMetadata(metadata);
         try {
             ObjectReader reader = new ObjectMapper().readerFor(HashMap.class);
             HashMap<String, Object> readValue = new HashMap<>();
@@ -79,10 +79,12 @@ public class DropboxItemWrapper {
             }
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) readValue.get("sharing_info");
-            String accountId = (String) map.get("modified_by");
-            if (accountId != null) {
-                BasicAccount account = client.getAccount(accountId);
-                modifiedBy = account.getName().getDisplayName();
+            if (map != null && map.get("modified_by") != null) {
+                String accountId = (String) map.get("modified_by");
+                if (accountId != null) {
+                    BasicAccount account = client.getAccount(accountId);
+                    modifiedBy = account.getName().getDisplayName();
+                }
             }
         } catch (Exception e) {
             logger.error("{}", e, e);
@@ -107,6 +109,10 @@ public class DropboxItemWrapper {
 
     public boolean isDir() {
         return dir;
+    }
+
+    public boolean isFile() {
+        return !dir;
     }
 
     public void setDir(boolean dir) {
@@ -167,6 +173,14 @@ public class DropboxItemWrapper {
 
     public void setExtension(String extension) {
         this.extension = extension;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public void setMetadata(Metadata metadata) {
+        this.metadata = metadata;
     }
 
 }
