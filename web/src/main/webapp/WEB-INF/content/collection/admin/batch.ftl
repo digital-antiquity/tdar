@@ -24,7 +24,7 @@
 
         <#list resources>
             <#items as res>
-                <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType})</p>
+                <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType} - ${res.status})</p>
                 <@s.hidden name="ids[${res_index}]" value="${res.id?c}" /> 
 
                 <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8" /> 
