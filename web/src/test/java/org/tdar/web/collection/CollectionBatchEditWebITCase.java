@@ -10,7 +10,6 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWebTestCase {
 
-    private static final String _12345 = "12345";
     private static final String HORP_DESCRIPTION = "horp description";
     private static final String HORP_TITLE = "HORP title";
 
