@@ -127,6 +127,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
     }
 
 
+    @Override
     public void prepare() {
         setupResourceCollectionTreesForDashboard();
         setupBookmarks();
@@ -195,9 +196,11 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * @return
      */
     public List<ListCollection> getSummaryItems() {
-        List<ListCollection> items = new ArrayList<>();
+            List<ListCollection> items = new ArrayList<>();
         items.add(getBookmarkCollection());
-        items.addAll(getSharedResourceCollections());
+        //for some reason 'shared' resource list empty
+        items.addAll(getAllResourceCollections());
+
         return items;
     }
 }

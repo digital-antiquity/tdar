@@ -350,10 +350,10 @@ bookmark indicator, etc..
                 </#if>
 
                 <div class="btn-group pull-right bookmark-menu">
-                  <button class="btn bookmark-link" resource-id="${_resource.id?c}" bookmark-state="<#if _resource.bookmarked>bookmarked<#else>bookmark</#if>">
-                        <i title="bookmark or unbookmark" class="tdar-icon-bookmarked bookmark-icon"></i>
+                  <button class="btn btn-mini bookmark-link" resource-id="${_resource.id?c}" bookmark-state="<#if _resource.bookmarked>bookmarked<#else>bookmark</#if>">
+                        <i title="bookmark or unbookmark" class="icon-star"></i>
                   </button>
-                  <button class="btn dropdown-toggle" data-toggle="dropdown">
+                  <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>
                   </button>
                   <ul class="dropdown-menu">

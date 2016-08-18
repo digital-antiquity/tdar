@@ -1,70 +1,71 @@
-<#escape _untrusted as _untrusted?html>
-    <#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
-    <#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
-    <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
-    <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
-    <#import "/WEB-INF/macros/resource/common.ftl" as common>
-    <#import "/${themeDir}/settings.ftl" as settings>
+<#import "/WEB-INF/macros/resource/list-macros.ftl" as rlist>
+<#import "/WEB-INF/macros/resource/edit-macros.ftl" as edit>
+<#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
+<#import "/WEB-INF/macros/search/search-macros.ftl" as search>
+<#import "/WEB-INF/macros/resource/common.ftl" as common>
+<#import "/${themeDir}/settings.ftl" as settings>
 
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>
     <meta name="lastModifiedDate" content="$Date$"/>
     <@edit.resourceDataTableJavascript />
+
 </head>
 
+
 <div id="titlebar" parse="true">
-    <h1>${authenticatedUser.properName}'s Library</h1>
+    <h2>My Library</h2>
 
 </div>
-
-
-
-
-
-
 <div class="row">
-<div class="span9">
-    <#list summaryItems>
+<div class="span2">
+    <ul class="nav nav-pills nav-stacked">
+        <li class="active"><a href="#">All Collections</a></li>
+        <li><a href="#">Private</a></li>
+        <li><a href="#">Shared</a></li>
+        <li><a href="#">My Bookmarks</a></li>
+    </ul>
+</div>
+<div class="span10">
         <div class="table">
-            <h2>Collections</h2>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Name & Description</th>
-                        <th>Size</th>
-                        <th>Contents</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+            <table class="table ">
                 <tbody>
-                    <#items as collection>
-                        <tr>
-                            <td>
-                                <div class="organize-summary-name">
-                                    <b>${collection.name}</b>
-                                    <#if collection.description?has_content>
-                                    <#-- fixme: ellipsify this-->
-                                        - ${collection.description}
-                                    </#if>
-                                </div>
-                            </td>
-                            <td>
-                                <#-- fixme: get actual total including child collections -->
-                                ${(collection.resources?size)!0}
-                            </td>
-                            <td>
-                                <em>Intelligent summary of collection contents goes here</em>
-                            </td>
-                            <td>view | share | edit</td>
-                        </tr>
-                    </#items>
+
+                    <tr>
+                        <td></td>
+                        <th class="active">
+                            My Bookmarks
+                        </th>
+                        <td>
+                            <em>This is an automatic list that contains all of your bookmearked items.</em>
+                        </td>
+
+                        <td><@moremenu /></td>
+                    </tr>
+
+                    <tr>
+                        <td class="new-resources-count">
+                            <span class="badge">23</span>
+                        </td>
+                        <th>The southwest fauna collection</th>
+                        <td>Datasets, coding-sheets, and ontologies collected during the 2012 Annual Southwest Faunal Collection</td>
+                        <td><@moremenu /></td>
+                    </tr>
+
+                    <tr>
+                        <td class="new-resources-count"> </td>
+                        <th>New Orleans cemeteries and surounding areas </th>
+                        <td>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</td>
+                        <td><@moremenu /></td>
+                    </tr>
+
                 </tbody>
             </table>
         </div>
-    <#else>
-        <p>If you're reading this,  Jim screwed something up.</p>
-    </#list>
 
+    <div class="spacer-fold" style="height:500px; border: 1px solid #eee; border-radius: 10px">
+        <p><em style="color:#eee">This space left intentionally blank</em></p>
+    </div>
 
     <div class="well">
         <b>I want to be able to:</b>
@@ -76,15 +77,38 @@
             <li>Should bookmarks be a "special" collection in your library? or a dedicated section?</li>
             <li>how to show "shared" libraries?</li>
             <li>two pane layout could work, either top/bottom or right /left where "top" or "right" was dedicated to creation, and other part was for viewing</li>
+
+        </ul>
+        <b>more ideas from jim</b>
+        <ul>
+            <li>present 'gmail-style' list interface</li>
+            <li>filter options on left</li>
+            <li>clicking inside table row shows  hierarchy tree perhaps? Accordian style?</li>
+            <li>(iffy)collapsed row view shows super-terse inventory, e.g.  "12 documents, 2 datasets, 10 images"</li>
+
+
         </ul>
     </div>
 
     <@collectionsSection />
 </div>
-<div class="span3">
-    <@bookmarksSection />
+<#--<div class="span3 organize-bookmarks-container">-->
+    <#--<@bookmarksSection />fkdlashfkldjasjk-->
+<#--</div>-->
+
+
 </div>
-</div>
+
+    <#macro moremenu>
+    <div class="moremenu pull-right">
+        <div class="btn-group">
+            <button class="btn btn-mini">View</button>
+            <button class="btn btn-mini">Edit</button>
+            </div>
+    </div>
+
+    </#macro>
+
 
     <#macro collectionsSection>
 
@@ -113,7 +137,6 @@
     <#macro bookmarksSection>
         <div id="bookmarks">
             <#if ( bookmarkedResources?size > 0)>
-            <h2>My Bookmarks</h2>
                 <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' listTag='ol' headerTag="h3" />
             <#else>
             <h3>Bookmarked resources appear in this section</h3>
@@ -204,5 +227,3 @@
     </#list>
 
 </#macro>
-
-</#escape>
