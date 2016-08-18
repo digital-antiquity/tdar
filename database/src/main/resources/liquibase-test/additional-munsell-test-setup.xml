@@ -85,11 +85,11 @@
 	</changeSet>
     <changeSet id="collection-abcd-additional" author="abrin">
         <insert tableName="collection_resource">
-            <column name="collection_id" valueNumeric="1002" />
+            <column name="collection_id" valueNumeric="1004" />
             <column name="resource_id" valueNumeric="3087" />
         </insert>
         <insert tableName="collection_resource">
-            <column name="collection_id" valueNumeric="1002" />
+            <column name="collection_id" valueNumeric="1004" />
             <column name="resource_id" valueNumeric="1628" />
         </insert>
     </changeSet>

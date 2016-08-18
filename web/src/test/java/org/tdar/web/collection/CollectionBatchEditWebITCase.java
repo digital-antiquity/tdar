@@ -15,7 +15,7 @@ public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWeb
 
     @Test
     public void testBatchEdit() {
-        gotoPage("/collection/admin/batch/1002");
+        gotoPage("/collection/admin/batch/1004");
         boolean seen = false;
         for (int i = 0; i < 5; i++) {
             try {
@@ -33,7 +33,7 @@ public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWeb
         assertTrue("should see HARP ID", seen);
         logger.debug(getPageText());
         submitForm();
-        gotoPage("/collection/1002/display_orientationgrid?orientation=LIST_FULL");
+        gotoPage("/collection/1004");
         assertTextPresentInPage(HORP_TITLE);
         assertTextPresentInPage(HORP_DESCRIPTION);
 //        assertTextPresentInPage(_12345);
