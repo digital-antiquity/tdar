@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.io.File;
 import java.io.StringReader;
@@ -57,7 +56,7 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 
     @Before
     public void setupAPIClient() {
-        apiClient = new APIClient(CONFIG.getBaseSecureUrl(), 10);
+        apiClient = new APIClient(CONFIG.getBaseSecureUrl(), 500);
     }
 
     @Test
