@@ -228,8 +228,12 @@ public class EmailService {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
-        String msg = String.format("%s requesting access (%s) sent to %s", from, type, to);
-        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, null, RevisionLogType.REQUEST);
+        String msg = String.format("%s[%s] requesting access (%s) sent to %s[%s]", from.getProperName(), from.getId(), type.name(), to.getProperName(), to.getId());
+        TdarUser user = genericDao.find(TdarUser.class, CONFIG.getAdminUserId());
+        if (from instanceof TdarUser) {
+            user = (TdarUser) from;
+        }
+        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, user, RevisionLogType.REQUEST);
         genericDao.markWritable(rrl);
         genericDao.saveOrUpdate(rrl);
         String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(),
