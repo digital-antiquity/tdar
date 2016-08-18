@@ -33,6 +33,8 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
@@ -226,6 +228,10 @@ public class EmailService {
             email.setTo(from.getEmail());
         }
         email.setTo(to.getEmail());
+        String msg = String.format("%s requesting access (%s) sent to %s", from, type, to);
+        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, resource, null, RevisionLogType.REQUEST);
+        genericDao.markWritable(rrl);
+        genericDao.saveOrUpdate(rrl);
         String subject = String.format("%s: %s [id: %s] %s", CONFIG.getSiteAcronym(), MessageHelper.getMessage(type.getLocaleKey()), resource.getId(),
                 from.getProperName());
         if (StringUtils.isNotBlank(subjectSuffix)) {
