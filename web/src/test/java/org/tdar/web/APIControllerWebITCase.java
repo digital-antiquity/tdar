@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 import java.io.File;
 import java.io.StringReader;
@@ -104,16 +105,43 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
 		apiClient.apiLogout();
 	}
 
-	@Test
-	@Rollback
-	public void testCreate() throws Exception {
-		setupValidLogin();
-		String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/newDocument.xml"));
-		ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
-		logger.debug("status:{} ", response.getStatusLine());
-		logger.debug("response: {}", response.getBody());
-		assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
-	}
+    @Test
+    @Rollback
+    public void testCreate() throws Exception {
+        setupValidLogin();
+        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/newDocument.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", response.getBody());
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+    }
+
+    
+    @Test
+    @Rollback
+    public void testHiddenCollection() throws Exception {
+        setupValidLogin();
+        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/hidden-collection.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", response.getBody());
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+        Long id = response.getTdarId();
+        ApiClientResponse viewRecord = apiClient.viewRecord(id);
+        int statusCode = viewRecord.getStatusLine().getStatusCode();
+        logger.debug("status:{}", statusCode);
+        logger.debug(viewRecord.getBody());
+        String rcid = StringUtils.substringAfter(viewRecord.getBody(), "tdar:jaxbPersistableRef id=\"");
+        logger.debug(rcid);
+        rcid = StringUtils.substringBefore(rcid, "\"");
+        viewRecord = apiClient.viewCollection(Long.parseLong(rcid));
+        statusCode = viewRecord.getStatusLine().getStatusCode();
+        logger.debug("status:{}", statusCode);
+        logger.debug(viewRecord.getBody());
+        
+        assertTrue(StringUtils.contains(viewRecord.getBody(), "resourceCollection hidden=\"true\" "));
+
+    }
 
 	@Test
 	@Rollback

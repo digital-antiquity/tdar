@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.math.NumberUtils;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.StatusCode;
 
@@ -33,6 +34,7 @@ public class JaxbResultContainer implements Serializable, APIParameters {
     @XmlAttribute
     private String apiToken;
     private Resource result;
+    private ResourceCollection collectionResult;
     private List<String> stackTraces;
     private String message;
     private Long id;
@@ -168,6 +170,14 @@ public class JaxbResultContainer implements Serializable, APIParameters {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public ResourceCollection getCollectionResult() {
+        return collectionResult;
+    }
+
+    public void setCollectionResult(ResourceCollection collectionResult) {
+        this.collectionResult = collectionResult;
     }
 
 }

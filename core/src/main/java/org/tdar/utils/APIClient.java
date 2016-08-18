@@ -222,15 +222,24 @@ public class APIClient {
         return resp;
     }
 
-    @SuppressWarnings("unused")
     public ApiClientResponse viewRecord(Long id) throws ClientProtocolException, IOException {
-        HttpGet get = new HttpGet(String.format("%s/api/view?id=%s", baseUrl, id));
+        return get(id,"%s/api/view?id=%s");
+    }
+
+    public ApiClientResponse viewCollection(Long id) throws ClientProtocolException, IOException {
+        String string = "%s/api/collection/view?id=%s";
+        return get(id, string);
+
+    }
+
+    @SuppressWarnings("unused")
+    private ApiClientResponse get(Long id, String string) throws IOException, ClientProtocolException {
+        HttpGet get = new HttpGet(String.format(string, baseUrl, id));
         CloseableHttpResponse execute = httpClient.execute(get);
         CloseableHttpResponse response = getHttpClient().execute(get);
         ApiClientResponse resp = new ApiClientResponse(response);
         response.close();
         return resp;
-
     }
 
 }
