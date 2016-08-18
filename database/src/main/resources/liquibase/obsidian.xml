@@ -110,4 +110,10 @@
     <changeSet id="obsidian-9" author="abrin">
         <modifyDataType tableName="geographic_keyword" columnName="code" newDataType="varchar(10)"/>
     </changeSet>
+    <changeSet id="obsidian-10" author="abrin">
+    	<addColumn tableName="information_resource_file">
+    		<column name="preservation_note" type="text" />
+    		<column name="preservation_status" type="varchar(255)" />
+    	</addColumn>
+   	</changeSet>
 </databaseChangeLog>

@@ -89,7 +89,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(3);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -105,7 +105,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(3);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -124,7 +124,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(3);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -180,7 +180,7 @@ public class FaimsExportService {
                     resource.setTitle(retrieveFile.getName());
                     // logger.debug(" --> {}", files);
                     String output = export(resource, projectIdMap.get(resource.getProjectId()));
-                    logger.debug(output);
+                    logger.trace(output);
                     ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, fileList.toArray(new File[0]));
                     if (uploadRecord != null) {
                         projectIdMap.put(id, uploadRecord.getTdarId());
@@ -253,7 +253,9 @@ public class FaimsExportService {
                     }
                 }
             }
-            files.add(retrieveFile);
+            if (retrieveFile != null) {
+                files.add(retrieveFile);
+            }
 
         }
 

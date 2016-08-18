@@ -516,6 +516,22 @@ TDAR.autocomplete = (function () {
         options.showCreate = newOption;
         options.showCreatePhrase = "Create a new keyword";
         options.minLength = 2;
+
+        var useCustomRender = false;
+        if (useCustomRender) {
+            options.customRender = function (ul, item) {
+                var star ="";
+                if (item.approved != undefined && item.approved == true) {
+                    star = "<i class=\"icon-star\"></i> ";
+                }
+                var ocur = "";
+                if (item.occurrence != undefined && item.occurrence != 0) {
+                    ocur = item.occurrence;
+                }
+                var extra = "<span class='pull-right'>" + ocur + " " + star + "&nbsp;&nbsp;</span>";
+                return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(item.label) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + extra + " </a>").appendTo(ul);
+            };
+        };
         _applyGenericAutocomplete($(selector), options);
     }
 

@@ -59,7 +59,7 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
         tasks.add(process);
         List<String> runUpgradeTasks = scheduledProcessService.runUpgradeTasks();
         assertTrue(runUpgradeTasks.contains(process.getDisplayName()));
-        scheduledProcessService.checkIfRun(process.getDisplayName());
+        scheduledProcessService.hasRun(process.getDisplayName());
         process = applicationContext.getBean(PartialReindexProjectTitleProcess.class);
         tasks.clear();
         tasks.add(process);

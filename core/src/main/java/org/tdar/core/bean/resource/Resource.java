@@ -1491,7 +1491,6 @@ public class Resource implements Persistable,
         this.setSpaceInBytesUsed(resource.getSpaceInBytesUsed());
         this.setFilesUsed(resource.getFilesUsed());
         this.getResourceCollections().addAll(new ArrayList<>(resource.getResourceCollections()));
-
     }
 
     @XmlAttribute(name = "uploaderRef")

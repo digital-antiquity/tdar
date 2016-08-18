@@ -302,7 +302,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         
         
         clickId = id;
-        if (id && id.indexOf('USA') == -1) {
+        if (id && id.indexOf('US') != 0) {
             if (stateLayer != undefined) {
                 map.removeLayer(stateLayer);
                 stateLayer = undefined;
@@ -469,17 +469,9 @@ TDAR.worldmap = (function(console, $, ctx) {
 
     function _constructUri(resourceType, id, name) {
         
-        var uri = "/search/results?";
+        var uri = "/geographic/" + id +"?";
         if (resourceType) {
             uri += "resourceTypes=" + resourceType;
-        }
-        if (id != undefined && name != undefined) {
-            uri += "&geographicKeywords=" + name;
-            if (id.length == 3) {
-                uri += " (Country)";
-            } else {
-                uri += " (State / Territory)";
-            }
         }
         return uri;
     }

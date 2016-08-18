@@ -31,6 +31,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -666,6 +667,67 @@ public class ImportService {
             throw new TdarRecoverableRuntimeException("error.object_does_not_exist");
         }
         return h;
+    }
+
+    public ResourceCollection bringCollectionOntoSession(ResourceCollection importedRecord, TdarUser authenticatedUser, boolean validate) throws APIException {
+        ResourceCollection incomingResource = importedRecord;
+        boolean created = true;
+        // If the object already has a tDAR ID
+        created = reconcileIncomingObjectWithExisting(authenticatedUser, incomingResource, created);
+
+
+        if (validate) {
+            validateInvalidImportFields(incomingResource);
+        }
+
+        TdarUser blessedAuthorizedUser = genericService.merge(authenticatedUser);
+        incomingResource.markUpdated(blessedAuthorizedUser);
+
+        reconcilePersistableChildBeans(blessedAuthorizedUser, incomingResource);
+        logger.debug("comparing before/after merge:: before:{}", System.identityHashCode(blessedAuthorizedUser));
+        incomingResource = genericService.merge(incomingResource);
+
+        incomingResource.setCreated(created);
+        genericService.saveOrUpdate(incomingResource);
+        return incomingResource;
+    }
+
+private void validateInvalidImportFields(ResourceCollection incomingResource) throws APIException {
+
+        if (incomingResource.getType() == CollectionType.INTERNAL) {
+            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
+        }
+
+        if (CollectionUtils.isNotEmpty(incomingResource.getResources())) {
+            throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
+        }
+
+        if (CollectionUtils.isNotEmpty(incomingResource.getAuthorizedUsers())) {
+            throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
+        }
+}
+
+    private boolean reconcileIncomingObjectWithExisting(TdarUser authorizedUser, ResourceCollection incomingResource, boolean created_) throws APIException {
+        boolean created = created_;
+        if (PersistableUtils.isNotTransient(incomingResource)) {
+
+            ResourceCollection existing = genericService.find(incomingResource.getClass(), incomingResource.getId());
+
+            if (existing == null) {
+                throw new APIException(MessageHelper.getMessage("importService.object_not_found"), StatusCode.NOT_FOUND);
+            }
+
+            // check if the user can modify the record
+            if (!authenticationAndAuthorizationService.canEditCollection(authorizedUser, existing)) {
+                throw new APIException(MessageHelper.getMessage("error.permission_denied"), StatusCode.UNAUTHORIZED);
+            }
+
+            incomingResource.copyImmutableFieldsFrom(existing);
+            // FIXME: could be trouble: the next line implicitly detaches the submitter we just copied to incomingResource
+            genericService.detachFromSession(existing);
+            created = false;
+        }
+        return created;
     }
 
 }

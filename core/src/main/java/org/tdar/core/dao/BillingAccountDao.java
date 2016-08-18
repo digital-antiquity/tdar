@@ -323,7 +323,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
             logger.trace("s{} f{} r:{} ", account.getAvailableSpaceInBytes(), account.getAvailableNumberOfFiles(), helper.getUnflagged());
             processResourcesChronologically(helper, resourcesToEvaluate);
 
-            status = updateResourceStatusesAndReconcileAccountStatus(helper, status);
+            status = updateResourceStatusesAndReconcileAccountStatus(helper, status, user);
             overdrawn = isOverdrawn(account, getResourceEvaluator());
             logger.info("flagged: {} overdrawn:{}", helper.getFlagged(), overdrawn);
             if (CollectionUtils.isNotEmpty(helper.getFlagged()) || overdrawn) {
@@ -381,10 +381,11 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
      * 
      * @param resources
      */
-    private void markResourcesAsFlagged(Collection<Resource> resources) {
+    private void markResourcesAsFlagged(Collection<Resource> resources, TdarUser user) {
         for (Resource resource : resources) {
             if (!getResourceEvaluator().getUncountedResourceStatuses().contains(resource.getStatus())) {
                 resource.setStatus(Status.FLAGGED_ACCOUNT_BALANCE);
+                resource.markUpdated(user);
                 saveOrUpdate(resource);
             }
         }
@@ -396,7 +397,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
      * 
      * @param resources
      */
-    private void unMarkResourcesAsFlagged(Collection<Resource> resources) {
+    private void unMarkResourcesAsFlagged(Collection<Resource> resources, TdarUser user) {
         for (Resource resource : resources) {
             if (resource.getStatus() != Status.FLAGGED_ACCOUNT_BALANCE) {
                 continue;
@@ -405,6 +406,7 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
             if (status == null) {
                 status = Status.ACTIVE;
             }
+            resource.markUpdated(user);
             resource.setStatus(status);
             saveOrUpdate(resource);
         }
@@ -417,10 +419,10 @@ public class BillingAccountDao extends Dao.HibernateBase<BillingAccount> {
      * @param status
      * @return
      */
-    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status_) {
+    private AccountAdditionStatus updateResourceStatusesAndReconcileAccountStatus(AccountEvaluationHelper helper, AccountAdditionStatus status_, TdarUser user) {
         AccountAdditionStatus status = status_;
-        markResourcesAsFlagged(helper.getFlagged());
-        unMarkResourcesAsFlagged(helper.getUnflagged());
+        markResourcesAsFlagged(helper.getFlagged(), user);
+        unMarkResourcesAsFlagged(helper.getUnflagged(), user);
         logger.info("HELPER FINAL: s:{} f:{} r:{} ", helper.getAvailableSpaceInBytes(), helper.getAvailableNumberOfFiles(), helper.getUnflagged().size());
         if (helper.getFlagged().size() > 0) {
             if (helper.getAvailableSpaceInBytes() < 0) {

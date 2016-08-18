@@ -1,7 +1,6 @@
 package org.tdar.struts.action.api.ingest;
 
 import java.io.File;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +36,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts.action.api.AbstractApiController;
 import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts.interceptor.annotation.PostOnly;
@@ -45,7 +44,6 @@ import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.struts.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.JaxbParsingException;
-import org.tdar.utils.jaxb.JaxbResultContainer;
 
 @SuppressWarnings("serial")
 @Namespace("/api/ingest")
@@ -55,16 +53,13 @@ import org.tdar.utils.jaxb.JaxbResultContainer;
 @RequiresTdarUserGroup(TdarGroup.TDAR_API_USER)
 @HttpForbiddenErrorResponseOnly
 @HttpsOnly
-public class APIController extends AbstractAuthenticatableAction {
+public class APIController extends AbstractApiController {
 
     @Autowired
     private transient AuthorizationService authorizationService;
 
     private List<File> uploadFile = new ArrayList<>();
     private List<String> uploadFileFileName = new ArrayList<>();
-    private String record;
-    private String msg;
-    private StatusCode status;
     private Long projectId; // note this will override projectId value specified in record
 
     // on the receiving end
@@ -79,26 +74,10 @@ public class APIController extends AbstractAuthenticatableAction {
     @Autowired
     private transient BillingAccountService accountService;
 
-//    @Autowired
-//    private SearchIndexService searchIndexService;
-
     private Resource importedRecord;
-    // private List<String> restrictedFiles = new ArrayList<>();
-    // private FileAccessRestriction fileAccessRestriction;
-    private Long id;
-    private InputStream inputStream;
-    private JaxbResultContainer xmlResultObject = new JaxbResultContainer();
 
     private Long accountId;
-
     private Long couponNumberOfFiles = -1L;
-
-    private String errorMessage;
-    public final static String msg_ = "%s is %s %s (%s): %s";
-
-    private void logMessage(String action_, Class<?> cls, Long id_, String name_) {
-        getLogger().info(String.format(msg_, getAuthenticatedUser().getEmail(), action_, cls.getSimpleName().toUpperCase(), id_, name_));
-    }
 
     @Action(value = "upload",
             interceptorRefs = { @InterceptorRef("editAuthenticatedStack") },
@@ -121,7 +100,7 @@ public class APIController extends AbstractAuthenticatableAction {
             Resource incoming = (Resource) serializationService.parseXml(new StringReader(getRecord()));
             // I don't know that this is "right"
 
-            xmlResultObject.setRecordId(incoming.getId());
+            getXmlResultObject().setRecordId(incoming.getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             List<FileProxy> fileProxies = new ArrayList<FileProxy>();
             if (incoming instanceof InformationResource) {
@@ -137,16 +116,12 @@ public class APIController extends AbstractAuthenticatableAction {
             setImportedRecord(loadedRecord);
             setId(loadedRecord.getId());
 
-            errorMessage = "updated:" + loadedRecord.getId();
             RevisionLogType type = RevisionLogType.EDIT;
-            StatusCode code = StatusCode.UPDATED;
-            status = StatusCode.UPDATED;
+            setStatusMessage(StatusCode.UPDATED, "updated:" + loadedRecord.getId());
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
             if (loadedRecord.isCreated()) {
-                status = StatusCode.CREATED;
-                errorMessage = "created:" + loadedRecord.getId();
+                setStatusMessage(StatusCode.CREATED, "created:" + loadedRecord.getId());
                 type = RevisionLogType.CREATE;
-                code = StatusCode.CREATED;
                 getXmlResultObject().setRecordId(loadedRecord.getId());
                 getXmlResultObject().setId(loadedRecord.getId());
                 statuscode = StatusCode.CREATED.getHttpStatusCode();
@@ -154,7 +129,7 @@ public class APIController extends AbstractAuthenticatableAction {
                 reconcileAccountId(loadedRecord);
             }
 
-            logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+            logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             if (getCouponNumberOfFiles() > 0 && billingAccount != null) {
                 Coupon coupon = accountService.generateCouponCode(billingAccount, getCouponNumberOfFiles(), null, DateTime.now().plusYears(1).toDate());
@@ -162,28 +137,28 @@ public class APIController extends AbstractAuthenticatableAction {
                 getGenericService().saveOrUpdate(coupon);
             }
             getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(code.toString());
-            resourceService.logResourceModification(loadedRecord, authenticatedUser, errorMessage + " " + loadedRecord.getTitle(), type);
-            xmlResultObject.setMessage(errorMessage);
+            getXmlResultObject().setStatus(getStatus().toString());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), type);
+            getXmlResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
 
             return SUCCESS;
         } catch (Throwable e) {
-            errorMessage = "";
+            setErrorMessage("");
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
                 errors = new ArrayList<>(events);
 
-                errorResponse(StatusCode.BAD_REQUEST, errors, errorMessage, null);
+                errorResponse(StatusCode.BAD_REQUEST, errors, getErrorMessage(), null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
             Throwable cause = ExceptionUtils.getRootCause(e);
             if (cause == null) {
-            	cause = e;
+                cause = e;
             }
             stackTraces.add(ExceptionUtils.getFullStackTrace(cause));
             if (cause.getLocalizedMessage() != null) {
@@ -199,11 +174,10 @@ public class APIController extends AbstractAuthenticatableAction {
                 return ERROR;
             }
         }
-        errorResponse(StatusCode.UNKNOWN_ERROR, errors, errorMessage, stackTraces);
+        errorResponse(StatusCode.UNKNOWN_ERROR, errors, getErrorMessage(), stackTraces);
         return ERROR;
 
     }
-
 
     private void processIncomingFileProxies(List<FileProxy> fileProxies) {
         for (int i = 0; i < uploadFile.size(); i++) {
@@ -244,15 +218,15 @@ public class APIController extends AbstractAuthenticatableAction {
         }
 
         try {
-            InformationResource incoming = getGenericService().find(InformationResource.class, id);
+            InformationResource incoming = getGenericService().find(InformationResource.class, getId());
             if (!authorizationService.canUploadFiles(getAuthenticatedUser(), incoming)) {
                 errorResponse(StatusCode.FORBIDDEN, null, null, null);
                 return ERROR;
             }
             // I don't know that this is "right"
             incoming = getGenericService().markWritableOnExistingSession(incoming);
-            xmlResultObject.setRecordId(getId());
-            xmlResultObject.setId(getId());
+            getXmlResultObject().setRecordId(getId());
+            getXmlResultObject().setId(getId());
             TdarUser authenticatedUser = getAuthenticatedUser();
             FileProxies fileProxies = (FileProxies) serializationService.parseXml(FileProxies.class, new StringReader(getRecord()));
             List<FileProxy> incomingList = fileProxies.getFileProxies();
@@ -266,27 +240,25 @@ public class APIController extends AbstractAuthenticatableAction {
 
             setImportedRecord(loadedRecord);
 
-            errorMessage = "updated:" + loadedRecord.getId();
-            StatusCode code = StatusCode.UPDATED;
-            status = StatusCode.UPDATED;
+            setStatusMessage(StatusCode.UPDATED, "updated:" + loadedRecord.getId());
             int statuscode = StatusCode.UPDATED.getHttpStatusCode();
 
-            logMessage(" API " + code.name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
+            logMessage(" API " + getStatus().name(), loadedRecord.getClass(), loadedRecord.getId(), loadedRecord.getTitle());
 
             getXmlResultObject().setStatusCode(statuscode);
-            getXmlResultObject().setStatus(code.toString());
-            resourceService.logResourceModification(loadedRecord, authenticatedUser, errorMessage + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
-            xmlResultObject.setMessage(errorMessage);
+            getXmlResultObject().setStatus(getStatus().toString());
+            resourceService.logResourceModification(loadedRecord, authenticatedUser, getErrorMessage() + " " + loadedRecord.getTitle(), RevisionLogType.EDIT);
+            getXmlResultObject().setMessage(getErrorMessage());
             if (getLogger().isTraceEnabled()) {
                 getLogger().trace(serializationService.convertToXML(loadedRecord));
             }
             return SUCCESS;
         } catch (Throwable e) {
-            errorMessage = "";
+            setErrorMessage("");
             if (e instanceof JaxbParsingException) {
                 getLogger().debug("Could not parse the xml import", e);
                 final List<String> events = ((JaxbParsingException) e).getEvents();
-                errorResponse(StatusCode.BAD_REQUEST, events, errorMessage, null);
+                errorResponse(StatusCode.BAD_REQUEST, events, getErrorMessage(), null);
                 return ERROR;
             }
             getLogger().debug("an exception occured when processing the xml import", e);
@@ -323,16 +295,6 @@ public class APIController extends AbstractAuthenticatableAction {
         }
     }
 
-    private String errorResponse(StatusCode statusCode, List<String> errors, String message2, List<String> stackTraces) {
-        status = statusCode;
-        xmlResultObject.setStatus(statusCode.toString());
-        xmlResultObject.setStatusCode(statusCode.getHttpStatusCode());
-        xmlResultObject.setMessage(errorMessage);
-        xmlResultObject.setStackTraces(stackTraces);
-        xmlResultObject.setErrors(errors);
-        return ERROR;
-    }
-
     public List<File> getUploadFile() {
         return uploadFile;
     }
@@ -357,20 +319,6 @@ public class APIController extends AbstractAuthenticatableAction {
         this.processedFileNames = processedFileNames;
     }
 
-    /**
-     * @param record
-     *            the record to set
-     */
-    public void setRecord(String record) {
-        this.record = record;
-    }
-
-    /**
-     * @return the record
-     */
-    public String getRecord() {
-        return record;
-    }
 
     /**
      * @param importedRecord
@@ -385,38 +333,6 @@ public class APIController extends AbstractAuthenticatableAction {
      */
     public Resource getImportedRecord() {
         return importedRecord;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setStatus(StatusCode status) {
-        this.status = status;
-    }
-
-    public StatusCode getStatus() {
-        return status;
-    }
-
-    public void setErrorMessage(String errorMessage) {
-        this.errorMessage = errorMessage;
-    }
-
-    public String getErrorMessage() {
-        return errorMessage;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     public Long getProjectId() {
@@ -435,18 +351,6 @@ public class APIController extends AbstractAuthenticatableAction {
         this.accountId = accountId;
     }
 
-    public InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public void setInputStream(InputStream inputStream) {
-        this.inputStream = inputStream;
-    }
-
-    public String getMessage() {
-        return errorMessage;
-    }
-
     // the command line tool passes this property in: but we don't need it.
     public void setUploadedItem(String path) {
         getLogger().debug("Path of uploaded item is: " + path);
@@ -462,14 +366,6 @@ public class APIController extends AbstractAuthenticatableAction {
             BillingAccount account = getGenericService().markWritableOnExistingSession(account_);
             accountService.updateQuota(account, getAuthenticatedUser(), resource);
         }
-    }
-
-    public JaxbResultContainer getXmlResultObject() {
-        return xmlResultObject;
-    }
-
-    public void setXmlResultObject(JaxbResultContainer xmlResultContainer) {
-        this.xmlResultObject = xmlResultContainer;
     }
 
     public Long getCouponNumberOfFiles() {

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -78,6 +79,7 @@ import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
+import com.github.jsonldjava.utils.Obj;
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 
@@ -941,24 +943,43 @@ public class ResourceService {
     public void updateBatch(Project project,BillingAccount account, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
-            Long id = ids.get(0);
+            Long id = ids.get(i);
             Integer date = dates.get(i);
             String title = titles.get(i);
             String description = descriptions.get(i);
             Resource r = genericDao.find(Resource.class, id);
-//            r = genericDao.markWritable(r);
+            r = genericDao.markWritableOnExistingSession(r);
             resources.add(r);
-            r.setTitle(title);
-            r.setDescription(description);
+            boolean different = false;
+            if (!Objects.equals(title,  r.getTitle())) {
+                different = true;
+                r.setTitle(title);
+            }
+            if (!Objects.equals(description,  r.getDescription())) {
+                different = true;
+                r.setDescription(description);
+            }
+            
             if (r instanceof InformationResource) {
                 InformationResource ir = (InformationResource) r;
-                ir.setDate(date);
-                ir.setProject(project);
+                if (!Objects.equals(date,  ir.getDate())) {
+                    different = true;
+                    ir.setDate(date);
+                }
+                if (!Objects.equals(ir.getProject(), project)) {
+                    different = true;                    
+                    ir.setProject(project);
+                }
             }
-            r.markUpdated(authenticatedUser);
-            genericDao.saveOrUpdate(r);
-
+            if (different) {
+                ResourceRevisionLog rrl = new ResourceRevisionLog("Resource batch modified (basic)", r, authenticatedUser, RevisionLogType.EDIT);
+                genericDao.saveOrUpdate(rrl);
+                r.markUpdated(authenticatedUser);
+                genericDao.saveOrUpdate(r);
+            }
+            logger.debug("processed: {}", r);
         }
+        
         if (PersistableUtils.isNotNullOrTransient(account)) {
             accountDao.updateQuota(account, resources, authenticatedUser);
         }
