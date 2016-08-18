@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.http.Consts;
@@ -18,6 +19,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.entity.mime.content.FileBody;
@@ -41,9 +43,10 @@ public class APIClient {
     private static final String API_LOGIN = "/api/login";
     private static final String UPLOAD_FILE = "uploadFile";
     private static final String API_INGEST_COLLECTION_UPLOAD = "/api/collection/upload";
-    
+    private static final int TIMEOUT = 3500;
+    private int timeout = TIMEOUT;
     private String baseUrl;
-    private CloseableHttpClient httpClient = SimpleHttpUtils.createClient(3500);
+    private CloseableHttpClient httpClient;
     private Properties props;
     
     /**
@@ -51,7 +54,7 @@ public class APIClient {
      * @param baseSecureUrl
      */
     public APIClient(String baseSecureUrl) {
-        this.baseUrl = baseSecureUrl;
+        this(baseSecureUrl, TIMEOUT );
     }
 
     /**
@@ -67,6 +70,13 @@ public class APIClient {
         props.load(new FileInputStream(propertiesFile));
 
         this.baseUrl = props.getProperty("base.url");
+        timeout = Integer.parseInt(props.getProperty("timeout", Integer.toString(timeout)));
+        httpClient = SimpleHttpUtils.createClient(timeout);
+    }
+
+    public APIClient(String baseSecureUrl, int timeout2) {
+        this.baseUrl = baseSecureUrl;
+        httpClient = SimpleHttpUtils.createClient(timeout2);
     }
 
     private Logger logger = LoggerFactory.getLogger(getClass());
@@ -99,15 +109,26 @@ public class APIClient {
         post.setEntity(new UrlEncodedFormEntity(postNameValuePairs, UTF_8));
         CloseableHttpResponse response = getHttpClient().execute(post);
         ApiClientResponse response_ = new ApiClientResponse(response);
-        response.close();
+        cleanup(post, response);
         return response_;
+    }
+
+    private void cleanup(HttpRequestBase post, CloseableHttpResponse response) throws IOException {
+        response.close();
+        post.releaseConnection();
+        httpClient.getConnectionManager().closeExpiredConnections();
+        httpClient.getConnectionManager().closeIdleConnections(getTimeout(), TimeUnit.SECONDS);
+    }
+
+    private long getTimeout() {
+        return timeout;
     }
 
     public ApiClientResponse apiLogout() throws ClientProtocolException, IOException {
         HttpPost post = new HttpPost(baseUrl + API_LOGOUT);
         CloseableHttpResponse execute = getHttpClient().execute(post);
         ApiClientResponse response = new ApiClientResponse(execute);
-        execute.close();
+        cleanup(post, execute);
         logger.debug("status {}", response.getStatusLine());
         return response;
 
@@ -168,7 +189,7 @@ public class APIClient {
         post.setEntity(builder.build());
         CloseableHttpResponse response = getHttpClient().execute(post);
         ApiClientResponse toReturn = new ApiClientResponse(response);
-        response.close();
+        cleanup(post, response);
         return toReturn;
     }
 
@@ -184,7 +205,7 @@ public class APIClient {
         post.setEntity(builder.build());
         CloseableHttpResponse response = getHttpClient().execute(post);
         ApiClientResponse toReturn = new ApiClientResponse(response);
-        response.close();
+        cleanup(post, response);
         return toReturn;
     }
 
@@ -218,7 +239,7 @@ public class APIClient {
         post.setEntity(builder.build());
         CloseableHttpResponse response = getHttpClient().execute(post);
         ApiClientResponse resp = new ApiClientResponse(response);
-        response.close();
+        cleanup(post, response);
         return resp;
     }
 
@@ -227,8 +248,7 @@ public class APIClient {
     }
 
     public ApiClientResponse viewCollection(Long id) throws ClientProtocolException, IOException {
-        String string = "%s/api/collection/view?id=%s";
-        return get(id, string);
+        return get(id, "%s/api/collection/view?id=%s");
 
     }
 
@@ -237,8 +257,9 @@ public class APIClient {
         HttpGet get = new HttpGet(String.format(string, baseUrl, id));
         CloseableHttpResponse execute = httpClient.execute(get);
         CloseableHttpResponse response = getHttpClient().execute(get);
+        logger.debug("Done with get");
         ApiClientResponse resp = new ApiClientResponse(response);
-        response.close();
+        cleanup(get, response);
         return resp;
     }
 

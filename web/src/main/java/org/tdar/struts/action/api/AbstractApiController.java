@@ -7,7 +7,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.utils.jaxb.JaxbResultContainer;
 
-public class AbstractApiController extends AbstractAuthenticatableAction {
+public abstract class AbstractApiController extends AbstractAuthenticatableAction {
 
     private static final long serialVersionUID = -4598504825709978763L;
     private String record;

@@ -1,6 +1,5 @@
 package org.tdar.struts.action.api.collection;
 
-import java.io.Serializable;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;

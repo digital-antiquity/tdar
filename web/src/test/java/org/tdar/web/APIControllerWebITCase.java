@@ -51,59 +51,59 @@ import com.sun.media.rtsp.protocol.StatusCode;
 // @ContextConfiguration(classes = TdarAppConfiguration.class)
 public class APIControllerWebITCase extends AbstractWebTestCase {
 
-	private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
-	private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
-	private APIClient apiClient;
+    private static final TestConfiguration CONFIG = TestConfiguration.getInstance();
+    private static Logger logger = LoggerFactory.getLogger(SimpleHttpUtils.class);
+    private APIClient apiClient;
 
-	@Before
-	public void setupAPIClient() {
-		apiClient = new APIClient(CONFIG.getBaseSecureUrl());
-	}
+    @Before
+    public void setupAPIClient() {
+        apiClient = new APIClient(CONFIG.getBaseSecureUrl(), 10);
+    }
 
-	@Test
-	public void testValidLogin() throws IllegalStateException, Exception {
-		setupValidLogin();
-		ApiClientResponse response = apiClient.apiLogout();
-		Assert.assertTrue(Arrays.asList(HttpStatus.SC_OK, HttpStatus.SC_MOVED_TEMPORARILY)
-				.contains(response.getStatusLine().getStatusCode()));
+    @Test
+    public void testValidLogin() throws IllegalStateException, Exception {
+        setupValidLogin();
+        ApiClientResponse response = apiClient.apiLogout();
+        Assert.assertTrue(Arrays.asList(HttpStatus.SC_OK, HttpStatus.SC_MOVED_TEMPORARILY)
+                .contains(response.getStatusLine().getStatusCode()));
 
-	}
+    }
 
-	private JaxbResultContainer setupValidLogin() {
-		try {
-			ApiClientResponse response = apiClient.apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
-			logger.debug("status {}", response.getStatusLine());
-			assertEquals(StatusCode.OK, response.getStatusCode());
-			JaxbResultContainer result = (JaxbResultContainer) parseResult(response.getBody());
-			assertNotNull(result.getApiToken());
-			assertEquals(TdarConfiguration.getInstance().getRequestTokenName(), result.getSessionKeyName());
-			assertNotNull(result.getUsername());
-			return result;
-		} catch (Exception e) {
-			logger.debug("exception", e);
-		}
-		return null;
-	}
+    private JaxbResultContainer setupValidLogin() {
+        try {
+            ApiClientResponse response = apiClient.apiLogin(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+            logger.debug("status {}", response.getStatusLine());
+            assertEquals(StatusCode.OK, response.getStatusCode());
+            JaxbResultContainer result = (JaxbResultContainer) parseResult(response.getBody());
+            assertNotNull(result.getApiToken());
+            assertEquals(TdarConfiguration.getInstance().getRequestTokenName(), result.getSessionKeyName());
+            assertNotNull(result.getUsername());
+            return result;
+        } catch (Exception e) {
+            logger.debug("exception", e);
+        }
+        return null;
+    }
 
-	@Test
-	public void testValidRequestWithoutCookie() throws IllegalStateException, Exception {
-		JaxbResultContainer login = setupValidLogin();
-		CloseableHttpClient client2 = SimpleHttpUtils.createClient();
-		HttpGet get = new HttpGet(CONFIG.getBaseSecureUrl() + "/api/view?id=4231");
-		CloseableHttpResponse execute = client2.execute(get);
-		int statusCode = execute.getStatusLine().getStatusCode();
-		logger.debug("status:{}", statusCode);
-		assertEquals(HttpStatus.SC_FORBIDDEN, statusCode);
-		logger.debug(IOUtils.toString(execute.getEntity().getContent()));
-		get = new HttpGet(String.format("%s/api/view?id=4231&%s=%s", CONFIG.getBaseSecureUrl(),
-				login.getSessionKeyName(), login.getApiToken()));
-		execute = client2.execute(get);
-		logger.debug("status:{}", statusCode);
-		statusCode = execute.getStatusLine().getStatusCode();
-		assertEquals(HttpStatus.SC_OK, statusCode);
-		logger.debug(IOUtils.toString(execute.getEntity().getContent()));
-		apiClient.apiLogout();
-	}
+    @Test
+    public void testValidRequestWithoutCookie() throws IllegalStateException, Exception {
+        JaxbResultContainer login = setupValidLogin();
+        CloseableHttpClient client2 = SimpleHttpUtils.createClient();
+        HttpGet get = new HttpGet(CONFIG.getBaseSecureUrl() + "/api/view?id=4231");
+        CloseableHttpResponse execute = client2.execute(get);
+        int statusCode = execute.getStatusLine().getStatusCode();
+        logger.debug("status:{}", statusCode);
+        assertEquals(HttpStatus.SC_FORBIDDEN, statusCode);
+        logger.debug(IOUtils.toString(execute.getEntity().getContent()));
+        get = new HttpGet(String.format("%s/api/view?id=4231&%s=%s", CONFIG.getBaseSecureUrl(),
+                login.getSessionKeyName(), login.getApiToken()));
+        execute = client2.execute(get);
+        logger.debug("status:{}", statusCode);
+        statusCode = execute.getStatusLine().getStatusCode();
+        assertEquals(HttpStatus.SC_OK, statusCode);
+        logger.debug(IOUtils.toString(execute.getEntity().getContent()));
+        apiClient.apiLogout();
+    }
 
     @Test
     @Rollback
@@ -116,7 +116,6 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
     }
 
-    
     @Test
     @Rollback
     public void testHiddenCollection() throws Exception {
@@ -134,138 +133,141 @@ public class APIControllerWebITCase extends AbstractWebTestCase {
         String rcid = StringUtils.substringAfter(viewRecord.getBody(), "tdar:jaxbPersistableRef id=\"");
         logger.debug(rcid);
         rcid = StringUtils.substringBefore(rcid, "\"");
-        viewRecord = apiClient.viewCollection(Long.parseLong(rcid));
-        statusCode = viewRecord.getStatusLine().getStatusCode();
+        apiClient = null;
+        setupAPIClient();
+        setupValidLogin();
+        ApiClientResponse viewCollection = apiClient.viewCollection(Long.parseLong(rcid));
+        statusCode = viewCollection.getStatusLine().getStatusCode();
         logger.debug("status:{}", statusCode);
-        logger.debug(viewRecord.getBody());
-        
-        assertTrue(StringUtils.contains(viewRecord.getBody(), "resourceCollection hidden=\"true\" "));
+        logger.debug(viewCollection.getBody());
+
+        assertTrue(StringUtils.contains(viewCollection.getBody(), "tdar:collectionResult hidden=\"true\" "));
 
     }
 
-	@Test
-	@Rollback
-	public void testInvalid() throws Exception {
-		setupValidLogin();
-		String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/invalid.xml"));
-		ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
-		logger.debug("status:{} ", response.getStatusLine());
-		logger.debug("response: {}", response.getBody());
-		assertNotEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
-		assertTrue(response.getBody().contains("using unsupported controlled keyword"));
-	}
+    @Test
+    @Rollback
+    public void testInvalid() throws Exception {
+        setupValidLogin();
+        String docXml = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/invalid.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(docXml, null, null);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", response.getBody());
+        assertNotEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+        assertTrue(response.getBody().contains("using unsupported controlled keyword"));
+    }
 
-	@Test
-	@RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
-	public void testConfidential() throws Exception {
-		setupValidLogin();
-		String filesUed = getFilesUsed(true);
-		logger.debug("used: {}", filesUed);
+    @Test
+    @RunWithTdarConfiguration(runWith = { RunWithTdarConfiguration.CREDIT_CARD })
+    public void testConfidential() throws Exception {
+        setupValidLogin();
+        String filesUed = getFilesUsed(true);
+        logger.debug("used: {}", filesUed);
 
-		String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-		ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, new File(TestConstants.TEST_IMAGE),
-				new File(TestConstants.TEST_IMAGE2));
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, 1L, new File(TestConstants.TEST_IMAGE),
+                new File(TestConstants.TEST_IMAGE2));
 
-		logger.debug("status:{} ", response.getStatusLine());
-		logger.debug("response: {}", response.getBody());
-		assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", response.getBody());
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
 
-		String filesUed_ = getFilesUsed(false);
-		logger.debug("used: {} vs. {}", filesUed, filesUed_);
-	}
+        String filesUed_ = getFilesUsed(false);
+        logger.debug("used: {} vs. {}", filesUed, filesUed_);
+    }
 
-	@Test
-	public void testReplaceFile() throws Exception {
-		setupValidLogin();
+    @Test
+    public void testReplaceFile() throws Exception {
+        setupValidLogin();
 
-		String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
-		ApiClientResponse response = apiClient.uploadRecord(text, null, null, new File(TestConstants.TEST_IMAGE));
-		logger.debug("status:{} ", response.getStatusLine());
-		String resp = response.getBody();
-		logger.debug("response: {}", resp);
-		Long id = response.getTdarId();
-		assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
+        String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/confidentialImage.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, null, new File(TestConstants.TEST_IMAGE));
+        logger.debug("status:{} ", response.getStatusLine());
+        String resp = response.getBody();
+        logger.debug("response: {}", resp);
+        Long id = response.getTdarId();
+        assertEquals(HttpStatus.SC_CREATED, response.getStatusLine().getStatusCode());
 
-		ApiClientResponse viewRecord = apiClient.viewRecord(id);
-		String fileId = viewRecord.getXmlDocument().getElementsByTagName("tdar:informationResourceFile").item(0)
-				.getAttributes().getNamedItem("id").getNodeValue();
-		logger.debug("fileId::{}", fileId);
-		text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
-		text = text.replace("{{FILE_ID}}", fileId);
-		text = text.replace("{{FILENAME}}", TestConstants.TEST_IMAGE_NAME2);
-		logger.debug(text);
-		response = apiClient.updateFiles(text, id, null, new File(TestConstants.TEST_IMAGE2));
+        ApiClientResponse viewRecord = apiClient.viewRecord(id);
+        String fileId = viewRecord.getXmlDocument().getElementsByTagName("tdar:informationResourceFile").item(0)
+                .getAttributes().getNamedItem("id").getNodeValue();
+        logger.debug("fileId::{}", fileId);
+        text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/replaceFileProxy.xml"));
+        text = text.replace("{{FILE_ID}}", fileId);
+        text = text.replace("{{FILENAME}}", TestConstants.TEST_IMAGE_NAME2);
+        logger.debug(text);
+        response = apiClient.updateFiles(text, id, null, new File(TestConstants.TEST_IMAGE2));
 
-		logger.debug("status:{} ", response.getStatusLine());
-		assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
-		logger.debug("response: {}", response.getBody());
-	}
+        logger.debug("status:{} ", response.getStatusLine());
+        assertEquals(HttpStatus.SC_ACCEPTED, response.getStatusLine().getStatusCode());
+        logger.debug("response: {}", response.getBody());
+    }
 
-	private String getFilesUsed(boolean login) {
-		if (login) {
-			login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
-		}
-		gotoPage("/billing/1");
-		String code = getPageCode();
-		String str = "class=\"filesused\">";
-		String filesUed = code.substring(code.indexOf(str) + str.length());
-		filesUed = filesUed.substring(0, filesUed.indexOf("</"));
-		return filesUed;
-	}
+    private String getFilesUsed(boolean login) {
+        if (login) {
+            login(CONFIG.getAdminUsername(), CONFIG.getAdminPassword());
+        }
+        gotoPage("/billing/1");
+        String code = getPageCode();
+        String str = "class=\"filesused\">";
+        String filesUed = code.substring(code.indexOf(str) + str.length());
+        filesUed = filesUed.substring(0, filesUed.indexOf("</"));
+        return filesUed;
+    }
 
-	@Test
-	@Rollback
-	public void testProjectWithCollection() throws Exception {
-		setupValidLogin();
-		String text = FileUtils
-				.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
-		ApiClientResponse response = apiClient.uploadRecord(text, null, null);
-		logger.debug("status:{} ", response.getStatusLine());
-		logger.debug("response: {}", response.getBody());
-		assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
-	}
+    @Test
+    @Rollback
+    public void testProjectWithCollection() throws Exception {
+        setupValidLogin();
+        String text = FileUtils
+                .readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/record-with-collections.xml"));
+        ApiClientResponse response = apiClient.uploadRecord(text, null, null);
+        logger.debug("status:{} ", response.getStatusLine());
+        logger.debug("response: {}", response.getBody());
+        assertEquals(StatusCode.CREATED, response.getStatusLine().getStatusCode());
+    }
 
-	@Test
-	public void testInvalidLogin() throws IllegalStateException, Exception {
-		ApiClientResponse response = apiClient.apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
-		assertEquals(StatusCode.BAD_REQUEST, response.getStatusCode());
-		JaxbResultContainer result = (JaxbResultContainer) parseResult(response.getBody());
-		assertNull(result.getApiToken());
-		assertNull(result.getUsername());
-		assertEquals(MessageHelper.getInstance().getText("apiAuthenticationController.invalid_user"), result.getErrors().get(0));
-	}
+    @Test
+    public void testInvalidLogin() throws IllegalStateException, Exception {
+        ApiClientResponse response = apiClient.apiLogin(CONFIG.getUsername(), CONFIG.getPassword());
+        assertEquals(StatusCode.BAD_REQUEST, response.getStatusCode());
+        JaxbResultContainer result = (JaxbResultContainer) parseResult(response.getBody());
+        assertNull(result.getApiToken());
+        assertNull(result.getUsername());
+        assertEquals(MessageHelper.getInstance().getText("apiAuthenticationController.invalid_user"), result.getErrors().get(0));
+    }
 
-	public JaxbResultContainer parseResult(String xml) throws JAXBException, JaxbParsingException {
-		JAXBContext jc = JAXBContext.newInstance(JaxbResultContainer.class);
-//		SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
-		// Schema schema = sf.newSchema(generateSchema());
+    public JaxbResultContainer parseResult(String xml) throws JAXBException, JaxbParsingException {
+        JAXBContext jc = JAXBContext.newInstance(JaxbResultContainer.class);
+        // SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+        // Schema schema = sf.newSchema(generateSchema());
 
-		Unmarshaller unmarshaller = jc.createUnmarshaller();
-		// unmarshaller.setSchema(schema);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        // unmarshaller.setSchema(schema);
 
-		final List<String> errors = new ArrayList<>();
-		List<String> lines = Arrays.asList(StringUtils.split(xml, '\n'));
-		unmarshaller.setEventHandler(new ValidationEventHandler() {
+        final List<String> errors = new ArrayList<>();
+        List<String> lines = Arrays.asList(StringUtils.split(xml, '\n'));
+        unmarshaller.setEventHandler(new ValidationEventHandler() {
 
-			@Override
-			public boolean handleEvent(ValidationEvent event) {
-				// TODO Auto-generated method stub
-				JaxbValidationEvent err = new JaxbValidationEvent(event,
-						lines.get(event.getLocator().getLineNumber() - 1));
-				errors.add(err.toString());
-				logger.warn("an XML parsing exception occurred: {}", err);
-				return true;
-			}
-		});
+            @Override
+            public boolean handleEvent(ValidationEvent event) {
+                // TODO Auto-generated method stub
+                JaxbValidationEvent err = new JaxbValidationEvent(event,
+                        lines.get(event.getLocator().getLineNumber() - 1));
+                errors.add(err.toString());
+                logger.warn("an XML parsing exception occurred: {}", err);
+                return true;
+            }
+        });
 
-		// separate out so that we can throw the exception
-		JaxbResultContainer toReturn = (JaxbResultContainer) unmarshaller.unmarshal(new StringReader(xml));
+        // separate out so that we can throw the exception
+        JaxbResultContainer toReturn = (JaxbResultContainer) unmarshaller.unmarshal(new StringReader(xml));
 
-		if (errors.size() > 0) {
-			throw new JaxbParsingException(MessageHelper.getMessage("serializationService.could_not_parse"), errors);
-		}
+        if (errors.size() > 0) {
+            throw new JaxbParsingException(MessageHelper.getMessage("serializationService.could_not_parse"), errors);
+        }
 
-		return toReturn;
-	}
+        return toReturn;
+    }
 
 }
