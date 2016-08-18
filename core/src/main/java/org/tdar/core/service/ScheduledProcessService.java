@@ -41,6 +41,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.AbstractPersistableScheduledProcess;
 import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
+import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
@@ -127,7 +128,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     @Scheduled(cron = "0 15 0 * * *")
     public void cronDailyStats() {
         logger.info("updating Daily stats");
-//        queue(OccurranceStatisticsUpdateProcess.class);
         queue(DailyStatisticsUpdate.class);
     }
 
@@ -215,6 +215,11 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     @Scheduled(cron = "50 0 0 * * SUN")
     public void cronVerifyTdarFiles() throws IOException {
         queue(WeeklyFilestoreLoggingProcess.class);
+    }
+
+    @Scheduled(cron = "50 0 0 * * SAT")
+    public void updateOcurrenceStats() throws IOException {
+        queue(OccurranceStatisticsUpdateProcess.class);
     }
 
     /**
