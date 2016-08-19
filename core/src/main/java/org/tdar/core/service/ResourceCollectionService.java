@@ -443,7 +443,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 if (collection.getSortBy() == null) {
                     collection.setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
                 }
-                collection.setHidden(false);
                 collectionToAdd = collection;
                 publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             }

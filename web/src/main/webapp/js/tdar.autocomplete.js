@@ -456,6 +456,9 @@ TDAR.autocomplete = (function () {
                         $(this).html(htmlString);
                     });
                 }
+                if (options.customHeader != undefined) {
+                    $("ul.ui-autocomplete").prepend(options.customHeader());
+                }
                 $("ul.ui-autocomplete").css("width", $(this).parent().width());
             },
             close: function () {
@@ -529,8 +532,12 @@ TDAR.autocomplete = (function () {
                     ocur = item.occurrence;
                 }
                 var extra = "<span class='pull-right'>" + ocur + " " + star + "&nbsp;&nbsp;</span>";
+
                 return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(item.label) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + extra + " </a>").appendTo(ul);
             };
+            options.customHeader = function() {
+                return $("<li class='header-auto'>Term <span class='header-auto pull-right'>Frequency / Suggested</span></li>");
+            }
         };
         _applyGenericAutocomplete($(selector), options);
     }
