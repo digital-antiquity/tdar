@@ -72,6 +72,7 @@ import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -303,8 +304,16 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
 
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        return mapper.readValue(json, cls);
+    }
+
+    @Transactional(readOnly = true)
+    public <C> C readObjectFromJsonWithJAXB(String json, Class<C> cls) throws IOException {
         final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector( TypeFactory.defaultInstance() );
-        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();//.setAnnotationIntrospector( jaxbIntrospector );
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper().setAnnotationIntrospector( jaxbIntrospector );
+        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
         return mapper.readValue(json, cls);
     }
 

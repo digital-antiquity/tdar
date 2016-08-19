@@ -5,6 +5,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
+import org.tdar.core.service.AutowireHelper;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ReflectionService;
 
@@ -41,6 +42,9 @@ public class JaxbPersistableConverter extends javax.xml.bind.annotation.adapters
             return null;
         }
         String[] split = id.split(":");
+        if (reflectionService == null) {
+            AutowireHelper.autowire(this, genericService, reflectionService);
+        }
         Class<? extends Persistable> cls = reflectionService.getMatchingClassForSimpleName(split[0]);
         return genericService.find(cls, Long.valueOf(split[1]));
     }

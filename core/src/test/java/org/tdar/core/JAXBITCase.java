@@ -2,11 +2,7 @@ package org.tdar.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +28,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
@@ -71,6 +68,8 @@ import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
+
+import com.rometools.modules.sle.types.Sort;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 
@@ -184,6 +183,26 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         assertTrue(sw.toString().contains(BEDOUIN));
     }
 
+    @Test
+    @Rollback
+//    @Ignore
+    public void testCollectionJson() throws IOException {
+        ResourceCollection rc = new ResourceCollection(10000L, "test", "test", SortOption.TITLE,CollectionType.SHARED, true);
+        rc.markUpdated(getAdminUser());
+        rc.setOwner(getBasicUser());
+        rc.setOrientation(DisplayOrientation.MAP);
+        rc.getResources().addAll(genericService.findRandom(Resource.class, 4));
+        genericService.saveOrUpdate(rc);
+        try {
+        String json = serializationService.convertToJson(rc);
+        logger.debug(json);
+        ResourceCollection rc2 = serializationService.readObjectFromJson(json, ResourceCollection.class);
+        logger.debug("{}",rc2);
+        } catch (Throwable t) {
+            logger.error("{}", t,t);
+            fail(t.getMessage());
+        }
+    }
     
     @Test
     @Rollback

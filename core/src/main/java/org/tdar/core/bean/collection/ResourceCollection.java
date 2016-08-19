@@ -80,8 +80,9 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -112,7 +113,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @Inheritance(strategy = InheritanceType.JOINED)
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters=true)
+@JsonInclude(value=Include.NON_NULL)
 public class ResourceCollection extends AbstractPersistable implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
 
@@ -618,6 +620,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return String.format("/%s/%s/%s", getUrlNamespace(), getId(), getSlug());
     }
 
+    @XmlTransient
     public String getAllFieldSearch() {
         StringBuilder sb = new StringBuilder();
         sb.append(getTitle()).append(" ").append(getDescription()).append(" ");
