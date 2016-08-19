@@ -1408,3 +1408,7 @@ hr.light {
 .ribbon-green:after {
   right: 0;
 }
+
+ul .header-auto {
+	text-decoration:underline;
+}

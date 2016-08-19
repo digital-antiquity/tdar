@@ -22,7 +22,9 @@ import org.tdar.utils.Pair;
  * 
  * @param <P>
  */
-public abstract class AbstractScheduledBatchProcess<P extends Persistable> extends AbstractPersistableScheduledProcess<P> {
+public abstract class AbstractScheduledBatchProcess<P extends Persistable> extends AbstractPersistableScheduledProcess<P> implements BatchProcess {
+
+    private static final int DEFAULT_PROCESS_END_ID = 1_000_000;
 
     private static final long serialVersionUID = -334767596935956563L;
 
@@ -38,6 +40,9 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
     protected GenericDao genericDao;
 
     private List<Long> allIds;
+
+    private int processStartId = -1;
+    private int processEndId = -1;
 
     public abstract void process(P persistable) throws Exception;
 
@@ -88,15 +93,15 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
             batch = getNextBatch();
         }
     }
-    
+
     public boolean clearBeforeBatch() {
-    	return false;
+        return false;
     }
 
     public synchronized List<Long> getNextBatch() {
-    	if (clearBeforeBatch()) {
-			genericDao.clearCurrentSession();
-    	}
+        if (clearBeforeBatch()) {
+            genericDao.clearCurrentSession();
+        }
         List<Long> queue = getBatchIdQueue();
         if (queue.isEmpty()) {
             logger.trace("No more ids to process");
@@ -148,17 +153,10 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
      * @return
      */
     public List<Long> findAllIds() {
-        // FIXME: replace with LinkedList iff we find that performance suffers -
-        // we use subList to iterate and clear
-        // batches and so LinkedList may offer better traversal/removal
-        // performance at the cost of increased memory usage.
-        if ((getTdarConfiguration().getScheduledProcessStartId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_START_ID)
-                && (getTdarConfiguration().getScheduledProcessEndId() == TdarConfiguration.DEFAULT_SCHEDULED_PROCESS_END_ID)) {
+        if (shouldRunAll()) {
             return genericDao.findAllIds(getPersistentClass());
-        }
-        else {
-            return genericDao.findAllIds(getPersistentClass(),
-                    getTdarConfiguration().getScheduledProcessStartId(), getTdarConfiguration().getScheduledProcessEndId());
+        } else {
+            return genericDao.findAllIds(getPersistentClass(), getProcessStartId(), getProcessEndId());
         }
     }
 
@@ -191,5 +189,25 @@ public abstract class AbstractScheduledBatchProcess<P extends Persistable> exten
 
     public void setAllIds(List<Long> allIds) {
         this.allIds = allIds;
+    }
+
+    @Override
+    public int getProcessStartId() {
+        return processStartId;
+    }
+
+    @Override
+    public void setProcessStartId(int processStartId) {
+        this.processStartId = processStartId;
+    }
+
+    @Override
+    public int getProcessEndId() {
+        return processEndId;
+    }
+
+    @Override
+    public void setProcessEndId(int processEndId) {
+        this.processEndId = processEndId;
     }
 }

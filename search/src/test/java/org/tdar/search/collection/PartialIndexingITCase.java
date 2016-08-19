@@ -18,6 +18,7 @@ import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.search.AbstractResourceSearchITCase;
+import org.tdar.search.bean.ReservedSearchParameters;
 import org.tdar.search.query.SearchResult;
 import org.tdar.search.service.SearchUtils;
 import org.tdar.search.service.query.ResourceSearchService;
@@ -47,13 +48,13 @@ public class PartialIndexingITCase extends AbstractResourceSearchITCase {
         SolrDocument byId = template.getById(SearchUtils.createKey(ds));
         logger.debug("{}", byId);
         SearchResult<Resource> result = new SearchResult<>();
-        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, result, MessageHelper.getInstance(), getAdminUser());
+        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, new ReservedSearchParameters(), result, MessageHelper.getInstance(), getAdminUser());
         logger.debug("{}", result.getResults());
         assertEquals(1, result.getResults().size());
         searchIndexService.partialIndexAllResourcesInCollectionSubTree(rc);
         result = new SearchResult<>();
         
-        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, result, MessageHelper.getInstance(), getAdminUser());
+        resourceSearchService.buildKeywordQuery(hittite, KeywordType.CULTURE_KEYWORD, new ReservedSearchParameters(), result, MessageHelper.getInstance(), getAdminUser());
         logger.debug("{}", result.getResults());
         assertEquals(1, result.getResults().size());
         logger.debug("{}", template.getById(SearchUtils.createKey(ds)));

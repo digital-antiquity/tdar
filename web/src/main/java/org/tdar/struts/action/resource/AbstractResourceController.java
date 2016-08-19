@@ -104,7 +104,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private List<InvestigationType> allInvestigationTypes;
     private List<EmailMessageType> emailTypes = EmailMessageType.valuesWithoutConfidentialFiles();
     private RevisionLogType revisionType = RevisionLogType.EDIT;
-    private String submitterProperName = "";
 
     @Autowired
     private SerializationService serializationService;
@@ -272,12 +271,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @see org.tdar.struts.action.AbstractPersistableController#save()
      */
     public String save() throws TdarActionException {
-        setupSubmitterField();
         setSaveSuccessPath(getResource().getResourceType().getUrlNamespace());
         if (PersistableUtils.isNullOrTransient(getId())) {
             revisionType = RevisionLogType.CREATE;
         }
-        // setSaveSuccessSuffix("/" + getResource().getSlug());
         return super.save();
     }
 
@@ -291,7 +288,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @Override
     public String add() throws TdarActionException {
         accountService.assignOrphanInvoicesIfNecessary(getAuthenticatedUser());
-        setupSubmitterField();
         // if user has no invoices/funds to bill against, redirect to cart page
         if (!isAbleToCreateBillableItem()) {
             addActionMessage(getText("resourceController.requires_funds"));
@@ -315,17 +311,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     @HttpsOnly
     @Override
     public String edit() throws TdarActionException {
-        setupSubmitterField();
         return super.edit();
-    }
-
-    private void setupSubmitterField() {
-        if (PersistableUtils.isNotNullOrTransient(getSubmitter()) && StringUtils.isNotBlank(getSubmitter().getProperName())) {
-            if (getSubmitter().getFirstName() != null && getSubmitter().getLastName() != null)
-                setSubmitterProperName(getSubmitter().getProperName());
-        } else {
-            setSubmitterProperName(getAuthenticatedUser().getProperName());
-        }
     }
 
     @Override
@@ -522,19 +508,6 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         if (PersistableUtils.isNotNullOrTransient(getSubmitter())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getSubmitter().getId());
             getPersistable().setSubmitter(uploader);
-            // if I change the owner, and the owner is me, then make sure I don't loose permissions on the record
-            // if (uploader.equals(getAuthenticatedUser())) {
-            // boolean found = false;
-            // for (AuthorizedUser user : getAuthorizedUsers()) {
-            // if (user.getUser().equals(uploader)) {
-            // found = true;
-            // }
-            // }
-            // // if we're setting the sbumitter
-            // if (!found) {
-            // getAuthorizedUsers().add(new AuthorizedUser(uploader, GeneralPermissions.MODIFY_RECORD));
-            // }
-            // }
         }
 
         // only modify these permissions if the user has the right to
@@ -1126,12 +1099,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     }
 
     public String getSubmitterProperName() {
-        return submitterProperName;
+        if(getSubmitter() == null) return null;
+        return getSubmitter().getProperName();
     }
 
-    public void setSubmitterProperName(String submitterProperName) {
-        this.submitterProperName = submitterProperName;
-    }
 
     public Boolean isSelect2Enabled() {
         return select2Enabled;

@@ -106,6 +106,15 @@ public class InformationResourceFile extends AbstractSequenced<InformationResour
     @Column(name = "number_of_parts")
     private Integer numberOfParts = 0;
 
+    @Column(name = "preservation_status", length = FieldLength.FIELD_LENGTH_25)
+    @Enumerated(EnumType.STRING)
+    private PreservationStatus preservationStatus;
+
+    @Column(name = "preservation_note")
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    private String preservationNote;
+
     @Column(name = "filename", length = FieldLength.FIELD_LENGTH_255)
     private String filename;
 
@@ -539,4 +548,15 @@ public class InformationResourceFile extends AbstractSequenced<InformationResour
         this.deleted = deleted;
     }
 
+    public String getPreservationNote() {
+        return preservationNote;
+    }
+
+    public void setPreservationNote(String preservationNote) {
+        this.preservationNote = preservationNote;
+    }
+
+    public void setPreservationStatus(PreservationStatus preservationStatus) {
+        this.preservationStatus = preservationStatus;
+    }
 }

@@ -36,6 +36,9 @@
         </ul>
         <#else>
         </#list>
+
+        <@search.facetBy facetlist=facetWrapper.facetResults['resourceType']![]  currentValues=resourceTypes label="Resource Type(s)" facetParam="resourceTypes" liCssClass="" ulClass="unstyled" pictoralIcon=true />
+        
     </div>
 </div>
         <@nav.keywordToolbar "view" />

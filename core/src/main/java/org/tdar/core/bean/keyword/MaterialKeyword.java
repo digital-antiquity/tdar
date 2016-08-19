@@ -12,6 +12,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Material Type keyword (controlled).
@@ -49,6 +52,7 @@ public class MaterialKeyword extends AbstractKeyword<MaterialKeyword> implements
 
     @XmlAttribute
     @Override
+    @JsonView(JsonLookupFilter.class)
     public boolean isApproved() {
         return approved;
     }

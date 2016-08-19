@@ -508,7 +508,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             collection.markUpdated(resource.getSubmitter());
             if (collection instanceof VisibleCollection && ((VisibleCollection) collection).getSortBy() == null) {
                 ((VisibleCollection) collection).setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
-                ((VisibleCollection) collection).setHidden(false);
             }
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             return collection;

@@ -13,6 +13,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
+import org.tdar.utils.json.JsonLookupFilter;
+
+import com.fasterxml.jackson.annotation.JsonView;
 
 /**
  * Describes the type of site in the resource
@@ -39,6 +42,7 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
 
     @XmlAttribute
     @Override
+    @JsonView(JsonLookupFilter.class)
     public boolean isApproved() {
         return approved;
     }

@@ -18,6 +18,7 @@
 package org.tdar.core.bean.collection;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -69,6 +70,10 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+
 /**
  * @author Adam Brin
  * 
@@ -96,7 +101,8 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @XmlType(name = "collection")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
-
+@JsonIgnoreProperties(ignoreUnknown = true, allowGetters=true)
+@JsonInclude(value=Include.NON_NULL)
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 @XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class, ListCollection.class })
@@ -150,6 +156,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Column(name = "resource_id")
     @Immutable
     private Set<Long> resourceIds;
+
+    private transient boolean created;
 
     public CollectionType getType() {
         return type;
@@ -277,4 +285,32 @@ public abstract class ResourceCollection extends AbstractPersistable
     public String getUrlNamespace() {
         return "collection";
     }
+
+    @Transient
+    @XmlTransient
+    public boolean isCreated() {
+        return created;
+    }
+
+    public void setCreated(boolean created) {
+        this.created = created;
+    }
+
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+    public <R extends ResourceCollection> void copyImmutableFieldsFrom(R resource) {
+        this.setDateCreated(resource.getDateCreated());
+        this.setOwner(resource.getOwner());
+        this.setType(resource.getType());
+        this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
+        if (resource instanceof RightsBasedResourceCollection && this instanceof RightsBasedResourceCollection) {
+            ((RightsBasedResourceCollection)this).getResources().addAll(((RightsBasedResourceCollection) resource).getResources());
+        }
+        if (resource instanceof HierarchicalCollection && this instanceof HierarchicalCollection) {
+            ((HierarchicalCollection)this).setParent(((HierarchicalCollection) resource).getParent());
+        }
+        if (resource instanceof VisibleCollection && this instanceof VisibleCollection) {
+            ((ListCollection)this).getUnmanagedResources().addAll(((ListCollection) resource).getUnmanagedResources());
+        }
+    }
+
 }

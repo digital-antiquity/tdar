@@ -19455,6 +19455,19 @@
           <column name="orientation" value="MAP"/>
           <column name="visible" valueBoolean="=true" />
       </insert>
+      <insert tableName="collection">
+          <column name="id" valueNumeric="1004"/>
+          <column name="name" value="batch"/>
+          <column name="description" value="batch test"/>
+          <column name="date_created" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
+          <column name="owner_id" valueNumeric="8092"/>
+          <column name="updater_id" valueNumeric="8092"/>
+          <column name="collection_type" value="SHARED"/>
+          <column name="sort_order" value="TITLE"/>
+          <column name="orientation" value="LIST_FULL"/>
+          <column name="visible" valueBoolean="=true" />
+      </insert>
 
       <insert tableName="collection_resource">
           <column name="collection_id" valueNumeric="1000"/>

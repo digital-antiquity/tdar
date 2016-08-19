@@ -92,4 +92,15 @@
 		<sql>update latitude_longitude set max_obfuscated_lat=max_obfuscated_lat + .2, max_obfuscated_long= max_obfuscated_long+ .2 where id=6701</sql>
 	</changeSet>
 
+    <changeSet id="collection-abcd-additional" author="abrin">
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1004" />
+            <column name="resource_id" valueNumeric="3087" />
+        </insert>
+        <insert tableName="collection_resource">
+            <column name="collection_id" valueNumeric="1004" />
+            <column name="resource_id" valueNumeric="1628" />
+        </insert>
+    </changeSet>
+
 </databaseChangeLog>
