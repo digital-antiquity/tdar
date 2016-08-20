@@ -117,7 +117,6 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 				genericDao.saveOrUpdate(file);
 				String msg = String.format("Embargo on file: %s (%s) expired and was set to PUBLIC access", file.getFilename(), file.getId());
 		        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, file.getInformationResource(), admin, RevisionLogType.EDIT);
-		        genericDao.markWritable(rrl);
 		        genericDao.saveOrUpdate(rrl);
 
 			}
