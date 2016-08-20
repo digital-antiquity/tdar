@@ -79,7 +79,6 @@ import org.tdar.transform.jsonld.SchemaOrgResourceTransformer;
 import org.tdar.utils.ImmutableScrollableCollection;
 import org.tdar.utils.PersistableUtils;
 
-import com.github.jsonldjava.utils.Obj;
 import com.opensymphony.xwork2.TextProvider;
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 
@@ -193,10 +192,7 @@ public class ResourceService {
         ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
         log.setTimestamp(new Date());
         log.setPayload(payload);
-        if (PersistableUtils.isNotNullOrTransient(startTime)) {
-             long milli = System.currentTimeMillis() - startTime.longValue();
-            log.setTimeInSeconds(milli / 1000);
-        }
+        log.setTimeBasedOnStart(startTime);
         genericDao.save(log);
     }
 
