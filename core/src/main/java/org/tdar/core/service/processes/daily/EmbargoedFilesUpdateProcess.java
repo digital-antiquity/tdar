@@ -14,6 +14,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -106,12 +108,18 @@ public class EmbargoedFilesUpdateProcess extends AbstractScheduledProcess {
 	}
 
 	private void expire(Map<TdarUser, Set<InformationResourceFile>> expiredMap) {
+	    TdarUser admin = genericDao.find(TdarUser.class, config.getAdminUserId());
 		for (TdarUser submitter : expiredMap.keySet()) {
 			Set<InformationResourceFile> expired = expiredMap.get(submitter);
 			for (InformationResourceFile file : expired) {
 				file.setRestriction(FileAccessRestriction.PUBLIC);
 				file.setDateMadePublic(null);
 				genericDao.saveOrUpdate(file);
+				String msg = String.format("Embargo on file: %s (%s) expired and was set to PUBLIC access", file.getFilename(), file.getId());
+		        ResourceRevisionLog rrl = new ResourceRevisionLog(msg, file.getInformationResource(), admin, RevisionLogType.EDIT);
+		        genericDao.markWritable(rrl);
+		        genericDao.saveOrUpdate(rrl);
+
 			}
 			sendEmail(submitter, expired, SUBJECT_EXPIRED, TEMPLATE_EXPIRED);
 		}
