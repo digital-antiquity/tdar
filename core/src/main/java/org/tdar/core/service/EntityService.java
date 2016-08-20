@@ -2,6 +2,7 @@ package org.tdar.core.service;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.resource.BookmarkedResource;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.dao.SimpleFileProcessingDao;
@@ -566,6 +568,11 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         getDao().delete(toDelete);
         getDao().saveOrUpdate(creator);
         
+    }
+
+    @Transactional(readOnly=true)
+    public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {
+        return getDao().findChangesForUser(user, date);
     }
 
 }
