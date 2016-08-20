@@ -16,8 +16,8 @@
         <skipWebTests>false</skipWebTests>
         <skipSeleniumTests>false</skipSeleniumTests>
         <skipJetty>false</skipJetty>
-        <skipKarma>false</skipKarma>
-        <skipNode>false</skipNode>
+        <skipKarma>true</skipKarma>
+        <skipNode>true</skipNode>
         <testChangeLog>changelog-integration.xml</testChangeLog>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
