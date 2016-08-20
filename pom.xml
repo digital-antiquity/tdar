@@ -24,6 +24,7 @@
         <!-- the tdar webapp -->
         <module>web-base</module>
         <module>struts-base</module>
+        <module>balk</module>
         <module>web</module>
         <module>tag</module>
         <module>dataone</module>
