@@ -1,5 +1,5 @@
 <#escape _untrusted as _untrusted?html >
-
+<h2>Edit History / Activity for ${user.properName}</h2>
 <#list logs>
 	<table class="table">
 		<thead>
