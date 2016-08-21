@@ -5,11 +5,13 @@ import java.io.IOException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.CrowdRestDao;
 
 @Configuration
+@EnableScheduling
 @ImportResource(value = { "classpath:spring-local-settings.xml" })
 public class BalkWebAppConfiguration extends SimpleAppConfiguration {
 
