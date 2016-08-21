@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.AsyncUpdateReceiver.DefaultReceiver;
 import org.tdar.core.bean.Indexable;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.datatable.DataTableRow;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
@@ -53,7 +53,7 @@ public class BatchIndexer implements Serializable {
      */
     @SuppressWarnings("deprecation")
     @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver_, List<LookupSource> sources, Person person) {
+    public void indexAll(AsyncUpdateReceiver updateReceiver_, List<LookupSource> sources, TdarUser person) {
         AsyncUpdateReceiver updateReceiver = updateReceiver_;
         if (updateReceiver == null) {
             updateReceiver = getDefaultUpdateReceiver();
@@ -61,7 +61,7 @@ public class BatchIndexer implements Serializable {
         Activity activity = new Activity();
         activity.setName(BUILD_LUCENE_INDEX_ACTIVITY_NAME);
         activity.setIndexingActivity(true);
-        activity.setUser(person);
+        activity.setUser(person.getUsername(), person.getId());
         activity.setMessage(String.format("reindexing %s", StringUtils.join(sources, ", ")));
         activity.start();
         ActivityManager.getInstance().addActivityToQueue(activity);

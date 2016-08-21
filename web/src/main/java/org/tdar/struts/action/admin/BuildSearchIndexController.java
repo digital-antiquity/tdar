@@ -20,7 +20,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
@@ -73,9 +73,9 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
             }
 
             getLogger().info("to reindex: {}", toReindex);
-            Person person = null;
+            TdarUser person = null;
             if (PersistableUtils.isNotNullOrTransient(getUserId())) {
-                person = getGenericService().find(Person.class, getUserId());
+                person = getGenericService().find(TdarUser.class, getUserId());
             }
 
             getLogger().info("reindexing");
