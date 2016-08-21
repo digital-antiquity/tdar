@@ -101,7 +101,7 @@ public class SessionSecurityInterceptor implements SessionDataAware, Interceptor
     }
 
     private void registerObfuscationListener(ActionInvocation invocation, SessionType mark) throws NoSuchMethodException {
-        if (!TdarConfiguration.getInstance().obfuscationInterceptorDisabled()) {
+        if (obfuscationService.obfuscationInterceptorEnabled()) {
             if (SessionType.READ_ONLY.equals(mark) || !ReflectionService.methodOrActionContainsAnnotation(invocation, DoNotObfuscate.class)) {
                 TdarUser user = genericService.find(TdarUser.class, sessionData.getTdarUserId());
                 invocation.addPreResultListener(new ObfuscationResultListener(obfuscationService, reflectionService, this, user));

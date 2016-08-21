@@ -1,4 +1,3 @@
-<br/><br/><br/><br/><br/><br/>
 
 <form id="loginForm" name="loginForm" action="/login/process" method="post" class="form-horizontal" novalidate="novalidate">
     <fieldset>
