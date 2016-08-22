@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.faims.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,6 +33,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.GenericService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
