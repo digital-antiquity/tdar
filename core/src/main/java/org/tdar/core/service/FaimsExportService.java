@@ -369,6 +369,7 @@ public class FaimsExportService {
             ((Ontology) resource).setOntologyNodes(null);
         }
         try {
+            r.setStatus(Status.DRAFT);
             String convertToXML = serializationService.convertToXML(r);
             genericService.detachFromSession(resource);
             r = null;
