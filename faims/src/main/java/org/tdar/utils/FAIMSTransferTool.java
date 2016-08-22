@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
@@ -35,7 +36,7 @@ public class FAIMSTransferTool {
     @Autowired
     private FaimsExportService faimsExportService;
 
-    private Long  accountId = 216L;
+    private Long  accountId = 3L;
 
     protected static final Logger logger = LoggerFactory.getLogger(FAIMSTransferTool.class);
 
@@ -43,11 +44,11 @@ public class FAIMSTransferTool {
 
     public static void main(String[] args) throws IOException {
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(TdarAppConfiguration.class, FAIMSTransferTool.class);
+        applicationContext.register(SimpleAppConfiguration.class, FAIMSTransferTool.class);
         applicationContext.refresh();
         applicationContext.start();
         username = System.getProperty("username","adam.brin@asu.edu");
-        password = System.getProperty("password", "");
+        password = System.getProperty("password", "brin");
         FAIMSTransferTool transfer = new FAIMSTransferTool();
         applicationContext.getAutowireCapableBeanFactory().autowireBean(transfer);
         try {

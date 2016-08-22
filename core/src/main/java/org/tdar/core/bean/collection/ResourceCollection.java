@@ -18,6 +18,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -80,7 +81,6 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -215,6 +215,13 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @CollectionTable(name = "collection_parents", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
+
+    
+    @OneToMany()
+    @JoinColumn(name = "collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT),nullable=true)
+    @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
 
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
@@ -724,6 +731,14 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         // set previous, then set current
         this.getResources().addAll(new ArrayList<>(resource.getResources()));
 
+    }
+
+    public Set<CollectionRevisionLog> getCollectionRevisionLog() {
+        return collectionRevisionLog;
+    }
+
+    public void setCollectionRevisionLog(Set<CollectionRevisionLog> collectionRevisionLog) {
+        this.collectionRevisionLog = collectionRevisionLog;
     }
 
 }
