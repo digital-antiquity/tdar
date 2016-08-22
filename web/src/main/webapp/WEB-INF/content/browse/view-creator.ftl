@@ -185,17 +185,23 @@
             </#if>
         </#if>
         <#if editor>
-<tr>
-<td><b>Total Occurrance Count:</b> ${creator.occurrence!0}</td>
-<td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence!0}</td>
-</tr>
-<tr>
-<td><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
-<#if creator.creatorType.institution && creator.email?has_content >
-<td><b>Email:</b> ${creator.email}</td>
-
-</#if>
-</tr>
+			<tr>
+				<td><b>Total Occurrance Count:</b> ${creator.occurrence!0}</td>
+				<td><b>Total Browse Occurrance Count:</b> ${creator.browseOccurrence!0}</td>
+			</tr>
+			<tr>
+				<td><b>Has User Hidden Page?:</b> ${creator.hidden?string}</td>
+				<#if creator.creatorType.institution && creator.email?has_content >
+				<td><b>Email:</b> ${creator.email}</td>
+				
+				</#if>
+			</tr>
+			<#if registered>
+			<tr>
+				<td><b>Edit History:</b> <a href="/entity/user/activity/${creator.id?c}">View Edit History</a></td>
+				<td></td>
+				</tr>
+			</#if>
 </#if>
 </table>
 
