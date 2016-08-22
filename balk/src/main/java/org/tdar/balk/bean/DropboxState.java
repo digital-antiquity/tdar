@@ -13,8 +13,8 @@ import javax.persistence.TemporalType;
 import org.tdar.core.bean.AbstractPersistable;
 
 @Entity
-@Table(name = "dropbox_status")
-public class DroboxState extends AbstractPersistable {
+@Table(name = "dropbox_state")
+public class DropboxState extends AbstractPersistable {
 
     private static final long serialVersionUID = -6348303910937425382L;
 
@@ -22,7 +22,7 @@ public class DroboxState extends AbstractPersistable {
     private String cursor;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "poll_type")
+    @Column(name = "poll_type", length=25)
     private PollType type;
 
     @Temporal(TemporalType.TIMESTAMP)
