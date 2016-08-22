@@ -59,7 +59,7 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     private Dataset getDataResource() {
         return getPersistable();
     }
-
+    private Long startTime = -1L;
     private Long id;
     private List<DataTableColumn> columnsToRemap;
     private DataTable dataTable;
@@ -110,7 +110,7 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
 
         try {
             columnsToRemap = datasetService.updateColumnResourceMappingMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(),
-                    getAuthenticatedUser());
+                    getAuthenticatedUser(), getStartTime());
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
@@ -243,5 +243,21 @@ public class ResourceMappingMetadataController extends AbstractAuthenticatableAc
     public InternalTdarRights getAdminRights() {
         return InternalTdarRights.EDIT_ANYTHING;
     }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * @return the startTime
+     */
+    public Long getCurrentTime() {
+        return System.currentTimeMillis();
+    }
+
 
 }

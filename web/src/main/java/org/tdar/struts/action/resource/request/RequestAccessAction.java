@@ -65,7 +65,7 @@ public class RequestAccessAction extends AbstractAuthenticatableAction
 
     @Override
     public void prepare() throws Exception {
-        getLogger().debug("id: {}, {}", getId(), getPersistableClass());
+        getLogger().trace("id: {}, {}", getId(), getPersistableClass());
         prepareAndLoad(this, RequestType.VIEW);
 
         if (PersistableUtils.isNullOrTransient(getResource())) {

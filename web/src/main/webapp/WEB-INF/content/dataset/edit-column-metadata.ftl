@@ -74,6 +74,7 @@
         <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
         <@s.hidden name="startRecord" value="${(startRecord!0)?c}" />
         <@s.hidden name="recordsPerPage" value="${(recordsPerPage!10)?c}" />
+        <@edit.hiddenStartTime />
         <#if ( dataset.dataTables?size > 1 )>
         <h2>Description: ${dataTable.displayName}</h2>
 

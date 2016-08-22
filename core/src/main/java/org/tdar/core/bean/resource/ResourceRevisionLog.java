@@ -21,6 +21,7 @@ import org.hibernate.validator.constraints.Length;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
 /**
@@ -135,6 +136,13 @@ public class ResourceRevisionLog extends AbstractPersistable {
 
     public void setTimeInSeconds(Long timeInSeconds) {
         this.timeInSeconds = timeInSeconds;
+    }
+
+    public void setTimeBasedOnStart(Long startTime) {
+        if (PersistableUtils.isNotNullOrTransient(startTime)) {
+            long milli = System.currentTimeMillis() - startTime.longValue();
+            setTimeInSeconds(milli / 1000);
+        }
     }
 
 }

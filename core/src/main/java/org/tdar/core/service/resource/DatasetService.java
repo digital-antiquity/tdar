@@ -210,11 +210,11 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
     /*
      * Log the DataTableColumn Information to XML to be stored in the ResourceRevisionLog
      */
-    public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser) {
+    public void logDataTableColumns(DataTable dataTable, String message, TdarUser authenticatedUser, Long start) {
         try {
             StringWriter writer = new StringWriter();
             serializationService.convertToXML(dataTable, writer);
-            resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString(), RevisionLogType.EDIT);
+            resourceService.logResourceModification(dataTable.getDataset(), authenticatedUser, message, writer.toString(), RevisionLogType.EDIT, start);
             getLogger().trace("{} - xml {}", message, writer);
         } catch (Exception e) {
             getLogger().error("could not serialize to XML:", e);
@@ -424,7 +424,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public Boolean updateColumnMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
-            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
+            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser, Long startTime) {
         Boolean hasOntologies = false;
         List<DataTableColumn> columnsToTranslate = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
@@ -505,7 +505,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
             retranslate(columnsToTranslate);
             createTranslatedFile(dataset);
         }
-        logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser);
+        logDataTableColumns(dataTable, "data column metadata registration", authenticatedUser, startTime);
         getLogger().info("hasOntology: {} ", hasOntologies);
         return hasOntologies;
     }
@@ -526,7 +526,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
      */
     @Transactional
     public List<DataTableColumn> updateColumnResourceMappingMetadata(TextProvider provider, Dataset dataset, DataTable dataTable,
-            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser) {
+            List<DataTableColumn> dataTableColumns, TdarUser authenticatedUser, Long start) {
         List<DataTableColumn> columnsToMap = new ArrayList<DataTableColumn>();
         for (DataTableColumn incomingColumn : dataTableColumns) {
             getLogger().debug("incoming data table column: {}", incomingColumn);
@@ -545,7 +545,7 @@ public class DatasetService extends ServiceInterface.TypedDaoBase<Dataset, Datas
         dataset.markUpdated(authenticatedUser);
         List<DataTableColumn> toReturn = prepareAndFindMappings(dataset.getProject(), columnsToMap);
         save(dataset);
-        logDataTableColumns(dataTable, "column metadata mapping", authenticatedUser);
+        logDataTableColumns(dataTable, "column metadata mapping", authenticatedUser, start);
         getLogger().info("mappingColumns: {} ", toReturn);
         return toReturn;
     }

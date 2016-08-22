@@ -12,6 +12,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
@@ -28,6 +29,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
@@ -301,5 +303,14 @@ public class PersonDao extends Dao.HibernateBase<Person> {
         return query.getResultList();
         
     }
+
+    public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {
+        Criteria criteria = getCriteria(ResourceRevisionLog.class).add(Restrictions.eq("person", user));
+        if (date != null) {
+            criteria.add(Restrictions.ge("timestamp", date));
+        }
+        criteria.addOrder(Order.desc("timestamp"));
+        return criteria.list();
+        }
 
 }

@@ -53,6 +53,7 @@
         <@s.token name='struts.csrf.token' />
         <@s.hidden name='id' id="resource_id" value='${resource.id?c}'/>
         <@s.hidden name='dataTableId' value='${dataTable.id?c}'/>
+        <@edit.hiddenStartTime />
 
         <div class="mappingDetail well">
             <p>${siteAcronym} can associate groups of documents and images with this dataset as long as they're all part of the same
