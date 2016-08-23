@@ -111,9 +111,36 @@
         <modifyDataType tableName="geographic_keyword" columnName="code" newDataType="varchar(10)"/>
     </changeSet>
     <changeSet id="obsidian-10" author="abrin">
-    	<addColumn tableName="information_resource_file">
-    		<column name="preservation_note" type="text" />
-    		<column name="preservation_status" type="varchar(255)" />
-    	</addColumn>
-   	</changeSet>
+        <addColumn tableName="information_resource_file">
+            <column name="preservation_note" type="text" />
+            <column name="preservation_status" type="varchar(255)" />
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="obsidian-11" author="abrin">
+    <createTable tableName="collection_revision_log">
+        <column name="id" type="bigserial" />
+        <column name="revision_type" type="varchar(25)" />
+        <column name="log_message" type="varchar(512)" />
+        <column name="time_seconds" type="bigint" />
+        <column name="person_id" type="bigint">
+            <constraints nullable="false" references="tdar_user"
+                foreignKeyName="fk_collection_revision__tdar_user_id" />
+        </column>
+        <column name="collection_id" type="bigint">
+            <constraints nullable="true" references="collection"
+                foreignKeyName="fk_collection_revision__collection_id" />
+        </column>
+    </createTable>
+    </changeSet>
+    <changeSet id="obsidian-12" author="abrin">
+        <addColumn tableName="collection_revision_log">
+            <column name="timestamp" type="timestamp" />
+        </addColumn>
+    </changeSet>
+    
+    <changeSet id="obsidian-13" author="abrin">
+    <dropForeignKeyConstraint baseTableName="collection_revision_log" constraintName="fk_collection_revision__collection_id"/>
+    </changeSet>
+    
 </databaseChangeLog>
