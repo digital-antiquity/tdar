@@ -138,4 +138,9 @@
             <column name="timestamp" type="timestamp" />
         </addColumn>
     </changeSet>
+    
+    <changeSet id="obsidian-13" author="abrin">
+    <dropForeignKeyConstraint baseTableName="collection_revision_log" constraintName="fk_collection_revision__collection_id"/>
+    </changeSet>
+    
 </databaseChangeLog>
