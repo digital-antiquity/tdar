@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
+import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.WhiteLabelCollection;
@@ -39,6 +40,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -807,6 +809,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         getDao().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
+        String msg = String.format("%s deleted %s", authenticatedUser, persistable.getTitle());
+        CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, RevisionLogType.DELETE);
+        getDao().saveOrUpdate(revision);
+
         getDao().delete(persistable);
         publisher.publishEvent(new TdarEvent(persistable, EventType.DELETE));
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
@@ -829,8 +835,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public void saveCollectionForController(ResourceCollection persistable, Long parentId, ResourceCollection parent, TdarUser authenticatedUser,
             List<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove, List<Long> publicToAdd,
-            List<Long> publicToRemove, boolean shouldSaveResource,
-            FileProxy fileProxy) {
+            List<Long> publicToRemove, boolean shouldSaveResource, FileProxy fileProxy, Long startTime) {
+
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
         }
@@ -838,6 +844,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             persistable.setType(CollectionType.SHARED);
         }
 
+        RevisionLogType type = RevisionLogType.CREATE;
+        if (PersistableUtils.isNotTransient(persistable)) {
+            type = RevisionLogType.EDIT;
+        }
 
         List<Resource> resourcesToRemove = getDao().findAll(Resource.class, toRemove);
         List<Resource> resourcesToAdd = getDao().findAll(Resource.class, toAdd);
@@ -857,6 +867,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         reconcileIncomingResourcesForCollectionWithoutRights(persistable, authenticatedUser, publicResourcesToAdd, publicResourcesToRemove);
         saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, shouldSaveResource, authenticatedUser);
         simpleFileProcessingDao.processFileProxyForCreatorOrCollection(persistable, fileProxy);
+        String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());
+        CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, type);
+        revision.setTimeBasedOnStart(startTime);
+        getDao().saveOrUpdate(revision);
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
 
