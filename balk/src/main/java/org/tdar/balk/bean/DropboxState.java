@@ -29,6 +29,14 @@ public class DropboxState extends AbstractPersistable {
     @Column(name = "last_polled")
     private Date lastPolled;
 
+    public DropboxState() {}
+    
+    public DropboxState(Date date, String currentCursor, PollType type) {
+        this.lastPolled = date;
+        this.cursor = cursor;
+        this.type = type;
+    }
+
     public String getCursor() {
         return cursor;
     }

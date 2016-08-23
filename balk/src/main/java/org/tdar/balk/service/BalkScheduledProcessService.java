@@ -17,6 +17,7 @@ public class BalkScheduledProcessService {
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void cronPollingQueue() {
         logger.debug("scheudled");
+        
     }
 
 }
