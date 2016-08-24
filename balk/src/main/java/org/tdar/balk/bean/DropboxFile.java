@@ -1,9 +1,11 @@
 package org.tdar.balk.bean;
 
+import javax.persistence.DiscriminatorValue;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
 @Entity
+@DiscriminatorValue(value = "FILE")
 public class DropboxFile extends AbstractDropboxItem {
 
     private static final long serialVersionUID = 3849742039989754238L;
