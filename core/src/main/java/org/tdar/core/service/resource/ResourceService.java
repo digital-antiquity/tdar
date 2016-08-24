@@ -972,7 +972,7 @@ public class ResourceService {
                     ir.setProject(project);
                 }
             }
-            if (!r.getResourceCollections().contains(collectionToAdd)) { 
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getResourceCollections().contains(collectionToAdd)) { 
                 r.getResourceCollections().add(collectionToAdd);
                 collectionToAdd.getResources().add(r);
             }
