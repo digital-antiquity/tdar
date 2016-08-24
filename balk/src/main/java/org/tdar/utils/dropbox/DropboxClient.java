@@ -128,10 +128,6 @@ public class DropboxClient {
                     continue;
                 }
                 
-                if (StringUtils.containsIgnoreCase(metadata.getPathLower(), "/VCP/") || StringUtils.containsIgnoreCase(metadata.getPathLower(), "augusta")) {
-                    continue;
-                }
-
                 DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
                 if (listener != null) {
                     try {
@@ -148,7 +144,10 @@ public class DropboxClient {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-        setCurrentCursor(client.files().listFolderGetLatestCursor(path).getCursor());
+        String cursor2 = client.files().listFolderGetLatestCursor(path).getCursor();
+        logger.debug("old cursor:{}", cursor);
+        logger.debug("new cursor:{}", cursor2);
+        setCurrentCursor(cursor2);
     }
 
     private Map<String,BasicAccount> cachedUsers = new HashMap<>();

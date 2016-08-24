@@ -3,6 +3,7 @@ package org.tdar.utils.dropbox;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -10,7 +11,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +19,7 @@ public class StatReporter implements MetadataListener {
     private static final String SEP = "\t";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     Map<String, List<DropboxItemWrapper>> map = new TreeMap<>();
+    private Boolean debug;
 
     @Override
     public void consume(DropboxItemWrapper fileWrapper) throws Exception {
@@ -68,9 +69,14 @@ public class StatReporter implements MetadataListener {
         }
     }
 
-    private void append(StringBuilder sb, DateTime modified, String modifiedBy, Integer size) {
+    private void append(StringBuilder sb, Date modified, String modifiedBy, Integer size) {
         SimpleDateFormat dateParser = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
-        sb.append(dateParser.format(modified.toDate())).append(SEP).append(modifiedBy).append(SEP).append(size).append(SEP);
+        sb.append(dateParser.format(modified)).append(SEP).append(modifiedBy).append(SEP).append(size).append(SEP);
 
+    }
+
+    @Override
+    public void setDebug(Boolean debug) {
+            this.debug = debug;        
     }
 }

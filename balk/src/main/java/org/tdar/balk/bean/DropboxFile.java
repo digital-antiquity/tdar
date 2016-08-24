@@ -8,7 +8,7 @@ public class DropboxFile extends AbstractDropboxItem {
 
     private static final long serialVersionUID = 3849742039989754238L;
     
-    private DropboxFile() {
+    public DropboxFile() {
         setType(ItemType.FILE);
     }
 

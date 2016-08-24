@@ -17,7 +17,7 @@ public class DropboxUserMapping extends AbstractPersistable {
     private String email;
     @Column(name = "username", length = 512)
     private String username;
-    @Column(name = "tdar_id")
+    @Column(name = "tdar_user_id")
     private Long tdarId;
 
     public String getDropboxUserId() {

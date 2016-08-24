@@ -41,8 +41,7 @@ public class TdarUploadListener implements MetadataListener {
     boolean loggedIn = false;
     private Boolean debug;
 
-    public TdarUploadListener(Boolean debug) throws FileNotFoundException, URISyntaxException, IOException {
-        this.debug = debug;
+    public TdarUploadListener() throws FileNotFoundException, URISyntaxException, IOException {
         apiClient = new APIClient();
     }
 
@@ -66,9 +65,10 @@ public class TdarUploadListener implements MetadataListener {
         if (fileWrapper.isDir()) {
             getMap().put(fileWrapper.getId(), new FolderContainer(fileWrapper));
         } else {
-            File file = fileWrapper.getFile();
             logger.debug(fileWrapper.getModifiedBy());
-            String docXml = makeXml(file, fileWrapper.getExtension(), StringUtils.join(tree,"/"));
+//            File file = fileWrapper.getFile();
+            File file = null;
+            String docXml = makeXml(file, fileWrapper.getName(), fileWrapper.getExtension(), StringUtils.join(tree,"/"));
             logger.trace(docXml);
             if (debug == false) {
                 logger.debug("uploading: {}", file);
@@ -79,7 +79,7 @@ public class TdarUploadListener implements MetadataListener {
 
     }
 
-    private String makeXml(File file, String extension,String collection) throws JAXBException, InstantiationException, IllegalAccessException {
+    private String makeXml(File file, String filename, String extension, String collection) throws JAXBException, InstantiationException, IllegalAccessException {
         Class<? extends Resource> cls = Resource.class;
         switch (extension.toLowerCase()) {
             case "doc":
@@ -110,8 +110,8 @@ public class TdarUploadListener implements MetadataListener {
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, UrlService.getProductionSchemaUrl());
         InformationResource object = (InformationResource) cls.newInstance();
-        object.setTitle(file.getName());
-        object.setDescription(file.getName());
+        object.setTitle(filename);
+        object.setDescription(filename);
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
@@ -131,6 +131,11 @@ public class TdarUploadListener implements MetadataListener {
 
     public void setMap(Map<String, AbstractContainer> map) {
         this.map = map;
+    }
+
+    @Override
+    public void setDebug(Boolean debug) {
+        this.debug = debug;        
     }
 
 }

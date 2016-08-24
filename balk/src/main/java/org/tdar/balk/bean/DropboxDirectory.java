@@ -7,7 +7,7 @@ public class DropboxDirectory extends AbstractDropboxItem {
 
     private static final long serialVersionUID = -4900076561727433757L;
 
-    private DropboxDirectory() {
+    public DropboxDirectory() {
         setType(ItemType.DIR);
     }
 }

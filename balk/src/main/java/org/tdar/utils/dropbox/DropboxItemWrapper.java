@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,8 +32,9 @@ public class DropboxItemWrapper {
     private String fullPath;
     private File path;
     private Integer size;
-    private DateTime modified;
+    private Date modified;
     private String modifiedBy;
+    private String modifiedId;
 
     private String extension;
 
@@ -71,16 +73,18 @@ public class DropboxItemWrapper {
             fullPath = (String) readValue.get("path_display");
             this.path = new File(fullPath).getParentFile();
             String mod = (String) readValue.get("server_modified");
+            
             if (!dir) {
                 extension = FilenameUtils.getExtension(name);
             }
             if (mod != null) {
-                this.modified = DateTime.parse(mod);
+                this.modified = DateTime.parse(mod).toDate();
             }
             @SuppressWarnings("unchecked")
             Map<String, Object> map = (Map<String, Object>) readValue.get("sharing_info");
             if (map != null && map.get("modified_by") != null) {
                 String accountId = (String) map.get("modified_by");
+                setModifiedId(accountId);
                 if (accountId != null) {
                     BasicAccount account = client.getAccount(accountId);
                     modifiedBy = account.getName().getDisplayName();
@@ -151,11 +155,11 @@ public class DropboxItemWrapper {
         this.size = size;
     }
 
-    public DateTime getModified() {
+    public Date getModified() {
         return modified;
     }
 
-    public void setModified(DateTime modified) {
+    public void setModified(Date modified) {
         this.modified = modified;
     }
 
@@ -181,6 +185,14 @@ public class DropboxItemWrapper {
 
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
+    }
+
+    public String getModifiedId() {
+        return modifiedId;
+    }
+
+    public void setModifiedId(String modifiedId) {
+        this.modifiedId = modifiedId;
     }
 
 }

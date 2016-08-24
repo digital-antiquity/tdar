@@ -33,7 +33,7 @@ public class DropboxState extends AbstractPersistable {
     
     public DropboxState(Date date, String currentCursor, PollType type) {
         this.lastPolled = date;
-        this.cursor = cursor;
+        this.cursor = currentCursor;
         this.type = type;
     }
 

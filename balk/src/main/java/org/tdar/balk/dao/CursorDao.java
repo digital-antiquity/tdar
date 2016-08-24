@@ -18,9 +18,11 @@ public class CursorDao {
     private transient SessionFactory sessionFactory;
 
     public String getLatestCursorFor(PollType type) {
-        String query = "select cursor from DropboxState where type=:type order by lastPolled desc limit 1";
+        String query = "select cursor from DropboxState where type=:type order by lastPolled desc";
         Query query2 = getCurrentSession().createQuery(query);
         query2.setParameter("type", type);
+        query2.setFirstResult(0);
+        query2.setMaxResults(1);
         return (String) query2.uniqueResult();
     }
 

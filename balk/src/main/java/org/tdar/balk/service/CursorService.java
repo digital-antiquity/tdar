@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Date;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +22,8 @@ import com.dropbox.core.DbxException;
 @Component
 public class CursorService {
 
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    
     @Autowired
     private CursorDao cursorDao;
     
@@ -29,9 +33,9 @@ public class CursorService {
     @Transactional(readOnly=false)
     public void pollAndProcess(PollType type, String path, MetadataListener listener) throws FileNotFoundException, URISyntaxException, IOException, DbxException {
         String latestCursorFor = cursorDao.getLatestCursorFor(type);
-        
+        logger.debug("running: {}", listener.getClass());
         DropboxClient client = new DropboxClient();
-
+        listener.setDebug(client.getDebug());
         switch (type) {
             case STATUS:
                 client.list(path, latestCursorFor, listener);

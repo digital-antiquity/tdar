@@ -49,7 +49,9 @@ public class Dropbox {
                 cursor = null;
             }
             logger.debug("latest cursor:{}", cursor);
-            client.list(DropboxConstants.UPLOAD_PATH, cursor, new TdarUploadListener(client.getDebug()));
+            TdarUploadListener listener = new TdarUploadListener();
+            listener.setDebug(true);
+            client.list(DropboxConstants.UPLOAD_PATH, cursor, listener);
             client.updateCursor(client.getCurrentCursor());
         } else {
             StatReporter reporter = new StatReporter();
