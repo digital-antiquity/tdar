@@ -70,6 +70,9 @@ public class TdarUploadListener implements MetadataListener {
             File file = null;
             String docXml = makeXml(file, fileWrapper.getName(), fileWrapper.getExtension(), StringUtils.join(tree,"/"));
             logger.trace(docXml);
+            if (docXml ==null) {
+                return;
+            }
             if (debug == false) {
                 logger.debug("uploading: {}", file);
                 apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
@@ -103,6 +106,8 @@ public class TdarUploadListener implements MetadataListener {
             case "csv":
                 cls = Dataset.class;
                 break;
+            default:
+                return null;    
         }
 
         JAXBContext jc = JAXBContext.newInstance(cls);
