@@ -183,13 +183,13 @@
                                                                 <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span>
                                                                 <!-- FIXME: this is "hidden", but is it even needed? -->
                                                                 <!-- FIXME: shouldn't this be the dataset name? -->
-                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
                                                             </div>
                                                             <div ng-switch-when="0">
                                                                 <i>-</i>
                                                             </div>
                                                             <div ng-switch-default>
-                                                                <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
                                                             </div>
                                                             </div>
                                                         </th>
@@ -203,9 +203,9 @@
                                                                 <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns track by $index">
+                                                        <td ng-repeat="columnSelection in outputColumn.selectedDataTableColumns track by $index">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{::dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{::columnSelection.dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(columnSelection.dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>

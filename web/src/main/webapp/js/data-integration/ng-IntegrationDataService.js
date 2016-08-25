@@ -287,7 +287,18 @@
                         if (column.type === 'INTEGRATION') {
                             var ontology = ontologyCache.get(column.ontology.id);
                             var integrationColumn = integration.addIntegrationColumn(name, ontology);
-                            integrationColumn.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+                            var dataTableColumns = self.getCachedDataTableColumns(ids);
+
+                            integrationColumn.selectedDataTableColumns = dataTableColumns.map(function(dataTableColumn, idx){
+                                return {
+                                    'dataTable': integration.dataTables[idx],
+                                    'dataTableColumn': dataTableColumn
+                                }
+                            });
+
+
+                            //integrationColumn.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+
 
                             integrationColumn.nodeSelections.forEach(function(node) {
                                 node.selected = column.nodeSelection.some(function(nodeRef){

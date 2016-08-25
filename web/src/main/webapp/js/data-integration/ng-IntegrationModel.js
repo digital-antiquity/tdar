@@ -177,7 +177,11 @@
             };
 
             // fixme: try to keep model devoid of angular conventions (angular excludes $-prefix when evaluating/copying objects)
-            // initialize, or update, the selected dataTable column selections.
+            /**
+             * Initialize, or update, the selected dataTable column selections.  Each columnSelection object contains a 'dataTable' and a 'dataTableColumn'
+             * property. If a dataTable has no compatible dataTableColumns,  selection.dataTableColumn is null.
+             *
+             */
             col.$getSelectedDataTableColumns = function() {
                 if (this.selectedDataTableColumns === null)
                     this.selectedDataTableColumns = [];
@@ -190,9 +194,14 @@
                     }
 
                     this.selectedDataTableColumns = mappedTables.map(function(dt) {
-                        if (!dt.compatCols.length)
-                            return null;
-                        return dt.compatCols[0];
+                        var columnSelection = {
+                            dataTable: dt,
+                            dataTableColumn: null
+                        };
+
+                        if (dt.compatCols.length)
+                            columnSelection.dataTableColumn = dt.compatCols[0];
+                        return columnSelection;
                     });
                 }
             };
@@ -300,8 +309,9 @@
             self.getIntegrationColumns().forEach(function(integrationColumn) {
 
                 // clean up integrationColumn.selectedDataTableColumn
-                integrationColumn.selectedDataTableColumns = integrationColumn.selectedDataTableColumns.filter(function(dataTableColumn) {
-                    return removedDataTableColumnIds.indexOf(dataTableColumn.id) === -1
+                integrationColumn.selectedDataTableColumns = integrationColumn.selectedDataTableColumns.filter(function(selectedDataTableColumn) {
+                    return removedDataTables.indexOf(selectedDataTableColumn.dataTable) == -1;
+                    //return removedDataTableColumnIds.indexOf(dataTableColumn.id) === -1
                 });
 
             });
