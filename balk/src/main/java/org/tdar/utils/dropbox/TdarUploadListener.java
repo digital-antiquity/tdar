@@ -17,6 +17,7 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.balk.service.ItemService;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
@@ -27,6 +28,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
+import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.dropbox.container.AbstractContainer;
 import org.tdar.utils.dropbox.container.FileContainer;
 import org.tdar.utils.dropbox.container.FolderContainer;
@@ -40,15 +42,19 @@ public class TdarUploadListener implements MetadataListener {
     private APIClient apiClient;
     boolean loggedIn = false;
     private Boolean debug;
+    ItemService itemService;
 
-    public TdarUploadListener() throws FileNotFoundException, URISyntaxException, IOException {
+    public TdarUploadListener(ItemService itemService) throws FileNotFoundException, URISyntaxException, IOException {
+        this.itemService = itemService;
         apiClient = new APIClient();
     }
 
     @Override
     public void consume(DropboxItemWrapper fileWrapper) throws Exception {
         logger.debug(fileWrapper.getFullPath());
-
+        if (itemService.hasUploaded(fileWrapper.getId())) {
+            return;
+        }
         File path = fileWrapper.getPath();
         List<String> tree = new ArrayList<>();
         while (!StringUtils.equalsIgnoreCase(path.getName(), rootDir.getName()) &&
@@ -65,24 +71,24 @@ public class TdarUploadListener implements MetadataListener {
         if (fileWrapper.isDir()) {
             getMap().put(fileWrapper.getId(), new FolderContainer(fileWrapper));
         } else {
-            logger.debug(fileWrapper.getModifiedBy());
-//            File file = fileWrapper.getFile();
             File file = null;
-            String docXml = makeXml(file, fileWrapper.getName(), fileWrapper.getExtension(), StringUtils.join(tree,"/"));
+            String docXml = makeXml(file, fileWrapper.getName(), fileWrapper.getExtension(), StringUtils.join(tree, "/"));
             logger.trace(docXml);
-            if (docXml ==null) {
+            if (docXml == null) {
                 return;
             }
             if (debug == false) {
                 logger.debug("uploading: {}", file);
-                apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
+                ApiClientResponse response = apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
+                itemService.markUploaded(fileWrapper.getId(), response.getTdarId());
             }
             getMap().put(fileWrapper.getId(), new FileContainer(fileWrapper));
         }
 
     }
 
-    private String makeXml(File file, String filename, String extension, String collection) throws JAXBException, InstantiationException, IllegalAccessException {
+    private String makeXml(File file, String filename, String extension, String collection)
+            throws JAXBException, InstantiationException, IllegalAccessException {
         Class<? extends Resource> cls = Resource.class;
         switch (extension.toLowerCase()) {
             case "doc":
@@ -107,7 +113,7 @@ public class TdarUploadListener implements MetadataListener {
                 cls = Dataset.class;
                 break;
             default:
-                return null;    
+                return null;
         }
 
         JAXBContext jc = JAXBContext.newInstance(cls);
@@ -140,7 +146,7 @@ public class TdarUploadListener implements MetadataListener {
 
     @Override
     public void setDebug(Boolean debug) {
-        this.debug = debug;        
+        this.debug = debug;
     }
 
 }

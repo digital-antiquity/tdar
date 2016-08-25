@@ -8,7 +8,6 @@ import org.slf4j.LoggerFactory;
 
 public class ToPersistListener implements MetadataListener {
 
-    private static final String SEP = "\t";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private List<DropboxItemWrapper> wrappers = new ArrayList<>();
     private Boolean debug;

@@ -1,7 +1,5 @@
 package org.tdar.balk.service;
 
-import static org.hamcrest.CoreMatchers.is;
-
 import java.io.IOException;
 import java.net.URISyntaxException;
 
@@ -12,8 +10,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.tdar.balk.bean.PollType;
 import org.tdar.utils.dropbox.DropboxConstants;
-import org.tdar.utils.dropbox.DropboxItemWrapper;
-import org.tdar.utils.dropbox.StatReporter;
 import org.tdar.utils.dropbox.TdarUploadListener;
 import org.tdar.utils.dropbox.ToPersistListener;
 
@@ -36,7 +32,7 @@ public class BalkScheduledProcessService {
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void cronPollingQueue() {
         try {
-            cursorService.pollAndProcess(PollType.UPLOAD, DropboxConstants.UPLOAD_PATH, new TdarUploadListener());
+            cursorService.pollAndProcess(PollType.UPLOAD, DropboxConstants.UPLOAD_PATH, new TdarUploadListener(itemService));
         } catch (URISyntaxException | IOException | DbxException e) {
             logger.error("polling error {}", e,e);
         }
