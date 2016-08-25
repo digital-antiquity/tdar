@@ -1,8 +1,11 @@
 package org.tdar.balk.service;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +45,8 @@ import org.tdar.utils.dropbox.ToPersistListener;
 public class ItemService {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private APIClient apiClient;
+    boolean loggedIn = false;
 
     @Autowired
     private GenericDao genericDao;
@@ -49,6 +54,10 @@ public class ItemService {
     @Autowired
     private ItemDao itemDao;
 
+    public ItemService() throws FileNotFoundException, URISyntaxException, IOException {
+        apiClient = new APIClient();
+    }
+    
     @Transactional(readOnly = false)
     public void store(ToPersistListener listener) {
         for (DropboxItemWrapper dropboxItemWrapper : listener.getWrappers()) {
@@ -97,6 +106,7 @@ public class ItemService {
         }
         item.setPath(dropboxItemWrapper.getFullPath());
         item.setDateAdded(new Date());
+        item.setSize(dropboxItemWrapper.getSize());
         item.setDateModified(dropboxItemWrapper.getModified());
         item.setDropboxId(dropboxItemWrapper.getId());
         item.setName(dropboxItemWrapper.getName());
@@ -109,8 +119,6 @@ public class ItemService {
 
     }
 
-    private APIClient apiClient;
-    boolean loggedIn = false;
 
     @Transactional(readOnly = false)
     public void handleUploads() {
@@ -133,7 +141,7 @@ public class ItemService {
         List<String> tree = new ArrayList<>();
         while (!StringUtils.equalsIgnoreCase(path.getName(), rootDir.getName()) &&
                 StringUtils.contains(path.getPath(), rootDir.getPath())) {
-            tree.add(0, path.getName());
+//            tree.add(0, path.getName());
             path = path.getParentFile();
             if (path == null || path.getName().equals("")) {
                 break;
