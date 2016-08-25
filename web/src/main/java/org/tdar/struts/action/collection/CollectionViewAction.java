@@ -1,6 +1,5 @@
 package org.tdar.struts.action.collection;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -489,7 +488,7 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public boolean isLogoAvailable() {
-        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getId(), VersionType.WEB_LARGE);
     }
 
     public boolean isSearchHeaderLogoAvailable() {
