@@ -1,5 +1,7 @@
 package org.tdar.balk.dao;
 
+import java.util.List;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hibernate.Query;
@@ -11,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
+import org.tdar.balk.bean.DropboxFile;
 
 @Component
 public class ItemDao {
@@ -43,11 +46,21 @@ public class ItemDao {
         return (DropboxDirectory) query2.uniqueResult();
     }
 
-    public AbstractDropboxItem findByDropboxId(String id) {
-        String query = "from AbstractDropboxItem where id=:path";
+    public AbstractDropboxItem findByDropboxId(String id, boolean dir) {
+        String query = "from DropboxFile Item where dropbox_id=:id";
+        if (dir) {
+            query = "from DropboxDirectory Item where dropbox_id=:id";
+        }
         Query query2 = getCurrentSession().createQuery(query);
         query2.setParameter("id", id);
         return (AbstractDropboxItem) query2.uniqueResult();
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<DropboxFile> findToUpload() {
+        String query = "from DropboxFile where tdar_id is null and path like '%/Upload to tDAR/%'";
+        Query query2 = getCurrentSession().createQuery(query);
+        return  query2.list();
     }
 
 }

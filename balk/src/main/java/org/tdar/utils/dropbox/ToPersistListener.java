@@ -5,16 +5,22 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.balk.service.ItemService;
 
 public class ToPersistListener implements MetadataListener {
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private List<DropboxItemWrapper> wrappers = new ArrayList<>();
     private Boolean debug;
+    private ItemService itemService;
 
+    public ToPersistListener(ItemService itemService) {
+        this.itemService = itemService;
+    }
+    
     @Override
     public void consume(DropboxItemWrapper fileWrapper) throws Exception {
-        logger.debug(fileWrapper.getFullPath());
+        itemService.store(fileWrapper);
         getWrappers().add(fileWrapper);
     }
 

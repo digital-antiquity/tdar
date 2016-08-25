@@ -75,7 +75,7 @@ public class DropboxClient {
         }
         Builder builder = DbxRequestConfig.newBuilder("dropbox/java-tutorial");
         DbxRequestConfig config = builder.build();
-        logger.debug(props.getProperty(DROPBOX_TOKEN));
+        logger.trace(props.getProperty(DROPBOX_TOKEN));
         client = new DbxClientV2(config, props.getProperty(DROPBOX_TOKEN));
     }
 

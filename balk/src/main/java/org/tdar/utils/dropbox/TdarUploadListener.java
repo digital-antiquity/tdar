@@ -52,7 +52,7 @@ public class TdarUploadListener implements MetadataListener {
     @Override
     public void consume(DropboxItemWrapper fileWrapper) throws Exception {
         logger.debug(fileWrapper.getFullPath());
-        if (itemService.hasUploaded(fileWrapper.getId())) {
+        if (itemService.hasUploaded(fileWrapper.getId(), fileWrapper.isDir())) {
             return;
         }
         File path = fileWrapper.getPath();
@@ -80,7 +80,7 @@ public class TdarUploadListener implements MetadataListener {
             if (debug == false) {
                 logger.debug("uploading: {}", file);
                 ApiClientResponse response = apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
-                itemService.markUploaded(fileWrapper.getId(), response.getTdarId());
+                itemService.markUploaded(fileWrapper.getId(), response.getTdarId() , fileWrapper.isDir());
             }
             getMap().put(fileWrapper.getId(), new FileContainer(fileWrapper));
         }
