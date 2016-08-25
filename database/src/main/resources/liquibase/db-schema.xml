@@ -1,0 +1,1497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+    <changeSet author="abrin (generated)" id="1412635782699-1">
+        <createSequence sequenceName="resource_sequence" />
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-2">
+        <createTable tableName="archive">
+            <column name="doimportcontent" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="importdone" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-3">
+        <createTable tableName="audio">
+            <column name="audio_codec" type="VARCHAR(255)" />
+            <column name="bit_depth" type="INT4" />
+            <column name="bit_rate" type="INT4" />
+            <column name="sample_rate" type="INT4" />
+            <column name="software" type="VARCHAR(255)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-4">
+        <createTable tableName="authorized_user">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="authorized_user_pkey" />
+            </column>
+            <column name="admin_permission" type="VARCHAR(255)" />
+            <column name="general_permission_int" type="INT4" />
+            <column name="general_permission" type="VARCHAR(50)" />
+            <column name="user_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-5">
+        <createTable tableName="bookmarked_resource">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="bookmarked_resource_pkey" />
+            </column>
+            <column name="name" type="VARCHAR(255)" />
+            <column name="timestamp" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="person_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-6">
+        <createTable tableName="category_variable">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="category_variable_pkey" />
+            </column>
+            <column name="description" type="VARCHAR(255)" />
+            <column name="label" type="VARCHAR(255)" />
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-7">
+        <createTable tableName="category_variable_synonyms">
+            <column name="categoryvariable_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="synonyms" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-8">
+        <createTable tableName="coding_rule">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="coding_rule_pkey" />
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="VARCHAR(2000)" />
+            <column name="term" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="coding_sheet_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="ontology_node_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-9">
+        <createTable tableName="coding_sheet">
+            <column name="generated" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="category_variable_id" type="INT8" />
+            <column name="default_ontology_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-10">
+        <createTable tableName="collection">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="collection_pkey" />
+            </column>
+            <column name="description_admin" type="TEXT" />
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="date_updated" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="description" type="TEXT" />
+            <column name="name" type="VARCHAR(255)" />
+            <column name="orientation" type="VARCHAR(50)" />
+            <column name="secondary_sort_order" type="VARCHAR(25)" />
+            <column name="sort_order" type="VARCHAR(25)" />
+            <column name="collection_type" type="VARCHAR(255)" />
+            <column name="visible" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="owner_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+            <column name="updater_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-11">
+        <createTable tableName="collection_parents">
+            <column name="collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-12">
+        <createTable tableName="collection_resource">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="collection_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-13">
+        <createTable tableName="coverage_date">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="coverage_date_pkey" />
+            </column>
+            <column name="date_type" type="VARCHAR(255)" />
+            <column name="description" type="VARCHAR(255)" />
+            <column name="end_date" type="INT4" />
+            <column name="end_aprox" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="start_date" type="INT4" />
+            <column name="start_aprox" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-14">
+        <createTable tableName="creator">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="creator_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="last_updated" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="description" type="TEXT" />
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="url" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-15">
+        <createTable tableName="creator_address">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="creator_address_pkey" />
+            </column>
+            <column name="city" type="VARCHAR(255)" />
+            <column name="country" type="VARCHAR(255)" />
+            <column name="postal" type="VARCHAR(255)" />
+            <column name="state" type="VARCHAR(255)" />
+            <column name="street1" type="VARCHAR(255)" />
+            <column name="street2" type="VARCHAR(255)" />
+            <column name="type" type="VARCHAR(255)" />
+            <column name="creator_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-16">
+        <createTable tableName="creator_view_statistics">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="creator_view_statistics_pkey" />
+            </column>
+            <column name="date_accessed" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="creator_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-17">
+        <createTable tableName="culture_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="culture_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="index" type="VARCHAR(255)" />
+            <column name="selectable" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="approved" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-31">
+        <createTable tableName="data_table">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="data_table_pkey" />
+            </column>
+            <column name="description" type="TEXT" />
+            <column name="display_name" type="VARCHAR(255)" />
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="dataset_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-32">
+        <createTable tableName="data_table_column">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="data_table_column_pkey" />
+            </column>
+            <column name="sequence_number" type="INT4" />
+            <column name="column_data_type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="column_encoding_type" type="VARCHAR(25)" />
+            <column name="delimitervalue" type="VARCHAR(255)" />
+            <column name="description" type="TEXT" />
+            <column name="display_name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="true" name="ignorefileextension"
+                type="BOOL" />
+            <column defaultValueBoolean="false" name="mappingcolumn"
+                type="BOOL" />
+            <column name="measurement_unit" type="VARCHAR(25)" />
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="true" name="visible"
+                type="BOOL" />
+            <column name="category_variable_id" type="INT8" />
+            <column name="data_table_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="default_coding_sheet_id" type="INT8" />
+            <column name="default_ontology_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-33">
+        <createTable tableName="data_table_column_relationship">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="data_table_column_relationship_pkey" />
+            </column>
+            <column name="foreign_column_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="local_column_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="relationship_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-34">
+        <createTable tableName="data_table_relationship">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="data_table_relationship_pkey" />
+            </column>
+            <column name="relationship_type" type="VARCHAR(255)" />
+            <column name="dataset_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-35">
+        <createTable tableName="dataset">
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-36">
+        <createTable tableName="document">
+            <column name="book_title" type="VARCHAR(255)" />
+            <column name="degree" type="VARCHAR(50)" />
+            <column name="document_type" type="VARCHAR(255)" />
+            <column name="edition" type="VARCHAR(255)" />
+            <column name="end_page" type="VARCHAR(255)" />
+            <column name="isbn" type="VARCHAR(255)" />
+            <column name="issn" type="VARCHAR(255)" />
+            <column name="journal_name" type="VARCHAR(255)" />
+            <column name="journal_number" type="VARCHAR(255)" />
+            <column name="number_of_pages" type="INT4" />
+            <column name="number_of_volumes" type="INT4" />
+            <column name="series_name" type="VARCHAR(255)" />
+            <column name="series_number" type="VARCHAR(255)" />
+            <column name="start_page" type="VARCHAR(255)" />
+            <column name="volume" type="VARCHAR(255)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-39">
+        <createTable tableName="explore_cache_decade">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="explore_cache_decade_pkey" />
+            </column>
+            <column name="item_count" type="INT8" />
+            <column name="key" type="INT4" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-40">
+        <createTable tableName="explore_cache_year">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="explore_cache_year_pkey" />
+            </column>
+            <column name="item_count" type="INT8" />
+            <column name="key" type="INT4" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-41">
+        <createTable tableName="file_download_day_agg">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints nullable="false" />
+            </column>
+            <column name="information_resource_file_id" type="INT8" />
+            <column name="count" type="INT8" />
+            <column name="date_accessed" type="date" />
+            <column name="year" type="INT4" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-42">
+        <createTable tableName="geographic_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="geographic_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="level" type="VARCHAR(50)" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-43">
+        <createTable tableName="geospatial">
+            <column name="currentnessupdatenotes" type="TEXT" />
+            <column name="map_source" type="VARCHAR(500)" />
+            <column name="scale" type="VARCHAR(100)" />
+            <column name="spatial_reference_system" type="VARCHAR(50)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-44">
+        <createTable tableName="homepage_cache_geographic_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="homepage_cache_geographic_keyword_pkey" />
+            </column>
+            <column name="resource_count" type="INT8" />
+            <column name="keyword_id" type="INT8" />
+            <column name="label" type="VARCHAR(255)" />
+            <column name="level" type="VARCHAR(50)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-45">
+        <createTable tableName="homepage_cache_resource_type">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="homepage_cache_resource_type_pkey" />
+            </column>
+            <column name="resource_count" type="INT8" />
+            <column name="resource_type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-46">
+        <createTable tableName="homepage_featured_item_cache">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="homepage_featured_item_cache_pkey" />
+            </column>
+            <column name="resource_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-47">
+        <createTable tableName="image">
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-48">
+        <createTable tableName="information_resource">
+            <column name="copy_location" type="VARCHAR(255)" />
+            <column name="date_created" type="INT4" />
+            <column name="date_created_normalized" type="INT4" />
+            <column name="external_doi" type="VARCHAR(255)" />
+            <column name="external_reference" type="BOOL" />
+            <column defaultValueBoolean="false"
+                name="inheriting_collection_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_cultural_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_identifier_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_individual_institutional_credit" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_investigation_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_material_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_note_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_other_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_site_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_spatial_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="inheriting_temporal_information" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_uploaded" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="license_text" type="TEXT" />
+            <column name="license_type" type="VARCHAR(128)" />
+            <column name="mappeddatakeyvalue" type="VARCHAR(255)" />
+            <column name="metadata_language" type="VARCHAR(100)" />
+            <column name="publisher_location" type="VARCHAR(255)" />
+            <column name="resource_language" type="VARCHAR(100)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="copyright_holder_id" type="INT8" />
+            <column name="mappeddatakeycolumn_id" type="INT8" />
+            <column name="project_id" type="INT8" />
+            <column name="publisher_id" type="INT8" />
+            <column name="provider_institution_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-49">
+        <createTable tableName="information_resource_file">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="information_resource_file_pkey" />
+            </column>
+            <column name="sequence_number" type="INT4" />
+            <column name="date_made_public" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column defaultValueBoolean="false" name="deleted"
+                type="BOOL" />
+            <column name="description" type="TEXT" />
+            <column name="error_message" type="TEXT" />
+            <column name="file_created_date" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="filename" type="VARCHAR(255)" />
+            <column name="general_type" type="VARCHAR(255)" />
+            <column name="latest_version" type="INT4" />
+            <column name="number_of_parts" type="INT4" />
+            <column defaultValueBoolean="false" name="part_of_composite"
+                type="BOOL" />
+            <column name="restriction" type="VARCHAR(50)" />
+            <column name="status" type="VARCHAR(32)" />
+            <column name="information_resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-50">
+        <createTable tableName="information_resource_file_download_statistics">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="information_resource_file_download_statistics_pkey" />
+            </column>
+            <column name="date_accessed" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="information_resource_file_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-51">
+        <createTable tableName="information_resource_file_version">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="information_resource_file_version_pkey" />
+            </column>
+            <column name="checksum" type="VARCHAR(255)" />
+            <column name="checksum_type" type="VARCHAR(255)" />
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="extension" type="VARCHAR(255)" />
+            <column name="size" type="INT8" />
+            <column name="file_type" type="VARCHAR(255)" />
+            <column name="internal_type" type="VARCHAR(255)" />
+            <column name="filename" type="VARCHAR(255)" />
+            <column name="filestore_id" type="VARCHAR(255)" />
+            <column name="format" type="VARCHAR(255)" />
+            <column name="height" type="INT4" />
+            <column name="mime_type" type="VARCHAR(255)" />
+            <column name="path" type="VARCHAR(255)" />
+            <column name="premisid" type="VARCHAR(255)" />
+            <column name="primary_file" type="BOOL" />
+            <column name="total_time" type="INT8" />
+            <column name="effective_size" type="INT8" />
+            <column name="file_version" type="INT4" />
+            <column name="width" type="INT4" />
+            <column name="information_resource_file_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-52">
+        <createTable tableName="institution">
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="email" type="varchar(255)" />
+            <column name="parentinstitution_id" type="INT8" />
+            <column name="merge_creator_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-53">
+        <createTable tableName="investigation_type">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="investigation_type_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-54">
+        <createTable tableName="latitude_longitude">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="latitude_longitude_pkey" />
+            </column>
+            <column defaultValueBoolean="false"
+                name="is_ok_to_show_exact_location" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="max_obfuscated_lat" type="FLOAT8" />
+            <column name="max_obfuscated_long" type="FLOAT8" />
+            <column name="maximum_latitude" type="FLOAT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="maximum_longitude" type="FLOAT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="min_obfuscated_lat" type="FLOAT8" />
+            <column name="min_obfuscated_long" type="FLOAT8" />
+            <column name="minimum_latitude" type="FLOAT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="minimum_longitude" type="FLOAT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-55">
+        <createTable tableName="material_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="material_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-56">
+        <createTable tableName="ontology">
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="category_variable_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-57">
+        <createTable tableName="ontology_node">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="ontology_node_pkey" />
+            </column>
+            <column name="description" type="VARCHAR(255)" />
+            <column name="display_name" type="VARCHAR(255)" />
+            <column name="import_order" type="INT8" />
+            <column name="index" type="VARCHAR(255)" />
+            <column name="interval_end" type="INT4" />
+            <column name="interval_start" type="INT4" />
+            <column name="iri" type="VARCHAR(255)" />
+            <column name="uri" type="VARCHAR(255)" />
+            <column name="ontology_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-58">
+        <createTable tableName="ontology_node_synonym">
+            <column name="ontologynode_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="synonyms" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-59">
+        <createTable tableName="other_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="other_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-60">
+        <createTable tableName="person">
+            <column name="email" type="VARCHAR(255)" />
+            <column defaultValueBoolean="false" name="email_public"
+                type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="first_name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="last_name" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="orcid_id" type="VARCHAR(255)" />
+            <column name="phone" type="VARCHAR(255)" />
+            <column defaultValueBoolean="false" name="phone_public"
+                type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="rpa_number" type="VARCHAR(255)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="institution_id" type="INT8" />
+            <column name="merge_creator_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-61">
+        <createTable tableName="personal_filestore_ticket">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="personal_filestore_ticket_pkey" />
+            </column>
+            <column name="date_generated" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="description" type="VARCHAR(500)" />
+            <column name="personal_file_type" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="submitter_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-62">
+        <createTable tableName="pos_account">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_account_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="description" type="VARCHAR(255)" />
+            <column name="date_expires" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="files_used" type="INT8" />
+            <column name="date_updated" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="name" type="VARCHAR(255)" />
+            <column name="resources_used" type="INT8" />
+            <column name="space_used" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="modifier_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="owner_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="account_group_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-63">
+        <createTable tableName="pos_account_group">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_account_group_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="description" type="VARCHAR(255)" />
+            <column name="date_updated" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="name" type="VARCHAR(255)" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="modifier_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="owner_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-64">
+        <createTable tableName="pos_billing_activity">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_billing_activity_pkey" />
+            </column>
+            <column name="activity_type" type="VARCHAR(25)" />
+            <column name="currency" type="VARCHAR(255)" />
+            <column name="displaynumberoffiles" type="INT8" />
+            <column name="displaynumberofmb" type="INT8" />
+            <column name="displaynumberofresources" type="INT8" />
+            <column name="enabled" type="BOOL" />
+            <column name="groupname" type="VARCHAR(255)" />
+            <column name="min_allowed_files" type="INT8" />
+            <column name="name" type="VARCHAR(255)" />
+            <column name="numberoffiles" type="INT8" />
+            <column name="numberofhours" type="INT4" />
+            <column name="numberofmb" type="INT8" />
+            <column name="numberofresources" type="INT8" />
+            <column name="sort_order" type="INT4" />
+            <column name="price" type="FLOAT4" />
+            <column name="model_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-65">
+        <createTable tableName="pos_billing_model">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_billing_model_pkey" />
+            </column>
+            <column name="active" type="BOOL" />
+            <column name="counting_files" type="BOOL" />
+            <column name="counting_resources" type="BOOL" />
+            <column name="counting_space" type="BOOL" />
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="description" type="VARCHAR(255)" />
+            <column name="version" type="INT4" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-66">
+        <createTable tableName="pos_coupon">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_coupon_pkey" />
+            </column>
+            <column name="code" type="VARCHAR(255)" />
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="date_expires" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="date_redeemed" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="number_of_files" type="INT8" />
+            <column name="number_of_mb" type="INT8" />
+            <column name="user_id" type="INT8" />
+            <column name="account_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-67">
+        <createTable tableName="pos_group_members">
+            <column name="user_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="account_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-68">
+        <createTable tableName="pos_invoice">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_invoice_pkey" />
+            </column>
+            <column name="account_type" type="VARCHAR(255)" />
+            <column name="billingphone" type="INT8" />
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="invoicenumber" type="VARCHAR(255)" />
+            <column name="creditcardtype" type="VARCHAR(25)" />
+            <column name="number_of_files" type="INT8" />
+            <column name="number_of_mb" type="INT8" />
+            <column name="expirationmonth" type="INT4" />
+            <column name="expirationyear" type="INT4" />
+            <column name="otherreason" type="VARCHAR(255)" />
+            <column name="transaction_type" type="VARCHAR(255)" />
+            <column name="total" type="FLOAT4" />
+            <column name="transaction_date" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="transaction_id" type="VARCHAR(255)" />
+            <column name="transactionstatus" type="VARCHAR(25)" />
+            <column name="address_id" type="INT8" />
+            <column name="coupon_id" type="INT8" />
+            <column name="owner_id" type="INT8" />
+            <column name="response_id" type="INT8" />
+            <column name="executor_id" type="INT8" />
+            <column name="account_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-69">
+        <createTable tableName="pos_item">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_item_pkey" />
+            </column>
+            <column name="quantity" type="INT4" />
+            <column name="activity_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="invoice_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-70">
+        <createTable tableName="pos_members">
+            <column name="account_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-71">
+        <createTable tableName="pos_transaction_log">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="pos_transaction_log_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="response" type="TEXT" />
+            <column name="transactionid" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-72">
+        <createTable tableName="project">
+            <column name="orientation" type="VARCHAR(50)" />
+            <column name="secondary_sort_order" type="VARCHAR(25)" />
+            <column defaultValue="'RESOURCE_TYPE'::character varying"
+                name="sort_order" type="VARCHAR(50)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-73">
+        <createTable tableName="related_comparative_collection">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="related_comparative_collection_pkey" />
+            </column>
+            <column name="text" type="TEXT" />
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-74">
+        <createTable tableName="resource">
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="date_registered" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="date_updated" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="description" type="TEXT" />
+            <column name="external_id" type="VARCHAR(255)" />
+            <column name="total_files" type="INT8" />
+            <column name="previous_status" type="VARCHAR(50)" />
+            <column name="resource_type" type="VARCHAR(255)" />
+            <column name="total_space_in_bytes" type="INT8" />
+            <column name="status" type="VARCHAR(50)" />
+            <column name="title" type="VARCHAR(512)" />
+            <column name="url" type="VARCHAR(255)" />
+            <column name="submitter_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="updater_id" type="INT8" />
+            <column name="uploader_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="account_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-75">
+        <createTable tableName="resource_access_day_agg">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8" />
+            <column name="count" type="INT8" />
+            <column name="date_accessed" type="date" />
+            <column name="year" type="INT4" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-76">
+        <createTable tableName="resource_access_statistics">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_access_statistics_pkey" />
+            </column>
+            <column name="date_accessed" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="resource_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-77">
+        <createTable tableName="resource_annotation">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_annotation_pkey" />
+            </column>
+            <column name="date_created" type="date" />
+            <column name="last_updated" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="value" type="TEXT" />
+            <column name="resourceannotationkey_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-78">
+        <createTable tableName="resource_annotation_key">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_annotation_key_pkey" />
+            </column>
+            <column name="annotation_data_type" type="VARCHAR(255)" />
+            <column name="format_string" type="VARCHAR(128)" />
+            <column name="key" type="VARCHAR(128)">
+                <constraints nullable="false" />
+            </column>
+            <column name="submitter_id" type="INT8" />
+            <column name="resource_annotation_type" type="VARCHAR(255)" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-79">
+        <createTable tableName="resource_collection_view_statistics">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_collection_view_statistics_pkey" />
+            </column>
+            <column name="date_accessed" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="resource_collection_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-80">
+        <createTable tableName="resource_creator">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_creator_pkey" />
+            </column>
+            <column name="sequence_number" type="INT4" />
+            <column name="role" type="VARCHAR(255)" />
+            <column name="creator_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-81">
+        <createTable tableName="resource_culture_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="culture_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-82">
+        <createTable tableName="resource_geographic_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="geographic_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-83">
+        <createTable tableName="resource_investigation_type">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="investigation_type_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-84">
+        <createTable tableName="resource_managed_geographic_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="geographic_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-85">
+        <createTable tableName="resource_material_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="material_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-86">
+        <createTable tableName="resource_note">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_note_pkey" />
+            </column>
+            <column name="sequence_number" type="INT4" />
+            <column name="note" type="VARCHAR(5000)" />
+            <column name="note_type" type="VARCHAR(255)" />
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-87">
+        <createTable tableName="resource_other_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="other_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-88">
+        <createTable tableName="resource_relationship">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_relationship_pkey" />
+            </column>
+            <column name="relationship_type" type="VARCHAR(255)" />
+            <column name="sourceresource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="targetresource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-89">
+        <createTable tableName="resource_revision_log">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="resource_revision_log_pkey" />
+            </column>
+            <column name="log_message" type="VARCHAR(512)" />
+            <column name="payload" type="TEXT" />
+            <column name="timestamp" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="person_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="resource_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-90">
+        <createTable tableName="resource_site_name_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="site_name_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-91">
+        <createTable tableName="resource_site_type_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="site_type_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-92">
+        <createTable tableName="resource_temporal_keyword">
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="temporal_keyword_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-93">
+        <createTable tableName="sensory_data">
+            <column name="additional_project_notes" type="VARCHAR(255)" />
+            <column name="camera_details" type="VARCHAR(255)" />
+            <column name="company_name" type="VARCHAR(255)" />
+            <column name="control_data_filename" type="VARCHAR(255)" />
+            <column name="decimated_mesh_dataset" type="VARCHAR(255)" />
+            <column name="decimated_mesh_original_triangle_count"
+                type="INT8" />
+            <column name="decimated_mesh_triangle_count" type="INT8" />
+            <column name="estimated_data_resolution" type="VARCHAR(254)" />
+            <column name="final_dataset_description" type="TEXT" />
+            <column name="final_registration_points" type="INT8" />
+            <column name="mesh_adjustment_matrix" type="VARCHAR(255)" />
+            <column name="mesh_color_editions" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="mesh_dataset_name" type="VARCHAR(255)" />
+            <column name="mesh_healing_despiking" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="mesh_holes_filled" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="mesh_processing_notes" type="TEXT" />
+            <column name="mesh_rgb_included" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="mesh_smoothing" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="mesh_triangle_count" type="INT8" />
+            <column name="mesh_data_reduction" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="monument_number" type="VARCHAR(255)" />
+            <column name="planimetric_map_filename" type="VARCHAR(255)" />
+            <column name="point_deletion_summary" type="TEXT" />
+            <column name="premesh_dataset_name" type="VARCHAR(255)" />
+            <column name="premesh_points" type="INT8" />
+            <column name="premesh_color_editions" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="premesh_overlap_reduction" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="premesh_smoothing" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="premesh_subsampling" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="registered_dataset_name" type="VARCHAR(255)" />
+            <column name="registration_error_units" type="FLOAT8" />
+            <column name="registration_method" type="VARCHAR(255)" />
+            <column name="rgb_capture" type="VARCHAR(255)" />
+            <column name="rgb_data_capture_info" type="TEXT" />
+            <column name="rgb_preserved_from_original" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="scanner_details" type="VARCHAR(255)" />
+            <column name="scanner_technology" type="VARCHAR(255)" />
+            <column name="scans_total_acquired" type="INT4" />
+            <column name="scans_used" type="INT4" />
+            <column name="survey_conditions" type="VARCHAR(255)" />
+            <column name="survey_date_begin" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="survey_date_end" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="survey_location" type="VARCHAR(255)" />
+            <column name="total_scans_in_project" type="INT8" />
+            <column name="turntable_used" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-94">
+        <createTable tableName="sensory_data_image">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="sensory_data_image_pkey" />
+            </column>
+            <column name="sequence_number" type="INT4" />
+            <column name="description" type="VARCHAR(255)" />
+            <column name="filename" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="sensory_data_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-95">
+        <createTable tableName="sensory_data_scan">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="sensory_data_scan_pkey" />
+            </column>
+            <column name="sequence_number" type="INT4" />
+            <column name="camera_exposure_settings" type="VARCHAR(255)" />
+            <column name="filename" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="matrix_applied" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="monument_name" type="VARCHAR(255)" />
+            <column name="phase_frequency_settings" type="VARCHAR(255)" />
+            <column name="phase_noise_settings" type="VARCHAR(255)" />
+            <column name="points_in_scan" type="INT8" />
+            <column name="resolution" type="FLOAT8" />
+            <column name="scan_date" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="scan_notes" type="VARCHAR(255)" />
+            <column name="scanner_technology" type="VARCHAR(255)" />
+            <column name="tof_return" type="VARCHAR(255)" />
+            <column name="transformation_matrix" type="VARCHAR(255)" />
+            <column name="triangulation_details" type="VARCHAR(255)" />
+            <column name="sensory_data_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-96">
+        <createTable tableName="site_name_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="site_name_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-97">
+        <createTable tableName="site_type_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="site_type_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="index" type="VARCHAR(255)" />
+            <column name="selectable" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="approved" type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column name="parent_id" type="INT8" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-98">
+        <createTable tableName="source_collection">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="source_collection_pkey" />
+            </column>
+            <column name="text" type="TEXT" />
+            <column name="resource_id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-99">
+        <createTable tableName="stats">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="stats_pkey" />
+            </column>
+            <column name="comment" type="VARCHAR(255)" />
+            <column name="recorded_date" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="stat_type" type="VARCHAR(255)" />
+            <column name="value" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-100">
+        <createTable tableName="tdar_user">
+            <column name="affiliation" type="VARCHAR(255)" />
+            <column defaultValueBoolean="false" name="contributor"
+                type="BOOL">
+                <constraints nullable="false" />
+            </column>
+            <column defaultValueNumeric="0"
+                name="contributor_agreement_version" type="INT4">
+                <constraints nullable="false" />
+            </column>
+            <column name="contributor_reason" type="VARCHAR(512)" />
+            <column name="dismissed_notifications_date" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="last_login" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="penultimate_login" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="proxy_note" type="TEXT" />
+            <column defaultValueNumeric="0" name="tos_version"
+                type="INT4">
+                <constraints nullable="false" />
+            </column>
+            <column name="total_login" type="INT8" />
+            <column name="username" type="VARCHAR(255)" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+            <column name="proxyinstitution_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-101">
+        <createTable tableName="temporal_keyword">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="temporal_keyword_pkey" />
+            </column>
+            <column name="definition" type="TEXT" />
+            <column name="label" type="VARCHAR(255)">
+                <constraints nullable="false" />
+            </column>
+            <column name="occurrence" type="INT8" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="merge_keyword_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-102">
+        <createTable tableName="upgrade_task">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="upgrade_task_pkey" />
+            </column>
+            <column name="comment" type="VARCHAR(255)" />
+            <column name="name" type="VARCHAR(255)" />
+            <column name="recorded_date" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="run" type="BOOL" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-103">
+        <createTable tableName="user_notification">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="user_notification_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE">
+                <constraints nullable="false" />
+            </column>
+            <column name="expiration_date" type="date" />
+            <column name="display_type" type="VARCHAR(32)">
+                <constraints nullable="false" />
+            </column>
+            <column name="message_key" type="TEXT">
+                <constraints nullable="false" />
+            </column>
+            <column name="message_type" type="VARCHAR(32)">
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="INT8" />
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1412635782699-104">
+        <createTable tableName="video">
+            <column name="audio_channels" type="VARCHAR(255)" />
+            <column name="audio_codec" type="VARCHAR(255)" />
+            <column name="audio_kbps" type="INT4" />
+            <column name="fps" type="INT4" />
+            <column name="height" type="INT4" />
+            <column name="kbps" type="INT4" />
+            <column name="sample_frequency" type="INT4" />
+            <column name="video_codec" type="VARCHAR(255)" />
+            <column name="width" type="INT4" />
+            <column name="id" type="INT8">
+                <constraints nullable="false" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="abrin (generated)" id="1414424083020-31">
+        <createTable tableName="email_queue">
+            <column autoIncrement="true" name="id" type="BIGSERIAL">
+                <constraints primaryKey="true"
+                    primaryKeyName="email_queue_pkey" />
+            </column>
+            <column name="date_created" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="date_sent" type="TIMESTAMP WITHOUT TIME ZONE" />
+            <column name="error_message" type="VARCHAR(2048)" />
+            <column name="from_address" type="VARCHAR(255)" />
+            <column name="message" type="TEXT" />
+            <column name="number_of_tries" type="INT4" />
+            <column name="status" type="VARCHAR(25)" />
+            <column name="subject" type="VARCHAR(1024)" />
+            <column name="to_address" type="VARCHAR(1024)" />
+            <column defaultValueBoolean="true" name="user_generated"
+                type="BOOL" />
+        </createTable>
+    </changeSet>
+</databaseChangeLog>
