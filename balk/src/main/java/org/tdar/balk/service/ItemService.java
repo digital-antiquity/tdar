@@ -97,7 +97,7 @@ public class ItemService {
             logger.trace("{} {}", dropboxItemWrapper.getPath(), item);
             return;
         }
-        logger.debug("{}", dropboxItemWrapper.getPath());
+        logger.debug("{}", dropboxItemWrapper.getFullPath());
         if (dropboxItemWrapper.isDir()) {
             item = new DropboxDirectory();
         } else {
@@ -137,11 +137,11 @@ public class ItemService {
         File rootDir = new File("Client Data", "Upload to tDAR");
         DropboxClient client  = new DropboxClient();
         logger.debug(file.getPath());
-        File path = new File(file.getPath());
+        File path = new File(file.getPath()).getParentFile();
         List<String> tree = new ArrayList<>();
         while (!StringUtils.equalsIgnoreCase(path.getName(), rootDir.getName()) &&
                 StringUtils.contains(path.getPath(), rootDir.getPath())) {
-//            tree.add(0, path.getName());
+            tree.add(0, path.getName());
             path = path.getParentFile();
             if (path == null || path.getName().equals("")) {
                 break;

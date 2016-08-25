@@ -144,10 +144,10 @@ public class DropboxClient {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-        String cursor2 = client.files().listFolderGetLatestCursor(path).getCursor();
+//        String cursor2 = client.files().listFolderGetLatestCursor(path).getCursor();
         logger.debug("old cursor:{}", cursor);
-        logger.debug("new cursor:{}", cursor2);
-        setCurrentCursor(cursor2);
+//        logger.debug("new cursor:{}", cursor2);
+        setCurrentCursor(cursor);
     }
 
     private Map<String,BasicAccount> cachedUsers = new HashMap<>();

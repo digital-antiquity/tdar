@@ -44,7 +44,7 @@ public class BalkScheduledProcessService {
         } catch (URISyntaxException | IOException | DbxException e) {
             logger.error("polling error {}", e,e);
         }
-        
+        logger.debug("completed poling");
     }
 
 }

@@ -29,6 +29,7 @@ public class ItemDao {
 
     public DropboxDirectory findByParentPath(String fullPath, boolean dir) {
         String path = fullPath;
+
         if (dir) {
             path = fullPath;
             if (StringUtils.endsWith(fullPath, "/")) {
@@ -40,10 +41,18 @@ public class ItemDao {
             path = "/" + path;
         }
         logger.trace("in: {} out: {}", fullPath, path);
-        String query = "from DropboxDirectory where lower(path)=lower(:path)";
-        Query query2 = getCurrentSession().createQuery(query);
-        query2.setParameter("path", path);
-        return (DropboxDirectory) query2.uniqueResult();
+        try {
+            //FIXME: FIgure out deleted paths/directories
+            String query = "from DropboxDirectory where lower(path)=lower(:path) order by id desc";
+            Query query2 = getCurrentSession().createQuery(query);
+            query2.setParameter("path", path);
+            query2.setFirstResult(0);
+            query2.setMaxResults(1);
+            return (DropboxDirectory) query2.uniqueResult();
+        } catch (Exception e) {
+            logger.error("in: {}, out: {}, {}", fullPath, path, e, e);
+            throw e;
+        }
     }
 
     public AbstractDropboxItem findByDropboxId(String id, boolean dir) {
@@ -51,16 +60,21 @@ public class ItemDao {
         if (dir) {
             query = "from DropboxDirectory Item where dropbox_id=:id";
         }
-        Query query2 = getCurrentSession().createQuery(query);
-        query2.setParameter("id", id);
-        return (AbstractDropboxItem) query2.uniqueResult();
+        try {
+            Query query2 = getCurrentSession().createQuery(query);
+            query2.setParameter("id", id);
+            return (AbstractDropboxItem) query2.uniqueResult();
+        } catch (Exception e) {
+            logger.error("{} ({}) -- {}", query, id, e, e);
+            return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
     public List<DropboxFile> findToUpload() {
         String query = "from DropboxFile where tdar_id is null and path like '%/Upload to tDAR/%'";
         Query query2 = getCurrentSession().createQuery(query);
-        return  query2.list();
+        return query2.list();
     }
 
 }
