@@ -255,7 +255,7 @@
 
     <div class="" id="collection-section">
         <h2>Collections</h2>
-        <@common.listCollections collections=allResourceCollections>
+        <@common.listCollections collections=allResourceCollections showBadge=true>
             <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
         </@common.listCollections>
     </div>
@@ -263,7 +263,7 @@
         <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
         <div class="">
             <h2>Collections Shared With You</h2>
-            <@common.listCollections collections=sharedResourceCollections />
+            <@common.listCollections collections=sharedResourceCollections showBadge=true/>
         </div>
         </#if>
 

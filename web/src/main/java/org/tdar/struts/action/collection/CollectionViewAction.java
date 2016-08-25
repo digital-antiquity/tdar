@@ -445,6 +445,9 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
     }
 
     public boolean isEditable() {
+        if (getPersistable().isSystemManaged() && !isAdministrator()) {
+            return false;
+        }
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 

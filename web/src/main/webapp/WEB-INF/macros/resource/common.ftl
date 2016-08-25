@@ -460,17 +460,17 @@ Common macros used in multiple contexts
     </#macro>
 
 <#-- emit html for single collection list item -->
-    <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false >
+    <#macro collectionListItem depth=0 collection=collection showOnlyVisible=false showBadge=false>
         <#if !collection.hidden || collection.viewable || showOnlyVisible==false >
             <#local clsHidden = "", clsClosed="" >
             <#if (depth < 1)><#local clsHidden = "hidden"></#if>
             <#if ((depth < 1) && (collection.transientChildren?size > 0))><#local clsClosed = "closed"></#if>
         <li class="${clsClosed}">
-            <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}</@s.a>
+            <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}<#if collection.new><span style="margin-left:.8em" class="label">new</span></#if></@s.a>
             <#if collection.transientChildren?has_content>
                 <ul class="${clsHidden}">
                     <#list collection.transientChildren as child>
-                    <@collectionListItem depth= (depth - 1) collection=child showOnlyVisible=showOnlyVisible  />
+                    <@collectionListItem depth= (depth - 1) collection=child showOnlyVisible=showOnlyVisible  showBadge=showBadge />
                 </#list>
                 </ul>
             </#if>
@@ -479,10 +479,10 @@ Common macros used in multiple contexts
     </#macro>
 
 <#-- emit the collections list in a 'treeview' control -->
-    <#macro listCollections collections=resourceCollections_ showOnlyVisible=false>
+    <#macro listCollections collections=resourceCollections_ showOnlyVisible=false showBadge=false>
     <ul class="collection-treeview">
         <#list collections as collection>
-            <@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=3/>
+            <@collectionListItem collection=collection showOnlyVisible=showOnlyVisible depth=3 showBadge=showBadge />
         </#list>
   <#nested>
     </ul>

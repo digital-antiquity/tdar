@@ -142,5 +142,10 @@
     <changeSet id="obsidian-13" author="abrin">
     <dropForeignKeyConstraint baseTableName="collection_revision_log" constraintName="fk_collection_revision__collection_id"/>
     </changeSet>
+
+    <changeSet id="obsidian-14" author="abrin">
+    	<addColumn tableName="collection">
+    		<column name="system_managed" type="boolean" defaultValueBoolean="false" />
+    </changeSet>
     
 </databaseChangeLog>
