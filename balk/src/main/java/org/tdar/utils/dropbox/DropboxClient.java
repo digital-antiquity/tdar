@@ -82,18 +82,18 @@ public class DropboxClient {
     public FullAccount getUserAccount() throws DbxException {
         return client.users().getCurrentAccount();
     }
-    
+
     private Properties loadProperties() throws URISyntaxException, IOException, FileNotFoundException {
         propertiesFile = new File(Dropbox.class.getClassLoader().getResource("dropbox.properties").toURI());
         Properties props = new Properties();
         props.load(new FileInputStream(propertiesFile));
         return props;
     }
-    
+
     private void writePropertiesToFile(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
         FileOutputStream out = new FileOutputStream(propertiesFile);
         props.store(out, "");
-        logger.debug("{}",props);
+        logger.debug("{}", props);
         IOUtils.closeQuietly(out);
     }
 
@@ -107,12 +107,12 @@ public class DropboxClient {
 
     public void updateCursor(String cursor) throws FileNotFoundException, IOException {
         props.put(DROPBOX_CURSOR, cursor);
-        logger.debug("new cursor:{}",cursor);
+        logger.debug("new cursor:{}", cursor);
         writePropertiesToFile(propertiesFile, props);
-        
+
     }
 
-    public void list(String path,String cursor, MetadataListener listener) throws ListFolderErrorException, DbxException {
+    public void list(String path, String cursor, MetadataListener listener) throws ListFolderErrorException, DbxException {
         ListFolderResult result = null;
         if (cursor == null) {
             ListFolderBuilder listFolderBuilder = client.files().listFolderBuilder(path);
@@ -120,20 +120,19 @@ public class DropboxClient {
         } else {
             result = client.files().listFolderContinue(cursor);
         }
-        
 
         while (true) {
             for (Metadata metadata : result.getEntries()) {
                 if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
                     continue;
                 }
-                
+
                 DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
                 if (listener != null) {
                     try {
                         listener.consume(fileWrapper);
                     } catch (Exception e) {
-                        logger.error("{}",e,e);
+                        logger.error("{}", e, e);
                     }
                 }
             }
@@ -144,13 +143,13 @@ public class DropboxClient {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-//        String cursor2 = client.files().listFolderGetLatestCursor(path).getCursor();
         logger.debug("old cursor:{}", cursor);
-//        logger.debug("new cursor:{}", cursor2);
-        setCurrentCursor(cursor);
+        String cursor2 = result.getCursor();
+        logger.debug("new cursor:{}", cursor2);
+        setCurrentCursor(cursor2);
     }
 
-    private Map<String,BasicAccount> cachedUsers = new HashMap<>();
+    private Map<String, BasicAccount> cachedUsers = new HashMap<>();
 
     public BasicAccount getAccount(String accountId) {
         if (accountId != null) {
@@ -162,7 +161,7 @@ public class DropboxClient {
                 cachedUsers.put(accountId, account);
                 return account;
             } catch (DbxException e) {
-                logger.error("{}",e,e);
+                logger.error("{}", e, e);
             }
         }
         return null;
@@ -172,7 +171,7 @@ public class DropboxClient {
         DbxDownloader<FileMetadata> download = client.files().download(path);
         FileMetadata fileMetadata = download.download(os);
         return fileMetadata;
-        
+
     }
 
     public Boolean getDebug() {
@@ -194,7 +193,7 @@ public class DropboxClient {
     public List<FileMetadata> getRevisions(String path) throws ListRevisionsErrorException, DbxException {
         ListRevisionsResult listRevisions = client.files().listRevisions(path);
         return listRevisions.getEntries();
-        
+
     }
 
 }
