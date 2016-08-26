@@ -141,7 +141,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private String description;
 
     @Column(name="system_managed")
-    private Boolean systemManaged = false;
+    private Boolean systemManaged = Boolean.FALSE;
     
     @Lob
     @Type(type = "org.hibernate.type.TextType")
@@ -763,6 +763,9 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     @XmlAttribute(required=false)
     public Boolean isSystemManaged() {
+        if (systemManaged == null) {
+            systemManaged = false;
+        }
         return systemManaged;
     }
 
