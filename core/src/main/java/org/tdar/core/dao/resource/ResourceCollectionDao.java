@@ -388,4 +388,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             saveOrUpdate(resource);
         }
     }
+
+    public void deleteDownloadAuthorizations(ResourceCollection collection) {
+        Query query = getCurrentSession().getNamedQuery(TdarNamedQueries.DELETE_DOWNLOAD_AUTHORIZATION);
+        query.setParameter("collectionId", collection.getId());
+        query.executeUpdate();
+    }
 }
