@@ -157,12 +157,9 @@
 </div>
 
 <h3>Users who can charge to this account</h3>
-<table class="tableFormat table">
+<table class="tableFormat table table-bordered">
     <tr>
-        <th>name</th>
-    </tr>
-    <tr>
-        <td>
+        <td colspan="2">
             <a href="<@s.url value="/browse/creators/${account.owner.id?c}"/>">${account.owner.properName}</a> (owner)
         </td>
     </tr>

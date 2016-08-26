@@ -796,8 +796,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         getDao().delete(persistable.getAuthorizedUsers());
+        getDao().deleteDownloadAuthorizations(persistable);
         // FIXME: need to handle parents and children
-        String msg = String.format("%s deleted %s", authenticatedUser, persistable.getTitle());
+        String msg = String.format("%s deleted %s (%s);\n%s ", authenticatedUser.getProperName(), persistable.getTitle(), persistable.getId(), deletionReason);
         CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, RevisionLogType.DELETE);
         getDao().saveOrUpdate(revision);
 
