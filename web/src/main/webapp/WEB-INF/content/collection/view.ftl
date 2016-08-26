@@ -15,12 +15,12 @@
 
     <@commonCollection.header />
 <h1>
-    <#if logoAvailable>
-        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo"
-        alt="logo" title="logo" /> 
-    </#if>
 
 ${resourceCollection.name!"untitled collection"}</h1>
+    <#if logoAvailable>
+        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo"
+        alt="logo" title="logo" />
+    </#if>
 
     <#if !visible>
     This collection is not accessible
