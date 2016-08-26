@@ -35,29 +35,15 @@
                     dataTableColumns : []
                 };
 
-                // get the data table columns in the same structure for Integration, Display, and Count columns
-                var tempList = column.selectedDataTableColumns;
-                if (tempList == undefined) {
-                    tempList = [];
-                    if (column.dataTableColumnSelections != undefined) {
-                        column.dataTableColumnSelections.forEach(function(col) {
-                            if (col != undefined) {
-                                tempList.push(col.dataTableColumn);
-                            }
-                        });
-                    }
-                }
-
-                // add the id/name
-                tempList.forEach(function(dtc) {
-                    if (dtc != undefined && dtc.id != undefined) {
-                        var dtc_ = {
-                            id : dtc.id,
-                            name : dtc.name
-                        }
-                    }
-                    outputColumn.dataTableColumns.push(dtc_);
-                });
+                // Get the data table columns in the same structure for Integration, Display, and Count columns.
+                // The ajax endpoint expects  a list of dataTableColumn objects, so we must flatten selectedDataTableColumns
+                outputColumn.dataTableColumns = (column.selectedDataTableColumns
+                    // select the dataTableColumn from the 'selectedDataTableColumn' object
+                    .map(function(selection){ return selection.dataTableColumn;})
+                    // filter out the null columns (if this is a partial integration)
+                    .filter(function(dtc){return !!dtc})
+                    // strip out the extraneous properties from our dtc object (all we want are ID and Name)
+                    .map(function(dtc){return {'id':dtc.id, 'name': dtc.name};}));
 
                 // get the nodes and ontologes
                 if (column.type == 'integration') {
@@ -84,11 +70,10 @@
                     }
                     ;
                 }
-
                 out.columns.push(outputColumn);
             });
-
         }
+
 
         // add any ontologies
         if (integration.ontologies != undefined) {

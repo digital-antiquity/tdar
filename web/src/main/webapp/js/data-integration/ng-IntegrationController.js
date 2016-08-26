@@ -362,7 +362,7 @@
                 //console.debug(data);
             }, function(err) {
                 _isBusy = false;
-                //console.debug("submitIntegration:: failed:%s", err);
+                console.error("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });
 
