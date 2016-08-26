@@ -158,7 +158,7 @@ public interface TdarNamedQueries {
     String MAPPED_RESOURCES = "query.mapped_resources";
     String COUNT_MAPPED_RESOURCES = "query.count_mapped_resources";
     String ALL_RESOURCES_IN_COLLECTION = "query.non_deleted_in_collection";
-    String DELETE_DOWNLOAD_AUTHORIZATION = "delete.downloadAuthorization";
+    String FIND_DOWNLOAD_AUTHORIZATION = "delete.downloadAuthorization";
     // raw SQL/HQL queries
 
     /**

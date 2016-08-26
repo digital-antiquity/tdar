@@ -136,6 +136,14 @@
         <to>/sitemap/sitemap?filename=sitemap$1</to>
     </rule>
 
+    <rule>
+        <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)\t(\d+)$
+        </from>
+        <to>/$1/$2</to>
+        <!-- was &amp;$3 aat end -->
+    </rule>
+
+
 	<!--  The following rules are designed to TRUMP the Struts URL Routing - they allow an action to be placed after the ID, but not be treated as a SLUG -->
     <rule>
         <from>^/(project|dataset|ontology|image|billing|audio|video|document|sensory-data|cart|coding-sheet|collection|archive|geospatial)/([0-9]+)/(edit|mapping)$

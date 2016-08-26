@@ -552,8 +552,8 @@
                 name=org.tdar.core.dao.TdarNamedQueries.COUNT_MAPPED_RESOURCES,
                 query = "select count(ir.id) from InformationResource ir inner join ir.project as project inner join ir.mappedDataKeyColumn as col"),
         @org.hibernate.annotations.NamedQuery(
-                name=org.tdar.core.dao.TdarNamedQueries.DELETE_DOWNLOAD_AUTHORIZATION,
-                query = "delete from DownloadAuthorization da where da.resourceCollection.id=:collectionId")
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
+                query = "from DownloadAuthorization da where da.resourceCollection.id=:collectionId")
         
 })
 package org.tdar.core.dao;
