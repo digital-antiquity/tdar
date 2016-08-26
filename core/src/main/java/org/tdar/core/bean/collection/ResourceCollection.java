@@ -82,6 +82,7 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -746,6 +747,9 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     }
 
+    @XmlTransient
+    @Transient
+    @JsonIgnore
     public boolean isNew() {
         if (getDateCreated() == null) {
             return false;
@@ -757,6 +761,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return false;
     }
 
+    @XmlAttribute
     public boolean isSystemManaged() {
         return systemManaged;
     }
