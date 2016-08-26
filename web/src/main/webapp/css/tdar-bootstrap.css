@@ -751,18 +751,21 @@ option.emptyoption {
 }
 
 
-/** collection logo presentation: flush with title **/
-h1 > img.collection-logo {
-    padding:0.5em;
-    max-width: 8em;
-    max-height: 5em ;
+img.collection-logo {
+    margin: 0.5em;
+    padding: 0
 }
 
-/** collection logo presentation: flush with title **/
+/** collection logo presentation: flush with header **/
+h1 > img.collection-logo {
+    max-width: 7em;
+    max-height: 4em ;
+}
+
+/** collection logo presentation: flush with description **/
 article > img.collection-logo {
-    padding:0.5em;
-    max-width: 16em;
-    max-height: 10em ;
+    max-width: 13em;
+    max-height: 8em ;
 }
 
 .divInheritSection button.clear-section {
