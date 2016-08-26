@@ -61,6 +61,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     public static final String COLUMNS = "columns";
     public static final String SAVE_VIEW = "SAVE_VIEW";
     public static final String SAVE_MAP_THIS = "SAVE_MAP_THIS";
+    private Long startTime;
     private static final String INPUT_COLUMNS = "INPUT_COLUMNS";
 
     @Autowired
@@ -205,7 +206,7 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
         initializePaginationHelper();
         getDataTable().setDescription(getTableDescription());
         try {
-            hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser());
+            hasOntologies = datasetService.updateColumnMetadata(this, getDataResource(), getDataTable(), getDataTableColumns(), getAuthenticatedUser(), startTime);
         } catch (Throwable tde) {
             getLogger().error(tde.getMessage(), tde);
             addActionErrorWithException(tde.getMessage(), tde);
@@ -387,5 +388,21 @@ public class ColumnMetadataController extends AbstractAuthenticatableAction impl
     public void setTableDescription(String tableDescription) {
         this.tableDescription = tableDescription;
     }
+
+    public Long getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Long startTime) {
+        this.startTime = startTime;
+    }
+
+    /**
+     * @return the startTime
+     */
+    public Long getCurrentTime() {
+        return System.currentTimeMillis();
+    }
+
 
 }

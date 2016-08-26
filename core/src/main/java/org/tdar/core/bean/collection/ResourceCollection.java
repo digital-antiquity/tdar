@@ -18,6 +18,7 @@ import javax.persistence.Cacheable;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ConstraintMode;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -52,6 +53,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -80,6 +82,7 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
 /**
@@ -110,6 +113,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection")
 @Inheritance(strategy = InheritanceType.JOINED)
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ResourceCollection extends AbstractPersistable implements HasName, Updatable, Indexable, Validatable, Addressable, Comparable<ResourceCollection>,
         SimpleSearch, Sortable, Viewable, DeHydratable, HasSubmitter, XmlLoggable, HasImage, Slugable, OaiDcProvider {
 
@@ -119,6 +123,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private transient boolean viewable;
     private transient Integer maxHeight;
     private transient Integer maxWidth;
+    private transient boolean created = false;
     private transient VersionType maxSize;
 
     private static final long serialVersionUID = -5308517783896369040L;
@@ -134,6 +139,9 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Type(type = "org.hibernate.type.TextType")
     private String description;
 
+    @Column(name="system_managed")
+    private boolean systemManaged = false;
+    
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "description_formatted")
@@ -212,6 +220,13 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Column(name = "parent_id")
     private Set<Long> parentIds = new HashSet<>();
 
+    
+    @OneToMany()
+    @JoinColumn(name = "collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT),nullable=true)
+    @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
+
     private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
 
     @Column(name = "hidden", nullable = false)
@@ -271,7 +286,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     public Set<Resource> getResources() {
         return resources;
     }
-
 
     public void setResources(Set<Resource> resources) {
         this.resources = resources;
@@ -702,4 +716,52 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         this.unmanagedResources = publicResources;
     }
 
+    @Transient
+    @XmlTransient
+    public boolean isCreated() {
+        return created;
+    }
+
+    public void setCreated(boolean created) {
+        this.created = created;
+    }
+
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
+        this.setDateCreated(resource.getDateCreated());
+        this.setOwner(resource.getOwner());
+        this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
+        this.setType(resource.getType());
+        this.setParent(resource.getParent());
+        // set previous, then set current
+        this.getResources().addAll(new ArrayList<>(resource.getResources()));
+
+    }
+
+    public Set<CollectionRevisionLog> getCollectionRevisionLog() {
+        return collectionRevisionLog;
+    }
+
+    public void setCollectionRevisionLog(Set<CollectionRevisionLog> collectionRevisionLog) {
+        this.collectionRevisionLog = collectionRevisionLog;
+
+    }
+
+    public boolean isNew() {
+        if (getDateCreated() == null) {
+            return false;
+        }
+        
+        if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSystemManaged() {
+        return systemManaged;
+    }
+
+    public void setSystemManaged(boolean systemManaged) {
+        this.systemManaged = systemManaged;
+    }
 }

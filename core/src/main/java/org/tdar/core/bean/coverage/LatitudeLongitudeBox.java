@@ -165,8 +165,8 @@ public class LatitudeLongitudeBox extends AbstractPersistable implements HasReso
     protected Double getCenterLong(Double minLong, Double maxLong) {
         // print out in degrees
         if (maxLong < minLong) {
-            logger.debug("min:" + minLong);
-            logger.debug("max:" + maxLong);
+//            logger.debug("min:" + minLong);
+//            logger.debug("max:" + maxLong);
 
             // min is one side of the dateline and max is on the other
             if (maxLong < 0 && minLong > 0) {

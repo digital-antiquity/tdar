@@ -39,7 +39,7 @@ public class SimpleHttpUtils {
      */
     public static CloseableHttpClient createClient() {
         try {
-            return  SimpleHttpUtils.createClientChecked(null);
+            return SimpleHttpUtils.createClientChecked(null);
         } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException("failed to create http client", e);
         }
@@ -53,7 +53,7 @@ public class SimpleHttpUtils {
      */
     public static CloseableHttpClient createClient(Integer timeoutInSeconds) {
         try {
-            return  SimpleHttpUtils.createClientChecked(timeoutInSeconds);
+            return SimpleHttpUtils.createClientChecked(timeoutInSeconds);
         } catch (KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
             throw new RuntimeException("failed to create http client", e);
         }
@@ -103,16 +103,18 @@ public class SimpleHttpUtils {
         return new BasicNameValuePair(key, val);
     }
 
-    private static CloseableHttpClient createClientChecked(Integer timeoutInSeconds) throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
+    private static CloseableHttpClient createClientChecked(Integer timeoutInSeconds)
+            throws KeyStoreException, NoSuchAlgorithmException, KeyManagementException {
         SSLContextBuilder builder = new SSLContextBuilder();
         builder.loadTrustMaterial(null, new TrustSelfSignedStrategy());
         SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(builder.build());
-        RequestConfig requestConfig= RequestConfig.DEFAULT;
+        RequestConfig requestConfig = RequestConfig.DEFAULT;
         if (timeoutInSeconds != null) {
             int timeoutInMs = timeoutInSeconds * 1000;
-            requestConfig = RequestConfig.custom().setConnectTimeout(timeoutInMs).setConnectionRequestTimeout(timeoutInMs).setSocketTimeout(timeoutInMs).build();
+            requestConfig = RequestConfig.custom().setConnectTimeout(timeoutInMs).setConnectionRequestTimeout(timeoutInMs).setSocketTimeout(timeoutInMs)
+                    .build();
         }
-        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultRequestConfig(requestConfig).build();
+        CloseableHttpClient httpclient = HttpClients.custom().setSSLSocketFactory(sslsf).setDefaultRequestConfig(requestConfig).evictExpiredConnections().build();
         return httpclient;
     }
 

@@ -224,7 +224,7 @@
                 </@s.url></#compress></#local>
                 <#if link><#t>
                 <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"></#if><#compress>
-                    <#if icon || pictoralIcon><#if pictoralIcon && facetParam=='selectedResourceTypes'>
+                    <#if icon || pictoralIcon><#if pictoralIcon && facetParam?lower_case?contains('resourcetype') >
                         <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${facet.raw?lower_case}"></use></svg>
                     <#else>
                         <#if currentValues?size == 1>

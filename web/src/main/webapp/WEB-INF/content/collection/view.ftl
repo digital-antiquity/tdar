@@ -16,7 +16,7 @@
     <@commonCollection.header />
 <h1>
     <#if logoAvailable>
-        <img class="pull-right collection-logo" src="/files/collection/sm/${id?c}/logo"
+        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo"
         alt="logo" title="logo" /> 
     </#if>
 

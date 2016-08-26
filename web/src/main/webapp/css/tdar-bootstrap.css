@@ -750,9 +750,19 @@ option.emptyoption {
     display: inline-block
 }
 
-img.collection-logo {
-    padding:1em;
-    max-width: 20em; /*if we decide to use hi-res images*/
+
+/** collection logo presentation: flush with title **/
+h1 > img.collection-logo {
+    padding:0.5em;
+    max-width: 8em;
+    max-height: 5em ;
+}
+
+/** collection logo presentation: flush with title **/
+article > img.collection-logo {
+    padding:0.5em;
+    max-width: 16em;
+    max-height: 10em ;
 }
 
 .divInheritSection button.clear-section {

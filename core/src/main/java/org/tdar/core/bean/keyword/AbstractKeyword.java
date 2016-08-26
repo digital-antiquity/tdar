@@ -162,6 +162,7 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         return status == Status.DUPLICATE;
     }
 
+    @JsonView(JsonLookupFilter.class)
     public Long getOccurrence() {
         return occurrence;
     }

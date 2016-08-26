@@ -1,6 +1,7 @@
 package org.tdar.utils;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.StringReader;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -17,7 +18,10 @@ import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-public class ApiClientResponse {
+public class ApiClientResponse implements Serializable {
+
+    private static final long serialVersionUID = -5890656648322899809L;
+
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private Header contentType;
@@ -30,11 +34,13 @@ public class ApiClientResponse {
         this.statusCode = response.getStatusLine().getStatusCode();
         this.statusLine = response.getStatusLine();
         this.headers = response.getAllHeaders();
+        logger.debug("respons: {}", response);
         try {
             this.body = IOUtils.toString(response.getEntity().getContent());
         } catch (UnsupportedOperationException | IOException e) {
             logger.error("error in response", e);
         }
+        logger.debug("done reading body");
         this.contentType = response.getEntity().getContentType();
     }
 

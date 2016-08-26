@@ -206,6 +206,7 @@ public class SearchDao<I extends Indexable> {
         Map<Long, Persistable> idMap = PersistableUtils.createIdMap((Collection<Persistable>) datasetDao.findAll(facetClass, ids));
         for (Count c : field.getValues()) {
             if (c.getCount() > 0) {
+                try {
                 HasLabel persistable = (HasLabel) idMap.get(Long.parseLong(c.getName()));
                 String label = persistable.getLabel();
                 logger.trace("  {} - {}", c.getCount(), label);
@@ -214,6 +215,9 @@ public class SearchDao<I extends Indexable> {
                     f.setDetailUrl(((Addressable) persistable).getDetailUrl());
                 }
                 facet.add(f);
+                } catch (Exception e) {
+                    logger.error("error hydrating facet: {}",e, e);
+                }
             }
         }
         return facet;

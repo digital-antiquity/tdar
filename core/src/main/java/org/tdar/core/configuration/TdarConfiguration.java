@@ -35,8 +35,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     private static final String JIRA_LINK = "issues.tdar.org/s/en_USgh0sw9-418945332/844/18/1.2.9/_/download/batch/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector/com.atlassian.jira.collector.plugin.jira-issue-collector-plugin:issuecollector.js?collectorId=959f12a3";
     private static final String SECURITY_EXCEPTION_COULD_NOT_CREATE_PERSONAL_FILESTORE_HOME_DIRECTORY = "Security Exception: could not create personal filestore home directory";
     public static final String COULDN_T_CREATE_TEMPORARY_DIRECTORY_AT = "Couldn't create temporary directory at : ";
-    public static final Long DEFAULT_SCHEDULED_PROCESS_START_ID = 0L;
-    public static final Long DEFAULT_SCHEDULED_PROCESS_END_ID = 400000L;
 
 
     public static final int DEFAULT_AUTHORITY_MANAGEMENT_DUPE_LIST_MAX_SIZE = 50;
@@ -505,16 +503,16 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     	return assistant.getBooleanProperty("featureEnabled.leftJoinDataIntegration", false);
     }
     
-    public Long getScheduledProcessStartId() {
-        return assistant.getLongProperty("scheduled.startId", DEFAULT_SCHEDULED_PROCESS_START_ID);
+    public int getScheduledProcessStartId() {
+        return assistant.getIntProperty("scheduled.startId", -1);
     }
 
     public int getScheduledProcessBatchSize() {
         return assistant.getIntProperty("scheduled.batchSize", 100);
     }
 
-    public Long getScheduledProcessEndId() {
-        return assistant.getLongProperty("scheduled.endId", DEFAULT_SCHEDULED_PROCESS_END_ID);
+    public int getScheduledProcessEndId() {
+        return assistant.getIntProperty("scheduled.endId", -1);
     }
 
     public String getGoogleAnalyticsId() {

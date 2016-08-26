@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.faims.service;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,8 +15,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.Project;
@@ -28,12 +30,16 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
+import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.StatusCode;
+import org.tdar.core.service.GenericService;
+import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
+import org.tdar.filestore.FileStoreFile;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.APIClient;
@@ -64,6 +70,24 @@ public class FaimsExportService {
         } catch (Exception e) {
             logger.error("error logging in", e);
         }
+        for (Long id : genericService.findAllIds(Image.class)) {
+            try {
+                processResource(id, new HashMap<>(), new HashMap<>(), new HashMap<>(), false, client, accountId);
+            } catch (Throwable t) {
+                logger.error("error processing FAIMS resource: {}", t, t);
+            }
+            genericService.clearCurrentSession();
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+//        defaultExport(accountId, client);
+    }
+
+    private void defaultExport(Long accountId, APIClient client) {
         boolean skip = false;
         Map<Long, Long> projectIdMap = uploadProjects(accountId, client, skip);
         logger.debug("done projects");
@@ -89,7 +113,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(3);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -105,7 +129,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(3);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -124,7 +148,7 @@ public class FaimsExportService {
             }
             genericService.clearCurrentSession();
             try {
-                Thread.sleep(3);
+                Thread.sleep(300);
             } catch (InterruptedException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
@@ -142,20 +166,37 @@ public class FaimsExportService {
             return null;
         }
         List<File> files = new ArrayList<>();
-        logger.debug("{} -- {} ({})", id, resource.getTitle(), (resource instanceof CodingSheet));
 
         addFaimsId(resource);
+        Long projectId = null;
+        if (resource.getProject() != Project.NULL) {
+            projectId = resource.getProjectId();
+        }
+        logger.debug("{} ({}) -- {}", resource.getTitle(), resource.getActiveInformationResourceFiles().size(), projectId);
 
         // only pull images from the two projects that have galleries in them.
-        if (resource.getActiveInformationResourceFiles().size() > 5 && (resource.getProjectId() == 7292 || resource.getProjectId() == 7293)) {
+        if (resource.getActiveInformationResourceFiles().size() > 5 && (projectId == 7292L || projectId == 7293L)) {
+            logger.debug("\t{} -- {} ", id, resource.getTitle());
+            Project project = new Project();
+            if (projectId == 7292L) {
+                project.setId(407157L);
+            }
+            if (projectId == 7293L) {
+                project.setId(407158L);
+            }
+            resource.setProject(project);
             // break groups of images into single images
             resource.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, resource.getTitle()));
             List<InformationResourceFile> irfs = new ArrayList<>(resource.getActiveInformationResourceFiles());
             Map<String,InformationResourceFile> filenameMap = new HashMap<>();
+            logger.debug("\t\t -- {} ", irfs);
             for (InformationResourceFile irf : irfs) {
                 filenameMap.put(irf.getFilename(), irf);
             }
             List<String> toSkip = new ArrayList<>();
+            // pre-export, ignore
+            String output = export(resource, project.getId());
+
             for (InformationResourceFile file : irfs) {
                 resource.getInformationResourceFiles().clear();
                 if (toSkip.contains(file.getFilename())) {
@@ -165,7 +206,7 @@ public class FaimsExportService {
                     resource.getInformationResourceFiles().add(file);
                     resource.getFileProxies().clear();
                     List<File> fileList = new ArrayList<>();
-                    File retrieveFile = getFile(filestore, file);
+                    File retrieveFile = getFile(filestore, file, id);
                     fileList.add(retrieveFile);
                     // try to add the r/f together
                     if (file.getFilename().endsWith("f.jpg")) {
@@ -174,13 +215,29 @@ public class FaimsExportService {
                         if (rear != null) {
                             resource.getInformationResourceFiles().add(rear);
                             toSkip.add(rear.getFilename());
-                            fileList.add(getFile(filestore, rear));
+                            fileList.add(getFile(filestore, rear, id));
                         }
                     }
-                    resource.setTitle(retrieveFile.getName());
-                    // logger.debug(" --> {}", files);
-                    String output = export(resource, projectIdMap.get(resource.getProjectId()));
-                    logger.debug(output);
+                    logger.debug(" \t\t{} ({}) --> {}", resource.getTitle(), resource.getId(), fileList);
+                    if (retrieveFile != null) {
+                        resource.setTitle(retrieveFile.getName());
+                    }
+                    
+                     List<FileProxy> proxies = new ArrayList<>();
+                    //output = export(resource, projectIdMap.get(resource.getProjectId()));
+                     for (InformationResourceFile irf : resource.getInformationResourceFiles()) {
+                         if (irf.isDeleted()) {
+                             continue;
+                         }
+                         FileProxy fileProxy = new FileProxy(irf);
+                         fileProxy.setFileId(null);
+                         fileProxy.setAction(FileAction.ADD);
+                         fileProxy.setOriginalFileVersionId(-1L);
+                         proxies .add(fileProxy);
+                     }
+                     resource.setFileProxies(proxies);
+                    convertToXml(resource, resource, projectId);
+                    logger.trace(output);
                     ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, fileList.toArray(new File[0]));
                     if (uploadRecord != null) {
                         projectIdMap.put(id, uploadRecord.getTdarId());
@@ -191,7 +248,7 @@ public class FaimsExportService {
                         logger.debug("status: {}", uploadRecord.getStatusLine());
                         return uploadRecord.getTdarId();
                     }
-                } catch (IOException e) {
+                } catch (Exception e) {
                     logger.error("error uploading", e);
                 }
             }
@@ -253,7 +310,9 @@ public class FaimsExportService {
                     }
                 }
             }
-            files.add(retrieveFile);
+            if (retrieveFile != null) {
+                files.add(retrieveFile);
+            }
 
         }
 
@@ -264,30 +323,34 @@ public class FaimsExportService {
             genericService.clearCurrentSession();
             return null;
         }
-        try {
-            logger.debug(output);
-            ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
-            if (uploadRecord != null) {
-                projectIdMap.put(id, uploadRecord.getTdarId());
-                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
-                        && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
-                    logger.warn(uploadRecord.getBody());
-                }
-                logger.debug("status: {}", uploadRecord.getStatusLine());
-                return uploadRecord.getTdarId();
-            }
-        } catch (IOException e) {
-            logger.error("error uploading", e);
-        }
+//        try {
+//            ApiClientResponse uploadRecord = client.uploadRecord(output, null, accountId, files.toArray(new File[0]));
+//            if (uploadRecord != null) {
+//                projectIdMap.put(id, uploadRecord.getTdarId());
+//                if (uploadRecord.getStatusCode() != StatusCode.CREATED.getHttpStatusCode()
+//                        && uploadRecord.getStatusCode() != StatusCode.UPDATED.getHttpStatusCode()) {
+//                    logger.warn(uploadRecord.getBody());
+//                }
+//                logger.debug("status: {}", uploadRecord.getStatusLine());
+//                return uploadRecord.getTdarId();
+//            }
+//        } catch (IOException e) {
+//            logger.error("error uploading", e);
+//        }
         return null;
 
     }
 
-    private File getFile(Filestore filestore, InformationResourceFile file) {
+    private File getFile(Filestore filestore, InformationResourceFile file, Long id) {
         File retrieveFile = null;
         InformationResourceFileVersion version = file.getLatestUploadedVersion();
+//        logger.debug("\t\tirid {}", file.getInformationResource().getId());
+//        logger.debug("\t\t\t-- {}", version);
         try {
-            retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, version);
+            FileStoreFile filestorefile = new FileStoreFile(FilestoreObjectType.RESOURCE, VersionType.UPLOADED, id, file.getFilename());
+            filestorefile.setInformationResourceFileId(file.getId());
+            filestorefile.setVersion(file.getLatestVersion());
+            retrieveFile = filestore.retrieveFile(FilestoreObjectType.RESOURCE, filestorefile);
         } catch (FileNotFoundException e) {
             logger.error("cannot find file: {}", e, e);
         }
@@ -366,7 +429,13 @@ public class FaimsExportService {
         if (resource instanceof Ontology) {
             ((Ontology) resource).setOntologyNodes(null);
         }
+        return convertToXml(resource, r, id);
+
+    }
+
+    private String convertToXml(Resource resource, Resource r, Long id) {
         try {
+            r.setStatus(Status.DRAFT);
             String convertToXML = serializationService.convertToXML(r);
             genericService.detachFromSession(resource);
             r = null;
@@ -384,6 +453,5 @@ public class FaimsExportService {
             e.printStackTrace();
         }
         return null;
-
     }
 }

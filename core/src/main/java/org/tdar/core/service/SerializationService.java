@@ -71,9 +71,12 @@ import org.tdar.utils.json.LatitudeLongitudeBoxWrapper;
 import org.w3c.dom.Document;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.fasterxml.jackson.databind.util.JSONPObject;
+import com.fasterxml.jackson.module.jaxb.JaxbAnnotationIntrospector;
 
 /*
  * class to help with marshalling and unmarshalling of resources
@@ -300,7 +303,8 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
 
     @Transactional(readOnly = true)
     public <C> C readObjectFromJson(String json, Class<C> cls) throws IOException {
-        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();
+        final AnnotationIntrospector jaxbIntrospector = new JaxbAnnotationIntrospector( TypeFactory.defaultInstance() );
+        ObjectMapper mapper = JacksonUtils.initializeObjectMapper();//.setAnnotationIntrospector( jaxbIntrospector );
         return mapper.readValue(json, cls);
     }
 

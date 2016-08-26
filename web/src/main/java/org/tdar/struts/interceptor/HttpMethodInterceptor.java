@@ -2,6 +2,7 @@ package org.tdar.struts.interceptor;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,10 @@ public class HttpMethodInterceptor implements Interceptor {
 
     private String doPostIntercept(ActionInvocation invocation) throws Exception {
         HttpServletRequest request = ServletActionContext.getRequest();
-        if (request.getMethod().equalsIgnoreCase("post")) {
+        if (logger.isTraceEnabled()) {
+            logger.trace(" request: {}, {}" , request.getMethod(), invocation.getProxy().getAction(), invocation.getProxy().getActionName());
+        }
+        if (StringUtils.equalsIgnoreCase("post",request.getMethod())) {
             return invocation.invoke();
         }
 

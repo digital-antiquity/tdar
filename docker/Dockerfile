@@ -1,0 +1,3 @@
+FROM maven:3-jdk-8
+# install maven, java8, ...
+# install other dependencies

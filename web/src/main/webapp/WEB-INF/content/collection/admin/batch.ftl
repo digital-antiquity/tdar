@@ -18,19 +18,39 @@
 </div>
 <div class="row">
     <div class="span12">
-        <@s.form cssClass="form-horizontal" action="save" >
+        <@s.form cssClass="form-horizontal" action="save" method="POST">
+
+<div class="row">
+    <div id="parentIdContainer" class="control-group">
+        <label class="control-label" for="collectionName">Collection</label>
+        <div class="controls">
+            <input type="hidden" name="collectionId" value="" id="hdnParentId" autocompleteparentelement="#parentIdContainer">
+            <input type="text" name="collectionName" maxlength="255" value="" id="txtParentCollectionName" class="input-xxlarge collectionAutoComplete ui-autocomplete-input ui-corner-all" autocompleteparentelement="#parentIdContainer" autocomplete="off" autocompleteidelement="#hdnParentId" autocompletename="name" placeholder="parent collection name">
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div id="parentIdContainer" class="control-group">
+            <@s.select name="accountId" list="%{availableAccounts}" label="Account" title="Choose an account to bill from" listValue="name" listKey="id" emptyOption="true" />
+    </div>
+</div>
 
 		<@s.hidden name="id" />
 
-        <#list collection.resources>
+        <#list resources>
             <#items as res>
-                <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType})</p>
+                <p><b>${res.id?c}</b> - <a href="${res.detailUrl}">${res.title}</a> (${res.resourceType} - ${res.status})</p>
                 <@s.hidden name="ids[${res_index}]" value="${res.id?c}" /> 
-
-                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8" /> 
-                <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
+                
+                <svg class="svgicon svg-small red pull-left" style="position:absolute"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${res.resourceType?lower_case}"></use></svg>                 
+                <@s.textfield name="titles[${res_index}]" value="${res.title}" label="Title" cssClass="input-xxlarge span8" />
+                <#if res.resourceType.project>
+                    <@s.hidden name="dates[${res_index}]" value="-1" label="Date" cssClass="input" /> 
+                <#else>
+                    <@s.textfield name="dates[${res_index}]" value="${res.date?c}" label="Date" cssClass="input" /> 
+                </#if>
                 <@s.textarea name="descriptions[${res_index}]" value="${res.description}" label="Description" cssClass="input-xxlarge span8" /> 
-               </tr>
             </#items>
         </#list>
         <@edit.submit fileReminder=false />
@@ -38,5 +58,13 @@
     </div>
 
 </div>
+<script>
+$(document).ready(function() {
+    TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+});
+</script>
+<style>
+textarea {height:10rem;}
+</style>
 </body>
 </#escape>

@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -191,10 +192,7 @@ public class ResourceService {
         ResourceRevisionLog log = new ResourceRevisionLog(message, modifiedResource, person, type);
         log.setTimestamp(new Date());
         log.setPayload(payload);
-        if (PersistableUtils.isNotNullOrTransient(startTime)) {
-             long milli = System.currentTimeMillis() - startTime.longValue();
-            log.setTimeInSeconds(milli / 1000);
-        }
+        log.setTimeBasedOnStart(startTime);
         genericDao.save(log);
     }
 
@@ -943,29 +941,56 @@ public class ResourceService {
     }
 
     @Transactional(readOnly=false)
-    public void updateBatch(Project project,BillingAccount account, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+    public void updateBatch(Project project,BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
-            Long id = ids.get(0);
+            Long id = ids.get(i);
             Integer date = dates.get(i);
             String title = titles.get(i);
             String description = descriptions.get(i);
             Resource r = genericDao.find(Resource.class, id);
-//            r = genericDao.markWritable(r);
+            r = genericDao.markWritableOnExistingSession(r);
             resources.add(r);
-            r.setTitle(title);
-            r.setDescription(description);
+            boolean different = false;
+            if (!Objects.equals(title,  r.getTitle())) {
+                different = true;
+                r.setTitle(title);
+            }
+            if (!Objects.equals(description,  r.getDescription())) {
+                different = true;
+                r.setDescription(description);
+            }
+            
             if (r instanceof InformationResource) {
                 InformationResource ir = (InformationResource) r;
-                ir.setDate(date);
-                ir.setProject(project);
+                if (!Objects.equals(date,  ir.getDate())) {
+                    different = true;
+                    ir.setDate(date);
+                }
+                if (!Objects.equals(ir.getProject(), project)) {
+                    different = true;                    
+                    ir.setProject(project);
+                }
             }
-            r.markUpdated(authenticatedUser);
-            genericDao.saveOrUpdate(r);
-
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getResourceCollections().contains(collectionToAdd)) { 
+                r.getResourceCollections().add(collectionToAdd);
+                collectionToAdd.getResources().add(r);
+            }
+            if (different) {
+                ResourceRevisionLog rrl = new ResourceRevisionLog("Resource batch modified (basic)", r, authenticatedUser, RevisionLogType.EDIT);
+                genericDao.saveOrUpdate(rrl);
+                r.markUpdated(authenticatedUser);
+                genericDao.saveOrUpdate(r);
+            }
+            logger.debug("processed: {}", r);
         }
+        
         if (PersistableUtils.isNotNullOrTransient(account)) {
             accountDao.updateQuota(account, resources, authenticatedUser);
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(collectionToAdd)) {
+            genericDao.saveOrUpdate(collectionToAdd);
         }
     }
 

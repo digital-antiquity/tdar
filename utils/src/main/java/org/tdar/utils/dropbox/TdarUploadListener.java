@@ -17,6 +17,8 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -47,7 +49,7 @@ public class TdarUploadListener implements MetadataListener {
     @Override
     public void consume(DropboxItemWrapper fileWrapper) throws Exception {
         logger.debug(fileWrapper.getFullPath());
-        // TODO Auto-generated method stub
+
         File path = fileWrapper.getPath();
         List<String> tree = new ArrayList<>();
         while (!StringUtils.equalsIgnoreCase(path.getName(), rootDir.getName()) &&
@@ -65,10 +67,11 @@ public class TdarUploadListener implements MetadataListener {
             getMap().put(fileWrapper.getId(), new FolderContainer(fileWrapper));
         } else {
             File file = fileWrapper.getFile();
-
-            String docXml = makeXml(file, fileWrapper.getExtension());
-            logger.debug(docXml);
+            logger.debug(fileWrapper.getModifiedBy());
+            String docXml = makeXml(file, fileWrapper.getExtension(), StringUtils.join(tree,"/"));
+            logger.trace(docXml);
             if (debug == false) {
+                logger.debug("uploading: {}", file);
                 apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
             }
             getMap().put(fileWrapper.getId(), new FileContainer(fileWrapper));
@@ -76,7 +79,7 @@ public class TdarUploadListener implements MetadataListener {
 
     }
 
-    private String makeXml(File file, String extension) throws JAXBException, InstantiationException, IllegalAccessException {
+    private String makeXml(File file, String extension,String collection) throws JAXBException, InstantiationException, IllegalAccessException {
         Class<? extends Resource> cls = Resource.class;
         switch (extension.toLowerCase()) {
             case "doc":
@@ -111,6 +114,11 @@ public class TdarUploadListener implements MetadataListener {
         object.setDescription(file.getName());
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
+        ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
+        rc.setHidden(true);
+        rc.setName(collection);
+        rc.setDescription("(from dropbox)");
+        object.getResourceCollections().add(rc);
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
         return writer.toString();

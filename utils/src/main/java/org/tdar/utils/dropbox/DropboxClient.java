@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -29,12 +32,16 @@ import com.dropbox.core.v2.files.FileMetadata;
 import com.dropbox.core.v2.files.ListFolderBuilder;
 import com.dropbox.core.v2.files.ListFolderErrorException;
 import com.dropbox.core.v2.files.ListFolderResult;
+import com.dropbox.core.v2.files.ListRevisionsErrorException;
+import com.dropbox.core.v2.files.ListRevisionsResult;
 import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxClient {
 
+    final String DEBUG2 = "debug";
+    final String DROPBOX_CURSOR = "dropbox.cursor";
     final String APP_KEY = "dropbox.key";
     final String APP_SECRET = "dropbox.secret";
     final String DROPBOX_TOKEN = "dropbox.token";
@@ -43,10 +50,11 @@ public class DropboxClient {
     private DbxClientV2 client;
     private Properties props;
     private Boolean debug = Boolean.TRUE;
+    private String currentCursor;
 
     public DropboxClient() throws URISyntaxException, FileNotFoundException, IOException, DbxException {
         props = loadProperties();
-        this.setDebug(Boolean.parseBoolean(props.getProperty("debug", "true")));
+        this.setDebug(Boolean.parseBoolean(props.getProperty(DEBUG2, "true")));
         String accessToken = props.getProperty(DROPBOX_TOKEN);
         if (accessToken == null) {
             DbxAppInfo appInfo = new DbxAppInfo(props.getProperty(APP_KEY), props.getProperty(APP_SECRET));
@@ -94,12 +102,12 @@ public class DropboxClient {
     }
 
     public String getStoredCursor() {
-        return (String) props.get("dropbox.cursor");
+        return (String) props.get(DROPBOX_CURSOR);
     }
 
     public void updateCursor(String cursor) throws FileNotFoundException, IOException {
-        props.put("dropbox.cursor", cursor);
-        logger.debug("cursor:{}",cursor);
+        props.put(DROPBOX_CURSOR, cursor);
+        logger.debug("new cursor:{}",cursor);
         writePropertiesToFile(propertiesFile, props);
         
     }
@@ -119,6 +127,11 @@ public class DropboxClient {
                 if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
                     continue;
                 }
+                
+                if (StringUtils.containsIgnoreCase(metadata.getPathLower(), "/VCP/") || StringUtils.containsIgnoreCase(metadata.getPathLower(), "augusta")) {
+                    continue;
+                }
+
                 DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
                 if (listener != null) {
                     try {
@@ -135,13 +148,20 @@ public class DropboxClient {
 
             result = client.files().listFolderContinue(result.getCursor());
         }
-        
+        setCurrentCursor(client.files().listFolderGetLatestCursor(path).getCursor());
     }
+
+    private Map<String,BasicAccount> cachedUsers = new HashMap<>();
 
     public BasicAccount getAccount(String accountId) {
         if (accountId != null) {
+            if (cachedUsers.containsKey(accountId)) {
+                return cachedUsers.get(accountId);
+            }
             try {
-                return client.users().getAccount(accountId);
+                BasicAccount account = client.users().getAccount(accountId);
+                cachedUsers.put(accountId, account);
+                return account;
             } catch (DbxException e) {
                 logger.error("{}",e,e);
             }
@@ -162,6 +182,20 @@ public class DropboxClient {
 
     public void setDebug(Boolean debug) {
         this.debug = debug;
+    }
+
+    public String getCurrentCursor() {
+        return currentCursor;
+    }
+
+    public void setCurrentCursor(String currentCursor) {
+        this.currentCursor = currentCursor;
+    }
+
+    public List<FileMetadata> getRevisions(String path) throws ListRevisionsErrorException, DbxException {
+        ListRevisionsResult listRevisions = client.files().listRevisions(path);
+        return listRevisions.getEntries();
+        
     }
 
 }

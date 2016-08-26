@@ -128,7 +128,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     @Scheduled(cron = "0 15 0 * * *")
     public void cronDailyStats() {
         logger.info("updating Daily stats");
-//        queue(OccurranceStatisticsUpdateProcess.class);
         queue(DailyStatisticsUpdate.class);
     }
 
@@ -218,6 +217,11 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         queue(WeeklyFilestoreLoggingProcess.class);
     }
 
+    @Scheduled(cron = "50 0 0 * * SAT")
+    public void updateOcurrenceStats() throws IOException {
+        queue(OccurranceStatisticsUpdateProcess.class);
+    }
+
     /**
      * Once a week, on Sundays, generate some static, cached stats for use by
      * the admin area and general system
@@ -254,7 +258,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
             Iterator<ScheduledProcess> iterator = manager.getUpgradeTasks() .iterator();
             while (iterator.hasNext()) {
                 ScheduledProcess process = iterator.next();
-                boolean run = checkIfRun(process.getDisplayName());
+                boolean run = hasRun(process.getDisplayName());
                 logger.debug("{} -- enabled:{} startup: {} completed: {}, hasRun: {}", process.getDisplayName(), process.isEnabled(), process.shouldRunAtStartup(), process.isCompleted(), run);
                 if (process.isEnabled() && process.shouldRunAtStartup() && !process.isCompleted() && !run) {
                     if (process instanceof UpgradeTask && !((UpgradeTask) process).hasRun()) {
@@ -311,7 +315,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         }
         // look in upgradeTasks to see what's there, if the task defined is not
         // there, then run the task, and then add it
-        boolean run = checkIfRun(process.getDisplayName());
+        boolean run = hasRun(process.getDisplayName());
         if (process.isSingleRunProcess() && run) {
             logger.debug("process has already run once, removing {}", process);
             getScheduledProcessQueue().remove(process.getClass());
@@ -375,7 +379,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
      * @return
      */
     @Transactional(readOnly=true)
-    public boolean checkIfRun(String name) {
+    public boolean hasRun(String name) {
         UpgradeTask upgradeTask = new UpgradeTask();
         upgradeTask.setName(name);
         List<String> ignoreProperties = new ArrayList<String>();

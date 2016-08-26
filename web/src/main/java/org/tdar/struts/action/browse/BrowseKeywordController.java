@@ -1,5 +1,7 @@
 package org.tdar.struts.action.browse;
 
+import java.util.List;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
@@ -18,7 +20,9 @@ import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.bean.resource.Addressable;
+import org.tdar.core.bean.resource.IntegratableOptions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.BookmarkedResourceService;
@@ -26,6 +30,7 @@ import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.geosearch.GeoSearchService;
+import org.tdar.search.query.QueryFieldNames;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.action.SlugViewAction;
@@ -122,6 +127,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
             if (kwd.getLevel() != null) {
                 try {
                     setGeoJson(geoSearchService.toGeoJson(kwd));
+                    getFacetWrapper().facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class);
                 } catch (Throwable t) {
                     getLogger().warn("issue with geographic keyword geojson conversion", t);
                 }
@@ -176,7 +182,7 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
         }
         try {
             setSortField(SortOption.TITLE);
-            resourceSearchService.buildKeywordQuery(keyword, keywordType, this, this, getAuthenticatedUser());
+            resourceSearchService.buildKeywordQuery(keyword, keywordType, getReservedSearchParameters(), this, this, getAuthenticatedUser());
             bookmarkedResourceService.applyTransientBookmarked(getResults(), getAuthenticatedUser());
         } catch (SearchPaginationException spe) {
             abort(StatusCode.NOT_FOUND, StatusCode.NOT_FOUND.getErrorMessage());
@@ -262,4 +268,15 @@ public class BrowseKeywordController extends AbstractLookupController<Resource> 
     public void setGeoJson(String geoJson) {
         this.geoJson = geoJson;
     }
+
+//    public List<ResourceType> getResourceTypes() {
+//        return getReservedSearchParameters().getResourceTypes();
+//    }
+//
+//    // REQUIRED IF YOU WANT FACETING TO ACTUALLY WORK
+//    public void setResourceTypes(List<ResourceType> resourceTypes) {
+//        getReservedSearchParameters().setResourceTypes(resourceTypes);
+//    }
+
+
 }
