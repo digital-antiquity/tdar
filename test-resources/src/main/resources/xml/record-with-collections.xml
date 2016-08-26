@@ -18,7 +18,7 @@
     <tdar:relatedComparativeCollections/>
     <tdar:resourceAnnotations/>
     <tdar:resourceCollections>
-        <tdar:resourceCollection hidden="false" systemManaged="false">
+        <tdar:resourceCollection hidden="false">
             <tdar:name>1234</tdar:name>
             <tdar:orientation>LIST</tdar:orientation>
             <tdar:resources>
@@ -27,7 +27,7 @@
             <tdar:sortBy>TITLE</tdar:sortBy>
             <tdar:type>SHARED</tdar:type>
         </tdar:resourceCollection>
-        <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF" systemManaged="false">
+        <tdar:resourceCollection hidden="true"  parentIdRef="NULL_REF">
             <tdar:description>description</tdar:description>
             <tdar:formattedDescription></tdar:formattedDescription>
             <tdar:name>abcd</tdar:name>

@@ -761,7 +761,6 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return false;
     }
 
-    @XmlAttribute
     public boolean isSystemManaged() {
         return systemManaged;
     }
