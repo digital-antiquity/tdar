@@ -33,7 +33,7 @@
     <tdar:relatedComparativeCollections/>
     <tdar:resourceAnnotations/>
     <tdar:resourceCollections>
-        <tdar:resourceCollection hidden="true" id="-1" ownerIdRef="NULL_REF" parentIdRef="NULL_REF" updaterIdRef="NULL_REF">
+        <tdar:resourceCollection hidden="true" id="-1" ownerIdRef="NULL_REF" parentIdRef="NULL_REF" updaterIdRef="NULL_REF" systemManaged="false">
             <tdar:dateCreated>2016-08-18T09:48:22.938-07:00</tdar:dateCreated>
             <tdar:description>(from dropbox)</tdar:description>
             <tdar:name>srp digital library/Batch 1</tdar:name>
