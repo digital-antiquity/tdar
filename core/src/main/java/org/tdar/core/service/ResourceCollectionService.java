@@ -797,7 +797,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         getDao().delete(persistable.getAuthorizedUsers());
         // FIXME: need to handle parents and children
-        String msg = String.format("%s deleted %s", authenticatedUser, persistable.getTitle());
+        String msg = String.format("%s deleted %s (%s);\n%s ", authenticatedUser.getProperName(), persistable.getTitle(), persistable.getId(), deletionReason);
         CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, RevisionLogType.DELETE);
         getDao().saveOrUpdate(revision);
 

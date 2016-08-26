@@ -53,6 +53,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -138,6 +139,9 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Type(type = "org.hibernate.type.TextType")
     private String description;
 
+    @Column(name="system_managed")
+    private boolean systemManaged = false;
+    
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "description_formatted")
@@ -739,6 +743,25 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     public void setCollectionRevisionLog(Set<CollectionRevisionLog> collectionRevisionLog) {
         this.collectionRevisionLog = collectionRevisionLog;
+
     }
 
+    public boolean isNew() {
+        if (getDateCreated() == null) {
+            return false;
+        }
+        
+        if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSystemManaged() {
+        return systemManaged;
+    }
+
+    public void setSystemManaged(boolean systemManaged) {
+        this.systemManaged = systemManaged;
+    }
 }
