@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.collection.DownloadAuthorization;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
@@ -307,7 +308,7 @@ public class DownloadService {
     }
 
     private File getCoverLogo(InformationResource resourceToDownload) {
-        SharedCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
+        ListCollection whiteLabelCollection = resourceCollectionDao.getWhiteLabelCollectionForResource(resourceToDownload);
         if (whiteLabelCollection == null || whiteLabelCollection.getProperties() == null || !whiteLabelCollection.getProperties().isCustomDocumentLogoEnabled()) {
             return null;
         }

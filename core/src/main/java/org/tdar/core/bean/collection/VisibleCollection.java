@@ -1,31 +1,19 @@
 package org.tdar.core.bean.collection;
 
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.AttributeOverride;
-import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.Lob;
-import javax.persistence.PrimaryKeyJoinColumn;
-import javax.persistence.SecondaryTable;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Slugable;
-import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.resource.Addressable;
@@ -36,8 +24,7 @@ import org.tdar.utils.json.JsonLookupFilter;
 import com.fasterxml.jackson.annotation.JsonView;
 
 @Entity
-@SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
-public abstract class VisibleCollection extends ResourceCollection implements OaiDcProvider, Sortable, HasName, Slugable, Addressable, Validatable, Indexable, Viewable {
+public abstract class VisibleCollection extends ResourceCollection implements OaiDcProvider, HasName, Slugable, Addressable, Validatable, Indexable, Viewable {
 
 
     private static final long serialVersionUID = -8963749030250029536L;
@@ -57,32 +44,6 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
     @Column(name = "description_formatted")
     private String formattedDescription;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "sort_order", length = FieldLength.FIELD_LENGTH_25)
-    private SortOption sortBy = DEFAULT_SORT_OPTION;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "secondary_sort_order", length = FieldLength.FIELD_LENGTH_25)
-    private SortOption secondarySortBy;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
-    private DisplayOrientation orientation = DisplayOrientation.LIST;
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
-    })
-    @Access(AccessType.FIELD)
-    private CollectionDisplayProperties properties;
-
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
 
@@ -95,16 +56,6 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
     public void setHidden(boolean visible) {
         this.hidden = visible;
     }
-
-
-    public CollectionDisplayProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(CollectionDisplayProperties properties) {
-        this.properties = properties;
-    }
-
 
     @Override
     @JsonView(JsonLookupFilter.class)
@@ -124,22 +75,6 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    /**
-     * @param sortBy
-     *            the sortBy to set
-     */
-    public void setSortBy(SortOption sortBy) {
-        this.sortBy = sortBy;
-    }
-
-    /**
-     * @return the sortBy
-     */
-    @Override
-    public SortOption getSortBy() {
-        return sortBy;
     }
 
     @Override
@@ -168,24 +103,7 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
     public String getUrlNamespace() {
         return "collection";
     }
-    public DisplayOrientation getOrientation() {
-        return orientation;
-    }
-
-    public void setOrientation(DisplayOrientation orientation) {
-        this.orientation = orientation;
-    }
-
-
-
-    public SortOption getSecondarySortBy() {
-        return secondarySortBy;
-    }
-
-    public void setSecondarySortBy(SortOption secondarySortBy) {
-        this.secondarySortBy = secondarySortBy;
-    }
-
+    
     public String getFormattedDescription() {
         return formattedDescription;
     }

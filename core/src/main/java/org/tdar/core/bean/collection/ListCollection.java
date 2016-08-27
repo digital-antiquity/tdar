@@ -4,7 +4,13 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -29,7 +35,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @DiscriminatorValue(value = "LIST")
 @Entity
 @XmlRootElement(name = "listCollection")
-public class ListCollection extends HierarchicalCollection<ListCollection> implements Comparable<ListCollection>, HasName {
+public class ListCollection extends CustomizableCollection<ListCollection> implements Comparable<ListCollection>, HasName {
 
     private static final long serialVersionUID = 1225586588061994193L;
 
@@ -55,6 +61,30 @@ public class ListCollection extends HierarchicalCollection<ListCollection> imple
     @LazyCollection(LazyCollectionOption.EXTRA)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.unmanagedResources")
     private Set<Resource> unmanagedResources = new LinkedHashSet<Resource>();
+
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
+    })
+    @Access(AccessType.FIELD)
+    private CollectionDisplayProperties properties;
+
+    public CollectionDisplayProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CollectionDisplayProperties properties) {
+        this.properties = properties;
+    }
+
 
     public ListCollection() {
         setProperties(new CollectionDisplayProperties());

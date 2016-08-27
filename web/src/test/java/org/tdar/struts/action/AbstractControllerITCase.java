@@ -27,6 +27,7 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -208,7 +209,9 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
             controller.getAuthorizedUsers().clear();
             controller.getAuthorizedUsers().addAll(users);
         }
-        resourceCollection.setSortBy(SortOption.RESOURCE_TYPE);
+        if (resourceCollection instanceof CustomizableCollection) {
+            ((CustomizableCollection) resourceCollection).setSortBy(SortOption.RESOURCE_TYPE);
+        }
         controller.setServletRequest(getServletPostRequest());
 
         //A better replication of the struts lifecycle would include calls to prepare() and validate(), however, this

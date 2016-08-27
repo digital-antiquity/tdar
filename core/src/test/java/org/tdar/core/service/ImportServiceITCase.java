@@ -50,7 +50,6 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         Document document = genericService.find(Document.class, 4287L);
         Long id = document.getId();
         SharedCollection rc = new SharedCollection(document,getAdminUser());
-        rc.setSortBy(SortOption.TITLE);
         rc.setDescription("test");
         rc.setName("name");
         rc.markUpdated(getAdminUser());

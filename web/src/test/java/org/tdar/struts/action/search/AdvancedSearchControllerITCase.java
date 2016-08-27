@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Indexable;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -244,13 +245,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     public void testResourceCaseSensitivity() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
-        SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test", SortOption.RELEVANCE,  false, getAdminUser());
+        SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test",  false, getAdminUser());
         titleCase.markUpdated(getAdminUser());
-        SharedCollection lowerCase = new SharedCollection(USAF_LOWER_CASE, "test", SortOption.RELEVANCE,  false, getAdminUser());
+        SharedCollection lowerCase = new SharedCollection(USAF_LOWER_CASE, "test",  false, getAdminUser());
         lowerCase.markUpdated(getAdminUser());
-        SharedCollection upperCase = new SharedCollection("USAF", "test", SortOption.RELEVANCE,  false, getAdminUser());
+        SharedCollection upperCase = new SharedCollection("USAF", "test",  false, getAdminUser());
         upperCase.markUpdated(getAdminUser());
-        SharedCollection usafLowerCase = new SharedCollection("usaf", "test", SortOption.RELEVANCE,  false, getAdminUser());
+        SharedCollection usafLowerCase = new SharedCollection("usaf", "test",  false, getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
         usafLowerCase.getResources().add(doc);
@@ -326,7 +327,7 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testWhitelabelAdvancedSearch() {
         String collectionTitle = "The History Channel Presents: Ancient Ceramic Bowls That Resemble Elvis";
-        SharedCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
+        ListCollection rc = createAndSaveNewWhiteLabelCollection(collectionTitle);
 
         getLogger().debug("collection saved. Id:{}  obj:{}", rc.getId(), rc);
         controller.setCollectionId(rc.getId());

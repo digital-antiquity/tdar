@@ -389,7 +389,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         resourceCollection.setName("tst");
         resourceCollection.setDescription("tst");
         resourceCollection.markUpdated(getBasicUser());
-        resourceCollection.setSortBy(SortOption.ID);
+//        resourceCollection.setSortBy(SortOption.ID);
         controller.getToAdd().add(document.getId());
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
@@ -437,7 +437,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getResourceCollections().add(new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBasicUser()));
+        controller.getResourceCollections().add(new SharedCollection("test123", "test123", true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
@@ -482,8 +482,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getResourceCollections().add(
-                new SharedCollection("test123", "test123", SortOption.RESOURCE_TYPE, true, getBasicUser()));
+        controller.getResourceCollections().add(new SharedCollection("test123", "test123", true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;

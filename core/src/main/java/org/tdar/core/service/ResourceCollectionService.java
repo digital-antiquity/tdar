@@ -32,11 +32,11 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
+import org.tdar.core.bean.collection.CollectionRevisionLog;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.CollectionRevisionLog;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -509,8 +509,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         } else {
             collection.setOwner(authenticatedUser);
             collection.markUpdated(resource.getSubmitter());
-            if (collection instanceof VisibleCollection && ((VisibleCollection) collection).getSortBy() == null) {
-                ((VisibleCollection) collection).setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
+            if (collection instanceof CustomizableCollection && ((CustomizableCollection) collection).getSortBy() == null) {
+                ((CustomizableCollection) collection).setSortBy(ResourceCollection.DEFAULT_SORT_OPTION);
             }
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
             return collection;
@@ -905,8 +905,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             saveAuthorizedUsersForResourceCollection(list, list, authorizedUsers, shouldSaveResource, authenticatedUser);
         }
         
-        if (persistable instanceof VisibleCollection) {
-            VisibleCollection hasProps = (VisibleCollection)persistable;
+        if (persistable instanceof ListCollection) {
+            ListCollection hasProps = (ListCollection)persistable;
             if (hasProps.getProperties() == null) {
                 hasProps.setProperties(new CollectionDisplayProperties());
                 getDao().saveOrUpdate(hasProps.getProperties());
@@ -935,7 +935,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public SharedCollection getWhiteLabelCollectionForResource(Resource resource) {
+    public ListCollection getWhiteLabelCollectionForResource(Resource resource) {
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 
@@ -967,7 +967,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param rc
      * @return
      */
-    public VisibleCollection convertToWhitelabelCollection(VisibleCollection rc) {
+    public ListCollection convertToWhitelabelCollection(ListCollection rc) {
         if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
             return rc;
         }
@@ -981,7 +981,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param wlc
      * @return
      */
-    public VisibleCollection convertToResourceCollection(VisibleCollection wlc) {
+    public ListCollection convertToResourceCollection(ListCollection wlc) {
         return getDao().convertToResourceCollection(wlc);
     }
 

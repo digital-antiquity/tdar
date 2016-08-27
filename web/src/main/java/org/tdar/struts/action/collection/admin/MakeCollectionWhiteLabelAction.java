@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.struts.interceptor.annotation.PostOnly;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
@@ -28,17 +29,26 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
     private ResourceCollectionService resourceCollectionService;
     
     @Override
+    public void validate() {
+        if (!(getCollection() instanceof ListCollection)) {
+            addActionError("makeWhiteLableAction.invalid_collection_type");
+        }
+        super.validate();
+    }
+    
+    @Override
     @PostOnly
     @WriteableSession
     @Action(value = "{id}", results={
             @Result(name = SUCCESS, type = REDIRECT, location = "${collection.detailUrl}"),
     })
     public String execute() throws Exception {
-        if (getCollection().getProperties() != null && getCollection().getProperties().isWhitelabel()) {
+        ListCollection lc = (ListCollection)getCollection();
+        if (lc.getProperties() != null && lc.getProperties().isWhitelabel()) {
             return SUCCESS;
         }
         try {
-        	setCollection(resourceCollectionService.convertToWhitelabelCollection(getCollection()));
+        	setCollection(resourceCollectionService.convertToWhitelabelCollection(lc));
         	getLogger().debug(getCollection().getDetailUrl());
         } catch (Exception e) {
         	getLogger().error("{}",e,e);

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.keyword.KeywordType;
@@ -84,11 +85,13 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
-        List<SharedCollection> findAllResourceCollections = resourceCollectionService.findAllResourceCollections();
+        List<ListCollection> findAllResourceCollections = genericService.findAll(ListCollection.class);
         stats.add(generateStatistics(StatisticType.NUM_COLLECTIONS, findAllResourceCollections.size(), ""));
+        stats.add(generateStatistics(StatisticType.NUM_SHARED_COLLECTIONS, genericService.findAll(SharedCollection.class).size(), ""));
+        stats.add(generateStatistics(StatisticType.NUM_LIST_COLLECTIONS, findAllResourceCollections.size(), ""));
         int whitelabelCount = 0;
-        for (ResourceCollection c : findAllResourceCollections) {
-            if (c instanceof VisibleCollection && ((VisibleCollection)c).getProperties() != null && ((VisibleCollection)c).getProperties().isWhitelabel()) {
+        for (ListCollection c : findAllResourceCollections) {
+            if (c.getProperties() != null && c.getProperties().isWhitelabel()) {
                 whitelabelCount++;
             }
         }

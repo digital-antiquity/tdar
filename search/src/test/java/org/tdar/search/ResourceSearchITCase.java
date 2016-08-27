@@ -817,7 +817,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // sp.getProjects().add(new Project(null,proj.getName()));
         // sp.getCollections().add(null); // [0]
         SearchParameters sp = new SearchParameters();
-        sp.getCollections().add(new SharedCollection(colname,null,null, true, null)); // [1]
+        sp.getCollections().add(new SharedCollection(colname,null, true, null)); // [1]
 
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
@@ -982,7 +982,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Test
     @Rollback(true)
     public void testSelectedResourceLookup() throws SolrServerException, IOException, ParseException {
-        SharedCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getUser());
+        SharedCollection collection = new SharedCollection("test", "test", true, getUser());
         collection.markUpdated(getUser());
         Ontology ont = createAndSaveNewInformationResource(Ontology.class);
         genericService.saveOrUpdate(collection);

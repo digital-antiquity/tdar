@@ -76,10 +76,10 @@ import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.InternalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.TdarUser;
@@ -474,12 +474,22 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
     }
 
     // create new, public, collection with the getUser() as the owner and no resources
+    public <C extends VisibleCollection> C createAndSaveNewResourceCollection(String name, Class<C> class1) {
+        try {
+            return init(class1.newInstance(), name);
+        } catch (InstantiationException | IllegalAccessException e) {
+            logger.error("{}",e,e);
+        }
+        return null;
+    }
+
+    // create new, public, collection with the getUser() as the owner and no resources
     public SharedCollection createAndSaveNewResourceCollection(String name) {
         return init(new SharedCollection(), name);
     }
 
-    public SharedCollection createAndSaveNewWhiteLabelCollection(String name) {
-        SharedCollection wlc = new SharedCollection();
+    public ListCollection createAndSaveNewWhiteLabelCollection(String name) {
+        ListCollection wlc = new ListCollection();
         wlc.setProperties(new CollectionDisplayProperties());
         wlc.getProperties().setWhitelabel(true);
         wlc.getProperties().setSubtitle("This is a fancy whitelabel collection");

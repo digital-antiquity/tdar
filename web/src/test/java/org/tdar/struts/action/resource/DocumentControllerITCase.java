@@ -98,9 +98,9 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 
 		SharedCollection collectionChild = new SharedCollection();
 		collectionChild.setName("child collection with project");
-		collectionChild.setSortBy(SortOption.RELEVANCE);
+//		collectionChild.setSortBy(SortOption.RELEVANCE);
 		collectionChild.setParent(collection);
-		collectionChild.setOrientation(DisplayOrientation.GRID);
+//		collectionChild.setOrientation(DisplayOrientation.GRID);
 		collectionChild.setDescription(collectionChild.getTitle());
 		collectionChild.markUpdated(getAdminUser());
 		project.getSharedCollections().add(collectionChild);
@@ -163,8 +163,8 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 	private SharedCollection createResourceCollectionWithAdminRights() {
 		SharedCollection collection = new SharedCollection();
 		collection.setName("parent collection with rights");
-		collection.setSortBy(SortOption.RELEVANCE);
-		collection.setOrientation(DisplayOrientation.GRID);
+//		collection.setSortBy(SortOption.RELEVANCE);
+//		collection.setOrientation(DisplayOrientation.GRID);
 		collection.setDescription(collection.getTitle());
 		collection.markUpdated(getAdminUser());
 		genericService.saveOrUpdate(collection);

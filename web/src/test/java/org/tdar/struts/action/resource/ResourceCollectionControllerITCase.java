@@ -338,7 +338,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testDeleteResourceCollectionWithUser() throws Exception {
         SharedCollection resourceCollection = new SharedCollection();
         resourceCollection.setName("a resource collection");
-        resourceCollection.setSortBy(SortOption.DATE);
+//        resourceCollection.setSortBy(SortOption.DATE);
         resourceCollection.setDescription("testing add then remove resources");
         List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
@@ -401,8 +401,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         rc.setName("test delete w/ redundant rights");
         rc.setDescription("a tragedy in three acts");
         rc.setHidden(false);
-        rc.setSortBy(SortOption.ID);
-        rc.setOrientation(DisplayOrientation.LIST);
+//        rc.setSortBy(SortOption.ID);
+//        rc.setOrientation(DisplayOrientation.LIST);
 
         // Add three authusers. two of the authusers are redundant and should be normalized to the user with
         // the best permissions.

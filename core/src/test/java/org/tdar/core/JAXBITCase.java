@@ -119,7 +119,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");
-        geos.getSharedCollections().add(new SharedCollection("test collection", "test description", SortOption.RESOURCE_TYPE, true, getAdminUser()));
+        geos.getSharedCollections().add(new SharedCollection("test collection", "test description", true, getAdminUser()));
         geos.setDescription("test map");
         geos.getCoverageDates().add(new CoverageDate(CoverageType.CALENDAR_DATE, 2010, 2015));
         geos.getFileProxies().add(new FileProxy("geotiff.tiff", null, VersionType.UPLOADED, FileAction.ADD));
@@ -184,12 +184,10 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-//    @Ignore
     public void testCollectionJson() throws IOException {
         SharedCollection rc = new SharedCollection(10000L, "test", "test", SortOption.TITLE, true);
         rc.markUpdated(getAdminUser());
         rc.setOwner(getBasicUser());
-        rc.setOrientation(DisplayOrientation.MAP);
         rc.getResources().addAll(genericService.findRandom(Resource.class, 4));
         genericService.saveOrUpdate(rc);
         try {

@@ -294,11 +294,11 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
     }
 
-    public SharedCollection getWhiteLabelCollectionForResource(Resource resource) {
-        Set<SharedCollection> resourceCollections = resource.getSharedResourceCollections();
+    public ListCollection getWhiteLabelCollectionForResource(Resource resource) {
+        Set<ListCollection> resourceCollections = resource.getUnmanagedResourceCollections();
 
-        List<SharedCollection> whiteLabelCollections = new ArrayList<>();
-        for (SharedCollection rc : resourceCollections) {
+        List<ListCollection> whiteLabelCollections = new ArrayList<>();
+        for (ListCollection rc : resourceCollections) {
             if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
                 whiteLabelCollections.add(rc);
             }
@@ -361,7 +361,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param rc
      * @return
      */
-    public <C extends VisibleCollection> C convertToWhitelabelCollection(C rc) {
+    public <C extends ListCollection> C convertToWhitelabelCollection(C rc) {
         if (rc.getProperties() == null) {
             rc.setProperties(new CollectionDisplayProperties());
         }
@@ -376,7 +376,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
      * @param wlc
      * @return
      */
-    public <C extends VisibleCollection> C convertToResourceCollection(C wlc) {
+    public <C extends ListCollection> C convertToResourceCollection(C wlc) {
         if (wlc.getProperties() == null) {
             return wlc;
         }

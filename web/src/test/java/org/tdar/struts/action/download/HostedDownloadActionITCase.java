@@ -28,6 +28,7 @@ import org.tdar.core.service.PdfService;
 import org.tdar.core.service.download.DownloadService;
 import org.tdar.junit.IgnoreActionErrors;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.collection.CollectionDeleteAction;
 
 import com.opensymphony.xwork2.Action;
 
@@ -45,6 +46,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
     @Test
     @Rollback
     public void testValidHostedDownload() throws Exception {
+        Long setup = setup();
 
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
@@ -66,6 +68,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
     @IgnoreActionErrors
     public void testInvalidHostedDownloadReferrer() throws Exception {
         // test bad referrer
+        Long setup = setup();
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
         controller.setApiKey("test");
@@ -83,6 +86,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
     @Rollback
     @IgnoreActionErrors
     public void testMissingHostedDownloadReferrer() throws Exception {
+        Long setup = setup();
         // test no referrer
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
@@ -99,8 +103,21 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
 
     @Test
     @Rollback
+    public void testDeleteCollection() throws Exception {
+        Long setup = setup();
+        CollectionDeleteAction controller = generateNewController(CollectionDeleteAction.class);
+        init(controller, getAdminUser());
+        controller.setServletRequest(getServletPostRequest());
+        controller.setDelete("delete");
+        controller.delete();
+    }
+    
+
+    @Test
+    @Rollback
     @IgnoreActionErrors
     public void testInvalidApiKeyHostedDownloadReferrer() throws Exception {
+        Long setup = setup();
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
         controller.setApiKey("testasasfasf");
@@ -118,7 +135,8 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
     @Test
     @Rollback
     @IgnoreActionErrors
-    public void testMissingApiKeyHostedDownloadReferrer() {
+    public void testMissingApiKeyHostedDownloadReferrer() throws InstantiationException, IllegalAccessException {
+        Long setup = setup();
         HostedDownloadAction controller = generateNewController(HostedDownloadAction.class);
         init(controller, null);
         MockHttpServletRequest request = new MockHttpServletRequest();
@@ -132,8 +150,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         assertThat(controller.getActionErrors(), is( not( empty())));
     }
 
-    @Before
-    public void setup() throws InstantiationException, IllegalAccessException {
+    public Long setup() throws InstantiationException, IllegalAccessException {
         doc = generateDocumentWithFileAndUseDefaultUser();
         SharedCollection collection = new SharedCollection();
         collection.setName("authorized collection");
@@ -149,6 +166,7 @@ public class HostedDownloadActionITCase extends AbstractDataIntegrationTestCase 
         downloadAuthorization.getRefererHostnames().add("test.tdar.org");
         downloadAuthorization.getRefererHostnames().add("whatever.tdar.org");
         genericService.saveOrUpdate(downloadAuthorization);
+        return collection.getId();
     }
 
 }

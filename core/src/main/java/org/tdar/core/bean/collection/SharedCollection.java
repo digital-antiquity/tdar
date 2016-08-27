@@ -20,6 +20,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.Sortable;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Resource;
@@ -28,14 +29,12 @@ import org.tdar.core.bean.resource.Resource;
 @Entity
 @XmlRootElement(name = "sharedCollection")
 public class SharedCollection extends HierarchicalCollection<SharedCollection>
-        implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName {
+        implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
-    public SharedCollection(String title, String description, SortOption sortBy, boolean hidden, TdarUser creator) {
-        super.setProperties(new CollectionDisplayProperties());
+    public SharedCollection(String title, String description, boolean hidden, TdarUser creator) {
         setName(title);
         setDescription(description);
-        setSortBy(sortBy);
         setHidden(hidden);
         setOwner(creator);
         this.setType(CollectionType.SHARED);
@@ -45,22 +44,18 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         setId(id);
         setName(title);
         setDescription(description);
-        setSortBy(sortBy);
         setHidden(hidden);
         this.setType(CollectionType.SHARED);
-        super.setProperties(new CollectionDisplayProperties());
     }
 
     public SharedCollection(Document document, TdarUser tdarUser) {
         markUpdated(tdarUser);
         getResources().add(document);
         this.setType(CollectionType.SHARED);
-        super.setProperties(new CollectionDisplayProperties());
     }
 
     public SharedCollection() {
         this.setType(CollectionType.SHARED);
-        super.setProperties(new CollectionDisplayProperties());
     }
 
 
@@ -125,12 +120,17 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
     @Override
     public boolean isValid() {
         if (isValidForController()) {
-            if ((getType() == CollectionType.SHARED) && (getSortBy() == null)) {
+            if ((getType() == CollectionType.SHARED)) {
                 return false;
             }
             return super.isValid();
         }
         return false;
+    }
+
+    @Override
+    public SortOption getSortBy() {
+        return SortOption.TITLE;
     }
 
 

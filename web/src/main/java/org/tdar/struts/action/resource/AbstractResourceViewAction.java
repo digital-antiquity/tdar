@@ -489,7 +489,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
-    private transient SharedCollection whiteLabelCollection;
+    private transient ListCollection whiteLabelCollection;
     
     @XmlTransient
     /**
@@ -497,7 +497,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      *
      * @return
      */
-    public SharedCollection getWhiteLabelCollection() {
+    public ListCollection getWhiteLabelCollection() {
         if (whiteLabelCollection == null) {
             whiteLabelCollection = resourceCollectionService.getWhiteLabelCollectionForResource(getResource());
         }
@@ -505,7 +505,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public boolean isWhiteLabelLogoAvailable() {
-        SharedCollection wlc = getWhiteLabelCollection();
+        ListCollection wlc = getWhiteLabelCollection();
         return wlc != null && checkLogoAvailable(FilestoreObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 

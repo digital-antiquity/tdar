@@ -51,7 +51,7 @@ public class ListCollectionController extends AbstractCollectionController<ListC
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
 
         resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getAuthorizedUsers(), getToAdd(),
-                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), ListCollection.class);
+                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), ListCollection.class, getStartTime());
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }

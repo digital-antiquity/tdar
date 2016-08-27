@@ -285,7 +285,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         detachedCollection.setName(rc.getName());
         detachedCollection.setId(rc.getId());
         detachedCollection.setHidden(false);
-        detachedCollection.setSortBy(SortOption.RELEVANCE);
+//        detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
         controller.getResourceCollections().add(detachedCollection);
         assertNotEquals(getUser(), rc.getOwner());
@@ -351,7 +351,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         genericService.save(owner);
         rc.markUpdated(owner);
         rc.setName(name);
-        rc.setSortBy(SortOption.RELEVANCE);
+//        rc.setSortBy(SortOption.RELEVANCE);
         assertTrue(rc.isValid());
         genericService.saveOrUpdate(rc);
         return rc;

@@ -21,6 +21,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.Sortable;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -72,7 +74,8 @@ import org.tdar.web.service.HomepageService;
                 location = "${id}/${persistable.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" }), // removed ,keywordPath
         @Result(name = TdarActionSupport.INPUT, type = TdarActionSupport.HTTPHEADER, params = { "error", "404" })
 })
-public class CollectionViewAction<C extends HierarchicalCollection> extends AbstractPersistableViewableAction<C> implements FacetedResultHandler<Resource>, SlugViewAction,
+public class CollectionViewAction<C extends HierarchicalCollection> extends AbstractPersistableViewableAction<C>
+        implements FacetedResultHandler<Resource>, SlugViewAction,
         ResourceFacetedAction {
 
     private static final long serialVersionUID = 5126290300997389535L;
@@ -114,16 +117,16 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private boolean showNavSearchBox = true;
     private FacetWrapper facetWrapper = new FacetWrapper();
 
-	private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
+    private ProjectionModel projectionModel = ProjectionModel.LUCENE_EXPERIMENTAL;
 
     private boolean keywordSectionVisible = true;
 
-	private DisplayOrientation orientation;
+    private DisplayOrientation orientation;
 
     private HomepageDetails homepageGraphs;
 
     private String schemaOrgJsonLD;
-    
+
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -139,7 +142,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         if (getPersistable() instanceof ListCollection) {
             cls = ListCollection.class;
         }
-        return (Class<C>)cls;
+        return (Class<C>) cls;
     }
 
     @Override
@@ -166,12 +169,12 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     }
 
     public void setResourceCollection(HierarchicalCollection rc) {
-        setPersistable((C)rc);
+        setPersistable((C) rc);
     }
 
     @Override
     public Class<C> getPersistableClass() {
-        return (Class<C>)HierarchicalCollection.class;
+        return (Class<C>) HierarchicalCollection.class;
     }
 
     public List<SortOption> getSortOptions() {
@@ -188,7 +191,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             setViewCount(resourceCollectionService.getCollectionViewCount(getPersistable()));
         }
 
-        reSortFacets(this, getPersistable());
+        reSortFacets(this, (Sortable)getPersistable());
         return SUCCESS;
     }
 
@@ -205,7 +208,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
             for (C c : resourceCollectionService.findDirectChildCollections(getId(), false, getActualClass())) {
-                findAllChildCollections.add((SharedCollection)c);
+                findAllChildCollections.add((SharedCollection) c);
             }
         }
         setCollections(new ArrayList<SharedCollection>(findAllChildCollections));
@@ -237,12 +240,14 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     }
 
     public boolean isWhiteLabelCollection() {
-        if (getPersistable().getProperties() == null) {
-            return false;
+        if (getPersistable() instanceof ListCollection) {
+            ListCollection lc = (ListCollection) getPersistable();
+            if (lc.getProperties() != null && lc.getProperties().isWhitelabel()) {
+                return true;
+            }
         }
-        return getPersistable().getProperties().isWhitelabel();
+        return false;
     }
-
 
     public FacetWrapper getFacetWrapper() {
         return facetWrapper;
@@ -255,11 +260,11 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private void buildLuceneSearch() throws TdarActionException {
         // the visibilty fence should take care of visible vs. shared above
         facetWrapper.facetBy(QueryFieldNames.RESOURCE_TYPE, ResourceType.class, selectedResourceTypes);
-        setSortField(getPersistable().getSortBy());
+        setSortField(((Sortable) getPersistable()).getSortBy());
         if (getSortField() != SortOption.RELEVANCE) {
             setSecondarySortField(SortOption.TITLE);
-            if (getPersistable().getSecondarySortBy() != null) {
-                setSecondarySortField(getPersistable().getSecondarySortBy());
+            if (getPersistable() instanceof CustomizableCollection && ((CustomizableCollection<ListCollection>) getPersistable()).getSecondarySortBy() != null) {
+                setSecondarySortField(((CustomizableCollection<ListCollection>) getPersistable()).getSecondarySortBy());
             }
         }
 
@@ -325,7 +330,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     public List<SharedCollection> getCollections() {
         return this.collections;
     }
-    
+
     @Override
     public boolean isRightSidebar() {
         return true;
@@ -424,9 +429,9 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     public ProjectionModel getProjectionModel() {
         return projectionModel;
     }
-    
+
     public void setProjectionModel(ProjectionModel model) {
-    	this.projectionModel  = model;
+        this.projectionModel = model;
     }
 
     /**
@@ -438,7 +443,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
      */
     public boolean isBigCollection() {
         if (getPersistable() instanceof SharedCollection) {
-        return (((SharedCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+            return (((SharedCollection) getPersistable()).getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
         } else {
             return (((ListCollection) getPersistable()).getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
         }
@@ -475,7 +480,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             try {
                 setSchemaOrgJsonLD(resourceCollectionService.getSchemaOrgJsonLD(getPersistable()));
             } catch (Exception ioe) {
-                getLogger().warn("issues creating json",ioe);
+                getLogger().warn("issues creating json", ioe);
             }
             if (isKeywordSectionVisible()) {
                 getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
@@ -498,7 +503,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
 
             }
         }
-        
+
     }
 
     @Override
@@ -521,10 +526,13 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
      * @return
      */
     public boolean isSearchHeaderEnabled() {
-        if (getResourceCollection().getProperties() == null) {
-            return false;
+        if (getResourceCollection() instanceof ListCollection) {
+            ListCollection lc = (ListCollection) getResourceCollection();
+            if (lc.getProperties() != null && lc.getProperties().isSearchEnabled()) {
+                return true;
+            }
         }
-        return getResourceCollection().getProperties().isSearchEnabled();
+        return false;
     }
 
     /**
@@ -553,7 +561,6 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         return baseUrl;
     }
 
-    
     @Override
     public boolean isNavSearchBoxVisible() {
         return showNavSearchBox;
@@ -562,22 +569,24 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     @Override
     public void setSearchTitle(String description) {
         // TODO Auto-generated method stub
-        
+
     }
 
+    @Override
+    public DisplayOrientation getOrientation() {
+        if (orientation == null) {
+            if (getPersistable() instanceof CustomizableCollection) {
+                return ((CustomizableCollection<ListCollection>) getPersistable()).getOrientation();
+            }
+            return DisplayOrientation.LIST;
+        }
+        return orientation;
+    }
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		if (orientation == null) {
-			return getPersistable().getOrientation();
-		}
-		return orientation;
-	}
+    public void setOrientation(DisplayOrientation orientation) {
+        this.orientation = orientation;
+    }
 
-	public void setOrientation(DisplayOrientation orientation) {
-		this.orientation = orientation;
-	}
-	
     public boolean isKeywordSectionVisible() {
         return keywordSectionVisible;
     }

@@ -1,24 +1,17 @@
 package org.tdar.core.bean;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.hasProperty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -52,7 +45,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testSparseResource() throws Exception {
-        SharedCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", true, getAdminUser());
         collection.markUpdated(getAdminUser());
         collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
         genericService.saveOrUpdate(collection);
@@ -70,7 +63,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testMakeActive() throws Exception {
-        SharedCollection collection = new SharedCollection("test", "test", SortOption.TITLE, true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", true, getAdminUser());
         collection.markUpdated(getAdminUser());
         boolean seen = false;
         genericService.saveOrUpdate(collection);
@@ -102,7 +95,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
 
         SharedCollection c1 = new SharedCollection();
@@ -127,7 +119,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection test = new SharedCollection();
         test.setName(TEST_TITLE);
         test.markUpdated(getAdminUser());
-        test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
         genericService.synchronize();
         List<SharedCollection> list = new ArrayList<>();
@@ -158,7 +149,6 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         test.markUpdated(getAdminUser());
         test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_GROUP));
         test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
-        test.setSortBy(SortOption.COLLECTION_TITLE);
         genericService.saveOrUpdate(test);
 
         SharedCollection c1 = new SharedCollection();
@@ -171,49 +161,16 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
-    public void testConvertToWhitelabelCollection() {
-        SharedCollection resourceCollection = createAndSaveNewResourceCollection("normal collection");
-        SharedCollection whitelabelCollection = resourceCollectionDao.convertToWhitelabelCollection(resourceCollection);
-
-        assertThat(whitelabelCollection, is(not(nullValue())));
-        assertThat(resourceCollection.getId(), is(whitelabelCollection.getId()));
-        assertThat(resourceCollection.getTitle(), is(whitelabelCollection.getTitle()));
-    }
-
-    @Test
-    @Rollback
-    public void testWhitelabelsetup() {
-        CollectionDisplayProperties props = new CollectionDisplayProperties();
-        SharedCollection c = new SharedCollection();
-        c.setName("test");
-        c.markUpdated(getAdminUser());
-        c.setProperties(props);
-        props.setWhitelabel(true);
-        genericService.saveOrUpdate(c);
-    }
-
-    @Test
-    @Rollback
-    public void testConvertToResourceCollection() {
-        SharedCollection wlc = createAndSaveNewWhiteLabelCollection("fancy collection");
-        ResourceCollection rc = resourceCollectionDao.convertToResourceCollection(wlc);
-
-        assertThat(rc, is(not(nullValue())));
-        assertThat(rc, hasProperty("title", is("fancy collection")));
-    }
-
-    @Test
     @Rollback(true)
     public void testDashboardQueries() {
-        SharedCollection parent = new SharedCollection("parent", "parent", SortOption.TITLE, false, getBasicUser());
-        SharedCollection parent2 = new SharedCollection("parent2", "parent", SortOption.TITLE, false, getAdminUser());
-        SharedCollection parent3 = new SharedCollection("parent3", "parent", SortOption.TITLE, false, getAdminUser());
-        SharedCollection child1 = new SharedCollection("child", "child", SortOption.TITLE, false, getBasicUser());
-        SharedCollection child11 = new SharedCollection("child1", "child1", SortOption.TITLE, false, getBasicUser());
-        SharedCollection access = new SharedCollection("access", "access", SortOption.TITLE, false, getAdminUser());
-        SharedCollection child2 = new SharedCollection("child2", "child2", SortOption.TITLE, false, getBasicUser());
-        SharedCollection child22 = new SharedCollection("child22", "child2", SortOption.TITLE, false, getBasicUser());
+        SharedCollection parent = new SharedCollection("parent", "parent", false, getBasicUser());
+        SharedCollection parent2 = new SharedCollection("parent2", "parent", false, getAdminUser());
+        SharedCollection parent3 = new SharedCollection("parent3", "parent", false, getAdminUser());
+        SharedCollection child1 = new SharedCollection("child", "child", false, getBasicUser());
+        SharedCollection child11 = new SharedCollection("child1", "child1", false, getBasicUser());
+        SharedCollection access = new SharedCollection("access", "access", false, getAdminUser());
+        SharedCollection child2 = new SharedCollection("child2", "child2", false, getBasicUser());
+        SharedCollection child22 = new SharedCollection("child22", "child2", false, getBasicUser());
         ListCollection list = new ListCollection("child22", "child2", SortOption.TITLE, false, getBasicUser());
 
         parent.markUpdated(getAdminUser());
@@ -280,7 +237,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        SharedCollection collection = new SharedCollection(name, description, SortOption.TITLE, false, getBasicUser());
+        SharedCollection collection = new SharedCollection(name, description, false, getBasicUser());
         collection.markUpdated(getBasicUser());
         resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), users, PersistableUtils.extractIds(resources), null, true,
                 null, SharedCollection.class,-1L);
