@@ -461,6 +461,9 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     }
 
     public boolean isEditable() {
+        if (getPersistable().isSystemManaged() && !isAdministrator()) {
+            return false;
+        }
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
@@ -504,7 +507,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     }
 
     public boolean isLogoAvailable() {
-        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getId(), VersionType.WEB_SMALL);
+        return checkLogoAvailable(FilestoreObjectType.COLLECTION, getId(), VersionType.WEB_LARGE);
     }
 
     public boolean isSearchHeaderLogoAvailable() {

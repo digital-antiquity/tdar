@@ -206,7 +206,7 @@
 
         <div class="row">
             <div class="span4">
-                <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type}" />
+                <@view.kvp key="Collection Type" val="${resourceCollection.type.label} ${type} ${resourceCollection.systemManaged!false?string(' (System)','')}" />
             </div>
             <div class="span4">
                 <@view.kvp key="Hidden" val=resourceCollection.hidden?string />

@@ -94,6 +94,9 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
      */
     @Transactional(readOnly = true)
     public List<Project> findAllSparseEditableProjects(Person person) {
+        if (PersistableUtils.isNullOrTransient(person)) {
+            return new ArrayList<>();
+        }
         return getDao().findAllEditableProjects(person);
     }
 

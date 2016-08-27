@@ -35,6 +35,8 @@ import org.tdar.core.bean.collection.CollectionDisplayProperties;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.CollectionRevisionLog;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -44,6 +46,7 @@ import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.SimpleFileProcessingDao;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -839,7 +842,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
         }
         getDao().delete(persistable.getAuthorizedUsers());
+        getDao().deleteDownloadAuthorizations(persistable);
         // FIXME: need to handle parents and children
+        String msg = String.format("%s deleted %s (%s);\n%s ", authenticatedUser.getProperName(), persistable.getTitle(), persistable.getId(), deletionReason);
+        CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, RevisionLogType.DELETE);
+        getDao().saveOrUpdate(revision);
+
         getDao().delete(persistable);
         publisher.publishEvent(new TdarEvent(persistable, EventType.DELETE));
         // getSearchIndexService().index(persistable.getResources().toArray(new Resource[0]));
@@ -862,7 +870,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public <C extends HierarchicalCollection> void saveCollectionForController(C persistable, Long parentId, C parent, TdarUser authenticatedUser,
             List<AuthorizedUser> authorizedUsers, List<Long> toAdd, List<Long> toRemove, 
-            boolean shouldSaveResource, FileProxy fileProxy, Class<C> cls) {
+            boolean shouldSaveResource, FileProxy fileProxy, Class<C> cls, Long startTime) {
+
         if (persistable == null) {
             throw new TdarRecoverableRuntimeException();
         }
@@ -870,6 +879,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (!Objects.equals(parentId, persistable.getParentId())) {
             updateCollectionParentTo(authenticatedUser, persistable, parent, cls);
+        }
+
+        RevisionLogType type = RevisionLogType.CREATE;
+        if (PersistableUtils.isNotTransient(persistable)) {
+            type = RevisionLogType.EDIT;
         }
 
         List<Resource> resourcesToRemove = getDao().findAll(Resource.class, toRemove);
@@ -899,6 +913,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
             simpleFileProcessingDao.processFileProxyForCreatorOrCollection(hasProps.getProperties(), fileProxy);
         }
+
+        String msg = String.format("%s modified %s", authenticatedUser, persistable.getTitle());
+        CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, type);
+        revision.setTimeBasedOnStart(startTime);
+        getDao().saveOrUpdate(revision);
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
     }
 

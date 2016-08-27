@@ -196,7 +196,7 @@
 				
 				</#if>
 			</tr>
-			<#if registered>
+			<#if registered?has_content && registered>
 			<tr>
 				<td><b>Edit History:</b> <a href="/entity/user/activity/${creator.id?c}">View Edit History</a></td>
 				<td></td>

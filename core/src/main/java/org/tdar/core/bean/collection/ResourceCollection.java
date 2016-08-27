@@ -28,6 +28,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
 import javax.persistence.DiscriminatorType;
+import javax.persistence.ConstraintMode;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -55,6 +56,11 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+import org.hibernate.annotations.Type;
+import org.hibernate.validator.constraints.Length;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -70,6 +76,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -116,6 +123,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     private transient boolean changesNeedToBeLogged = false;
 
     private static final long serialVersionUID = -5308517783896369040L;
+    @Column(name="system_managed")
+    private Boolean systemManaged = Boolean.FALSE;
 
     @Enumerated(EnumType.STRING)
     @XmlTransient
@@ -144,6 +153,13 @@ public abstract class ResourceCollection extends AbstractPersistable
     @NotNull
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
+    
+    @OneToMany()
+    @JoinColumn(name = "collection_id", foreignKey = @javax.persistence.ForeignKey(value = ConstraintMode.NO_CONSTRAINT),nullable=true)
+    @XmlTransient
+    @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
+    private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
+
 
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
@@ -302,6 +318,7 @@ public abstract class ResourceCollection extends AbstractPersistable
         this.setOwner(resource.getOwner());
         this.setType(resource.getType());
         this.setAuthorizedUsers(new HashSet<>(resource.getAuthorizedUsers()));
+        this.setSystemManaged(resource.isSystemManaged());
         if (resource instanceof RightsBasedResourceCollection && this instanceof RightsBasedResourceCollection) {
             ((RightsBasedResourceCollection)this).getResources().addAll(((RightsBasedResourceCollection) resource).getResources());
         }
@@ -313,4 +330,38 @@ public abstract class ResourceCollection extends AbstractPersistable
         }
     }
 
+    public Set<CollectionRevisionLog> getCollectionRevisionLog() {
+        return collectionRevisionLog;
+    }
+
+    public void setCollectionRevisionLog(Set<CollectionRevisionLog> collectionRevisionLog) {
+        this.collectionRevisionLog = collectionRevisionLog;
+
+    }
+
+    @XmlTransient
+    @Transient
+    @JsonIgnore
+    public boolean isNew() {
+        if (getDateCreated() == null) {
+            return false;
+        }
+        
+        if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
+            return true;
+        }
+        return false;
+    }
+
+    @XmlAttribute(required=false)
+    public Boolean isSystemManaged() {
+        if (systemManaged == null) {
+            systemManaged = false;
+        }
+        return systemManaged;
+    }
+
+    public void setSystemManaged(Boolean systemManaged) {
+        this.systemManaged = systemManaged;
+    }
 }

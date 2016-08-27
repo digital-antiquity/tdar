@@ -1,32 +1,20 @@
 package org.tdar.utils;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.resource.CodingSheet;
-import org.tdar.core.bean.resource.Dataset;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Ontology;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
+import org.tdar.core.configuration.SimpleAppConfiguration;
 import org.tdar.core.configuration.TdarAppConfiguration;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.exception.StatusCode;
-import org.tdar.core.service.FaimsExportService;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceExportService;
+import org.tdar.faims.service.FaimsExportService;
 
 @Component
 @EnableTransactionManagement
@@ -48,7 +36,7 @@ public class FAIMSTransferTool {
     @Autowired
     private FaimsExportService faimsExportService;
 
-    private Long  accountId = 216L;
+    private Long  accountId = 3L;
 
     protected static final Logger logger = LoggerFactory.getLogger(FAIMSTransferTool.class);
 
@@ -56,7 +44,7 @@ public class FAIMSTransferTool {
 
     public static void main(String[] args) throws IOException {
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
-        applicationContext.register(TdarAppConfiguration.class, FAIMSTransferTool.class);
+        applicationContext.register(SimpleAppConfiguration.class, FAIMSTransferTool.class);
         applicationContext.refresh();
         applicationContext.start();
         username = System.getProperty("username","adam.brin@asu.edu");

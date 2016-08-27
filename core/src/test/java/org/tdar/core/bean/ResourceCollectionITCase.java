@@ -11,6 +11,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 
@@ -282,7 +283,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         SharedCollection collection = new SharedCollection(name, description, SortOption.TITLE, false, getBasicUser());
         collection.markUpdated(getBasicUser());
         resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), users, PersistableUtils.extractIds(resources), null, true,
-                null, SharedCollection.class);
+                null, SharedCollection.class,-1L);
         genericService.synchronize();
 
         final Long id = collection.getId();
@@ -291,7 +292,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection = genericService.find(SharedCollection.class, id);
         List<AuthorizedUser> aus = new ArrayList<>(users);
         aus.add(new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD));
-        resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), aus, null, null, true, null, SharedCollection.class);
+        resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), aus, null, null, true, null, SharedCollection.class, -1l);
         genericService.synchronize();
         logger.debug("au: {}", collection.getAuthorizedUsers());
         logger.debug("no: {}", normal.getSharedCollections());

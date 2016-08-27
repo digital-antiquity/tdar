@@ -166,6 +166,7 @@ public interface TdarNamedQueries {
     String ALL_RESOURCES_IN_COLLECTION = "query.non_deleted_in_collection";
     String CHECK_INVITES = "check.invites";
     String ALL_INTERNAL_COLLECTIONS = "all.internalCollections";
+    String FIND_DOWNLOAD_AUTHORIZATION = "delete.downloadAuthorization";
     // raw SQL/HQL queries
 
     /**
