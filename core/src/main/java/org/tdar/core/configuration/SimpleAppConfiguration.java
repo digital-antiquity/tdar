@@ -94,10 +94,14 @@ public abstract class SimpleAppConfiguration implements Serializable {
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
         try {
-            return configureDataSource("tdarmetadata");
+            return configureDataSource(getMetadataDatabaseName());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getMetadataDatabaseName() {
+        return "tdarmetadata";
     }
 
     @Bean(name = "sessionFactory")

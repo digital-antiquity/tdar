@@ -32,6 +32,10 @@ public class BalkWebAppConfiguration extends SimpleAppConfiguration {
         return new CrowdRestDao();
     }
     
+    @Override
+    public String getMetadataDatabaseName() {
+        return "tdarbalk";
+    }
 
     @Bean(name="obfuscationEnabled")
     public Boolean isObfuscationEnabled() {
