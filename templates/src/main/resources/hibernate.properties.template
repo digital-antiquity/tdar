@@ -9,7 +9,7 @@ javax.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdarmetadata
 javax.persistence.jdbc.driver=org.postgresql.Driver
 hibernate.dialect=org.hibernate.dialect.PostgreSQL9Dialect
 
-tdardata.connection.url=jdbc:postgresql://${tdar.database.host}/tdardata
+tdardata.persistence.jdbc.url=jdbc:postgresql://${tdar.database.host}/tdardata
 
 
 tdar.database.maxIdleTimeForConnection=600
