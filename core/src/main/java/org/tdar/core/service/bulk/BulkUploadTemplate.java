@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
+import org.tdar.core.bean.resource.Language;
 import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.CellFormat.Style;
@@ -133,7 +134,14 @@ public class BulkUploadTemplate implements Serializable {
             row.getCell(i).setCellStyle(style);
 
             if (CollectionUtils.isNotEmpty(field.getEnumList())) {
-                excelWriter.addColumnValidation(sheet, i, validationHelper, field.getEnumList().toArray(new Enum[0]));
+                Enum[] array = field.getEnumList().toArray(new Enum[0]);
+                //hack to control languages to be < 255 characters
+                if (field.getOutputName().equals( "Metadata Language") || field.getOutputName().equals("Resource Language")) {
+                    array = new Enum[]{Language.ENGLISH,Language.SPANISH,Language.FRENCH, Language.GERMAN, Language.MULTIPLE};
+                    logger.debug(field.getOutputName());
+                }
+                logger.debug(field.getOutputName());
+                excelWriter.addColumnValidation(sheet, i, validationHelper, array);
                 enumFields.add(field);
             }
 
