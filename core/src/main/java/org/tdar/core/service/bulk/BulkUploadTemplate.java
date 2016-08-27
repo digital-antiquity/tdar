@@ -138,9 +138,9 @@ public class BulkUploadTemplate implements Serializable {
                 //hack to control languages to be < 255 characters
                 if (field.getOutputName().equals( "Metadata Language") || field.getOutputName().equals("Resource Language")) {
                     array = new Enum[]{Language.ENGLISH,Language.SPANISH,Language.FRENCH, Language.GERMAN, Language.MULTIPLE};
-                    logger.debug(field.getOutputName());
+//                    logger.debug(field.getOutputName());
                 }
-                logger.debug(field.getOutputName());
+  //              logger.debug(field.getOutputName());
                 excelWriter.addColumnValidation(sheet, i, validationHelper, array);
                 enumFields.add(field);
             }
