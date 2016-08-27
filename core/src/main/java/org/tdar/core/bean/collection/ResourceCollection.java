@@ -82,6 +82,7 @@ import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 
@@ -140,7 +141,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     private String description;
 
     @Column(name="system_managed")
-    private boolean systemManaged = false;
+    private Boolean systemManaged = Boolean.FALSE;
     
     @Lob
     @Type(type = "org.hibernate.type.TextType")
@@ -746,6 +747,9 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     }
 
+    @XmlTransient
+    @Transient
+    @JsonIgnore
     public boolean isNew() {
         if (getDateCreated() == null) {
             return false;
@@ -757,11 +761,15 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         return false;
     }
 
-    public boolean isSystemManaged() {
+    @XmlAttribute(required=false)
+    public Boolean isSystemManaged() {
+        if (systemManaged == null) {
+            systemManaged = false;
+        }
         return systemManaged;
     }
 
-    public void setSystemManaged(boolean systemManaged) {
+    public void setSystemManaged(Boolean systemManaged) {
         this.systemManaged = systemManaged;
     }
 }
