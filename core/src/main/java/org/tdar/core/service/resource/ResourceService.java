@@ -982,7 +982,7 @@ public class ResourceService {
                 genericDao.saveOrUpdate(r);
             }
             logger.debug("processed: {}", r);
-            throw new TdarRecoverableRuntimeException("FIXME collection above");
+            throw new TdarRecoverableRuntimeException("error.not_implemented");
         }
         
         if (PersistableUtils.isNotNullOrTransient(account)) {
