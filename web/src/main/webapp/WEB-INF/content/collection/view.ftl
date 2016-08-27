@@ -14,13 +14,20 @@
 </div>
 
     <@commonCollection.header />
-<h1>
-    <#if logoAvailable>
-        <img class="pull-right collection-logo" src="/files/collection/sm/${id?c}/logo"
-        alt="logo" title="logo" /> 
-    </#if>
 
-${resourceCollection.name!"untitled collection"}</h1>
+    <#if logoAvailable>
+        <#if ((resourceCollection.description!'')?length > 150)>
+        <h1>${resourceCollection.name!"untitled collection"}</h1>
+        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo"
+        alt="logo" title="logo" />
+        <#else>
+        <h1>${resourceCollection.name!"untitled collection"}
+        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo"
+             alt="logo" title="logo" />
+        </h1>
+
+        </#if>
+    </#if>
 
     <#if !visible>
     This collection is not accessible

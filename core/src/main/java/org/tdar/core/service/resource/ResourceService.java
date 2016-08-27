@@ -936,7 +936,7 @@ public class ResourceService {
     }
 
     @Transactional(readOnly=false)
-    public void updateBatch(Project project,BillingAccount account, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
+    public void updateBatch(Project project,BillingAccount account, ResourceCollection collectionToAdd, List<Long> ids, List<Integer> dates, List<String> titles, List<String> descriptions, TdarUser authenticatedUser) {
         List<Resource> resources = new ArrayList<>();
         for (int i=0; i< ids.size(); i++) {
             Long id = ids.get(i);
@@ -967,6 +967,10 @@ public class ResourceService {
                     ir.setProject(project);
                 }
             }
+            if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !r.getResourceCollections().contains(collectionToAdd)) { 
+                r.getResourceCollections().add(collectionToAdd);
+                collectionToAdd.getResources().add(r);
+            }
             if (different) {
                 ResourceRevisionLog rrl = new ResourceRevisionLog("Resource batch modified (basic)", r, authenticatedUser, RevisionLogType.EDIT);
                 genericDao.saveOrUpdate(rrl);
@@ -978,6 +982,10 @@ public class ResourceService {
         
         if (PersistableUtils.isNotNullOrTransient(account)) {
             accountDao.updateQuota(account, resources, authenticatedUser);
+        }
+
+        if (PersistableUtils.isNotNullOrTransient(collectionToAdd)) {
+            genericDao.saveOrUpdate(collectionToAdd);
         }
     }
 

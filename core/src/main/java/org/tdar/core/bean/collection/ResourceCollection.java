@@ -53,6 +53,7 @@ import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -81,6 +82,7 @@ import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -141,6 +143,9 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Type(type = "org.hibernate.type.TextType")
     private String description;
 
+    @Column(name="system_managed")
+    private Boolean systemManaged = Boolean.FALSE;
+    
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     @Column(name = "description_formatted")
@@ -742,6 +747,32 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     public void setCollectionRevisionLog(Set<CollectionRevisionLog> collectionRevisionLog) {
         this.collectionRevisionLog = collectionRevisionLog;
+
     }
 
+    @XmlTransient
+    @Transient
+    @JsonIgnore
+    public boolean isNew() {
+        if (getDateCreated() == null) {
+            return false;
+        }
+        
+        if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
+            return true;
+        }
+        return false;
+    }
+
+    @XmlAttribute(required=false)
+    public Boolean isSystemManaged() {
+        if (systemManaged == null) {
+            systemManaged = false;
+        }
+        return systemManaged;
+    }
+
+    public void setSystemManaged(Boolean systemManaged) {
+        this.systemManaged = systemManaged;
+    }
 }
