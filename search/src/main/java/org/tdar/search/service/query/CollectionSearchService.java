@@ -9,7 +9,6 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
@@ -54,7 +53,7 @@ public class CollectionSearchService extends AbstractSearchService {
             }
         }
 
-        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
+//        queryBuilder.append(new FieldQueryPart<String>(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name()));
         if (query.isLimitToTopLevel()) {
             queryBuilder.append(new FieldQueryPart<Boolean>(QueryFieldNames.TOP_LEVEL, true));
         }
@@ -82,7 +81,6 @@ public class CollectionSearchService extends AbstractSearchService {
             }
         }
         queryBuilder.append(rightsPart);
-        logger.debug(queryBuilder.generateQueryString());
         searchService.handleSearch(queryBuilder, result, provider);
         return result;
 

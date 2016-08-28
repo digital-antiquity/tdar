@@ -38,6 +38,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -791,8 +792,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         SearchParameters sp = new SearchParameters();
         // simulate searchParamerters that represents a project at [0] and collection at [1]
         sp.getProjects().add(sparseProject(proj.getId()));
-        sp.getCollections().add(null); // [0]
-        sp.getCollections().add(sparseCollection(coll.getId())); // [1]
+        sp.getShares().add(null); // [0]
+        sp.getShares().add(sparseCollection(coll.getId())); // [1]
 
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
@@ -817,7 +818,7 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
         // sp.getProjects().add(new Project(null,proj.getName()));
         // sp.getCollections().add(null); // [0]
         SearchParameters sp = new SearchParameters();
-        sp.getCollections().add(new SharedCollection(colname,null, true, null)); // [1]
+        sp.getShares().add(new SharedCollection(colname,null, true, null)); // [1]
 
         SearchResult<Resource> result = doSearch(null, null, sp, null);
 
@@ -879,8 +880,8 @@ public class ResourceSearchITCase  extends AbstractResourceSearchITCase {
     @Rollback
     public void testRefineSearchWithSparseCollection() throws ParseException, SolrServerException, IOException {
 
-        SharedCollection rc = createAndSaveNewResourceCollection("Mega Collection");
-        SharedCollection sparseCollection = new SharedCollection();
+        ListCollection rc = createAndSaveNewResourceCollection("Mega Collection", ListCollection.class);
+        ListCollection sparseCollection = new ListCollection();
         evictCache();
         long collectionId = rc.getId();
         assertThat(collectionId, greaterThan(0L));

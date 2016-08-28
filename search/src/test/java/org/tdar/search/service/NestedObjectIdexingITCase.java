@@ -93,7 +93,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         result = new SearchResult<>();
         asqo = new AdvancedSearchQueryObject();
         params = new SearchParameters();
-        params.getCollections().add(collection);
+        params.getShares().add(collection);
         asqo.getSearchParameters().add(params);
         resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
         assertTrue(result.getResults().contains(image));
@@ -107,7 +107,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         result = new SearchResult<>();
         asqo = new AdvancedSearchQueryObject();
         params = new SearchParameters();
-        params.getCollections().add(collection);
+        params.getShares().add(collection);
         asqo.getSearchParameters().add(params);
         resourceSearchService.buildAdvancedSearch(asqo, getAdminUser(), result, MessageHelper.getInstance());
         assertFalse(result.getResults().contains(image));

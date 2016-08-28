@@ -26,6 +26,8 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     VIEW_ALL("View and Download", 100),
     MODIFY_METADATA("Modify Metadata", 400),
     MODIFY_RECORD("Modify Files & Metadata", 500),
+    ADD_TO_COLLECTION("Add to Collection", ResourceCollection.class,4000),
+    REMOVE_FROM_COLLECTION("Remove from Collection", ResourceCollection.class,4500),
     ADMINISTER_GROUP("Add/Remove Items from Collection", ResourceCollection.class, 5000);
 
     private Integer effectivePermissions;

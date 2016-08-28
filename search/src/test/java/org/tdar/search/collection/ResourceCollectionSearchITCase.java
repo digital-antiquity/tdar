@@ -14,6 +14,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
@@ -48,7 +49,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
             first = false;
             logger.debug("{} {} {}", collection.getId(), collection.getTitle(), collection.isHidden());
         }
-        SharedCollection find = genericService.find(SharedCollection.class, 1003L);
+        ListCollection find = genericService.find(ListCollection.class, 1003L);
         find.setHidden(false);
         genericService.saveOrUpdate(find);
         reindex();
@@ -103,8 +104,8 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         seen = false;
         for (ResourceCollection c : result.getResults()) {
             logger.debug("{} {}", c.getId(), c);
-            if (c.getId().equals(1002L) && c instanceof SharedCollection) {
-                SharedCollection shared = (SharedCollection)c;
+            if (c.getId().equals(1002L) && c instanceof ListCollection) {
+                ListCollection shared = (ListCollection)c;
                 logger.debug("parent: {}", shared.getParent());
                 logger.debug("parent: {}", shared.isTopLevel());
                 seen = true;
@@ -151,6 +152,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
 
     private SearchResult<ResourceCollection> runQuery(TdarUser user, CollectionSearchQueryObject csqo) throws ParseException, SolrServerException, IOException {
         SearchResult<ResourceCollection> result = new SearchResult<>();
+        result.setRecordsPerPage(100);
         collectionSearchService.buildResourceCollectionQuery(user, csqo, result, MessageHelper.getInstance());
         return result;
     }

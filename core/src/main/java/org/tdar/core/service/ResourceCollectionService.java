@@ -458,13 +458,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
         logger.trace("{}, {}", collectionToAdd, collectionToAdd.isValid());
-        String name = "Internal";
-        if (collectionToAdd instanceof VisibleCollection) {
-            name = ((VisibleCollection) collection).getName();
-        }
+        String name = getName(collectionToAdd);
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
-                    && !authorizationService.canEditCollection(authenticatedUser, collectionToAdd)) {
+                    && !authorizationService.canAddToCollection(collectionToAdd, authenticatedUser)) {
                 throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(name));
             }
@@ -491,7 +488,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
     }
 
+    private <C extends ResourceCollection> String getName(C collectionToAdd) {
+        String name = "Internal";
+        if (collectionToAdd instanceof VisibleCollection) {
+            name = ((VisibleCollection) collectionToAdd).getName();
+        }
+        return name;
+    }
+
     private void addToCollection(Resource resource, RightsBasedResourceCollection collectionToAdd) {
+
         if (collectionToAdd instanceof InternalCollection) {
             resource.getInternalCollections().add((InternalCollection) collectionToAdd);
         }
@@ -771,11 +777,26 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         Set<Resource> resources = persistable.getResources();
         List<Resource> ineligibleToAdd = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
         List<Resource> ineligibleToRemove = new ArrayList<Resource>(); // existing resources the user doesn't have the rights to add
+        
+        if (CollectionUtils.isNotEmpty(resourcesToAdd)) {
+            if (!authorizationService.canAddToCollection((ResourceCollection)persistable, authenticatedUser)) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
+                        Arrays.asList(getName((ResourceCollection)persistable)));
+            }
+        }
+        
+        if (CollectionUtils.isNotEmpty(resourcesToRemove)) {
+            if (!authorizationService.canRemoveFromCollection((ResourceCollection)persistable, authenticatedUser)) {
+                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
+                        Arrays.asList(getName((ResourceCollection)persistable)));
+            }
+        }
+        
         for (Resource resource : resourcesToAdd) {
             if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD)) {
                 ineligibleToAdd.add(resource);
             } else {
-                addToCollection(resource,persistable);
+                addToCollection(resource , persistable);
                 publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             }
         }

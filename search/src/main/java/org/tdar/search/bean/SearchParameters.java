@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -106,7 +107,8 @@ public class SearchParameters {
     // private List<String> creatorRoleIdentifiers = new ArrayList<String>();
 
     private List<Resource> sparseProjects = new ArrayList<Resource>();
-    private List<SharedCollection> sparseCollections = new ArrayList<>();
+    private List<ListCollection> collections = new ArrayList<>();
+    private List<SharedCollection> shares = new ArrayList<>();
 
     private List<Long> resourceIds = new ArrayList<Long>();
 
@@ -402,9 +404,12 @@ public class SearchParameters {
         queryPartGroup.append(spatialQueryPart);
         // NOTE: I AM "SHARED" the autocomplete will supply the "public"
 
+        queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS,
+                support.getText("searchParameter.list_collection"), "listCollections.",
+                ListCollection.class, getOperator(), getCollections()));
         queryPartGroup.append(constructSkeletonQueryPart(QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS,
                 support.getText("searchParameter.resource_collection"), "resourceCollections.",
-                SharedCollection.class, getOperator(), getCollections()));
+                SharedCollection.class, getOperator(), getShares()));
         queryPartGroup.append(new CreatorQueryPart<>(QueryFieldNames.CREATOR_ROLE_IDENTIFIER, Creator.class, null, resourceCreatorProxies));
 
         // explore: decade
@@ -552,12 +557,20 @@ public class SearchParameters {
         sparseProjects = projects;
     }
 
-    public List<SharedCollection> getCollections() {
-        return sparseCollections;
+    public List<ListCollection> getCollections() {
+        return collections;
     }
 
-    public void setCollections(List<SharedCollection> resourceCollections) {
-        sparseCollections = resourceCollections;
+    public void setCollections(List<ListCollection> resourceCollections) {
+        collections = resourceCollections;
+    }
+
+    public List<SharedCollection> getShares() {
+        return shares;
+    }
+
+    public void setShares(List<SharedCollection> resourceCollections) {
+        shares = resourceCollections;
     }
 
     public List<String> getContents() {
@@ -595,7 +608,7 @@ public class SearchParameters {
     public List<List<? extends Persistable>> getSparseLists() {
         List<List<? extends Persistable>> lists = new ArrayList<List<? extends Persistable>>();
         lists.add(sparseProjects);
-        lists.add(sparseCollections);
+        lists.add(collections);
         return lists;
     }
 

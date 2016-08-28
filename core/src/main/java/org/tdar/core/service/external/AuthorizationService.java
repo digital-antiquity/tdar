@@ -838,4 +838,20 @@ public class AuthorizationService implements Accessible {
         return false;
     }
 
+    public boolean canAddToCollection(ResourceCollection collectionToAdd, TdarUser user) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collectionToAdd.getOwner())) {
+            return true;
+        }
+
+        return authorizedUserDao.isAllowedTo(user, collectionToAdd, GeneralPermissions.ADD_TO_COLLECTION);
+    }
+
+    public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
+        if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collection.getOwner())) {
+            return true;
+        }
+
+        return authorizedUserDao.isAllowedTo(user, collection, GeneralPermissions.REMOVE_FROM_COLLECTION);
+    }
+
 }

@@ -31,12 +31,11 @@ public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
         } else {
             doc.setField(QueryFieldNames.TOP_LEVEL, false);
         }
+        CollectionRightsExtractor extractor = new CollectionRightsExtractor(collection);
+        doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, extractor.getUsersWhoCanModify());
+        doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
+        doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
         if (collection instanceof SharedCollection) {
-            SharedCollection shared = (SharedCollection)collection;
-            CollectionRightsExtractor extractor = new CollectionRightsExtractor(shared);
-            doc.setField(QueryFieldNames.RESOURCE_USERS_WHO_CAN_MODIFY, extractor.getUsersWhoCanModify());
-            doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER, extractor.getUsersWhoCanAdminister());
-            doc.setField(QueryFieldNames.COLLECTION_USERS_WHO_CAN_VIEW, extractor.getUsersWhoCanView());
             doc.setField(QueryFieldNames.COLLECTION_TYPE, CollectionType.SHARED.name());
         }
         if (collection instanceof ListCollection) {
