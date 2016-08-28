@@ -2,7 +2,12 @@ package org.tdar.core;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,11 +17,13 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.bouncycastle.crypto.generators.MGF1BytesGenerator;
 import org.custommonkey.xmlunit.exceptions.ConfigurationException;
 import org.joda.time.DateTime;
 import org.junit.Assert;
@@ -28,11 +35,9 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
-import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -67,8 +72,6 @@ import org.tdar.utils.jaxb.JaxbParsingException;
 import org.tdar.utils.json.JsonLookupFilter;
 import org.tdar.utils.json.JsonProjectLookupFilter;
 import org.xml.sax.SAXException;
-
-import java.util.Collections;
 
 
 public class JAXBITCase extends AbstractIntegrationTestCase {
@@ -363,6 +366,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         try {
             File generateSchema = serializationService.generateSchema();
             FileUtils.copyFile(generateSchema, schemaFile);
+            logger.debug("{}",generateSchema);
             testValidXMLSchemaResponse(FileUtils.readFileToString(generateSchema));
         } catch (Exception e) {
             logger.warn("exception", e);

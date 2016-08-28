@@ -11,6 +11,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.SecondaryTable;
+import javax.xml.bind.annotation.XmlType;
 
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.FieldLength;
@@ -18,6 +19,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
 
 @Entity
+@XmlType(name = "customCollBase")
 @SecondaryTable(name = "whitelabel_collection", pkJoinColumns = @PrimaryKeyJoinColumn(name = "id"))
 public abstract class CustomizableCollection<C extends HierarchicalCollection<C>> extends HierarchicalCollection<C> implements Sortable {
 

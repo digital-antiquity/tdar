@@ -118,17 +118,6 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
     }
 
     @Override
-    public boolean isValid() {
-        if (isValidForController()) {
-            if ((getType() == CollectionType.SHARED)) {
-                return false;
-            }
-            return super.isValid();
-        }
-        return false;
-    }
-
-    @Override
     public SortOption getSortBy() {
         return SortOption.TITLE;
     }
