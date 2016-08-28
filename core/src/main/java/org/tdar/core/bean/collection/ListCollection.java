@@ -62,30 +62,6 @@ public class ListCollection extends CustomizableCollection<ListCollection> imple
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.collection.ResourceCollection.unmanagedResources")
     private Set<Resource> unmanagedResources = new LinkedHashSet<Resource>();
 
-
-    @Embedded
-    @AttributeOverrides({
-            @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
-            @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
-    })
-    @Access(AccessType.FIELD)
-    private CollectionDisplayProperties properties;
-
-    public CollectionDisplayProperties getProperties() {
-        return properties;
-    }
-
-    public void setProperties(CollectionDisplayProperties properties) {
-        this.properties = properties;
-    }
-
-
     public ListCollection() {
         setProperties(new CollectionDisplayProperties());
         setType(CollectionType.LIST);

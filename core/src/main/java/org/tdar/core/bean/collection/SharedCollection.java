@@ -40,7 +40,7 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         this.setType(CollectionType.SHARED);
     }
 
-    public SharedCollection(Long id, String title, String description, SortOption sortBy, boolean hidden) {
+    public SharedCollection(Long id, String title, String description, boolean hidden) {
         setId(id);
         setName(title);
         setDescription(description);

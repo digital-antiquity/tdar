@@ -1,6 +1,11 @@
 package org.tdar.core.bean.collection;
 
+import javax.persistence.Access;
+import javax.persistence.AccessType;
+import javax.persistence.AttributeOverride;
+import javax.persistence.AttributeOverrides;
 import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -29,6 +34,29 @@ public abstract class CustomizableCollection<C extends HierarchicalCollection<C>
     @Enumerated(EnumType.STRING)
     @Column(name = "orientation", length = FieldLength.FIELD_LENGTH_50)
     private DisplayOrientation orientation = DisplayOrientation.LIST;
+
+
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "whitelabel", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "custom_header_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "custom_doc_logo_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "featured_resources_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "search_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "sub_collections_enabled", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "subtitle", column = @Column(table = "whitelabel_collection")),
+            @AttributeOverride(name = "css", column = @Column(table = "whitelabel_collection"))
+    })
+    @Access(AccessType.FIELD)
+    private CollectionDisplayProperties properties;
+
+    public CollectionDisplayProperties getProperties() {
+        return properties;
+    }
+
+    public void setProperties(CollectionDisplayProperties properties) {
+        this.properties = properties;
+    }
 
 
     /**
