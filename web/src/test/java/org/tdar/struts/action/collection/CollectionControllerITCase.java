@@ -1,7 +1,6 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.collection;
 
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,9 +20,9 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.struts.action.collection.ListCollectionController;
+import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
-public class ListCollectionControllerITCase extends AbstractResourceControllerITCase {
+public class CollectionControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
     private GenericService genericService;
@@ -34,13 +33,13 @@ public class ListCollectionControllerITCase extends AbstractResourceControllerIT
     @Autowired
     AuthorizedUserDao authorizedUserDao;
 
-    ListCollectionController controller;
+    CollectionController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(ListCollectionController.class);
+        controller = generateNewInitializedController(CollectionController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -69,12 +68,12 @@ public class ListCollectionControllerITCase extends AbstractResourceControllerIT
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         ListCollection collection = generateResourceCollection(name, description, false, users, testPerson, resources, null, 
-                ListCollectionController.class, ListCollection.class);
+                CollectionController.class, ListCollection.class);
         final Long id = collection.getId();
         String slug = collection.getSlug();
         collection = null;
 
-        controller = generateNewInitializedController(ListCollectionController.class, getAdminUser());
+        controller = generateNewInitializedController(CollectionController.class, getAdminUser());
         controller.setId(id);
         controller.prepare();
         controller.edit();

@@ -1,4 +1,4 @@
-package org.tdar.struts.action.collection;
+package org.tdar.struts.action;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,9 +29,6 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.DataTableResourceDisplay;
-import org.tdar.struts.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
 import com.google.common.base.Objects;

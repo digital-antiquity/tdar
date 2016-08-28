@@ -122,5 +122,10 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         return SortOption.TITLE;
     }
 
+//    @Override
+//    public String getUrlNamespace() {
+//        return "share";
+//    }
+
 
 }

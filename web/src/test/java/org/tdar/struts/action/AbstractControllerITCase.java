@@ -26,13 +26,10 @@ import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.billing.BillingItem;
 import org.tdar.core.bean.billing.Invoice;
 import org.tdar.core.bean.billing.TransactionStatus;
-import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
@@ -54,8 +51,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
-import org.tdar.struts.action.collection.AbstractCollectionController;
-import org.tdar.struts.action.collection.CollectionController;
+import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
@@ -178,7 +174,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
 
     public SharedCollection generateResourceCollection(String name, String description, boolean visible, List<AuthorizedUser> users,
             TdarUser owner, List<? extends Resource> resources, Long parentId) throws Exception {
-        return generateResourceCollection(name, description, visible, users, owner, resources, parentId,CollectionController.class, SharedCollection.class);
+        return generateResourceCollection(name, description, visible, users, owner, resources, parentId,ShareController.class, SharedCollection.class);
     }
 
 

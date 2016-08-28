@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Namespaces;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,6 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
@@ -46,7 +45,10 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
-@Namespace("/collection/admin")
+@Namespaces(value={
+        @Namespace("/collection/admin"),
+        @Namespace("/share/admin")
+})
 public class CollectionAdminAction extends AbstractCollectionAdminAction implements Preparable, FacetedResultHandler<Resource> {
 
     private static final long serialVersionUID = -4060598709570483884L;

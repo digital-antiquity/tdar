@@ -28,8 +28,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.DisplayOrientation;
-import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
@@ -54,9 +52,9 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.browse.BrowseCollectionController;
-import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.collection.CollectionDeleteAction;
 import org.tdar.struts.action.collection.CollectionViewAction;
+import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
@@ -79,13 +77,13 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Autowired
     private ResourceCollectionService resourceCollectionService;
 
-    CollectionController controller;
+    ShareController controller;
 
     static int indexCount = 0;
 
     @Before
     public void setup() {
-        controller = generateNewInitializedController(CollectionController.class);
+        controller = generateNewInitializedController(ShareController.class);
         if (indexCount < 1) {
             reindex();
         }
@@ -118,7 +116,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         String slug = collection.getSlug();
         collection = null;
 
-        controller = generateNewInitializedController(CollectionController.class, getAdminUser());
+        controller = generateNewInitializedController(ShareController.class, getAdminUser());
         controller.setId(id);
         controller.prepare();
         controller.edit();
@@ -624,7 +622,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         evictCache();
 
-        controller = generateNewInitializedController(CollectionController.class, getBasicUser());
+        controller = generateNewInitializedController(ShareController.class, getBasicUser());
         controller.prepare();
         controller.add();
         logger.info("{}", controller.getCandidateParentResourceCollections());
@@ -855,7 +853,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback(true)
     public void testControllerWithActiveResourceThatBecomesDeleted() throws Exception {
-        controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller = generateNewInitializedController(ShareController.class, getUser());
         controller.prepare();
         SharedCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
@@ -957,7 +955,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
-        controller = generateNewInitializedController(CollectionController.class);
+        controller = generateNewInitializedController(ShareController.class);
         controller.setId(rcid);
         controller.prepare();
         controller.edit();
@@ -970,7 +968,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {
-        controller = generateNewInitializedController(CollectionController.class, getUser());
+        controller = generateNewInitializedController(ShareController.class, getUser());
         controller.prepare();
         SharedCollection rc = controller.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
@@ -1012,7 +1010,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         Long ruid = registeredUser.getId();
         // now make the user an authorizedUser
-        controller = generateNewInitializedController(CollectionController.class);
+        controller = generateNewInitializedController(ShareController.class);
         controller.setId(rcid);
         controller.prepare();
         AuthorizedUser authUser = new AuthorizedUser(registeredUser, GeneralPermissions.MODIFY_RECORD);

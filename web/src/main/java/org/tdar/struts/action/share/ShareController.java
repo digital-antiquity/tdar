@@ -1,4 +1,4 @@
-package org.tdar.struts.action.collection;
+package org.tdar.struts.action.share;
 
 import java.util.List;
 
@@ -7,24 +7,22 @@ import org.apache.struts2.convention.annotation.ParentPackage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.struts.action.AbstractCollectionController;
 import org.tdar.struts.action.DataTableResourceDisplay;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/listcollection")
-public class ListCollectionController extends AbstractCollectionController<ListCollection> implements DataTableResourceDisplay {
+@Namespace("/share")
+public class ShareController extends AbstractCollectionController<SharedCollection> implements DataTableResourceDisplay {
 
-    private static final long serialVersionUID = 5657142152922902051L;
+    private static final long serialVersionUID = 1169442990022630650L;
 
     /**
-     * Threshold that defines a "big" collection (based on imperieal evidence by highly-trained tDAR staff). This number
-     * refers to the combined count of authorized users +the count of resources associated with a collection. Big
-     * collections may adversely affect save/load times as well as cause rendering problems on the client, and so the
-     * system may choose to mitigate these effects (somehow)
+     * Threshold that defines a "big" collection.
      */
     public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
 
@@ -38,20 +36,20 @@ public class ListCollectionController extends AbstractCollectionController<ListC
      * 
      * @return
      */
-    public List<ListCollection> getCandidateParentResourceCollections() {
-        List<ListCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
-                getPersistable(), ListCollection.class);
+    public List<SharedCollection> getCandidateParentResourceCollections() {
+        List<SharedCollection> publicResourceCollections = resourceCollectionService.findPotentialParentCollections(getAuthenticatedUser(),
+                getPersistable(), SharedCollection.class);
         return publicResourceCollections;
     }
 
 
     @Override
-    protected String save(ListCollection persistable) {
+    protected String save(SharedCollection persistable) {
         // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
         // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
 
         resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getAuthorizedUsers(), getToAdd(),
-                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), ListCollection.class, getStartTime());
+                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class, getStartTime());
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -64,26 +62,26 @@ public class ListCollectionController extends AbstractCollectionController<ListC
          * (b) visibility changes
          */
         if (isAsync()) {
-            searchIndexService.indexAllResourcesInCollectionSubTreeAsync(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTreeAsync(getPersistable());
         } else {
-            searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
+            searchIndexService.partialIndexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
 
-    public ListCollection getResourceCollection() {
+    public SharedCollection getResourceCollection() {
         if (getPersistable() == null) {
-            setPersistable(new ListCollection());
+            setPersistable(new SharedCollection());
         }
         return getPersistable();
     }
 
-    public void setResourceCollection(ListCollection rc) {
+    public void setResourceCollection(SharedCollection rc) {
         setPersistable(rc);
     }
 
     @Override
-    public Class<ListCollection> getPersistableClass() {
-        return ListCollection.class;
+    public Class<SharedCollection> getPersistableClass() {
+        return SharedCollection.class;
     }
 
     /**
@@ -94,6 +92,6 @@ public class ListCollectionController extends AbstractCollectionController<ListC
      * @return
      */
     public boolean isBigCollection() {
-        return (getPersistable().getUnmanagedResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
     }
 }

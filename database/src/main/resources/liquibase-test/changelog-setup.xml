@@ -19408,7 +19408,7 @@
           <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
           <column name="owner_id" valueNumeric="8092"/>
           <column name="updater_id" valueNumeric="8092"/>
-          <column name="collection_type" value="SHARED"/>
+          <column name="collection_type" value="LIST"/>
           <column name="sort_order" value="TITLE"/>
           <column name="orientation" value="LIST"/>
           <column name="visible" valueBoolean="=true" />
@@ -19422,7 +19422,7 @@
           <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
           <column name="owner_id" valueNumeric="8092"/>
           <column name="updater_id" valueNumeric="8092"/>
-          <column name="collection_type" value="SHARED"/>
+          <column name="collection_type" value="LIST"/>
           <column name="sort_order" value="TITLE"/>
           <column name="orientation" value="LIST_FULL"/>
           <column name="visible" valueBoolean="=true" />
@@ -19436,7 +19436,7 @@
           <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
           <column name="owner_id" valueNumeric="8092"/>
           <column name="updater_id" valueNumeric="8092"/>
-          <column name="collection_type" value="SHARED"/>
+          <column name="collection_type" value="LIST"/>
           <column name="sort_order" value="TITLE"/>
           <column name="orientation" value="GRID"/>
           <column name="visible" valueBoolean="=true" />
@@ -19450,7 +19450,7 @@
           <column name="date_updated" valueDate="2011-02-15 20:08:43.509"/>
           <column name="owner_id" valueNumeric="8092"/>
           <column name="updater_id" valueNumeric="8092"/>
-          <column name="collection_type" value="SHARED"/>
+          <column name="collection_type" value="LIST"/>
           <column name="sort_order" value="TITLE"/>
           <column name="orientation" value="MAP"/>
           <column name="visible" valueBoolean="=true" />
