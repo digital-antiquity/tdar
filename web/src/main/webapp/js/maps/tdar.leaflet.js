@@ -610,7 +610,7 @@ TDAR.leaflet = (function(console, $, ctx, L) {
             // LEAFLET HANDLES WRAPPING AROUND THE DATELINE SPECIALLY, , SO WE NEED TO TRANSLATE FOR IT
             // http://www.macwright.org/2015/03/23/geojson-second-bite.html IS A GOOD EXPLANATION, BUT BASICALLY HERE, THE REVERSE AS ABOVE
             //
-            x = parseFloat(x) - 360.0 ;
+            x = parseFloat(x) - 360.0;
             $(".d_maxx", $el).val(x);
             $(".maxx", $el).val(x);
         }
@@ -624,11 +624,14 @@ TDAR.leaflet = (function(console, $, ctx, L) {
      */
     function _correctForWorldWrap(x_) {
         var x = x_;
-        while (x > 360) {
+        while (x > 180) {
             x -= 360;
         }
-        while (x < -360) {
+        while (x < -180) {
             x += 360;
+        }
+        if (x != x_) {
+            console.log("   " + x_ + " --> " + x);
         }
         return x;
     }
