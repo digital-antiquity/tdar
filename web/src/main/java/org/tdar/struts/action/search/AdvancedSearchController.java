@@ -19,6 +19,7 @@ import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -203,7 +204,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
     }
 
     private void processWhitelabelSearch() {
-        SharedCollection rc = getGenericService().find(SharedCollection.class, getCollectionId());
+        ListCollection rc = getGenericService().find(ListCollection.class, getCollectionId());
         if (rc == null) {
             return;
         }

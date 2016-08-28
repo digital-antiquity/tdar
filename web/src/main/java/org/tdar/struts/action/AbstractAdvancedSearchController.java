@@ -17,6 +17,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
@@ -255,7 +256,7 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
         // contextual search: resource collection
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
             getLogger().debug("contextual search: collection {}", collectionId);
-            SharedCollection rc = getGenericService().find(SharedCollection.class, collectionId);
+            ListCollection rc = getGenericService().find(ListCollection.class, collectionId);
             terms.getFieldTypes().add(0, SearchFieldType.COLLECTION);
             terms.getCollections().add(rc);
             terms.getAllFields().add(0, null);

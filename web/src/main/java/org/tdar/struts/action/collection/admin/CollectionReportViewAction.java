@@ -66,7 +66,7 @@ public class CollectionReportViewAction extends AbstractAuthenticatableAction
     public String execute() throws Exception {
         AdvancedSearchQueryObject asqo = new AdvancedSearchQueryObject();
         getAuthenticatedUser();
-        asqo.getReservedParams().getCollections().add((SharedCollection)getResourceCollection());
+        asqo.getReservedParams().getShares().add((SharedCollection)getResourceCollection());
         getFacetWrapper().facetBy("status", Status.class);
         getFacetWrapper().facetBy("resourceType", ResourceType.class);
         getFacetWrapper().facetBy(QueryFieldNames.ACTIVE_CULTURE_KEYWORDS, CultureKeyword.class);
