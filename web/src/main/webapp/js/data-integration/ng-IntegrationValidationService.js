@@ -73,6 +73,16 @@
          * @returns {Array}  list of error messages, or empty list
          */
         this.validateIntegration = function(jsonData, integration) {
+
+            //rule: data tables still exist
+            var expectedTableIds = jsonData.dataTables.map(function(dt){return dt.id});
+            var actualTableIds = integration.dataTables.map(function(dt){return dt.id});
+            var missingTableIds = expectedTableIds.filter(function(id){return actualTableIds.indexOf(id) === -1});
+            if(missingTableIds.length > 0) {
+                _addErrors(["Some of the dataset tables referenced by this integration no longer exist.  "]);
+            }
+
+
             //rule: selected ontology nodes still exist
             _addErrors(jsonData.columns
                     //exclude all but integration columns
@@ -80,7 +90,7 @@
                     //exclude valid integration columns  (valid == every selected ontologyNodeId exists in the ontologyNode cache)
                     .filter(function(c){return !c.nodeSelection.every(function(node){
                         var cachedNode = DataService.ontologyNodeCache.get(node.id);
-                        if(!cachedNode) {console.error("node id not found:%s", node.id)}
+                        if(!cachedNode) {console.warn("node id not found:%s", node.id)}
                         return cachedNode})})
                     //convert invalid columns to list of error messages
                     .map(function(invalidColumn){

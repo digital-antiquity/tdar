@@ -237,6 +237,10 @@
             //console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
+                //some requested datatables may be missing since user created the workflow
+                dataTables = dataTables.filter(function(dt){return !!dt});
+
+
                 self.addDataTables(integration, dataTables);
                 //load  the participation information + ontology details,  then reconstitute  the columns in the integration
                 var futureParticipation = self.loadUpdatedParticipationInformation(integration);
