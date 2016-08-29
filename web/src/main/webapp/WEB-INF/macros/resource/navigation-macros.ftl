@@ -57,7 +57,7 @@ navigation freemarker macros
             <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-        		<#if persistable.shared>
+        		<#if persistable.shared!false>
                     <@makeLink "share" "edit" "edit" "edit" current />
 				<#else>
                     <@makeLink namespace "edit" "edit" "edit" current />

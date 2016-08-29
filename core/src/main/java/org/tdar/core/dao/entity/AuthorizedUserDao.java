@@ -18,6 +18,7 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -88,14 +89,15 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         return isAllowedTo(person, permission, ids);
     }
 
-    public boolean isAllowedTo(TdarUser person, VisibleCollection collection, GeneralPermissions permission) {
+    public boolean isAllowedTo(TdarUser person, ResourceCollection collection, GeneralPermissions permission) {
 
         if (Objects.equals(collection.getOwner(), person)) {
             return true;
         }
         List<Long> ids = new ArrayList<>();
-        if (collection instanceof SharedCollection) {
-            ids.addAll(((SharedCollection)collection).getParentIds());
+        if (collection instanceof HierarchicalCollection) {
+            HierarchicalCollection hierarchicalCollection = (HierarchicalCollection)collection;
+            ids.addAll(hierarchicalCollection.getParentIds());
         }
 
         ids.add(collection.getId());

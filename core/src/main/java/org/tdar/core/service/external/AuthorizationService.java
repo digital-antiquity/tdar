@@ -842,7 +842,6 @@ public class AuthorizationService implements Accessible {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collectionToAdd.getOwner())) {
             return true;
         }
-
         return authorizedUserDao.isAllowedTo(user, collectionToAdd, GeneralPermissions.ADD_TO_COLLECTION);
     }
 

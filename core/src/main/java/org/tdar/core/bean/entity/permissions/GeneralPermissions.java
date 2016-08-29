@@ -109,6 +109,8 @@ public enum GeneralPermissions implements HasLabel, Localizable {
     public static List<GeneralPermissions> resourcePermissions() {
         List<GeneralPermissions> permissions = new ArrayList<>(Arrays.asList(GeneralPermissions.values()));
         permissions.remove(GeneralPermissions.ADMINISTER_GROUP);
+        permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
+        permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
         return permissions;
     }
 }

@@ -38,7 +38,7 @@
                 query = "SELECT distinct 1 from " +
                         " ResourceCollection as rescol inner join rescol.authorizedUsers " +
                         " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
-                        " rescol.id in (:resourceCollectionIds) and rescol.type!='PUBLIC'"),
+                        " rescol.id in (:resourceCollectionIds)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),

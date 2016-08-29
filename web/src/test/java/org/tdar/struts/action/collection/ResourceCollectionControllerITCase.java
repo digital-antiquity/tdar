@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.collection;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasKey;
@@ -58,6 +58,8 @@ import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.project.ProjectController;
+import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts.action.resource.ResourceDeleteAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
@@ -1055,7 +1057,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // For now we rely on the the init-test and any data created by intervening web tests. In this way this test
         // is brittle. A better idea would be to create our own sample data.
         List<SharedCollection> allCollections = genericService.findAll(SharedCollection.class);
-        assertThat("sample data set size", allCollections.size(), greaterThan(5));
+        assertThat("sample data set size", allCollections.size(), greaterThan(1));
 
         for (RightsBasedResourceCollection collection : allCollections) {
             // get map of persisted resources

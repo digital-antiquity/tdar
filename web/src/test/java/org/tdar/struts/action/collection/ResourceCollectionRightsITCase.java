@@ -1,4 +1,4 @@
-package org.tdar.struts.action.resource;
+package org.tdar.struts.action.collection;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -34,6 +34,7 @@ import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts.action.document.DocumentController;
+import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
 
 import com.opensymphony.xwork2.Action;
 
@@ -86,7 +87,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertEquals(name, foundCollection.getName());
         assertEquals(description, foundCollection.getDescription());
         assertEquals(CollectionType.SHARED, foundCollection.getType());
-        assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
+        assertEquals(SortOption.TITLE, foundCollection.getSortBy());
 
         assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile2));
         assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile));
@@ -234,7 +235,8 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
         ResourceCollection collection = generateResourceCollection("test parent", "test parent", false, users, null, null);
-        ResourceCollection child = generateResourceCollection("test child", "test child", false, null, null, collection.getId());
+        Long parentId = collection.getId();
+        ResourceCollection child = generateResourceCollection("test child", "test child", false, null, null, parentId);
         Long childId = child.getId();
         child = null;
         collection = null;
@@ -248,10 +250,14 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         authorizedUserDao.clearUserPermissionsCache();
         // assertTrue("user can edit based on parent of parent resource collection",
         // authenticationAndAuthorizationService.canEditResource(testPerson, generateInformationResourceWithFile, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEdit(testPerson, genericService.find(ResourceCollection.class, childId)));
-
+        SharedCollection find = genericService.find(SharedCollection.class, childId);
+        logger.debug("parent:{}",find.getParent());
+        assertTrue(authenticationAndAuthorizationService.canAddToCollection(find, testPerson));
+        authorizedUserDao.clearUserPermissionsCache();
+        find = null;
         controller = generateNewInitializedController(ShareController.class, testPerson);
         controller.setId(childId);
+        controller.setParentId(parentId);
         controller.prepare();
         controller.getToAdd().add(resId);
         controller.setServletRequest(getServletPostRequest());

@@ -91,7 +91,6 @@ public class SearchDao<I extends Indexable> {
         if (logger.isTraceEnabled()) {
             logger.trace(rsp.toString());
         }
-        logger.debug(rsp.toString());
         convertProjectedResultIntoObjects(resultHandler, query);
         query.markStartFacetSearch();
         processFacets(rsp, resultHandler, provider);

@@ -1,6 +1,9 @@
 package org.tdar.struts.action.collection;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,7 +13,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -21,6 +27,7 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts.action.share.ShareController;
 
 public class CollectionControllerITCase extends AbstractResourceControllerITCase {
 
@@ -87,5 +94,56 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, draft));
         assertFalse(authenticationAndAuthorizationService.canViewResource(testPerson, normal));
     }
+    
+
+    @Test
+    @Rollback
+    public void testResourceShareController() throws Exception {
+        TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
+        String name = "test collection";
+        String description = "test description";
+
+        InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
+        InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
+        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
+        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
+        ListCollection collection = 
+                generateResourceCollection(name, description, true, users, getUser(), resources, null, CollectionController.class, ListCollection.class);
+        Long collectionid = collection.getId();
+        logger.info("{}", collection.getUnmanagedResources());
+        assertFalse(collectionid.equals(-1L));
+        collection = null;
+        ListCollection foundCollection = genericService.find(ListCollection.class, collectionid);
+        assertNotNull(foundCollection);
+        assertEquals(3, foundCollection.getAuthorizedUsers().size());
+        assertEquals(2, foundCollection.getUnmanagedResources().size());
+
+        assertEquals(name, foundCollection.getName());
+        assertEquals(description, foundCollection.getDescription());
+        assertEquals(CollectionType.LIST, foundCollection.getType());
+        assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
+
+        assertTrue(foundCollection.getUnmanagedResources().contains(generateInformationResourceWithFile2));
+        assertTrue(foundCollection.getUnmanagedResources().contains(generateInformationResourceWithFile));
+
+        int count = 0;
+        for (AuthorizedUser user : foundCollection.getAuthorizedUsers()) {
+            if (user.getUser().equals(testPerson)) {
+                count++;
+                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+            }
+            if (user.getUser().equals(getAdminUser())) {
+                count++;
+                assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());
+            }
+            if (user.getUser().equals(getBasicUser())) {
+                count++;
+                assertEquals(GeneralPermissions.ADMINISTER_GROUP, user.getGeneralPermission());
+            }
+        }
+        assertEquals(3, count);
+    }
+
 
 }

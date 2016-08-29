@@ -18,6 +18,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
+import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Sortable;
@@ -122,6 +123,9 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         return SortOption.TITLE;
     }
 
+    public DisplayOrientation getDisplayOrientation() {
+        return DisplayOrientation.LIST;
+    }
 //    @Override
 //    public String getUrlNamespace() {
 //        return "share";
