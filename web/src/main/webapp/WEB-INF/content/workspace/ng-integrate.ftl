@@ -62,10 +62,10 @@
                             <div class="span4">
                                 <label><b>Selected Datasets</b></label>
                                 <div>
-                                    <ol>
+                                    <ol class="selected-datasets-list">
                                         <li ng-repeat="dt in ctrl.integration.dataTables">
                                             <div class="pull-right">
-                                                <a href="#" ng-click="ctrl.removeDatatableClicked(dt)">X</a>
+                                                <a class="btn btn-mini delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)">X</a>
                                             </div>
                                             <span>{{dt|dtDisplayName|titleCase}}</span>
                                             <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>

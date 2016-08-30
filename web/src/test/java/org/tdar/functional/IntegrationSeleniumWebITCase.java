@@ -24,6 +24,7 @@ import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCoun
 import static org.tdar.functional.util.TdarExpectedConditions.textToBePresentInElementsLocated;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -82,8 +83,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // wait for modal to disappear and dataset list to populate
         waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
-        waitFor(locatedElementCountGreaterThan(cssSelector("#selDatasets option"), 1));
-
+        waitFor(locatedElementCountGreaterThan(cssSelector("ol.selected-datasets-list li"), 1));
         removeDatasetByPartialName("Knowth");
         assertThat(find(".sharedOntologies").toList(), hasSize(2));
         assertThat(getText(), not(containsString("Knowth")));
@@ -282,9 +282,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void removeDatasetByPartialName(String name) {
-        By selector = id("selDatasets");
-        chooseSelectByName(name, selector);
-        find(id("rmDatasetBtn")).click();
+        find("ol.selected-datasets-list li").stream()
+                .filter( elem -> elem.getText().contains(name))
+                .findFirst()
+                .ifPresent(li -> li.findElement(By.cssSelector("a")).click());
     }
 
     private void chooseSelectByName(String name, By selector) {
