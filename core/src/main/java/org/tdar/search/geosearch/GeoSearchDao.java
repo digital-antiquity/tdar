@@ -309,7 +309,7 @@ public class GeoSearchDao {
             if (i != 0) {
                 list += " OR ";
             }
-            list += String.format("cntry_name ilike '%s'", "%" + StringEscapeUtils.escapeSql(countries.get(i)) + "%");
+            list += String.format("lower(cntry_name)='%s'", StringUtils.lowerCase(StringEscapeUtils.escapeSql(countries.get(i))));
         }
         String sql = String.format("select st_extent(the_geom) as polygon from (select the_geom from country_wgs84 where %s ) as the_geom;", list);
         logger.debug(sql);
