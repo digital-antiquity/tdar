@@ -35,6 +35,11 @@
                     dataTableColumns : []
                 };
 
+
+
+                // for integration column,  build the dataTableColumns, selectedNodes, and list of ontologies
+                if (column.type == 'integration') {
+
                 // Get the data table columns in the same structure for Integration, Display, and Count columns.
                 // The ajax endpoint expects  a list of dataTableColumn objects, so we must flatten selectedDataTableColumns
                 outputColumn.dataTableColumns = (column.selectedDataTableColumns
@@ -45,8 +50,6 @@
                     // strip out the extraneous properties from our dtc object (all we want are ID and Name)
                     .map(function(dtc){return {'id':dtc.id, 'name': dtc.name};}));
 
-                // get the nodes and ontologes
-                if (column.type == 'integration') {
                     var ont = {
                         id : column.ontology.id,
                         title : column.ontology.title
@@ -69,7 +72,18 @@
                         });
                     }
                     ;
+                } else {
+                    //we assume a display column if not an integration column
+                    //fixme:  display columns have 'dataTableColumnSelections', which is virtually identical to 'selectedDataTableColumns'. refactor so they use the same name
+                    outputColumn.dataTableColumns = (column.dataTableColumnSelections
+                            .filter(function(col){return !!col})
+                            .map(function(col){return col.dataTableColumn})
+                            .filter(function(dtc){return !!dtc})
+                            .map(function(dtc){return {'id':dtc.id, 'name': dtc.name}})
+
+                    );
                 }
+
                 out.columns.push(outputColumn);
             });
         }
