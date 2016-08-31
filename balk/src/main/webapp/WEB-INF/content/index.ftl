@@ -7,11 +7,13 @@ hi ${authenticatedUser.username}
 <thead>
 <tr>
 <th>path</th>
+<th>extension</th>
 <th colspan=3>to PDF</th>
 <th colspan=3>done PDF</th>
-<th colspan=3>to Upload</th>
+<th colspan=4>to Upload</th>
 </tr>
 <tr>
+<th></th>
 <th></th>
 <th> date</th>
 <th> who</th>
@@ -22,11 +24,13 @@ hi ${authenticatedUser.username}
 <th> date</th>
 <th> who</th>
 <th> size</th>
+<th> tDAR ID</th>
 </tr>
 </thead>
 <#list itemStatusReport?keys as key>
 <tr>
-<td>${key}</td>
+<td>${itemStatusReport[key].first.path}</td>
+<td>${itemStatusReport[key].first.extension}</td>
 <#if itemStatusReport[key].toPdf?has_content>
 	<@_printrow itemStatusReport[key].toPdf />
 <#else>
@@ -39,6 +43,7 @@ hi ${authenticatedUser.username}
 </#if>
 <#if itemStatusReport[key].toUpload?has_content>
 	<@_printrow itemStatusReport[key].toUpload />
+    <td><a href="http://core.tdar.org/resource/${itemStatusReport[key].toUpload.tdarId?c}">${itemStatusReport[key].toUpload.tdarId?c}</a></td>
 <#else>
 	<@_blankrow />
 </#if>

@@ -231,7 +231,7 @@ public class ItemService {
             key = StringUtils.replace(key, "/output/", "/");
             key = StringUtils.remove(key, DropboxConstants.CLIENT_DATA.toLowerCase());
             key = StringUtils.substringAfter(key, "/");
-            logger.debug(key);
+            logger.trace(key);
             key = StringUtils.replace(key, "_ocr_pdfa.pdf", ".pdf");
             map.putIfAbsent(key, new WorkflowStatusReport());
             WorkflowStatusReport status = map.get(key);
