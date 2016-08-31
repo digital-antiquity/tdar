@@ -31,7 +31,7 @@ public class BalkScheduledProcessService {
     
     @Scheduled(fixedDelay = FIVE_MIN_MS)
     public void cronPollingQueue() {
-        itemService.handleUploads();
+//        itemService.handleUploads();
     }
 
     @Scheduled(fixedDelay = FIVE_MIN_MS)

@@ -6,14 +6,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +43,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.DropboxItemWrapper;
 import org.tdar.utils.dropbox.ToPersistListener;
 
@@ -213,6 +219,36 @@ public class ItemService {
         marshaller.marshal(object, writer);
         return writer.toString();
 
+    }
+
+    @Transactional(readOnly=true)
+    public TreeMap<String, WorkflowStatusReport> itemStatusReport() {
+        List<DropboxFile> findAll = genericDao.findAll(DropboxFile.class);
+        TreeMap<String,WorkflowStatusReport> map = new TreeMap<>();
+        for (DropboxFile file : findAll) {
+            String key = file.getPath().toLowerCase();
+            key = StringUtils.replace(key, "/input/", "/");
+            key = StringUtils.replace(key, "/output/", "/");
+            key = StringUtils.remove(key, DropboxConstants.CLIENT_DATA.toLowerCase());
+            key = StringUtils.substringAfter(key, "/");
+            logger.debug(key);
+            key = StringUtils.replace(key, "_ocr_pdfa.pdf", ".pdf");
+            map.putIfAbsent(key, new WorkflowStatusReport());
+            WorkflowStatusReport status = map.get(key);
+            String path1 = "/Client Data/Create PDFA/input/";
+            String path2 = "/Client Data/Create PDFA/output/";
+            String path3 = "/Client Data/Upload to tDAR/";
+            if (StringUtils.containsIgnoreCase(file.getPath(), path1)) {
+                status.setToPdf(file);
+            }
+            if (StringUtils.containsIgnoreCase(file.getPath(), path2)) {
+                status.setDoneOcr(file);
+            }
+            if (StringUtils.containsIgnoreCase(file.getPath(), path3)) {
+                status.setToUpload(file);
+            }
+        }
+        return map;
     }
 
 }
