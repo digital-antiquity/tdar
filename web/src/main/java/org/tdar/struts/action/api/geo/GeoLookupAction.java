@@ -54,6 +54,19 @@ public class GeoLookupAction extends AbstractJsonApiAction implements Preparable
             setJsonObject(err);
             return;
         }
+        if (box.getMaximumLatitude() > 90) {
+            box.setMaximumLatitude(89.99999);
+        }
+        if (box.getMinimumLatitude() < -90) {
+            box.setMinimumLatitude(-89.99999);
+        }
+        if (box.getMaximumLongitude() > 180) {
+            box.setMaximumLongitude(179.99999);
+        }
+        if (box.getMinimumLongitude() < -180) {
+            box.setMinimumLongitude(-179.99999);
+        }
+
         setJsonObject(box);
     }
 

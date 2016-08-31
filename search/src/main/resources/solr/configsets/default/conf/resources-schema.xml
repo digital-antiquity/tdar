@@ -94,6 +94,7 @@
     <field name="COPYRIGHT_HOLDER" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="SUBMITTER" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="UPDATER" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
+    <field name="UPLOADER" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="RESOURCE_PROVIDER" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="PUBLISHER" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="resourceOwner" type="long" indexed="true"  required="false" multiValued="false"  stored="true"/>

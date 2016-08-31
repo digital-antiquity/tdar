@@ -12,6 +12,7 @@ import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.RelationType;
 import org.tdar.core.bean.Validatable;
+import org.tdar.core.bean.util.UrlUtils;
 import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -30,19 +31,18 @@ public class ExternalKeywordMapping extends AbstractPersistable implements Valid
         this.relationType = type;
     }
 
-    
-    @Column(name = "relation", nullable=false)
+    @Column(name = "relation", nullable = false)
     @Length(max = FieldLength.FIELD_LENGTH_2048)
     @JsonView(JsonLookupFilter.class)
     private String relation;
 
-    @Column(name = "label", nullable=false)
+    @Column(name = "label", nullable = false)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String label;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "relation_type", nullable=false)
+    @Column(name = "relation_type", nullable = false)
     @JsonView(JsonLookupFilter.class)
     private RelationType relationType;
 
@@ -70,7 +70,7 @@ public class ExternalKeywordMapping extends AbstractPersistable implements Valid
     @Override
     public boolean isValidForController() {
         if (StringUtils.isBlank(relation) || relationType == null) {
-        return false;
+            return false;
         }
         return true;
     }
@@ -86,5 +86,14 @@ public class ExternalKeywordMapping extends AbstractPersistable implements Valid
 
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    public String getRelationHost() {
+        try {
+            return UrlUtils.getHost(relation);
+        } catch (Exception e) {
+            logger.warn("url is not valid: {}", relation);
+        }
+        return null;
     }
 }

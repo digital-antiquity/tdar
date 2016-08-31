@@ -53,7 +53,7 @@ public enum ResourceCreatorRole implements HasLabel, Localizable {
     SUBMITTER("Submitter", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     UPDATER("Updater", ResourceCreatorRoleType.OTHER, CreatorType.PERSON),
     RESOURCE_PROVIDER("Resource Provider", ResourceCreatorRoleType.OTHER, CreatorType.INSTITUTION),
-    PUBLISHER("Publisher", ResourceCreatorRoleType.OTHER);
+    PUBLISHER("Publisher", ResourceCreatorRoleType.OTHER), UPLOADER("Uploader", ResourceCreatorRoleType.OTHER, CreatorType.PERSON);
 
     private final String label;
     private final CreatorType relevantCreatorType;
