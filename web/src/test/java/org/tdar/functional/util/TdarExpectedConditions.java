@@ -167,8 +167,9 @@ public class TdarExpectedConditions {
     private static boolean isStale(WebElement element) {
         // Beleive it or not, this is how selenium advises checking for staleness (see ExpectedConditions.stalenessOf)
         try {
-            // will throw exception if stale
             element.isEnabled();
+            element.getText();
+            element.getTagName();
         } catch (StaleElementReferenceException ex) {
             return true;
         }
