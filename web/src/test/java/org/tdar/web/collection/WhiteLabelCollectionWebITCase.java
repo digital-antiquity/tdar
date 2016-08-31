@@ -19,7 +19,7 @@ public class WhiteLabelCollectionWebITCase extends AbstractAdminAuthenticatedWeb
 	@Before
 	public void setupWhiteLabel() {
 		gotoPage(COLLECTION_2580);
-		if (getPageText().contains("Shared (white label)")) {
+		if (getPageText().contains(" (white label)")) {
 			// already a white-label collection
 			return;
 		} else {

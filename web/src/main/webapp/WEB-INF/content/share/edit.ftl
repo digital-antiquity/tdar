@@ -86,6 +86,7 @@
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge' title="Please enter the description " />
 
+        </div>
 <#--        
 
             <#if administrator>
@@ -105,7 +106,6 @@
             </div>
         </#if>
 
-        </div>
 
         <div id="divBrowseOptionsTips" style="display:none">
             <p>Choose whether this collection will be public or private, and how ${siteAcronym} will sort the resources when displaying this collection to other
@@ -128,6 +128,7 @@
                                                                              value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
                 </div>
             </div>
+        </div>
 -->    
 
         <div id="divCollectionAccessRightsTips" style="display:none">

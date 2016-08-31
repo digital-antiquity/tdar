@@ -56,6 +56,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Immutable;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
@@ -334,6 +335,20 @@ public abstract class ResourceCollection extends AbstractPersistable
 
     }
 
+    @XmlTransient
+    @Transient
+    @JsonIgnore
+    public boolean isNew() {
+        if (getDateCreated() == null) {
+            return false;
+        }
+        
+        if (DateTime.now().minusDays(7).isBefore(getDateCreated().getTime())) {
+            return true;
+        }
+        return false;
+    }
+
     @XmlAttribute(required=false)
     public Boolean isSystemManaged() {
         if (systemManaged == null) {
@@ -342,16 +357,6 @@ public abstract class ResourceCollection extends AbstractPersistable
         return systemManaged;
     }
 
-    @XmlTransient
-    @Transient
-    @JsonIgnore
-    public boolean isShare() {
-        if (this instanceof SharedCollection) {
-            return true;
-        }
-        return false;
-    }
-    
     public void setSystemManaged(Boolean systemManaged) {
         this.systemManaged = systemManaged;
     }

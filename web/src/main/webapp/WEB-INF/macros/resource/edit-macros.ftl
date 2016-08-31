@@ -18,26 +18,26 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- Emit the choose-a-collection section -->
-    <#macro resourceCollectionSection>
+    <#macro resourceCollectionSection prefix="resourceCollections" label="Collections" list=__resourceCollections>
         <#local _resourceCollections = [blankResourceCollection] />
-        <#if (resourceCollections?? && !resourceCollections.empty)>
-            <#local _resourceCollections = resourceCollections />
+        <#if (__resourceCollections?? && !__resourceCollections.empty)>
+            <#local _resourceCollections = __resourceCollections />
         </#if>
         <@helptext.resourceCollection />
-    <div data-tiplabel="${siteAcronym} Collections" data-tooltipcontent="#divResourceCollectionListTips">
+    <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
     <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project >
-        <div id="resourceCollectionTable" class="control-group repeatLastRow" addAnother="add another collection">
+        <div id="${prefix}Table" class="control-group repeatLastRow" addAnother="add another collection">
             <label class="control-label">Collection Name(s)</label>
 
             <div class="controls">
                 <#list _resourceCollections as resourceCollection>
                 <#-- emit a single row of the choose-a-collection section -->
-                    <div id="resourceCollectionRow_${resourceCollection_index}_" class="controls-row repeat-row">
-                        <@s.hidden name="resourceCollections[${resourceCollection_index}].id"  id="resourceCollectionRow_${resourceCollection_index}_id" />
-                <@s.textfield theme="simple" id="txtResourceCollectionRow_${resourceCollection_index}_id" name="resourceCollections[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
-                    autocompleteIdElement="#resourceCollectionRow_${resourceCollection_index}_id" maxlength=255
-                    autocompleteParentElement="#resourceCollectionRow_${resourceCollection_index}_" />
-                <@nav.clearDeleteButton id="resourceCollectionRow" />
+                    <div id="${prefix}Row_${resourceCollection_index}_" class="controls-row repeat-row">
+                        <@s.hidden name="${prefix}[${resourceCollection_index}].id"  id="${prefix}Row_${resourceCollection_index}_id" />
+                <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
+                    autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
+                    autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
+                <@nav.clearDeleteButton id="${prefix}Row" />
                     </div>
 
                 </#list>

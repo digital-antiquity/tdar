@@ -262,7 +262,7 @@
 
             <h2>${siteAcronym} Collections &amp; Project</h2>
             <h4>Add to a Collection</h4>
-            <@edit.resourceCollectionSection />
+            <@edit.resourceCollectionSection prefix="resourceCollections" label="Collections" list=resourceCollections />
             <#assign _projectId = 'project.id' />
             <#if resource.id == -1 >
                 <#assign _projectId = request.getParameter('projectId')!'' />
@@ -391,6 +391,8 @@
         <#if !(hideRelatedCollections??)>
             <@edit.relatedCollections inheritanceEnabled />
         </#if>
+
+        <@edit.resourceCollectionSection prefix="shares" label="Shares" list=shares />
 
         <@edit.fullAccessRights />
 

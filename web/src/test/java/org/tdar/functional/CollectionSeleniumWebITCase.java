@@ -17,6 +17,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.functional.util.WebElementSelection;
@@ -38,7 +39,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true);
+        String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true, CollectionType.SHARED);
         logger.debug("URL: {}", url);
         logout();
         // make sure basic user cannot see restricted page
@@ -92,7 +93,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true);
+        String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true, CollectionType.LIST);
         gotoEdit(url);
         applyEditPageHacks();
 
@@ -132,7 +133,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
-        String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false);
+        String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
         gotoEdit(url);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
         submitForm();
@@ -162,7 +163,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionInGeneralSearch() {
         List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET);
-        String url = setupCollectionForTest(TITLE + " (general search)", titles, false);
+        String url = setupCollectionForTest(TITLE + " (general search)", titles, false, CollectionType.LIST);
         logout();
         gotoPage(url);
         Assert.assertTrue(getText().contains(TITLE));
@@ -220,11 +221,15 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertEquals("should see every title on each page", seen, titles.size());
     }
 
-    private String setupCollectionForTest(String title_, List<String> titles, Boolean visible) {
+    private String setupCollectionForTest(String title_, List<String> titles, Boolean visible, CollectionType type) {
         gotoPage("/dashboard");
         find(By.linkText("UPLOAD")).click();
         waitForPageload();
-        find(By.linkText("Collection")).click();
+        if (type == CollectionType.LIST) {
+            find(By.linkText("Collection")).click();
+        } else {
+            gotoPage("/share/add");
+        }
         waitForPageload();
         applyEditPageHacks();
         TestConfiguration config = TestConfiguration.getInstance();

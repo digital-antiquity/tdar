@@ -23,6 +23,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
     private static final String DESCRIPTION = "descriptionthisisauniquetest";
     private static final String TITLE = "title of a test document";
+    private static final String TESTSHARENAME = "TESTSHARENAME";
     private static final String TESTCOLLECTIONNAME = "TESTCOLLECTIONNAME";
 
     @Test
@@ -33,6 +34,7 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
         docValMap.put("document.title", TITLE);
         docValMap.put("document.description", DESCRIPTION);
         docValMap.put("document.documentType", "BOOK");
+        docValMap.put("shares[0].name", TESTSHARENAME);
         docValMap.put("resourceCollections[0].name", TESTCOLLECTIONNAME);
         docValMap.put("document.date", "1923");
         docValMap.put("status", "DRAFT");
@@ -43,8 +45,8 @@ public class BasicUserWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput(key, docValMap.get(key));
         }
         submitForm();
-        assertTextPresent(TESTCOLLECTIONNAME);
-        clickLinkWithText(TESTCOLLECTIONNAME);
+        assertTextPresent(TESTSHARENAME);
+        clickLinkWithText(TESTSHARENAME);
         assertTextPresent(TITLE);
         gotoPage("/search/results?query=" + DESCRIPTION);
         assertTextPresent(TITLE);

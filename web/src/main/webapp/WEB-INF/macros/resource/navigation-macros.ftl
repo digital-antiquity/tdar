@@ -57,10 +57,10 @@ navigation freemarker macros
             <ul>
         <@makeLink namespace "view" "view" "view" current />
         <#if editable>
-        		<#if persistable.shared!false>
-                    <@makeLink "share" "edit" "edit" "edit" current />
-				<#else>
+        		<#if persistable.type != 'SHARED' || persistable.properties?has_content >
                     <@makeLink namespace "edit" "edit" "edit" current />
+				<#else>
+                    <@makeLink "share" "edit" "edit" "edit" current />
 				</#if>
                     <#local _deleteable = (persistable.status!"")?lower_case == "deleted">
                     <@makeLink namespace "delete?id=${persistable.id}" "delete" "delete" current true _deleteable />

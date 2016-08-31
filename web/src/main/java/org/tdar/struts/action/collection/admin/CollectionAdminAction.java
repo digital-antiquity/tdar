@@ -16,7 +16,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -64,7 +65,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private Set<SharedCollection> allChildCollections;
+    private Set<HierarchicalCollection> allChildCollections;
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -83,8 +84,8 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        resourceCollectionService.buildCollectionTreeForController((SharedCollection)getCollection(), getAuthenticatedUser(), SharedCollection.class);
-        setAllChildCollections(((SharedCollection)getCollection()).getTransientChildren());
+        resourceCollectionService.buildCollectionTreeForController((HierarchicalCollection)getCollection(), getAuthenticatedUser(), HierarchicalCollection.class);
+        setAllChildCollections(((HierarchicalCollection)getCollection()).getTransientChildren());
 
         List<Long> collectionIds = PersistableUtils.extractIds(getAllChildCollections());
         collectionIds.add(getId());
@@ -244,11 +245,11 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public Set<SharedCollection> getAllChildCollections() {
+    public Set<HierarchicalCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(Set<SharedCollection> allChildCollections) {
+    public void setAllChildCollections(Set<HierarchicalCollection> allChildCollections) {
         this.allChildCollections = allChildCollections;
     }
 

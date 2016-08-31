@@ -22,9 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Creator.CreatorType;
@@ -109,8 +107,10 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ResourceService resourceService;
 
-    private List<ResourceCollection> resourceCollections = new ArrayList<>();
-    private List<RightsBasedResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<RightsBasedResourceCollection> shares = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
+    private List<ListCollection> resourceCollections = new ArrayList<>();
+    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies;
     private List<ResourceCreatorProxy> creditProxies;
@@ -249,8 +249,10 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     private void loadEffectiveResourceCollections() {
-        getResourceCollections().addAll(getResource().getSharedResourceCollections());
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+        getShares().addAll(getResource().getSharedResourceCollections());
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+        getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
     public Resource getResource() {
@@ -329,31 +331,17 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(List<ResourceCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
+    public void setShares(List<RightsBasedResourceCollection> resourceCollections) {
+        this.shares = resourceCollections;
     }
 
     /**
      * @return the resourceCollections
      */
-    public List<ResourceCollection> getResourceCollections() {
-        return resourceCollections;
+    public List<RightsBasedResourceCollection> getShares() {
+        return shares;
     }
 
-    /**
-     * @return the effectiveResourceCollections
-     */
-    public List<RightsBasedResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
-    }
-
-    /**
-     * @param effectiveResourceCollections
-     *            the effectiveResourceCollections to set
-     */
-    public void setEffectiveResourceCollections(List<RightsBasedResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
-    }
 
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
     // shared+invisible+canEdit
@@ -532,5 +520,29 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Override
     public boolean isRightSidebar() {
         return true;
+    }
+
+    public List<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
+    }
+
+    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveShares) {
+        this.effectiveShares = effectiveShares;
+    }
+
+    public List<ListCollection> getResourceCollections() {
+        return resourceCollections;
+    }
+
+    public void setResourceCollections(List<ListCollection> resourceCollections) {
+        this.resourceCollections = resourceCollections;
+    }
+
+    public List<ListCollection> getEffectiveResourceCollections() {
+        return effectiveResourceCollections;
+    }
+
+    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+        this.effectiveResourceCollections = effectiveResourceCollections;
     }
 }

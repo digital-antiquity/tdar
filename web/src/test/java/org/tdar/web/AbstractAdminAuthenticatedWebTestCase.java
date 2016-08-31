@@ -27,7 +27,8 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
 
     public static final String LAT_LONG_SECURITY_TEST = "latLongSecurityTest";
     public static final String TEST_SECURITY_COLLECTION = "test security collection";
-
+    public static final String TEST_LIST_COLLECTION = "test list collection";
+    
     @Before
     @Override
     public void setUp() {
@@ -119,6 +120,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
         }
 
         setInput("shares[0].name", TEST_SECURITY_COLLECTION);
+        setInput("resourceCollections[0].name", TEST_LIST_COLLECTION);
         if (file != null) {
             setInput("ticketId", ticketId);
             FileAccessRestriction access_ = FileAccessRestriction.PUBLIC;

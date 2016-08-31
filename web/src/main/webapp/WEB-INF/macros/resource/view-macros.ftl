@@ -474,7 +474,7 @@ View freemarker macros
         </div>
 
             <#nested>
-            <@common.resourceCollectionsRights collections=effectiveResourceCollections owner=resource.submitter />
+            <@common.resourceCollectionsRights collections=effectiveShares owner=resource.submitter />
         </#if>
     </#macro>
 

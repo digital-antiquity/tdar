@@ -102,7 +102,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
     private transient BookmarkedResourceService bookmarkedResourceService;
 
     private Long parentId;
-    private List<SharedCollection> collections = new LinkedList<>();
+    private List<HierarchicalCollection> collections = new LinkedList<>();
     private Long viewCount = 0L;
     private int startRecord = DEFAULT_START;
     private int recordsPerPage = getDefaultRecordsPerPage();
@@ -201,17 +201,17 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
             return;
         }
         getLogger().trace("child collections: begin");
-        Set<SharedCollection> findAllChildCollections = new HashSet<>();
+        Set<HierarchicalCollection> findAllChildCollections = new HashSet<>();
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), getActualClass());
             findAllChildCollections.addAll(getPersistable().getTransientChildren());
         } else {
             for (C c : resourceCollectionService.findDirectChildCollections(getId(), false, getActualClass())) {
-                findAllChildCollections.add((SharedCollection) c);
+                findAllChildCollections.add((HierarchicalCollection) c);
             }
         }
-        setCollections(new ArrayList<SharedCollection>(findAllChildCollections));
+        setCollections(new ArrayList<HierarchicalCollection>(findAllChildCollections));
         getLogger().trace("child collections: sort");
         Collections.sort(collections);
         getLogger().trace("child collections: end");
@@ -320,14 +320,14 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         this.recordsPerPage = recordsPerPage;
     }
 
-    public void setCollections(List<SharedCollection> findAllChildCollections) {
+    public void setCollections(List<HierarchicalCollection> findAllChildCollections) {
         if (getLogger().isTraceEnabled()) {
             getLogger().trace("child collections: {}", findAllChildCollections);
         }
         this.collections = findAllChildCollections;
     }
 
-    public List<SharedCollection> getCollections() {
+    public List<HierarchicalCollection> getCollections() {
         return this.collections;
     }
 

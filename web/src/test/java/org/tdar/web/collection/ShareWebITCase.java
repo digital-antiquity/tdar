@@ -145,7 +145,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         loginAdmin();
         Long parentId = 1575L;
 
-        gotoPage("/collection/add");
+        gotoPage("/share/add");
         String name = "testCreateChildCollection";
         String desc = "lame child colllection";
 
@@ -164,7 +164,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testAssignNonUserToCollection() {
         // try to create a collection and assign it to a person that is not a registered user.
-        gotoPage("/collection/add");
+        gotoPage("/share/add");
 
         // first lets start populating the person fields with a person that does not yet exist. tDAR should not create the person record on the fly, and
         // should not assign to the collection.
@@ -201,7 +201,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     @Test
     public void testAssignNonUserToCollection2() {
-        gotoPage("/collection/add");
+        gotoPage("/share/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
@@ -245,7 +245,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitFormWithoutErrorCheck();
 
         assertTrue(getPageText().contains("User does not exist"));
-        assertTrue(getCurrentUrlPath().contains("/collection/save"));
+        assertTrue(getCurrentUrlPath().contains("/share/save"));
 
         assertTextPresent("my fancy collection");
     }
@@ -255,7 +255,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     @Test
     public void testCollectionRightsRevoke() {
         //create test collection with basic user having adminGroup rights
-        gotoPage("/collection/add");
+        gotoPage("/share/add");
         String name = "my fancy collection";
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
