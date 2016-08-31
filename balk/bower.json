@@ -3,16 +3,16 @@
     "Adam Brin <abrin@digitalantiquity.org>"
   ],
   "dependencies": {
-    "bootstrap": "~2.3.2",
+    "bootstrap": "~3.3.7",
     "jquery": "~1.11.3",
-    "jquery-file-upload": "8.6.1",
+    "StickyTableHeaders": "~0.1.19",
     "svgxuse": "~1.1.17"
   },
-  "dependencies-cdn" : {
-      "README":"local dependency management, not managed by bower (see layout-bootstrap.dec)",
-      "jquery-validation": "~1.8.1",
-      "jquery": "~1.11.3",
-      "jquery-ui": "~1.11.4"
+  "dependencies-cdn": {
+    "README": "local dependency management, not managed by bower (see layout-bootstrap.dec)",
+    "jquery-validation": "~1.8.1",
+    "jquery": "~1.11.3",
+    "jquery-ui": "~1.11.4"
   },
   "homepage": "https://bitbucket.org/tdar/tdar.src",
   "ignore": [

@@ -72,3 +72,9 @@ hi ${authenticatedUser.username}
 <td></td>
 <td></td>
 </#macro>
+<script src="components/StickyTableHeaders/js/jquery.stickytableheaders.js"/>
+<script>
+$(document).ready(function() {
+    $("table").stickyTableHeaders();
+});
+</script>
