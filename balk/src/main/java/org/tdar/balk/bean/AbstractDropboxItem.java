@@ -13,6 +13,7 @@ import javax.persistence.InheritanceType;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.AbstractPersistable;
 
 @Entity(name = "dropbox_items")
@@ -131,4 +132,7 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
         this.tdarId = tdarId;
     }
 
+    public String getParentDirName() {
+        return StringUtils.substringBeforeLast(getPath(), "/");
+    }
 }

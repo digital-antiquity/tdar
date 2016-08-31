@@ -1,3 +1,5 @@
+<#setting url_escaping_charset="UTF-8">
+
         <div class="row">
           <div class="col-md-9" role="main">
 
@@ -15,18 +17,20 @@ hi ${authenticatedUser.username}
     <th> date</th> <th> who</th> <th> size</th> <th> tDAR ID</th>
 </tr>
 </thead>
-<# assign _path = ""/>
+<#assign _path = "/" />
+
 <#list itemStatusReport?keys as key>
 <#assign row = itemStatusReport[key] />
 <#assign path = key />
 <#if !row.usingWorkflow>
     <#assign path = row.first.path/> 
 </#if>
-<#assign _parentPath = _path?keep_before_last("/") />
-<#if _parentPath != _path>
+<#assign _parentPath = (path?keep_before_last("/"))!'' />
+
+<#if (_parentPath != _path) >
 <tr>
     <td colspan=50>${_parentPath}</td>
-    <#assign _path = _parentPath />
+    <#assign _path = path?keep_before_last("/") />
 </#if>
 <tr>
 <td>${path}</td>
@@ -57,7 +61,7 @@ hi ${authenticatedUser.username}
 
 <#macro _printrow item>
 <#if item?has_content>
-<td><#if item.dateModified?is_date>${item.dateModified?string.short}</#if></td>
+<td><#if item.dateModified?is_date><a href="https://www.dropbox.com/work${item.parentDirName?ensure_starts_with("/")?url_path}?preview=${item.name}" target="_blank">${item.dateModified?string.short}</#if></td>
 <td>${item.ownerId!''} </td>
 <td>${item.size!''}</td>
 </#if>
