@@ -15,10 +15,21 @@ hi ${authenticatedUser.username}
     <th> date</th> <th> who</th> <th> size</th> <th> tDAR ID</th>
 </tr>
 </thead>
+<# assign _path = ""/>
 <#list itemStatusReport?keys as key>
 <#assign row = itemStatusReport[key] />
+<#assign path = key />
+<#if !row.usingWorkflow>
+    <#assign path = row.first.path/> 
+</#if>
+<#assign _parentPath = _path?keep_before_last("/") />
+<#if _parentPath != _path>
 <tr>
-<td>${row.first.path}</td>
+    <td colspan=50>${_parentPath}</td>
+    <#assign _path = _parentPath />
+</#if>
+<tr>
+<td>${path}</td>
 <td>${row.first.extension}</td>
 <#if row.toPdf?has_content>
 	<@_printrow row.toPdf />

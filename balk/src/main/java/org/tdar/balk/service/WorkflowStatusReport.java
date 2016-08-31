@@ -8,7 +8,7 @@ public class WorkflowStatusReport {
     private DropboxFile toPdf;
     private DropboxFile doneOcr;
     private DropboxFile toUpload;
-
+    
     public boolean isUsingWorkflow() {
         if (toPdf == null && doneOcr == null && toUpload == null) {
             return false;
