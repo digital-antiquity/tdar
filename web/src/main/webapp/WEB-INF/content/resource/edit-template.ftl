@@ -392,8 +392,6 @@
             <@edit.relatedCollections inheritanceEnabled />
         </#if>
 
-        <@edit.resourceCollectionSection prefix="shares" label="Shares" list=shares />
-
         <@edit.fullAccessRights />
 
         <#if !resource.resourceType.project>

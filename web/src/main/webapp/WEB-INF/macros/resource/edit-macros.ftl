@@ -18,16 +18,16 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- Emit the choose-a-collection section -->
-    <#macro resourceCollectionSection prefix="resourceCollections" label="Collections" list=__resourceCollections>
+    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
         <#local _resourceCollections = [blankResourceCollection] />
-        <#if (__resourceCollections?? && !__resourceCollections.empty)>
-            <#local _resourceCollections = __resourceCollections />
+        <#if (list?? && !list.empty)>
+            <#local _resourceCollections = list />
         </#if>
         <@helptext.resourceCollection />
     <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
     <#if (ableToUploadFiles?? && ableToUploadFiles) || resource.resourceType.project >
-        <div id="${prefix}Table" class="control-group repeatLastRow" addAnother="add another collection">
-            <label class="control-label">Collection Name(s)</label>
+        <div id="${prefix}Table" class="control-group repeatLastRow" addAnother="add another ${label}">
+            <label class="control-label">${label} Name(s)</label>
 
             <div class="controls">
                 <#list _resourceCollections as resourceCollection>
@@ -335,8 +335,11 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
         <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
         <@helptext.accessRights />
 
+
     <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
         <h2><a name="accessRights"></a>Access Rights</h2>
+
+    <@resourceCollectionSection prefix="shares" label="Shares" list=shares />
 
         <h3>${label}</h3>
 
