@@ -11,6 +11,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.search.bean.CollectionSearchQueryObject;
@@ -39,6 +40,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
 
     private String term;
     private GeneralPermissions permission;
+    private CollectionType type;
 
     @Action(value = "collection", results = {
             @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "jsonInputStream" })
@@ -52,6 +54,7 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
         if (SearchUtils.checkMinString(getTerm(), getMinLookupLength())) {
             try {
                 CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
+                csqo.setType(type);
                 csqo.setPermission(getPermission());
                 csqo.getTitles().add(getTerm());
                 collectionSearchService.lookupCollection(getAuthenticatedUser(), csqo, this, this);
@@ -79,6 +82,14 @@ public class CollectionLookupAction extends AbstractLookupController<ResourceCol
 
     public void setTerm(String term) {
         this.term = term;
+    }
+
+    public CollectionType getType() {
+        return type;
+    }
+
+    public void setType(CollectionType type) {
+        this.type = type;
     }
 
 }

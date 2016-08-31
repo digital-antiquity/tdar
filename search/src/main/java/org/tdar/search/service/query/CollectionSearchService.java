@@ -89,6 +89,7 @@ public class CollectionSearchService extends AbstractSearchService {
     public LuceneSearchResultHandler<ResourceCollection> lookupCollection(TdarUser authenticatedUser, CollectionSearchQueryObject csqo,
             LuceneSearchResultHandler<ResourceCollection> result, TextProvider provider) throws ParseException, SolrServerException, IOException {
         ResourceCollectionQueryBuilder q = new ResourceCollectionQueryBuilder();
+        q.setOperator(Operator.AND);
         q.append(new AutocompleteTitleQueryPart(csqo.getTitles().get(0)));
         boolean admin = false;
         if (authorizationService.can(InternalTdarRights.VIEW_ANYTHING, authenticatedUser)) {
@@ -96,6 +97,9 @@ public class CollectionSearchService extends AbstractSearchService {
         }
         CollectionAccessQueryPart queryPart = new CollectionAccessQueryPart(authenticatedUser, admin, csqo.getPermission());
         q.append(queryPart);
+        if (csqo.getType() != null) {
+            q.append(new FieldQueryPart<>(QueryFieldNames.COLLECTION_TYPE, csqo.getType()));
+        }
         searchService.handleSearch(q, result, provider);
         return result;
 
