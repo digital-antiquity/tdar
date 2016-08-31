@@ -6,19 +6,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,6 +94,10 @@ public class ItemService {
 
     @Transactional(readOnly = false)
     public void store(DropboxItemWrapper dropboxItemWrapper) {
+        if (dropboxItemWrapper  == null || dropboxItemWrapper.getId() == null) {
+            logger.warn("id is null for path: {}", dropboxItemWrapper.getFullPath());
+            return;
+        }
         AbstractDropboxItem item = itemDao.findByDropboxId(dropboxItemWrapper.getId(), dropboxItemWrapper.isDir());
         if (item != null) {
             logger.trace("{} {}", dropboxItemWrapper.getPath(), item);
