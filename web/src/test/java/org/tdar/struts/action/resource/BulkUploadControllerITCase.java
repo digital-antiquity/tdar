@@ -608,7 +608,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // NEED TO SET THE TYPE OF THE ADHOC COLLECTION
         adHocCollection.setName("collection of bulk-uploaded resource collections");
         bulkUploadController.getAuthorizedUsers().add(new AuthorizedUser(getUser(), GeneralPermissions.MODIFY_RECORD));
-        bulkUploadController.getResourceCollections().add(adHocCollection);
+        bulkUploadController.getShares().add(adHocCollection);
 
         // saving
         bulkUploadController.setServletRequest(getServletPostRequest());

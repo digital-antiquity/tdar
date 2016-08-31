@@ -35,7 +35,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
     }
 
     public void createTestCollection(String name, String desc, List<? extends Resource> someResources) {
-        gotoPage("/collection/add");
+        gotoPage("/share/add");
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
 
@@ -118,7 +118,7 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
             setInput("status", status.name());
         }
 
-        setInput("resourceCollections[0].name", TEST_SECURITY_COLLECTION);
+        setInput("shares[0].name", TEST_SECURITY_COLLECTION);
         if (file != null) {
             setInput("ticketId", ticketId);
             FileAccessRestriction access_ = FileAccessRestriction.PUBLIC;

@@ -110,7 +110,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
         image.setDescription("test description");
         imageController.setServletRequest(getServletPostRequest());
         assertTrue(PersistableUtils.isNotNullOrTransient(coll));
-        imageController.getResourceCollections().add(coll);
+        imageController.getShares().add(coll);
         imageController.save();
         final Long imgId = image.getId();
         assertNotNull(imgId);
@@ -125,7 +125,7 @@ public class UserPermissionsITCase extends AbstractResourceControllerITCase {
 
         // Whaaat? p just removed the authuser entry that gives p the ability to edit this item in the first place. p, you crazy.
         imageController.getAuthorizedUsers().clear();
-        imageController.getResourceCollections().clear();
+        imageController.getShares().clear();
         imageController.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, imageController.save());
         evictCache();

@@ -71,7 +71,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
         setResourceLogEntries(resourceService.getLogsForResource(getResource()));
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
         getXmlFiles().addAll(FILESTORE.listXmlRecordFiles(FilestoreObjectType.RESOURCE, id));
     }
 

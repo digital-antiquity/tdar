@@ -250,7 +250,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
 
     private void loadEffectiveResourceCollections() {
         getResourceCollections().addAll(getResource().getSharedResourceCollections());
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
+        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
     }
 
     public Resource getResource() {

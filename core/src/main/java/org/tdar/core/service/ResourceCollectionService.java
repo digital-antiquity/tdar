@@ -747,7 +747,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public Set<RightsBasedResourceCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
+    public Set<RightsBasedResourceCollection> getEffectiveSharesForResource(Resource resource) {
         Set<RightsBasedResourceCollection> tempSet = new HashSet<>();
         for (SharedCollection collection : resource.getSharedResourceCollections()) {
             if (collection != null) {
@@ -764,6 +764,26 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         while (iter.hasNext()) {
             RightsBasedResourceCollection next = iter.next();
             if (CollectionUtils.isEmpty(((ResourceCollection)next).getAuthorizedUsers())) {
+                iter.remove();
+            }
+        }
+
+        return tempSet;
+    }
+    
+    @Transactional(readOnly = true)
+    public Set<ListCollection> getEffectiveResourceCollectionsForResource(Resource resource) {
+        Set<ListCollection> tempSet = new HashSet<>();
+        for (ListCollection collection : resource.getUnmanagedResourceCollections()) {
+            if (collection != null) {
+                tempSet.addAll(collection.getHierarchicalResourceCollections());
+            }
+        }
+
+        Iterator<ListCollection> iter = tempSet.iterator();
+        while (iter.hasNext()) {
+            ListCollection next = iter.next();
+            if (CollectionUtils.isEmpty(((ListCollection)next).getAuthorizedUsers())) {
                 iter.remove();
             }
         }

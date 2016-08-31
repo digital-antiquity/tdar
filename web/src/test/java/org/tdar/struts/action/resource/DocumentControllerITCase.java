@@ -627,7 +627,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		d.setDate(1234);
 		SharedCollection collection = new SharedCollection();
 		collection.setName(collectionname);
-		controller.getResourceCollections().add(collection);
+		controller.getShares().add(collection);
 
 		controller.setServletRequest(getServletPostRequest());
 		controller.save();

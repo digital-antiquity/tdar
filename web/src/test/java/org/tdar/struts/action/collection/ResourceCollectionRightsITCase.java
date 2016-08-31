@@ -307,7 +307,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         document.setTitle("test");
         document.setDescription("test");
         document.setDate(1234);
-        controller.getResourceCollections().add(collection1);
+        controller.getShares().add(collection1);
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
         evictCache();
@@ -442,11 +442,11 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getResourceCollections().add(new SharedCollection("test123", "test123", true, getBasicUser()));
+        controller.getShares().add(new SharedCollection("test123", "test123", true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
-        for (ResourceCollection c : controller.getResourceCollections()) {
+        for (ResourceCollection c : controller.getShares()) {
             if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
                 id = c.getId();
             }
@@ -487,11 +487,11 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getResourceCollections().add(new SharedCollection("test123", "test123", true, getBasicUser()));
+        controller.getShares().add(new SharedCollection("test123", "test123", true, getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
-        for (ResourceCollection c : controller.getResourceCollections()) {
+        for (ResourceCollection c : controller.getShares()) {
             if (c instanceof SharedCollection && ((SharedCollection) c).getTitle().equals("test123")) {
                 id = c.getId();
             }

@@ -25,7 +25,7 @@ import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
@@ -131,8 +131,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
     private KeywordNode<SiteTypeKeyword> approvedSiteTypeKeywords;
     private KeywordNode<CultureKeyword> approvedCultureKeywords;
 
-    private List<SharedCollection> resourceCollections = new ArrayList<>();
-    private List<RightsBasedResourceCollection> effectiveResourceCollections = new ArrayList<>();
+    private List<ListCollection> resourceCollections = new ArrayList<>();
+    private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
+
+    private List<SharedCollection> shares = new ArrayList<>();
+    private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
 
     private List<ResourceRelationship> resourceRelationships = new ArrayList<>();
 
@@ -535,7 +538,7 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
         if (authorizationService.canDo(getAuthenticatedUser(), getResource(), InternalTdarRights.EDIT_ANY_RESOURCE,
                 GeneralPermissions.MODIFY_RECORD)) {
-            resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, getResource().getSharedCollections(),
+            resourceCollectionService.saveResourceCollections(getResource(), shares, getResource().getSharedCollections(),
                     getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, SharedCollection.class);
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
@@ -611,14 +614,10 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         loadEffectiveResourceCollections();
     }
 
-    public void loadBasicViewMetadata() {
-        getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForResource(getResource(), getAuthenticatedUser()));
-        initializeResourceCreatorProxyLists(true);
-        loadEffectiveResourceCollections();
-    }
-
     private void loadEffectiveResourceCollections() {
-        getResourceCollections().addAll(getResource().getSharedResourceCollections());
+        getShares().addAll(getResource().getSharedResourceCollections());
+        getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+        getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
@@ -951,30 +950,30 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
      * @param resourceCollections
      *            the resourceCollections to set
      */
-    public void setResourceCollections(List<SharedCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
+    public void setShares(List<SharedCollection> resourceCollections) {
+        this.shares = resourceCollections;
     }
 
     /**
      * @return the resourceCollections
      */
-    public List<SharedCollection> getResourceCollections() {
-        return resourceCollections;
+    public List<SharedCollection> getShares() {
+        return shares;
     }
 
     /**
      * @return the effectiveResourceCollections
      */
-    public List<RightsBasedResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
+    public List<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
     }
 
     /**
      * @param effectiveResourceCollections
      *            the effectiveResourceCollections to set
      */
-    public void setEffectiveResourceCollections(List<RightsBasedResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
+    public void setEffectiveShares(List<RightsBasedResourceCollection> effectiveResourceCollections) {
+        this.effectiveShares = effectiveResourceCollections;
     }
 
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
@@ -1118,5 +1117,21 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
 
     public void setSelect2SingleEnabled(boolean select2SingleEnabled) {
         this.select2SingleEnabled = select2SingleEnabled;
+    }
+
+    public List<ListCollection> getEffectiveResourceCollections() {
+        return effectiveResourceCollections;
+    }
+
+    public void setEffectiveResourceCollections(List<ListCollection> effectiveResourceCollections) {
+        this.effectiveResourceCollections = effectiveResourceCollections;
+    }
+
+    public List<ListCollection> getResourceCollections() {
+        return resourceCollections;
+    }
+
+    public void setResourceCollections(List<ListCollection> resourceCollections) {
+        this.resourceCollections = resourceCollections;
     }
 }

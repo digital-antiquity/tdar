@@ -287,7 +287,7 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         detachedCollection.setHidden(false);
 //        detachedCollection.setSortBy(SortOption.RELEVANCE);
         detachedCollection.markUpdated(rc.getOwner());
-        controller.getResourceCollections().add(detachedCollection);
+        controller.getShares().add(detachedCollection);
         assertNotEquals(getUser(), rc.getOwner());
         assertNotNull(detachedCollection.getOwner());
         assertTrue(detachedCollection.isValid());
@@ -313,13 +313,13 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
 
         SharedCollection collection = new SharedCollection();
         collection.setName(name1);
-        controller.getResourceCollections().add(collection);
+        controller.getShares().add(collection);
 
         collection = new SharedCollection();
         collection.setName(name2);
-        controller.getResourceCollections().add(collection);
+        controller.getShares().add(collection);
 
-        assertUniqueCollections(controller.getResourceCollections(), name1, name2);
+        assertUniqueCollections(controller.getShares(), name1, name2);
         controller.setServletRequest(getServletPostRequest());
         String result = controller.save();
         assertEquals(Action.SUCCESS, result);

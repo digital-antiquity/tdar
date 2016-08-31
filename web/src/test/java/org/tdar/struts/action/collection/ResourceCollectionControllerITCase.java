@@ -649,7 +649,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         fakeIncoming.setName(collection1.getName());
         fakeIncoming.setId(collection1.getId());
         controller.setServletRequest(getServletPostRequest());
-        controller.getResourceCollections().add(fakeIncoming);
+        controller.getShares().add(fakeIncoming);
         assertEquals(Action.SUCCESS, controller.save());
         RightsBasedResourceCollection first = document.getRightsBasedResourceCollections().iterator().next();
         assertEquals(1, document.getRightsBasedResourceCollections().size());
@@ -670,7 +670,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         document.setDescription("test");
         document.setDate(1234);
         controller.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL));
-        controller.getResourceCollections().add(collection1);
+        controller.getShares().add(collection1);
         controller.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, controller.save());
 
@@ -749,8 +749,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         docController.setId(doc.getId());
         docController.prepare();
         docController.edit();
-        docController.getResourceCollections().clear();
-        docController.getResourceCollections().add(fake);
+        docController.getShares().clear();
+        docController.getShares().add(fake);
         docController.setServletRequest(getServletPostRequest());
         assertEquals(Action.SUCCESS, docController.save());
         evictCache();
