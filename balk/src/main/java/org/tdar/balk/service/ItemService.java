@@ -235,6 +235,9 @@ public class ItemService {
             key = StringUtils.replace(key, "_ocr_pdfa.pdf", ".pdf");
             map.putIfAbsent(key, new WorkflowStatusReport());
             WorkflowStatusReport status = map.get(key);
+            if (status.getFirst() == null) {
+                status.setFirst(file);
+            }
             String path1 = "/Client Data/Create PDFA/input/";
             String path2 = "/Client Data/Create PDFA/output/";
             String path3 = "/Client Data/Upload to tDAR/";

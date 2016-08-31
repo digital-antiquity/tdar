@@ -5,46 +5,37 @@ hi ${authenticatedUser.username}
 
 <table class="table">
 <thead>
+    <tr>
+        <th>path</th> <th>extension</th> <th colspan=3>to PDF</th> <th colspan=3>done PDF</th> <th colspan=4>to Upload</th>
+    </tr>
 <tr>
-<th>path</th>
-<th>extension</th>
-<th colspan=3>to PDF</th>
-<th colspan=3>done PDF</th>
-<th colspan=4>to Upload</th>
-</tr>
-<tr>
-<th></th>
-<th></th>
-<th> date</th>
-<th> who</th>
-<th> size</th>
-<th> date</th>
-<th> who</th>
-<th> size</th>
-<th> date</th>
-<th> who</th>
-<th> size</th>
-<th> tDAR ID</th>
+    <th></th> <th></th>
+    <th> date</th> <th> who</th> <th> size</th>
+    <th> date</th> <th> who</th> <th> size</th>
+    <th> date</th> <th> who</th> <th> size</th> <th> tDAR ID</th>
 </tr>
 </thead>
 <#list itemStatusReport?keys as key>
+<#assign row = itemStatusReport[key] />
 <tr>
-<td>${itemStatusReport[key].first.path}</td>
-<td>${itemStatusReport[key].first.extension}</td>
-<#if itemStatusReport[key].toPdf?has_content>
-	<@_printrow itemStatusReport[key].toPdf />
+<td>${row.first.path}</td>
+<td>${row.first.extension}</td>
+<#if row.toPdf?has_content>
+	<@_printrow row.toPdf />
 <#else>
 	<@_blankrow />
 </#if>
-<#if itemStatusReport[key].doneOcr?has_content>
-	<@_printrow itemStatusReport[key].doneOcr />
+<#if row.doneOcr?has_content>
+	<@_printrow row.doneOcr />
 <#else>
 	<@_blankrow />
 </#if>
-<#if itemStatusReport[key].toUpload?has_content>
-	<@_printrow itemStatusReport[key].toUpload />
-    <td><a href="http://core.tdar.org/resource/${itemStatusReport[key].toUpload.tdarId?c}">${itemStatusReport[key].toUpload.tdarId?c}</a></td>
-<#else>
+<#if row.toUpload?has_content>
+	<@_printrow row.toUpload />
+    <td>
+        <#if (row.toUpload.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarId?c}">${row.toUpload.tdarId?c}</a></#if>
+    </td>
+ <#else>
 	<@_blankrow />
 </#if>
 </tr>
