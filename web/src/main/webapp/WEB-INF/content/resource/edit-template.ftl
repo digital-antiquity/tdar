@@ -334,7 +334,8 @@
             </div>
         <#else>
             <h2>${siteAcronym} Collections</h2>
-            <@edit.resourceCollectionSection />
+            <@edit.resourceCollectionSection prefix="resourceCollections" label="Collections" list=resourceCollections />
+
 
         <#if !resource.resourceType.project>
             <h4>Create a Project</h4>

@@ -18,10 +18,10 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- Emit the choose-a-collection section -->
-    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
+    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=lst >
         <#local _resourceCollections = [blankResourceCollection] />
-        <#if (list?? && !list.empty)>
-            <#local _resourceCollections = list />
+        <#if (lst?has_content && (lst.size!0 > 0) )>
+            <#local _resourceCollections = lst />
         </#if>
         <@helptext.resourceCollection />
     <div data-tiplabel="${siteAcronym} ${label}" data-tooltipcontent="#divResourceCollectionListTips">
