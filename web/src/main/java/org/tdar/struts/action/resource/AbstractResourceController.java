@@ -926,7 +926,11 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         return new ResourceAnnotation(new ResourceAnnotationKey(), "");
     }
 
-    public SharedCollection getBlankResourceCollection() {
+    public ListCollection getBlankResourceCollection() {
+        return new ListCollection();
+    }
+
+    public SharedCollection getBlankShare() {
         return new SharedCollection();
     }
 

@@ -18,8 +18,12 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- Emit the choose-a-collection section -->
-    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=lst >
+    <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
         <#local _resourceCollections = [blankResourceCollection] />
+        <#if prefix=='shares'>
+            <#local _resourceCollections = [blankShare] />
+        </#if> 
+               
         <#if (lst?has_content && (lst.size!0 > 0) )>
             <#local _resourceCollections = lst />
         </#if>
@@ -329,7 +333,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- provides a fieldset just for full user access -->
-    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource">
+    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource" type="resource">
         <#local _authorizedUsers=authorizedUsers />
         <#local _isSubmitter = authenticatedUser.id == ((persistable.submitter.id)!-1)>
         <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
@@ -339,7 +343,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
     <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
         <h2><a name="accessRights"></a>Access Rights</h2>
 
-    <@resourceCollectionSection prefix="shares" label="Shares" list=shares />
+    <#if type == 'resource'>
+        <@resourceCollectionSection prefix="shares" label="Shares" list=shares />
+    </#if>
 
         <h3>${label}</h3>
 
