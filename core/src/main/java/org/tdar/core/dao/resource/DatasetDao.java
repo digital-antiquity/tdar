@@ -535,6 +535,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         // getDao().synchronize();
 
+        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > 50_000_000) {
+            return null;
+        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
@@ -548,10 +551,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
             FileProxyWrapper wrapper = new FileProxyWrapper(dataset, analyzer, this, Arrays.asList(fileProxy));
             wrapper.processMetadataForFileProxies();
             irFile = fileProxy.getInformationResourceFile();
-            InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.TRANSLATED, filename, irFile);
-            irFile.getInformationResourceFileVersions().add(version);
-            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
-            informationResourceFileDao.saveOrUpdate(version);
+//            InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.TRANSLATED, filename, irFile);
+//            irFile.getInformationResourceFileVersions().add(version);
+//            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
+//            informationResourceFileDao.saveOrUpdate(version);
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
         } finally {
