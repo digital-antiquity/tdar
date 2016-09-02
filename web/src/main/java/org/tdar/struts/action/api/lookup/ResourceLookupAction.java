@@ -104,8 +104,10 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
                 Set<Long> resourceIds = new HashSet<Long>();
                 for (Indexable result_ : getResults()) {
                     Resource resource = (Resource) result_;
-                    if (resource != null && resource.isViewable() && resource.getSharedCollections().contains(collectionContainer)) {
-                        resourceIds.add(resource.getId());
+                    if (resource != null && resource.isViewable()) {
+                        if (resource.getSharedCollections().contains(collectionContainer) || resource.getUnmanagedResourceCollections().contains(collectionContainer)) {
+                            resourceIds.add(resource.getId());
+                        }
                     }
                 }
                 getResult().put(SELECTED_RESULTS, resourceIds);
