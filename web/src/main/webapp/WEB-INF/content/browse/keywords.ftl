@@ -31,7 +31,7 @@
         <h4>External Relationships</h4>
         <ul>
             <#items as item>
-                <li><a href="${item.relation}">${item.label!item.relation}</a> (${item.relationType.term})</li>
+                <li><a href="${item.relation}">${item.label!item.relation}</a> (${item.relationType.term}<#if item.relationHost?has_content> - ${item.relationHost!''}</#if>)</li>
             </#items>        
         </ul>
         <#else>

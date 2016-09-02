@@ -285,7 +285,7 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         if (creatorType == CreatorType.INSTITUTION) {
             return Arrays.asList(ResourceCreatorRole.RESOURCE_PROVIDER);
         } else if (creatorType == CreatorType.PERSON) {
-            return Arrays.asList(ResourceCreatorRole.SUBMITTER, ResourceCreatorRole.UPDATER);
+            return Arrays.asList(ResourceCreatorRole.SUBMITTER, ResourceCreatorRole.UPDATER); //, ResourceCreatorRole.UPLOADER (add after reindex)
         }
         return Collections.emptyList();
     }
