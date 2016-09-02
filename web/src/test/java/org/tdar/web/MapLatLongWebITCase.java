@@ -30,12 +30,12 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/share/add");
         setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
         setInput("resourceCollection.description", "test for map secuity");
-        setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
+//        setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
         setInput("resourceCollection.hidden", "false");
         setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
-        String url = getCurrentUrlPath() + "?type=1";
+        String url = getCurrentUrlPath() + "?type=1&orientation=MAP";
         LatitudeLongitudeBox latLong = new LatitudeLongitudeBox();
         latLong.setNorth(45.336701909968106);
         latLong.setSouth(32.175612478499325);

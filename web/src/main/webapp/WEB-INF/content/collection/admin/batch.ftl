@@ -6,6 +6,10 @@
 
 <head>
 <title>Admin: ${collection.name}</title>
+<style>
+textarea {height:10rem;}
+</style>
+
 </head>
 <body>
 
@@ -64,8 +68,5 @@ $(document).ready(function() {
     TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
 });
 </script>
-<style>
-textarea {height:10rem;}
-</style>
 </body>
 </#escape>
