@@ -51,7 +51,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         // add basic user
         loginAdmin();
-        gotoEdit(url);
+        gotoEdit(url, CollectionType.SHARED);
         applyEditPageHacks();
         addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
         submitForm();
@@ -67,7 +67,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         // change view permission
         loginAdmin();
-        gotoEdit(url);
+        gotoEdit(url, CollectionType.SHARED);
         applyEditPageHacks();
         setFieldByName("resourceCollection.hidden", "false");
         submitForm();
@@ -94,7 +94,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true, CollectionType.LIST);
-        gotoEdit(url);
+        gotoEdit(url, CollectionType.LIST);
         applyEditPageHacks();
 
         WebElementSelection select = find(By.id("collection-selector"));
@@ -134,7 +134,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 TAG_FAUNAL_WORKSHOP,
                 _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
-        gotoEdit(url);
+        gotoEdit(url, CollectionType.SHARED);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
         submitForm();
 
@@ -144,8 +144,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         logout();
         login();
-        gotoEdit(url);
-        gotoEdit(url);
+        gotoEdit(url, CollectionType.SHARED);
+        gotoEdit(url, CollectionType.SHARED);
         // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         submitForm();
@@ -256,11 +256,17 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         return url;
     }
 
-    private void gotoEdit(String url_) {
+    private void gotoEdit(String url_, CollectionType type) {
         String url = url_;
         url = url.substring(0, url.lastIndexOf("/"));
         logger.debug(getCurrentUrl());
-        gotoPage(url + "/edit");
+        String id = StringUtils.substringAfterLast(url, "/");
+        if (type == CollectionType.LIST) {
+            gotoPage("/collection/"+ id +"/edit");
+        }
+        if (type == CollectionType.SHARED) {
+            gotoPage("/share/"+ id +"/edit");
+        }
         logger.debug(getCurrentUrl());
         // find(By.linkText(" edit")).click();
         waitForPageload();
