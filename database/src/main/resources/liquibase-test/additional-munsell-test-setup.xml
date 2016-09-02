@@ -53,18 +53,13 @@
         </insert>
         <insert tableName="collection">
 			<column name="id" valueNumeric="999"/>
-			<column name="description_admin"/>
 			<column name="date_created" valueDate="2014-10-06 15:32:40.494"/>
 			<column name="date_updated" valueDate="2014-10-06 15:35:40.773"/>
-			<column name="description"/>
 			<column name="name" value="download authorization"/>
 			<column name="orientation" value="LIST"/>
-			<column name="secondary_sort_order"/>
-			<column name="sort_order" value="TITLE"/>
 			<column name="collection_type" value="SHARE"/>
-			<column name="visible" valueBoolean="true"/>
+			<column name="hidden" valueBoolean="false"/>
 			<column name="owner_id" valueNumeric="8344"/>
-			<column name="parent_id"/>
 			<column name="updater_id" valueNumeric="8344"/>
         </insert>
         <insert tableName="download_authorization">
