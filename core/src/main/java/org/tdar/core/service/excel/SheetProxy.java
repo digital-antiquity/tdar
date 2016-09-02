@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.ExcelWorkbookWriter;
@@ -31,7 +32,7 @@ public class SheetProxy implements Serializable {
     private int startCol = ExcelWorkbookWriter.FIRST_COLUMN;
     private String noteRow;
     private Iterator<Object[]> data;
-
+    private boolean lowMemory;
     // private static Callback NO_OP = new Callback() {public void apply(Workbook ignored){}};
 
     private Callback preCallback = null;
@@ -55,7 +56,12 @@ public class SheetProxy implements Serializable {
         if (version == SpreadsheetVersion.EXCEL97) {
             workbook = new HSSFWorkbook();
         } else {
-            workbook = new XSSFWorkbook();
+            if (lowMemory) {
+                workbook = new SXSSFWorkbook(10);
+                ((SXSSFWorkbook)workbook).setCompressTempFiles(true);
+            } else {
+                workbook = new XSSFWorkbook();
+            }
         }
     }
 
@@ -219,6 +225,14 @@ public class SheetProxy implements Serializable {
 
     public void setAutosizeCols(boolean autosizeCols) {
         this.autosizeCols = autosizeCols;
+    }
+
+    public boolean isLowMemory() {
+        return lowMemory;
+    }
+
+    public void setLowMemory(boolean lowMemory) {
+        this.lowMemory = lowMemory;
     }
 
 }

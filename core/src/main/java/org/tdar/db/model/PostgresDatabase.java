@@ -235,7 +235,8 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     public <T> T selectAllFromTableInImportOrder(DataTable table, ResultSetExtractor<T> resultSetExtractor, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = getSelectAll(table, includeGeneratedValues);
         builder.getOrderBy().add(DataTableColumn.TDAR_ROW_ID.getName());
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        LowMemoryStatementCreator lmsc = new LowMemoryStatementCreator(builder.toSql());
+        return jdbcTemplate.query(lmsc, resultSetExtractor);
     }
 
     @Override
