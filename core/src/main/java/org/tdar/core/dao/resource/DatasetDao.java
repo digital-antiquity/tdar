@@ -1,5 +1,6 @@
 package org.tdar.core.dao.resource;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -535,9 +536,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         // getDao().synchronize();
 
-        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > 50_000_000) {
-            return null;
-        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
@@ -588,12 +586,17 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     proxy.setData(new ResultSetIterator(resultSet));
                     getLogger().debug("column names: " + headerLabels);
                     workbookWriter.addSheets(proxy);
+                    
                     return true;
                 }
             };
             tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
         }
-        proxy.getWorkbook().write(outputStream);
+        BufferedOutputStream stream = new BufferedOutputStream(outputStream);
+        proxy.getWorkbook().write(stream);
+        proxy.getWorkbook().close();
+        IOUtils.closeQuietly(stream);
+        
         return proxy;
     }
 

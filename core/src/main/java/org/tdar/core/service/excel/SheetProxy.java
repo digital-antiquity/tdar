@@ -58,6 +58,7 @@ public class SheetProxy implements Serializable {
         } else {
             if (lowMemory) {
                 workbook = new SXSSFWorkbook(10);
+                ((SXSSFWorkbook)workbook).setCompressTempFiles(true);
             } else {
                 workbook = new XSSFWorkbook();
             }
