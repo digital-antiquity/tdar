@@ -27,7 +27,7 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
     public void testAddingInformationResourceToProject() {
         TestConfiguration config = TestConfiguration.getInstance();
 
-        gotoPage("/collection/add");
+        gotoPage("/share/add");
         setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());

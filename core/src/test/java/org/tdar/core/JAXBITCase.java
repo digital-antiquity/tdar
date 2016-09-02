@@ -38,6 +38,8 @@ import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.FileProxies;
 import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.RelationType;
+import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.CoverageType;
@@ -119,6 +121,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
         geos.getOtherKeywords().add(new OtherKeyword("map"));
         geos.getInvestigationTypes().add(new InvestigationType("Architectural Survey"));
         geos.getMaterialKeywords().add(new MaterialKeyword("Ceramic"));
+        geos.getUnmanagedResourceCollections().add(new ListCollection("test", "test", SortOption.TITLE, true, getAdminUser()));
         geos.getResourceNotes().add(new ResourceNote(ResourceNoteType.GENERAL, "collected around the national monument"));
         geos.getLatitudeLongitudeBoxes().add(new LatitudeLongitudeBox(-77.05041825771332, 38.889028630817144, -77.04992473125458, 38.88953803591012));
         geos.setTitle("map of ceramics around national monument");

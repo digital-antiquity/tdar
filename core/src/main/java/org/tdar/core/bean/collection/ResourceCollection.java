@@ -309,7 +309,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    public <R extends ResourceCollection> void copyImmutableFieldsFrom(R resource) {
+    public void copyImmutableFieldsFrom(ResourceCollection resource) {
         this.setDateCreated(resource.getDateCreated());
         this.setOwner(resource.getOwner());
         this.setType(resource.getType());
@@ -321,7 +321,7 @@ public abstract class ResourceCollection extends AbstractPersistable
         if (resource instanceof HierarchicalCollection && this instanceof HierarchicalCollection) {
             ((HierarchicalCollection)this).setParent(((HierarchicalCollection) resource).getParent());
         }
-        if (resource instanceof VisibleCollection && this instanceof VisibleCollection) {
+        if (resource instanceof ListCollection && this instanceof ListCollection) {
             ((ListCollection)this).getUnmanagedResources().addAll(((ListCollection) resource).getUnmanagedResources());
         }
     }

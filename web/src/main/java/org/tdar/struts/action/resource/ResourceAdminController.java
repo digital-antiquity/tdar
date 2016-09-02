@@ -44,7 +44,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     private List<ResourceRevisionLog> resourceLogEntries;
 
     private List<ResourceRevisionLog> logEntries;
-    private Set<RightsBasedResourceCollection> effectiveResourceCollections = new HashSet<>();
+    private Set<RightsBasedResourceCollection> effectiveShares = new HashSet<>();
     private List<File> xmlFiles = new ArrayList<>();
 
     private Resource resource;
@@ -71,7 +71,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
             addActionError(getText("resourceAdminController.valid_resource_required"));
         }
         setResourceLogEntries(resourceService.getLogsForResource(getResource()));
-        getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
+        getEffectiveShares ().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
         getXmlFiles().addAll(FILESTORE.listXmlRecordFiles(FilestoreObjectType.RESOURCE, id));
     }
 
@@ -107,12 +107,12 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
         this.resource = resource;
     }
 
-    public Set<RightsBasedResourceCollection> getEffectiveResourceCollections() {
-        return effectiveResourceCollections;
+    public Set<RightsBasedResourceCollection> getEffectiveShares() {
+        return effectiveShares;
     }
 
-    public void setEffectiveResourceCollections(Set<RightsBasedResourceCollection> effectiveResourceCollections) {
-        this.effectiveResourceCollections = effectiveResourceCollections;
+    public void setEffectiveShares(Set<RightsBasedResourceCollection> effectiveResourceCollections) {
+        this.effectiveShares = effectiveResourceCollections;
     }
 
     public List<GeneralPermissions> getAvailablePermissions() {

@@ -1293,6 +1293,19 @@ public class Resource implements Persistable,
 //        }
 //        return resourceCollections;
 //    }
+    
+    @XmlElementWrapper(name = "listCollections")
+    @XmlElementRefs({
+        @XmlElementRef(name = "listCollection", type = ListCollection.class, required = false),
+        @XmlElementRef(name = "listCollectionRef", type = JAXBPersistableRef.class, required = false)
+    })
+    public Set<ListCollection> getUnmanagedResourceCollections() {
+        return unmanagedResourceCollections;
+    }
+    
+    public void setUnmanagedResourceCollections(Set<ListCollection> publicResourceCollections) {
+        this.unmanagedResourceCollections = publicResourceCollections;
+    }
 
     @XmlElementWrapper(name = "sharedCollections")
     @XmlElementRefs({
@@ -1303,6 +1316,7 @@ public class Resource implements Persistable,
     public Set<SharedCollection> getSharedCollections() {
         return sharedCollections;
     }
+
 
     @Transient
     public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
@@ -1761,14 +1775,6 @@ public class Resource implements Persistable,
 
     public void setFormattedDescription(String formattedDescription) {
         this.formattedDescription = formattedDescription;
-    }
-
-    public Set<ListCollection> getUnmanagedResourceCollections() {
-        return unmanagedResourceCollections;
-    }
-
-    public void setUnmanagedResourceCollections(Set<ListCollection> publicResourceCollections) {
-        this.unmanagedResourceCollections = publicResourceCollections;
     }
 
     public Collection<ListCollection> getVisibleUnmanagedResourceCollections() {

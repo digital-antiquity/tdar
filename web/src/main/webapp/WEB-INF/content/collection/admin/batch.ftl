@@ -58,6 +58,7 @@
     </div>
 
 </div>
+</div>
 <script>
 $(document).ready(function() {
     TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});

@@ -79,7 +79,7 @@ Common macros used in multiple contexts
 <#-- @param collections:list? a list of resourceCollections -->
 <#-- @param owner:object? Person object representing the collection owner
 <#-- FIXME:  both of these parameters have invalid defaults. consider making them mandatory  -->
-    <#macro resourceCollectionsRights collections=effectiveResourceCollections_ owner="">
+    <#macro resourceCollectionsRights collections=[] owner="">
         <#if collections?has_content>
         <h3>Access Permissions</h3>
             <#nested />
