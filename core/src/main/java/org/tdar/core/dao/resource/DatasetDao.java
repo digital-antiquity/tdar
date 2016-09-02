@@ -536,6 +536,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         // getDao().synchronize();
 
+        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > 75_000_000) {
+            return null;
+        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
