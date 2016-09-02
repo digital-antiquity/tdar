@@ -57,7 +57,7 @@
 			<column name="date_updated" valueDate="2014-10-06 15:35:40.773"/>
 			<column name="name" value="download authorization"/>
 			<column name="orientation" value="LIST"/>
-			<column name="collection_type" value="SHARE"/>
+			<column name="collection_type" value="SHARED"/>
 			<column name="hidden" valueBoolean="false"/>
 			<column name="owner_id" valueNumeric="8344"/>
 			<column name="updater_id" valueNumeric="8344"/>
