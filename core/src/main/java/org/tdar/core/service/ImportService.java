@@ -339,6 +339,16 @@ public class ImportService {
             }
         }
 
+        if (incomingResource instanceof Dataset) {
+            // wipe out internal names
+            for (DataTable table : ((Dataset) incomingResource).getDataTables()) {
+                table.setName(null);
+                for (DataTableColumn col : table.getDataTableColumns()) {
+                    col.setName(null);
+                }
+            }
+        }
+        
         if (incomingResource instanceof InformationResource) {
             InformationResource informationResource = (InformationResource) incomingResource;
 
