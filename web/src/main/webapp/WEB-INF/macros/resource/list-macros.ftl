@@ -344,14 +344,18 @@ bookmark indicator, etc..
                 <#assign status = "disabled-bookmark" />
 
                 <#if _resource.bookmarked>
-                    <#assign status = "un-bookmark" />
+                    <#local status = "un-bookmark" />
+                    <#local state = "bookmarked" />
+                    <#local icon = "icon-star" />
                 <#else>
-                    <#assign status = "bookmark" />
+                    <#local status = "bookmark" />
+                    <#local state = "bookmark" />
+                    <#local icon = "icon-star-empty" />
                 </#if>
-
                 <div class="btn-group pull-right bookmark-menu">
-                  <button class="btn btn-mini bookmark-link" resource-id="${_resource.id?c}" bookmark-state="<#if _resource.bookmarked>bookmarked<#else>bookmark</#if>">
-                        <i title="bookmark or unbookmark" class="icon-star"></i>
+                  
+                  <button class="btn btn-mini bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
+                        <i title="bookmark or unbookmark" class="${icon} bookmarkicon"></i>
                   </button>
                   <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
                     <span class="caret"></span>

@@ -567,22 +567,25 @@ TDAR.common = function (TDAR, fileupload) {
         var state = $this.attr("bookmark-state");
         var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
         $this.prepend($waitingElem);
-        var $icon = $(".bookmark-icon", $this);
+        var $icon = $(".bookmarkicon", $this);
         $icon.hide();
         //console.log(resourceId + ": " + state);
-        var oldclass = "tdar-icon-" + state;
+        var oldclass = "icon-star-empty";
         var newtext = "un-bookmark";
         var newstate = "bookmarked";
         var action = "bookmarkAjax";
         var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
-
+        var newclass = "icon-star";
+        
         if (state == 'bookmarked') {
             newtext = "bookmark";
             newstate = "bookmark";
             action = "removeBookmarkAjax";
+            oldclass = "icon-star";
+            newclass = "icon-star-empty";
             newUrl = "/resource/bookmark?resourceId=" + resourceId;
         }
-        var newclass = "tdar-icon-" + newstate;
+//        var newclass = "tdar-icon-" + newstate;
 
         $.post(TDAR.uri() + "api/resource/" + action + "?resourceId=" + resourceId, function (data) {
                     if (data.success) {
