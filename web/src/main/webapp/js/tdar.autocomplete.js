@@ -529,14 +529,14 @@ TDAR.autocomplete = (function () {
                 }
                 var ocur = "";
                 if (item.occurrence != undefined && item.occurrence != 0) {
-                    ocur = item.occurrence;
+                    ocur = "(" + item.occurrence + ")";
                 }
-                var extra = "<span class='pull-right'>" + ocur + " " + star + "&nbsp;&nbsp;</span>";
+                var extra = "<span class='pull-right'>" + star + ocur + " " + "&nbsp;&nbsp;</span>";
 
                 return $("<li></li>").data("item.autocomplete", item).append("<a  title=\"" + TDAR.common.htmlDecode(item.label) + "\">" + TDAR.common.htmlDoubleEncode(item.value) + extra + " </a>").appendTo(ul);
             };
             options.customHeader = function() {
-                return $("<li class='header-auto'>Term <span class='header-auto pull-right'>Frequency / Suggested</span></li>");
+                return $("<li class='header-auto'>Term <span class='header-auto pull-right'>Suggested (# of ocur.)</span></li>");
             }
         };
         _applyGenericAutocomplete($(selector), options);

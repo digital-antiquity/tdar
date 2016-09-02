@@ -270,6 +270,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         map.get(ResourceCreatorRole.SUBMITTER).add(resource.getSubmitter());
         map.get(ResourceCreatorRole.UPDATER).add(resource.getUpdatedBy());
+        map.get(ResourceCreatorRole.UPLOADER).add(resource.getUploader());
         Set<String> roles = new HashSet<>();
         Set<String> names = new HashSet<>();
         for (ResourceCreator rc : resource.getActiveResourceCreators()) {
