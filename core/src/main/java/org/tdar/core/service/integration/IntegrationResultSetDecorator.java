@@ -220,7 +220,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
         if (previewCount.containsKey(tableId)) {
             rowCount = previewCount.get(tableId);
         }
-        if (rowCount < TdarConfiguration.getIntegrationPreviewSizePerDataTable()) {
+        if (rowCount < TdarConfiguration.getInstance().getIntegrationPreviewSizePerDataTable()) {
             rowCount++;
             logger.trace("{} {}{}", row);
             getPreviewData().add(values.toArray(new String[0]));

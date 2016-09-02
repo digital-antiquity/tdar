@@ -536,7 +536,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         // getDao().synchronize();
 
-        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > 75_000_000) {
+        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > TdarConfiguration.getInstance().getMaxTranslatedFileSize()) {
             return null;
         }
         InformationResourceFile irFile = null;
