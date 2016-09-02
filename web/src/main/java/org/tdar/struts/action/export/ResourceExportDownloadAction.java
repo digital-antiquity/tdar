@@ -4,6 +4,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -44,8 +46,9 @@ public class ResourceExportDownloadAction extends TdarActionSupport implements P
                     params = {
                             "contentType", "application/zip",
                             "inputName", "inputStream",
-                            "contentDisposition", "Content-Disposition:attachment;filename=\"$filename}\""
-                    })
+                            "contentDisposition", "Content-Disposition:attachment;filename=\"${filename}\""
+                    }),
+            @Result(name = INPUT, location="request.ftl")
     })
     public String execute() {
         return SUCCESS;
@@ -59,10 +62,12 @@ public class ResourceExportDownloadAction extends TdarActionSupport implements P
         this.inputStream = inputStream;
     }
 
-    public String getFilename() {
+    public String getFilename(){
         return filename;
     }
 
+    @RequiredStringValidator(message = "no filename provided")
+    @StringLengthFieldValidator(message = "filename invalid", maxLength = "100", minLength = "1")
     public void setFilename(String filename) {
         this.filename = filename;
     }
