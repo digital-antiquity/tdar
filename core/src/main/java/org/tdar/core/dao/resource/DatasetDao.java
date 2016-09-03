@@ -632,4 +632,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         }
         return columnNames;
     }
+
+    public boolean checkExists(DataTable dataTable) {
+        return tdarDataImportDatabase.checkTableExists(dataTable);
+    }
 }

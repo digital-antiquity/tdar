@@ -44,6 +44,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.DatabaseMetaDataCallback;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
+import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.CodingRule;
@@ -924,6 +925,20 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         String sql = String.format("select table_to_xml('%s',true,false,'');", dataTable.getName());
         logger.debug(sql);
         return jdbcTemplate.queryForObject(sql, String.class);
+    }
+
+    @Override
+    @Transactional(value = "tdarDataTx", readOnly = true)
+    public boolean checkTableExists(DataTable dataTable) {
+        String sql = String.format("select * from \"%s\" limit 1", dataTable.getName());
+        logger.trace(sql);
+        try {
+            SqlRowSet queryForRowSet = jdbcTemplate.queryForRowSet(sql);
+            queryForRowSet.next();
+            return true;
+        } catch (Throwable e) {
+            return false;
+        }
     }
 
 }
