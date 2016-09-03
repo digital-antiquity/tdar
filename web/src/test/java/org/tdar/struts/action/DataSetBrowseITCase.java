@@ -25,6 +25,7 @@ import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.datatable.DataTableBrowseController;
+import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 

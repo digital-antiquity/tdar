@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.struts.TdarStrutsTestCase;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 //@Ignore
 public class StrutsIndexControllerITCase extends TdarStrutsTestCase<TdarActionSupport> {

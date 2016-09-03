@@ -30,7 +30,7 @@ import org.tdar.core.service.integration.dto.IntegrationDeserializationException
 import org.tdar.core.service.resource.DataTableService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.api.integration.IntegrationColumnDetailsAction;
 import org.tdar.struts.action.api.integration.NodeParticipationByColumnAction;

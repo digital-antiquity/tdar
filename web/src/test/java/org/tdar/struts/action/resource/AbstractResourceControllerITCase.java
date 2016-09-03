@@ -21,7 +21,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.billing.BillingAccountController;
 import org.tdar.struts.action.billing.CouponCreationAction;
 

@@ -30,7 +30,7 @@ import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.activity.Activity;
 import org.tdar.utils.activity.IgnoreActivity;
 import org.tdar.utils.json.JsonLookupFilter;

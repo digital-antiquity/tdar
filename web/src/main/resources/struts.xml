@@ -44,34 +44,34 @@
             as a "prefix" for other stacks -->
         <result-types>
             <result-type name="tdar-redirect"
-                class="org.tdar.struts.result.RedirectResult" />
+                class="org.tdar.struts_base.result.RedirectResult" />
             <result-type name="jaxbdocument"
-                class="org.tdar.struts.result.JaxbDocumentResult" />
+                class="org.tdar.struts_base.result.JaxbDocumentResult" />
             <result-type name="xmldocument"
-                class="org.tdar.struts.result.XMLDocumentResult" />
+                class="org.tdar.struts_base.result.XMLDocumentResult" />
             <result-type name="jsonresult"
-                class="org.tdar.struts.result.JsonDocumentResult" />
+                class="org.tdar.struts_base.result.JsonDocumentResult" />
             <result-type name="freemarkerhttp"
-                class="org.tdar.struts.result.FreemarkerHttpHeaderResult" />
+                class="org.tdar.struts_base.result.FreemarkerHttpHeaderResult" />
             <result-type name="streamhttp"
-                class="org.tdar.struts.result.StreamHttpStatusResult" />
+                class="org.tdar.struts_base.result.StreamHttpStatusResult" />
         </result-types>
         <interceptors>
             <interceptor name="authenticate"
-                class="org.tdar.struts.interceptor.AuthenticationInterceptor" />
+                class="org.tdar.struts_base.interceptor.AuthenticationInterceptor" />
             <interceptor name="userAgreement"
                 class="org.tdar.struts.interceptor.UserAgreementInterceptor" />
             <interceptor name="sessionSecurity"
-                class="org.tdar.struts.interceptor.SessionSecurityInterceptor" />
+                class="org.tdar.struts_base.interceptor.SessionSecurityInterceptor" />
             <interceptor name="httpsMethod"
                 class="org.tdar.struts.interceptor.HttpsInterceptor" />
             <interceptor name="httpMethod"
-                class="org.tdar.struts.interceptor.HttpMethodInterceptor" />
+                class="org.tdar.struts_base.interceptor.HttpMethodInterceptor" />
             <interceptor name="cacheControl"
                 class="org.tdar.struts.interceptor.CacheControlInterceptor" />
             <interceptor name="activityLogging"
-                class="org.tdar.struts.interceptor.ActivityLoggingInterceptor" />
-            <interceptor name="sso" class="org.tdar.struts.interceptor.CrowdTokenInterceptor" />
+                class="org.tdar.struts_base.interceptor.ActivityLoggingInterceptor" />
+            <interceptor name="sso" class="org.tdar.struts_base.interceptor.CrowdTokenInterceptor" />
             <interceptor-stack name="tdarDefaultStack">
                 <interceptor-ref name="exception">
                     <param name="logEnabled">true</param>

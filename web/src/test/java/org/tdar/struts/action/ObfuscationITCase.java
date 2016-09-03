@@ -13,6 +13,7 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.document.DocumentViewAction;
+import org.tdar.struts_base.action.TdarActionException;
 
 /**
  * @author Adam Brin

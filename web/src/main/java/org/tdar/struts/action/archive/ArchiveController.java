@@ -15,7 +15,7 @@ import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.resource.InformationResourceService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 
 /**

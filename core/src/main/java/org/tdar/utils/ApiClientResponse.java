@@ -34,13 +34,13 @@ public class ApiClientResponse implements Serializable {
         this.statusCode = response.getStatusLine().getStatusCode();
         this.statusLine = response.getStatusLine();
         this.headers = response.getAllHeaders();
-        logger.debug("respons: {}", response);
+        logger.trace("response: {}", response);
         try {
             this.body = IOUtils.toString(response.getEntity().getContent());
         } catch (UnsupportedOperationException | IOException e) {
             logger.error("error in response", e);
         }
-        logger.debug("done reading body");
+        logger.trace("done reading body");
         this.contentType = response.getEntity().getContentType();
     }
 

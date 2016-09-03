@@ -20,12 +20,9 @@ import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-
-import com.opensymphony.xwork2.Validateable;
-import com.opensymphony.xwork2.interceptor.ValidationAware;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 /**
  * $Id$

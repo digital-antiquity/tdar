@@ -5,7 +5,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
 import static org.openqa.selenium.support.ui.ExpectedConditions.titleContains;
 import static org.tdar.TestConstants.TEST_DOCUMENT;
-import static org.tdar.struts.action.TdarActionSupport.CONFIRM;
+import static org.tdar.struts_base.action.TdarActionSupport.CONFIRM;
 
 import java.io.File;
 

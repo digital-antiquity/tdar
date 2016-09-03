@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 import edu.asu.lib.dc.DublinCoreDocument;
 import edu.asu.lib.jaxb.JaxbDocumentWriter;

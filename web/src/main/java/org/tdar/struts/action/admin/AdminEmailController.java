@@ -19,8 +19,8 @@ import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
 

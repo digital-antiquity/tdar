@@ -58,7 +58,8 @@ import org.tdar.junit.ControllerTestWatcher;
 import org.tdar.search.config.TdarSearchAppConfiguration;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.search.service.query.SearchService;
-import org.tdar.struts.ErrorListener;
+import org.tdar.struts_base.ErrorListener;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.ActionContext;

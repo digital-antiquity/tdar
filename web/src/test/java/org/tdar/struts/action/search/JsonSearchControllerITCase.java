@@ -28,8 +28,7 @@ import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.core.service.external.session.SessionData;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.api.search.JsonSearchAction;
+import org.tdar.struts_base.action.TdarActionException;
 import org.xml.sax.SAXException;
 
 @Transactional

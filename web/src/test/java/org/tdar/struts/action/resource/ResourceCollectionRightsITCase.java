@@ -28,8 +28,8 @@ import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.struts.action.AbstractPersistableController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.document.DocumentController;
 

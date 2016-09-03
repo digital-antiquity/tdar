@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.service.SerializationService;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 /**

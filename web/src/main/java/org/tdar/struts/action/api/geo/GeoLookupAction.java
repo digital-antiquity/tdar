@@ -15,8 +15,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.search.geosearch.GeoSearchService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 import com.opensymphony.xwork2.Preparable;
 

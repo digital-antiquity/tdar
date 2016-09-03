@@ -41,7 +41,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.service.ResourceCollectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
 import org.tdar.search.converter.ResourceRightsExtractor;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.project.ProjectController;
 import org.tdar.struts.action.sensoryData.SensoryDataController;
 

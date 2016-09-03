@@ -37,8 +37,8 @@ import org.tdar.core.dao.external.payment.nelnet.NelNetTransactionResponseTempla
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 @Component
 @Scope("prototype")

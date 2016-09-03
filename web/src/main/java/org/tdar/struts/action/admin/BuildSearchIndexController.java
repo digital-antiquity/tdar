@@ -20,15 +20,15 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AsyncUpdateReceiver;
 import org.tdar.core.bean.TdarGroup;
-import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.service.ActivityManager;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.activity.Activity;
@@ -46,7 +46,6 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
     private int percentDone = -1;
     private String phase = "Initializing";
     private String callback;
-    private Long userId;
     private boolean asyncSave = true;
     private boolean forceClear = false;
     private LinkedList<Throwable> errors = new LinkedList<>();
@@ -73,10 +72,7 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
             }
 
             getLogger().info("to reindex: {}", toReindex);
-            Person person = null;
-            if (PersistableUtils.isNotNullOrTransient(getUserId())) {
-                person = getGenericService().find(Person.class, getUserId());
-            }
+            TdarUser person = getAuthenticatedUser();
 
             getLogger().info("reindexing");
             if (isAsyncSave()) {
@@ -224,15 +220,7 @@ public class BuildSearchIndexController extends AbstractAuthenticatableAction im
     public void setIndexesToRebuild(List<LookupSource> indexesToRebuild) {
         this.indexesToRebuild = indexesToRebuild;
     }
-
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
+    
     public InputStream getJsonInputStream() {
         return jsonInputStream;
     }

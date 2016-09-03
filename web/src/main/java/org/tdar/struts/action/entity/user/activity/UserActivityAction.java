@@ -18,7 +18,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
 import com.opensymphony.xwork2.Validateable;

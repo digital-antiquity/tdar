@@ -15,7 +15,7 @@ import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.service.SerializationService;
 import org.tdar.search.geosearch.GeoSearchService;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 @Component
 @Scope("prototype")

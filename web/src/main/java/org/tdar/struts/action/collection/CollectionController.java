@@ -33,7 +33,7 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.DataTableResourceDisplay;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.PersistableUtils;
 
 @Component

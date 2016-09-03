@@ -64,6 +64,7 @@ import com.mchange.v2.c3p0.ComboPooledDataSource;
 @Configuration
 public abstract class SimpleAppConfiguration implements Serializable {
 
+    public static final String ORG_TDAR = "org.tdar";
     protected static final String HIBERNATE_PROPERTIES = "hibernate.properties";
     protected static final String TDAR_PROPERTIES = "tdar.properties";
     private static final long serialVersionUID = 2190713147269025044L;
@@ -93,10 +94,14 @@ public abstract class SimpleAppConfiguration implements Serializable {
     @Bean(name = "tdarMetadataDataSource")
     public DataSource tdarMetadataDataSource() {
         try {
-            return configureDataSource("tdarmetadata");
+            return configureDataSource(getMetadataDatabaseName());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getMetadataDatabaseName() {
+        return "tdarmetadata";
     }
 
     @Bean(name = "sessionFactory")
@@ -107,14 +112,23 @@ public abstract class SimpleAppConfiguration implements Serializable {
         properties.load(ConfigurationAssistant.toInputStream(HIBERNATE_PROPERTIES));
 
         LocalSessionFactoryBuilder builder = new LocalSessionFactoryBuilder(dataSource);
-        builder.scanPackages(new String[] { "org.tdar" });
+        builder.scanPackages(new String[] { getHibernatePackageScan() });
         builder.addProperties(properties);
 //        SessionBuilder sessionBuilder = builder.buildSessionFactory().withOptions().eventListeners(new FilestoreLoggingSessionEventListener());
         return builder.buildSessionFactory();
     }
 
+    public String getHibernatePackageScan() {
+        return ORG_TDAR;
+    }
+
     public boolean disableHibernateSearch() {
         return true;
+    }
+    
+    @Bean(name="obfuscationEnabled")
+    public Boolean isObfuscationEnabled() {
+        return !TdarConfiguration.getInstance().obfuscationInterceptorDisabled();
     }
 
     @Bean(name = "mailSender")

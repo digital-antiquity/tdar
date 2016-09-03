@@ -16,6 +16,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.struts.action.dataset.RowViewAction;
+import org.tdar.struts_base.action.TdarActionException;
 
 import com.opensymphony.xwork2.Action;
 

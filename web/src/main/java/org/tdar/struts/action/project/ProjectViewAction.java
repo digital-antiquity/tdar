@@ -23,7 +23,7 @@ import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
 import org.tdar.struts.action.ResourceFacetedAction;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractResourceViewAction;
 import org.tdar.utils.PaginationHelper;
 

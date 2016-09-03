@@ -25,9 +25,9 @@ import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;

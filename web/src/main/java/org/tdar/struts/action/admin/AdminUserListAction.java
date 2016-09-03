@@ -1,7 +1,6 @@
 package org.tdar.struts.action.admin;
 
 import static com.opensymphony.xwork2.Action.SUCCESS;
-import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
@@ -22,7 +21,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.AuthenticationService;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -30,7 +29,7 @@ import com.opensymphony.xwork2.Preparable;
 @Component
 @Scope("prototype")
 @Results({
-        @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" })
+        @Result(name = SUCCESS, type = TdarActionSupport.JSONRESULT, params = { "stream", "resultJson" })
 })
 public class AdminUserListAction extends TdarActionSupport implements Preparable {
 

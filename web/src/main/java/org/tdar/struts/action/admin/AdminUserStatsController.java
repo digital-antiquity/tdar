@@ -20,7 +20,7 @@ import org.tdar.core.bean.statistics.AggregateStatistic.StatisticType;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.StatisticService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.Pair;
 
 /**

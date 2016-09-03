@@ -17,8 +17,8 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
-import org.tdar.struts.action.TdarActionSupport;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
 

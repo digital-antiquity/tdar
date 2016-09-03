@@ -17,7 +17,7 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.DatasetService;
 import org.tdar.core.service.resource.dataset.ResultMetadataWrapper;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 import org.tdar.utils.PersistableUtils;
 
 @ParentPackage("secured")

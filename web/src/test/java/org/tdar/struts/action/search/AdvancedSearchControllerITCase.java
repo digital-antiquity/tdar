@@ -49,7 +49,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractControllerITCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 @Transactional
 public class AdvancedSearchControllerITCase extends AbstractControllerITCase {

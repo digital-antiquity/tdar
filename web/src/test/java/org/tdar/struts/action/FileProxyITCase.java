@@ -38,6 +38,7 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 
 /**

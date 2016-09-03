@@ -15,7 +15,7 @@ import org.tdar.core.bean.keyword.KeywordType;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 import com.opensymphony.xwork2.Preparable;
 

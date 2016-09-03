@@ -19,8 +19,8 @@ import org.tdar.core.dao.external.payment.nelnet.TransactionResponse;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.PostOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 

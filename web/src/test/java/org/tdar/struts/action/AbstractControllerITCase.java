@@ -58,6 +58,7 @@ import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.action.resource.AbstractSupportingInformationResourceController;
 import org.tdar.struts.action.resource.BookmarkResourceController;
 import org.tdar.struts.action.upload.UploadController;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.Pair;
 import org.tdar.utils.PersistableUtils;
 

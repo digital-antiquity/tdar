@@ -58,8 +58,8 @@ import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.junit.MultipleTdarConfigurationRunner;
 import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.Pair;
 import org.tdar.utils.TestConfiguration;
 

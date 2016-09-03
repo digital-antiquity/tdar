@@ -24,8 +24,8 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.Filestore;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;

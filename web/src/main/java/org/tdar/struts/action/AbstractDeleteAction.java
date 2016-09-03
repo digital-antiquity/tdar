@@ -22,7 +22,9 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
-import org.tdar.struts.interceptor.annotation.WriteableSession;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;

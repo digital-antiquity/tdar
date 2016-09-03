@@ -32,6 +32,10 @@ import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts_base.action.PersistableLoadingAction;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.action.ViewableAction;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;

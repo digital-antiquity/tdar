@@ -34,8 +34,8 @@ import org.tdar.search.query.facet.Facet;
 import org.tdar.search.query.facet.FacetWrapper;
 import org.tdar.search.query.facet.FacetedResultHandler;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
 

@@ -21,7 +21,7 @@ import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.resource.CodingSheetService;
 import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 
 @Component
