@@ -21,6 +21,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,13 +29,11 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
 import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.MultipleWebTdarConfigurationRunner;
 import org.tdar.core.bean.coverage.CoverageType;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
@@ -46,7 +45,6 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.functional.AbstractBasicSeleniumWebITCase;
 import org.tdar.functional.util.WebElementSelection;
-import org.tdar.junit.RunWithTdarConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
 public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebITCase {
@@ -408,7 +406,11 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         }
 
         // specific checks for auth users we added earlier
-        String sectionText = find("#divAccessRights").getText().toLowerCase();
+        Iterator<WebElement> iterator = find(By.className("userAutoComplete")).iterator();
+        String sectionText = "";
+        while (iterator.hasNext()) {
+            sectionText += " " + iterator.next().getText().toLowerCase();
+        }
         logger.debug("\n\n------ access rights text ---- \n" + sectionText);
 
         assertThat(sectionText, containsString("joshua watts"));
