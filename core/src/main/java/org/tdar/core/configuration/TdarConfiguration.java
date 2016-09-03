@@ -852,7 +852,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return names;
     }
 
-    public static Integer getIntegrationPreviewSizePerDataTable() {
+    public Integer getIntegrationPreviewSizePerDataTable() {
         return 10;
     }
 
@@ -983,5 +983,9 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     public boolean ssoEnabled() {
         return assistant.getBooleanProperty("sso.enabled", true);
+    }
+
+    public Long getMaxTranslatedFileSize() {
+        return assistant.getLongProperty("max.translated_file_size", 75_000_000);
     }
 }

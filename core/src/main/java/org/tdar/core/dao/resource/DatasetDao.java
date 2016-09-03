@@ -536,6 +536,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         // getDao().synchronize();
 
+        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > TdarConfiguration.getInstance().getMaxTranslatedFileSize()) {
+            return null;
+        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
@@ -628,5 +631,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
             columnNames.add(columnName);
         }
         return columnNames;
+    }
+
+    public boolean checkExists(DataTable dataTable) {
+        return tdarDataImportDatabase.checkTableExists(dataTable);
     }
 }
