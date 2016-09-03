@@ -13,6 +13,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
@@ -292,7 +293,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     public void addResourceToCollection(final String title) {
         // wait until datatable loads new content
-        WebElement origRow = findFirst("#resource_datatable tbody tr");
+        String selector = "#resource_datatable tbody tr";
+        WebElement origRow = findFirst(selector);
 
         find(By.name("_tdar.query")).val(title);
         waitFor(ExpectedConditions.stalenessOf(origRow));
@@ -302,13 +304,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 find("#resource_datatable").first(), title));
 
         // get the checkbox of the matching row
-        WebElementSelection checkboxes = find("#resource_datatable tbody tr")
+        WebElementSelection checkboxes = find(selector)
                 .any(tr -> tr.getText().contains(title))
                 .find(".datatable-checkbox");
         assertThat("expecting one or more matches", checkboxes.size(), is(greaterThan(0)));
 
         //some searches may yield more than one result. just pick the first.
-        checkboxes.first().click();
+        
+        retryingFindClick(By.cssSelector(selector + " .datatable-checkbox"));
 
         //reset the search
         find(By.name("_tdar.query")).val("");
@@ -316,6 +319,24 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     }
 
+    public boolean retryingFindClick(By by) {
+        boolean result = false;
+        int attempts = 0;
+        while(attempts < 2) {
+            try {
+                getDriver().findElement(by).click();
+                result = true;
+                break;
+            } catch(Throwable e) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                }
+            }
+            attempts++;
+        }
+        return result;
+}
     private void removeResourceFromCollection(String title) {
         boolean found = false;
         WebElementSelection rows = find("#resource_datatable tr");
