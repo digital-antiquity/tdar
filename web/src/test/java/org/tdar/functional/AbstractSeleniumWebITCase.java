@@ -36,6 +36,7 @@ import java.util.logging.Level;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
+import javax.imageio.ImageIO;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
@@ -51,8 +52,6 @@ import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.UnhandledAlertException;
 import org.openqa.selenium.WebDriver;
@@ -99,6 +98,10 @@ import org.tdar.web.AbstractWebTestCase;
 
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
+
+import ru.yandex.qatools.ashot.AShot;
+import ru.yandex.qatools.ashot.Screenshot;
+import ru.yandex.qatools.ashot.shooting.ShootingStrategies;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -463,17 +466,23 @@ public abstract class AbstractSeleniumWebITCase {
         // this is necessary since we take since onException() calls takeScreenshot()
         screenshotsAllowed = false;
         try {
-            File scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+            Screenshot takeScreenshot = new AShot()
+            .shootingStrategy(ShootingStrategies.viewportPasting(100))
+            .takeScreenshot(driver);
             String scrFilename = "target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName();
+            File dir = new File(scrFilename);
+            dir.mkdirs();
+            String finalFilename = screenshotFilename(filename, "png");
+            
+            File scrFile = File.createTempFile(finalFilename, ".png");
+            ImageIO.write(takeScreenshot.getImage(), "png", scrFile);
+
             if (scrFile != null && Objects.equals(scrFile.length(), previousScreenshotSize)) {
                 logger.debug("skipping screenshot, size identical: {}", scrFilename);
                 return;
             }
             previousScreenshotSize = scrFile.length();
             // Now you can do whatever you need to do with it, for example copy somewhere
-            File dir = new File(scrFilename);
-            dir.mkdirs();
-            String finalFilename = screenshotFilename(filename, "png");
             logger.debug("saving screenshot: dir:{}, name:", dir, finalFilename);
             FileUtils.copyFile(scrFile, new File(dir, finalFilename));
         } catch (Exception e) {

@@ -103,20 +103,11 @@
             <artifactId>commons-fileupload</artifactId>
             <version>1.3.2</version>
         </dependency>
-
-        <!-- ANDS PID Client -->
-        <dependency>
-            <groupId>net.sourceforge.andspidclient</groupId>
-            <artifactId>ands-pid-client</artifactId>
-            <version>1.0.30</version>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+		    <groupId>ru.yandex.qatools.ashot</groupId>
+		    <artifactId>ashot</artifactId>
+		    <version>1.5.2</version>
+		</dependency>
         <!-- /these are required for htmlunit 2.10 -->
         <dependency>
             <groupId>org.apache.struts</groupId>
