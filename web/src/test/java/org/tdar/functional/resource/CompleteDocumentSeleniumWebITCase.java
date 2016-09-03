@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.sparql.function.library.leviathan.sec;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.ElementNotVisibleException;
@@ -406,18 +407,28 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
         }
 
         // specific checks for auth users we added earlier
-        Iterator<WebElement> iterator = find(By.className("userAutoComplete")).iterator();
-        String sectionText = "";
-        while (iterator.hasNext()) {
-            sectionText += " " + iterator.next().getText().toLowerCase();
+        String sectionHtml = find("#divAccessRights").getHtml();
+        logger.debug("\n\n------ access rights text ---- \n" + sectionHtml);
+        sectionHtml = sectionHtml.toLowerCase();
+        assertThat(sectionHtml, containsString("joshua watts::"+ VIEW_ALL.name().toLowerCase()));
+        assertThat(sectionHtml, containsString("michelle elliott::" + MODIFY_RECORD.name().toLowerCase()));
+
+        String val1 = find("#metadataForm_authorizedUsersFullNames_0_").val().toLowerCase();
+        String sel1 = find("#metadataForm_authorizedUsers_0__generalPermission").val();
+        String val2 = find("#metadataForm_authorizedUsersFullNames_1_").val().toLowerCase();
+        String sel2 = find("#metadataForm_authorizedUsers_1__generalPermission").val();
+        if (val1.contains("joshua watts")) {
+            assertThat(val2, containsString("michelle elliott"));
+            assertThat(sel1,containsString(VIEW_ALL.name()));
+            assertThat(sel2,containsString(MODIFY_RECORD.name()));
+        } else if (val2.contains("joshua watts")) {
+            assertThat(val1, containsString("michelle elliott"));
+            assertThat(sel2,containsString(VIEW_ALL.name()));
+            assertThat(sel1,containsString(MODIFY_RECORD.name()));
+        } else {
+            fail("didn't see joshua or michelle");
         }
-        logger.debug("\n\n------ access rights text ---- \n" + sectionText);
-
-        assertThat(sectionText, containsString("joshua watts"));
-        assertThat(sectionText, containsString("michelle elliott"));
-        assertThat(sectionText, containsString(VIEW_ALL.getLabel().toLowerCase()));
-        assertThat(sectionText, containsString(MODIFY_RECORD.getLabel().toLowerCase()));
-
+        
         // make sure our 'async' file was added to the resource
         assertThat(getSource(), containsString(TEST_DOCUMENT_NAME));
     }
