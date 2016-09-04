@@ -20,6 +20,7 @@ import org.tdar.core.service.external.auth.UserLogin;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts.interceptor.annotation.CacheControl;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 

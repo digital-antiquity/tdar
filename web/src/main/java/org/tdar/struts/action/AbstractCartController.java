@@ -1,4 +1,4 @@
-package org.tdar.struts.action.cart;
+package org.tdar.struts.action;
 
 import java.util.ArrayList;
 import java.util.List;

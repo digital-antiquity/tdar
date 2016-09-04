@@ -1,4 +1,4 @@
-package org.tdar.struts.action.search;
+package org.tdar.struts.action;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -197,15 +197,15 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 		processCollectionProjectLimit();
 
 		try {
-			asqo = new AdvancedSearchQueryObject();
-			asqo.setExplore(explore);
-			asqo.setAllGeneralQueryFields(getAllGeneralQueryFields());
-			asqo.setQuery(query);
-			asqo.getSearchParameters().addAll(groups);
-			asqo.setReservedParams(getReservedSearchParameters());
-			resourceSearchService.buildAdvancedSearch(asqo, getAuthenticatedUser(), this, this);
+			setAsqo(new AdvancedSearchQueryObject());
+			getAsqo().setExplore(explore);
+			getAsqo().setAllGeneralQueryFields(getAllGeneralQueryFields());
+			getAsqo().setQuery(query);
+			getAsqo().getSearchParameters().addAll(groups);
+			getAsqo().setReservedParams(getReservedSearchParameters());
+			resourceSearchService.buildAdvancedSearch(getAsqo(), getAuthenticatedUser(), this, this);
 			updateDisplayOrientationBasedOnSearchResults();
-			setCollectionSearchBoxVisible(asqo.isCollectionSearchBoxVisible());
+			setCollectionSearchBoxVisible(getAsqo().isCollectionSearchBoxVisible());
 		} catch (SearchPaginationException spe) {
 			getLogger().debug("pagination issue: {}", spe.getMessage());
 			throw new TdarActionException(StatusCode.NOT_FOUND, TdarActionSupport.NOT_FOUND,
@@ -356,14 +356,14 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 
 	public String getSearchPhrase() {
 		StringBuilder sb = new StringBuilder();
-		String searchingFor = asqo.getSearchPhrase();
+		String searchingFor = getAsqo().getSearchPhrase();
 		if (groups.isEmpty() || StringUtils.isBlank(searchingFor)) {
 			sb.append(getText("advancedSearchController.showing_all_resources"));
 		} else {
 			sb.append(searchingFor);
 		}
 		// THIS SHOULD BE LESS BRITTLE THAN CALLING isEmpty()
-		String narrowedBy = asqo.getRefinedBy();
+		String narrowedBy = getAsqo().getRefinedBy();
 		if ((narrowedBy != null) && StringUtils.isNotBlank(narrowedBy.trim())) {
 			sb.append(" ").append(getText("advancedSearchController.narrowed_by"));
 			sb.append(narrowedBy);
@@ -669,5 +669,13 @@ public abstract class AbstractAdvancedSearchController extends AbstractLookupCon
 		}
 		return allFields;
 	}
+
+    public AdvancedSearchQueryObject getAsqo() {
+        return asqo;
+    }
+
+    public void setAsqo(AdvancedSearchQueryObject asqo) {
+        this.asqo = asqo;
+    }
 
 }

@@ -28,6 +28,7 @@ import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.core.service.billing.PricingOption.PricingType;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 /**

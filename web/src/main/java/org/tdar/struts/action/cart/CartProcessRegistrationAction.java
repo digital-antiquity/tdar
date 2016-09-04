@@ -15,6 +15,7 @@ import org.tdar.core.service.ErrorTransferObject;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.external.auth.CartUserRegistration;
 import org.tdar.core.service.external.auth.UserRegistration;
+import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;

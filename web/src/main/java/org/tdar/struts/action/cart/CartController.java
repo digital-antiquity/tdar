@@ -21,6 +21,7 @@ import org.tdar.core.service.billing.InvoiceService;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+import org.tdar.struts.action.AbstractCartController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
