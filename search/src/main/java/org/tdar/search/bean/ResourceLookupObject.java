@@ -26,12 +26,15 @@ public class ResourceLookupObject implements Serializable {
     public ResourceLookupObject() {
     }
     
-    public ResourceLookupObject(String term, Long projectId, Boolean includeParent, Long collectionId, Long categoryId, GeneralPermissions permission, ReservedSearchParameters reservedSearchParameters) {
+    public ResourceLookupObject(String term, Long projectId, Boolean includeParent, Long collectionId, Long shareId, Long categoryId, GeneralPermissions permission, ReservedSearchParameters reservedSearchParameters) {
         this.term = term;
         this.projectId = projectId;
         this.includeParent = includeParent;
         if (PersistableUtils.isNotNullOrTransient(collectionId)) {
-        	collectionIds.add(collectionId);
+            collectionIds.add(collectionId);
+        }
+        if (PersistableUtils.isNotNullOrTransient(shareId)) {
+            shareIds.add(shareId);
         }
         this.categoryId = categoryId;
         this.permission = permission;

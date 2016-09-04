@@ -249,7 +249,7 @@ public abstract class AbstractResourceSearchITCase extends AbstractWithIndexInte
             ReservedSearchParameters reservedSearchParameters, GeneralPermissions permission, int max) throws ParseException, SolrServerException, IOException {
         SearchResult<Resource> result = new SearchResult<>(max);
         logger.debug("{}, {}", resourceSearchService, MessageHelper.getInstance());
-        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent, collectionId, categoryId, permission, reservedSearchParameters);
+        ResourceLookupObject rl = new ResourceLookupObject(term, projectId, includeParent,null, collectionId, categoryId, permission, reservedSearchParameters);
         resourceSearchService.lookupResource(user, rl, result, MessageHelper.getInstance());
         return result;
     }
