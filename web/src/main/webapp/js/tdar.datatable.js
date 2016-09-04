@@ -139,6 +139,7 @@ TDAR.datatable = function() {
                 // determine whether the user selected this item already (if so check the box)
                 var $cb = $(nRow).find('input[type=checkbox]');
                 var id = $cb.val();
+                $(nRow).attr("id","row-"+id);
                 $cb.prop('checked', obj.isCurrentlySelected );
                 return nRow;
             };

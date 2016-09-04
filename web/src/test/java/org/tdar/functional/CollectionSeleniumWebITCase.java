@@ -3,9 +3,11 @@ package org.tdar.functional;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -304,14 +306,19 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 find("#resource_datatable").first(), title));
 
         // get the checkbox of the matching row
-        WebElementSelection checkboxes = find(selector)
-                .any(tr -> tr.getText().contains(title))
-                .find(".datatable-checkbox");
-        assertThat("expecting one or more matches", checkboxes.size(), is(greaterThan(0)));
-
+        Iterator<WebElement> it = find(selector).iterator();
+        String rowId = null;
+        while (it.hasNext()) {
+            WebElement tr = it.next();
+            if (tr.getText().contains(title)) {
+                rowId = tr.getAttribute("id");
+                break;
+            }
+        }
+        assertNotNull(rowId);
         //some searches may yield more than one result. just pick the first.
         
-        retryingFindClick(By.cssSelector(selector + " .datatable-checkbox"));
+        retryingFindClick(By.cssSelector("#" + rowId + " .datatable-checkbox"));
 
         //reset the search
         find(By.name("_tdar.query")).val("");
