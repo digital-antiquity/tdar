@@ -179,7 +179,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionOrientiationOptions() {
         // test display orientation
-        reindex();
         List<String> titles = Arrays.asList("this is a test");
         String url = "/collection/1000";
         gotoPage(url);

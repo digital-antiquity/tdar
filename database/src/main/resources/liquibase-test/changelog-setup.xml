@@ -19468,23 +19468,6 @@
           <column name="orientation" value="LIST_FULL"/>
           <column name="visible" valueBoolean="=true" />
       </insert>
-
-      <insert tableName="collection_resource">
-          <column name="collection_id" valueNumeric="1000"/>
-          <column name="resource_id" valueNumeric="4292"/>
-      </insert>
-      <insert tableName="collection_resource">
-          <column name="collection_id" valueNumeric="1001"/>
-          <column name="resource_id" valueNumeric="4292"/>
-      </insert>
-      <insert tableName="collection_resource">
-          <column name="collection_id" valueNumeric="1002"/>
-          <column name="resource_id" valueNumeric="4292"/>
-      </insert>
-      <insert tableName="collection_resource">
-          <column name="collection_id" valueNumeric="1003"/>
-          <column name="resource_id" valueNumeric="4292"/>
-      </insert>
   </changeSet>
   
 </databaseChangeLog>
