@@ -75,6 +75,7 @@
     <field name="listCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="allCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="directSharedCollectionIds" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
+    <field name="directListCollectionIds" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="sharedCollectionIds" type="longs" indexed="true" stored="true" required="false" multiValued="true" />
 
     <field name="usersWhoCanModify" type="longs" indexed="true"  required="false" multiValued="true"  stored="true"/>

@@ -94,6 +94,7 @@ public interface QueryFieldNames {
 	String COLLECTION_HIDDEN_WITH_RESOURCES = "visibleInSearch";
 
 	String RESOURCE_COLLECTION_DIRECT_SHARED_IDS = "directSharedCollectionIds";
+    String RESOURCE_LIST_COLLECTION_DIRECT_IDS = "directListCollectionIds";
 	String LAST_NAME_AUTO = "lastName_autocomplete";
 	String FIRST_NAME_AUTO = "firstName_autocomplete";
 	String NAME_AUTOCOMPLETE = "name_autocomplete";

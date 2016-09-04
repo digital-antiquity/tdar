@@ -467,7 +467,7 @@ public abstract class AbstractSeleniumWebITCase {
         screenshotsAllowed = false;
         try {
             Screenshot takeScreenshot = new AShot()
-            .shootingStrategy(ShootingStrategies.viewportPasting(100))
+            .shootingStrategy(ShootingStrategies.viewportPasting(500))
             .takeScreenshot(driver);
             String scrFilename = "target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName();
             File dir = new File(scrFilename);

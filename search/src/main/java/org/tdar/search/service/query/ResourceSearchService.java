@@ -157,24 +157,18 @@ public class ResourceSearchService extends AbstractSearchService {
             q.append(new ProjectIdLookupQueryPart(look.getProjectId()));
         }
 
-        String colQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
-        if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
-            colQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
-        }
-
         if (StringUtils.isNotBlank(look.getGeneralQuery())) {
             q.append(new GeneralSearchResourceQueryPart(look.getGeneralQuery()));
         }
 
-        Set<Long> filtered = new HashSet<>();
-        for (Long cid : look.getCollectionIds()) {
-            if (PersistableUtils.isNotNullOrTransient(cid)) {
-                filtered.add(cid);
-            }
+        String colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_IDS;
+        String shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_SHARED_IDS;
+        if (look.getIncludeParent() == Boolean.FALSE || look.getIncludeParent() == null) {
+            colQueryField = QueryFieldNames.RESOURCE_LIST_COLLECTION_DIRECT_IDS;
+            shareQueryField = QueryFieldNames.RESOURCE_COLLECTION_DIRECT_SHARED_IDS;
         }
-        ;
-
-        q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
+        setupCollectionLookup(look, q, colQueryField, look.getCollectionIds());
+        setupCollectionLookup(look, q, shareQueryField, look.getShareIds());
 
         ReservedSearchParameters reservedSearchParameters = look.getReservedSearchParameters();
         reservedSearchParameters.setUseSubmitterContext(look.isUseSubmitterContext());
@@ -186,6 +180,17 @@ public class ResourceSearchService extends AbstractSearchService {
         searchService.handleSearch(q, result, MessageHelper.getInstance());
         return result;
 
+    }
+
+    private void setupCollectionLookup(ResourceLookupObject look, ResourceQueryBuilder q, String colQueryField, List<Long> colids) {
+        Set<Long> filtered = new HashSet<>();
+        for (Long cid : colids) {
+            if (PersistableUtils.isNotNullOrTransient(cid)) {
+                filtered.add(cid);
+            }
+        }
+
+        q.append(new FieldQueryPart<Long>(colQueryField, Operator.OR, filtered));
     }
 
     @Transactional(readOnly = true)

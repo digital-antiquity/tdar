@@ -4,6 +4,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,11 +39,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     private static final String TAG_FAUNAL_WORKSHOP = "TAG Faunal Workshop";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
+    List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
+
     @Test
     public void testCollectionPermissionsAndVisible() {
         TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET, TAG_FAUNAL_WORKSHOP, _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true, CollectionType.SHARED);
         logger.debug("URL: {}", url);
         logout();
@@ -93,9 +96,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionRemoveElement() {
         TestConfiguration config = TestConfiguration.getInstance();
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
-                TAG_FAUNAL_WORKSHOP,
-                _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(TITLE + " (remove edit)",titles, true, CollectionType.LIST);
         gotoEdit(url, CollectionType.LIST);
         applyEditPageHacks();
@@ -133,9 +133,6 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionRetain() {
         TestConfiguration config = TestConfiguration.getInstance();
-        List<String> titles = Arrays.asList(HARP_FAUNA_SPECIES_CODING_SHEET,
-                TAG_FAUNAL_WORKSHOP,
-                _2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT);
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
         gotoEdit(url, CollectionType.SHARED);
         addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
@@ -182,6 +179,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
     @Test
     public void testCollectionOrientiationOptions() {
         // test display orientation
+        reindex();
         List<String> titles = Arrays.asList("this is a test");
         String url = "/collection/1000";
         gotoPage(url);
@@ -221,7 +219,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
             }
         }
         logger.debug("seen:{} total:{}", seen, titles.size());
-        Assert.assertEquals("should see every title on each page", seen, titles.size());
+        Assert.assertEquals("should see every title on each page", titles.size(), seen);
     }
 
     private String setupCollectionForTest(String title_, List<String> titles, Boolean visible, CollectionType type) {
@@ -283,14 +281,32 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         Assert.assertFalse(text.contains(DESCRIPTION));
     }
 
-    private void assertPageViewable(List<String> titles) {
+    private void assertPageViewable(List<String> titles2) {
+        int seen = assertSeenTitles(titles2);
+        if (seen > 0) {
+            gotoPage(getCurrentUrl());
+        }
+        // just in case indexing is slow
+        seen = assertSeenTitles(titles2);
+        if (seen > 0) {
+            fail("page should have all titles: " + titles2);
+        }
+        
+    }
+
+    private int assertSeenTitles(List<String> titles2) {
+       int seen = titles2.size();
         String text = getText();
         logger.debug(text);
-        for (String title : titles) {
-            Assert.assertTrue("view page contains title: " + title, text.contains(title));
+        for (String title : titles2) {
+            if (text.contains(title)) {
+                seen--;
+                Assert.assertTrue("view page contains title: " + title, text.contains(title));
+            }
         }
         Assert.assertTrue(text.contains(TITLE));
         Assert.assertTrue(text.contains(DESCRIPTION));
+        return seen;
     }
 
     public void addResourceToCollection(final String title) {
@@ -306,15 +322,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 find("#resource_datatable").first(), title));
 
         // get the checkbox of the matching row
-        Iterator<WebElement> it = find(selector).iterator();
-        String rowId = null;
-        while (it.hasNext()) {
-            WebElement tr = it.next();
-            if (tr.getText().contains(title)) {
-                rowId = tr.getAttribute("id");
-                break;
-            }
-        }
+        String rowId = findByIdWithText(title, selector);
         assertNotNull(rowId);
         //some searches may yield more than one result. just pick the first.
         
@@ -324,6 +332,30 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find(By.name("_tdar.query")).val("");
 //        waitFor(ExpectedConditions.stalenessOf(origRow));
 
+    }
+
+    private String findByIdWithText(final String title, String selector) {
+        int attempts = 0;
+        while(attempts < 2) {
+            try {
+                Iterator<WebElement> it = find(selector).iterator();
+                String rowId = null;
+                while (it.hasNext()) {
+                    WebElement tr = it.next();
+                    if (tr.getText().contains(title)) {
+                        rowId = tr.getAttribute("id");
+                        return rowId;
+                    }
+                }
+            } catch(Throwable e) {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e1) {
+                }
+            }
+            attempts++;
+        }
+        return null;
     }
 
     public boolean retryingFindClick(By by) {

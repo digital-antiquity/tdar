@@ -33,7 +33,8 @@ public class CollectionDataExtractor {
         extractHierarchy();
     }
 
-    private HashSet<Long> directCollectionIds = new HashSet<>();;
+    private HashSet<Long> directCollectionIds = new HashSet<>();
+    private HashSet<Long> directListCollectionIds = new HashSet<>();
     private HashSet<Long> collectionIds = new HashSet<>();;
     private HashSet<Long> allCollectionIds = new HashSet<>();;
     private HashSet<String> collectionNames = new HashSet<>();;
@@ -111,6 +112,7 @@ public class CollectionDataExtractor {
             if (collection instanceof ListCollection) {
                 ListCollection list = (ListCollection)collection;
                 getListCollectionIds().add(collection.getId());
+                directListCollectionIds.add(collection.getId());
                 getListCollectionNames().addAll(list.getParentNameList());
                 getListCollectionIds().addAll(list.getParentIds());
             }
@@ -172,6 +174,14 @@ public class CollectionDataExtractor {
 
     public void setListCollectionNames(HashSet<String> listCollectionNames) {
         this.listCollectionNames = listCollectionNames;
+    }
+
+    public HashSet<Long> getDirectListCollectionIds() {
+        return directListCollectionIds;
+    }
+
+    public void setDirectListCollectionIds(HashSet<Long> directListCollectionIds) {
+        this.directListCollectionIds = directListCollectionIds;
     }
     
 }

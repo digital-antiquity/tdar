@@ -20,7 +20,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 <#-- Emit the choose-a-collection section -->
     <#macro resourceCollectionSection prefix="resourceCollections" label="Collection" list=[] >
         <#local _resourceCollections = [blankResourceCollection] />
+        <#local collectionType="LIST"/>
         <#if prefix=='shares'>
+	        <#local collectionType="SHARED"/>
             <#local _resourceCollections = [blankShare] />
         </#if> 
                
@@ -40,6 +42,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
                         <@s.hidden name="${prefix}[${resourceCollection_index}].id"  id="${prefix}Row_${resourceCollection_index}_id" />
                 <@s.textfield theme="simple" id="txt${prefix}Row_${resourceCollection_index}_id" name="${prefix}[${resourceCollection_index}].name" cssClass="input-xxlarge collectionAutoComplete "  autocomplete="off"
                     autocompleteIdElement="#${prefix}Row_${resourceCollection_index}_id" maxlength=255
+                    collectionType="${collectionType}"
                     autocompleteParentElement="#${prefix}Row_${resourceCollection_index}_" />
                 <@nav.clearDeleteButton id="${prefix}Row" />
                     </div>

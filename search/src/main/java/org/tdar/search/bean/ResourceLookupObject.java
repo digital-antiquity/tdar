@@ -16,6 +16,7 @@ public class ResourceLookupObject implements Serializable {
     private Long projectId;
     private Boolean includeParent;
     private List<Long> collectionIds = new ArrayList<Long>();
+    private List<Long> shareIds = new ArrayList<Long>();
     private Long categoryId;
     private GeneralPermissions permission;
     private boolean useSubmitterContext;
@@ -118,6 +119,14 @@ public class ResourceLookupObject implements Serializable {
 
     public void setUseSubmitterContext(boolean useSubmitterContext) {
         this.useSubmitterContext = useSubmitterContext;
+    }
+
+    public List<Long> getShareIds() {
+        return shareIds;
+    }
+
+    public void setShareIds(List<Long> shareIds) {
+        this.shareIds = shareIds;
     }
     
 }
