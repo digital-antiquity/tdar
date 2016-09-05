@@ -91,7 +91,7 @@ public class SolrConfig {
         File defaultTestPath = new File(TARGET_CLASSES_SOLR);
         Path path = defaultTestPath.toPath();
         //fixme: brittle
-        List<String> paths = Arrays.asList("","web/","tag/");
+        List<String> paths = Arrays.asList("","web/","tag/","webservice/tag/");
         for (String path_ : paths) {
         	File globalTestPath = new File(path_ + TARGET_CLASSES_SOLR);
 	        if (globalTestPath.exists()) {

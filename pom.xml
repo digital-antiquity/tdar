@@ -26,10 +26,10 @@
         <module>struts-base</module>
         <module>balk</module>
         <module>web</module>
-        <module>tag</module>
-        <module>dataone</module>
-        <module>odata</module>
-        <module>oai-pmh</module>
+        <module>webservice/tag</module>
+        <module>webservice/dataone</module>
+        <module>webservice/odata</module>
+        <module>webservice/oai-pmh</module>
         <module>utils</module>
     </modules>
 
