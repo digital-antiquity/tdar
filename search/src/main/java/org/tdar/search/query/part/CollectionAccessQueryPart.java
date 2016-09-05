@@ -49,7 +49,7 @@ public class CollectionAccessQueryPart implements QueryPart<Person> {
                     userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_MODIFY);
                     group.append(userAccessQueryPart);
                     break;
-                case ADMINISTER_GROUP:
+                case ADMINISTER_SHARE:
                     userAccessQueryPart.setFieldName(QueryFieldNames.COLLECTION_USERS_WHO_CAN_ADMINISTER);
                     group.append(userAccessQueryPart);
                     break;

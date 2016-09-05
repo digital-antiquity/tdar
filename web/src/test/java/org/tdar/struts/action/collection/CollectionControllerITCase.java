@@ -105,7 +105,7 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
 
         InformationResource generateInformationResourceWithFile = generateDocumentWithUser();
         InformationResource generateInformationResourceWithFile2 = generateDocumentWithUser();
-        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<AuthorizedUser>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         ListCollection collection = 
@@ -139,7 +139,7 @@ public class CollectionControllerITCase extends AbstractResourceControllerITCase
             }
             if (user.getUser().equals(getBasicUser())) {
                 count++;
-                assertEquals(GeneralPermissions.ADMINISTER_GROUP, user.getGeneralPermission());
+                assertEquals(GeneralPermissions.ADMINISTER_SHARE, user.getGeneralPermission());
             }
         }
         assertEquals(3, count);

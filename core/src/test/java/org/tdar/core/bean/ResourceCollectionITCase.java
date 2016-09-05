@@ -143,11 +143,11 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    public void testFindWithRights() {
+    public void testFindShareWithRights() {
         SharedCollection test = new SharedCollection();
         test.setName("test");
         test.markUpdated(getAdminUser());
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_GROUP));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
         test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
         genericService.saveOrUpdate(test);
 
@@ -158,6 +158,21 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1.getName(), SharedCollection.class);
         assertNotEquals(withName, test);
+    }
+
+    @Test
+    @Rollback
+    public void testFindCollectionWithRights() {
+        ListCollection test = new ListCollection();
+        test.setName("test");
+        test.markUpdated(getAdminUser());
+        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+        genericService.saveOrUpdate(test);
+
+        ListCollection c1 = new ListCollection();
+        c1.setName(" TEST ");
+        ListCollection withName = resourceCollectionDao.findCollectionWithName(getBasicUser(), false, c1.getName(), ListCollection.class);
+        assertEquals(withName, test);
     }
 
     @Test
@@ -193,8 +208,8 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<SharedCollection> parentCollections = resourceCollectionService.findParentOwnerCollections(getBasicUser(), SharedCollection.class);
         logger.debug("parents:{}", parentCollections);
         assertFalse("should not contain admin owner collection", parentCollections.contains(parent3));
-        assertFalse("should not contian hidden collection", parentCollections.contains(parent2));
-        assertFalse("should not contian admin owned collection", parentCollections.contains(access));
+        assertFalse("should not contain hidden collection", parentCollections.contains(parent2));
+        assertFalse("should not contain admin owned collection", parentCollections.contains(access));
         assertTrue("should contain visbile child", parentCollections.contains(child2));
         assertTrue("should contain normal child", parentCollections.contains(child1));
         assertTrue("should contain visbile child ofhidden parent", parentCollections.contains(child22));
@@ -234,7 +249,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, false, getBasicUser());

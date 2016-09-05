@@ -109,7 +109,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
         SharedCollection collection = generateResourceCollection(name, description, false, users, resources, null);
@@ -172,7 +172,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         InformationResource normal = generateDocumentAndUseDefaultUser();
         final Long normalId = normal.getId();
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getAdminUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_METADATA)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal));
         ResourceCollection collection = generateResourceCollection(name, description, false, users, resources, null);
@@ -408,7 +408,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // the best permissions.
         AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
+        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_SHARE);
         user2.setTest("1234");
         controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
@@ -444,7 +444,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         // the best permissions.
         AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
-        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_GROUP);
+        AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_SHARE);
         List<AuthorizedUser> authusers = new ArrayList<>(Arrays.asList(user1Viewer, user1Modifier, user2));
         int origCount = authusers.size();
         resourceCollectionService.normalizeAuthorizedUsers(authusers);
@@ -468,7 +468,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         genericService.synchronize();
         logger.debug("------------------------------------------------------------------------------------------------------------------");
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_SHARE)));
         InternalCollection collection1 = new InternalCollection();
         collection1.markUpdated(getUser());
         collection1.getAuthorizedUsers().addAll(users);
@@ -592,7 +592,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Rollback
     public void testNestedCollectionEdit() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_GROUP)));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(testPerson, GeneralPermissions.ADMINISTER_SHARE)));
         ResourceCollection collection1 = generateResourceCollection("test 1 private", "", false, users, new ArrayList<Resource>(), null);
         ResourceCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(),
                 new ArrayList<Resource>(), collection1.getId());
@@ -612,7 +612,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Document generateInformationResourceWithFile = generateDocumentWithUser();
         Document generateInformationResourceWithFile2 = generateDocumentWithUser();
 
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP),
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD), new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(generateInformationResourceWithFile, generateInformationResourceWithFile2));
         // use case 1 -- use owner
@@ -735,7 +735,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Rollback
     public void testRemoveResourceCollectionButMaintainSome() throws Exception {
         Document doc = generateDocumentWithUser();
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(doc.getSubmitter(), GeneralPermissions.ADMINISTER_GROUP)));
+        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(doc.getSubmitter(), GeneralPermissions.ADMINISTER_SHARE)));
         SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, users, Arrays.asList(doc), null);
         SharedCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(),
                 Arrays.asList(doc), collection1.getId());

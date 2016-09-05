@@ -105,6 +105,9 @@ public enum GeneralPermissions implements HasLabel, Localizable {
         permissions.remove(GeneralPermissions.ADMINISTER_GROUP);
         permissions.remove(GeneralPermissions.ADD_TO_COLLECTION);
         permissions.remove(GeneralPermissions.REMOVE_FROM_COLLECTION);
+        permissions.remove(GeneralPermissions.ADMINISTER_SHARE);
+        permissions.remove(GeneralPermissions.ADD_TO_SHARE);
+        permissions.remove(GeneralPermissions.REMOVE_FROM_SHARE);
         return permissions;
     }
 

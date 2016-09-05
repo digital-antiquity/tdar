@@ -135,7 +135,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
         gotoEdit(url, CollectionType.SHARED);
-        addUserWithRights(config, url, GeneralPermissions.ADMINISTER_GROUP);
+        addUserWithRights(config, url, GeneralPermissions.ADMINISTER_SHARE);
         submitForm();
 
         gotoPage("/project/" + _139 + "/edit");

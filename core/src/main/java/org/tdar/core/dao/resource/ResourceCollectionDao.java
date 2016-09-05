@@ -95,8 +95,10 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public <C extends HierarchicalCollection> List<C> findParentOwnerCollections(Person person, Class<C> cls) {
         String q = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER;
+        GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
         if (CollectionType.getTypeForClass(cls) == CollectionType.LIST) {
             q = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER;
+            base = GeneralPermissions.ADMINISTER_GROUP;
         }
         Query<C> namedQuery = getCurrentSession().createNamedQuery(q, cls);
         Long id = -1L;
@@ -105,7 +107,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
         namedQuery.setParameter("authOwnerId", id);
         namedQuery.setParameter("collectionTypes", Arrays.asList(CollectionType.getTypeForClass(cls)));
-        namedQuery.setParameter("equivPerm", GeneralPermissions.ADMINISTER_GROUP.getEffectivePermissions() - 1);
+        namedQuery.setParameter("equivPerm", base.getEffectivePermissions() - 1);
         try {
             List<C> list = namedQuery.getResultList();
             logger.trace("{}", list);
@@ -125,14 +127,16 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public <C extends VisibleCollection> C findCollectionWithName(TdarUser user, boolean isAdmin, String name, Class<C> cls) {
         String q = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
+        GeneralPermissions base = GeneralPermissions.ADMINISTER_SHARE;
         if (cls.isAssignableFrom(ListCollection.class)) {
             q = TdarNamedQueries.QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME;
+            base = GeneralPermissions.ADMINISTER_GROUP;
         }
         Query<C> query = getCurrentSession().createNamedQuery(q, cls);
         query.setParameter("name", name);
         List<C> list = query.getResultList();
         for (C coll : list) {
-            if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, GeneralPermissions.ADMINISTER_GROUP)) {
+            if (isAdmin || authorizedUserDao.isAllowedTo(user, coll, base)) {
                 return coll;
             }
         }

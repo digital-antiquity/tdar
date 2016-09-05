@@ -262,7 +262,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.description", desc);
 
         setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_SHARE.toString());
 
         submitForm();
         String url = getCurrentUrlPath();

@@ -93,7 +93,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		SharedCollection collection = createResourceCollectionWithAdminRights();
 		genericService.saveOrUpdate(collection);
 		genericService.saveOrUpdate(collection);
-		collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP));
+		collection.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE));
 		genericService.saveOrUpdate(collection);
 
 		SharedCollection collectionChild = new SharedCollection();
@@ -677,7 +677,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		dc.setId(id);
 		dc.prepare();
 		dc.edit();
-		dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.ADMINISTER_GROUP));
+		dc.getAuthorizedUsers().add(new AuthorizedUser(newUser, GeneralPermissions.ADMINISTER_SHARE));
 		dc.setServletRequest(getServletPostRequest());
 		assertEquals(Action.SUCCESS, dc.save());
 
@@ -713,7 +713,7 @@ public class DocumentControllerITCase extends AbstractResourceControllerITCase {
 		uc.getUploadFileFileName().add(TestConstants.TEST_DOCUMENT_NAME);
 		uc.upload();
 		assertFalse(authenticationAndAuthorizationService.canDo(newUser, dc.getDocument(),
-				InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_GROUP));
+				InternalTdarRights.EDIT_ANY_RESOURCE, GeneralPermissions.ADMINISTER_SHARE));
 		assertEquals(1, dc.getDocument().getInternalResourceCollection().getAuthorizedUsers().size());
 		// try to edit as basic user -- should fail
 		dc = generateNewInitializedController(DocumentController.class, newUser);
