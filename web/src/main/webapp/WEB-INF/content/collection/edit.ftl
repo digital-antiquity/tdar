@@ -216,6 +216,7 @@
             $(function () {
                 TDAR.datatable.setupDashboardDataTable({
                     isAdministrator: ${(editor!false)?string},
+                    limitContext: false,
                     isSelectable: true,
                     showDescription: false,
                     selectResourcesFromCollectionid: $("#metadataForm_id").val()
@@ -229,8 +230,7 @@
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
-                TDAR.datatable.registerResourceCollectionDataTable("#resource_datatablepublic", "#tblCollectionResourcespublic",false);
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP",collectionType:"LIST"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
         });

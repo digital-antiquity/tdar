@@ -318,7 +318,7 @@ TDAR.datatable = function() {
                     'term' : $("#query").val(),
                     'projectId' : $("#project-selector").val(),
                     'collectionId' : $("#collection-selector").val(),
-                    useSubmitterContext : !_options.isAdministrator,
+                    useSubmitterContext : (_options.limitContext == true || !_options.isAdministrator),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
                 };
                 if($("#parentCollectionsIncluded").length) {
