@@ -12,9 +12,11 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.SortOption;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -85,7 +87,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST, null);
         SearchResult<ResourceCollection> result = search(null, null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -93,7 +95,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUser() throws SolrServerException, IOException, ParseException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST,  GeneralPermissions.ADD_TO_COLLECTION);
         SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
         assertTrue(result.getResults().contains(e));
     }
@@ -101,18 +103,46 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     @Test
     @Rollback(true)
     public void testInvisibleCollectionLookupFoundByBasicUserForModification() throws SolrServerException, IOException, ParseException {
-        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), GeneralPermissions.VIEW_ALL);
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.LIST, GeneralPermissions.REMOVE_FROM_COLLECTION);
         SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_GROUP, "test");
         assertFalse(result.getResults().contains(e));
     }
 
-    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, GeneralPermissions permission)
+    
+    @Test
+    @Rollback(true)
+    public void testInvisibleShareLookupFoundByBasicOwner() throws SolrServerException, IOException, ParseException {
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED, GeneralPermissions.VIEW_ALL);
+        SearchResult<ResourceCollection> result = search(null, null, "test");
+        assertTrue(result.getResults().contains(e));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testInvisibleShareLookupFoundByBasicUser() throws SolrServerException, IOException, ParseException {
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED,  GeneralPermissions.VIEW_ALL);
+        SearchResult<ResourceCollection> result = search(getBasicUser(), null, "test");
+        assertTrue(result.getResults().contains(e));
+    }
+
+    @Test
+    @Rollback(true)
+    public void testInvisibleShareLookupFoundByBasicUserForModification() throws SolrServerException, IOException, ParseException {
+        ResourceCollection e = setupResourceCollectionForPermissionsTests(getAdminUser(), false, getBasicUser(), CollectionType.SHARED, GeneralPermissions.VIEW_ALL);
+        SearchResult<ResourceCollection> result = search(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE, "test");
+        assertFalse(result.getResults().contains(e));
+    }
+
+    private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, CollectionType type,GeneralPermissions permission)
             throws SolrServerException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
         ResourceCollection e = new SharedCollection("a test", "a Name", visible, owner);
+        if (type == CollectionType.LIST) {
+            e = new ListCollection("a test", "a name", SortOption.TITLE, visible, owner);
+        }
         e.markUpdated(owner);
         genericService.save(e);
-        if (user != null) {
+        if (user != null && permission != null) {
             AuthorizedUser au = new AuthorizedUser(user, permission);
             e.getAuthorizedUsers().add(au);
         }
