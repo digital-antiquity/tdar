@@ -465,12 +465,7 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) ||  ClassUtils.isAssignable(getPersistableClass(), permission.getContext())) {
-                permissions.add(permission);
-            }
-        }
+        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 

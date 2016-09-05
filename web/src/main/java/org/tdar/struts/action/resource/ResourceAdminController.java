@@ -116,12 +116,7 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
     }
 
     public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) || Resource.class.isAssignableFrom(permission.getContext())) {
-                permissions.add(permission);
-            }
-        }
+        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(Resource.class);
         return permissions;
     }
 

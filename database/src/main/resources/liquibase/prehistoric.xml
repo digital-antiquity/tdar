@@ -60,6 +60,12 @@
             </column>
         </createTable>
     </changeSet>    
-
+	<changeSet id="prehistoric-collections-6" author="abrin">
+	<!--     ADMINISTER_GROUP("Add/Remove Items from Collection", 80,ListCollection.class), 
+	    ADMINISTER_SHARE("Add/Remove Items from Share", 5000,SharedCollection.class);
+	-->
+		<sql>update authorized_user set general_permission_int=80 where resource_collection_id in (select id from collection where collection_type='LIST')=</sql>
+		<sql>update authorized_user set general_permission='ADMINISTER_SHARE' where resource_collection_id in (select id from collection where collection_type='SHARED')=</sql>
+	</changeSet>
     <!--  FIXME: migration script -->
 </databaseChangeLog>

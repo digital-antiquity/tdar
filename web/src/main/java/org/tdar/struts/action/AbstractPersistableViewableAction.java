@@ -224,12 +224,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
     }
 
     public List<GeneralPermissions> getAvailablePermissions() {
-        List<GeneralPermissions> permissions = new ArrayList<GeneralPermissions>();
-        for (GeneralPermissions permission : GeneralPermissions.values()) {
-            if ((permission.getContext() == null) || getPersistable().getClass().isAssignableFrom(permission.getContext())) {
-                permissions.add(permission);
-            }
-        }
+        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
         return permissions;
     }
 
