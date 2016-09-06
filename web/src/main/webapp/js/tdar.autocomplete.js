@@ -596,7 +596,7 @@ TDAR.autocomplete = (function () {
             _options = options;
         }
         var defaults = {};
-        if ($elements.attr("collectionType") != undefined) {
+        if ($elements.attr("collectionType") != undefined && $elements.attr("collectionType") != '') {
             extraData.type = $elements.attr("collectionType");
         }
         options.enhanceRequestData = function (requestData) {

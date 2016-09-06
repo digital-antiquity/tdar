@@ -221,7 +221,9 @@
             <#elseif fieldType="PROJECT">
                 <@templateProject fieldIndex groupid />
             <#elseif fieldType="COLLECTION">
-                <@templateCollection fieldIndex groupid />
+                <@templateCollection fieldIndex groupid "collection" />
+            <#elseif fieldType="SHARE" && authenticated>
+                <@templateCollection fieldIndex groupid "share" />
 
             </#if>
         </#if>
@@ -334,12 +336,18 @@
     </#macro>
 
 <!-- FIXME: refactor to not repeat the same block -->
-    <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}">
-    <div class="term COLLECTION">
-        <@s.hidden name="groups[${groupid}].collections[${fieldIndex}].id" id="collections_${groupid}_${fieldIndex}_id" />
-            <@common.combobox name="groups[${groupid}].collections[${fieldIndex}].name" id="collections_${groupid}_${fieldIndex}_name"
-    cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#collections_${groupid}_${fieldIndex}_id"
-    target="" label="" placeholder="enter collection name" bootstrapControl=false/>
+    <#macro templateCollection fieldIndex="{termid}" groupid="{groupid}" type="collection">
+    <#local prefix="collections">
+    <#local collectionType="LIST">
+    <#if type == 'share'>
+        <#local collectionType="SHARED">
+        <#local prefix="shares">
+    </#if>
+    <div class="term ${type?upper_case}">
+        <@s.hidden name="groups[${groupid}].${prefix}[${fieldIndex}].id" id="${prefix}_${groupid}_${fieldIndex}_id" />
+            <@common.combobox name="groups[${groupid}].${prefix}[${fieldIndex}].name" id="${prefix}_${groupid}_${fieldIndex}_name"
+    cssClass="input-xxlarge-combo collectioncombo" autocompleteIdElement="#${prefix}_${groupid}_${fieldIndex}_id"
+    target="" label="" placeholder="enter ${type} name" bootstrapControl=false collectionType="${collectionType}"/>
     </div>
     </#macro>
 

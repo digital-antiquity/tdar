@@ -369,7 +369,7 @@ Common macros used in multiple contexts
 
 <#-- emit a "combobox" control.  A combobox is essentially text field element that features both autocomplete support as
  as the ability to view a list of all possible values (by clicking on a 'dropdown' button beside the text box)-->
-    <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="">
+    <#macro combobox name target autocompleteIdElement placeholder  cssClass value=false autocompleteParentElement="" label="" bootstrapControl=true id="" addNewLink="" collectionType="">
         <#if bootstrapControl>
         <div class="control-group">
             <label class="control-label">${label}</label>
@@ -383,13 +383,15 @@ Common macros used in multiple contexts
                 label="${label}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
-                placeholder="${placeholder}"
-                value="${value}" cssClass="${cssClass}" />
+                placeholder="${placeholder}" cssClass="${cssClass}"
+                collectionType="${collectionType}"
+                value="${value}"  />
             <#else>
                 <@s.textfield theme="simple" name="${name}"  target="${target}"
                 label="${label}"
                 autocompleteParentElement="${autocompleteParentElement}"
                 autocompleteIdElement="${autocompleteIdElement}"
+                collectionType="${collectionType}"
                 placeholder="${placeholder}" cssClass="${cssClass}" />
             </#if>
             <button type="button" class="btn show-all"><i class="icon-chevron-down"></i></button>
