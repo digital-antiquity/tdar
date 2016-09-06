@@ -242,10 +242,14 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
         addAnother.click();
         setFieldByName("resourceCollection.hidden", visible.toString().toLowerCase());
+        GeneralPermissions permission = GeneralPermissions.MODIFY_RECORD;
+        if (type == CollectionType.LIST) {
+            permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
+        }
         addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
-        		"person-"+ config.getEditorUserId(), GeneralPermissions.MODIFY_RECORD);
+        		"person-"+ config.getEditorUserId(), permission);
         addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
-        		"michelle elliott",  "Michelle Elliott", "person-121", GeneralPermissions.MODIFY_RECORD);
+        		"michelle elliott",  "Michelle Elliott", "person-121", permission);
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
