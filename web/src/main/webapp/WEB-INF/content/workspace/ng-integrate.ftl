@@ -60,35 +60,46 @@
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
                             <div class="span4">
-                                <label><b>Selected Datasets</b></label>
-                                <div>
-                                    <ol class="selected-datasets-list">
-                                        <li ng-repeat="dt in ctrl.integration.dataTables">
-                                            <div class="pull-right">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr><th colspan="3">Selected Datasets</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="dt in ctrl.integration.dataTables">
+                                            <td><span class="badge">{{$index + 1}}</span></td>
+                                            <td>
+                                                {{dt|dtDisplayName|titleCase}}
+                                                <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
+                                            </td>
+                                            <td style="width:10%">
                                                 <a class="btn btn-mini delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)">X</a>
-                                            </div>
-                                            <span>{{dt|dtDisplayName|titleCase}}</span>
-                                            <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
-                                        </li>
-                                    </ol>
-                                </div>
-                                
-                                
-<div class="controls controls-row">
-                                <div class="btn-group">
-                                    <button type="button" class="btn"  id="btnAddDataset" ng-disabled="isReadOnly()"
-                                            ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
-                                </div>
-                        </div>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
+                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+
+
                         </div>
                             <div class="span4">
-                                <label><b>Available Ontologies</b></label>
-                                <ol>
-                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">
-                                        <span>{{ontology | ontDisplayName}}</span>
-                                        <a href="/ontology/{{ontology.id}}" target="_blank">({{ontology.id}})</a>
-                                    </li>
-                                </ol>
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr><th colspan="2">Available Ontologies</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="ontology in ctrl.integration.ontologies">
+                                            <td>{{$index + 1}}.</td>
+                                            <td class="sharedOntologies">
+                                                {{ontology | ontDisplayName}}
+                                                <a href="/ontology/{{ontology.id}}" target="_blank">({{ontology.id}})</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                             </div>
                         </div>
                     </div>
@@ -103,7 +114,7 @@
                         <div class="controls">
                             <div class="btn-group">
                                 <div class="btn-group" >
-                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
+                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
@@ -112,12 +123,12 @@
                                                 ><a ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
-                                <button type="button" class="btn" id="btnAddDisplayColumn"
+                                <button type="button" class="btn btn-mini" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
                                         ng-disabled="!ctrl.integration.ontologies.length"
                                         >Add Display Column</button>
 
-                                <button type="button" class="btn" id="btnAddCountColumn"
+                                <button type="button" class="btn btn-mini" id="btnAddCountColumn"
                                         ng-click="ctrl.addCountColumnClicked()"
                                         ng-disabled="ctrl.isCountColumnDisabled()"
                                         >Add Count Column</button>
@@ -171,26 +182,30 @@
                                                             </div>
                                                             <div>Node Value</div>
                                                         </th>
-                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{outputColumn.dataTableColumns.length}}">
+                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{outputColumn.selectedDataTableColumns.length}}">
                                                             Datasets
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
+                                                        <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" style="min-width: 2em;" >
                                                             <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                            <div ng-switch on="cc.compatCols.length">
-                                                            <div ng-switch-when="1">
-                                                                <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span>
-                                                                <!-- FIXME: this is "hidden", but is it even needed? -->
-                                                                <!-- FIXME: shouldn't this be the dataset name? -->
-                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
-                                                            </div>
-                                                            <div ng-switch-when="0">
-                                                                <i>-</i>
-                                                            </div>
-                                                            <div ng-switch-default>
-                                                                <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
-                                                            </div>
+                                                            <div class="text-center">
+                                                                <span title="{{cc.dataTable.displayName}}" class="badge">{{$index + 1}}</span>
+
+
+
+                                                                <div ng-switch on="cc.compatCols.length">
+                                                                <div ng-switch-when="1">
+
+                                                                    <!-- <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span> -->
+                                                                    <!-- FIXME: this is "hidden", but is it even needed? -->
+                                                                    <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+                                                                </div>
+                                                                <div ng-switch-when="0"></div>
+                                                                <div ng-switch-default>
+                                                                    <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                </div>
+                                                                </div>
                                                             </div>
                                                         </th>
                                                     </tr>
