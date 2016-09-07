@@ -207,7 +207,7 @@
                 var form = $("#metadataForm")[0];
                 TDAR.common.initEditPage(form);
                 TDAR.datatable.registerResourceCollectionDataTable("#resource_datatable", "#tblCollectionResources");
-                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_GROUP",collectionType:"SHARED"});
+                TDAR.autocomplete.applyCollectionAutocomplete($("#txtParentCollectionName"), {showCreate: false}, {permission: "ADMINISTER_SHARE",collectionType:"SHARED"});
                 TDAR.datatable.registerAddRemoveSection(${(id!-1)?c});
                         //remind users that adding a project does not also add the project's contents
         });

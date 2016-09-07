@@ -318,9 +318,14 @@ TDAR.datatable = function() {
                     'term' : $("#query").val(),
                     'projectId' : $("#project-selector").val(),
                     'collectionId' : $("#collection-selector").val(),
-                    useSubmitterContext : (_options.limitContext == true || !_options.isAdministrator),
                     selectResourcesFromCollectionid: options.selectResourcesFromCollectionid
                 };
+                if (!_options.isAdministrator && _options.limitContext == true ) {
+                    parms['useSubmitterContext'] = true;
+                } else {
+                    parms['useSubmitterContext'] = false;
+                }
+                console.log(parms);
                 if($("#parentCollectionsIncluded").length) {
                     parms.parentCollectionsIncluded = (!$("#parentCollectionsIncluded").prop("checked")).toString();
                 }
