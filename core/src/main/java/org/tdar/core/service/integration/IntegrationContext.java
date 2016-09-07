@@ -92,7 +92,7 @@ public class IntegrationContext implements Serializable {
         }
         tempTableName = sb.toString();
         if (tempTableName.length() > PostgresConstants.MAX_NAME_SIZE) {
-            tempTableName = StringUtils.substring(tempTableName, PostgresConstants.MAX_NAME_SIZE);
+            tempTableName = StringUtils.substring(tempTableName, 0, PostgresConstants.MAX_NAME_SIZE - 10) + System.currentTimeMillis();
         }
         return tempTableName;
     }
