@@ -1,5 +1,6 @@
 package org.tdar.core.dao.resource;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -26,6 +27,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.SpreadsheetVersion;
 import org.hibernate.CacheMode;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
@@ -58,6 +60,7 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.NamedNativeQueries;
@@ -70,6 +73,7 @@ import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
+import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
 
@@ -532,10 +536,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
 
         // getDao().synchronize();
 
+        if (file.getLatestUploadedOrArchivalVersion().getUncompressedSizeOnDisk() > TdarConfiguration.getInstance().getMaxTranslatedFileSize()) {
+            return null;
+        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
         try {
-            File tempFile = File.createTempFile("translated", ".xls", TdarConfiguration.getInstance().getTempDirectory());
+            File tempFile = File.createTempFile("translated", ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
@@ -545,6 +552,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
             FileProxyWrapper wrapper = new FileProxyWrapper(dataset, analyzer, this, Arrays.asList(fileProxy));
             wrapper.processMetadataForFileProxies();
             irFile = fileProxy.getInformationResourceFile();
+//            InformationResourceFileVersion version = new InformationResourceFileVersion(VersionType.TRANSLATED, filename, irFile);
+//            irFile.getInformationResourceFileVersions().add(version);
+//            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
+//            informationResourceFileDao.saveOrUpdate(version);
         } catch (IOException exception) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
         } finally {
@@ -559,11 +570,12 @@ public class DatasetDao extends ResourceDao<Dataset> {
     private SheetProxy toExcel(Dataset dataset, OutputStream outputStream) throws IOException {
         Set<DataTable> dataTables = dataset.getDataTables();
         ExcelWorkbookWriter workbookWriter = new ExcelWorkbookWriter();
+        
         if ((dataTables == null) || dataTables.isEmpty()) {
             return null;
         }
-        final SheetProxy proxy = new SheetProxy();
-
+        final SheetProxy proxy = new SheetProxy(SpreadsheetVersion.EXCEL2007);
+        proxy.setLowMemory(true);
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
@@ -577,12 +589,17 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     proxy.setData(new ResultSetIterator(resultSet));
                     getLogger().debug("column names: " + headerLabels);
                     workbookWriter.addSheets(proxy);
+                    
                     return true;
                 }
             };
             tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
         }
-        proxy.getWorkbook().write(outputStream);
+        BufferedOutputStream stream = new BufferedOutputStream(outputStream);
+        proxy.getWorkbook().write(stream);
+        proxy.getWorkbook().close();
+        IOUtils.closeQuietly(stream);
+        
         return proxy;
     }
 
@@ -614,5 +631,9 @@ public class DatasetDao extends ResourceDao<Dataset> {
             columnNames.add(columnName);
         }
         return columnNames;
+    }
+
+    public boolean checkExists(DataTable dataTable) {
+        return tdarDataImportDatabase.checkTableExists(dataTable);
     }
 }

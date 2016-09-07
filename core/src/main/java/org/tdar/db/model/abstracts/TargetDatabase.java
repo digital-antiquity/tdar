@@ -90,4 +90,7 @@ public interface TargetDatabase extends Database {
     Map<DataTableColumn, String> selectAllFromTableCaseInsensitive(DataTableColumn column, String key,
             ResultSetExtractor<Map<DataTableColumn, String>> resultSetExtractor);
 
+    @Transactional(value = "tdarDataTx", readOnly = true)
+    boolean checkTableExists(DataTable dataTable);
+
 }

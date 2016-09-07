@@ -13,6 +13,7 @@ import org.tdar.utils.MessageHelper;
  */
 public enum Language implements HasLabel, Localizable {
 
+    ENGLISH("English", "en", "eng"),
     MULTIPLE("Multiple", "-", "mul"),
     CATALONIAN("Catalonian","ca","cat"),
     CHEROKEE("Cherokee", "", "chr"),
@@ -21,7 +22,6 @@ public enum Language implements HasLabel, Localizable {
     CZECH("Czech","cs","cze"),
     DANISH("Danish","da","dan"),
     DUTCH("Dutch", "nl", "nld"),
-    ENGLISH("English", "en", "eng"),
     FINNISH("Finnish","fi","fin"),
     FRENCH("French", "fr", "fra"),
     GERMAN("German", "de", "deu"),
