@@ -94,10 +94,10 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
             for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
                 DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 
-                WhereCondition whereCond = new WhereCondition(column.getName());
-                // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
-                // do these need to be per-table-updates?
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
+                    WhereCondition whereCond = new WhereCondition(column.getName());
+                    // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
+                    // do these need to be per-table-updates?
                     Set<String> nodeSet = new HashSet<>();
                     // tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
