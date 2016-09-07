@@ -57,6 +57,7 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
 
     public SharedCollection() {
         this.setType(CollectionType.SHARED);
+        this.setHidden(true);
     }
 
 

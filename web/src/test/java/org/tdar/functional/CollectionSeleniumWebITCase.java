@@ -1,8 +1,5 @@
 package org.tdar.functional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -16,15 +13,15 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
+import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.TestConfiguration;
 
@@ -43,13 +40,20 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
 
     @Test
     public void testCollectionPermissionsAndVisible() {
-        TestConfiguration config = TestConfiguration.getInstance();
         // setup a collection with 3 resources in it
         String url = setupCollectionForTest(TITLE + " (permissions visible)",titles, true, CollectionType.SHARED);
         logger.debug("URL: {}", url);
         logout();
         // make sure basic user cannot see restricted page
-        login();
+        UserRegistration registration = createUserRegistration("collectionPermissions");
+        
+        gotoPage("/register");
+        TdarUser person = registration.getPerson();
+        registration.setRequestingContributorAccess(true);
+        registration.setContributorReason("beacuse");
+        fillOutRegistration(registration);
+        submitForm();
+//        login(person.getUsername(), registration.getPassword());
         setIgnorePageErrorChecks(true);
         gotoPage(url);
         // assert that the page has the resources
@@ -59,7 +63,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         loginAdmin();
         gotoEdit(url, CollectionType.SHARED);
         applyEditPageHacks();
-        addUserWithRights(config, url, GeneralPermissions.VIEW_ALL);
+        addUserWithRights(person.getProperName(), person.getUsername(),  person.getId(), GeneralPermissions.VIEW_ALL);
         submitForm();
         logout();
         // make sure unauthenticated user cannot see resources on the page
@@ -67,7 +71,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage(url);
         assertPageNotViewable(titles);
         // make sure unauthenticated user can now see
-        login();
+        login(person.getUsername(), registration.getPassword());
         gotoPage(url);
         assertPageViewable(titles);
         logout();
@@ -83,13 +87,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         assertPageViewable(titles);
     }
 
-    private void addUserWithRights(TestConfiguration config, String url, GeneralPermissions permissions) {
+    private void addUserWithRights(String name, String username, Long userId, GeneralPermissions permissions) {
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
-        addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", "test user", config.getUsername(),
-                "person-" + config.getUserId(),
-                permissions);
+        addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", name, username, "person-" + userId, permissions);
     }
 
     @SuppressWarnings("unused")
@@ -135,7 +137,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
         gotoEdit(url, CollectionType.SHARED);
-        addUserWithRights(config, url, GeneralPermissions.ADMINISTER_SHARE);
+        addUserWithRights("test user", config.getUsername(), config.getUserId(), GeneralPermissions.ADMINISTER_SHARE);
         submitForm();
 
         gotoPage("/project/" + _139 + "/edit");
