@@ -190,6 +190,8 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 }
             }
         }
+        String addIndex = String.format("create index tmp_integ_%s on \"%s\" ( \"%s\" )", System.currentTimeMillis(), tempTable.getName(), tableColumn.getName());
+        executeUpdateOrDelete(addIndex);
         return tempTable;
     }
 
