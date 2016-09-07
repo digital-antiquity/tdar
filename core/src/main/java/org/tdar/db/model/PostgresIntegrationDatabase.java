@@ -153,7 +153,6 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         DataTableColumn tableColumn = new DataTableColumn();
         tableColumn.setName(INTEGRATION_TABLE_NAME_COL);
         executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), tableColumn.getName()));
-        String indexSql = String.format("create index on \"%s\" (\"%s\"))", tempTable.getName(), tableColumn.getName());
         executeUpdateOrDelete(String.format("create index on \"%s\" (\"%s\")", tempTable.getName(), tableColumn.getName()));
         tempTable.getDataTableColumns().add(tableColumn);
         tableColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_table"));
