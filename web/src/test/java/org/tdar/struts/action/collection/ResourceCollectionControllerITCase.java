@@ -999,8 +999,12 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.view();
         assertEquals("collection should have one resource inside", 1, vc.getResults().size());
         vc = null;
+        
+         setIgnoreActionErrors(true);
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
+        boolean expectingError = false;
+        try {
         vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
         vc.setId(rcid);
         vc.setSlug(slug);
@@ -1009,6 +1013,11 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertEquals(controller.getAuthenticatedUser(), registeredUser);
         assertTrue("resource should not be viewable", vc.getResults().isEmpty());
         // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
+        } catch (TdarActionException tae) {
+            expectingError = true;
+        }
+        assertTrue("should see tDAR Action Exception",expectingError);
+        setIgnoreActionErrors(false);
 
         Long ruid = registeredUser.getId();
         // now make the user an authorizedUser
