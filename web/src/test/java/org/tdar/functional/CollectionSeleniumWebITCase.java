@@ -84,7 +84,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         // check that anonymous user can see
         gotoPage(url);
-        assertPageViewable(titles);
+        // shares are hidden, so nothing to see
+        assertPageNotViewable(titles);
     }
 
     private void addUserWithRights(String name, String username, Long userId, GeneralPermissions permissions) {
@@ -147,7 +148,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logout();
         login();
         gotoEdit(url, CollectionType.SHARED);
-        gotoEdit(url, CollectionType.SHARED);
+//        gotoEdit(url, CollectionType.SHARED);
         // removeResourceFromCollection(TAG_FAUNAL_WORKSHOP);
         Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
         submitForm();
@@ -157,9 +158,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         gotoPage("/project/" + _139 + "/edit");
         setFieldByName("status", Status.ACTIVE.name());
         submitForm();
-        logout();
         gotoPage(url);
         Assert.assertTrue(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
+        logout();
+        gotoPage(url);
+        // share are hidden, so should not see it
+        Assert.assertFalse(getText().contains(RUDD_CREEK_ARCHAEOLOGICAL_PROJECT));
     }
 
     @Test
