@@ -543,6 +543,8 @@ public abstract class AbstractResourceController<R extends Resource> extends Abs
         } else {
             getLogger().debug("ignoring changes to rights as user doesn't have sufficient permissions");
         }
+        resourceCollectionService.saveResourceCollections(getResource(), resourceCollections, getResource().getUnmanagedResourceCollections(),
+                getAuthenticatedUser(), shouldSaveResource(), ErrorHandling.VALIDATE_SKIP_ERRORS, ListCollection.class);
 
     }
 

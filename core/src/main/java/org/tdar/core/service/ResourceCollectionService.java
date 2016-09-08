@@ -760,13 +760,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             tempSet.add(internal);
         }
 
-        Iterator<RightsBasedResourceCollection> iter = tempSet.iterator();
-        while (iter.hasNext()) {
-            RightsBasedResourceCollection next = iter.next();
-            if (CollectionUtils.isEmpty(((ResourceCollection)next).getAuthorizedUsers())) {
-                iter.remove();
-            }
-        }
+//        Iterator<RightsBasedResourceCollection> iter = tempSet.iterator();
+//        while (iter.hasNext()) {
+//            RightsBasedResourceCollection next = iter.next();
+//            if (CollectionUtils.isEmpty(((ResourceCollection)next).getAuthorizedUsers())) {
+//                iter.remove();
+//            }
+//        }
 
         return tempSet;
     }

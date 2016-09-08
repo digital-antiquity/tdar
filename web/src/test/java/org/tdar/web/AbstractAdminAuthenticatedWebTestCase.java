@@ -119,8 +119,6 @@ public abstract class AbstractAdminAuthenticatedWebTestCase extends AbstractAuth
             setInput("status", status.name());
         }
 
-        setInput("shares[0].name", TEST_SECURITY_COLLECTION);
-        setInput("resourceCollections[0].name", TEST_LIST_COLLECTION);
         if (file != null) {
             setInput("ticketId", ticketId);
             FileAccessRestriction access_ = FileAccessRestriction.PUBLIC;

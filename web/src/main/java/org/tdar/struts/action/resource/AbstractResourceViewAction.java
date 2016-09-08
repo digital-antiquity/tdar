@@ -107,9 +107,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     @Autowired
     private ResourceService resourceService;
 
-    private List<RightsBasedResourceCollection> shares = new ArrayList<>();
+//    private List<RightsBasedResourceCollection> shares = new ArrayList<>();
     private List<RightsBasedResourceCollection> effectiveShares = new ArrayList<>();
-    private List<ListCollection> resourceCollections = new ArrayList<>();
+//    private List<ListCollection> resourceCollections = new ArrayList<>();
     private List<ListCollection> effectiveResourceCollections = new ArrayList<>();
 
     private List<ResourceCreatorProxy> authorshipProxies;
@@ -117,7 +117,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     private List<ResourceCreatorProxy> contactProxies;
     private ResourceCitationFormatter resourceCitation;
 
-    private List<SharedCollection> viewableResourceCollections;
+//    private List<SharedCollection> viewableResourceCollections;
     private List<ListCollection> viewableListCollections;
 
     private String schemaOrgJsonLD;
@@ -249,9 +249,9 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     private void loadEffectiveResourceCollections() {
-        getShares().addAll(getResource().getSharedResourceCollections());
+//        getShares().addAll(getResource().getSharedResourceCollections());
         getEffectiveShares().addAll(resourceCollectionService.getEffectiveSharesForResource(getResource()));
-        getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
+//        getResourceCollections().addAll(getResource().getUnmanagedResourceCollections());
         getEffectiveResourceCollections().addAll(resourceCollectionService.getEffectiveResourceCollectionsForResource(getResource()));
     }
 
@@ -327,44 +327,44 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         return ResourceCreatorRole.getCreditRoles(CreatorType.PERSON, getResource().getResourceType());
     }
 
-    /**
-     * @param resourceCollections
-     *            the resourceCollections to set
-     */
-    public void setShares(List<RightsBasedResourceCollection> resourceCollections) {
-        this.shares = resourceCollections;
-    }
-
-    /**
-     * @return the resourceCollections
-     */
-    public List<RightsBasedResourceCollection> getShares() {
-        return shares;
-    }
-
-
-    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
-    // shared+invisible+canEdit
-    public List<SharedCollection> getViewableResourceCollections() {
-        if (viewableResourceCollections != null) {
-            return viewableResourceCollections;
-        }
-
-        // if nobody logged in, just get the shared+visible collections
-        Set<SharedCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
-        // if authenticated, also add the collections that the user can modify
-        if (isAuthenticated()) {
-            Set<SharedCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
-            for (SharedCollection resourceCollection : all) {
-                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
-                    collections.add(resourceCollection);
-                }
-            }
-        }
-
-        viewableResourceCollections = new ArrayList<>(collections);
-        return viewableResourceCollections;
-    }
+//    /**
+//     * @param resourceCollections
+//     *            the resourceCollections to set
+//     */
+//    public void setShares(List<RightsBasedResourceCollection> resourceCollections) {
+//        this.shares = resourceCollections;
+//    }
+//
+//    /**
+//     * @return the resourceCollections
+//     */
+//    public List<RightsBasedResourceCollection> getShares() {
+//        return shares;
+//    }
+//
+//
+//    // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
+//    // shared+invisible+canEdit
+//    public List<SharedCollection> getViewableResourceCollections() {
+//        if (viewableResourceCollections != null) {
+//            return viewableResourceCollections;
+//        }
+//
+//        // if nobody logged in, just get the shared+visible collections
+//        Set<SharedCollection> collections = new HashSet<>(getResource().getSharedVisibleResourceCollections());
+//        // if authenticated, also add the collections that the user can modify
+//        if (isAuthenticated()) {
+//            Set<SharedCollection> all = new HashSet<>(getResource().getSharedResourceCollections());
+//            for (SharedCollection resourceCollection : all) {
+//                if (authorizationService.canViewCollection(resourceCollection, getAuthenticatedUser())) {
+//                    collections.add(resourceCollection);
+//                }
+//            }
+//        }
+//
+//        viewableResourceCollections = new ArrayList<>(collections);
+//        return viewableResourceCollections;
+//    }
 
     
     // return all of the collections that the currently-logged-in user is allowed to view. We define viewable as either shared+visible, or
@@ -530,13 +530,13 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.effectiveShares = effectiveShares;
     }
 
-    public List<ListCollection> getResourceCollections() {
-        return resourceCollections;
-    }
-
-    public void setResourceCollections(List<ListCollection> resourceCollections) {
-        this.resourceCollections = resourceCollections;
-    }
+//    public List<ListCollection> getResourceCollections() {
+//        return resourceCollections;
+//    }
+//
+//    public void setResourceCollections(List<ListCollection> resourceCollections) {
+//        this.resourceCollections = resourceCollections;
+//    }
 
     public List<ListCollection> getEffectiveResourceCollections() {
         return effectiveResourceCollections;
