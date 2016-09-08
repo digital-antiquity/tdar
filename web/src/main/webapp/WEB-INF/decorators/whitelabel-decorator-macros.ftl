@@ -11,7 +11,7 @@
                 <#else><p></p>
                 </#if>
                 <form name="searchheader" action="<@s.url value="/search/results"/>" class="searchheader">
-                    <input type="text" name="query" placeholder="Search within this collection..." class="searchbox input-xxlarge">
+                    <input type="text" name="query" placeholder="Search within this collection..." class="searchbox input-xxlarge" value="${query!''}">
                     <a href="/search/advanced?collectionId=${resourceCollection.id?c}">advanced search</a>
                     <input type="hidden" name="_tdar.searchType" value="simple">
                     <input type="hidden" name="collectionId" value="${resourceCollection.id}">
