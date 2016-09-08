@@ -60,6 +60,8 @@ public class ExcelWorkbookWriter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    private SpreadsheetVersion version;
+
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
@@ -262,6 +264,7 @@ public class ExcelWorkbookWriter {
      * @return
      */
     public Workbook createWorkbook(SpreadsheetVersion version) {
+        this.version = version;
         if (version == DEFAULT_EXCEL_VERSION) {
             return new HSSFWorkbook();
         } else {
@@ -449,7 +452,7 @@ public class ExcelWorkbookWriter {
      * @return
      */
     public CellStyle addRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> fields, CellStyle headerStyle) {
-        if (rowNum > DEFAULT_EXCEL_VERSION.getMaxRows()) {
+        if (rowNum > version.getMaxRows()) {
             throw new TdarRecoverableRuntimeException("excelService.too_many_rows");
         }
         Row row = sheet.getRow(rowNum);
