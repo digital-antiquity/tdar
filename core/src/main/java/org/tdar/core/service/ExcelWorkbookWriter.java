@@ -60,12 +60,12 @@ public class ExcelWorkbookWriter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    private SpreadsheetVersion version;
 
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
     public static final int MAX_ROWS_PER_WORKBOOK = DEFAULT_EXCEL_VERSION.getMaxRows() * MAX_SHEETS_PER_WORKBOOK;
+    private SpreadsheetVersion version = DEFAULT_EXCEL_VERSION;
 
     /**
      * Add validation to a given column
