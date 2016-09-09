@@ -289,10 +289,12 @@ public class AuthorizationService implements Accessible {
             return true;
         }
 
+        GeneralPermissions permission = GeneralPermissions.ADMINISTER_SHARE;
         if (persistable instanceof ListCollection) {
-            return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_GROUP);
+            permission = GeneralPermissions.ADMINISTER_GROUP;
         }
-        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, GeneralPermissions.ADMINISTER_SHARE);
+
+        return authorizedUserDao.isAllowedTo(authenticatedUser, persistable, permission);
     }
 
     /**
@@ -849,7 +851,11 @@ public class AuthorizationService implements Accessible {
         if (can(InternalTdarRights.EDIT_RESOURCE_COLLECTIONS, user) || user.equals(collectionToAdd.getOwner())) {
             return true;
         }
-        return authorizedUserDao.isAllowedTo(user, collectionToAdd, GeneralPermissions.ADD_TO_COLLECTION);
+        GeneralPermissions permission = GeneralPermissions.ADD_TO_COLLECTION;
+        if (collectionToAdd instanceof SharedCollection) {
+            permission = GeneralPermissions.ADD_TO_SHARE;
+        }
+        return authorizedUserDao.isAllowedTo(user, collectionToAdd, permission);
     }
 
     public boolean canRemoveFromCollection(ResourceCollection collection, TdarUser user) {
@@ -857,7 +863,12 @@ public class AuthorizationService implements Accessible {
             return true;
         }
 
-        return authorizedUserDao.isAllowedTo(user, collection, GeneralPermissions.REMOVE_FROM_COLLECTION);
+        
+        GeneralPermissions permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
+        if (collection instanceof SharedCollection) {
+            permission = GeneralPermissions.REMOVE_FROM_SHARE;
+        }
+        return authorizedUserDao.isAllowedTo(user, collection, permission);
     }
 
 }
