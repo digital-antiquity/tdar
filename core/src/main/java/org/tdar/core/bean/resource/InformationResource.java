@@ -63,6 +63,7 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.exception.TdarValidationException;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 import org.tdar.utils.json.JsonLookupFilter;
 
@@ -121,9 +122,6 @@ public abstract class InformationResource extends Resource {
 
     @ManyToOne(optional = true, cascade = { CascadeType.MERGE, CascadeType.DETACH })
     private Project project;
-
-    @Transient
-    private Long projectId;
 
     // FIXME: cascade "delete" ?
     @OneToMany(mappedBy = "informationResource", cascade = { CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH })
@@ -344,17 +342,10 @@ public abstract class InformationResource extends Resource {
     }
 
     public Long getProjectId() {
-        if (projectId == null) {
-            projectId = getProject().getId();
+        if (PersistableUtils.isNotNullOrTransient(getProject())) {
+            return getProject().getId();
         }
-        return Long.valueOf(-1L).equals(projectId) ? null : projectId;
-    }
-
-    @Deprecated
-    public void setProjectId(Long projectId) {
-        // FIXME: jtd - added this method to assist w/ sensoryData xml creation export. In any other scenario you should probably be using setProject() to
-        // implicitly set projectId.
-        this.projectId = projectId;
+        return null;
     }
 
     @Transient
