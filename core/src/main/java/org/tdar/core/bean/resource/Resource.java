@@ -335,21 +335,21 @@ public class Resource implements Persistable,
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "geographic_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include = "all", region = "org.tdar.core.bean.resource.Resource.geographicKeywords")
     private Set<GeographicKeyword> geographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_managed_geographic_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") },
             inverseJoinColumns = { @JoinColumn(nullable = false,
-                    name = "geographic_keyword_id") })
+                    name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, include = "all", region = "org.tdar.core.bean.resource.Resource.managedGeographicKeywords")
     private Set<GeographicKeyword> managedGeographicKeywords = new LinkedHashSet<GeographicKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_temporal_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "temporal_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<TemporalKeyword> temporalKeywords = new LinkedHashSet<TemporalKeyword>();
 
@@ -361,42 +361,42 @@ public class Resource implements Persistable,
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_culture_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "culture_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.cultureKeywords")
     private Set<CultureKeyword> cultureKeywords = new LinkedHashSet<CultureKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_other_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "other_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<OtherKeyword> otherKeywords = new LinkedHashSet<OtherKeyword>();
 
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_site_name_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "site_name_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteNameKeyword> siteNameKeywords = new LinkedHashSet<SiteNameKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_material_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "material_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<MaterialKeyword> materialKeywords = new LinkedHashSet<MaterialKeyword>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_investigation_type", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "investigation_type_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<InvestigationType> investigationTypes = new LinkedHashSet<InvestigationType>();
 
     @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE }, fetch = FetchType.LAZY)
     @JoinTable(name = "resource_site_type_keyword", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false,
-            name = "site_type_keyword_id") })
+            name = "keyword_id") })
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<SiteTypeKeyword> siteTypeKeywords = new LinkedHashSet<SiteTypeKeyword>();
 

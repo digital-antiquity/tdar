@@ -106,25 +106,7 @@ public enum KeywordType implements Localizable {
     }
 
     public String getJoinTableKey() {
-        switch (this) {
-            case CULTURE_KEYWORD:
-                return "culture_keyword_id";
-            case GEOGRAPHIC_KEYWORD:
-                return "geographic_keyword_id";
-            case INVESTIGATION_TYPE:
-                return "investigation_type_id";
-            case MATERIAL_TYPE:
-                return "material_keyword_id";
-            case OTHER_KEYWORD:
-                return "other_keyword_id";
-            case SITE_NAME_KEYWORD:
-                return "site_name_keyword_id";
-            case SITE_TYPE_KEYWORD:
-                return "site_type_keyword_id";
-            case TEMPORAL_KEYWORD:
-                return "temporal_keyword_id";
-        }
-        return null;
+        return "keyword_id";
     }
 
     public String getTableName() {
