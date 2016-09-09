@@ -58,7 +58,7 @@ public class WeeklyResourcesAdded extends AbstractScheduledProcess {
 
             resources = searchService.findRecentResourcesSince(time.toDate(), null, messageHelper);
             collection.markUpdated(genericService.find(TdarUser.class, config.getAdminUserId()));
-            collection.setHidden(true);
+            collection.setHidden(false);
             collection.setSystemManaged(true);
             collection.setName(messageHelper.getText("weekly_collection.name", Arrays.asList(time.toString(MM_DD_YYYY), new DateTime().toString(MM_DD_YYYY))));
             collection.setDescription(messageHelper.getText("weekly_collection.description",
