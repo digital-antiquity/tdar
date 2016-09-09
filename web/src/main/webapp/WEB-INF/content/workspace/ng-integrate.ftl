@@ -59,10 +59,15 @@
                     <div class="control-group">
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
-                            <div class="span4">
+                            <div class="span5">
                                 <table class="table table-condensed table-hover">
                                     <thead>
-                                        <tr><th colspan="3">Selected Datasets</th></tr>
+                                        <tr>
+                                            <th colspan="3">Selected Datasets
+                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
+                                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+
+                                        </th></tr>
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="dt in ctrl.integration.dataTables">
@@ -79,19 +84,17 @@
                                     </tbody>
                                 </table>
 
-                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
-                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+
 
 
                         </div>
-                            <div class="span4">
+                            <div class="span3">
                                 <table class="table table-condensed table-hover">
                                     <thead>
                                         <tr><th colspan="2">Available Ontologies</th></tr>
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="ontology in ctrl.integration.ontologies">
-                                            <td>{{$index + 1}}.</td>
                                             <td class="sharedOntologies">
                                                 {{ontology | ontDisplayName}}
                                                 <a href="/ontology/{{ontology.id}}" target="_blank">({{ontology.id}})</a>
@@ -190,7 +193,7 @@
                                                         <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" style="min-width: 2em;" >
                                                             <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
                                                             <div class="text-center">
-                                                                <span title="{{cc.dataTable.displayName}}" class="badge">{{$index + 1}}</span>
+                                                                <span data-content="{{cc.dataTable|dtDisplayName|titleCase}}" class="badge" popover>{{$index + 1}}</span>
 
 
 

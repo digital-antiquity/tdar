@@ -18,4 +18,23 @@
 
             }
         }]);
+
+
+    //fixme: If we like this directive, either rename this file or put this directive into it's own file (TDAR-5530)
+
+    //Tooltip directive (beware: it will properly render {{interpolated}} strings but *will not* update them)
+    app.directive('popover', function(){
+        return {
+            restrict: 'A',
+            link: function(scope, element, attrs){
+                $(element).popover({
+                    placement: 'top',
+                    trigger: 'hover',
+                    html: false,
+                    content: attrs.content
+                });
+            }
+        };
+    });
+
 })(angular);
