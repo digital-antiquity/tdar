@@ -175,7 +175,7 @@ public interface TdarNamedQueries {
     String QUERY_SQL_DASHBOARD = "select id, status, resource_type from resource " +
             "where id in " +
             "(select resource_id from collection_resource,collection, authorized_user " +
-            "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id " +
+            "where collection.id=collection_resource.collection_id and collection.id=authorized_user.resource_collection_id and collection.status='ACTIVE'  " +
             "and user_id=:submitterId and general_permission_int > :effectivePermissions " +
             "union select id from resource where updater_id=:submitterId or submitter_id=:submitterId)";
 
@@ -218,7 +218,7 @@ public interface TdarNamedQueries {
             + "and (TRUE=:allStatuses or res.status in (:statuses) )  AND "
             +
             " (res.submitter.id=:userId or exists "
-            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and "
+            + "( from ResourceCollection rescol left join rescol.parentIds parentId join rescol.resources as colres where colres.id = res.id and rescol.status='ACTIVE' and "
             +
             " (TRUE=:admin or rescol.owner.id=:userId or exists ( "
             + "select 1 from ResourceCollection r join r.authorizedUsers as auth where (rescol.id=r.id or parentId=r.id) and auth.user.id=:userId and auth.effectiveGeneralPermission > :effectivePermission)) "
@@ -228,7 +228,7 @@ public interface TdarNamedQueries {
     String INTEGRATION_DATA_TABLE_SUFFIX = "from DataTable dt left join dt.dataTableColumns as dtc left join dtc.defaultCodingSheet.defaultOntology as ont left join dtc.defaultCodingSheet as code left join code.defaultOntology as ont2 join dt.dataset as ds "
             + "where ds.status='ACTIVE' and (:projectId=-1L or ds.project.id=:projectId) and "
             + " lower(ds.title) like :titleLookup and "
-            + "(:collectionId=-1L or ds.id in (select distinct r.id from SharedCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.id=:collectionId or parentId=:collectionId)) and "
+            + "(:collectionId=-1L or ds.id in (select distinct r.id from SharedCollection rc left join rc.parentIds parentId inner join rc.resources r where rc.status='ACTIVE' and (rc.id=:collectionId or parentId=:collectionId))) and "
             + "(:hasOntologies=false or ont.id in :paddedOntologyIds ) and "
             + "(:ableToIntegrate=false or ont.id is not NULL or ont2.id is not NULL) and "
             + "(:bookmarked=false or ds.id in (select distinct b.resource.id from BookmarkedResource b where b.person.id=:submitterId) ) "

@@ -123,30 +123,6 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
         this.status = status;
     }
 
-    @Override
-    public boolean isActive() {
-        return this.status == Status.ACTIVE;
-    }
-
-    @Override
-    public boolean isDeleted() {
-        return this.status == Status.DELETED;
-    }
-
-    @Override
-    public boolean isDraft() {
-        return status == Status.DRAFT;
-    }
-
-    @Override
-    public boolean isFlagged() {
-        return status == Status.FLAGGED;
-    }
-
-    @Override
-    public boolean isDuplicate() {
-        return status == Status.DUPLICATE;
-    }
 
     @JsonView(JsonLookupFilter.class)
     public Long getOccurrence() {

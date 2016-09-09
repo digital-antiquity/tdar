@@ -341,16 +341,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
         this.modifiedBy = modifiedBy;
     }
 
-    @Override
-    public boolean isDeleted() {
-        return status == Status.DELETED;
-    }
-
-    @Override
-    public boolean isActive() {
-        return status == Status.ACTIVE;
-    }
-
     /**
      * @return the status
      */
@@ -433,21 +423,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     @Override
     public Date getDateUpdated() {
         return lastModified;
-    }
-
-    @Override
-    public boolean isDraft() {
-        return status == Status.DRAFT;
-    }
-
-    @Override
-    public boolean isFlagged() {
-        return status == Status.FLAGGED;
-    }
-
-    @Override
-    public boolean isDuplicate() {
-        return status == Status.DUPLICATE;
     }
 
     public Set<Coupon> getCoupons() {

@@ -13,32 +13,32 @@
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO,
                 query = "SELECT distinct 1 from " +
                         " Resource res inner join res.resourceCollections as rescol inner join rescol.authorizedUsers " +
-                        " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
+                        " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and rescol.status='ACTIVE' AND " +
                         " res.id in (:resourceIds)"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_RESOURCES_WITH_STATUS,
                 query = "SELECT res from Resource res inner join res.resourceCollections as rescol " +
-                        "  where res.status in (:statuses) and rescol.id in (:ids)"),
+                        "  where res.status in (:statuses) and rescol.id in (:ids) and rescol.status='ACTIVE' "),
         // NOTE QUERY below was modified, will need to confirm performance impact
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_NEW, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK
                 query = "SELECT distinct 1 from ResourceCollection as rescol inner join rescol.authorizedUsers as authuser where authuser.user.id=:userId and authuser.effectiveGeneralPermission > :effectivePermission and "
-                        + " rescol.id in (:resourceCollectionIds)"),
+                        + " rescol.id in (:resourceCollectionIds) and rescol.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from SharedCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) "),
+                query = "SELECT distinct resCol from SharedCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) and resCol.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LIST_COLLECTIONS_YOU_HAVE_ACCESS_TO_WITH_NAME,
-                query = "SELECT distinct resCol from ListCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) "),
+                query = "SELECT distinct resCol from ListCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) and resCol.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
-                query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) "),
+                query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and resCol.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
                         " ResourceCollection as rescol inner join rescol.authorizedUsers " +
                         " as authUser where authUser.user.id=:userId and authUser.effectiveGeneralPermission > :effectivePermission and " +
-                        " rescol.id in (:resourceCollectionIds)"),
+                        " rescol.id in (:resourceCollectionIds) and rescol.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_RESOURCE_LOOKUP,
                 query = "SELECT new Resource(res.id, res.title, res.resourceType, res.description, res.status) FROM Resource as res where res.id in (:ids) "),
@@ -195,30 +195,30 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_PARENT,
-                query = "from SharedCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL))  and (hidden=:visible or :visible is NULL)"
+                query = "from SharedCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL))  and (hidden=:visible or :visible is NULL) and col.status='ACTIVE' "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_PARENT,
-                query = "from ListCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and (hidden=:visible or :visible is NULL)"
+                query = "from ListCollection as col where (col.parent.id=:parent or (col.parent.id is NULL AND :parent is NULL)) and (hidden=:visible or :visible is NULL) and col.status='ACTIVE' "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_PUBLIC_ACTIVE,
-                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.hidden is false "
+                query = "SELECT id from ResourceCollection as col where col.type not in ('INTERNAL') and col.hidden is false and col.status='ACTIVE'"
         ),
 
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_BY_AUTH_OWNER,
                 query = "select distinct col from SharedCollection as col left join col.authorizedUsers as authorizedUser where "
-                        + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
+                        + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) and col.status='ACTIVE' order by col.name"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LIST_COLLECTION_BY_AUTH_OWNER,
                 query = "select distinct col from ListCollection as col left join col.authorizedUsers as authorizedUser where "
-                        + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) order by col.name"
+                        + "col.type in (:collectionTypes) and (col.owner.id=:authOwnerId or (authorizedUser.user.id=:authOwnerId and authorizedUser.effectiveGeneralPermission >  :equivPerm)) and col.status='ACTIVE' order by col.name"
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_PUBLIC_WITH_HIDDEN_PARENT,
-                query = "select distinct col from SharedCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL'"
+                query = "select distinct col from SharedCollection as col left join col.parent as parent where parent.type!='INTERNAL' and parent.hidden=true and col.hidden=false and col.type!='INTERNAL' and col.status='ACTIVE' "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_COUNT_BY_TYPE_AND_STATUS_BY_USER,
@@ -423,7 +423,7 @@
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_PROXY_RESOURCE_FULL,
-                query = "select res from ResourceProxy res fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies left join fetch res.resourceCollections col left join fetch col.authorizedUsers user where res.id in (:ids)"
+                query = "select res from ResourceProxy res fetch all properties left join fetch res.resourceCreators rc left join fetch res.latitudeLongitudeBoxes left join fetch rc.creator left join fetch res.informationResourceFileProxies left join fetch res.resourceCollections col left join fetch col.authorizedUsers user where res.id in (:ids) and col.status = 'ACTIVE' "
         ),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_RESOURCE_FIND_OLD_LIST,
@@ -434,11 +434,11 @@
                 query = "select account from BillingAccount account join account.invoices as invoice where invoice.id = :id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER,
-                query = "select rescol from SharedCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
+                query = "select rescol from SharedCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId and rescol.status='ACTIVE' "),
 
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.LIST_COLLECTION_LIST_WITH_AUTHUSER,
-                query = "select rescol from ListCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId"),
+                query = "select rescol from ListCollection rescol join rescol.authorizedUsers  as authUser where authUser.effectiveGeneralPermission > :effectivePermission  and authUser.user.id = :userId and rescol.status = 'ACTIVE' "),
 
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_EDITABLE_SORTED_RESOURCES_INHERITED,
@@ -448,7 +448,7 @@
                         " from ResourceCollection rescol  " +
                         " join rescol.resources as colres " +
                         " where " +
-                        " colres.id = res.id and " +
+                        " colres.id = res.id and colres.status='ACTIVE'  and " +
                         " (TRUE=:admin or rescol.id in (:rescolIds) )))  "),
         @org.hibernate.annotations.NamedQuery(
                 //select c.id, c.name from collection c left join collection_parents as p on c.id=p.collection_id left join authorized_user auth on c.id=auth.resource_collection_id where auth.general_permission_int>399 and auth.user_id=8092 or p.parent_id in (select resource_collection_id from authorized_user where authorized_user.general_permission_int>399 and authorized_user.user_id=8092);
@@ -472,22 +472,22 @@
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_COLLECTION_RESOURCES,
                 query = "select new Resource(r.id, r.title, r.resourceType, r.status, r.submitter.id) from "
-                        + " Resource r join r.resourceCollections rc where rc.id = :id"),
+                        + " Resource r join r.resourceCollections rc where rc.id = :id and rc.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.CREATOR_VIEW,
                 query = "select count(*) from CreatorViewStatistic  where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.COLLECTION_VIEW,
                 query = "select count(*) from ResourceCollectionViewStatistic where reference.id = :id"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SHARED_COLLECTION_CHILDREN_RESOURCES,
-                query = "select distinct res from SharedCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id order by res.id asc"),
+                query = "select distinct res from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_LIST_COLLECTION_CHILDREN_RESOURCES,
-                query = "select distinct res from ListCollection rc left join rc.parentIds parentId join rc.unmanagedResources res where parentId IN (:id) or rc.id=:id order by res.id asc"),
+                query = "select distinct res from ListCollection rc left join rc.parentIds parentId join rc.unmanagedResources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' order by res.id asc"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN_RESOURCES_COUNT,
-                query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where parentId IN (:id) or rc.id=:id"),
+                query = "select count(distinct res.id) from SharedCollection rc left join rc.parentIds parentId join rc.resources res where (parentId IN (:id) or rc.id=:id) and rc.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(name = TdarNamedQueries.QUERY_COLLECTION_CHILDREN,
-                query = "from HierarchicalCollection rc inner join rc.parentIds parentId where parentId IN (:id) "),
+                query = "from HierarchicalCollection rc inner join rc.parentIds parentId where parentId IN (:id) and rc.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_INFORMATION_RESOURCE_FILE_VERSION_VERIFICATION,
                 query = "select ir.id, irf.id, irf.latestVersion, irfv from ResourceProxy ir join ir.informationResourceFileProxies as irf join irf.informationResourceFileVersionProxies as irfv"),
@@ -516,14 +516,14 @@
                         + " left join rc.parentIds parentId  "
                         + "where ont.status='ACTIVE' and (:projectId=-1L or ont.project.id=:projectId) and "
                         + " ont.title like :titleLookup and "
-                        + "(:collectionId=-1L or rc.id=:collectionId or parentId=:collectionId) and "
+                        + "(:collectionId=-1L or (rc.id=:collectionId  or parentId=:collectionId) and rc.status='ACTIVE') and "
                         + "(:categoryVariableId=-1L or ont.categoryVariable.id=:categoryVariableId) and "
                         + "(:hasDatasets=false or ont.id in "
                         + "(select dtcont.id from DataTableColumn dtc inner join dtc.defaultCodingSheet.defaultOntology as dtcont where dtc.dataTable.dataset.status='ACTIVE' and dtc.dataTable.id in (:paddedDataTableIds))) and "
                         + "(:bookmarked=false or ont.id in (select b.resource.id from BookmarkedResource b where b.person.id=:submitterId) )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_HOSTED_DOWNLOAD_AUTHORIZATION,
-                query = "select da from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.id in (:collectionids) or parentId in (:collectionids))"),
+                query = "select da from DownloadAuthorization da inner join da.refererHostnames rh join da.resourceCollection as rc left join rc.parentIds as parentId where da.apiKey=:apiKey and lower(rh)=lower(:hostname) and (rc.status= 'ACTIVE' and (rc.id in (:collectionids) or parentId in (:collectionids)))"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.CAN_EDIT_INSTITUTION,
                 query = "select authorized from InstitutionManagementAuthorization ima where ima.user.id=:userId and ima.institution.id=:institutionId and authorized=true"),
@@ -553,10 +553,10 @@
                 query = "from InformationResource where lower(externalId)=trim(lower(:doi))"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.UPDATE_RESOURCE_IN_COLLECTION_TO_ACTIVE,
-                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and status='DRAFT'"),
+                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and rescol.status='ACTIVE' and res.status='DRAFT'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.ALL_RESOURCES_IN_COLLECTION,
-                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and status!='DELETED'"),
+                query = "select res from Resource res inner join res.resourceCollections as rescol where rescol.id in (select coll.id from ResourceCollection coll left join coll.parentIds p where p=:id or coll.id=:id) and rescol.status='ACTIVE' and res.status!='DELETED'"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.USERS_IN_COLLECTION,
                 query = "select au from ResourceCollection rc inner join rc.authorizedUsers as au where rc.id=:id"),

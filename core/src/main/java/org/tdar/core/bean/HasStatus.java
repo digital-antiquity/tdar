@@ -1,5 +1,8 @@
 package org.tdar.core.bean;
 
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.tdar.core.bean.resource.Status;
 
 /**
@@ -12,14 +15,35 @@ public interface HasStatus {
 
     void setStatus(Status status);
 
-    boolean isDeleted();
 
-    boolean isActive();
+    @Transient
+    @XmlTransient
+    public default boolean isDeleted() {
+        return getStatus() ==  Status.DELETED;
+    }
 
-    boolean isDraft();
+    @Transient
+    @XmlTransient
+    public default boolean isActive() {
+        return getStatus() ==  Status.ACTIVE;
+    }
 
-    boolean isFlagged();
+    @Transient
+    @XmlTransient
+    public default boolean isDraft() {
+        return getStatus() ==  Status.DRAFT;
+    }
 
-    boolean isDuplicate();
+    @Transient
+    @XmlTransient
+    public default boolean isDuplicate() {
+        return getStatus() ==  Status.DUPLICATE;
+    }
+
+    @Transient
+    @XmlTransient
+    public default boolean isFlagged() {
+        return getStatus() ==  Status.FLAGGED;
+    }
 
 }

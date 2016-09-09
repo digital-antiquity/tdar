@@ -358,28 +358,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     }
 
     @Override
-    public boolean isActive() {
-        return this.status == Status.ACTIVE;
-    }
-
-    @Override
-    public boolean isDeleted() {
-        return this.status == Status.DELETED;
-    }
-
-    /*
-     * @XmlIDREF
-     * 
-     * @XmlAttribute(name = "updaterId")
-     * public Person getUpdatedBy() {
-     * return updatedBy;
-     * }
-     * 
-     * public void setUpdatedBy(Person updatedBy) {
-     * this.updatedBy = updatedBy;
-     * }
-     */
-    @Override
     @XmlTransient
     public Date getDateUpdated() {
         return dateUpdated;
@@ -424,25 +402,6 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
 
     public void setAddresses(Set<Address> addresses) {
         this.addresses = addresses;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isDraft() {
-        return status == Status.DRAFT;
-    }
-
-    @Override
-    @Transient
-    @XmlTransient
-    public boolean isFlagged() {
-        return status == Status.FLAGGED;
-    }
-
-    @Override
-    public boolean isDuplicate() {
-        return status == Status.DUPLICATE;
     }
 
     public Long getOccurrence() {

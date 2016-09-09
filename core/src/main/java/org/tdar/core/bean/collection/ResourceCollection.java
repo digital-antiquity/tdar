@@ -62,6 +62,7 @@ import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.AbstractPersistable;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.FieldLength;
+import org.tdar.core.bean.HasStatus;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.Updatable;
@@ -69,12 +70,15 @@ import org.tdar.core.bean.Validatable;
 import org.tdar.core.bean.XmlLoggable;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.resource.Status;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
+import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 /**
@@ -110,7 +114,7 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 @DiscriminatorColumn(name = "collection_type", length = FieldLength.FIELD_LENGTH_255, discriminatorType = DiscriminatorType.STRING)
 @XmlSeeAlso(value = { SharedCollection.class, InternalCollection.class, ListCollection.class })
 public abstract class ResourceCollection extends AbstractPersistable
-        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable {
+        implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus {
 
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
@@ -126,6 +130,12 @@ public abstract class ResourceCollection extends AbstractPersistable
     @XmlTransient
     @Column(name = "collection_type", updatable = false, insertable = false)
     private CollectionType type;
+
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
+    @JsonView(JsonLookupFilter.class)
+    private Status status = Status.ACTIVE;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(nullable = false, updatable = false, name = "resource_collection_id")
@@ -360,4 +370,13 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setSystemManaged(Boolean systemManaged) {
         this.systemManaged = systemManaged;
     }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+    
 }
