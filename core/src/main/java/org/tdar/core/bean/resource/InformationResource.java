@@ -341,6 +341,7 @@ public abstract class InformationResource extends Resource {
         return project;
     }
 
+    @XmlTransient
     public Long getProjectId() {
         if (PersistableUtils.isNotNullOrTransient(getProject())) {
             return getProject().getId();
