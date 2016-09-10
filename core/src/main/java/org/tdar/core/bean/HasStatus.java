@@ -15,6 +15,11 @@ public interface HasStatus {
 
     void setStatus(Status status);
 
+    /**
+     * NOTE These default methods are here for the future, but Freemarker doesn't support default methods, so it causes failures
+     * https://issues.apache.org/jira/browse/FREEMARKER-24
+     * @return
+     */
 
     @Transient
     @XmlTransient

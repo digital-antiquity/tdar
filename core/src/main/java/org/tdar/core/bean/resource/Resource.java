@@ -1339,6 +1339,39 @@ public class Resource implements Persistable,
     @Override
     @Transient
     @XmlTransient
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
     public String getName() {
         return getTitle();
     }

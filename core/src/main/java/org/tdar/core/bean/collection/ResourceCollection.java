@@ -378,5 +378,39 @@ public abstract class ResourceCollection extends AbstractPersistable
     public void setStatus(Status status) {
         this.status = status;
     }
-    
+
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDeleted() {
+        return status == Status.DELETED;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isActive() {
+        return status == Status.ACTIVE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isDraft() {
+        return status == Status.DRAFT;
+    }
+
+    @Override
+    public boolean isDuplicate() {
+        return status == Status.DUPLICATE;
+    }
+
+    @Override
+    @Transient
+    @XmlTransient
+    public boolean isFlagged() {
+        return status == Status.FLAGGED;
+    }
+
 }
