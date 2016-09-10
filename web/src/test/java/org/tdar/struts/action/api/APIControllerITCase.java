@@ -46,6 +46,7 @@ import org.tdar.core.bean.resource.ResourceNoteType;
 import org.tdar.core.bean.resource.SensoryData;
 import org.tdar.core.bean.resource.sensory.SensoryDataImage;
 import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.dao.resource.DatasetDao;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericKeywordService;
 import org.tdar.core.service.SerializationService;
@@ -75,6 +76,10 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Autowired
     GenericKeywordService genericKeywordService;
 
+    @Autowired
+    private DatasetDao datasetDao;
+
+    
     @Autowired
     BillingAccountService billingAccountService; 
     public final static Long TEST_ID = 3794L;
@@ -308,7 +313,7 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
     @Rollback
 //    @Ignore("not implemented yet")
     public void testDatasetWithMappings() throws Exception {
-
+        
         APIController controller = generateNewInitializedController(APIController.class);
         String text = FileUtils.readFileToString(new File(TestConstants.TEST_ROOT_DIR + "/xml/datasetmapping.xml"));
         controller.setRecord(text);
@@ -317,6 +322,9 @@ public class APIControllerITCase extends AbstractAdminControllerITCase {
         String uploadStatus = controller.upload();
         assertEquals(Action.SUCCESS, uploadStatus);
         assertEquals(StatusCode.CREATED, controller.getStatus());
+        ((Dataset)controller.getImportedRecord()).getDataTables().forEach(dt ->
+        assertTrue(datasetDao.checkExists(dt))
+        );
     }
 
     @Test

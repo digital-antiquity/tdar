@@ -26,6 +26,9 @@ import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
+import org.tdar.core.configuration.TdarConfiguration;
+import org.tdar.core.exception.TdarRuntimeException;
+import com.opensymphony.xwork2.Preparable;
 import org.apache.struts2.interceptor.ParameterAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
@@ -44,7 +47,7 @@ import org.tdar.struts_base.interceptor.annotation.PostOnly;
 @Scope("prototype")
 @ParentPackage("default")
 @Namespace("/test/nelnet")
-public class MockNelnetController extends AbstractAuthenticatableAction implements ParameterAware, Serializable {
+public class MockNelnetController extends AbstractAuthenticatableAction implements ParameterAware, Serializable, Preparable {
 
     private static final long serialVersionUID = -973297044126882831L;
 
@@ -89,7 +92,7 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
     }
 
     private void sendResponse() throws TdarActionException {
-        String url = String.format("https://%s:%s%s/cart/process-external-payment-response", getHostName(), getHttpsPort(),getContextPath());
+        String url = String.format("https://%s:%s%s/cart/process-external-payment-response", getHostName(), getHttpsPort(), getContextPath());
 
         HttpPost postReq = new HttpPost(url);
         getLogger().info(url);
@@ -201,4 +204,11 @@ public class MockNelnetController extends AbstractAuthenticatableAction implemen
         this.responseParams = responseParams;
     }
 
+    @Override
+    public void prepare() throws Exception {
+        if (System.getProperty("enableContextSwitchingConfig", "false").equalsIgnoreCase("false") && 
+                TdarConfiguration.getInstance().isProductionEnvironment()) {
+                throw new TdarRuntimeException("not in production environment");
+        }
+    }
 }

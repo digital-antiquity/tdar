@@ -125,6 +125,47 @@ describe("LeafletSpec.js", function() {
     });
 
 
+    it("edit:fireCreateOutOfBoundsTooBig",function(done){
+        loadFixtures("leaflet/leaflet-edit.html");
+        TDAR.leaflet.initEditableLeafletMaps()[0].done(function(){
+            var bounds = [[53.912257, 227.581640], [53.902257, 227.561640]];
+            var $el = $("#large-map");
+            var map = $(".mapdiv",$el).data('map');
+            var rect = L.rectangle(bounds, {color: 'blue', weight: 1});
+            var event = $.Event("draw:created");
+            event.type = "draw:created";
+            event.layer = rect;
+            map.fireEvent(event.type,event);
+            console.log("**** " + parseFloat($(".minx", $el).val()));
+            expect(parseFloat($(".minx", $el).val())).toEqual(-180 - (180 - bounds[1][1]));
+            expect(parseFloat($(".miny", $el).val())).toEqual(bounds[1][0]);
+            expect(parseFloat($(".maxx", $el).val())).toEqual(-180 - (180 - bounds[0][1]));
+            expect(parseFloat($(".maxy", $el).val())).toEqual(bounds[0][0]);
+            done();
+        });
+    });
+
+    it("edit:fireCreateOutOfBoundsAroundTheWorldAfewTimes",function(done){
+        loadFixtures("leaflet/leaflet-edit.html");
+        TDAR.leaflet.initEditableLeafletMaps()[0].done(function(){
+            var bounds = [[53.912257, -527.581640], [53.902257, -527.561640]];
+            var $el = $("#large-map");
+            var map = $(".mapdiv",$el).data('map');
+            var rect = L.rectangle(bounds, {color: 'blue', weight: 1});
+            var event = $.Event("draw:created");
+            event.type = "draw:created";
+            event.layer = rect;
+            map.fireEvent(event.type,event);
+            console.log("**** " + parseFloat($(".minx", $el).val()));
+            expect(parseFloat($(".minx", $el).val())).toEqual(-167.581640);
+            expect(parseFloat($(".miny", $el).val())).toEqual(bounds[1][0]);
+            expect(parseFloat($(".maxx", $el).val())).toEqual(-167.561640);
+            expect(parseFloat($(".maxy", $el).val())).toEqual(bounds[0][0]);
+            done();
+        });
+    });
+
+
     it("edit:fireDelete",function(done){
         loadFixtures("leaflet/leaflet-edit.html");
 

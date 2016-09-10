@@ -91,4 +91,8 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     public boolean isLimited() {
         return assistant.getBooleanProperty("dataone.limited", false);
     }
+
+    public String getMaxId() {
+        return Integer.toString(assistant.getIntProperty("dataone.maxId", 2000));
+    }
 }

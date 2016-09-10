@@ -127,6 +127,13 @@ public class DatasetImportService {
 
             if (existingTable != null) {
                 existingTablesMap.remove(existingTable.getInternalName());
+                if (!datasetDao.checkExists(existingTable)) {
+                    if (!datasetDao.checkExists(tableToPersist)) {
+                        throw new TdarRecoverableRuntimeException("datasetImportService.no_tables_exist");
+                    }
+                    existingTable.setName(tableToPersist.getName());
+                }
+
                 Pair<DataTable, Collection<DataTableColumn>> reconcileDataTable = reconcileDataTable(dataset, existingTable, tableToPersist);
                 tableToPersist = reconcileDataTable.getFirst();
                 if (CollectionUtils.isNotEmpty(reconcileDataTable.getSecond())) {

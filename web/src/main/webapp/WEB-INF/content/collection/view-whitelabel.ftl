@@ -63,10 +63,12 @@
                 <h2>Collections</h2>
                 <#list collections as childCollection>
                     <p>
-                        <@s.a href="/collection/${childCollection.id?c}/${childCollection.slug}" cssClass="title"
-                            >${childCollection.name}</@s.a>
-
-                        ${common.fnTruncate(childCollection.description, 500)}
+                        <@s.a href="/collection/${childCollection.id?c}/${childCollection.slug}" cssClass="title">${childCollection.name}</@s.a>
+						<#assign  descr = childCollection.description />
+						<#if (childCollection.description?trim?index_of("\n") > 0)>
+							<#assign  descr = childCollection.description?trim?keep_before("\n") />
+						</#if>
+                        ${common.fnTruncate(descr, 500)}
                     </p>
                 </#list>
             </div>

@@ -31,7 +31,7 @@ public class DataOneDao {
 	private static final String D1_PREFIX = " external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
 	private static final String TDAR_PREFIX = " external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
     private static final String LIST_OBJECT_QUERY = "select " + D1_PREFIX + " " + D1_SUFFIX + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX;
-    private static final String LIMIT = " and res.id < 2000";
+    private static final String LIMIT = " and res.id < " + DataOneConfiguration.getInstance().getMaxId();
     private static final String LIST_OBJECT_QUERY_LIMITED = "select " + D1_PREFIX + " " + D1_SUFFIX + LIMIT + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX + LIMIT;
     private static final String LIST_OBJECT_QUERY_COUNT =  "select ((select count(res.id) " + D1_SUFFIX + " ) + ( " + "select count(res.id) " + TDAR_SUFFIX +" ))";
     private static final String LIST_OBJECT_QUERY_COUNT_LIMITED =  "select ((select count(res.id) " + D1_SUFFIX + LIMIT + " ) + ( " + "select count(res.id) " + TDAR_SUFFIX + LIMIT +" ))";
