@@ -320,7 +320,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         resourceCollection = null;
         resourceCollection = genericService.find(SharedCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
-        assertTrue("user should be able to delete collection", resourceCollection == null);
+        assertFalse("user should be able to delete collection", resourceCollection == null);
+        assertTrue("user should be able to delete collection", resourceCollection.isDeleted());
         resourceCollectionChild = null;
         resourceCollectionParent = null;
         SharedCollection child = genericService.find(SharedCollection.class, childId);
@@ -370,7 +371,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         // now load our resource collection again. the resources should be gone.
         resourceCollection = genericService.find(SharedCollection.class, rcid);
-        assertFalse("user should not be able to delete collection", resourceCollection == null);
+        assertFalse("user should not be able to delete collection", resourceCollection.isDeleted());
 
         deleteAction = generateNewController(CollectionDeleteAction.class);
         deleteAction.setId(rcid);
@@ -387,7 +388,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         resourceCollection = null;
         resourceCollection = genericService.find(SharedCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
-        assertTrue("user should be able to delete collection", resourceCollection == null);
+        assertTrue("user should be able to delete collection", resourceCollection.isDeleted());
 //        evictCache();
     }
 

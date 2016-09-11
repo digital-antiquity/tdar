@@ -120,6 +120,10 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
                             break;
                         }
                         Resource r = result;
+                        
+                        if (r == null) {
+                            continue;
+                        }
                         Integer dateCreated = null;
                         Integer numFiles = 0;
                         List<String> filenames = new ArrayList<String>();
@@ -138,7 +142,6 @@ public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchControll
 
                         }
                         List<Creator<?>> authors = new ArrayList<>();
-
                         for (ResourceCreator creator : r.getPrimaryCreators()) {
                             authors.add(creator.getCreator());
                         }

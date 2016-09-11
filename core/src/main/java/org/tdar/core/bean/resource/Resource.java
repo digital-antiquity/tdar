@@ -418,7 +418,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="collection_type='SHARED'")
+    @Where(clause="collection_type='SHARED' and status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.sharedCollections")
     private Set<SharedCollection> sharedCollections = new LinkedHashSet<>();
 
@@ -429,7 +429,7 @@ public class Resource implements Persistable,
     @XmlTransient
     @Size(min=0,max=1)
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.internalCollections")
-    @Where(clause="collection_type='INTERNAL'")
+    @Where(clause="collection_type='INTERNAL' and status='ACTIVE' ")
     private Set<InternalCollection> internalCollections = new LinkedHashSet<>();
 
 //    @OneToOne(cascade=CascadeType.ALL)
@@ -442,7 +442,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="collection_type!='LIST'")
+    @Where(clause="collection_type!='LIST' and status='ACTIVE' ")
     private Set<ResourceCollection> resourceCollections = new LinkedHashSet<>();
 
     @ManyToMany(cascade = { CascadeType.ALL }, fetch = FetchType.LAZY)
@@ -450,7 +450,7 @@ public class Resource implements Persistable,
     @JoinTable(name = "unmanaged_collection_resource", joinColumns = { @JoinColumn(nullable = false, name = "resource_id") }, inverseJoinColumns = { @JoinColumn(
             nullable = false, name = "collection_id") })
     @XmlTransient
-    @Where(clause="collection_type='LIST'")
+    @Where(clause="collection_type='LIST' and status='ACTIVE' ")
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.unmanagedResourceCollections")
     private Set<ListCollection> unmanagedResourceCollections = new LinkedHashSet<>();
 

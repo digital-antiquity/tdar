@@ -24,8 +24,7 @@ import org.tdar.core.bean.OaiDcProvider;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.resource.Resource;
@@ -297,7 +296,7 @@ public class OaiPmhService {
         // iso_utc
         record.setHeader(header);
         if (resource instanceof Resource) {
-            for (ResourceCollection rc : ((Resource) resource).getSharedResourceCollections()) {
+            for (ListCollection rc : ((Resource) resource).getUnmanagedResourceCollections()) {
                 header.getSetSpec().add(Long.toString(rc.getId()));
                 if (rc instanceof HierarchicalCollection) {
                     HierarchicalCollection<?> hc = (HierarchicalCollection<?>) rc;
