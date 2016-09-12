@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.custommonkey.xmlunit.NamespaceContext;
 import org.custommonkey.xmlunit.SimpleNamespaceContext;
@@ -140,7 +141,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertNotEmpty(controller.getResults());
         String xml = IOUtils.toString(controller.getInputStream());
         logger.debug(xml);
-        assertTrue(xml.contains("link rel=\"enclosure\" type=\"application/vnd.ms-excel"));
+        StringUtils.containsAny(xml, "<link rel=\"enclosure\" type=\"application/pdf\"", "<link rel=\"enclosure\" type=\"application/vnd.ms-excel");
     }
 
     private String setupGeoRssCall(InformationResource document, GeoRssMode mode) throws TdarActionException, IOException {

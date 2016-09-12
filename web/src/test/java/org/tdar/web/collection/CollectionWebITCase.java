@@ -131,8 +131,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         submitForm("delete");
         logger.debug("currentPage: " + currentUrlPath);
         gotoPageWithoutErrorCheck(currentUrlPath);
-        logger.debug("{}",internalPage);
-        assertFalse(getPageCode().contains("my fancy collection"));
+        logger.debug("{}",getPageText());
+        assertTrue(getPageCode().contains("my fancy collection"));
+        assertTrue(getPageCode().contains("Deleted"));
 
     }
 

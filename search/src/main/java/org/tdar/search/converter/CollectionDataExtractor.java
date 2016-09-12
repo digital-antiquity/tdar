@@ -54,6 +54,9 @@ public class CollectionDataExtractor {
         writable.add(resource.getSubmitter());
         writable.add(resource.getUpdatedBy());
         for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+            if (!collection.isActive()) {
+                continue;
+            }
             writable.addAll(CollectionRightsExtractor.getUsersWhoCan((ResourceCollection)collection, GeneralPermissions.MODIFY_METADATA, true));
         }
         for (TdarUser p : writable) {
@@ -96,6 +99,9 @@ public class CollectionDataExtractor {
 
     public void extractHierarchy() {
         for (RightsBasedResourceCollection collection : resource.getRightsBasedResourceCollections()) {
+            if (!collection.isActive()) {
+                continue;
+            }
             if (collection instanceof SharedCollection) {
                 SharedCollection shared = (SharedCollection)collection;
                 directCollectionIds.add(collection.getId());
@@ -109,6 +115,10 @@ public class CollectionDataExtractor {
         }
         allCollectionIds.addAll(collectionIds);
         for (ListCollection collection : resource.getUnmanagedResourceCollections()) {
+            if (!collection.isActive()) {
+                continue;
+            }
+
             if (collection instanceof ListCollection) {
                 ListCollection list = (ListCollection)collection;
                 getListCollectionIds().add(collection.getId());
