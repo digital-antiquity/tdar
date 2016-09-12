@@ -669,7 +669,8 @@
         this.loadNodeParticipation = function(dataTableColumnIds) {
             var postData = $.param({
                 dataTableColumnIds : dataTableColumnIds,
-                verbose: 'true'
+                //fixme:  use non-verbose output until TDAR-5236 is fixed.
+                verbose: 'false'
             }, true);
 
             var httpPromise = $http({
@@ -681,8 +682,8 @@
 
             //var httpPromise = $http.get(url);
             var futureWork = $q.defer();
-            httpPromise.success(function(verboseData) {
-                var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
+            httpPromise.success(function(nodeIdsByColumnId) {
+                // var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
                 Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId) {
                     var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
                     var nodes = nodeIdsByColumnId[dataTableColumnId].map(function(ontologyNodeId){return ontologyNodeCache.get(ontologyNodeId)});
