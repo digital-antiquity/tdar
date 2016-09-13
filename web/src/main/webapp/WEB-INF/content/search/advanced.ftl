@@ -29,6 +29,7 @@
         <div id="resource" class="tab-pane active">
             <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} >
                 <input type="hidden" name="_tdar.searchType" value="advanced">
+                <input type="hidden" name="types[0]" value="RESOURCE">
 
                 <div class="searchgroup">
                     <h2>Choose Search Terms</h2>
