@@ -568,7 +568,6 @@ public class ExcelWorkbookWriter {
                 break;
             }
             rowNum++;
-            addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
             if (rowNum >= (maxRows - 1)) {
                 if (proxy.isCleanupNeeded()) {
                     autoSizeColumnsOnSheet(sheet);
@@ -578,6 +577,7 @@ public class ExcelWorkbookWriter {
                 rowNum = FIRST_ROW;
                 addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
             }
+            addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
         }
         
         if (proxy.hasFreezeRow()) {
