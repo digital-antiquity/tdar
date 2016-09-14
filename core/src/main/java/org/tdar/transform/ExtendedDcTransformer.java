@@ -3,6 +3,7 @@ package org.tdar.transform;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -51,6 +52,9 @@ import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
 public abstract class ExtendedDcTransformer<R extends Resource> implements Transformer<R, QualifiedDublinCoreDocument> {
 
+    protected Set<String> contributors = new HashSet<>();
+    protected Set<String> creators = new HashSet<>();
+    
     @Override
     public QualifiedDublinCoreDocument transform(R source) {
         QualifiedDublinCoreDocument dc = new QualifiedDublinCoreDocument();
@@ -80,9 +84,15 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
             // FIXME: check this logic
             if (resourceCreator.getRole() == ResourceCreatorRole.AUTHOR || resourceCreator.getRole() == ResourceCreatorRole.CREATOR) {
-                dc.addCreator(name);
+                if (!creators.contains(name)) {
+                    dc.addCreator(name);
+                    creators.add(name);
+                }
             } else {
-                dc.addContributor(name);
+                if (!contributors.contains(name)) {
+                    dc.addContributor(name);
+                    contributors.add(name);
+                }
             }
         }
 
@@ -242,7 +252,11 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
             Institution resourceProviderInstitution = source.getResourceProviderInstitution();
             if (resourceProviderInstitution != null) {
-                dc.addContributor(resourceProviderInstitution.getName());
+                String name = resourceProviderInstitution.getName();
+                if (!contributors.contains(name)) {
+                    dc.addContributor(name);
+                    contributors.add(name);
+                }
             }
 
             String publisherLocation = source.getPublisherLocation();
