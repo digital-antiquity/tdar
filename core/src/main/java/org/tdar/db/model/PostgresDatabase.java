@@ -242,7 +242,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectDistinctValues(DataTableColumn dataTableColumn) {
+    public List<String> selectDistinctValues(DataTableColumn dataTableColumn, boolean sort) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
@@ -256,7 +256,9 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         }
         builder.getColumns().add(dataTableColumn.getName());
         builder.getTableNames().add(dataTableColumn.getDataTable().getName());
-        builder.getOrderBy().add(dataTableColumn.getName());
+        if (sort) {
+            builder.getOrderBy().add(dataTableColumn.getName());
+        }
         logger.debug(builder.toSql());
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
