@@ -604,6 +604,10 @@ public class ExcelWorkbookWriter {
     private void autoSizeColumnsOnSheet(Sheet sheet) {
         // auto-sizing columns
         // FIXME user start row may not be 0
+        if (sheet == null || sheet.getRow(0) == null) {
+            return;
+        }
+
         int lastCol = sheet.getRow(0).getLastCellNum();
         for (int i = 0; i < lastCol; i++) {
             sheet.autoSizeColumn(i);

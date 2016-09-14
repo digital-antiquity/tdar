@@ -72,9 +72,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         this.person = context.getCreator();
         this.provider = provider;
         this.rawIntegration = rawIntegration;
-        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(10);
-        sxssfWorkbook.setCompressTempFiles(true);
-        setWorkbook(sxssfWorkbook);
+//        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(10);
+//        sxssfWorkbook.setCompressTempFiles(true);
+        setWorkbook(new XSSFWorkbook());
     }
 
     /**
