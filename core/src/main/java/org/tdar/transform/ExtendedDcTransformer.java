@@ -293,8 +293,6 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                 dc.addIdentifier(issn);
             }
 
-            dc.addType(source.getDocumentType().getLabel());
-            
 
             String seriesName = source.getSeriesName();
             String seriesNumber = source.getSeriesNumber();
