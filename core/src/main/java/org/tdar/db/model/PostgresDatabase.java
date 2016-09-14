@@ -257,6 +257,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         builder.getColumns().add(dataTableColumn.getName());
         builder.getTableNames().add(dataTableColumn.getDataTable().getName());
         builder.getOrderBy().add(dataTableColumn.getName());
+        logger.debug(builder.toSql());
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 

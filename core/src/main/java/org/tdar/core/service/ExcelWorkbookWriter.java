@@ -537,7 +537,9 @@ public class ExcelWorkbookWriter {
         Sheet sheet = null;
         int rowNum = proxy.getStartRow();
         int startRow = proxy.getStartRow();
-        SpreadsheetVersion version = proxy.getVersion();
+        if (this.version != proxy.getVersion()) {
+            this.version = proxy.getVersion();
+        }
         Workbook workbook = proxy.getWorkbook();
         String sheetName = normalizeSheetName(workbook, proxy.getName());
         proxy.preProcess();
