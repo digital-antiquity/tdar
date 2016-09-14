@@ -24,6 +24,7 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,7 +72,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         this.person = context.getCreator();
         this.provider = provider;
         this.rawIntegration = rawIntegration;
-        setWorkbook(new XSSFWorkbook());
+        SXSSFWorkbook sxssfWorkbook = new SXSSFWorkbook(10);
+        sxssfWorkbook.setCompressTempFiles(true);
+        setWorkbook(sxssfWorkbook);
     }
 
     /**
