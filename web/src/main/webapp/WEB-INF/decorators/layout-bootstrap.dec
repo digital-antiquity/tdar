@@ -299,7 +299,6 @@ function _buildCollectionTree(data) {
 	  	if (children != undefined) {
 	  	//http://stackoverflow.com/questions/9758587/twitter-bootstrap-multilevel-dropdown-menu
 	  	//https://vsn4ik.github.io/bootstrap-submenu/
-//	  		item += children.html();
   		}
   		item  += "</li>" 
 	    items.push( item);
@@ -314,12 +313,10 @@ $(document).ready(function() {
     	var $menu = $(this);
         if($menu.data('open')) {
             $menu.data('open', false);
-			$menu.children(".extra").remove();
-            console.log("close");
+			$(".dropdown-menu").children(".extra").remove();
         } else {
 			$.getJSON( "/api/collection/tree", function( data ) {
 			  var items = _buildCollectionTree(data);
-			  console.log($menu);
 				$menu.next("ul.dropdown-menu").append(items);
 			});
             $menu.data('open', true);

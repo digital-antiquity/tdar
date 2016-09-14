@@ -17,8 +17,23 @@
 </div>
     <form class="form">
 <div class="row">
-<div class="span12">
-    <h4>Grant Access</h4>
+<div class="span2">
+	<ul class="nav nav-list nav-stacked">
+      <li><a href="#">Dashboard</a></li>
+	  <li class="nav-header">My Library</li>
+      <li><a href="#">Collections</a></li>
+      <li><a href="#"> Bookmarks</a></li>
+	  <li class="nav-header">Shares</li>
+      <li class="active"><a href="#">Share</a></li>
+      <li><a href="#">Shares</a></li>
+      <li><a href="#">Resources</a></li>
+      <li><a href="#">With Me</a></li>
+	  <li class="nav-header">My Account</li>
+      <li><a href="#">Billing Accounts</a></li>
+      <li><a href="#">Profile</a></li>
+    </ul>
+</div>
+<div class="span10">
     <div class="well">
     <div class="row">
         <div class="span6">

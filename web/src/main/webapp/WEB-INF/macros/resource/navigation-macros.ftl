@@ -41,6 +41,7 @@ navigation freemarker macros
 					<@makeLink "resource" "duplicate/duplicate?id=${resource.id?c}" "duplicate" "duplicate" "" false />
 			        <#if editable>
 						<@makeLink "resource" "usage/${resource.id?c}" "usage" "usage" "" false />
+						<@makeLink "resource" "share/${resource.id?c}" "share" "share" "" false />
 					</#if>
 			    </#if>
 			    <#nested>
