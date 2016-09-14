@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jena.sparql.function.library.max;
 import org.apache.poi.hssf.usermodel.DVConstraint;
 import org.apache.poi.hssf.usermodel.HSSFDataValidation;
 import org.apache.poi.hssf.usermodel.HSSFDataValidationHelper;
@@ -555,7 +556,7 @@ public class ExcelWorkbookWriter {
         if (proxy.getNoteRow() != null) {
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(proxy.getNoteRow()));
         }
-        int maxRows = version.getMaxRows();
+        int maxRows = version.getMaxRows() -1;
         if (TdarConfiguration.getInstance().getMaxSpreadSheetRows() > 1) {
             maxRows = TdarConfiguration.getInstance().getMaxSpreadSheetRows();
         }
@@ -568,7 +569,9 @@ public class ExcelWorkbookWriter {
                 break;
             }
             rowNum++;
-            if (rowNum >= (maxRows - 1)) {
+            logger.debug("{} - of - {}", rowNum, maxRows);
+            if (rowNum == maxRows) {
+                logger.debug("resetting rows to 0");
                 if (proxy.isCleanupNeeded()) {
                     autoSizeColumnsOnSheet(sheet);
                 }
@@ -576,6 +579,7 @@ public class ExcelWorkbookWriter {
                 sheet = workbook.createSheet(normalizeSheetName(workbook, proxy.getSheetName(sheetIndex)));
                 rowNum = FIRST_ROW;
                 addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
+                rowNum++;
             }
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
         }
