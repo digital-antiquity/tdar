@@ -20,6 +20,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -100,9 +101,14 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             dc.addSubject(cultureTerm.getLabel());
         }
 
+        // add culture subjects
+        for (InvestigationType investigationType: toSortedList(source.getActiveInvestigationTypes())) {
+            dc.addSubject(investigationType.getLabel());
+        }
+
         // add site name subjects
         for (SiteNameKeyword siteNameTerm : toSortedList(source.getActiveSiteNameKeywords())) {
-            dc.addCoverage(siteNameTerm.getLabel());
+            dc.addSubject(siteNameTerm.getLabel());
         }
 
         // add site name subjects
@@ -198,7 +204,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             QualifiedDublinCoreDocument dc = super.transform(source);
 
             String doi = source.getDoi();
-            if (doi != null) {
+            if (StringUtils.isNotBlank(doi)) {
                 dc.addIdentifier(doi);
             }
             
@@ -265,15 +271,15 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             QualifiedDublinCoreDocument dc = super.transform(source);
 
             String isbn = source.getIsbn();
-            if (isbn != null) {
+            if (StringUtils.isNotBlank(isbn)) {
                 dc.addIdentifier(isbn);
             }
             String issn = source.getIssn();
-            if (issn != null) {
+            if (StringUtils.isNotBlank(issn)) {
                 dc.addIdentifier(issn);
             }
 
-                dc.addType(source.getDocumentType().getLabel());
+            dc.addType(source.getDocumentType().getLabel());
             
 
             String seriesName = source.getSeriesName();
