@@ -117,7 +117,7 @@ public class DataIntegrationService {
             return;
         }
         logger.trace("selecting distinct values from column");
-        List<String> values = tdarDataImportDatabase.selectDistinctValues(column, false);
+        Set<String> values = new HashSet<>(tdarDataImportDatabase.selectDistinctValues(column, false));
         logger.trace("values: {} ", values);
         logger.trace("matching coding rule terms to column values");
         for (CodingRule rule : codingSheet.getCodingRules()) {
