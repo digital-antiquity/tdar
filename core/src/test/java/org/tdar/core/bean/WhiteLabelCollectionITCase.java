@@ -88,7 +88,6 @@ public class WhiteLabelCollectionITCase extends AbstractIntegrationTestCase {
 
     @Test
     @Rollback
-    @Ignore
     public void testAddFeaturedRsourceSuccessful() {
         // fixme: stop being so lazy and just write a createWhiteLabelCollection() method.
         testSave();

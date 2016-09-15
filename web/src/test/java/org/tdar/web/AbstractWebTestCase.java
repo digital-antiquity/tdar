@@ -36,6 +36,9 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
+import org.junit.rules.TestName;
+import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -139,6 +142,36 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
 
     protected Set<String> encodingErrorExclusions = new HashSet<>();
 
+    
+    
+    @Rule
+    public TestName testName = new TestName();
+
+    @Rule
+    public TestWatcher failWatcher = new TestWatcher() {
+
+        @Override
+        protected void failed(Throwable e, Description description) {
+            AbstractWebTestCase.this.onFail(e, description);
+        }
+
+    };
+
+    @Before
+    public void announceTestStarting() {
+        String fmt = " ***   RUNNING TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getSimpleName(), testName.getMethodName());
+    }    
+
+    @After
+    public void announceTestOver() {
+        String fmt = " *** COMPLETED TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
+    }
+
+    
+    
+    
     @SuppressWarnings("serial")
     private Map<String, Pattern> encodingErrorPatterns = new LinkedHashMap<String, Pattern>() {
         {

@@ -542,7 +542,7 @@ public class AuthorizationService implements Accessible {
          */
 
         // FIXME: it'd be nice if this took an array and could handle multiple lookups at once
-        logger.debug("applying transient viewable flag to : {}", p);
+        logger.trace("applying transient viewable flag to : {}", p);
         if (p instanceof Viewable) {
             logger.trace("item is a 'viewable': {}", p);
             Viewable item = (Viewable) p;

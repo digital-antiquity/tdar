@@ -69,10 +69,12 @@
 
         <table class="table">
             <thead>
+            	<tr>
                 <th>Id</th>
                 <th>Name</th>
                 <th># of users</th>
                 <th>action</th>
+			</tr>
             </thead>
             <tbody>
             <#list internalCollections![] as collection>
