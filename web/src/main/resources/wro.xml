@@ -103,6 +103,7 @@
         <js>/js/tdar.formValidateExtensions.js</js>
         <js>/includes/bindWithDelay.js</js>
         <js>/js/maps/tdar.worldmap.js</js>
+        <js>/js/tdar.bookmark.js</js>
         <js>/js/maps/tdar.leaflet.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>

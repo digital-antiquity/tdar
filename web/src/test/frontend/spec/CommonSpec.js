@@ -57,26 +57,6 @@ describe("TDAR.common: edit page tests", function () {
             expect($subCategoryIdSelect.find('option').text()).toBe('bar');
         });
 
-        it("updates the server when you add/remove a bookmark", function () {
-            var $elem = $('<span resource-id="12345" bookmark-state="bookmark">click me</span>');
-            var $elem2 = $('<span resource-id="12345" bookmark-state="bookmarked">click me</span>');
-            setFixtures($elem);
-
-            TDAR.common.applyBookmarks.call($elem);
-            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/bookmarkAjax?resourceId=12345');            
-
-            TDAR.common.applyBookmarks.call($elem2);
-            jasmine.Ajax.requests.mostRecent().respondWith({
-                status:200,
-                contentType: 'text/json',
-                responseText: '{"success": true}'    
-            });
-            expect(jasmine.Ajax.requests.mostRecent().url).toContain('resource/removeBookmarkAjax?resourceId=12345');
-
-
-
-        });
-
         it("registers the global ajax status indicator", function () {
             var cb = function(arg){};
             setFixtures('<div id="ajaxIndicator"><strong> </strong><span> </span>');

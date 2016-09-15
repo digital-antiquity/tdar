@@ -554,53 +554,6 @@ TDAR.common = function (TDAR, fileupload) {
     }
 
     /**
-     * Click event handler used when user clicks on the "bookmark" icon beside a resource. If the resource is
-     * "bookmarked" it is  tagged as a potential integration source on the "integrate" page.  This function shows the
-     * correct state (clicking the button togges the state on/off)  and sends an ajax request to update
-     * the bookmark status on the server-side
-     * @returns {boolean}
-     * @private
-     */
-    function _applyBookmarks() {
-        var $this = $(this);
-        var resourceId = $this.attr("resource-id");
-        var state = $this.attr("bookmark-state");
-        var $waitingElem = $("<img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' />");
-        $this.prepend($waitingElem);
-        var $icon = $(".bookmarkicon", $this);
-        $icon.hide();
-        //console.log(resourceId + ": " + state);
-        var oldclass = "icon-star-empty";
-        var newtext = "un-bookmark";
-        var newstate = "bookmarked";
-        var action = "bookmarkAjax";
-        var newUrl = "/resource/removeBookmark?resourceId=" + resourceId;
-        var newclass = "icon-star";
-        
-        if (state == 'bookmarked') {
-            newtext = "bookmark";
-            newstate = "bookmark";
-            action = "removeBookmarkAjax";
-            oldclass = "icon-star";
-            newclass = "icon-star-empty";
-            newUrl = "/resource/bookmark?resourceId=" + resourceId;
-        }
-//        var newclass = "tdar-icon-" + newstate;
-
-        $.post(TDAR.uri() + "api/resource/" + action + "?resourceId=" + resourceId, function (data) {
-                    if (data.success) {
-                        $(".bookmark-label", $this).text(newtext);
-                        $icon.removeClass(oldclass).addClass(newclass).show();
-                        $this.attr("bookmark-state", newstate);
-                        $this.attr("href", newUrl);
-                        $(".waiting", $this).remove();
-                    }
-                });
-
-        return false;
-    }
-
-    /**
      *  apply watermark input tags in context with watermark attribute.   'context' can be any valid
      *  argument to jQuery(selector[, context])
      * @param context
@@ -962,7 +915,6 @@ TDAR.common = function (TDAR, fileupload) {
         "switchType": _switchType,
         "setupDocumentEditForm": _setupDocumentEditForm,
         "sessionTimeoutWarning": _sessionTimeoutWarning,
-        "applyBookmarks": _applyBookmarks,
         "sprintf": _sprintf,
         "htmlDecode": _htmlDecode,
         "htmlEncode": _htmlEncode,
@@ -998,6 +950,4 @@ $(document).ready(function () {
     checkWindowSize();
     $(window).resize(checkWindowSize);
     TDAR.common.sessionTimeoutWarning();
-    $(document).delegate(".bookmark-link", "click", TDAR.common.applyBookmarks);
-
 });
