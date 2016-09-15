@@ -49,20 +49,25 @@ public class SheetProxy implements Serializable {
     }
 
     public SheetProxy() {
-        this(ExcelWorkbookWriter.DEFAULT_EXCEL_VERSION);
+        this(ExcelWorkbookWriter.DEFAULT_EXCEL_VERSION, false);
     }
 
-    public SheetProxy(SpreadsheetVersion version) {
+    public SheetProxy(SpreadsheetVersion version, boolean lowMem) {
         if (version == SpreadsheetVersion.EXCEL97) {
             workbook = new HSSFWorkbook();
         } else {
-            if (lowMemory) {
+            if (lowMem) {
+                lowMemory = true;
                 workbook = new SXSSFWorkbook(10);
                 ((SXSSFWorkbook)workbook).setCompressTempFiles(true);
             } else {
                 workbook = new XSSFWorkbook();
             }
         }
+    }
+
+    public SheetProxy(SpreadsheetVersion version) {
+        this(version, false);
     }
 
     public SheetProxy(String name, List<String> headerLabels, Iterator<Object[]> data) {
@@ -229,10 +234,6 @@ public class SheetProxy implements Serializable {
 
     public boolean isLowMemory() {
         return lowMemory;
-    }
-
-    public void setLowMemory(boolean lowMemory) {
-        this.lowMemory = lowMemory;
     }
 
 }

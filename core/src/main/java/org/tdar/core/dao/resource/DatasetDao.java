@@ -60,7 +60,6 @@ import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableRelationship;
 import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
-import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.NamedNativeQueries;
@@ -73,7 +72,6 @@ import org.tdar.core.service.resource.FileProxyWrapper;
 import org.tdar.core.service.resource.dataset.DatasetUtils;
 import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
-import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
 
@@ -574,8 +572,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if ((dataTables == null) || dataTables.isEmpty()) {
             return null;
         }
-        final SheetProxy proxy = new SheetProxy(SpreadsheetVersion.EXCEL2007);
-        proxy.setLowMemory(true);
+        final SheetProxy proxy = new SheetProxy(SpreadsheetVersion.EXCEL2007, true);
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
