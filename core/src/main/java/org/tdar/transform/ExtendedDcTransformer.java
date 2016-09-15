@@ -3,6 +3,7 @@ package org.tdar.transform;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -20,6 +21,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
+import org.tdar.core.bean.keyword.InvestigationType;
 import org.tdar.core.bean.keyword.MaterialKeyword;
 import org.tdar.core.bean.keyword.OtherKeyword;
 import org.tdar.core.bean.keyword.SiteNameKeyword;
@@ -50,6 +52,9 @@ import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
 public abstract class ExtendedDcTransformer<R extends Resource> implements Transformer<R, QualifiedDublinCoreDocument> {
 
+    protected Set<String> contributors = new HashSet<>();
+    protected Set<String> creators = new HashSet<>();
+    
     @Override
     public QualifiedDublinCoreDocument transform(R source) {
         QualifiedDublinCoreDocument dc = new QualifiedDublinCoreDocument();
@@ -79,9 +84,15 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
             // FIXME: check this logic
             if (resourceCreator.getRole() == ResourceCreatorRole.AUTHOR || resourceCreator.getRole() == ResourceCreatorRole.CREATOR) {
-                dc.addCreator(name);
+                if (!creators.contains(name)) {
+                    dc.addCreator(name);
+                    creators.add(name);
+                }
             } else {
-                dc.addContributor(name);
+                if (!contributors.contains(name)) {
+                    dc.addContributor(name);
+                    contributors.add(name);
+                }
             }
         }
 
@@ -100,9 +111,14 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             dc.addSubject(cultureTerm.getLabel());
         }
 
+        // add culture subjects
+        for (InvestigationType investigationType: toSortedList(source.getActiveInvestigationTypes())) {
+            dc.addSubject(investigationType.getLabel());
+        }
+
         // add site name subjects
         for (SiteNameKeyword siteNameTerm : toSortedList(source.getActiveSiteNameKeywords())) {
-            dc.addCoverage(siteNameTerm.getLabel());
+            dc.addSubject(siteNameTerm.getLabel());
         }
 
         // add site name subjects
@@ -198,7 +214,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             QualifiedDublinCoreDocument dc = super.transform(source);
 
             String doi = source.getDoi();
-            if (doi != null) {
+            if (StringUtils.isNotBlank(doi)) {
                 dc.addIdentifier(doi);
             }
             
@@ -217,7 +233,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                 }
             }
             if (source.getDate() != null) {
-                dc.addCreated(source.getDate().toString());
+                dc.addDate(source.getDate().toString());
             }
 
             Language resourceLanguage = source.getResourceLanguage();
@@ -236,7 +252,11 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
 
             Institution resourceProviderInstitution = source.getResourceProviderInstitution();
             if (resourceProviderInstitution != null) {
-                dc.addContributor(resourceProviderInstitution.getName());
+                String name = resourceProviderInstitution.getName();
+                if (!contributors.contains(name)) {
+                    dc.addContributor(name);
+                    contributors.add(name);
+                }
             }
 
             String publisherLocation = source.getPublisherLocation();
@@ -265,16 +285,14 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             QualifiedDublinCoreDocument dc = super.transform(source);
 
             String isbn = source.getIsbn();
-            if (isbn != null) {
+            if (StringUtils.isNotBlank(isbn)) {
                 dc.addIdentifier(isbn);
             }
             String issn = source.getIssn();
-            if (issn != null) {
+            if (StringUtils.isNotBlank(issn)) {
                 dc.addIdentifier(issn);
             }
 
-                dc.addType(source.getDocumentType().getLabel());
-            
 
             String seriesName = source.getSeriesName();
             String seriesNumber = source.getSeriesNumber();

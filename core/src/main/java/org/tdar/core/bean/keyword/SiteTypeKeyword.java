@@ -40,6 +40,12 @@ public class SiteTypeKeyword extends HierarchicalKeyword<SiteTypeKeyword> implem
     private static final long serialVersionUID = 4043710177198125088L;
     private boolean approved;
 
+    public SiteTypeKeyword() {}
+    
+    public SiteTypeKeyword(String string) {
+        this.setLabel(string);
+    }
+
     @XmlAttribute
     @Override
     @JsonView(JsonLookupFilter.class)
