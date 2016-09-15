@@ -570,7 +570,7 @@ public class ExcelWorkbookWriter {
                 break;
             }
             rowNum++;
-            logger.debug("{} - of - {}", rowNum, maxRows);
+            logger.trace("{} - of - {}", rowNum, maxRows);
             if (rowNum == maxRows) {
                 logger.debug("resetting rows to 0");
                 if (proxy.isCleanupNeeded()) {
