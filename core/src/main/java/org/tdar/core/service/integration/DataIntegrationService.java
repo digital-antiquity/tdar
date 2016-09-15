@@ -35,6 +35,7 @@ import org.tdar.core.bean.resource.ResourceRevisionLog;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.file.VersionType;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.TableDetailsProxy;
@@ -83,7 +84,7 @@ public class DataIntegrationService {
 
     @Autowired
     private DatasetDao datasetDao;
-    
+
     @Autowired
     private FileAnalyzer analyzer;
 
@@ -117,30 +118,42 @@ public class DataIntegrationService {
             return;
         }
         logger.trace("selecting distinct values from column");
-        List<String> values = tdarDataImportDatabase.selectDistinctValues(column, false);
+
+        Set<String> values = new HashSet<>(tdarDataImportDatabase.selectDistinctValues(column, false));
         logger.trace("values: {} ", values);
         logger.trace("matching coding rule terms to column values");
 
-        // we make an assumption in places that the "term" in a coding rule is unique, but this might not
-        // be the case, hence, we need to group them
-        Map<String,List<CodingRule>> ruleMap = new HashMap<>();
-        for (CodingRule rule : codingSheet.getCodingRules()) {
-            ruleMap.putIfAbsent(rule.getTerm(), new ArrayList<>());
-            ruleMap.get(rule.getTerm()).add(rule);
-        }
-        
-        for (String val : values) {
-            List<CodingRule> list = ruleMap.get(val);
-            if (CollectionUtils.isEmpty(list)) {
-                continue;
+        if (TdarConfiguration.getInstance().useMapInNodeParticipation()) {
+            // we make an assumption in places that the "term" in a coding rule is unique, but this might not
+            // be the case, hence, we need to group them
+            Map<String, List<CodingRule>> ruleMap = new HashMap<>();
+            for (CodingRule rule : codingSheet.getCodingRules()) {
+                ruleMap.putIfAbsent(rule.getTerm(), new ArrayList<>());
+                ruleMap.get(rule.getTerm()).add(rule);
             }
-            for (CodingRule rule : list) {
-                logger.trace("mapping rule {} to column {}", rule, column);
-                rule.setMappedToData(column);
+
+            for (String val : values) {
+                List<CodingRule> list = ruleMap.get(val);
+                if (CollectionUtils.isEmpty(list)) {
+                    continue;
+                }
+                for (CodingRule rule : list) {
+                    logger.trace("mapping rule {} to column {}", rule, column);
+                    rule.setMappedToData(column);
+                }
             }
+        } else {
+            logger.trace("values: {} ", values);
+            logger.trace("matching coding rule terms to column values");
+            for (CodingRule rule : codingSheet.getCodingRules()) {
+                if (values.contains(rule.getTerm())) {
+                    logger.trace("mapping rule {} to column {}", rule, column);
+                    rule.setMappedToData(column);
+                }
+            }
+
         }
     }
-
 
     /**
      * Convert the integration context to XML for persistance in the @link PersonalFilestore and logging
@@ -165,7 +178,7 @@ public class DataIntegrationService {
      */
     @Transactional
     public List<CodingRule> findMappedCodingRules(DataTableColumn column) {
-        List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column,false);
+        List<String> distinctColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column, false);
         return dataTableColumnDao.findMappedCodingRules(column, distinctColumnValues);
     }
 
@@ -187,7 +200,7 @@ public class DataIntegrationService {
         Dataset dataset = column.getDataTable().getDataset();
         CodingSheet codingSheet = dataTableColumnDao.setupGeneratedCodingSheet(column, dataset, submitter, provider, ontology);
         // generate identity coding rules
-        List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column,true);
+        List<String> dataColumnValues = tdarDataImportDatabase.selectNonNullDistinctValues(column, true);
         Set<CodingRule> rules = new HashSet<>();
         for (int index = 0; index < dataColumnValues.size(); index++) {
             String dataValue = dataColumnValues.get(index);
@@ -237,7 +250,6 @@ public class DataIntegrationService {
         IOUtils.closeQuietly(writer);
         return sw.toString();
     }
-
 
     @Transactional(readOnly = true)
     public Map<Ontology, List<DataTable>> getIntegrationSuggestions(Collection<DataTable> bookmarkedDataTables, boolean showOnlyShared) {

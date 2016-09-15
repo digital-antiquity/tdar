@@ -985,6 +985,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("sso.enabled", true);
     }
 
+    public boolean useMapInNodeParticipation() {
+        return assistant.getBooleanProperty("experimental.map_node_participation", false);
+    }
+
     public Long getMaxTranslatedFileSize() {
         return assistant.getLongProperty("max.translated_file_size", 75_000_000);
     }
