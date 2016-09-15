@@ -1,7 +1,6 @@
 package org.tdar.web.collection;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
@@ -158,7 +157,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(desc);
 
         // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/dashboard");
+        gotoPage("/organize");
         assertTextPresentInPage(name);
     }
 

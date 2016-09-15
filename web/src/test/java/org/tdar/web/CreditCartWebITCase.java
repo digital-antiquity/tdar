@@ -212,7 +212,7 @@ public class CreditCartWebITCase extends AbstractWebTestCase {
 		assertTextPresent(accountName2);
 		assertTextNotPresent(accountName);
 		assertNotEquals(account, accountId);
-		gotoPage(URLConstants.DASHBOARD);
+		gotoPage("/billing");
 		assertTextPresent(accountName);
 		assertTextPresent(accountName2);
 		logger.trace(getPageText());

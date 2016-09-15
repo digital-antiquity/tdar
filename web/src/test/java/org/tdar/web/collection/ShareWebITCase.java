@@ -132,7 +132,8 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.debug("currentPage: " + currentUrlPath);
         gotoPageWithoutErrorCheck(currentUrlPath);
         logger.debug("{}",internalPage);
-        assertFalse(getPageCode().contains("my fancy collection"));
+        assertTrue(getPageCode().contains("my fancy collection"));
+        assertTrue(getPageCode().contains("Deleted"));
 
     }
 
@@ -157,7 +158,7 @@ public class ShareWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTextPresentInPage(desc);
 
         // now look for the collection on the dashboard (implicitly test encoding errors also)
-        gotoPage("/dashboard");
+        gotoPage("/manage");
         assertTextPresentInPage(name);
     }
 
