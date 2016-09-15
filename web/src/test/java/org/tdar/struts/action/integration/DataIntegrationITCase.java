@@ -6,6 +6,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
@@ -19,11 +22,13 @@ import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -37,10 +42,12 @@ import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
 import org.tdar.core.dao.resource.OntologyNodeDao;
+import org.tdar.core.service.PersonalFilestoreService;
 import org.tdar.core.service.integration.IntegrationColumn;
 import org.tdar.core.service.integration.ModernDataIntegrationWorkbook;
 import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
+import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
 import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
@@ -204,7 +211,7 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         boolean seenUnmapped = false;
 
         logger.trace("result: {}", result);
-        Workbook workbook = result.getWorkbook().getWorkbook();
+        Workbook workbook = writeWorkbookAndReload(result);
         Sheet sheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
@@ -269,6 +276,21 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         // assertions on descriptions too?
 
         logger.info("hi, we're done here");
+    }
+
+    @Autowired
+    PersonalFilestoreService personalFilestoreService;
+    private Workbook writeWorkbookAndReload(ModernIntegrationDataResult result) throws IOException, FileNotFoundException {
+        result.getWorkbook().getFileName();
+        List<PersonalFilestoreFile> files = personalFilestoreService.retrieveAllPersonalFilestoreFiles(result.getTicket().getId());
+        File file = null;
+        for (PersonalFilestoreFile file_ : files) {
+            if (file_.getFile().getName().equals(result.getWorkbook().getFileName())) {
+                file = file_.getFile();
+            }
+        }
+        Workbook workbook = new XSSFWorkbook(new FileInputStream(file));
+        return workbook;
     }
 
     private ModernIntegrationDataResult runIntegration(Map<String, Long> idMap, final String integration_)
@@ -398,7 +420,9 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
 
         int unmapped = 0;
         int nulls = 0;
-        Sheet sheet = result.getWorkbook().getWorkbook().getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
+        Workbook workbook = writeWorkbookAndReload(result);
+        
+        Sheet sheet = workbook.getSheet(MessageHelper.getMessage("dataIntegrationWorkbook.data_worksheet"));
         Iterator<Row> rowIterator = sheet.rowIterator();
         while (rowIterator.hasNext()) {
             Row row = rowIterator.next();

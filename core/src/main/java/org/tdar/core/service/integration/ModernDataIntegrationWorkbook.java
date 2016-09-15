@@ -24,8 +24,8 @@ import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -273,7 +273,9 @@ public class ModernDataIntegrationWorkbook implements Serializable {
         workbookWriter.addDataRow(summarySheet, currentRow + 4, 1,Arrays.asList("JSON:",rawIntegration));
         // auto-sizing columns
         for (int i = 0; i < max; i++) {
-            summarySheet.autoSizeColumn(i);
+            if (! (summarySheet instanceof SXSSFSheet)) {
+                summarySheet.autoSizeColumn(i);
+            }
         }
     }
 
