@@ -5,6 +5,7 @@
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/${themeDir}/settings.ftl" as settings>
+    <#import "dashboard-common.ftl" as dash />
 
 <head>
     <title>Billing Accounts</title>
@@ -16,73 +17,30 @@
     <h1>${authenticatedUser.properName}'s Billing Accounts</h1>
 
 </div>
-    <div id="accountSection" class="row">
-    <div class="span9">
-        <div id="divAccountInfo">
-            <#list accounts>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Name</th>
-                            <th>Size</th>
-                            <th>Resources</th>
-                            <th>Latest Activity</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <#items as account>
-                        <tr>
-                            <td>${account.name}</td>
-                            <td >
-                                ${account.invoices?size} invoices,
-                                ${account.totalNumberOfFiles} files,
-                                ${account.totalSpaceInBytes} bytes
-                            </td>
-                            <td>${account.resources?size}</td>
-                            <td>
-                                <#--fixme: work to obtain aggregate info like this is best left to action or service layer -->
-                                <#if account.resourceList?has_content>
-                                    <#assign resource = account.resourceList?sort_by('dateCreated')?reverse?first>
-                                    <em>${resource.title}</em>
-                                    created on ${resource.dateCreated?date?string.short}
-                                <#else>
-                                   <em class="disabled">n/a</em>
-                                </#if>
-                            </td>
-                            <td>details | edit | reports</td>
-                        </tr>
-                        </#items>
 
-                    </tbody>
-                </table>
-            <#else>
-                <em>You do not have any billing accounts.</em>
-            </#list>
-            <@common.billingAccountList accounts />
 
-        </div>
-
+<div class="row">
+    <div class="span2">
+        <@dash.sidebar current="billing" />
     </div>
-    <div class="span3">
-    <h5>Add Space</h5>
+    <div class="span8">
+        <@accountSection />
+    </div>
+    <div class="span2">
+      <h5>Add Space</h5>
     <@s.form name='MetadataForm' id='MetadataForm'  method='post' cssClass="form-horizontal disableFormNavigate" enctype='multipart/form-data' action='process-choice'>
                 <table class="table pTable">
                     <tbody>
                         <tr>
-                            <th class="borderRight">
-                                # of Files
-                            </th>
+                            <th class="borderRight">Files</th>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer span2 orderinfo" maxlength=9  />
+                                <@s.textfield name="invoice.numberOfFiles" theme="simple" cssClass="integer span1 orderinfo" maxlength=9  />
                             </td>
                         </tr>
                         <tr>
-                            <th class="borderRight">
-                                Total File Size (MB)
-                            </th>
+                            <th class="borderRight">Space (MB)</th>
                             <td class="custom" style="text-align:center">
-                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span2 orderinfo" maxlength=9 />
+                                <@s.textfield name="invoice.numberOfMb"  theme="simple" cssClass="integer span1 orderinfo" maxlength=9 />
                             </td>
                         </tr>
                         <tr>
@@ -104,6 +62,58 @@
                     </tbody>
                 </table>
                 </@s.form>
+  
+    </div>
+
+</div>
+<#macro accountSection>
+            <#list accounts>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Invoices</th>
+                            <th>Space</th>
+                            <th>Files</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <#items as account>
+                        <tr>
+                            <td><a href="${account.detailUrl}">${account.name}</a></td>
+                            <td>${account.invoices?size}</td>
+                            <td id="space${account.id?c}"><span class="glabel">${account.totalSpaceInMb}</span></td>
+                            <td id="files${account.id?c}"><span class="glabel">${account.totalNumberOfFiles}</span></td>
+                        </tr>
+                        <style>
+                        .glabel {z-index:100;display:inline-block;position:absolute}
+                        <@makeGraphCss "space" account account.availableSpaceInMb / account.totalSpaceInMb  />
+                        <@makeGraphCss "files" account account.availableNumberOfFiles / account.totalNumberOfFiles />
+                        </style>
+                        </#items>
+
+                    </tbody>
+                </table>
+            <#else>
+                <em>You do not have any billing accounts.</em>
+            </#list>
+</#macro>
+
+<#macro makeGraphCss prefix account percent>
+    #${prefix}${account.id?c} {
+        position: relative;
+    }
+    #${prefix}${account.id?c}:after {
+        content:'\A';
+        position:absolute;
+        background:#ddd;
+        top:0; bottom:0;
+        left:0;
+        z-index:0;
+        width:${percent}%;
+    }
+
+</#macro>
 <script>
     $(document).ready(function () {
         TDAR.pricing.initPricing($('#MetadataForm')[0], "<@s.url value="/api/cart/quote"/>");
