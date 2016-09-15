@@ -16,23 +16,42 @@
 
 </#macro>
 
-<#macro sidebar>
+<#macro sidebar minimal=false>
 
     <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
-        <#if results?has_content>
         <br/><br/>
-        <hr class="light"/>
-        <@common.renderWorldMap mode="mini" />
-        <hr class="light"/>
-            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
-<i class="icon-document-red"></i>
+        <#if !minimal>
+            <#if results?has_content>
+            <hr class="light"/>
+            <@common.renderWorldMap mode="mini" />
+            <hr class="light"/>
+                <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
+    <i class="icon-document-red"></i>
+            </#if>
         </#if>
         <#if collections?has_content && !collections.empty > 
             <h3>Child Collections</h3>
             <@common.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
+
+        <#if true > 
+            <hr/>
+            <ul class="inline">
+            <li class="media"><i class="icon-envelope pull-left"></i>
+            <div class="media-body">
+                    <a id="requestAccess" href="/collection/request/${id?c}">Request Access, Submit Correction, Comment
+            </a>
+            </div>
+            </li>
+            <li class="media"><i class="icon-share-alt pull-left"></i>
+            <div class="media-body">
+                    <a id="requestAccess" href="/collection/request/${id?c}">Share with...</a>
+            </div>
+            </li>
+        </ul>
+        </#if>
     </div>
 </#macro>
 
@@ -131,11 +150,11 @@
             </#if>
 </#macro>
 
-<#macro resultsSection>
+<#macro resultsSection header="Resources Inside This Collection">
 
         <#if results?has_content>
         <div id="divResultsSortControl">
-            <h2>Resources Inside This Collection</h2>
+            <h2>${header}</h2>
             <div class="row">
                 <div class="span4">
                     <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>

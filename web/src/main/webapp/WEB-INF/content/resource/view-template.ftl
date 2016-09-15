@@ -601,6 +601,11 @@
             </a>
             </div>
             </li>
+            <li class="media"><i class="icon-share-alt pull-left"></i>
+            <div class="media-body">
+                    <a id="requestAccess" href="/collection/request/${id?c}">Share with...</a>
+            </div>
+            </li>
         </ul>
     <h3>Basic Information</h3>
 
