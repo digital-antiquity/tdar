@@ -128,8 +128,13 @@ public class DataIntegrationService {
             ruleMap.putIfAbsent(rule.getTerm(), new ArrayList<>());
             ruleMap.get(rule.getTerm()).add(rule);
         }
+        
         for (String val : values) {
-            for (CodingRule rule : ruleMap.get(val)) {
+            List<CodingRule> list = ruleMap.get(val);
+            if (CollectionUtils.isEmpty(list)) {
+                continue;
+            }
+            for (CodingRule rule : list) {
                 logger.trace("mapping rule {} to column {}", rule, column);
                 rule.setMappedToData(column);
             }
