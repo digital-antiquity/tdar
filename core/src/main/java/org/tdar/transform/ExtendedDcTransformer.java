@@ -233,7 +233,7 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
                 }
             }
             if (source.getDate() != null) {
-                dc.addCreated(source.getDate().toString());
+                dc.addDate(source.getDate().toString());
             }
 
             Language resourceLanguage = source.getResourceLanguage();
