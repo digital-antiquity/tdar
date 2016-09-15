@@ -367,6 +367,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 
     @Override
     public boolean isRightSidebar() {
-        return true;
+        return false;
     }
 }

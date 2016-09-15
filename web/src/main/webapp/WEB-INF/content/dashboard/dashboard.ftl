@@ -4,6 +4,7 @@
     <#import "/WEB-INF/macros/resource/view-macros.ftl" as view>
     <#import "/WEB-INF/macros/search/search-macros.ftl" as search>
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
+    <#import "dashboard-common.ftl" as dash >
     <#import "/${themeDir}/settings.ftl" as settings>
 
 <head>
@@ -18,19 +19,101 @@
         <@headerNotifications />
 </div>
 
-<div id="sidebar-right" parse="true">
-    <div>
-    	<div id="myProfile">
-            <h2>About ${authenticatedUser.firstName}</h2>
+
+<div class="row">
+<div class="span2">
+<@dash.sidebar current="dashboard" />
+</div>
+<div class="span10">
+    <div class="row">
+        <div class="span10">
+            Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!
+            <#if contributor>
+                The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
+                <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
+                above.
+            <hr/>
+            </#if>
+        </div>
+    </div>
+    <div class="row">
+        <div class="span8">
+            <div class="row">
+            <h4 style="text-align:center">At a glance</h4>
+            </div>
+            <div class="row">
+                <div class="span4">
+        
+                    <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick">
+                    </div>
+                    
+                    <#noescape>
+                    <script id='statusTypeData'>
+                    ${statusData}
+                    </script>
+                    </#noescape>
+        
+                </div>
+                <div class="span4">
+                    <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick">
+                    </div>
+                    
+                    <#noescape>
+                    <script id='resourceTypeData'>
+                    ${resourceTypeData}
+                    </script>
+                    </#noescape>
+                </div>
+            </div>
+        </div>
+        <div class="span2">
+            <h4>About ${authenticatedUser.firstName}</h4>
             <strong>Profile:</strong>
-			<a href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.properName}</a>
-			<#if authenticatedUser.institution??>
-			<br><strong>Institution:</strong>
+            <a href="<@s.url value="/browse/creators/${authenticatedUser.id?c}"/>">${authenticatedUser.properName}</a>
+            <#if authenticatedUser.institution??>
+            <br><strong>Institution:</strong>
 <a href="<@s.url value="/browse/creators/${authenticatedUser.institution.id?c}"/>">${authenticatedUser.institution.properName}</a></#if><br>
             <#if authenticatedUser.penultimateLogin??>
                 <strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}<br>
             </#if><br>
             <a class="button btn" href="<@s.url value='/entity/user/edit?id=${authenticatedUser.id?c}'/>">edit your profile</a>
+        </div>
+    </div>
+    <div class="row">
+<hr/>
+    </div>
+<div class="row">
+    <#if contributor>
+        <#if (activeResourceCount == 0)>
+            <@gettingStarted />
+        <hr/>
+        <#else>
+            <@recentlyUpdatedSection />
+        </#if>
+
+        <@emptyProjectsSection />
+        <@browseResourceSection />
+    <#else>
+    <@searchSection />
+    <#if featuredResources?has_content  >
+    <hr/>
+    <div class="row">
+        <@view.featured colspan="9" header="Featured and Recent Content"/>
+    </div>
+    </#if>
+    </#if>
+
+</div>
+</div>
+</div>
+
+
+
+
+
+<div id="sidebar-right" parse="true">
+    <div>
+    	<div id="myProfile">
             <hr/>
     	</div>
         <#if contributor>
@@ -81,42 +164,8 @@
     </div>
 </div>
 
-<div class="row">
-    <div class="span9">
-        Welcome <#if authenticated.penultimateLogin?has_content>back,</#if> ${authenticatedUser.firstName}!
-        <#if contributor>
-            The resources you can access are listed below. To create a <a href="<@s.url value="/resource/add"/>">new resource</a> or
-            <a href="<@s.url value="/project/add"/>">project</a>, or <a href="<@s.url value="/collection/add"/>">collection</a>, click on the "upload" button
-            above.
-        <p><strong>Jump To:</strong> <a href="#project-list">Browse Resources</a> | <a href="#collection-section">Collections</a> | <a href="#divAccountInfo">Profile</a>
-            <#if payPerIngestEnabled>| <a href="#billing">Billing Accounts</a></#if>
-            | <a href="#boomkarks">Bookmarks</a>
-        </p>
-        <hr/>
-        </#if>
-    </div>
-</div>
 
 
-    <#if contributor>
-        <#if (activeResourceCount == 0)>
-            <@gettingStarted />
-        <hr/>
-        <#else>
-            <@recentlyUpdatedSection />
-        </#if>
-
-        <@emptyProjectsSection />
-        <@browseResourceSection />
-    <#else>
-    <@searchSection />
-    <#if featuredResources?has_content  >
-    <hr/>
-    <div class="row">
-        <@view.featured colspan="9" header="Featured and Recent Content"/>
-    </div>
-    </#if>
-    </#if>
 <hr/>
     <#-- <@accountSection /> -->
 <hr/>
@@ -153,22 +202,6 @@
     <#macro resourcePieChart>
     <div>
             <h2>At a glance</h2>
-
-            <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick">
-            </div>
-            
-            <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick">
-            </div>
-            
-            <#noescape>
-            <script id='statusTypeData'>
-            ${statusData}
-			</script>
-
-            <script id='resourceTypeData'>
-            ${resourceTypeData}
-            </script>
-            </#noescape>
     </div>
 
     </#macro>
