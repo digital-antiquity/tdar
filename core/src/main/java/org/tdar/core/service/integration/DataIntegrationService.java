@@ -117,11 +117,19 @@ public class DataIntegrationService {
             return;
         }
         logger.trace("selecting distinct values from column");
-        Set<String> values = new HashSet<>(tdarDataImportDatabase.selectDistinctValues(column, false));
+        List<String> values = tdarDataImportDatabase.selectDistinctValues(column, false);
         logger.trace("values: {} ", values);
         logger.trace("matching coding rule terms to column values");
+
+        // we make an assumption in places that the "term" in a coding rule is unique, but this might not
+        // be the case, hence, we need to group them
+        Map<String,List<CodingRule>> ruleMap = new HashMap<>();
         for (CodingRule rule : codingSheet.getCodingRules()) {
-            if (values.contains(rule.getTerm())) {
+            ruleMap.putIfAbsent(rule.getTerm(), new ArrayList<>());
+            ruleMap.get(rule.getTerm()).add(rule);
+        }
+        for (String val : values) {
+            for (CodingRule rule : ruleMap.get(val)) {
                 logger.trace("mapping rule {} to column {}", rule, column);
                 rule.setMappedToData(column);
             }
