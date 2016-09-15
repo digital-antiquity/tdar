@@ -160,10 +160,6 @@
 </#macro>
             <script>
             $(document).ready(function() {
-                var picker = $('.datepicker').datepicker();
-                picker.on('changeDate', function(ev){
-                    $(ev.target).datepicker('hide');
-                });
                 TDAR.notifications.init();
                 TDAR.common.collectionTreeview();
             });
