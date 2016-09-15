@@ -31,6 +31,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -570,7 +571,10 @@ public class ExcelWorkbookWriter {
                 break;
             }
             rowNum++;
-            logger.trace("{} - of - {}", rowNum, maxRows);
+
+            if (rowNum % 10_000 == 0) {
+                logger.debug("writing row {} of {}", rowNum, sheet.getSheetName());
+            }
             if (rowNum == maxRows) {
                 logger.debug("resetting rows to 0");
                 if (proxy.isCleanupNeeded()) {
@@ -605,6 +609,11 @@ public class ExcelWorkbookWriter {
         // auto-sizing columns
         // FIXME user start row may not be 0
         if (sheet == null || sheet.getRow(0) == null) {
+            return;
+        }
+        
+        if (sheet instanceof SXSSFSheet) {
+            logger.debug("can't auto-size a SXSSF sheet");
             return;
         }
 
