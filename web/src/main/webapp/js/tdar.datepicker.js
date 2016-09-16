@@ -3,7 +3,7 @@
 
 
     var _init = function() {
-        var picker = $('input.datepicker, .singleFileUpload input.date, .existing-file input.date, input.date.datepicker').datepicker();
+        var picker = $('input.datepicker').datepicker();
         picker.on('changeDate', function(ev){
             $(ev.target).datepicker('hide');
         });

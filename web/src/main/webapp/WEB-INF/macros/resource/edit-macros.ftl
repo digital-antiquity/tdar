@@ -831,7 +831,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                 <#if (fileProxies[0].fileCreatedDate)?has_content>
                     <#local val = fileProxies[0].fileCreatedDate?string("MM/dd/yyyy") />
                 </#if>
-                Date             <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="date input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+                Date             
+                        <div class="input-append">
+   						  <@s.textfield name="fileProxies[0].fileCreatedDate" cssClass="datepicker input-small" placeholder="mm/dd/yyyy" value="${val}" dynamicAttributes={"data-date-format":"mm/dd/yy"} />
+                          <span class="add-on"><i class="icon-th"></i></span>
+                        </div>
                 Description      <@s.textarea class="input-block-level" name="fileProxies[0].description" rows="3" placeholder="Enter a description here" cols="80" />
 
             </div>
@@ -1317,7 +1321,11 @@ MARTIN: it's also used by the FAIMS Archive type on edit.
                     <label class="control-label" for="">Date Created</label>
                     <div class="controls controls-row">
                          <div class="span5">
-                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="date" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}" data-date-format="mm/dd/yy" >
+	                         <div class="input-append">
+	                            <input type="text" name="fileProxies[{%=idx%}].fileCreatedDate" class="datepicker" placeholder="mm/dd/yyyy" value="{%=file.fileCreatedDate%}" data-date-format="mm/dd/yy" >
+	                            <span class="add-on"><i class="icon-th"></i></span>
+	                        </div>
+	                         
                          </div>
                     </div>
 
