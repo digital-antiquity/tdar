@@ -541,7 +541,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setId(id);
         vc.setSlug(slug);
         vc.prepare();
-        assertEquals(Action.SUCCESS, vc.view());
+        assertEquals(CollectionViewAction.SUCCESS_SHARE, vc.view());
         collections = PersistableUtils.extractIds(vc.getCollections());
         assertTrue(collections.contains(childCollectionId));
         assertFalse(collections.contains(childCollectionHiddenId));
@@ -554,7 +554,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setId(id);
         vc.setSlug(slug);
         vc.prepare();
-        assertEquals(Action.SUCCESS, vc.view());
+        assertEquals(CollectionViewAction.SUCCESS_SHARE, vc.view());
         collections = PersistableUtils.extractIds(vc.getCollections());
         assertEquals(2, collections.size());
         assertTrue(collections.contains(childCollectionId));
@@ -683,7 +683,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setId(collection1.getId());
         vc.setSlug(collection1.getSlug());
         vc.prepare();
-        assertEquals(Action.SUCCESS, vc.view());
+        assertEquals(CollectionViewAction.SUCCESS_SHARE, vc.view());
         logger.info("results: {}", vc.getResults());
         assertTrue(vc.getResults().contains(document));
     }

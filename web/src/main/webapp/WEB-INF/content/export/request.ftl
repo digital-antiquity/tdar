@@ -7,7 +7,6 @@
 <body>
 <h1>Export Resources from ${siteAcronym}</h1>
 
-<@s.form method=POST action="perform" class="form-horizontal">
 
 <div class="row">
 <div class="span2">
@@ -17,6 +16,7 @@
 
 <h3>Select a Billing Account or Collection to export from</h3>
 <br/>
+<@s.form method=POST action="perform" class="form-horizontal">
 <div class="row">
     <div class="span8">
         <div class="control-group" >

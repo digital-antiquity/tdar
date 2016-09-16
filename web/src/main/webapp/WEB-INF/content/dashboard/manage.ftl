@@ -37,10 +37,12 @@
 
         <table class="table">
             <thead>
+            <tr>
                 <th>Name</th>
                 <th># of resources</th>
                 <th># of users</th>
                 <th>action</th>
+            </tr>
             </thead>
             <tbody>
             <#list allResourceCollections as collection>

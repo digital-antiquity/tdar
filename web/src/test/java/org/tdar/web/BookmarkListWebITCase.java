@@ -1,5 +1,7 @@
 package org.tdar.web;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.tdar.TestConstants;
@@ -8,6 +10,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.w3c.dom.Element;
 
+import com.gargoylesoftware.htmlunit.html.DomElement;
 import com.gargoylesoftware.htmlunit.html.DomNode;
 
 public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
@@ -25,7 +28,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
         // bookmark it, confirm it's on workspace
-        clickLinkOnPage("bookmark");
+        clickBookmarkLink();
         gotoPage(viewPage);
         gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
@@ -78,7 +81,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
         // bookmark it, confirm it's on workspace
-        clickLinkOnPage("bookmark");
+        clickBookmarkLink();
         gotoPage(viewPage);
         gotoPage(URLConstants.DASHBOARD);
 
@@ -110,6 +113,14 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
+    }
+
+    private void clickBookmarkLink() {
+        try {
+            ((DomElement)htmlPage.getDocumentElement().querySelector(".bookmark-link")).click();
+        } catch (IOException e) {
+            logger.error("{}",e,e);
+        }
     }
 
     private void setDocumentRequiredFields(String docTitle, String docDescription) {

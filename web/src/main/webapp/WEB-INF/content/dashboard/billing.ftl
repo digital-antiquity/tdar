@@ -10,6 +10,30 @@
 <head>
     <title>Billing Accounts</title>
     <meta name="lastModifiedDate" content="$Date$"/>
+    
+<style>
+    .glabel {z-index:100;display:inline-block;position:absolute}
+    <#list accounts as account>
+        <#assign spacePercent = 0>
+        <#if (account.availableSpaceInMb < 0 ) >
+            <#assign spacePercent = 101 >
+        </#if> 
+        <#if (account.availableSpaceInMb > 0)>
+            <#assign spacePercent = account.availableSpaceInMb / account.totalSpaceInMb  />
+        </#if>
+
+        <#assign filesPercent = 0>
+        <#if (account.availableNumberOfFiles < 0 ) >
+            <#assign filesPercent = 101 >
+        </#if> 
+        <#if (account.availableNumberOfFiles > 0)>
+        <#assign filesPercent = account.availableNumberOfFiles / account.totalNumberOfFiles  />
+            </#if>
+        <@makeGraphCss "space" account spacePercent /> 
+        <@makeGraphCss "files" account filesPercent />
+
+    </#list>
+                        </style>
 </head>
 
 <div id="titlebar" parse="true">
@@ -81,33 +105,13 @@
                         <tr>
                             <td><a href="${account.detailUrl}">${account.name}</a></td>
                             <td>${account.invoices?size}</td>
-<#assign spacePercent = 0>
-<#if (account.availableSpaceInMb < 0 ) >
-	<#assign spacePercent = 101 >
-</#if> 
-<#if (account.availableSpaceInMb > 0)>
-<#assign spacePercent = account.availableSpaceInMb / account.totalSpaceInMb  />
-</#if>
                             <td nowrap id="space${account.id?c}"><span class="glabel">${account.totalSpaceInMb}</span></td>
-
-<#assign filesPercent = 0>
-<#if (account.availableNumberOfFiles < 0 ) >
-	<#assign filesPercent = 101 >
-</#if> 
-<#if (account.availableNumberOfFiles > 0)>
-<#assign filesPercent = account.availableNumberOfFiles / account.totalNumberOfFiles  />
-</#if>
                             <td nowrap id="files${account.id?c}"><span class="glabel">${account.totalNumberOfFiles}</span>
                             
 
                             </td>
 
                         </tr>
-                        <style>
-                        .glabel {z-index:100;display:inline-block;position:absolute}
-                        <@makeGraphCss "space" account spacePercent /> 
-                        <@makeGraphCss "files" account filesPercent />
-                        </style>
                         </#items>
 
                     </tbody>
