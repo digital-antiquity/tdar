@@ -4,14 +4,14 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService',
-        function($rootScope, $scope, $log,  integration, dataService, validationService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService', '$attrs',
+        function($rootScope, $scope, $log,  integration, dataService, validationService, $attrs){
         $log.info("IntegrationController::");
 
         var self = this;
         var _openModal;
         var _processAddedIntegrationColumns;
-        var _isReadOnly = !!$("#divIntegrationMain").data("read-only");
+        var _isReadOnly = $attrs.readOnly === "true";
         var _isBusy =false;
 
         // controller public fields
@@ -21,28 +21,31 @@
         _openModal = function(options) {
             $rootScope.$broadcast("openTdarModal", options);
         };
-        
         //status messages
         $scope.alert = {
             kind: "default",
             message: ""
         };
 
+        $scope.maxDataTables = parseInt($attrs.maxDataTables);
+        $scope.maxOutputColumns = parseInt($attrs.maxOutputColumns);
+
         // controller public methods
         self.setTab  = function(idx) {
             this.tab = idx;
-        }
+        };
+
 
         self.isTabSet = function(idx) {
             return this.tab === idx;
-        }
+        };
 
         self.closeTab = function(idx) {
             integration.removeOutputColumn(idx);
             if (integration.columns.length > 0) {
                 self.setTab(integration.columns.length - 1);
             }
-        }
+        };
 
         self.saveClicked = function() {
             self.updateStatus("Saving...");
@@ -240,6 +243,15 @@
         }
         // FIXME: proper validation required
         $scope.isValid = function() {
+
+            // do we exceed the max allowed output columns? datasets?
+            if(integration.columns.length > $scope.maxOutputColumns) {
+                return false;
+            }
+
+            if(integration.dataTables.length > $scope.maxDataTables) {
+                return false;
+            }
 
             // is the system already working on a preview or an integration
             if(_isBusy) {

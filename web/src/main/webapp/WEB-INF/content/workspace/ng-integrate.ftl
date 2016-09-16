@@ -6,7 +6,11 @@
 </head>
 <body>
 
-<div id="divIntegrationMain" ng-controller="IntegrationController as ctrl" data-read-only="${(!editable)?string}">
+<div id="divIntegrationMain" ng-controller="IntegrationController as ctrl"
+     data-read-only="${(!editable)?string}"
+     data-max-data-tables="${maxDataTables?c}"
+     data-max-output-columns="${maxOutputColumns?c}"
+>
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
     </div>
@@ -65,6 +69,10 @@
                                     <thead>
                                         <tr>
                                             <th colspan="3">Selected Datasets
+                                                <div class="alert alert-warn" ng-show="ctrl.integration.dataTables.length > maxDataTables" >
+                                                    Please use less than {{maxDataTables}} datasets.
+                                                </div>
+
                                                 <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
                                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
 
@@ -116,6 +124,10 @@
                     <div class="control-group">
                         <label class="control-label">Actions</label>
                         <div class="controls">
+                            <div id="divStatusMessage" class="alert alert-warn" ng-show="ctrl.integration.columns.length > maxOutputColumns" >
+                                Please use less than {{maxOutputColumns}} output columns.
+                            </div>
+
                             <div class="btn-group">
                                 <div class="btn-group" >
                                     <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">

@@ -992,4 +992,12 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     public Long getMaxTranslatedFileSize() {
         return assistant.getLongProperty("max.translated_file_size", 75_000_000);
     }
+
+    public int getDataIntegrationMaxDataTables() {
+        return assistant.getIntProperty("data.integration.maxDataTables", 10);
+    }
+
+    public int getDataIntegrationMaxOutputColumns() {
+        return assistant.getIntProperty("data.integration.maxOutputColumns", 15);
+    }
 }
