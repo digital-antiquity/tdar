@@ -31,6 +31,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -537,7 +538,9 @@ public class ExcelWorkbookWriter {
         Sheet sheet = null;
         int rowNum = proxy.getStartRow();
         int startRow = proxy.getStartRow();
-        SpreadsheetVersion version = proxy.getVersion();
+        if (this.version != proxy.getVersion()) {
+            this.version = proxy.getVersion();
+        }
         Workbook workbook = proxy.getWorkbook();
         String sheetName = normalizeSheetName(workbook, proxy.getName());
         proxy.preProcess();
@@ -568,7 +571,12 @@ public class ExcelWorkbookWriter {
                 break;
             }
             rowNum++;
-            if (rowNum >= (maxRows - 1)) {
+
+            if (rowNum % 10_000 == 0) {
+                logger.debug("writing row {} of {}", rowNum, sheet.getSheetName());
+            }
+            if (rowNum == maxRows) {
+                logger.debug("resetting rows to 0");
                 if (proxy.isCleanupNeeded()) {
                     autoSizeColumnsOnSheet(sheet);
                 }
@@ -576,6 +584,7 @@ public class ExcelWorkbookWriter {
                 sheet = workbook.createSheet(normalizeSheetName(workbook, proxy.getSheetName(sheetIndex)));
                 rowNum = FIRST_ROW;
                 addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
+                rowNum++;
             }
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
         }
@@ -599,6 +608,15 @@ public class ExcelWorkbookWriter {
     private void autoSizeColumnsOnSheet(Sheet sheet) {
         // auto-sizing columns
         // FIXME user start row may not be 0
+        if (sheet == null || sheet.getRow(0) == null) {
+            return;
+        }
+        
+        if (sheet instanceof SXSSFSheet) {
+            logger.debug("can't auto-size a SXSSF sheet");
+            return;
+        }
+
         int lastCol = sheet.getRow(0).getLastCellNum();
         for (int i = 0; i < lastCol; i++) {
             sheet.autoSizeColumn(i);
