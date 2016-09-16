@@ -231,4 +231,11 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
             }
         }
     }
+
+    /** tell layout.ftl and view.ftl that we want fluid containers **/
+    public String getGridSystemType() {
+        return "fluid";
+    }
+
+
 }

@@ -5,6 +5,7 @@
     <title>Dataset Integration: Edit</title>
 </head>
 <body>
+
 <div id="divIntegrationMain" ng-controller="IntegrationController as ctrl" data-read-only="${(!editable)?string}">
     <div id="divIntegrationHeader">
         <h1 class="compact">Dataset Integration</h1>
@@ -14,7 +15,7 @@
     </div>
 
     <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
-        <div class="row">
+        <div class="row-fluid">
             <div class="span9">
                <div class="control-group">
                    <label class="control-label">
@@ -54,7 +55,7 @@
         </div>
 
         <div id="divSelectedItemsSection">
-            <div class="row">
+            <div class="row-fluid">
                 <div class="span12">
                     <div class="control-group">
                         <label class="control-label">Datasets & Ontologies</label>
@@ -142,7 +143,7 @@
         </div>
         
         <div id="divColumnSection">
-            <div class="row">
+            <div class="row-fluid">
                 <div class="span12">
 
                     <div class="control-group" ng-show="ctrl.integration.columns.length">
