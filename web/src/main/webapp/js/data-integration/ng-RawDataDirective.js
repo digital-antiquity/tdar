@@ -28,7 +28,7 @@
             restrict: 'A',
             link: function(scope, element, attrs){
                 $(element).popover({
-                    placement: 'top',
+                    placement: 'left',
                     trigger: 'hover',
                     html: false,
                     content: attrs.content

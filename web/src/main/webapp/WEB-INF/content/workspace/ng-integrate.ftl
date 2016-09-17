@@ -12,13 +12,13 @@
      data-max-output-columns="${maxOutputColumns?c}"
 >
     <div id="divIntegrationHeader">
-        <h1 class="compact">Dataset Integration</h1>
+        <h2 class="compact">Dataset Integration</h2>
     </div>
     <div id="divStatusMessage" class="alert alert-{{alert.kind}}" ng-show="alert.message !==''" >
     {{alert.message}}
     </div>
 
-    <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
+    <form id="frmIntegrationEdit" class="form-horizontal form-condensed" ng-init="ctrl.loadJSON()">
         <div class="row-fluid">
             <div class="span9">
                <div class="control-group">
@@ -400,7 +400,7 @@
                                     <th style="width:1em">&nbsp</th>
                                     <th style="width:40em">Title</th>
                                     <th style="width:10em">Date</th>
-                                    <th style="width: 20em">Mapped Ontologies</th>
+                                    <th style="width: 20em">Mapped Ontologies (hover to show all)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -415,10 +415,10 @@
                                                 ng-checked="isSelected(result.id)"
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>
-                                    <td style="width:40em"><label for="cbResult{{result.id}}">{{result.title}}</label></td>
+                                    <td style="width:35em"><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td style="width:10em">{{result.date_created | date }}</td>
-                                    <td class="ellipsified" style="max-width: 20em">
-                                        <span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
+                                    <td class="ellipsified" style="max-width: 25em" title="{{result.ontologies.join(', ')}}" >
+                                        <span ng-repeat="ontology in result.ontologies" ">{{$first ? '' : ', '}}{{ontology}}</span>
                                     </td>
                                 </tr>
                                 </tbody>

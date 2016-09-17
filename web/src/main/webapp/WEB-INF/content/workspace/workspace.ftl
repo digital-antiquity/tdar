@@ -5,21 +5,13 @@
 
 <body>
 <h1>Data Integration</h1>
-<div class="well">
-    <p>
-        Please click the link below to start your dataset integration.
-    </p>
-        <a href="<@s.url value="/workspace/integrate"/>">Start Now</a>
 
-</div>
-
-
-<div class="glide">
 
     <div class="row">
         <div class="span9">
+                <a href="<@s.url value="/workspace/integrate"/>" class="button tdar-button">Start a New Integration</a>
             <#list workflows?sort_by('dateUpdated')?reverse>
-            <h3>Saved Integrations</h3>
+                <h3>Saved Integrations</h3>
             <table id="tblWorkflows" class="table table-bordered table-hover">
                 <thead>
                     <tr>
@@ -58,7 +50,6 @@
             <img src="<@s.url value="/images/r4/data_integration.png"/>" class="responsive-image" alt="integrate" title="Integrate" />
         </div>
     </div>
-</div>
 </body>
 
 <#macro learn>
