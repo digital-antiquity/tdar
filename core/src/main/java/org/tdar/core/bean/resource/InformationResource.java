@@ -911,10 +911,13 @@ public abstract class InformationResource extends Resource {
         hasPrimaryThumbnail = Boolean.FALSE;
         
         List<InformationResourceFile> visibleFilesWithThumbnails = getVisibleFilesWithThumbnails();
-        if (CollectionUtils.isNotEmpty(visibleFilesWithThumbnails));
-        hasPrimaryThumbnail = Boolean.TRUE;
-        primaryThumbnail = visibleFilesWithThumbnails.get(0).getLatestThumbnail();
-        return primaryThumbnail;
+        if (CollectionUtils.isNotEmpty(visibleFilesWithThumbnails)) {
+            hasPrimaryThumbnail = Boolean.TRUE;
+            primaryThumbnail = visibleFilesWithThumbnails.get(0).getLatestThumbnail();
+            return primaryThumbnail;
+        } else {
+            return null;
+        }
     }
 
     @Transient
