@@ -26,6 +26,12 @@
             <version>${lucene.version}</version>
             <type>jar</type>
             <scope>compile</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>com.google.guava</groupId>
+            		<artifactId>guava</artifactId>
+            	</exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <artifactId>solr-core</artifactId>
