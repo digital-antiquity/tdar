@@ -39,6 +39,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.dropbox.DropboxClient;
+import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.DropboxItemWrapper;
 import org.tdar.utils.dropbox.ToPersistListener;
 
@@ -143,13 +144,13 @@ public class ItemService {
     }
 
     private void upload(DropboxFile file) throws IllegalStateException, Exception {
-        File rootDir = new File("Client Data", "Upload to tDAR");
+        File rootDir = new File(DropboxConstants.UPLOAD_PATH);
         DropboxClient client  = new DropboxClient();
         logger.debug(file.getPath());
         File path = new File(file.getPath()).getParentFile();
         List<String> tree = new ArrayList<>();
         while (!StringUtils.equalsIgnoreCase(path.getName(), rootDir.getName()) &&
-                StringUtils.contains(path.getPath(), rootDir.getPath())) {
+                StringUtils.containsIgnoreCase(path.getPath(), rootDir.getPath())) {
             tree.add(0, path.getName());
             path = path.getParentFile();
             if (path == null || path.getName().equals("")) {

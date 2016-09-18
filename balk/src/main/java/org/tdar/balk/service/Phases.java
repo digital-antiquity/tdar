@@ -55,4 +55,15 @@ public enum Phases {
         return DropboxConstants.CLIENT_DATA + this.getPath() + nPath;
     }
 
+    public Phases getNextPhase() {
+        switch (this) {
+            case TO_PDFA:
+                return null;
+            case DONE_PDFA:
+                return Phases.UPLOAD_TDAR;
+            case UPLOAD_TDAR:
+                return null;
+        }
+        return null;
+    }
 }

@@ -16,6 +16,13 @@ public class WorkflowStatusReport {
         return true;
     }
     
+    public Phases getNextPhase() {
+        if (doneOcr != null && toUpload == null) {
+            return Phases.UPLOAD_TDAR;
+        }
+        return null;
+    }
+    
     public DropboxFile getToPdf() {
         return toPdf;
     }

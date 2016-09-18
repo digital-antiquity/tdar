@@ -36,17 +36,17 @@ hi ${authenticatedUser.username}
 <td>${path}</td>
 <td>${row.first.extension}</td>
 <#if row.toPdf?has_content>
-	<@_printrow row.toPdf />
+	<@_printrow row.toPdf itemStatusReport/>
 <#else>
 	<@_blankrow />
 </#if>
 <#if row.doneOcr?has_content>
-	<@_printrow row.doneOcr />
+	<@_printrow row.doneOcr itemStatusReport/>
 <#else>
 	<@_blankrow />
 </#if>
 <#if row.toUpload?has_content>
-	<@_printrow row.toUpload />
+	<@_printrow row.toUpload itemStatusReport/>
     <td>
         <#if (row.toUpload.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarId?c}">${row.toUpload.tdarId?c}</a></#if>
     </td>
@@ -59,11 +59,20 @@ hi ${authenticatedUser.username}
 </div>
 </div>
 
-<#macro _printrow item>
+<#macro _printrow item report>
 <#if item?has_content>
 <td><#if item.dateModified?is_date><a href="https://www.dropbox.com/work${item.parentDirName?ensure_starts_with("/")?url_path}?preview=${item.name}" target="_blank">${item.dateModified?string.short}</#if></td>
 <td>${item.ownerId!''} </td>
 <td>${item.size!''}</td>
+<td>
+<#if report.nextPhase != null>
+	<@s.form action="/approve" method="POST">
+		<@s.hidden name="id" value="item.dropboxId"/>
+		<@s.hidden name="phase" value="report.nextPhase"/>
+		<@s.submit name="approve">Approve</@s.submit>
+	</@s.form>
+</#if>
+</td>
 </#if>
 </#macro>
 
