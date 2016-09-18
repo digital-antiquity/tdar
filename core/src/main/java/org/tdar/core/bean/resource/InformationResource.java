@@ -3,6 +3,7 @@ package org.tdar.core.bean.resource;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -893,6 +894,7 @@ public abstract class InformationResource extends Resource {
                 visibleFiles.add(irfile);
             }
         }
+        Collections.sort(visibleFiles);
         return visibleFiles;
     }
 
@@ -907,11 +909,15 @@ public abstract class InformationResource extends Resource {
             return primaryThumbnail;
         }
         hasPrimaryThumbnail = Boolean.FALSE;
-        for (InformationResourceFile firstVisible : getVisibleFilesWithThumbnails()) {
+        
+        List<InformationResourceFile> visibleFilesWithThumbnails = getVisibleFilesWithThumbnails();
+        if (CollectionUtils.isNotEmpty(visibleFilesWithThumbnails)) {
             hasPrimaryThumbnail = Boolean.TRUE;
-            primaryThumbnail = firstVisible.getLatestThumbnail();
+            primaryThumbnail = visibleFilesWithThumbnails.get(0).getLatestThumbnail();
+            return primaryThumbnail;
+        } else {
+            return null;
         }
-        return primaryThumbnail;
     }
 
     @Transient
