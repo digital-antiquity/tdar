@@ -1,0 +1,72 @@
+package org.tdar.balk.struts.action;
+
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.ParentPackage;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.tdar.balk.bean.AbstractDropboxItem;
+import org.tdar.balk.service.ItemService;
+import org.tdar.balk.service.Phases;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+
+import com.opensymphony.xwork2.Preparable;
+
+@ParentPackage("default")
+@Namespace("/approve")
+@Component
+@Scope("prototype")
+@PostOnly
+public class ApproveAction extends AbstractAuthenticatedAction implements Preparable {
+
+    private static final long serialVersionUID = -6850649205111686901L;
+
+    @Autowired
+    private ItemService itemService;
+
+    private String id;
+
+    private AbstractDropboxItem item;
+    private Phases phase;
+
+    @Override
+    public void prepare() throws Exception {
+        setItem(itemService.findByDropboxId(id, false));
+    }
+
+    @Override
+    public String execute() throws Exception {
+        try {
+            itemService.move(item, phase);
+        } catch (Exception e) {
+            getLogger().error("{}", e, e);
+            return INPUT;
+        }
+        return SUCCESS;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public AbstractDropboxItem getItem() {
+        return item;
+    }
+
+    public void setItem(AbstractDropboxItem item) {
+        this.item = item;
+    }
+
+    public Phases getPhase() {
+        return phase;
+    }
+
+    public void setPhase(Phases phase) {
+        this.phase = phase;
+    }
+
+}

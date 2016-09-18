@@ -35,6 +35,7 @@ import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.ListRevisionsErrorException;
 import com.dropbox.core.v2.files.ListRevisionsResult;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.RelocationErrorException;
 import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
 
@@ -174,6 +175,10 @@ public class DropboxClient {
 
     }
 
+    public void move(String from, String to) throws RelocationErrorException, DbxException {
+        Metadata move = client.files().move(from, to);
+    }
+    
     public Boolean getDebug() {
         return debug;
     }

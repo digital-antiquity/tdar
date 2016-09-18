@@ -42,7 +42,7 @@ public class ItemDao {
         }
         logger.trace("in: {} out: {}", fullPath, path);
         try {
-            //FIXME: FIgure out deleted paths/directories
+            // FIXME: FIgure out deleted paths/directories
             String query = "from DropboxDirectory where lower(path)=lower(:path) order by id desc";
             Query query2 = getCurrentSession().createQuery(query);
             query2.setParameter("path", path);
@@ -73,6 +73,15 @@ public class ItemDao {
     @SuppressWarnings("unchecked")
     public List<DropboxFile> findToUpload() {
         String query = "from DropboxFile where tdar_id is null and path like '%/Upload to tDAR/%'";
+        Query query2 = getCurrentSession().createQuery(query);
+        return query2.list();
+    }
+
+    public List<DropboxFile> findAllWithPath(String path) {
+        String query = "from DropboxFile";
+        if (StringUtils.isNotBlank(path) && path != "/") {
+            query = "from DropboxFile where path like '%/" + path + "/%'";
+        }
         Query query2 = getCurrentSession().createQuery(query);
         return query2.list();
     }

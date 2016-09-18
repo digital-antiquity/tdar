@@ -22,10 +22,12 @@ public class IndexAction extends AbstractAuthenticatedAction {
     private ItemService itemService;
 
     private TreeMap<String, WorkflowStatusReport> itemStatusReport;
+
+    private String path;
     
     @Override
     public String execute() throws Exception {
-        setItemStatusReport(itemService.itemStatusReport());
+        setItemStatusReport(itemService.itemStatusReport(path));
         return super.execute();
     }
 
@@ -35,5 +37,13 @@ public class IndexAction extends AbstractAuthenticatedAction {
 
     public void setItemStatusReport(TreeMap<String, WorkflowStatusReport> itemStatusReport) {
         this.itemStatusReport = itemStatusReport;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 }

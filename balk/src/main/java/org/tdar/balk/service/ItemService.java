@@ -39,9 +39,11 @@ import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.dropbox.DropboxClient;
-import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.DropboxItemWrapper;
 import org.tdar.utils.dropbox.ToPersistListener;
+
+import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.RelocationErrorException;
 
 @Component
 public class ItemService {
@@ -129,6 +131,7 @@ public class ItemService {
     @Transactional(readOnly = false)
     public void handleUploads() {
         List<DropboxFile> files = itemDao.findToUpload();
+
         for (DropboxFile file : files) {
             try {
                 upload(file);
@@ -136,7 +139,7 @@ public class ItemService {
                 logger.error("{}",e,e);
             }
         }
-
+        
     }
 
     private void upload(DropboxFile file) throws IllegalStateException, Exception {
@@ -222,36 +225,31 @@ public class ItemService {
     }
 
     @Transactional(readOnly=true)
-    public TreeMap<String, WorkflowStatusReport> itemStatusReport() {
-        List<DropboxFile> findAll = genericDao.findAll(DropboxFile.class);
+    public TreeMap<String, WorkflowStatusReport> itemStatusReport(String path) {
+        List<DropboxFile> findAll = itemDao.findAllWithPath(path);
         TreeMap<String,WorkflowStatusReport> map = new TreeMap<>();
         for (DropboxFile file : findAll) {
-            String key = file.getPath().toLowerCase();
-            key = StringUtils.replace(key, "/input/", "/");
-            key = StringUtils.replace(key, "/output/", "/");
-            key = StringUtils.remove(key, DropboxConstants.CLIENT_DATA.toLowerCase());
-            key = StringUtils.substringAfter(key, "/");
-            logger.trace(key);
-            key = StringUtils.replace(key, "_ocr_pdfa.pdf", ".pdf");
+            String key = Phases.createKey(file);
             map.putIfAbsent(key, new WorkflowStatusReport());
             WorkflowStatusReport status = map.get(key);
             if (status.getFirst() == null) {
                 status.setFirst(file);
             }
-            String path1 = "/Client Data/Create PDFA/input/";
-            String path2 = "/Client Data/Create PDFA/output/";
-            String path3 = "/Client Data/Upload to tDAR/";
-            if (StringUtils.containsIgnoreCase(file.getPath(), path1)) {
-                status.setToPdf(file);
-            }
-            if (StringUtils.containsIgnoreCase(file.getPath(), path2)) {
-                status.setDoneOcr(file);
-            }
-            if (StringUtils.containsIgnoreCase(file.getPath(), path3)) {
-                status.setToUpload(file);
+            
+            for (Phases phase : Phases.values()) {
+                phase.updateStatus(status, file);
             }
         }
         return map;
+    }
+
+    public AbstractDropboxItem findByDropboxId(String id, boolean dir) {
+        return itemDao.findByDropboxId(id, dir);
+    }
+
+    public void move(AbstractDropboxItem item, Phases phase) throws RelocationErrorException, DbxException, FileNotFoundException, URISyntaxException, IOException {
+        DropboxClient client  = new DropboxClient();
+        client.move(item.getPath(), phase.mutatePath(item.getPath()));
     }
 
 }
