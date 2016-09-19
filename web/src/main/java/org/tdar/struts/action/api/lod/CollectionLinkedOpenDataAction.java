@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.api.AbstractJsonApiAction;
 import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 

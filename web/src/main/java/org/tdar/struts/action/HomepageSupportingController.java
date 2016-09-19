@@ -18,7 +18,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.file.VersionType;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
 import org.tdar.struts_base.action.TdarActionSupport;

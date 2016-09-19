@@ -47,7 +47,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.index.LookupSource;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;

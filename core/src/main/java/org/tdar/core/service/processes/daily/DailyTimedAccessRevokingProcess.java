@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 
 /**

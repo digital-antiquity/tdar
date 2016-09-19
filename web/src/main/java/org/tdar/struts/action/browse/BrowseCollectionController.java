@@ -26,7 +26,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.resource.stats.ResourceSpaceUsageStatistic;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.bean.CollectionSearchQueryObject;
 import org.tdar.search.bean.SearchFieldType;

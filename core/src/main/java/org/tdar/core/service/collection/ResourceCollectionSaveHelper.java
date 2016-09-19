@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.collection;
 
 import java.util.Collection;
 import java.util.HashSet;

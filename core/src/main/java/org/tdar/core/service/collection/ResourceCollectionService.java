@@ -4,7 +4,7 @@
  * @author $Author$
  * @version $Revision$
  */
-package org.tdar.core.service;
+package org.tdar.core.service.collection;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -54,6 +54,10 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
+import org.tdar.core.service.DeleteIssue;
+import org.tdar.core.service.SerializationService;
+import org.tdar.core.service.ServiceInterface;
+import org.tdar.core.service.ServiceInterface.TypedDaoBase;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.transform.jsonld.SchemaOrgCollectionTransformer;

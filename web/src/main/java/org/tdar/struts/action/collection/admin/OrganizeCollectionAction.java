@@ -13,7 +13,7 @@ import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 

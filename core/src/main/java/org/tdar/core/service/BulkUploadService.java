@@ -54,6 +54,7 @@ import org.tdar.core.service.bulk.BulkFileProxy;
 import org.tdar.core.service.bulk.BulkManifestProxy;
 import org.tdar.core.service.bulk.BulkUploadTemplate;
 import org.tdar.core.service.bulk.CellMetadata;
+import org.tdar.core.service.excel.ExcelWorkbookWriter;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.filestore.FileAnalyzer;

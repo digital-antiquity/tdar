@@ -21,7 +21,7 @@ import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserAffiliation;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ExcelWorkbookWriter;
+import org.tdar.core.service.excel.ExcelWorkbookWriter;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 

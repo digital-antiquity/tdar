@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.AbstractCollectionController;
 import org.tdar.struts.action.DataTableResourceDisplay;

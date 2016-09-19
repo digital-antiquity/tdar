@@ -40,9 +40,9 @@ import org.tdar.core.bean.resource.file.FileAction;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.BulkUploadTemplateService;
 import org.tdar.core.service.EntityService;
-import org.tdar.core.service.ExcelWorkbookWriter;
 import org.tdar.core.service.ReflectionService;
 import org.tdar.core.service.ResourceCreatorProxy;
+import org.tdar.core.service.excel.ExcelWorkbookWriter;
 import org.tdar.utils.MessageHelper;
 
 /**

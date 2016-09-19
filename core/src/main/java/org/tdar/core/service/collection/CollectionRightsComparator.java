@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.collection;
 
 import java.util.ArrayList;
 import java.util.HashMap;

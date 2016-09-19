@@ -1,4 +1,4 @@
-package org.tdar.core.service;
+package org.tdar.core.service.excel;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -37,9 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.excel.CellFormat;
 import org.tdar.core.service.excel.CellFormat.Style;
-import org.tdar.core.service.excel.SheetProxy;
 import org.tdar.utils.DataUtil;
 
 /**

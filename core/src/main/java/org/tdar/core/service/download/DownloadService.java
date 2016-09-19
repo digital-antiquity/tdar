@@ -30,7 +30,7 @@ import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.PdfService;
-import org.tdar.core.service.WhiteLabelFiles;
+import org.tdar.core.service.collection.WhiteLabelFiles;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.utils.PersistableUtils;

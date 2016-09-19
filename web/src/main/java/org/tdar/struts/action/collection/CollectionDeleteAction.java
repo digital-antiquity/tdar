@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.DeleteIssue;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractDeleteAction;
 

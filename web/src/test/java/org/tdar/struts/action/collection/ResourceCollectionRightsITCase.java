@@ -28,7 +28,7 @@ import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
 import org.tdar.core.service.GenericService;
-import org.tdar.core.service.ResourceCollectionService;
+import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.struts.action.AbstractPersistableController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
