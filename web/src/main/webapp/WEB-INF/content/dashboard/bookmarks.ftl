@@ -10,123 +10,38 @@
 <head>
     <title>${authenticatedUser.properName}'s Dashboard</title>
     <meta name="lastModifiedDate" content="$Date$"/>
-    <@edit.resourceDataTableJavascript />
 
 </head>
 
 
 <div id="titlebar" parse="true">
-    <h2>My Library</h2>
+    <h2>My Bookmarks</h2>
 
 </div>
 <div class="row">
 <div class="span2">
-    <@dash.sidebar current="collections" />
+    <@dash.sidebar current="bookmarks" />
 </div>
 <div class="span10">
-        <div class="table">
-            <table class="table ">
-                <tbody>
-            <#list allResourceCollections as collection>
-                    <tr>
-                        <th><a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</th>
-                        <td>${collection.description}</td>
-                        <td>${collection.unmanagedResources?size!0}</td>
-                        <td><@moremenu collection /></td>
-                    </tr>
-           </#list>
-
-                    <tr>
-                        <td class="new-resources-count">
-                            <span class="badge">23</span>
-                        </td>
-                        <th>The southwest fauna collection</th>
-                        <td>Datasets, coding-sheets, and ontologies collected during the 2012 Annual Southwest Faunal Collection</td>
-                        <td><@moremenu /></td>
-                    </tr>
-
-                    <tr>
-                        <td class="new-resources-count"> </td>
-                        <th>New Orleans cemeteries and surounding areas </th>
-                        <td>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</td>
-                        <td><@moremenu /></td>
-                    </tr>
-
-                </tbody>
-            </table>
+    <@bookmarksSection />
         </div>
-
-    <div class="spacer-fold" style="height:500px; border: 1px solid #eee; border-radius: 10px">
-        <p><em style="color:#eee">This space left intentionally blank</em></p>
-    </div>
-
-    <div class="well">
-        <b>I want to be able to:</b>
-        <ul>
-            <li>View all my collections</li>
-            <li>delete collections?</li>
-            <li>organize collections?</li>
-            <li>add resources to a collection? (maybe)?</li>
-            <li>Should bookmarks be a "special" collection in your library? or a dedicated section?</li>
-            <li>how to show "shared" libraries?</li>
-            <li>two pane layout could work, either top/bottom or right /left where "top" or "right" was dedicated to creation, and other part was for viewing</li>
-
-        </ul>
-        <b>more ideas from jim</b>
-        <ul>
-            <li>present 'gmail-style' list interface</li>
-            <li>filter options on left</li>
-            <li>clicking inside table row shows  hierarchy tree perhaps? Accordian style?</li>
-            <li>(iffy)collapsed row view shows super-terse inventory, e.g.  "12 documents, 2 datasets, 10 images"</li>
-
-
-        </ul>
-    </div>
+</div>
 
 </div>
 
 
 </div>
 
-    <#macro moremenu collection="">
-    <div class=" pull-right">
+    <#macro moremenu>
+    <div class="moremenu pull-right">
         <div class="btn-group">
-            <#if collection?has_content>
-            <a href="<@s.url value="${collection.detailUrl}"/>"class="btn btn-mini">View</a>
-            <a href="<@s.url value="/collection/${collection.id?c}/edit"/>"class="btn btn-mini">Edit</a>
-            <#else>
-            <a href="<@s.url value="/"/>"class="btn btn-mini">View</a>
-            <a href="<@s.url value="/collection/0/edit"/>"class="btn btn-mini">Edit</a>
-            </#if>
+            <button class="btn btn-mini">View</button>
+            <button class="btn btn-mini">Edit</button>
             </div>
     </div>
 
     </#macro>
 
-
-    <#macro collectionsSection>
-
-    <div class="" id="collection-section">
-        <h2>My Collections</h2>
-        <@common.listCollections collections=allResourceCollections>
-            <li><i class="icon-star"></i> My Bookmarks
-                <ul>
-                    <#list bookmarkedResources as book>
-                        <li><a href="${book.detailUrl}">${book.title}</a></li>
-                    </#list>
-                </ul></li>
-            <li><a href="<@s.url value="/collection/add"/>">create one</a></li>
-        </@common.listCollections>
-    </div>
-    <br>
-        <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
-        <div class="">
-            <h2>Collections Shared With You</h2>
-            <@common.listCollections collections=sharedResourceCollections />
-        </div>
-        </#if>
-
-    </#macro>
 
     <#macro bookmarksSection>
         <div id="bookmarks">

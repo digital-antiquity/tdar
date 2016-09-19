@@ -3,8 +3,8 @@
     <ul class="nav nav-list nav-stacked dashboard-nav">
       <li <@activeIf current "dashboard" />><a href="/dashboard"> My Resources</a></li>
       <li class="nav-header">My Library</li>
-      <li  <@activeIf current "collections" />> <a href="#">Collections</a></li>
-      <li  <@activeIf current "bookmarks" />> <a href="#"> Bookmarks</a></li>
+      <li  <@activeIf current "collections" />> <a href="/organize">Collections</a></li>
+      <li  <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>
       <li class="nav-header">Shares</li>
       <li  <@activeIf current "share" />><a href="/manage">Share</a></li>
       <li><a href="#">Resources</a></li>
