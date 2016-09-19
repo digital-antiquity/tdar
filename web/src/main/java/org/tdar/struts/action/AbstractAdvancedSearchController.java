@@ -43,18 +43,21 @@ import org.tdar.search.exception.SearchPaginationException;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.ProjectionModel;
 import org.tdar.search.service.query.ResourceSearchService;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts.action.AbstractLookupController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractAdvancedSearchController extends AbstractLookupController<Resource> {
 
-    private static final long serialVersionUID = -1673127898112301380L;
+	private static final long serialVersionUID = -1673127898112301380L;
 
-    private static final String SEARCH_RSS = "/search/rss";
-    private boolean hideFacetsAndSort = false;
+	private static final String SEARCH_RSS = "/search/rss";
+	private boolean hideFacetsAndSort = false;
 
-    @Autowired
-    private transient ResourceSearchService resourceSearchService;
+	@Autowired
+	private transient ResourceSearchService resourceSearchService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;

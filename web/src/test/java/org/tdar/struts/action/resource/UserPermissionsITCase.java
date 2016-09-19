@@ -26,7 +26,7 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.image.ImageController;
 import org.tdar.utils.PersistableUtils;
 

@@ -3,7 +3,7 @@ package org.tdar.struts.action.api.cart;
 import static com.opensymphony.xwork2.Action.ERROR;
 import static com.opensymphony.xwork2.Action.INPUT;
 import static com.opensymphony.xwork2.Action.SUCCESS;
-import static org.tdar.struts.action.TdarActionSupport.JSONRESULT;
+import static org.tdar.struts_base.action.TdarActionSupport.JSONRESULT;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

@@ -250,13 +250,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     }
 
-    
-    @Test
-    @Rollback(true)
-    public void testAccountUsageHistory() {
-        scheduledProcessService.cronUpdateAccountUsageHistory();
-    }
-
     @Autowired
     OccurranceStatisticsUpdateProcess ocur;
 

@@ -25,7 +25,7 @@ public class UrlService {
      */
     public static String getBaseUrl() {
         if (baseUrl == null) {
-            baseUrl = StringUtils.stripEnd(TdarConfiguration.getInstance().getBaseUrl().trim(), "/");
+            baseUrl = StringUtils.stripEnd(TdarConfiguration.getInstance().getBaseSecureUrl().trim(), "/");
         }
         return baseUrl;
     }
@@ -37,6 +37,10 @@ public class UrlService {
      * @return
      */
     public static String absoluteUrl(Addressable resource) {
+        return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
+    }
+
+    public static String absoluteSecureUrl(Addressable resource) {
         return String.format("%s%s", StringUtils.stripEnd(getBaseUrl(), "/"), relativeUrl(resource));
     }
 

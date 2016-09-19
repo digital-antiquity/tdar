@@ -53,8 +53,8 @@
             <#if navSearchBoxVisible>
                 <form name="searchheader" action="<@s.url value="/search/results"/>" class="inlineform seleniumIgnoreForm hidden-phone hidden-tablet  screen">
                 <#-- fixme -- boostrap 3/4 should provide a better unstyled way to handle the magnifying glass -->
-                    <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; ">
-                <#--<input type="hidden" name="_tdar.searchType" value="simple">-->
+                    <input type="text" name="query" class="searchbox" placeholder="Search ${siteAcronym} &hellip; "  value="${query!''}">
+                    <input type="hidden" name="_tdar.searchType" value="simple">
                 ${(page.properties["div.divSearchContext"])!""}
                 </form>
             </#if>

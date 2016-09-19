@@ -28,6 +28,8 @@ import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.document.DocumentController;
 import org.tdar.struts.action.login.LoginController;
 import org.tdar.struts.action.resource.ResourceController;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;

@@ -12,7 +12,8 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.UrlService;
 import org.tdar.core.service.resource.ResourceService;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 /**
  * Implementation of <a href="http://unapi.info/specs/">Unapi</a> for tDAR
@@ -34,7 +35,7 @@ import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 @Scope("prototype")
 @ParentPackage("default")
 @HttpForbiddenErrorResponseOnly
-public class UnapiController extends TdarActionSupport {
+public class UnapiController extends TdarBaseActionSupport {
 
     private static final String FORMATS = "formats";
     private static final String ASFORMAT = "asformat";

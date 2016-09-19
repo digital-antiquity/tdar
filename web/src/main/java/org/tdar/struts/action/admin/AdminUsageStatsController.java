@@ -16,7 +16,7 @@ import org.tdar.core.bean.statistics.AggregateViewStatistic;
 import org.tdar.core.dao.resource.stats.DateGranularity;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 import com.opensymphony.xwork2.Preparable;
 

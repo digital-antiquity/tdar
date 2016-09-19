@@ -17,7 +17,7 @@ import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.service.StatisticService;
 import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 /**
  * $Id$

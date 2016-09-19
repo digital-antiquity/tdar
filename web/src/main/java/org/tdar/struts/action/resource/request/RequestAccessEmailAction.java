@@ -21,7 +21,7 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.external.RecaptchaService;
 import org.tdar.core.service.external.auth.AntiSpamHelper;
-import org.tdar.struts.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.utils.EmailMessageType;
 import org.tdar.utils.PersistableUtils;
 

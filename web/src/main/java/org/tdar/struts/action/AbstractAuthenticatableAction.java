@@ -12,10 +12,13 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.external.AuthorizationService;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts_base.action.AuthenticationAware;
+import org.tdar.struts_base.action.PersistableLoadingAction;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractAuthenticatableAction extends TdarActionSupport implements AuthenticationAware {
+public abstract class AbstractAuthenticatableAction extends TdarBaseActionSupport implements AuthenticationAware {
 
     private static final long serialVersionUID = -4055376095680758009L;
 

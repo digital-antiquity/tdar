@@ -43,7 +43,7 @@ import org.tdar.core.service.resource.InformationResourceFileService;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.search.service.query.SearchService;
-import org.tdar.struts.interceptor.annotation.DoNotObfuscate;
+import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
 /**

@@ -12,7 +12,7 @@ import org.tdar.core.bean.resource.DegreeType;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.DocumentType;
 import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 
 /**

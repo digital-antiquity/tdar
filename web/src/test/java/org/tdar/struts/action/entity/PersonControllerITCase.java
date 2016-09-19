@@ -13,7 +13,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.exception.StatusCode;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 public class PersonControllerITCase extends AbstractAdminControllerITCase {
 

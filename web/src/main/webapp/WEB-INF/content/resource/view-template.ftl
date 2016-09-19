@@ -96,8 +96,10 @@
     <p>
     <ul class="inline">
         <#items as collection>
-    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+            <#if !(collection.systemManaged!false)>
+            <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
         <#sep>&nbsp;&nbsp;&bull;</#sep></li>
+        </#if>
 </#items>
 </ul>
 </p>

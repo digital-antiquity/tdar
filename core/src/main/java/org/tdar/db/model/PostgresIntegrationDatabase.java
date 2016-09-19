@@ -2,8 +2,13 @@ package org.tdar.db.model;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -91,13 +96,13 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 continue;
             }
 
+            DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
+            Map<OntologyNode,Map<Set<String>,List<Long>>> map = new HashMap<>();
             for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
-                DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
 
-                WhereCondition whereCond = new WhereCondition(column.getName());
-                // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
-                // do these need to be per-table-updates?
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
+                    // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
+                    // do these need to be per-table-updates?
                     Set<String> nodeSet = new HashSet<>();
                     // tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
                     nodeSet.addAll(actualColumn.getMappedDataValues(node));
@@ -111,8 +116,24 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     if (CollectionUtils.isEmpty(nodeSet)) {
                         continue;
                     }
+                    // keep track of the nodes in a map Node --> Mapping --> [tableIds]
+                    // only re-use when the node + mappings are 100% the same 
+                    map.putIfAbsent(node, new HashMap<>());
+                    map.get(node).putIfAbsent(nodeSet, new ArrayList<>());
+                    map.get(node).get(nodeSet).add(actualColumn.getDataTable().getId());
+                }
+            }
+            
+            
+            for (Entry<OntologyNode, Map<Set<String>, List<Long>>> entry : map.entrySet()) {
+                OntologyNode node = entry.getKey();
+                for (Entry<Set<String>, List<Long>> vals : entry.getValue().entrySet()) {
+                    List tableIds = vals.getValue();
+                    Set<String> nodeSet = vals.getKey();
+                    WhereCondition whereCond = new WhereCondition(column.getName());
                     WhereCondition tableCond = new WhereCondition(INTEGRATION_TABLE_NAME_COL);
-                    tableCond.setValue(actualColumn.getDataTable().getId());
+                    
+                    tableCond.setInValues(tableIds);
 
                     whereCond.getInValues().addAll(nodeSet);
                     whereCond.setIncludeNulls(false);
@@ -124,6 +145,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     sb.append(" AND ");
                     sb.append(whereCond.toSql());
                     executeUpdateOrDelete(sb.toString());
+
                 }
             }
         }
@@ -190,6 +212,8 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 }
             }
         }
+        String addIndex = String.format("create index tmp_integ_%s on \"%s\" ( \"%s\" )", System.currentTimeMillis(), tempTable.getName(), tableColumn.getName());
+        executeUpdateOrDelete(addIndex);
         return tempTable;
     }
 

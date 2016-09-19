@@ -34,6 +34,7 @@ import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.keyword.Keyword;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.resource.InformationResource;
@@ -100,12 +101,12 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
     public static final String BUILD_LUCENE_INDEX_ACTIVITY_NAME = "Build Lucene Search Index";
 
     @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver, Person person) {
+    public void indexAll(AsyncUpdateReceiver updateReceiver, TdarUser person) {
         indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
 
     @Transactional(readOnly = true)
-    public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex, Person person) {
+    public void indexAll(AsyncUpdateReceiver updateReceiver, List<LookupSource> toReindex, TdarUser person) {
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
         batch.indexAll(updateReceiver, Arrays.asList(LookupSource.values()), person);
     }
@@ -359,7 +360,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * 
      * @param person
      */
-    public void indexAll(Person person) {
+    public void indexAll(TdarUser person) {
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
         batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(LookupSource.values()), person);
     }
@@ -371,7 +372,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
      * @param person
      * @param classes
      */
-    public void indexAll(Person person, LookupSource... sources) {
+    public void indexAll(TdarUser person, LookupSource... sources) {
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);
         batch.indexAll(getDefaultUpdateReceiver(), Arrays.asList(sources), person);
     }
@@ -469,7 +470,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
     @Async
     @Transactional(readOnly = false)
     public void indexAllAsync(final AsyncUpdateReceiver reciever, final List<LookupSource> toReindex,
-            final Person person) {
+            final TdarUser person) {
         Date startDate = new Date();
         logger.info("reindexing indexall");
         BatchIndexer batch = new BatchIndexer(genericDao, datasetDao, this);

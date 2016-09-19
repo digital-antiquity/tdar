@@ -6,7 +6,6 @@
  */
 package org.tdar.core.service;
 
-import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.lang.management.ThreadInfo;
 import java.lang.management.ThreadMXBean;
@@ -40,20 +39,9 @@ import org.tdar.core.dao.GenericDao.FindOptions;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthenticationService;
 import org.tdar.core.service.processes.AbstractPersistableScheduledProcess;
-import org.tdar.core.service.processes.AccountUsageHistoryLoggingTask;
-import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
-import org.tdar.core.service.processes.daily.DailyEmailProcess;
-import org.tdar.core.service.processes.daily.DailyStatisticsUpdate;
-import org.tdar.core.service.processes.daily.DoiProcess;
-import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
-import org.tdar.core.service.processes.daily.RebuildHomepageCache;
-import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
-import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.core.service.processes.manager.ProcessManager;
-import org.tdar.core.service.processes.weekly.WeeklyFilestoreLoggingProcess;
-import org.tdar.core.service.processes.weekly.WeeklyStatisticsLoggingProcess;
 
 import com.google.common.collect.Sets;
 
@@ -86,23 +74,21 @@ import com.google.common.collect.Sets;
 @Service
 public class ScheduledProcessService implements  SchedulingConfigurer, ApplicationContextAware {
 
-    private static final long ONE_HOUR_MS = 3600000;
-    private static final long ONE_MIN_MS = 60000;
-    private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
-    private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
+    public static final long ONE_HOUR_MS = 3600000;
+    public static final long ONE_MIN_MS = 60000;
+    public static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
+    public static final long TWO_MIN_MS = ONE_MIN_MS * 2;
 
     TdarConfiguration config = TdarConfiguration.getInstance();
 
     private transient final GenericService genericService;
-    private transient final RssService rssService;
     private transient final AuthenticationService authenticationService;
     private transient final ProcessManager manager;
 
     @Autowired
     public ScheduledProcessService(@Qualifier("genericService") GenericService gs,
-            RssService rss, AuthenticationService auth, @Qualifier("processManager") ProcessManager pm) {
+            AuthenticationService auth, @Qualifier("processManager") ProcessManager pm) {
         this.genericService = gs;
-        this.rssService = rss;
         this.authenticationService = auth;
         this.manager = pm;
     }
@@ -112,33 +98,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
     private ApplicationContext applicationContext;
     private ScheduledTaskRegistrar taskRegistrar;
 
-    /**
-     * Send emails at midnight
-     */
-    @Scheduled(cron = "0 1 0 * * *")
-    public void cronDailyEmail() {
-        logger.info("updating Daily Emails");
-        queue(DailyEmailProcess.class);
-        queue(SalesforceSyncProcess.class);
-    }
-
-    /**
-     * Send emails at midnight
-     */
-    @Scheduled(cron = "0 15 0 * * *")
-    public void cronDailyStats() {
-        logger.info("updating Daily stats");
-        queue(DailyStatisticsUpdate.class);
-    }
-
-    /**
-     * Send emails at midnight
-     */
-    @Scheduled(cron = "0 45 0 * * *")
-    public void cronEmbargoNotices() {
-        logger.info("updating Embargo notices");
-        queue(EmbargoedFilesUpdateProcess.class);
-    }
 
     /**
      * Check that our Authentication System (Crowd /LDAP ) is actually running
@@ -150,12 +109,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         }
     }
 
-    @Scheduled(fixedDelay = FIVE_MIN_MS)
-    public void evictCaches() {
-        if (config.shouldRunPeriodicEvents()) {
-            rssService.evictRssCache();
-        }
-    }
 
     /**
      * Cache the Crowd / LDAP group permissions for one hour
@@ -166,70 +119,6 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
         authenticationService.clearPermissionsCache();
     }
 
-    @Scheduled(fixedDelay = FIVE_MIN_MS)
-    public void cronQueueEmail() {
-        queue(SendEmailProcess.class);
-    }
-
-    /**
-     * Generate DOIs
-     */
-    @Scheduled(cron = "16 15 0 * * *")
-    public void cronUpdateDois() {
-        logger.info("updating DOIs");
-        queue(DoiProcess.class);
-    }
-
-    /**
-     * Log Account Usage History
-     */
-    // * Spring scheduling cron expressions: Seconds Minutes Hours Day-of-Month Month Day-of-Week Year (optional field)
-    @Scheduled(cron = "0 0 1 1 * *")
-    public void cronUpdateAccountUsageHistory() {
-        logger.info("updating account usage history");
-        queue(AccountUsageHistoryLoggingTask.class);
-    }
-
-    /**
-     * Update the Sitemap.org sitemap files
-     */
-    @Scheduled(cron = "20 15 0 * * *")
-    public void cronUpdateSitemap() {
-        logger.info("updating Sitemaps");
-        queue(SitemapGeneratorProcess.class);
-    }
-
-    /**
-     * Update the Homepage's Featured Resources
-     */
-    @Scheduled(cron = "1 15 0 * * *")
-    public void cronUpdateHomepage() {
-        queue(RebuildHomepageCache.class);
-    }
-
-    /**
-     * Verify the @link Filestore once a week
-     * 
-     * @throws IOException
-     */
-    @Scheduled(cron = "50 0 0 * * SUN")
-    public void cronVerifyTdarFiles() throws IOException {
-        queue(WeeklyFilestoreLoggingProcess.class);
-    }
-
-    @Scheduled(cron = "50 0 0 * * SAT")
-    public void updateOcurrenceStats() throws IOException {
-        queue(OccurranceStatisticsUpdateProcess.class);
-    }
-
-    /**
-     * Once a week, on Sundays, generate some static, cached stats for use by
-     * the admin area and general system
-     */
-    @Scheduled(cron = "12 0 0 * * SUN")
-    public void cronGenerateWeeklyStats() {
-        queue(WeeklyStatisticsLoggingProcess.class);
-    }
 
     /**
      * Scheduled processes have two separate flavors. (a) they run once (b) they

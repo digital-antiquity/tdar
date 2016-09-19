@@ -33,8 +33,8 @@ import org.tdar.core.service.resource.ProjectService;
 import org.tdar.struts.WROProfile;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
-import org.tdar.struts.action.PersistableLoadingAction;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.PersistableLoadingAction;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.json.JsonLookupFilter;
 

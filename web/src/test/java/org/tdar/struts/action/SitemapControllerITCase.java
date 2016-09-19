@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.service.processes.daily.SitemapGeneratorProcess;
 import org.tdar.struts.action.sitemap.SitemapController;
+import org.tdar.struts_base.action.TdarActionSupport;
 
 
 public class SitemapControllerITCase extends AbstractControllerITCase {

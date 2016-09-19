@@ -17,6 +17,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.resource.datatable.DataTable;
+import org.tdar.db.model.PostgresConstants;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -90,6 +91,9 @@ public class IntegrationContext implements Serializable {
             }
         }
         tempTableName = sb.toString();
+        if (tempTableName.length() > PostgresConstants.MAX_NAME_SIZE) {
+            tempTableName = StringUtils.substring(tempTableName, 0, PostgresConstants.MAX_NAME_SIZE - 10) + System.currentTimeMillis();
+        }
         return tempTableName;
     }
 

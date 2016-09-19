@@ -9,6 +9,7 @@ import org.hibernate.LazyInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.Obfuscatable;
@@ -36,6 +37,8 @@ public class ObfuscationService {
 
     @Autowired
     private AuthorizationService authService;
+
+    private Boolean enabled = true;
 
     /**
      * Obfuscates a collection of objects based on the specified user.
@@ -157,6 +160,19 @@ public class ObfuscationService {
 
     public boolean isWritableSession() {
         return genericDao.isSessionWritable();
+    }
+
+    @Autowired(required=false)
+    @Qualifier("obfuscationEnabled")
+    public void setObfuscationEnabled(Boolean enabled) {
+        this.enabled = enabled;
+        logger.debug("set enabled: {} ", enabled);
+    }
+
+    
+    public boolean obfuscationInterceptorEnabled() {
+        logger.debug("get enabled: {} ", enabled);
+        return enabled;
     }
 
 }

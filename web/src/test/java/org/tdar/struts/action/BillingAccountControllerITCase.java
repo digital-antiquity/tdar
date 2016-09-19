@@ -28,6 +28,7 @@ import org.tdar.struts.action.billing.BillingAccountController;
 import org.tdar.struts.action.billing.BillingAccountSelectionAction;
 import org.tdar.struts.action.billing.CouponCreationAction;
 import org.tdar.struts.action.resource.AbstractResourceControllerITCase;
+import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.utils.MessageHelper;
 
 import com.opensymphony.xwork2.Action;

@@ -149,4 +149,15 @@
    		</addColumn>
     </changeSet>
     
+    <changeSet id="obsidian-15" author="abrin">
+        <renameColumn tableName="resource_culture_keyword" oldColumnName="culture_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_site_name_keyword" oldColumnName="site_name_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_site_type_keyword" oldColumnName="site_type_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_temporal_keyword" oldColumnName="temporal_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_other_keyword" oldColumnName="other_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_geographic_keyword" oldColumnName="geographic_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_managed_geographic_keyword" oldColumnName="geographic_keyword_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_investigation_type" oldColumnName="investigation_type_id" newColumnName="keyword_id"/>
+        <renameColumn tableName="resource_material_keyword" oldColumnName="material_keyword_id" newColumnName="keyword_id"/>
+    </changeSet>
 </databaseChangeLog>

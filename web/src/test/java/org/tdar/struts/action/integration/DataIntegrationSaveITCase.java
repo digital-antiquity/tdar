@@ -15,8 +15,8 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.action.TdarActionSupport;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.action.api.integration.IntegrationPersistanceAction;
 
 public class DataIntegrationSaveITCase extends AbstractAdminControllerITCase {

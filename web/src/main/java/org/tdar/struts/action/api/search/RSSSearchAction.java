@@ -17,11 +17,11 @@ import org.tdar.core.service.FeedSearchHelper;
 import org.tdar.core.service.RssService;
 import org.tdar.core.service.RssService.GeoRssMode;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
-import org.tdar.struts.action.TdarActionException;
-import org.tdar.struts.interceptor.annotation.HttpNotFoundErrorOnly;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.HttpNotFoundErrorOnly;
 
-@Namespace("/api/search")
+@Namespace("/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")

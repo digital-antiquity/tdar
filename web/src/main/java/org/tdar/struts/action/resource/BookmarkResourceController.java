@@ -1,6 +1,9 @@
 package org.tdar.struts.action.resource;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -16,6 +19,8 @@ import org.tdar.core.service.BookmarkedResourceService;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -50,7 +55,17 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
     private InputStream resultJson;
 
     private Resource resource;
+
     private TdarUser person;
+
+    @Action(value = "bookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @HttpForbiddenErrorResponseOnly
+    @PostOnly
+    public String bookmarkResourceAjaxAction() {
+        success = bookmarkResource();
+        processResultToJson();
+        return SUCCESS;
+    }
 
     @Override
     public void prepare() throws Exception {
@@ -64,14 +79,27 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
         }
     }
 
+    private void processResultToJson() {
+        Map<String, Object> result = new HashMap<>();
+        result.put(SUCCESS, success);
+        setResultJson(new ByteArrayInputStream(serializationService.convertFilteredJsonForStream(result, null, callback).getBytes()));
+    }
 
     @Action(value = "bookmark",
             results = {
                     @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.BOOKMARKS)
             })
     public String bookmarkResourceAction() {
-        getLogger().debug("checking if resource is already bookmarked for resource:" + resource.getId());
-        success = bookmarkedResourceService.bookmarkResource(resource, person);
+        success = bookmarkResource();
+        return SUCCESS;
+    }
+
+    @Action(value = "removeBookmarkAjax", results = { @Result(name = SUCCESS, type = JSONRESULT, params = { "stream", "resultJson" }) })
+    @PostOnly
+    @HttpForbiddenErrorResponseOnly
+    public String removeBookmarkAjaxAction() {
+        success = removeBookmark();
+        processResultToJson();
         return SUCCESS;
     }
 
@@ -80,12 +108,19 @@ public class BookmarkResourceController extends AbstractAuthenticatableAction im
                     @Result(name = SUCCESS, type = TDAR_REDIRECT, location = URLConstants.BOOKMARKS)
             })
     public String removeBookmarkAction() {
-        getLogger().trace("removing bookmark for resource: " + resource.getId());
-        success  = bookmarkedResourceService.removeBookmark(resource, person);
+        success = removeBookmark();
         return SUCCESS;
     }
 
+    private boolean bookmarkResource() {
+        getLogger().debug("checking if resource is already bookmarked for resource:" + resource.getId());
+        return bookmarkedResourceService.bookmarkResource(resource, person);
+    }
 
+    private boolean removeBookmark() {
+        getLogger().trace("removing bookmark for resource: " + resource.getId());
+        return bookmarkedResourceService.removeBookmark(resource, person);
+    }
 
     public Long getResourceId() {
         return resourceId;

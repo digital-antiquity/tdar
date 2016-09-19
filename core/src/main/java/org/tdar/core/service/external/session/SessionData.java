@@ -26,11 +26,13 @@ public class SessionData implements Serializable {
     private String[] parameters;
     private Long tdarUserId;
     private Long invoiceId;
+    private String username;
 
     public void clearAuthenticationToken() {
         this.parameters = null;
         this.tdarUserId = null;
         this.invoiceId = null;
+        this.username = null;
         clearPassthroughParameters();
     }
 
@@ -83,11 +85,17 @@ public class SessionData implements Serializable {
         return tdarUserId;
     }
 
+    public String getUsername() {
+        return username;
+    }
+
     public void setTdarUser(TdarUser user) {
         if (PersistableUtils.isNotNullOrTransient(user)) {
             this.tdarUserId = user.getId();
+            this.username = user.getUsername();
         } else {
             this.tdarUserId = null;
+            this.username = null;
         }
     }
 

@@ -16,7 +16,7 @@ import org.tdar.TestConstants;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.InstitutionManagementAuthorization;
 import org.tdar.struts.action.AbstractAdminControllerITCase;
-import org.tdar.struts.action.TdarActionException;
+import org.tdar.struts_base.action.TdarActionException;
 
 public class InstitutionControllerITCase extends AbstractAdminControllerITCase {
 

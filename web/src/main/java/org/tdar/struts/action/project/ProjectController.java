@@ -22,7 +22,7 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.service.resource.ProjectService;
 import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.resource.AbstractResourceController;
-import org.tdar.struts.interceptor.annotation.HttpForbiddenErrorResponseOnly;
+import org.tdar.struts_base.interceptor.annotation.HttpForbiddenErrorResponseOnly;
 
 /**
  * $Id$

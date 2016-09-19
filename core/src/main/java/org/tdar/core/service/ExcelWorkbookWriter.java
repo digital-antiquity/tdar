@@ -31,6 +31,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddressList;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,10 +61,12 @@ public class ExcelWorkbookWriter {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+
     public static final int FIRST_ROW = 0;
     public static final int FIRST_COLUMN = 0;
     public static final SpreadsheetVersion DEFAULT_EXCEL_VERSION = SpreadsheetVersion.EXCEL97;
     public static final int MAX_ROWS_PER_WORKBOOK = DEFAULT_EXCEL_VERSION.getMaxRows() * MAX_SHEETS_PER_WORKBOOK;
+    private SpreadsheetVersion version = DEFAULT_EXCEL_VERSION;
 
     /**
      * Add validation to a given column
@@ -262,6 +265,7 @@ public class ExcelWorkbookWriter {
      * @return
      */
     public Workbook createWorkbook(SpreadsheetVersion version) {
+        this.version = version;
         if (version == DEFAULT_EXCEL_VERSION) {
             return new HSSFWorkbook();
         } else {
@@ -449,7 +453,7 @@ public class ExcelWorkbookWriter {
      * @return
      */
     public CellStyle addRow(Sheet sheet, int rowNum, int startCol, List<? extends Object> fields, CellStyle headerStyle) {
-        if (rowNum > DEFAULT_EXCEL_VERSION.getMaxRows()) {
+        if (rowNum > version.getMaxRows()) {
             throw new TdarRecoverableRuntimeException("excelService.too_many_rows");
         }
         Row row = sheet.getRow(rowNum);
@@ -534,7 +538,9 @@ public class ExcelWorkbookWriter {
         Sheet sheet = null;
         int rowNum = proxy.getStartRow();
         int startRow = proxy.getStartRow();
-        SpreadsheetVersion version = proxy.getVersion();
+        if (this.version != proxy.getVersion()) {
+            this.version = proxy.getVersion();
+        }
         Workbook workbook = proxy.getWorkbook();
         String sheetName = normalizeSheetName(workbook, proxy.getName());
         proxy.preProcess();
@@ -565,8 +571,12 @@ public class ExcelWorkbookWriter {
                 break;
             }
             rowNum++;
-            addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
-            if (rowNum >= (maxRows - 1)) {
+
+            if (rowNum % 10_000 == 0) {
+                logger.debug("writing row {} of {}", rowNum, sheet.getSheetName());
+            }
+            if (rowNum == maxRows) {
+                logger.debug("resetting rows to 0");
                 if (proxy.isCleanupNeeded()) {
                     autoSizeColumnsOnSheet(sheet);
                 }
@@ -574,7 +584,9 @@ public class ExcelWorkbookWriter {
                 sheet = workbook.createSheet(normalizeSheetName(workbook, proxy.getSheetName(sheetIndex)));
                 rowNum = FIRST_ROW;
                 addHeaderRow(sheet, rowNum, proxy.getStartCol(), proxy.getHeaderLabels());
+                rowNum++;
             }
+            addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(row));
         }
         
         if (proxy.hasFreezeRow()) {
@@ -596,6 +608,15 @@ public class ExcelWorkbookWriter {
     private void autoSizeColumnsOnSheet(Sheet sheet) {
         // auto-sizing columns
         // FIXME user start row may not be 0
+        if (sheet == null || sheet.getRow(0) == null) {
+            return;
+        }
+        
+        if (sheet instanceof SXSSFSheet) {
+            logger.debug("can't auto-size a SXSSF sheet");
+            return;
+        }
+
         int lastCol = sheet.getRow(0).getLastCellNum();
         for (int i = 0; i < lastCol; i++) {
             sheet.autoSizeColumn(i);

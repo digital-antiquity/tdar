@@ -51,7 +51,7 @@ public class ProjectDao extends ResourceDao<Project> {
         }
         Query<Number> query = getNamedQuery(QUERY_PROJECTS_COUNT_INTEGRATABLE_DATASETS, Number.class);
         logger.debug("setting parameter list");
-        query.setParameter("projectIdList", projectIds, StandardBasicTypes.LONG);
+        query.setParameter("projectIdList", projectIds);
         return query.getSingleResult().longValue() > 0;
     }
 

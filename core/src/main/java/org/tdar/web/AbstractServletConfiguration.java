@@ -27,7 +27,7 @@ public abstract class AbstractServletConfiguration {
 
     // NOTE: when changing these, you must test both TOMCAT and JETTY as they behave differently
     EnumSet<DispatcherType> allDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.INCLUDE, DispatcherType.ERROR);
-    EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
+    protected EnumSet<DispatcherType> strutsDispacherTypes = EnumSet.of(DispatcherType.REQUEST, DispatcherType.FORWARD, DispatcherType.ERROR);
 
     protected TdarConfiguration configuration = TdarConfiguration.getInstance();
     private String failureMessage;
