@@ -125,7 +125,7 @@ public class CollectionRightsComparator {
     }
 
     private String getCompareKey(AuthorizedUser user) {
-        return String.format("%s-%s", user.getGeneralPermission(), user.getDateExpires());
+        return String.format("%s", user.getGeneralPermission());
     }
 
     public List<AuthorizedUser> getAdditions() {

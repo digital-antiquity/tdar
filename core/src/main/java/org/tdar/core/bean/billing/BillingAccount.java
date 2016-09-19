@@ -229,15 +229,6 @@ public class BillingAccount extends AbstractPersistable implements Updatable, Ha
     }
 
     @Transient
-    /**
-     * Transient, freemarker-friendly resource accessor.
-     * @return
-     */
-    public List<Resource> getResourceList() {
-        return new ArrayList<>(getResources());
-    }
-
-    @Transient
     public Set<Resource> getFlaggedResources() {
         Set<Resource> flagged = new HashSet<>();
         for (Resource resource : getResources()) {

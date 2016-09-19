@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -26,7 +27,7 @@ import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 
 @Component
 @Scope("prototype")
-public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<ResourceCollection> {
+public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProcess<TimedAccessRestriction> {
 
     private static final long serialVersionUID = 7534566757094920406L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
@@ -65,19 +66,19 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
         return true;
     }
     @Override
-    public void process(ResourceCollection persistable) throws Exception {
+    public void process(TimedAccessRestriction persistable) throws Exception {
         DateTime now = DateTime.now();
         boolean changed = false;
-        for (AuthorizedUser au : persistable.getAuthorizedUsers()) {
-            if (now.isAfter(au.getDateExpires().getTime())) {
-                persistable.getAuthorizedUsers().remove(au);
-                genericDao.delete(au);
-                changed = true;
-            }
-        }
-        if (changed) {
-            resourceCollectionService.saveOrUpdate(persistable);
-        }
+//        for (AuthorizedUser au : persistable.getAuthorizedUsers()) {
+//            if (now.isAfter(au.getDateExpires().getTime())) {
+//                persistable.getAuthorizedUsers().remove(au);
+//                genericDao.delete(au);
+//                changed = true;
+//            }
+//        }
+//        if (changed) {
+//            resourceCollectionService.saveOrUpdate(persistable);
+//        }
     }
     
     @Override
@@ -86,8 +87,8 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     }
     
     @Override
-    public Class<ResourceCollection> getPersistentClass() {
-        return ResourceCollection.class;
+    public Class<TimedAccessRestriction> getPersistentClass() {
+        return TimedAccessRestriction.class;
     }
 
 }

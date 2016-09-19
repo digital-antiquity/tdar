@@ -410,7 +410,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         AuthorizedUser user1Viewer = createAuthUser(GeneralPermissions.VIEW_ALL);
         AuthorizedUser user1Modifier = new AuthorizedUser(user1Viewer.getUser(), GeneralPermissions.MODIFY_METADATA);
         AuthorizedUser user2 = createAuthUser(GeneralPermissions.ADMINISTER_SHARE);
-        user2.setTest("1234");
         controller.getAuthorizedUsers().addAll(Arrays.asList(user1Viewer, user1Modifier, user2));
 
         controller.setServletRequest(getServletPostRequest());

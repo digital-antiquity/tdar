@@ -55,23 +55,12 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-    /* Right now not used */
-    enum AdminPermissions {
-        NONE,
-        PUBLISH,
-        CAN_DELETE,
-        ALL
-    }
-
     @Enumerated(EnumType.STRING)
     @Column(name = "general_permission", length = FieldLength.FIELD_LENGTH_50)
     private GeneralPermissions generalPermission;
 
     @Column(name = "general_permission_int")
     private Integer effectiveGeneralPermission;
-    @Enumerated(EnumType.STRING)
-    @Column(name = "admin_permission", length = FieldLength.FIELD_LENGTH_255)
-    private AdminPermissions adminPermission;
 
     @ManyToOne(optional = false)
     @JoinColumn(nullable = false, name = "user_id")
@@ -94,14 +83,6 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
     public AuthorizedUser(TdarUser person, GeneralPermissions permission) {
         this.user = person;
         setGeneralPermission(permission);
-    }
-
-    public AdminPermissions getAdminPermission() {
-        return adminPermission;
-    }
-
-    public void setAdminPermission(AdminPermissions adminPermission) {
-        this.adminPermission = adminPermission;
     }
 
     @XmlElement(name = "personRef")
@@ -170,14 +151,6 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
         return effectiveGeneralPermission;
     }
 
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
-
     /**
      * 'Enabled' in this context refers to whether the system should allow modification of this object in the context UI edit operation. When enabled is false,
      * the system should not allow operations which would alter the fields in this object, and also should not allow operations that would add or remove the
@@ -196,14 +169,5 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
         this.enabled = enabled;
     }
 
-    public Date getDateExpires() {
-        return dateExpires;
-    }
-
-    public void setDateExpires(Date dateExpires) {
-        this.dateExpires = dateExpires;
-    }
-
-    private transient String test = "";
 
 }

@@ -75,5 +75,33 @@
             <column name="status">ACTIVE</column>
             </update>
     </changeSet>
+    
+    
+    <changeSet id="prehistoric-collections-7" author="abrin">
+        <createTable tableName="timed_access">
+            <column name="id" autoIncrement="true" type="bigint">
+                <constraints nullable="false" primaryKey="true" />
+            </column>
+            <column name="date_created" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="until" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+            <column name="collection_id" type='bigint'>
+                <constraints nullable="false" references="collection" foreignKeyName="fk_timed_collection" />
+            </column>
+            <column name="user_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user" foreignKeyName="fk_timed_user" />
+            </column>
+            <column name="invite_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user" foreignKeyName="fk_timed_invite" />
+            </column>
+        </createTable>
+    </changeSet>    
+    
+    <changeSet id="prehistoric-collections-8" author="abrin">
+    <modifyDataType tableName="timed_access" columnName="until" newDataType="date"/>
+    </changeSet>
     <!--  FIXME: migration script -->
 </databaseChangeLog>

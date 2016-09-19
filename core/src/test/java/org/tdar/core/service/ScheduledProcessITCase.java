@@ -23,7 +23,10 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Status;
@@ -35,6 +38,7 @@ import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
 import org.tdar.core.service.processes.ScheduledProcess;
 import org.tdar.core.service.processes.SendEmailProcess;
 import org.tdar.core.service.processes.daily.DailyEmailProcess;
+import org.tdar.core.service.processes.daily.DailyTimedAccessRevokingProcess;
 import org.tdar.core.service.processes.daily.EmbargoedFilesUpdateProcess;
 import org.tdar.core.service.processes.daily.OverdrawnAccountUpdate;
 import org.tdar.core.service.processes.daily.SalesforceSyncProcess;
@@ -267,4 +271,33 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
             salesforce.execute();
         }
     }
+    
+    @Test
+    @Rollback
+    @Ignore
+    public void testDailyTimedAccessRevokingProcess() {
+        Dataset dataset = createAndSaveNewDataset();
+        SharedCollection collection = new SharedCollection();
+        collection.getResources().add(dataset);
+        dataset.getSharedCollections().add(collection);
+        collection.markUpdated(getAdminUser());
+        AuthorizedUser e = new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL);
+//        e.setDateExpires(DateTime.now().minusDays(4).toDate());
+        collection.setName("test");
+        collection.setDescription("test");
+        collection.markUpdated(getAdminUser());
+        collection.getAuthorizedUsers().add(e);
+        collection.getResources().add(dataset);
+        genericService.saveOrUpdate(collection);
+        genericService.saveOrUpdate(e);
+//        dataset.getResourceCollections().add(collection);
+        genericService.saveOrUpdate(dataset);
+        
+        dtarp.execute();
+    }
+
+    @Autowired
+    DailyTimedAccessRevokingProcess dtarp;
+    
+
 }

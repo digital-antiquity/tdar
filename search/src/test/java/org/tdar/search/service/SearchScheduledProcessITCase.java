@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.joda.time.DateTime;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -68,34 +69,6 @@ public class SearchScheduledProcessITCase extends AbstractWithIndexIntegrationTe
     }
     
     
-
-    @Autowired
-    DailyTimedAccessRevokingProcess dtarp;
-    
-    @Test
-    @Rollback
-    public void testDailyTimedAccessRevokingProcess() {
-        Dataset dataset = createAndSaveNewDataset();
-        SharedCollection collection = new SharedCollection();
-        collection.getResources().add(dataset);
-        dataset.getSharedCollections().add(collection);
-        collection.markUpdated(getAdminUser());
-        AuthorizedUser e = new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL);
-        e.setDateExpires(DateTime.now().minusDays(4).toDate());
-        collection.setName("test");
-        collection.setDescription("test");
-        collection.markUpdated(getAdminUser());
-        collection.getAuthorizedUsers().add(e);
-        collection.getResources().add(dataset);
-        genericService.saveOrUpdate(collection);
-        genericService.saveOrUpdate(e);
-//        dataset.getResourceCollections().add(collection);
-        genericService.saveOrUpdate(dataset);
-        
-        dtarp.execute();
-    }
-
-
     @Test
     @Rollback(true)
     public void testWeeklyStats() {

@@ -1,7 +1,11 @@
 package org.tdar.core.service.collection;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
 public class AdhocShare implements Serializable {
 
@@ -9,9 +13,10 @@ public class AdhocShare implements Serializable {
     private String email;
     private Long userId;
     
-    private Long shareId;
+    private Long collectionId;
     private Long accountId;
-    
+    private List<Long> resourceIds = new ArrayList<>();
+    private GeneralPermissions permission = GeneralPermissions.VIEW_ALL;
     private Date expires;
 
     public String getEmail() {
@@ -30,14 +35,6 @@ public class AdhocShare implements Serializable {
         this.userId = userId;
     }
 
-    public Long getShareId() {
-        return shareId;
-    }
-
-    public void setShareId(Long shareId) {
-        this.shareId = shareId;
-    }
-
     public Long getAccountId() {
         return accountId;
     }
@@ -53,6 +50,29 @@ public class AdhocShare implements Serializable {
     public void setExpires(Date expires) {
         this.expires = expires;
     }
-    
-    
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
+    }
+
+    public List<Long> getResourceIds() {
+        return resourceIds;
+    }
+
+    public void setResourceIds(List<Long> resourceIds) {
+        this.resourceIds = resourceIds;
+    }
+
+    public GeneralPermissions getPermission() {
+        return permission;
+    }
+
+    public void setPermission(GeneralPermissions permission) {
+        this.permission = permission;
+    }
+
 }

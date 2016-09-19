@@ -36,10 +36,6 @@ public class UserInvite extends AbstractPersistable {
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     private String emailAddress;
 
-    @ManyToOne
-    @JoinColumn(nullable = false, name = "authorizer_id")
-    private TdarUser authorizedBy;
-
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable=false)
     private Date dateCreated;
@@ -58,14 +54,6 @@ public class UserInvite extends AbstractPersistable {
 
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
-    }
-
-    public TdarUser getAuthorizedBy() {
-        return authorizedBy;
-    }
-
-    public void setAuthorizedBy(TdarUser authorizedBy) {
-        this.authorizedBy = authorizedBy;
     }
 
     public GeneralPermissions getPermissions() {
