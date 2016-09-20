@@ -46,7 +46,7 @@
     <#macro bookmarksSection>
         <div id="bookmarks">
             <#if ( bookmarkedResources?size > 0)>
-                <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' listTag='ol' headerTag="h3" />
+                <@rlist.listResources resourcelist=bookmarkedResources sortfield='RESOURCE_TYPE' listTag='ol' headerTag="h3" titleTag="b" />
             <#else>
             <h3>Bookmarked resources appear in this section</h3>
             Bookmarks are a quick and useful way to access resources from your dashboard. To bookmark a resource, click on the star <i class="icon-star"></i> icon next to any resource's title.
@@ -64,76 +64,4 @@
 
 
 
-<#macro headerNotifications>
-    <#list currentNotifications as notification>
-        <div class="${notification.messageType} alert" id="note_${notification.id?c}">
-        <button type="button" id="close_note_${notification.id?c}" class="close" data-dismiss="alert" data-dismiss-id="${notification.id?c}" >&times;</button>
-        <#if notification.messageDisplayType.normal>
-        <@s.text name="${notification.messageKey}"/> [${notification.dateCreated?date?string.short}]
-        <#else>
-            <#local file = "../notifications/${notification.messageKey}.ftl" />
-            <#if !notification.messageKey?string?contains("..") >
-                <#attempt>
-                    <#include file />
-                <#recover>
-                    Could not load notification.
-                </#attempt>
-            </#if>
-        </#if>
-        </div>
-    </#list>
-
-    <#list resourcesWithErrors![]>
-    <div class="alert-error alert">
-        <h3><@s.text name="dashboard.archiving_heading"/></h3>
-
-        <p><@common.localText "dashboard.archiving_errors", serviceProvider, serviceProvider /> </p>
-        <ul>
-            <#items as resource>
-                <li>
-                    <a href="<@s.url value="${resource.detailUrl}" />">${resource.title}:
-                        <#list resource.filesWithProcessingErrors as file><#if file_index !=0>,</#if>${file.filename!"unknown"}</#list>
-                    </a>
-                </li>
-            </#items>
-        </ul>
-    </div>
-    </#list>
-
-<#if showUserSuggestions!false>
-	<#list userSuggestions>
-    <div class="alert-error alert">
-        <h3>Are any of these you?</h3>
-		<ul class="unstyled">
-			<#items as sug>
-				<li><input type="checkbox" name="merge" value="${sug.id?c}-${sug.properName}">&nbsp;<@s.a value="${sug.detailUrl}">${sug.properName}</@s.a></li>
-			</#items>
-		</ul>
-		<form>
-		<!-- fixme - send email via email-controller 
-			construct list of people; contruct url for -- dedup /admin/authority/select-authority?selectedDupeIds=...&entityType=PERSON -->
-		<button name="yes" class="button btn">Yes</button>
-		<button name="no"  class="button btn">No</button>
-		</form>
-    </div>
-	</#list>
-</#if>
-    <#list overdrawnAccounts![]>
-    <div class="alert-error alert">
-        <h3><@s.text name="dashboard.overdrawn_title"/></h3>
-
-        <p><@s.text name="dashboard.overdrawn_description" />
-            <a href="<@s.url value="/cart/add"/>"><@s.text name="dashboard.overdrawn_purchase_link_text" /></a>
-        </p>
-        <ul>
-            <#items as account>
-                <li>
-                    <a href="<@s.url value="/billing/${account.id?c}" />">${account.name!"unamed"}</a>
-                </li>
-            </#items>
-        </ul>
-    </div>
-    </#list>
-
-</#macro>
 </#escape>
