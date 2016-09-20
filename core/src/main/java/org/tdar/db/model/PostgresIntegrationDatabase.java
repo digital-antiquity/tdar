@@ -200,13 +200,15 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 tempTable.getDataTableColumns().add(dtc);
                 column.setTempTableDataTableColumn(dtc);
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
+                String pretty = dtc.getPrettyDisplayName();
                 if (column.isIntegrationColumn()) {
-                    dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(column.getName())));
+                    dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(pretty)));
 
                     DataTableColumn integrationColumn = new DataTableColumn();
                     integrationColumn.setDisplayName(dtc.getDisplayName() + " " + i);
                     integrationColumn.setName(name + INTEGRATION_SUFFIX);
-                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value",Arrays.asList(column.getName())));
+                    
+                    integrationColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_mapped_value",Arrays.asList(pretty)));
                     tempTable.getDataTableColumns().add(integrationColumn);
                     executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), integrationColumn.getName()));
 //                    dtc.setDisplayName(integrationColumn.getDisplayName());
