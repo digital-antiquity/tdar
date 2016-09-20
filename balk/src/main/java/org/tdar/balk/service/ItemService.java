@@ -15,10 +15,14 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.AbstractDropboxItem;
@@ -36,6 +40,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.service.UrlService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
 import org.tdar.utils.dropbox.DropboxClient;
@@ -45,6 +50,7 @@ import org.tdar.utils.dropbox.ToPersistListener;
 
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.RelocationErrorException;
+import com.hp.hpl.jena.sparql.function.library.substr;
 
 @Component
 public class ItemService {
@@ -54,7 +60,13 @@ public class ItemService {
     boolean loggedIn = false;
 
     @Autowired
+    EmailService emailService;
+
+    @Autowired
     private GenericDao genericDao;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     private ItemDao itemDao;
@@ -62,7 +74,7 @@ public class ItemService {
     public ItemService() throws FileNotFoundException, URISyntaxException, IOException {
         apiClient = new APIClient();
     }
-    
+
     @Transactional(readOnly = false)
     public void store(ToPersistListener listener) {
         for (DropboxItemWrapper dropboxItemWrapper : listener.getWrappers()) {
@@ -97,7 +109,7 @@ public class ItemService {
 
     @Transactional(readOnly = false)
     public void store(DropboxItemWrapper dropboxItemWrapper) {
-        if (dropboxItemWrapper  == null || dropboxItemWrapper.getId() == null) {
+        if (dropboxItemWrapper == null || dropboxItemWrapper.getId() == null) {
             logger.warn("id is null for path: {}", dropboxItemWrapper.getFullPath());
             return;
         }
@@ -128,24 +140,43 @@ public class ItemService {
 
     }
 
+    private void sendEmail(String from, String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        // Message message = new MimeMessage(session);
+        message.setFrom(from);
+        message.setSubject(subject);
+        message.setTo(to);
+        message.setText(text);
+        try {
+            mailSender.send(message);
+        } catch (MailException me) {
+            logger.error("email error: {} {}", message, me);
+        }
+
+    }
 
     @Transactional(readOnly = false)
     public void handleUploads() {
         List<DropboxFile> files = itemDao.findToUpload();
+        StringBuilder msg = new StringBuilder("the following files were uploaded to tDAR:\n");
 
         for (DropboxFile file : files) {
             try {
                 upload(file);
+                msg.append(" - ").append(file.getName()).append(" (").append(file.getTdarId()).append(")");
             } catch (Exception e) {
-                logger.error("{}",e,e);
+                logger.error("{}", e, e);
             }
         }
-        
+        if (CollectionUtils.isNotEmpty(files)) {
+            sendEmail("balk@tdar.org", "adam.brin@asu.edu", "Uploaded files to tDAR", msg.toString());
+        }
+
     }
 
     private void upload(DropboxFile file) throws IllegalStateException, Exception {
         File rootDir = new File(DropboxConstants.UPLOAD_PATH);
-        DropboxClient client  = new DropboxClient();
+        DropboxClient client = new DropboxClient();
         logger.debug(file.getPath());
         File path = new File(file.getPath()).getParentFile();
         List<String> tree = new ArrayList<>();
@@ -225,10 +256,10 @@ public class ItemService {
 
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public TreeMap<String, WorkflowStatusReport> itemStatusReport(String path) {
         List<DropboxFile> findAll = itemDao.findAllWithPath(path);
-        TreeMap<String,WorkflowStatusReport> map = new TreeMap<>();
+        TreeMap<String, WorkflowStatusReport> map = new TreeMap<>();
         for (DropboxFile file : findAll) {
             String key = Phases.createKey(file);
             map.putIfAbsent(key, new WorkflowStatusReport());
@@ -236,7 +267,7 @@ public class ItemService {
             if (status.getFirst() == null) {
                 status.setFirst(file);
             }
-            
+
             for (Phases phase : Phases.values()) {
                 phase.updateStatus(status, file);
             }
@@ -248,8 +279,9 @@ public class ItemService {
         return itemDao.findByDropboxId(id, dir);
     }
 
-    public void move(AbstractDropboxItem item, Phases phase) throws RelocationErrorException, DbxException, FileNotFoundException, URISyntaxException, IOException {
-        DropboxClient client  = new DropboxClient();
+    public void move(AbstractDropboxItem item, Phases phase)
+            throws RelocationErrorException, DbxException, FileNotFoundException, URISyntaxException, IOException {
+        DropboxClient client = new DropboxClient();
         client.move(item.getPath(), phase.mutatePath(item.getPath()));
     }
 
