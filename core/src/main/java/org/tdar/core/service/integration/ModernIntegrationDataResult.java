@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.PersonalFilestoreTicket;
@@ -121,11 +122,13 @@ public class ModernIntegrationDataResult implements Serializable {
         MessageHelper instance = MessageHelper.getInstance();
         logger.debug("{}",integrationContext.getTempTable().getDataTableColumns());
         for (DataTableColumn dtc : integrationContext.getTempTable().getDataTableColumns()) {
-            labels.add(dtc.getDisplayName());
+            String displayName = dtc.getPrettyDisplayName();
+            labels.add(displayName);
+            displayName = displayName.replace("mapped-", "");
 
             if (dtc.getName().endsWith(PostgresIntegrationDatabase.INTEGRATION_SUFFIX)) {
-                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value",Arrays.asList(dtc.getDisplayName())));
-                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value",Arrays.asList(dtc.getDisplayName())));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_sort_value",Arrays.asList(displayName)));
+                labels.add(instance.getText("dataIntegrationWorkbook.data_type_value",Arrays.asList(displayName)));
             }
         }
         return labels;
