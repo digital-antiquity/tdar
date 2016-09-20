@@ -43,7 +43,14 @@
             <column name="email" type="varchar(255)" />
         </createTable>
     </changeSet>
+    
     <changeSet id="4" author="abrin">
         <modifyDataType tableName="dropbox_state" columnName="db_cursor" newDataType="text"/>
+    </changeSet>
+    
+    <changeSet id="5" author="abrin">
+	    <addColumn tableName="dropbox_user_mapping">
+            <column name="token" type="varchar(512)" />
+	    </addColumn>    
     </changeSet>
 </databaseChangeLog>

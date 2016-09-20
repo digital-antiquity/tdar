@@ -15,6 +15,8 @@ public class DropboxUserMapping extends AbstractPersistable {
 
     @Column(name = "email", length = 512)
     private String email;
+    @Column(name = "token", length = 512)
+    private String token;
     @Column(name = "username", length = 512)
     private String username;
     @Column(name = "tdar_user_id")
@@ -50,6 +52,14 @@ public class DropboxUserMapping extends AbstractPersistable {
 
     public void setTdarId(Long tdarId) {
         this.tdarId = tdarId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
 }
