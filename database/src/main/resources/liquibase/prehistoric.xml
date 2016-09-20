@@ -106,17 +106,21 @@
     
     <changeSet id="prehistoric-collections-9" author="abrin">
         <addColumn tableName="user_invite">
-                   <column name="date_redeemed" type="timestamp">
+           <column name="date_redeemed" type="timestamp">
                 <constraints nullable="false" />
             </column>
-        <addColumn tableName="user_invite">
-            <column name="user_id" type='bigint'>
-                <constraints nullable="true" references="tdar_user" foreignKeyName="fk_user_invite_user_id" />
-            </column>
         </addColumn>
-            <column name="owner_id" type='bigint'>
-                <constraints nullable="false" references="tdar_user" foreignKeyName="fk_timed_owner" />
-            </column>
+        <addColumn tableName="user_invite">
+            <column name="user_id" type='bigint' />
+        </addColumn>
+         <addForeignKeyConstraint constraintName="fk_user_invite_user_id" referencedTableName="tdar_user" 
+            baseColumnNames="user_id" baseTableName="user_invite" referencedColumnNames="id" />
+        
+        <addColumn tableName="timed_access">
+            <column name="owner_id" type='bigint'/>
+        </addColumn>
+         <addForeignKeyConstraint constraintName="fk_timed_owner_id" referencedTableName="tdar_user" 
+            baseColumnNames="owner_id" baseTableName="timed_access" referencedColumnNames="id" />
     </changeSet>
     <!--  FIXME: migration script -->
 </databaseChangeLog>
