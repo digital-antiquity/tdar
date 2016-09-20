@@ -39,10 +39,18 @@ public class UserInvite extends AbstractPersistable {
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_created", nullable=false)
     private Date dateCreated;
-    
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_redeemed", nullable=false)
+    private Date dateRedeemed;
+
     @ManyToOne
     @JoinColumn(nullable = false, name = "collection_id")
     private ResourceCollection ResourceCollection;
+
+    @ManyToOne
+    @JoinColumn(nullable = true, name = "user_id")
+    private TdarUser user;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "permission", length = FieldLength.FIELD_LENGTH_255)
@@ -78,6 +86,22 @@ public class UserInvite extends AbstractPersistable {
 
     public void setDateCreated(Date dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public TdarUser getUser() {
+        return user;
+    }
+
+    public void setUser(TdarUser user) {
+        this.user = user;
+    }
+
+    public Date getDateRedeemed() {
+        return dateRedeemed;
+    }
+
+    public void setDateRedeemed(Date dateRedeemed) {
+        this.dateRedeemed = dateRedeemed;
     }
 
 }

@@ -33,6 +33,10 @@ public class TimedAccessRestriction extends AbstractPersistable {
     private TdarUser user;
 
     @ManyToOne
+    @JoinColumn(nullable = false, name = "owner_id")
+    private TdarUser createdBy;
+
+    @ManyToOne
     @JoinColumn(nullable = false, name = "invite_id")
     private UserInvite invite;
 
@@ -86,6 +90,14 @@ public class TimedAccessRestriction extends AbstractPersistable {
 
     public void setCollection(ResourceCollection collection) {
         this.collection = collection;
+    }
+
+    public TdarUser getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(TdarUser createdBy) {
+        this.createdBy = createdBy;
     }
 
 }

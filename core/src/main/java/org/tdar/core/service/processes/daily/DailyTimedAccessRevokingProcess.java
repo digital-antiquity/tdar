@@ -1,19 +1,31 @@
 package org.tdar.core.service.processes.daily;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.TimedAccessRestriction;
-import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
-import org.tdar.core.service.collection.ResourceCollectionService;
+import org.tdar.core.event.EventType;
+import org.tdar.core.event.TdarEvent;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
+
 
 /**
  * $Id$
@@ -35,7 +47,10 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
-    private transient ResourceCollectionService resourceCollectionService;
+    private ApplicationEventPublisher publisher;
+
+    @Autowired
+    private EmailService emailService;
 
 
     @Override
@@ -65,27 +80,88 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     public boolean isEnabled() {
         return true;
     }
+    
+    Map<TdarUser,List<String>> ownerNotes = new HashMap<>();
+    Map<TdarUser,List<String>> userNotes = new HashMap<>();
+    
     @Override
     public void process(TimedAccessRestriction persistable) throws Exception {
         DateTime now = DateTime.now();
-        boolean changed = false;
-//        for (AuthorizedUser au : persistable.getAuthorizedUsers()) {
-//            if (now.isAfter(au.getDateExpires().getTime())) {
-//                persistable.getAuthorizedUsers().remove(au);
-//                genericDao.delete(au);
-//                changed = true;
-//            }
-//        }
-//        if (changed) {
-//            resourceCollectionService.saveOrUpdate(persistable);
-//        }
+        List<TdarUser> toRemove = new ArrayList<>();
+        if (now.isAfter(new DateTime(persistable.getUntil()))) {
+            persistable.getCollection().getAuthorizedUsers().forEach(au ->{
+                TdarUser user = persistable.getUser();
+                // if the access restriction was created prior to the creation of the user, the invite might exist
+                if (user == null && persistable.getInvite() != null) {
+                    user = persistable.getInvite().getUser();
+                    persistable.getInvite().setPermissions(null);
+                    genericDao.saveOrUpdate(persistable.getInvite());
+                }
+                
+                ResourceCollection collection = persistable.getCollection();
+                if (au.getUser().equals(user)) {
+                    toRemove.add(user);
+                    String name = "";
+                    if (collection instanceof HasName) {
+                        name = ((HasName)collection).getName();
+                    }
+                    ownerNotes.putIfAbsent(persistable.getCreatedBy(), new ArrayList<>());
+                    userNotes.putIfAbsent(persistable.getUser(), new ArrayList<>());
+                    String note = String.format("%s - %s", name, user.getName());
+                    ownerNotes.get(persistable.getCreatedBy()).add(note);
+                    userNotes.get(persistable.getUser()).add(note);
+                }
+                collection.getAuthorizedUsers().removeAll(toRemove);
+                genericDao.saveOrUpdate(collection);
+                genericDao.saveOrUpdate(collection.getAuthorizedUsers());
+                publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
+
+            });
+        }
     }
     
+
     @Override
-    public List<Long> findAllIds() {
-        return resourceCollectionService.findCollectionIdsWithTimeLimitedAccess();
-    }
-    
+    protected void batchCleanup() {
+        
+        Set<String> adminNotes = new HashSet<>();
+        for (TdarUser owner : ownerNotes.keySet()) {
+            Email email = new Email();
+            email.setUserGenerated(false);
+            email.setTo(owner.getEmail());
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User from Collection");
+            Map<String,Object> map = new HashMap<>();
+            map.put("user", owner);
+            List<String> notes = ownerNotes.get(owner);
+            map.put("notes", notes);
+            emailService.queueWithFreemarkerTemplate("expire/expire-owner.ftl", map , email);
+            adminNotes.addAll(notes);
+        }
+
+        
+        for (TdarUser owner : userNotes.keySet()) {
+            Email email = new Email();
+            email.setUserGenerated(false);
+            email.setTo(owner.getEmail());
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired Access To Collection");
+            Map<String,Object> map = new HashMap<>();
+            map.put("user", owner);
+            map.put("notes", ownerNotes.get(owner));
+            emailService.queueWithFreemarkerTemplate("expire/expire-user.ftl", map , email);
+        }
+
+
+        if (CollectionUtils.isNotEmpty(adminNotes)) {
+            Email email = new Email();
+            email.setTo(TdarConfiguration.getInstance().getSystemAdminEmail());
+            email.setUserGenerated(false);
+            email.setSubject(TdarConfiguration.getInstance().getSiteAcronym() + " Expired User Access To Collection");
+            Map<String,Object> map = new HashMap<>();
+            map.put("notes", adminNotes);
+            emailService.queueWithFreemarkerTemplate("expire/expire-admin.ftl", map , email);
+        }
+}
+
     @Override
     public Class<TimedAccessRestriction> getPersistentClass() {
         return TimedAccessRestriction.class;

@@ -103,5 +103,20 @@
     <changeSet id="prehistoric-collections-8" author="abrin">
     <modifyDataType tableName="timed_access" columnName="until" newDataType="date"/>
     </changeSet>
+    
+    <changeSet id="prehistoric-collections-9" author="abrin">
+        <addColumn tableName="user_invite">
+                   <column name="date_redeemed" type="timestamp">
+                <constraints nullable="false" />
+            </column>
+        <addColumn tableName="user_invite">
+            <column name="user_id" type='bigint'>
+                <constraints nullable="true" references="tdar_user" foreignKeyName="fk_user_invite_user_id" />
+            </column>
+        </addColumn>
+            <column name="owner_id" type='bigint'>
+                <constraints nullable="false" references="tdar_user" foreignKeyName="fk_timed_owner" />
+            </column>
+    </changeSet>
     <!--  FIXME: migration script -->
 </databaseChangeLog>

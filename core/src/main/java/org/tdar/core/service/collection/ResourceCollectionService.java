@@ -31,6 +31,7 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.FileProxy;
+import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.HasSubmitter;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionDisplayProperties;
@@ -62,6 +63,7 @@ import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.ServiceInterface;
 import org.tdar.core.service.external.AuthorizationService;
+import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.transform.jsonld.SchemaOrgCollectionTransformer;
 import org.tdar.utils.PersistableUtils;
@@ -86,6 +88,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     private ApplicationEventPublisher publisher;
     @Autowired
     private SerializationService serializationService;
+    @Autowired
+    private EmailService emailService;
 
     /**
      * Reconcile @link AuthorizedUser entries on a @link ResourceCollection, save if told to.
@@ -1096,13 +1100,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         SharedCollection collection = new SharedCollection();
         collection.setName("Test share");
         collection.markUpdated(authenticatedUser);
-        collection.setDescription("auto generated share");
+        String from = "";
         HashSet<Resource> toTrack = new HashSet<>(resources);
         if (account != null) {
+            from = String.format("%s: %s, %s", "Billing Account", account.getName(), account.getId());
             toTrack.addAll(account.getResources());
         }
 
         if (collectionFrom != null) {
+            String name = "";
+            if (collectionFrom instanceof HasName) {
+                name = ((HasName) collectionFrom).getName();
+            }
+            from = String.format("%s: %s, %s", "Collection or Share", name, collectionFrom.getId());
             if (collectionFrom instanceof ListCollection) {
                 toTrack.addAll(((ListCollection) collectionFrom).getUnmanagedResources());
             }
@@ -1114,13 +1124,16 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             toTrack.forEach(r -> {
                 if (authorizationService.canEditResource(authenticatedUser, r, GeneralPermissions.MODIFY_RECORD)) {
                     collection.getResources().add(r);
+                    r.getSharedCollections().add(collection);
                 }
 
             });
         }
         
         TdarUser user = getDao().find(TdarUser.class, share.getUserId());
+        String _for = "";
         if (user != null) {
+            _for = user.getUsername();
             collection.getAuthorizedUsers().add(new AuthorizedUser(user, share.getPermission()));
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
@@ -1131,16 +1144,22 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         } else {
             UserInvite invite = new UserInvite();
+            _for = share.getEmail();
             invite.setEmailAddress(share.getEmail());
             invite.setPermissions(share.getPermission());
             invite.setDateCreated(new Date());
+            invite.setResourceCollection(collection);
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
                 tar.setCollection(collection);
                 tar.setInvite(invite);
                 getDao().saveOrUpdate(tar);
             }
+            getDao().saveOrUpdate(invite);
+            emailService.sendUserInviteEmail(invite, authenticatedUser);
         }
+        collection.setDescription(String.format("auto generated share for %s with %s resources based on %s", _for, collection.getResources().size(), from));
+        saveOrUpdate(collection);
         return collection;
     }
 

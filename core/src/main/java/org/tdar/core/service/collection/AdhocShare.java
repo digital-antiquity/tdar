@@ -7,6 +7,11 @@ import java.util.List;
 
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 
+/**
+ * A bean to keep track of all of the data related to the creation of a share
+ * @author abrin
+ *
+ */
 public class AdhocShare implements Serializable {
 
     private static final long serialVersionUID = 1871697669066300301L;

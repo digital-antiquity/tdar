@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.entity.HasEmail;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.Status;
@@ -86,6 +87,20 @@ public class EmailService {
         }
     }
 
+    
+    @Transactional(readOnly=false)
+    public void sendUserInviteEmail(UserInvite invite, TdarUser from) {
+        Email email = new Email();
+        email.setUserGenerated(false);
+        email.setTo(invite.getEmailAddress());
+        email.setSubject(String.format("%s has invited you to %s", from.getProperName(), TdarConfiguration.getInstance().getSiteAcronym() ));
+        Map<String,Object> map = new HashMap<>();
+        map.put("invite", invite);
+        map.put("from", from);
+        queueWithFreemarkerTemplate("invite.ftl", map , email);
+
+    }
+    
     @Transactional(readOnly=true)
     public void sendMimeMessage(String templateName, Map<String,?> dataModel, Email email, List<File> attachments, List<File> inline) {
 

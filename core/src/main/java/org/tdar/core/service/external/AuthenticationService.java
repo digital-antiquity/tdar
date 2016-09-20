@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.jena.atlas.test.Gen;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,14 +26,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.AuthNotice;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Institution;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.UserInvite;
-import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.bean.notification.UserNotificationDisplayType;
 import org.tdar.core.bean.resource.Resource;
@@ -44,7 +42,6 @@ import org.tdar.core.dao.entity.PersonDao;
 import org.tdar.core.dao.external.auth.AuthenticationProvider;
 import org.tdar.core.dao.external.auth.AuthenticationResult;
 import org.tdar.core.dao.external.auth.AuthenticationResult.AuthenticationResultType;
-import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
@@ -429,12 +426,19 @@ public class AuthenticationService {
     public void updatePersonWithInvites(TdarUser person) {
         List<UserInvite> invites = personDao.checkInvite(person);
         for (UserInvite invite : invites) {
+            if (invite.getPermissions() == null) {
+                continue;
+            }
+            
             AuthorizedUser user = new AuthorizedUser(person, invite.getPermissions());
             if (invite.getResourceCollection() != null) {
                 invite.getResourceCollection().getAuthorizedUsers().add(user);
                 personDao.saveOrUpdate(invite.getResourceCollection());
                 personDao.saveOrUpdate(user);
             }
+            invite.setUser(person);
+            invite.setDateRedeemed(new Date());
+            personDao.saveOrUpdate(invite);
             //FIXME: REMOVE if rights changes work
             if (invite.getResourceCollection() instanceof RightsBasedResourceCollection) {
                 for (Resource r : ((RightsBasedResourceCollection) invite.getResourceCollection()).getResources()) {
