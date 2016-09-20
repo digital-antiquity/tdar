@@ -55,6 +55,9 @@
                         <td><@moremenu collection /></td>
                     </tr>
            </#list>
+            <tr>
+                <td colspan="3"><a href="/collection/add" class="tdarbutton button">Create a New Collection</a></td>
+            </tr>
                 </tbody>
             </table>
         </div>

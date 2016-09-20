@@ -1095,11 +1095,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly=false)
-    public SharedCollection createShareFromAdhoc(AdhocShare share, List<Resource> resources, ResourceCollection collectionFrom, BillingAccount account,
+    public RightsBasedResourceCollection createShareFromAdhoc(AdhocShare share, List<Resource> resources, ResourceCollection collectionFrom, BillingAccount account,
             TdarUser authenticatedUser) {
-        SharedCollection collection = new SharedCollection();
-        collection.setName("Test share");
-        collection.markUpdated(authenticatedUser);
+        RightsBasedResourceCollection collection = null;
+        SharedCollection _share =  new SharedCollection();
+        _share.setName("Share");
+        _share.markUpdated(authenticatedUser);
         String from = "";
         HashSet<Resource> toTrack = new HashSet<>(resources);
         if (account != null) {
@@ -1120,13 +1121,38 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 toTrack.addAll(((RightsBasedResourceCollection) collectionFrom).getResources());
             }
         }
-        if (CollectionUtils.isNotEmpty(toTrack)) {
+        
+        // If what we're really trying to do is add a user to a collection, then bypass the create logic and just do that...
+        if (collectionFrom instanceof RightsBasedResourceCollection && toTrack.size() == ((RightsBasedResourceCollection) collectionFrom).getResources().size() &&
+                authorizationService.canEditCollection(authenticatedUser, collectionFrom)) {
+            collection = (RightsBasedResourceCollection) collectionFrom;
+        } else if (resources.size() == 1 && toTrack.size() ==1) {
+            // if we're dealing with something that could be an internal collection, use that
+            
+            Resource resource = resources.get(0);
+            Set<InternalCollection> internalCollections = resource.getInternalCollections();
+            InternalCollection internal = null;
+            if (internalCollections.size() > 0) { // should never be > 1, but don't add to the problem
+                internal = internalCollections.iterator().next();
+                collection = internal;
+            } else {
+                internal = new InternalCollection();
+                collection = internal;
+                internal.markUpdated(authenticatedUser);
+            }
+            resource.getInternalCollections().add(internal);
+            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+            getDao().saveOrUpdate(internal);
+        } else if (CollectionUtils.isNotEmpty(toTrack)) {
+            // otherwise, we're really starting from scratch
+            collection = _share;
+
             toTrack.forEach(r -> {
                 if (authorizationService.canEditResource(authenticatedUser, r, GeneralPermissions.MODIFY_RECORD)) {
-                    collection.getResources().add(r);
-                    r.getSharedCollections().add(collection);
+                    _share.getResources().add(r);
+                    r.getSharedCollections().add(_share);
+                    publisher.publishEvent(new TdarEvent(r, EventType.CREATE_OR_UPDATE));
                 }
-
             });
         }
         
@@ -1137,7 +1163,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             collection.getAuthorizedUsers().add(new AuthorizedUser(user, share.getPermission()));
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
-                tar.setCollection(collection);
+                tar.setCollection((ResourceCollection)collection);
                 tar.setUser(user);
                 getDao().saveOrUpdate(tar);
             }
@@ -1148,18 +1174,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             invite.setEmailAddress(share.getEmail());
             invite.setPermissions(share.getPermission());
             invite.setDateCreated(new Date());
-            invite.setResourceCollection(collection);
+            invite.setResourceCollection((ResourceCollection)collection);
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
-                tar.setCollection(collection);
+                tar.setCollection((ResourceCollection)collection);
                 tar.setInvite(invite);
                 getDao().saveOrUpdate(tar);
             }
             getDao().saveOrUpdate(invite);
             emailService.sendUserInviteEmail(invite, authenticatedUser);
         }
-        collection.setDescription(String.format("auto generated share for %s with %s resources based on %s", _for, collection.getResources().size(), from));
-        saveOrUpdate(collection);
+        getDao().saveOrUpdate((ResourceCollection)collection);
+        _share.setName(String.format("Share with %s", _for));
+        _share.setDescription(String.format("auto generated share for %s with %s resources based on %s", _for, collection.getResources().size(), from));
         return collection;
     }
 

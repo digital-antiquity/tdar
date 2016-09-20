@@ -52,9 +52,9 @@
                 <td>${collection.authorizedUsers?size}</td>
                 <td>
                     <div class="btn-group">
-                      <a class="btn" href="${collection.detailUrl}">Details</a>
-                      <a class="btn" href="/collection/${collection.id?c}/edit">Edit</a>
-                      <a class="btn">Delete</a>
+                      <a class="btn btn-mini" href="${collection.detailUrl}">View</a>
+                      <a class="btn btn-mini" href="/share/${collection.id?c}/edit">Edit</a>
+                      <a class="btn btn-mini" href="/share/delete?id=${collection.id?c}">Delete</a>
                     </div>
                 </td>
                 </tr>
@@ -72,7 +72,6 @@
         <table class="table">
             <thead>
             	<tr>
-                <th>Id</th>
                 <th>Name</th>
                 <th># of users</th>
                 <th>action</th>
@@ -83,11 +82,15 @@
                 <#if (collection.resources?size > 0 )>
 					<#list collection.resources as resource>
                         <tr>
-                        <td>${resource.id?c}</td>
                         <td>
         						<a href="${resource.detailUrl}">${resource.title}</a></td>
                         <td>${collection.authorizedUsers?size}</td>
-                        <td>edit | delete | details</td>
+                        <td>
+                    <div class="btn-group">
+                      <a class="btn btn-mini" href="/${resource.urlNamespace}/${resource.id?c}/edit">Edit</a>
+                    </div>
+
+                        </td>
                         </tr>
                     </#list>
                 </#if>
