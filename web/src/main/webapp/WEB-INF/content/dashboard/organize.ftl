@@ -36,7 +36,7 @@
                 <tbody>
             <#list allResourceCollections as collection>
                     <tr>
-                        <th><a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</th>
+                        <th><a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a></th>
                         <td>${collection.description!"no description available"}
                           <ul class="inline">
                             <li><i class="icon-hdd"></i> ${collection.unmanagedResources?size!0} Resources</li>
