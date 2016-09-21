@@ -41,13 +41,18 @@ public class AdhocShareCreateAction extends AbstractAuthenticatableAction implem
     
     @Override
     public void prepare() throws Exception {
-        resources = getGenericService().findAll(Resource.class, share.getResourceIds());
-        account = getGenericService().find(BillingAccount.class, share.getAccountId());
-        collection = getGenericService().find(ResourceCollection.class, share.getCollectionId());
+        if (share != null) {
+            resources = getGenericService().findAll(Resource.class, share.getResourceIds());
+            account = getGenericService().find(BillingAccount.class, share.getAccountId());
+            collection = getGenericService().find(ResourceCollection.class, share.getCollectionId());
+        }
     }
     
     @Override
     public void validate() {
+        if (share == null) {
+            addActionError("adhocShareCreateAction.no_share_provided");
+        }
         super.validate();
     }
     

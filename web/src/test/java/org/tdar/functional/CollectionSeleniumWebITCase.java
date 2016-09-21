@@ -203,16 +203,16 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         // assertPageViewable(titles);
         // }
 
-        List<String> urls = new ArrayList<>();
-        for (WebElement el : find(".media-body a")) {
-            urls.add(el.getAttribute("href"));
-        }
-        logger.debug("urls: {}", urls);
-        for (String link : urls) {
-            gotoPage(url);
-            gotoPage(link);
-            assertTitlesSeen(titles);
-        }
+//        List<String> urls = new ArrayList<>();
+//        for (WebElement el : find(".media-body a")) {
+//            urls.add(el.getAttribute("href"));
+//        }
+//        logger.debug("urls: {}", urls);
+//        for (String link : urls) {
+//            gotoPage(url);
+//            gotoPage(link);
+//            assertTitlesSeen(titles);
+//        }
     }
 
     private void assertTitlesSeen(List<String> titles) {
@@ -224,7 +224,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
             }
         }
         logger.debug("seen:{} total:{}", seen, titles.size());
-        Assert.assertEquals("should see every title on each page", titles.size(), seen);
+        Assert.assertEquals("should see every title on each page: "+titles+"", titles.size(), seen);
     }
 
     private String setupCollectionForTest(String title_, List<String> titles, Boolean visible, CollectionType type) {
