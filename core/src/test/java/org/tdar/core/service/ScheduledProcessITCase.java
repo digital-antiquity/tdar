@@ -24,6 +24,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -274,7 +275,6 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     
     @Test
     @Rollback
-    @Ignore
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = new SharedCollection();
@@ -291,9 +291,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         genericService.saveOrUpdate(collection);
         genericService.saveOrUpdate(e);
 //        dataset.getResourceCollections().add(collection);
+        TimedAccessRestriction tar = new TimedAccessRestriction();
+        TimedAccessRestriction expired = new TimedAccessRestriction();
         genericService.saveOrUpdate(dataset);
         
         dtarp.execute();
+        fail("");
     }
 
     @Autowired
