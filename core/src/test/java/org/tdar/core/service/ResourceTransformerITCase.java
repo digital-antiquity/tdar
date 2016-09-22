@@ -40,8 +40,8 @@ public class ResourceTransformerITCase extends AbstractIntegrationTestCase {
         Document d = new Document();
         d.getInvestigationTypes().add(new InvestigationType("bacd"));
         d.getSiteNameKeywords().add(new SiteNameKeyword("siteName"));
-        d.markUpdated(getAdminUser());d.
-        setDate(2001);
+        d.markUpdated(getAdminUser());
+        d.setDate(2001);
         d.getSiteTypeKeywords().add(new SiteTypeKeyword("SiteType"));
         d.getResourceCreators().add(new ResourceCreator(getBasicUser(), ResourceCreatorRole.AUTHOR));
         d.getResourceCreators().add(new ResourceCreator(getAdminUser(), ResourceCreatorRole.CONTRIBUTOR));
