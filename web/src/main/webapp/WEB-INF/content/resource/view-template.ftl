@@ -109,6 +109,20 @@
 <h2>Summary</h2>
     <@common.description resource.description />
 <hr>
+    <#list viewableListResourceCollections![]>
+    <h3>This Resource is Part of the Following Collections</h3>
+    <p>
+    <ul class="inline">
+        <#items as collection>
+    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
+        <#sep>&nbsp;&nbsp;&bull;</#sep></li>
+</#items>
+</ul>
+</p>
+<hr>
+</#list>
+
+
 <@view.resourceCitationSection resource />
 
     <#if authenticatedUser?has_content>
@@ -550,19 +564,6 @@
         <@local_.afterFileInfo />
     </#if>
 
-    <#list viewableListResourceCollections![]>
-    <h3>This Resource is Part of the Following User-Generated Collections</h3>
-    <p>
-    <ul class="inline">
-        <#items as collection>
-    <li><a class="sml" href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a>
-        <#sep>&nbsp;&nbsp;&bull;</#sep></li>
-</#items>
-</ul>
-</p>
-<hr>
-</#list>
-
     <@view.accessRights>
     <div>
         <#if resource.embargoedFiles?? && !resource.embargoedFiles>
@@ -603,11 +604,13 @@
             </a>
             </div>
             </li>
+            <#if (authenticatedUser.id)?has_content && editable>
             <li class="media"><i class="icon-share-alt pull-left"></i>
             <div class="media-body">
-                    <a id="requestAccess" href="/collection/request/${id?c}">Share with...</a>
+                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Share with...</a>
             </div>
             </li>
+            </#if>
         </ul>
     <h3>Basic Information</h3>
 

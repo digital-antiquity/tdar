@@ -38,18 +38,7 @@
                     <tr>
                         <th><a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a></th>
                         <td>${collection.description!"no description available"}
-                          <ul class="inline">
-                            <li><i class="icon-hdd"></i> ${collection.unmanagedResources?size!0} Resources</li>
-                            <li><i class="icon-tasks"></i> ${collection.transientChildren?size!0} Child Collections</li>
-                            <li><i class="icon-user"></i> ${collection.authorizedUsers?size!0} Users</li>
-                            <li><i class="icon-circle-arrow-right" data-toggle="collapse" data-target="#details${collection.id?c}"></i> </li>
-                        </ul>
-                        <div id="details${collection.id?c}" class="collapse">
-                          <ul class="">
-                            <li><i class="icon-tasks"></i> <#list collection.transientChildren as child>${child.name}<#sep>&bull;</#sep></#list></li>
-                            <li><i class="icon-user"></i> <#list collection.authorizedUsers as user>${user.user.properName} (${user.generalPermission.name})<#sep>&bull;</#sep></#list></li>
-                        </ul>
-                        
+                        <@dash.collectionLegend collection />                        
                         </div>
                         </td>
                         <td><@moremenu collection /></td>

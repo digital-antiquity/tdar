@@ -39,37 +39,27 @@
             <thead>
             <tr>
                 <th>Name</th>
-                <th># of resources</th>
-                <th># of users</th>
+                <th>Description</th>
                 <th>action</th>
             </tr>
             </thead>
             <tbody>
             <#list allResourceCollections as collection>
                 <tr>
-                <td><a href="${collection.name}">${collection.name}</a></td>
-                <td>${collection.resources?size}</td>
-                <td>${collection.authorizedUsers?size}</td>
+                <td><a href="${collection.detailUrl}">${collection.name!'no name'}</a></td>
+                <td> <@dash.collectionLegend collection /></td>
                 <td>
-                    <div class="btn-group">
-                      <a class="btn btn-mini" href="${collection.detailUrl}">View</a>
+                    <div class="btn-group inline">
                       <a class="btn btn-mini" href="/share/${collection.id?c}/edit">Edit</a>
                       <a class="btn btn-mini" href="/share/delete?id=${collection.id?c}">Delete</a>
                     </div>
-                </td>
+                 </td>
                 </tr>
             </#list>
             </tbody>
         </table>
 
-        <#if sharedResourceCollections?? && !sharedResourceCollections.empty >
-        <div class="">
-            <h2>Collections Shared With You</h2>
-            <@common.listCollections collections=sharedResourceCollections />
-        </div>
-        </#if>
-
-        <table class="table">
+        <table class="table" id="allResources">
             <thead>
             	<tr>
                 <th>Name</th>

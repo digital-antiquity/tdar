@@ -7,8 +7,7 @@
       <li  <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>
       <li class="nav-header">Shares</li>
       <li  <@activeIf current "share" />><a href="/manage">Share</a></li>
-      <li><a href="#">Resources</a></li>
-      <li><a href="#">With Me</a></li>
+      <li><a href="/manage#allResources">Resources</a></li>
       <li class="nav-header">My Account</li>
       <li><a href="/entity/user/myprofile">Profile</a></li>
       <#if contributor>
@@ -59,6 +58,28 @@
         </ul>
     </div>
     </#list>
+
+</#macro>
+
+<#macro collectionLegend collection>
+        <ul class="inline">
+            <li title="# of resources"><i class="icon-file"></i> ${((collection.unmanagedResources?size)!0 + collection.resources?size!0)}</li>
+            <#local children= (collection.transientChildren?size)!0/>
+            <#local users= (collection.authorizedUsers?size)!0/>
+            
+            <#local folder = "icon-folder-close" />
+            <#if (children > 0)>
+                <#local folder="icon-folder-open" />
+            </#if>
+            <li title="# of collections"><i class="${folder}"></i> ${children}</li>
+            <li title="# of users"><i class="icon-user"></i> ${users}</li>
+            <#if (children + users > 0)><li><i class="icon-circle-arrow-right" data-toggle="collapse" data-target="#details${collection.id?c}"></i> </li></#if>
+        </ul>
+        <div id="details${collection.id?c}" class="collapse">
+          <ul class="">
+            <#list collection.transientChildren><li><i class="${folder}"></i> <#items as child>${child.name}<#sep>&bull;</#sep></#items></#list></li>
+            <#list collection.authorizedUsers><li><i class="icon-user"></i> <#items as user>${user.user.properName} (${user.generalPermission})<#sep>&bull;</#sep></#items></#list></li>
+        </ul>
 
 </#macro>
 
