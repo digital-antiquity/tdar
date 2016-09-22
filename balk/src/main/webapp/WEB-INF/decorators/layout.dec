@@ -33,7 +33,7 @@ ${head}
           <ul class="nav navbar-nav">
             <li class="active"><a href="#">Home</a></li>
             <li><a href="/setup/request">Setup</a></li>
-            <li><a href="#">hi ${authenticatedUser.username}</a></li>
+            <#if authenticatedUser?has_content><li><a href="#">hi ${authenticatedUser.username}</a></li></#if>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
