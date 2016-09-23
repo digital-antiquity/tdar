@@ -593,7 +593,7 @@
         	<@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
 		</#if>	
     </#if>
-        <ul class="inline">
+        <ul class="unstyled">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media"><i class="icon-envelope pull-left"></i>
             <div class="media-body">
@@ -607,9 +607,23 @@
             <#if (authenticatedUser.id)?has_content && editable>
             <li class="media"><i class="icon-share-alt pull-left"></i>
             <div class="media-body">
-                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Share with...</a>
+                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Share</a>
             </div>
             </li>
+
+            <li class="media"><i class="icon-star pull-left"></i>
+                <div class="media-body">
+                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Bookmark</a>
+                </div>
+            </li>
+
+
+            <li class="media"><i class="icon-folder-open pull-left"></i>
+                <div class="media-body">
+                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Add to Library</a>
+                </div>
+            </li>
+
             </#if>
         </ul>
     <h3>Basic Information</h3>
