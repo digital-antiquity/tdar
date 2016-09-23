@@ -16,7 +16,7 @@
 
 
 <div id="titlebar" parse="true">
-    <h2>My Library</h2>
+    <h1>Dashboard &raquo; <span class="red">My Library</span></h1>
 
 </div>
 <div class="row">
@@ -31,6 +31,7 @@
                 <th>Collection</th>
                 <th>Description</th>
                 <th></th>
+                <th></th>
             </tr>
             </thead>
                 <tbody>
@@ -38,9 +39,9 @@
                     <tr>
                         <th><a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a></th>
                         <td>${collection.description!"no description available"}
-                        <@dash.collectionLegend collection />                        
                         </div>
                         </td>
+                        <td><@dash.collectionLegend collection /> </td>
                         <td><@moremenu collection /></td>
                     </tr>
            </#list>
@@ -58,18 +59,8 @@
 
 </div>
 
-    <#macro moremenu collection="">
-    <div class=" pull-right">
-        <div class="btn-group">
-            <#if collection?has_content>
-            <a href="<@s.url value="${collection.detailUrl}"/>"class="btn btn-mini">View</a>
+    <#macro moremenu collection>
             <a href="<@s.url value="/collection/${collection.id?c}/edit"/>"class="btn btn-mini">Edit</a>
-            <#else>
-            <a href="<@s.url value="/"/>"class="btn btn-mini">View</a>
-            <a href="<@s.url value="/collection/0/edit"/>"class="btn btn-mini">Edit</a>
-            </#if>
-            </div>
-    </div>
 
     </#macro>
 

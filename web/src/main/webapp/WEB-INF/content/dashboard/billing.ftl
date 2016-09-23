@@ -37,7 +37,7 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>${authenticatedUser.properName}'s Billing Accounts</h1>
+    <h1>Dashboard &raquo; <span class="red">My Billing Accounts</span></h1>
 
 </div>
 

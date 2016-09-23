@@ -14,7 +14,7 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>Manage Rights &amp; Permissions</h1>
+    <h1>Dashboard &raquo; <span class="red">Manage Rights &amp; Permissions</span></h1>
 </div>
 <div class="row">
     <div class="span2">

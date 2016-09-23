@@ -14,7 +14,7 @@
 </head>
 
 <div id="titlebar" parse="true">
-    <h1>${authenticatedUser.properName}'s Dashboard</h1>
+        <h1>Dashboard &raquo; <span class="red">My Resources</span></h1>
 
         <@dash.headerNotifications />
 </div>

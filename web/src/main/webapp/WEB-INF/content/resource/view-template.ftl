@@ -611,6 +611,8 @@
             </div>
             </li>
 
+            <li><strong>Library</strong>
+                <ul class="unstyled">
             <li class="media"><i class="icon-star pull-left"></i>
                 <div class="media-body">
                     <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Bookmark</a>
@@ -620,10 +622,11 @@
 
             <li class="media"><i class="icon-folder-open pull-left"></i>
                 <div class="media-body">
-                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Add to Library</a>
+                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Add to a Collection</a>
                 </div>
             </li>
-
+            </ul>
+            </li>
             </#if>
         </ul>
     <h3>Basic Information</h3>

@@ -52,6 +52,18 @@
             </li>
         </ul>
         </#if>
+            <hr/>
+            
+            <ul class="unstyled-list">
+            <li>
+                <strong>Owner<br>
+                    <a href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
+            </li>
+        <li>
+            <strong>tDAR ID</strong><br>${id?c}
+        </li>
+    </ul>
+                
     </div>
 </#macro>
 

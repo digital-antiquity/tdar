@@ -15,7 +15,7 @@
 
 
 <div id="titlebar" parse="true">
-    <h2>My Bookmarks</h2>
+    <h1>Dashboard &raquo; <span class="red">My Bookmarks</span></h1>
 
 </div>
 <div class="row">
