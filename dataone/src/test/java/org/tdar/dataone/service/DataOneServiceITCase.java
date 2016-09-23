@@ -1,6 +1,6 @@
 package org.tdar.dataone.service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -23,9 +23,6 @@ import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
-import org.tdar.transform.ExtendedDcTransformer;
-
-import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
 
 public class DataOneServiceITCase extends AbstractIntegrationTestCase {
 
