@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -43,7 +44,8 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient AuthorizationService authorizationService;
-
+    private CollectionType type;
+    
     @Override
     public void prepare() {
         collection = getGenericService().find(HierarchicalCollection.class, getId());
@@ -71,7 +73,11 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
         if (collection != null) {
             allChildCollections = resourceCollectionService.getAllChildCollections(collection, HierarchicalCollection.class);
         } else {
-            allChildCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), HierarchicalCollection.class));
+            if (type == CollectionType.SHARED) {
+                allChildCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), SharedCollection.class));
+            } else {
+                allChildCollections.addAll(resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(), ListCollection.class));
+            }
         }
         getLogger().trace("accessible collections");
         List<Long> collectionIds = PersistableUtils.extractIds(allChildCollections);
@@ -109,5 +115,13 @@ public class ListCollectionApiAction extends AbstractJsonApiAction implements Pr
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public CollectionType getType() {
+        return type;
+    }
+
+    public void setType(CollectionType type) {
+        this.type = type;
     }
 }

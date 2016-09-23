@@ -16,7 +16,7 @@
                 var $next = $menu.next("ul.dropdown-menu");
                 $(".dropdown-menu").children(".extra").remove();
                 $next.append($("<li class='extra'><img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' /></li>"));
-                $.getJSON( "/api/collection/tree", function( data ) {
+                $.getJSON( "/api/collection/tree?type=LIST", function( data ) {
                     $(".dropdown-menu").children(".extra").remove();
                     var items = _buildCollectionTree(data);
                     $next.append(items);

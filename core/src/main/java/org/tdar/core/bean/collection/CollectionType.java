@@ -39,4 +39,16 @@ public enum CollectionType implements Localizable, PluralLocalizable {
     public String getLocaleKey() {
         return MessageHelper.formatPluralLocalizableKey(this);
     }
+
+    public Class<? extends ResourceCollection> getClassForType() {
+        switch (this) {
+            case INTERNAL:
+                return  InternalCollection.class;
+            case LIST:
+                return ListCollection.class;
+            case SHARED:
+                return SharedCollection.class;
+        }
+        return null;
+    }
 }
