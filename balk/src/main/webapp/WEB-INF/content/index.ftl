@@ -6,13 +6,13 @@
 <table class="table">
 <thead>
     <tr>
-        <th>extension</th> <th>path</th> <th colspan=3>to PDF</th> <th colspan=3>done PDF</th> <th colspan=4>to Upload</th>
+        <th>extension</th> <th>path</th> <th colspan=4>to PDF</th> <th colspan=4>done PDF</th> <th colspan=5>to Upload</th>
     </tr>
 <tr>
     <th></th> <th></th>
-    <th> date</th> <th> who</th> <th> size</th>
-    <th> date</th> <th> who</th> <th> size</th>
-    <th> date</th> <th> who</th> <th> size</th> <th> tDAR ID</th>
+    <th> date</th> <th> who</th> <th> size</th><th></th>
+    <th> date</th> <th> who</th> <th> size</th><th></th>
+    <th> date</th> <th> who</th> <th> size</th> <th> tDAR ID</th><th></th>
 </tr>
 </thead>
 <#assign _path = "/" />
@@ -32,7 +32,7 @@
 </#if>
 <tr>
 <td><span class="small label label-default">${row.first.extension}</span></td>
-<td>${path}</td>
+<td>${row.first.name}</td>
 	<@_printrow itemStatusReport row.toPdf/>
 	<@_printrow itemStatusReport row.doneOcr/>
 	<@_printrow itemStatusReport row.toUpload/>
