@@ -46,7 +46,7 @@
         if ($(element).is(':hidden')) {
             return true;
         } // skip validation if not showing
-        return value.match(/^((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])$/);
+        return value.match(/^|((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])$/);
     }, "you must include a valid 10/13 Digit ISBN");
 
     /**
