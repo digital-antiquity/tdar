@@ -60,8 +60,9 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         document.getInternalResourceCollection().getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, getBillingUser().getUsername()), GeneralPermissions.ADMINISTER_GROUP));
         Document newDoc = importService.bringObjectOntoSession(document, getAdminUser(), null, null, true);
         genericService.synchronize();
-        logger.debug("AU:{}",newDoc.getInternalResourceCollection().getAuthorizedUsers());
-        assertTrue(newDoc.getInternalResourceCollection().getAuthorizedUsers().contains(getBillingUser()));
+        Set<AuthorizedUser> authorizedUsers = newDoc.getInternalResourceCollection().getAuthorizedUsers();
+        logger.debug("AU:{}",authorizedUsers);
+        assertEquals(authorizedUsers.iterator().next().getUser(), getBillingUser());
     }
 
 
