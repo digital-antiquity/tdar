@@ -1,13 +1,13 @@
 package org.tdar.search.query.part;
 
-import java.util.List;
+import java.util.Collection;
 
 import org.apache.lucene.queryparser.classic.QueryParser.Operator;
 import org.tdar.search.query.QueryFieldNames;
 
 public class StringAutocompletePart extends FieldQueryPart<String> {
 
-    public StringAutocompletePart(String name, List<String> list) {
+    public StringAutocompletePart(String name, Collection<String> list) {
         this.setFieldName(name);
         this.getFieldValues().addAll(list);
     }
