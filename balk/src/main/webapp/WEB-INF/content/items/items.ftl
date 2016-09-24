@@ -1,0 +1,83 @@
+<#setting url_escaping_charset="UTF-8">
+
+        <div class="row">
+          <div class="col-md-9" role="main">
+
+<table class="table">
+<thead>
+    <tr>
+        <th>extension</th> <th>path</th> <th>date</th><th>size</th><th colspan=4>to PDF</th> <th colspan=4>done PDF</th> <th colspan=5>to Upload</th>
+    </tr>
+<tr>
+    <th></th> <th></th>
+    <th></th> <th></th>
+    <th> date</th> <th> who</th> <th> size</th><th></th>
+    <th> date</th> <th> who</th> <th> size</th><th></th>
+    <th> date</th> <th> who</th> <th> size</th> <th> tDAR ID</th><th></th>
+</tr>
+</thead>
+<#assign _path = "/" />
+
+<#list itemStatusReport?keys as key>
+<#assign row = itemStatusReport[key] />
+<#assign path = key />
+<#if !row.usingWorkflow>
+    <#assign path = row.first.path/> 
+</#if>
+<#assign _parentPath = (path?keep_before_last("/"))!'' />
+
+<#if (_parentPath != _path) >
+<tr>
+    <th colspan=50>${_parentPath}</th>
+    <#assign _path = path?keep_before_last("/") />
+</#if>
+<tr>
+<td><span class="small label label-default">${row.first.extension}</span></td>
+<td>${row.first.name}</td>
+<td>${row.first.dateModified?string.short}</td>
+<td>${row.first.size!''}</td>
+	<@_printrow itemStatusReport row row.toPdf/>
+	<@_printrow itemStatusReport row row.doneOcr/>
+	<@_printrow itemStatusReport row row.toUpload/>
+    <td>
+        <#if (row.toUpload.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarId?c}">${row.toUpload.tdarId?c}</a></#if>
+    </td>
+</tr>
+</#list>
+</table>
+</div>
+</div>
+
+<#macro _printrow report row item=test>
+<#if item?has_content>
+    <td><#if item.dateModified?is_date><a href="https://www.dropbox.com/work${item.parentDirName?ensure_starts_with("/")?url_path}?preview=${item.name}" target="_blank">${item.dateModified?string.short}</#if></td>
+    <td>${item.ownerId!''} </td>
+    <td>${item.size!''}</td>
+<#else>
+    <td></td>
+    <td></td>
+    <td></td>
+</#if>
+<td style="border-right:1px solid #999">
+<#if row.nextPhase?has_content && item?has_content >
+	<@s.form action="/approve/?" method="POST">
+		<@s.hidden name="id" value="${item.dropboxId}"/>
+		<@s.hidden name="phase" value="${row.nextPhase}"/>
+		<@s.hidden name="path" value="${path}"/>
+		<@s.submit name="approve" value="Approve" />
+	</@s.form>
+</#if>
+</td>
+</#macro>
+
+<#macro _blankrow>
+<td></td>
+<td></td>
+<td></td>
+</#macro>
+<script src="<@s.url value="/components/StickyTableHeaders/js/jquery.stickytableheaders.js"/>"/>
+<script>
+$(document).ready(function() {
+    $("table").stickyTableHeaders();
+});
+</script>

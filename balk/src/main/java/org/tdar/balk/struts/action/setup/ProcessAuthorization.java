@@ -14,16 +14,18 @@ import org.tdar.balk.service.UserService;
 import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.dropbox.DropboxConfig;
 
 import com.dropbox.core.DbxException;
 import com.opensymphony.xwork2.Preparable;
 
-@ParentPackage("default")
+@ParentPackage("secured")
 @Namespace("/setup")
 @Component
 @Scope("prototype")
 @PostOnly
+@WriteableSession
 public class ProcessAuthorization extends AbstractAuthenticatedAction implements Preparable {
 
     private static final long serialVersionUID = 3312980413167535971L;

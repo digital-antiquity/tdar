@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
+import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.dao.ItemDao;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -51,6 +52,8 @@ import org.tdar.utils.dropbox.ToPersistListener;
 import com.dropbox.core.DbxException;
 import com.dropbox.core.v2.files.RelocationErrorException;
 import com.hp.hpl.jena.sparql.function.library.substr;
+
+import java.util.Arrays;
 
 @Component
 public class ItemService {
@@ -279,10 +282,17 @@ public class ItemService {
         return itemDao.findByDropboxId(id, dir);
     }
 
-    public void move(AbstractDropboxItem item, Phases phase)
+    @Transactional(readOnly = false)
+    public void move(AbstractDropboxItem item, Phases phase, DropboxUserMapping userMapping)
             throws RelocationErrorException, DbxException, FileNotFoundException, URISyntaxException, IOException {
-        DropboxClient client = new DropboxClient();
+        DropboxClient client = new DropboxClient(userMapping);
         client.move(item.getPath(), phase.mutatePath(item.getPath()));
+    }
+
+    @Transactional(readOnly = true)
+    public List<String> listTopLevelPaths() {
+        return Arrays.asList("");
+        
     }
 
 }

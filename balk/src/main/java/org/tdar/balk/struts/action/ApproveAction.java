@@ -1,18 +1,22 @@
 package org.tdar.balk.struts.action;
 
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
+import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.service.ItemService;
 import org.tdar.balk.service.Phases;
+import org.tdar.balk.service.UserService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 
 import com.opensymphony.xwork2.Preparable;
 
-@ParentPackage("default")
+@ParentPackage("secured")
 @Namespace("/approve")
 @Component
 @Scope("prototype")
@@ -23,17 +27,23 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
 
     @Autowired
     private ItemService itemService;
+    @Autowired
+    private UserService userService;
 
     private String id;
 
     private AbstractDropboxItem item;
     private Phases phase;
-
+    private String path;
+    private DropboxUserMapping userMapping;
+    
     @Override
     public void prepare() throws Exception {
         setItem(itemService.findByDropboxId(id, false));
+        userMapping = userService.findUser(getAuthenticatedUser());
     }
 
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/${path}")})
     @Override
     public String execute() throws Exception {
         try {
@@ -67,6 +77,14 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
 
     public void setPhase(Phases phase) {
         this.phase = phase;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
     }
 
 }

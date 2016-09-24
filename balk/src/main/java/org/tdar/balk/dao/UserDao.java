@@ -1,5 +1,7 @@
 package org.tdar.balk.dao;
 
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -23,12 +25,16 @@ public class UserDao {
     }
 
     public DropboxUserMapping findUserForUsername(TdarUser user) {
-        String query = "from DropboxUserMapping where lower(username)=lower(:username)";
+        String query = "from DropboxUserMapping map where lower(map.username)=lower(:username)";
         Query query2 = getCurrentSession().createQuery(query);
         query2.setParameter("username", user.getUsername());
         query2.setFirstResult(0);
         query2.setMaxResults(1);
-        return (DropboxUserMapping) query2.uniqueResult();
+        List list = query2.list();
+        if (list.size() == 0) {
+            return null;
+        }
+        return (DropboxUserMapping) list.get(0);
 
     }
 }

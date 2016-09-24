@@ -15,7 +15,7 @@ import org.tdar.utils.dropbox.DropboxConfig;
 
 import com.opensymphony.xwork2.Preparable;
 
-@ParentPackage("default")
+@ParentPackage("secured")
 @Namespace("/setup")
 @Component
 @Scope("prototype")

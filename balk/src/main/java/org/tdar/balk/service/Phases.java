@@ -19,20 +19,35 @@ public enum Phases {
         return null;
     }
 
+    public Integer getOrd() {
+        switch (this) {
+            case TO_PDFA:
+                return 1;
+            case DONE_PDFA:
+                return 2;
+            case UPLOAD_TDAR:
+                return 3;
+        }
+        return null;
+    }
+
     public void updateStatus(WorkflowStatusReport status, DropboxFile file) {
         switch (this) {
             case TO_PDFA:
                 if (StringUtils.containsIgnoreCase(file.getPath(), this.getPath())) {
                     status.setToPdf(file);
                 }
+                break;
             case DONE_PDFA:
                 if (StringUtils.containsIgnoreCase(file.getPath(), this.getPath())) {
                     status.setDoneOcr(file);
                 }
+                break;
             case UPLOAD_TDAR:
                 if (StringUtils.containsIgnoreCase(file.getPath(), this.getPath())) {
                     status.setToUpload(file);
                 }
+                break;
         }
     }
 

@@ -154,7 +154,9 @@ public class DropboxClient {
     }
 
     public void move(String from, String to) throws RelocationErrorException, DbxException {
+        logger.debug("Moving {} -> {}",from, to);
         Metadata move = client.files().move(from, to);
+        logger.debug("\t{}",move);
     }
     
     public Boolean getDebug() {

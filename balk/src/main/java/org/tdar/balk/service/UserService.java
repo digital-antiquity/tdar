@@ -22,11 +22,26 @@ public class UserService {
     private UserDao userDao;
 
     @Transactional(readOnly=false)
-    public void saveTokenFor(TdarUser user, String token) throws Exception {
+    public void saveTokenFor(TdarUser user, String token) {
+        try {
         DropboxUserMapping mapping = userDao.findUserForUsername(user);
+        if (mapping == null) {
+            mapping = new DropboxUserMapping();
+            mapping.setUsername(user.getUsername());
+            mapping.setTdarId(user.getId());
+        }
         mapping.setToken(token);
         DropboxClient client = new DropboxClient(mapping);
         mapping.setEmail(client.getUserAccount().getEmail());
+        mapping.setDropboxUserId(client.getUserAccount().getAccountId());
         genericDao.saveOrUpdate(mapping);
+        } catch (Exception e) {
+            logger.error("{}",e,e);
+        }
+    }
+
+    @Transactional(readOnly=false)
+    public DropboxUserMapping findUser(TdarUser authenticatedUser) {
+        return userDao.findUserForUsername(authenticatedUser);
     }
 }
