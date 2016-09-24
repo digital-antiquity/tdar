@@ -46,7 +46,7 @@
         if ($(element).is(':hidden')) {
             return true;
         } // skip validation if not showing
-        return value.match(/^(((\d+)-?(\d+)-?(\d+)-?([\dX]))|((978|979)-?(\d{9}[\dXx]))|)$/);
+        return value.match(/^((978[\--– ])?[0-9][0-9\--– ]{10}[\--– ][0-9xX])|((978)?[0-9]{9}[0-9Xx])$/);
     }, "you must include a valid 10/13 Digit ISBN");
 
     /**
@@ -56,7 +56,7 @@
         if ($(element).is(':hidden')) {
             return true;
         }// skip validation if not showing
-        return value.match(/^((\d{4})-?(\d{3})(\d|X|x)|)$/);
+        return value.match(/^(((\d{4})-?(\d{3})|(\d{7}))(\d|X|x)|)$/);
     }, "you must include a valid 8 Digit ISSN");
     
     $.validator.addMethod("couponFilesOrSpace", function(value, element) {
