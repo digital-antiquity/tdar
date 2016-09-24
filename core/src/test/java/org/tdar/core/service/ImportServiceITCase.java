@@ -1,5 +1,7 @@
 package org.tdar.core.service;
 
+import static org.junit.Assert.*;
+
 import java.util.Set;
 
 import org.junit.Assert;
@@ -11,7 +13,11 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.DocumentType;
 
 public class ImportServiceITCase extends AbstractIntegrationTestCase {
 
@@ -41,7 +47,23 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         assertNotEquals(coverageDates.iterator().next().getId(), coverageDates2.iterator().next().getId());
         logger.debug(serializationService.convertToXML(newDoc));
     }
+
     
+    @Test
+    @Rollback
+    public void testImportWithAuthorizedUser() throws Exception {
+        Document document = new Document();
+        document.setTitle("test");
+        document.setDescription("test description");
+        document.setDocumentType(DocumentType.BOOK);
+        document.getResourceCollections().add(new ResourceCollection("internal collection","intenral", SortOption.TITLE, CollectionType.INTERNAL, true, getUser()));
+        document.getInternalResourceCollection().getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, getBillingUser().getUsername()), GeneralPermissions.ADMINISTER_GROUP));
+        Document newDoc = importService.bringObjectOntoSession(document, getAdminUser(), null, null, true);
+        genericService.synchronize();
+        logger.debug("AU:{}",newDoc.getInternalResourceCollection().getAuthorizedUsers());
+        assertTrue(newDoc.getInternalResourceCollection().getAuthorizedUsers().contains(getBillingUser()));
+    }
+
 
     @SuppressWarnings("deprecation")
     @Test
