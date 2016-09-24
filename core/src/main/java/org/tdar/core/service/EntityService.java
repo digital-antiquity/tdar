@@ -287,12 +287,21 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
         }
 
         Person blessedPerson = null;
+        if (transientPerson instanceof TdarUser) {
+            String username = ((TdarUser) transientPerson).getUsername();
+            if (StringUtils.isNotBlank(username)) {
+                blessedPerson = findByUsername(username);
+            }
+            logger.debug("find by username: {}, {}", username, blessedPerson);
+        }
+        
         String email = transientPerson.getEmail();
-        if (StringUtils.isNotBlank(transientPerson.getEmail())) {
-            blessedPerson = findByEmail(transientPerson.getEmail());
+        if (StringUtils.isNotBlank(email)  && blessedPerson == null) {
+            blessedPerson = findByEmail(email);
         } else {
             transientPerson.setEmail(null);// make sure it's null and not just blank or empty
         }
+
 
         // didn't find by email? cast the net a little wider...
         if (blessedPerson == null) {
@@ -573,6 +582,15 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
     @Transactional(readOnly=true)
     public List<ResourceRevisionLog> findChangesForUser(TdarUser user, Date date) {
         return getDao().findChangesForUser(user, date);
+    }
+
+    @Transactional(readOnly=true)
+    public TdarUser findUser(TdarUser user) {
+        TdarUser found = (TdarUser) findPerson(user);
+        if (PersistableUtils.isNotNullOrTransient(found)) {
+            return found;
+        }
+        return null;
     }
 
 }

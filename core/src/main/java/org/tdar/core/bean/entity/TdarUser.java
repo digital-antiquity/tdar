@@ -14,9 +14,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Check;
 import org.hibernate.annotations.Type;
 import org.hibernate.validator.constraints.Length;
@@ -271,4 +273,9 @@ public class TdarUser extends Person {
         this.userAgent = userAgent;
     }
 
+    @Transient
+    @Override
+    public boolean hasNoPersistableValues() {
+        return StringUtils.isBlank(username) && super.hasNoPersistableValues();
+    }
 }
