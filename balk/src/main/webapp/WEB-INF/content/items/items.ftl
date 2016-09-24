@@ -28,11 +28,11 @@
 
 <#if (_parentPath != _path) >
 <tr>
-    <th colspan=50>${_parentPath}</th>
+    <th colspan=50 style="background:#efefef">${_parentPath}</th>
     <#assign _path = path?keep_before_last("/") />
 </#if>
 <tr>
-<td><span class="small label label-default">${row.first.extension}</span></td>
+<td style="padding:1em;text-align:center"><span class="label label-default label-sm">${row.first.extension}</span></td>
 <td>${row.first.name}</td>
 <td>${row.first.dateModified?string.short}</td>
 <td>${row.first.size!''}</td>

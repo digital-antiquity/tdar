@@ -47,7 +47,7 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
     @Override
     public String execute() throws Exception {
         try {
-            itemService.move(item, phase);
+            itemService.move(item, phase, userMapping);
         } catch (Exception e) {
             getLogger().error("{}", e, e);
             return INPUT;
