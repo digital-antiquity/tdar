@@ -42,14 +42,13 @@ public class DataOneDao {
     @Autowired
     private GenericDao genericDao;
 
-    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list) {
+    public List<ListObjectEntry> findUpdatedResourcesWithDOIs(Date start, Date end, String formatId, String identifier, ObjectList list, int count, int startNum) {
         SQLQuery query = setupListObjectQuery(LIST_OBJECT_QUERY_COUNT, start, end, formatId, identifier);
         if (DataOneConfiguration.getInstance().isLimited()) {
             query = setupListObjectQuery(LIST_OBJECT_QUERY_COUNT_LIMITED, start, end, formatId, identifier);
         }
-        
         list.setTotal(((Number)query.uniqueResult()).intValue());
-        if (list.getCount() == 0) {
+        if (count == 0) {
             return new ArrayList<>();
         }
 
@@ -57,14 +56,15 @@ public class DataOneDao {
         if (DataOneConfiguration.getInstance().isLimited()) {
             query = setupListObjectQuery(LIST_OBJECT_QUERY_LIMITED, start, end, formatId, identifier);
         }
-        query.setMaxResults(list.getCount());
-        query.setFirstResult(list.getStart());
+        query.setMaxResults(count);
+        query.setFirstResult(startNum);
         List<ListObjectEntry> toReturn = new ArrayList<>();
         for (Object wrap : query.list()) {
             Object[] obj = (Object[])wrap;
             long longValue = ((BigInteger)obj[2]).longValue();
             toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], longValue, (Date)obj[3],null,null,null,null));
         }
+        logger.debug("return: {}:", toReturn);
         return toReturn;
     }
 

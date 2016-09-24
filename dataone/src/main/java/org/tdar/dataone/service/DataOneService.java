@@ -20,7 +20,7 @@ import org.dataone.service.types.v1.AccessPolicy;
 import org.dataone.service.types.v1.Checksum;
 import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
-import org.dataone.service.types.v1.Node;
+import org.dataone.service.types.v2.Node;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v1.NodeReplicationPolicy;
 import org.dataone.service.types.v1.NodeState;
@@ -34,7 +34,7 @@ import org.dataone.service.types.v1.Service;
 import org.dataone.service.types.v1.Services;
 import org.dataone.service.types.v1.Subject;
 import org.dataone.service.types.v1.Synchronization;
-import org.dataone.service.types.v1.SystemMetadata;
+import org.dataone.service.types.v2.SystemMetadata;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
@@ -265,7 +265,7 @@ public class DataOneService implements DataOneConstants {
         list.setCount(count);
         list.setStart(start);
 
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list);
+        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list, count, start);
         logger.trace("{}", resources);
         // for each entry we find in the database, create a packaged response
         for (ListObjectEntry entry : resources) {
@@ -315,7 +315,6 @@ public class DataOneService implements DataOneConstants {
         if (object == null) {
             return null;
         }
-
         InformationResource resource = object.getTdarResource();
         policy.getAllowList().add(DataOneUtils.createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
@@ -333,6 +332,7 @@ public class DataOneService implements DataOneConstants {
         metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
         metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
+        metadata.setSeriesId(DataOneUtils.createIdentifier(object.getTdarResource().getId().toString()));
         metadata.setIdentifier(DataOneUtils.createIdentifier(object.getIdentifier()));
         // metadata.setObsoletedBy(value);
         // metadata.setObsoletes(value);
@@ -418,6 +418,7 @@ public class DataOneService implements DataOneConstants {
             }
             
             resp.setIdentifier(id_);
+            resp.setTdarResource(ir);
 
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest:" + id_, e);
