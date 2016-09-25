@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -30,8 +31,12 @@ import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
 import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.dao.ItemDao;
+import org.tdar.balk.dao.UserDao;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.AuthorizedUser;
+import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
 import org.tdar.core.bean.resource.Image;
@@ -50,10 +55,9 @@ import org.tdar.utils.dropbox.DropboxItemWrapper;
 import org.tdar.utils.dropbox.ToPersistListener;
 
 import com.dropbox.core.DbxException;
+import com.dropbox.core.v2.files.Metadata;
 import com.dropbox.core.v2.files.RelocationErrorException;
-import com.hp.hpl.jena.sparql.function.library.substr;
-
-import java.util.Arrays;
+import com.dropbox.core.v2.users.BasicAccount;
 
 @Component
 public class ItemService {
@@ -64,6 +68,8 @@ public class ItemService {
 
     @Autowired
     EmailService emailService;
+    @Autowired
+    UserDao userDao;
 
     @Autowired
     private GenericDao genericDao;
@@ -118,7 +124,10 @@ public class ItemService {
         }
         AbstractDropboxItem item = itemDao.findByDropboxId(dropboxItemWrapper.getId(), dropboxItemWrapper.isDir());
         if (item != null) {
-            logger.trace("{} {}", dropboxItemWrapper.getPath(), item);
+            logger.debug("{} {}", dropboxItemWrapper.getPath(), item);
+            //fixme: better handling of "move/delete"
+            item.setDropboxId("deleted" + item);
+            genericDao.saveOrUpdate(item);
             return;
         }
         logger.debug("{}", dropboxItemWrapper.getFullPath());
@@ -198,7 +207,13 @@ public class ItemService {
         File actualFile = new File(TdarConfiguration.getInstance().getTempDirectory(), file.getName());
         FileOutputStream fos = new FileOutputStream(actualFile);
         client.getFile(file.getPath(), fos);
-        String docXml = makeXml(actualFile, file.getName(), file.getExtension(), StringUtils.join(tree, "/"));
+        BasicAccount account = client.getAccount(file.getOwnerId());
+        DropboxUserMapping mapping = userDao.getUserForDropboxAccount(account);
+        String username = null;
+        if (mapping != null) {
+            username = mapping.getUsername();
+        }
+        String docXml = makeXml(actualFile, file.getName(), file.getExtension(), StringUtils.join(tree, "/"), username);
         logger.trace(docXml);
         if (docXml == null) {
             return;
@@ -210,7 +225,7 @@ public class ItemService {
         }
     }
 
-    private String makeXml(File file, String filename, String extension, String collection)
+    private String makeXml(File file, String filename, String extension, String collection, String username)
             throws JAXBException, InstantiationException, IllegalAccessException {
         Class<? extends Resource> cls = Resource.class;
         switch (extension.toLowerCase()) {
@@ -250,6 +265,9 @@ public class ItemService {
         object.setDate(2016);
         ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
         rc.setHidden(true);
+        if (StringUtils.isNotBlank(username)) {
+            rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
+        }
         rc.setName(collection);
         rc.setDescription("(from dropbox)");
         object.getResourceCollections().add(rc);
@@ -284,15 +302,21 @@ public class ItemService {
 
     @Transactional(readOnly = false)
     public void move(AbstractDropboxItem item, Phases phase, DropboxUserMapping userMapping)
-            throws RelocationErrorException, DbxException, FileNotFoundException, URISyntaxException, IOException {
+            throws Exception {
         DropboxClient client = new DropboxClient(userMapping);
-        client.move(item.getPath(), phase.mutatePath(item.getPath()));
+        Metadata move = client.move(item.getPath(), phase.mutatePath(item.getPath()));
+        client = new DropboxClient();
+        ToPersistListener listener = new ToPersistListener(this);
+        client.processMetadataItem(listener, move);
+        logger.debug("storing: {} {}", listener,listener.getWrappers());
+        store(listener);
+
     }
 
     @Transactional(readOnly = true)
     public List<String> listTopLevelPaths() {
         return Arrays.asList("");
-        
+
     }
 
 }

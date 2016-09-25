@@ -13,6 +13,7 @@ import org.tdar.balk.service.ItemService;
 import org.tdar.balk.service.Phases;
 import org.tdar.balk.service.UserService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -20,6 +21,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/approve")
 @Component
 @Scope("prototype")
+@WriteableSession
 @PostOnly
 public class ApproveAction extends AbstractAuthenticatedAction implements Preparable {
 

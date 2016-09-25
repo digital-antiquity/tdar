@@ -30,7 +30,7 @@ public class BalkScheduledProcessService {
     @Autowired
     private ItemService itemService;
     
-    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    @Scheduled(fixedDelay = ONE_MIN_MS)
     public void cronPollingQueue() {
         DropboxClient client;
         try {
@@ -44,7 +44,7 @@ public class BalkScheduledProcessService {
         }
     }
 
-    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    @Scheduled(fixedDelay = ONE_MIN_MS)
     @Transactional(readOnly=false)
     public void cronPollingStatsQueue() {
         try {

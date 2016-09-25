@@ -2,7 +2,6 @@ package org.tdar.utils.dropbox;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -20,13 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.balk.bean.DropboxUserMapping;
 
-import com.dropbox.core.DbxAppInfo;
-import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxRequestConfig.Builder;
-import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.DownloadErrorException;
 import com.dropbox.core.v2.files.FileMetadata;
@@ -102,18 +96,7 @@ public class DropboxClient {
 
         while (true) {
             for (Metadata metadata : result.getEntries()) {
-                if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
-                    continue;
-                }
-
-                DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
-                if (listener != null) {
-                    try {
-                        listener.consume(fileWrapper);
-                    } catch (Exception e) {
-                        logger.error("{}", e, e);
-                    }
-                }
+                processMetadataItem(listener, metadata);
             }
 
             if (!result.getHasMore()) {
@@ -126,6 +109,24 @@ public class DropboxClient {
         String cursor2 = result.getCursor();
         logger.debug("new cursor:{}", cursor2);
         setCurrentCursor(cursor2);
+    }
+
+    public DropboxItemWrapper processMetadataItem(MetadataListener listener, Metadata metadata) {
+        logger.trace("{}", metadata);
+        if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
+            return null;
+        }
+
+        DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
+        if (listener != null) {
+            try {
+                logger.debug("consume: {}", fileWrapper);
+                listener.consume(fileWrapper);
+            } catch (Exception e) {
+                logger.error("{}", e, e);
+            }
+        }
+        return fileWrapper;
     }
 
     private Map<String, BasicAccount> cachedUsers = new HashMap<>();
@@ -153,10 +154,11 @@ public class DropboxClient {
 
     }
 
-    public void move(String from, String to) throws RelocationErrorException, DbxException {
+    public Metadata move(String from, String to) throws RelocationErrorException, DbxException {
         logger.debug("Moving {} -> {}",from, to);
         Metadata move = client.files().move(from, to);
-        logger.debug("\t{}",move);
+        logger.trace("\t{}",move);
+        return move;
     }
     
     public Boolean getDebug() {
