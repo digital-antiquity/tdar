@@ -7,38 +7,6 @@ th {border-right:1px solid #DDD}
 <#-- for trying to do things as a columns: ${resource['resourceType']} -->
 <#assign properties=['id','resourceType','title','description','primaryCreators','activeIndividualAndInstitutionalCredit','resourceProviderInstitution','project','sharedResourceCollections','activeInformationResourceFiles','activeInvestigationTypes','activeMaterialTypes','activeSiteNameKeywords','activeSiteTypeKeywords','activeTemporalKeywords','activeOtherKeywords','activeGeographicKeywords','activeCultureKeywords'] />
 
-
-<table class="table">
-    <thead>
-    <tr>
-    <#list properties as prop>
-        <th>${prop}</th>
-    </#list>    
-    </tr>
-</thead>
-<tbody>
-     <#list resources as resource>
-    <tr>
-    <#list properties as prop>
-            <td>
-                <#if resource[prop]?? >
-                <#assign val=resource[prop] />
-                <#if val?is_number >
-                ${val?c}
-                <#else>
-                ${val}
-                </#if>
-                <#if prop == 'resourceType' && resource.resourceType.document>
-                    (${resource.documentType})
-                </#if>
-                </#if>
-            </td>
-         </#list>
-    </tr>
-    </#list>
-</tbody>
-</table>
-
 <table class="table">
     <tr>
         <th>Id:</th>
@@ -112,15 +80,29 @@ th {border-right:1px solid #DDD}
         <th>Investigation Types:</th>
         <#list resources as resource>
         <td>
-            ${resource.activeInvestigationTypes}
+            <#list resource.activeInvestigationTypes as it>
+                <#if investigationTypes?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
     <tr>
         <th>Material Keywords:</th>
         <#list resources as resource>
-        <td>
-            ${resource.activeMaterialKeywords}
+    <td>
+            <#list resource.activeMaterialKeywords as it>
+                <#if material?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
@@ -128,7 +110,14 @@ th {border-right:1px solid #DDD}
         <th>Culture Keywords:</th>
         <#list resources as resource>
         <td>
-            ${resource.activeCultureKeywords}
+            <#list resource.activeCultureKeywords as it>
+                <#if cultures?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
@@ -136,7 +125,14 @@ th {border-right:1px solid #DDD}
         <th>Site Name Keywords:</th>
         <#list resources as resource>
         <td>
-            ${resource.activeSiteNameKeywords}
+            <#list resource.activeSiteNameKeywords as it>
+                <#if siteNames?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
@@ -144,7 +140,14 @@ th {border-right:1px solid #DDD}
         <th>Site Type Keywords:</th>
         <#list resources as resource>
         <td>
-            ${resource.activeSiteTypeKeywords}
+            <#list resource.activeSiteTypeKeywords as it>
+                <#if siteTypes?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
@@ -152,7 +155,14 @@ th {border-right:1px solid #DDD}
         <th>Geographic Keywords:</th>
         <#list resources as resource>
         <td>
-            ${resource.activeGeographicKeywords}
+            <#list resource.activeGeographicKeywords as it>
+                <#if geographic?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
@@ -160,15 +170,14 @@ th {border-right:1px solid #DDD}
         <th>Temporal Keywords:</th>
         <#list resources as resource>
         <td>
-            ${resource.activeTemporalKeywords}
-        </td>
-        </#list>
-    </tr>
-    <tr>
-        <th>Site Type Keywords:</th>
-        <#list resources as resource>
-        <td>
-            ${resource.activeSiteTypeKeywords}
+            <#list resource.activeTemporalKeywords as it>
+                <#if temporal?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
         </td>
         </#list>
     </tr>
