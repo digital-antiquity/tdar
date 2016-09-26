@@ -3,31 +3,42 @@ package org.tdar.balk.struts.action.items;
 import java.util.TreeMap;
 
 import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.service.ItemService;
+import org.tdar.balk.service.UserService;
 import org.tdar.balk.service.WorkflowStatusReport;
 import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
+
+import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
 @Namespace("/items")
 @Component
 @Scope("prototype")
-public class ItemsAction extends AbstractAuthenticatedAction {
+public class ItemsAction extends AbstractAuthenticatedAction implements Preparable {
 
     private static final long serialVersionUID = -4366032864518820991L;
 
     @Autowired
     private ItemService itemService;
 
-    private TreeMap<String, WorkflowStatusReport> itemStatusReport;
+    @Autowired
+    private UserService userService;
 
+    private TreeMap<String, WorkflowStatusReport> itemStatusReport;
+    private DropboxUserMapping userInfo;
     private String path;
+    
+    @Override
+    public void prepare() throws Exception {
+        userInfo = userService.findUser(getAuthenticatedUser());
+    }
     
     @Action(value="" , results={@Result(name=SUCCESS, type=FREEMARKER, location="items.ftl")})
     public String execute() throws Exception {
@@ -49,5 +60,13 @@ public class ItemsAction extends AbstractAuthenticatedAction {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public DropboxUserMapping getUserInfo() {
+        return userInfo;
+    }
+
+    public void setUserInfo(DropboxUserMapping userInfo) {
+        this.userInfo = userInfo;
     }
 }

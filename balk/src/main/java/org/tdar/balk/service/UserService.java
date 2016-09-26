@@ -42,6 +42,9 @@ public class UserService {
 
     @Transactional(readOnly=false)
     public DropboxUserMapping findUser(TdarUser authenticatedUser) {
+        if (authenticatedUser == null) {
+            return null;
+        }
         return userDao.findUserForUsername(authenticatedUser);
     }
 }

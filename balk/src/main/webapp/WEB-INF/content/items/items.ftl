@@ -36,9 +36,9 @@
 <td>${row.first.name}</td>
 <td>${row.first.dateModified?string.short}</td>
 <td>${row.first.size!''}</td>
-	<@_printrow itemStatusReport row row.toPdf/>
-	<@_printrow itemStatusReport row row.doneOcr/>
-	<@_printrow itemStatusReport row row.toUpload/>
+	<@_printrow itemStatusReport row "TO_PDFA" />
+	<@_printrow itemStatusReport row "DONE_PDFA" row.doneOcr/>
+	<@_printrow itemStatusReport row "UPLOAD_TDAR" row.toUpload/>
     <td>
         <#if (row.toUpload.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarId?c}">${row.toUpload.tdarId?c}</a></#if>
     </td>
@@ -48,7 +48,17 @@
 </div>
 </div>
 
-<#macro _printrow report row item=test>
+<#macro _printrow report row phase>
+<#if phase == 'TO_PDFA'>
+    <#local item=row.toPdf />
+</#if>
+<#if phase == 'DONE_PDFA'>
+    <#local item=row.doneOcr />
+</#if>
+<#if phase == 'UPLOAD_TDAR'>
+    <#local item=row.toUpload />
+</#if>
+
 <#if item?has_content>
     <td><#if item.dateModified?is_date><a href="https://www.dropbox.com/work${item.parentDirName?ensure_starts_with("/")?url_path}?preview=${item.name}" target="_blank">${item.dateModified?string.short}</#if></td>
     <td>${item.ownerId!''} </td>
@@ -59,7 +69,7 @@
     <td></td>
 </#if>
 <td style="border-right:1px solid #999">
-<#if row.nextPhase?has_content && item?has_content >
+<#if row.nextPhase?has_content && item?has_content && userInfo?has_content && userInfo.token?has_content && row.latestPhase == phase>
 	<@s.form action="/approve/?" method="POST">
 		<@s.hidden name="id" value="${item.dropboxId}"/>
 		<@s.hidden name="phase" value="${row.nextPhase}"/>
