@@ -239,11 +239,11 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     }
 
     public int getMaxOutputColumns() {
-        return TdarConfiguration.getInstance().getDataIntegrationMaxOutputColumns();
+        return TdarConfiguration.getInstance().getDataIntegrationMaximumColumns();
     }
 
     public int getMaxDataTables() {
-        return TdarConfiguration.getInstance().getDataIntegrationMaxDataTables();
+        return TdarConfiguration.getInstance().getDataIntegrationMaximumDataTables();
     }
 
 

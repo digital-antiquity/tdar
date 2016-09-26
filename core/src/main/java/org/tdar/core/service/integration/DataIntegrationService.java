@@ -18,6 +18,7 @@ import java.util.SortedMap;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -454,6 +455,14 @@ public class DataIntegrationService {
                 col.buildNodeChildHierarchy(ontologyNodeDao);
             }
         }
+
+        // if we're in a weekday and restricting access and have massive integration
+        if ((TdarConfiguration.getInstance().restrictBigIntegrationsDuringWeek() && (DateTime.now().getDayOfWeek() < 6)) &&
+                (TdarConfiguration.getInstance().getDataIntegrationMaximumColumns() < integrationContext.getIntegrationColumns().size() ||
+                        TdarConfiguration.getInstance().getDataIntegrationMaximumDataTables() < integrationContext.getDataTables().size())) {
+            throw new TdarRecoverableRuntimeException("dataIntegrationService.invalid_integration_at_this_time", workflow.getErrors());
+        }
+
         // logger.debug(serializationService.convertToXML(integrationContext));
 
         integrationContext.setCreator(authenticatedUser);
