@@ -9,7 +9,7 @@ import org.apache.struts2.views.freemarker.ScopesHashModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
-
+import org.tdar.core.configuration.TdarConfiguration;
 import com.opensymphony.xwork2.util.ValueStack;
 
 import freemarker.template.ObjectWrapper;
@@ -23,7 +23,9 @@ public class TdarFreemarkerManager extends FreemarkerManager {
     @Override
     public void init(ServletContext servletContext) throws TemplateException {
         super.init(servletContext);
-        config.setTemplateExceptionHandler(new TdarFreemarkerTemplateExceptionHandler());
+        if (TdarConfiguration.getInstance().isProductionEnvironment()) {
+            config.setTemplateExceptionHandler(new TdarFreemarkerTemplateExceptionHandler());
+        }
     }
     
     @Override
