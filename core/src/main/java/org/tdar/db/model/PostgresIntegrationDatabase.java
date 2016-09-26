@@ -202,6 +202,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 String pretty = dtc.getPrettyDisplayName();
                 if (column.isIntegrationColumn()) {
+                    pretty += "(" + column.getSharedOntology().getId() + ")";
                     dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(pretty)));
 
                     DataTableColumn integrationColumn = new DataTableColumn();
