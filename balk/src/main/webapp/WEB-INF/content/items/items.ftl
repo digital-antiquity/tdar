@@ -49,13 +49,13 @@
 </div>
 
 <#macro _printrow report row phase>
-<#if phase == 'TO_PDFA'>
+<#if phase == 'TO_PDFA' && row.toPdf?has_content >
     <#local item=row.toPdf />
 </#if>
-<#if phase == 'DONE_PDFA'>
-    <#local item=row.doneOcr />
+<#if phase == 'DONE_PDFA' && row.doneOcr?has_content >
+    <#local item=row.doneOcr/>
 </#if>
-<#if phase == 'UPLOAD_TDAR'>
+<#if phase == 'UPLOAD_TDAR' && row.toUpload?has_content>
     <#local item=row.toUpload />
 </#if>
 
