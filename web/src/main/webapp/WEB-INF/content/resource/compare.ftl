@@ -28,7 +28,7 @@ th {border-right:1px solid #DDD}
         <th>Project:</th>
         <#list resources as resource>
         <td><#if resource.project??>
-            <a href="${resource.project.detailUrl}>${resource.project.title}</a>
+            <a href="${resource.project.detailUrl}">${resource.project.title}</a>
         </#if></td>
         </#list>
     </tr>
@@ -50,7 +50,6 @@ th {border-right:1px solid #DDD}
                 </#if>
                 <#sep>, </#sep>
             </#list>
-        
         </td>
         </#list>
     </tr>
@@ -66,7 +65,7 @@ th {border-right:1px solid #DDD}
                 </#if>
                 <#sep>, </#sep>
 	        </#list>
-		</td>        
+		</td>
         </#list>
     </tr>
     <tr>
