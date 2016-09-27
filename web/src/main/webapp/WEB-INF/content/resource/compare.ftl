@@ -11,7 +11,7 @@ th {border-right:1px solid #DDD}
     <tr>
         <th>Id:</th>
         <#list resources as resource>
-        <td>${resource['id']?c}</td>
+        <td><a href="${resource.detailUrl}">${resource['id']?c}</a></td>
         </#list>
     </tr>
     <tr>
@@ -28,7 +28,7 @@ th {border-right:1px solid #DDD}
         <th>Project:</th>
         <#list resources as resource>
         <td><#if resource.project??>
-            ${resource.project.title}
+            <a href="${resource.project.detailUrl}>${resource.project.title}</a>
         </#if></td>
         </#list>
     </tr>
@@ -41,13 +41,32 @@ th {border-right:1px solid #DDD}
     <tr>
         <th>Creators:</th>
         <#list resources as resource>
-        <td>${resource.primaryCreators}</td>
+        <td>
+            <#list resource.primaryCreators as it>
+                <#if creators?seq_contains(it) >
+                <a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a>
+                <#else>
+                    <b><a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a></b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
+        
+        </td>
         </#list>
     </tr>
     <tr>
         <th>Contributors/Credit:</th>
         <#list resources as resource>
-        <td>${resource.activeIndividualAndInstitutionalCredit}</td>
+        <td>
+            <#list resource.activeIndividualAndInstitutionalCredit as it>
+                <#if individualRoles?seq_contains(it) >
+	                <a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a>
+                <#else>
+                    <b><a href="${it.creator.detailUrl}">${it.creator.properName} ${it.role}</a></b>
+                </#if>
+                <#sep>, </#sep>
+	        </#list>
+		</td>        
         </#list>
     </tr>
     <tr>
@@ -62,7 +81,17 @@ th {border-right:1px solid #DDD}
         <th>Collections:</th>
         <#list resources as resource>
         <td>
-            ${resource.sharedResourceCollections}
+            <#list resource.sharedResourceCollections as it>
+            	<#if !it.internal>
+                <#if collections?seq_contains(it) >
+                    <a href="${it.detailUrl}">${it.name}</a>
+                <#else>
+                    <b><a href="${it.detailUrl}">${it.name}</a></b>
+                </#if>
+				</#if>
+                <#sep>, </#sep>
+            </#list>
+
         </td>
         </#list>
     </tr>
@@ -71,7 +100,10 @@ th {border-right:1px solid #DDD}
         <#list resources as resource>
         <td>
             <#if resource.informationResourceFiles??>
-            ${resource.informationResourceFiles}
+            <#list resource.informationResourceFiles as file>
+				${file.filename} (${file.restriction})
+            <#sep>,</#sep>
+            </#list>
             </#if>
         </td>
         </#list>
@@ -175,6 +207,66 @@ th {border-right:1px solid #DDD}
                     ${it}
                 <#else>
                     <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
+        </td>
+        </#list>
+    </tr>
+    <tr>
+        <th>Notes:</th>
+        <#list resources as resource>
+        <td>
+            <#list resource.activeResourceNotes as it>
+                <#if notes?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
+        </td>
+        </#list>
+    </tr>
+    <tr>
+        <th>Coverage Dates:</th>
+        <#list resources as resource>
+        <td>
+            <#list resource.activeCoverageDates as it>
+                <#if coverage?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
+        </td>
+        </#list>
+    </tr>
+    <tr>
+        <th>Latitude Longitude Boxes:</th>
+        <#list resources as resource>
+        <td>
+            <#list resource.activeLatitudeLongitudeBoxes as it>
+                <#if latitudeLongitude?seq_contains(it) >
+                    ${it}
+                <#else>
+                    <b>${it}</b>
+                </#if>
+                <#sep>, </#sep>
+            </#list>
+        </td>
+        </#list>
+    </tr>
+    <tr>
+        <th>Resource Annotations:</th>
+        <#list resources as resource>
+        <td>
+            <#list resource.activeResourceAnnotations as it>
+                <#if annotations?seq_contains(it) >
+                    ${it.resourceAnnotationKey.key}: ${it.value}
+                <#else>
+                    <b>${it.resourceAnnotationKey.key}: ${it.value}</b>
                 </#if>
                 <#sep>, </#sep>
             </#list>

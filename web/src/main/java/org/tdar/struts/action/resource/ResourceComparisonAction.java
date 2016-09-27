@@ -13,6 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.TdarGroup;
+import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.coverage.CoverageDate;
+import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -22,9 +26,12 @@ import org.tdar.core.bean.keyword.SiteNameKeyword;
 import org.tdar.core.bean.keyword.SiteTypeKeyword;
 import org.tdar.core.bean.keyword.TemporalKeyword;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.bean.resource.ResourceAnnotation;
+import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.service.GenericService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
+import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -37,7 +44,8 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
 
     private static final long serialVersionUID = 1996434590439580868L;
     private List<Long> ids;
-    private List<Resource> resources;
+    private Long collectionId;
+    private Set<Resource> resources = new HashSet<>();
     
     @Autowired
     private GenericService genericService;
@@ -49,10 +57,22 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
     private Set<GeographicKeyword> geographic = new HashSet<>();
     private Set<SiteNameKeyword> siteNames = new HashSet<>();
     private Set<SiteTypeKeyword> siteTypes = new HashSet<>();
-    
+    private Set<ResourceCreator> creators = new HashSet<>(); 
+    private Set<ResourceCreator> individualRoles = new HashSet<>(); 
+    private Set<LatitudeLongitudeBox> latitudeLongitude = new HashSet<>(); 
+    private Set<ResourceNote> notes = new HashSet<>();
+    private Set<CoverageDate> coverage = new HashSet<>(); 
+    private Set<ResourceCollection> collections = new HashSet<>(); 
+    private Set<ResourceAnnotation> annotations = new HashSet<>(); 
+
+
     @Override
     public void prepare() throws Exception {
-        resources = genericService.findAll(Resource.class, ids);
+        resources.addAll( genericService.findAll(Resource.class, ids));
+        if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
+            ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
+            resources.addAll(rc.getResources());
+        }
         setupSharedKeywords();
     }
 
@@ -68,6 +88,13 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 geographic.addAll(r.getActiveGeographicKeywords());
                 siteNames.addAll(r.getActiveSiteNameKeywords());
                 siteTypes.addAll(r.getActiveSiteTypeKeywords());
+                creators.addAll(r.getPrimaryCreators());
+                individualRoles.addAll(r.getActiveIndividualAndInstitutionalCredit());
+                latitudeLongitude.addAll(r.getActiveLatitudeLongitudeBoxes());
+                notes.addAll(r.getActiveResourceNotes());
+                coverage.addAll(r.getActiveCoverageDates());
+                collections.addAll(r.getSharedResourceCollections());
+                annotations.addAll(r.getActiveResourceAnnotations());
                 first = false;
             } else {
                 cultures = SetUtils.intersection(cultures, r.getActiveCultureKeywords());
@@ -78,6 +105,13 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
                 geographic = SetUtils.intersection(geographic, r.getActiveGeographicKeywords());
                 siteNames = SetUtils.intersection(siteNames, r.getActiveSiteNameKeywords());
                 siteTypes = SetUtils.intersection(siteTypes, r.getActiveSiteTypeKeywords());
+                creators = SetUtils.intersection( creators, new HashSet<>(r.getPrimaryCreators()));
+                individualRoles = SetUtils.intersection(individualRoles , r.getActiveIndividualAndInstitutionalCredit());
+                latitudeLongitude = SetUtils.intersection(latitudeLongitude , r.getActiveLatitudeLongitudeBoxes());
+                notes = SetUtils.intersection( notes, r.getActiveResourceNotes());
+                coverage = SetUtils.intersection( coverage, r.getActiveCoverageDates());
+                collections = SetUtils.intersection( collections, r.getSharedResourceCollections());
+                annotations = SetUtils.intersection( annotations, r.getActiveResourceAnnotations());
             }
         }
     }
@@ -98,11 +132,11 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         this.ids = ids;
     }
 
-    public List<Resource> getResources() {
+    public Set<Resource> getResources() {
         return resources;
     }
 
-    public void setResources(List<Resource> resources) {
+    public void setResources(Set<Resource> resources) {
         this.resources = resources;
     }
 
@@ -168,6 +202,70 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
 
     public void setSiteTypes(HashSet<SiteTypeKeyword> siteTypes) {
         this.siteTypes = siteTypes;
+    }
+
+    public Set<ResourceCreator> getCreators() {
+        return creators;
+    }
+
+    public void setCreators(Set<ResourceCreator> creators) {
+        this.creators = creators;
+    }
+
+    public Set<ResourceCreator> getIndividualRoles() {
+        return individualRoles;
+    }
+
+    public void setIndividualRoles(Set<ResourceCreator> individualRoles) {
+        this.individualRoles = individualRoles;
+    }
+
+    public Set<LatitudeLongitudeBox> getLatitudeLongitude() {
+        return latitudeLongitude;
+    }
+
+    public void setLatitudeLongitude(Set<LatitudeLongitudeBox> latitudeLongitude) {
+        this.latitudeLongitude = latitudeLongitude;
+    }
+
+    public Set<ResourceNote> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(Set<ResourceNote> notes) {
+        this.notes = notes;
+    }
+
+    public Set<CoverageDate> getCoverage() {
+        return coverage;
+    }
+
+    public void setCoverage(Set<CoverageDate> coverage) {
+        this.coverage = coverage;
+    }
+
+    public Set<ResourceCollection> getCollections() {
+        return collections;
+    }
+
+    public void setCollections(Set<ResourceCollection> collections) {
+        this.collections = collections;
+    }
+
+    public Set<ResourceAnnotation> getAnnotations() {
+        return annotations;
+    }
+
+    public void setAnnotations(Set<ResourceAnnotation> annotations) {
+        this.annotations = annotations;
+    }
+
+    public Long getCollectionId() {
+        return collectionId;
+    }
+
+    public void setCollectionId(Long collectionId) {
+        this.collectionId = collectionId;
     }
 
 }
