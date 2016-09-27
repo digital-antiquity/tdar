@@ -35,7 +35,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource/request")
 @Component
 @Scope("prototype")
-public class RequestAccessEmailAction extends AbstractRequestAccessController implements Preparable, ParameterAware {
+public class RequestAccessEmailAction extends AbstractResourceRequestAccessController implements Preparable, ParameterAware {
 
     private static final long serialVersionUID = 2598289601940169922L;
 
@@ -62,7 +62,7 @@ public class RequestAccessEmailAction extends AbstractRequestAccessController im
 
     @Action(value = "deliver", results = {
             @Result(name = SUCCESS, type = REDIRECT, location="${resource.detailUrl}"),
-            @Result(name = INPUT, type = REDIRECT, location=AbstractRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS)
+            @Result(name = INPUT, type = REDIRECT, location=AbstractResourceRequestAccessController.SUCCESS_REDIRECT_REQUEST_ACCESS)
     })
     @PostOnly
     public String execute() {

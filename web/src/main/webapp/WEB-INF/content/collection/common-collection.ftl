@@ -45,18 +45,18 @@
             </a>
             </div>
             </li>
-            <li class="media"><i class="icon-share-alt pull-left"></i>
+<!--            <li class="media"><i class="icon-share-alt pull-left"></i>
             <div class="media-body">
                     <a id="requestAccess" href="/collection/request/${id?c}">Share with...</a>
             </div>
-            </li>
+            </li> -->
         </ul>
         </#if>
             <hr/>
             
             <ul class="unstyled-list">
             <li>
-                <strong>Owner<br>
+                <strong>Owner</strong><br>
                     <a href="<@s.url value="${resourceCollection.owner.detailUrl}"/>">${resourceCollection.owner.properName}</a>
             </li>
         <li>
