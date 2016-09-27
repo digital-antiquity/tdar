@@ -308,7 +308,7 @@ public class DataOneService implements DataOneConstants {
      */
     @Transactional(readOnly = true)
     public SystemMetadata metadataRequest(String id) {
-        SystemMetadata metadata = new SystemMetadata();
+        org.dataone.service.types.v1.SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
 
         ObjectResponseContainer object = getObjectFromTdar(id);
@@ -320,8 +320,12 @@ public class DataOneService implements DataOneConstants {
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
-
-        metadata.setDateUploaded(resource.getDateCreated());
+        // look up in log table what the last exposed version of metadata was
+        String oldId = dataOneDao.findLastExposedVersion(id);
+        if (oldId != null) {
+            metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
+        }
+        metadata.setDateUploaded(resource.getDateUpdated());
 
         // if it's deleted, we mark it as archived
         if (resource.getStatus() != Status.ACTIVE) {

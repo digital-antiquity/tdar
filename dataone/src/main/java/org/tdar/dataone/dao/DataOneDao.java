@@ -130,4 +130,13 @@ public class DataOneDao {
         query.setParameter("end", to);
     }
 
+    public String findLastExposedVersion(String id) {
+        // extract out the sub-id
+        // look in the logs table for the latest version exposed
+        // return
+        // or
+        // return null
+        return null;
+    }
+
 }
