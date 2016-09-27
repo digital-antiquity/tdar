@@ -58,6 +58,7 @@ import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
+import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.SerializationService;
@@ -271,7 +272,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             logger.debug("{} - {} ({})", actor, source.getSubmitter(), resourceCollection.getOwner());
 
             if (!authorizationService.canAdminiserUsersOn(source, actor)) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
+                throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
             }
 
             for (AuthorizedUser user : comparator.getAdditions()) {
@@ -318,7 +319,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // specifically checking for rights escalation
         if (actor.equals(transientUser) && ObjectUtils.notEqual(source.getSubmitter(), actor)) {
             if (!authorizationService.canDo(actor, source, InternalTdarRights.EDIT_ANYTHING, generalPermission)) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
+                throw new TdarAuthorizationException("resourceCollectionService.could_not_add_user", Arrays.asList(transientUser,
                         generalPermission));
             }
             // find highest permission for actor
@@ -474,7 +475,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         if (collectionToAdd != null && collectionToAdd.isValid()) {
             if (PersistableUtils.isNotNullOrTransient(collectionToAdd) && !current.contains(collectionToAdd)
                     && !authorizationService.canAddToCollection(collectionToAdd, authenticatedUser)) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
+                throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(name));
             }
             collectionToAdd.markUpdated(authenticatedUser);
@@ -724,7 +725,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // find all children with me as a parent
         if (!authorizationService.canEditCollection(authorizedUser, persistable) ||
                 parent != null && !authorizationService.canEditCollection(authorizedUser, parent)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.user_does_not_have_permisssions");
+            throw new TdarAuthorizationException("resourceCollectionService.user_does_not_have_permisssions");
         }
 
         List<C> children = getAllChildCollections(persistable, cls);
@@ -813,14 +814,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         if (CollectionUtils.isNotEmpty(resourcesToAdd)) {
             if (!authorizationService.canAddToCollection((ResourceCollection) persistable, authenticatedUser)) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
+                throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(getName((ResourceCollection) persistable)));
             }
         }
 
         if (CollectionUtils.isNotEmpty(resourcesToRemove)) {
             if (!authorizationService.canRemoveFromCollection((ResourceCollection) persistable, authenticatedUser)) {
-                throw new TdarRecoverableRuntimeException("resourceCollectionSerice.resource_collection_rights_error",
+                throw new TdarAuthorizationException("resourceCollectionSerice.resource_collection_rights_error",
                         Arrays.asList(getName((ResourceCollection) persistable)));
             }
         }
@@ -847,11 +848,11 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         getDao().saveOrUpdate(resourcesToAdd);
         getDao().saveOrUpdate(resourcesToRemove);
         if (ineligibleToAdd.size() > 0) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_add", ineligibleToAdd);
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_add", ineligibleToAdd);
         }
 
         if (ineligibleToRemove.size() > 0) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove", ineligibleToRemove);
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_remove", ineligibleToRemove);
         }
     }
 
@@ -859,7 +860,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public void removeResourceFromCollection(Resource resource, VisibleCollection collection, TdarUser authenticatedUser) {
         if (!authorizationService.canEditResource(authenticatedUser, resource, GeneralPermissions.MODIFY_RECORD) ||
                 authorizationService.canRemoveFromCollection(collection, authenticatedUser)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.could_not_remove");
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_remove");
         } else {
             removeFromCollection(resource, collection);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
@@ -977,7 +978,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     @Transactional(readOnly = false)
     public void makeResourcesInCollectionActive(ResourceCollection col, TdarUser person) {
         if (!authorizationService.canEditCollection(person, col)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.make_active_permissions");
+            throw new TdarAuthorizationException("resourceCollectionService.make_active_permissions");
         }
         getDao().makeResourceInCollectionActive(col, person);
     }
@@ -1047,7 +1048,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     public <C extends VisibleCollection> void moveResource(Resource resource, C fromCollection, C toCollection, TdarUser tdarUser) {
         if (!authorizationService.canEdit(tdarUser, resource) || !authorizationService.canEdit(tdarUser, fromCollection)
                 || !authorizationService.canEdit(tdarUser, toCollection)) {
-            throw new TdarRecoverableRuntimeException("resourceCollectionService.insufficient_rights");
+            throw new TdarAuthorizationException("resourceCollectionService.insufficient_rights");
         }
         if (fromCollection instanceof SharedCollection) {
             resource.getSharedCollections().remove(fromCollection);
@@ -1099,10 +1100,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             TdarUser authenticatedUser) {
         RightsBasedResourceCollection collection = null;
         SharedCollection _share =  new SharedCollection();
+        List<Resource> issues = new ArrayList<>();
         _share.setName("Share");
         _share.markUpdated(authenticatedUser);
         String from = "";
-        HashSet<Resource> toTrack = new HashSet<>(resources);
+        HashSet<Resource> toTrack = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(resources)) {
+            toTrack.addAll(resources);
+        }
         if (account != null) {
             from = String.format("%s: %s, %s", "Billing Account", account.getName(), account.getId());
             toTrack.addAll(account.getResources());
@@ -1123,10 +1128,13 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         
         // If what we're really trying to do is add a user to a collection, then bypass the create logic and just do that...
+        
+        // FIXME: how do we determine whether we're creating a new share or not??? Not sure pure canEdit() check is right as the issue might be a true admin, and thus... could be a new share???
+        
         if (collectionFrom instanceof RightsBasedResourceCollection && toTrack.size() == ((RightsBasedResourceCollection) collectionFrom).getResources().size() &&
                 authorizationService.canEditCollection(authenticatedUser, collectionFrom)) {
             collection = (RightsBasedResourceCollection) collectionFrom;
-        } else if (resources.size() == 1 && toTrack.size() ==1) {
+        } else if (CollectionUtils.isNotEmpty(resources) && resources.size() == 1 && toTrack.size() ==1) {
             // if we're dealing with something that could be an internal collection, use that
             
             Resource resource = resources.get(0);
@@ -1140,6 +1148,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 collection = internal;
                 internal.markUpdated(authenticatedUser);
             }
+            collection.getResources().add(resource);
             resource.getInternalCollections().add(internal);
             publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             getDao().saveOrUpdate(internal);
@@ -1152,10 +1161,15 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                     _share.getResources().add(r);
                     r.getSharedCollections().add(_share);
                     publisher.publishEvent(new TdarEvent(r, EventType.CREATE_OR_UPDATE));
+                } else {
+                    issues.add(r);
                 }
             });
         }
         
+        if (CollectionUtils.isNotEmpty(issues)) {
+            throw new TdarAuthorizationException("resourceCollectionService.could_not_add", Arrays.asList(issues));
+        }
         TdarUser user = getDao().find(TdarUser.class, share.getUserId());
         String _for = "";
         if (user != null) {
