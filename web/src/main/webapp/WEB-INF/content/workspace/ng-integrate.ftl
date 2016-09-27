@@ -65,7 +65,7 @@
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
                             <div class="span5">
-                                <table class="table table-condensed table-hover">
+                                <table class="table table-condensed table-hover selected-datasets">
                                     <thead>
                                         <tr>
                                             <th colspan="3">Selected Datasets
@@ -80,7 +80,7 @@
                                     </thead>
                                     <tbody>
                                         <tr ng-repeat="dt in ctrl.integration.dataTables">
-                                            <td><span class="badge">{{$index + 1}}</span></td>
+                                            <td><span class="badge bg-red ">{{$index + 1}}</span></td>
                                             <td>
                                                 {{dt|dtDisplayName|titleCase}}
                                                 <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
@@ -206,7 +206,7 @@
                                                         <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" style="min-width: 2em;" >
                                                             <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
                                                             <div class="text-center">
-                                                                <span data-content="{{cc.dataTable|dtDisplayName|titleCase}}" class="badge" popover>{{$index + 1}}</span>
+                                                                <span data-content="{{cc.dataTable|dtDisplayName|titleCase}}" class="badge bg-red" popover>{{$index + 1}}</span>
 
 
 

@@ -83,7 +83,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // wait for modal to disappear and dataset list to populate
         waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
-        waitFor(locatedElementCountGreaterThan(cssSelector("ol.selected-datasets-list li"), 1));
+        waitFor(locatedElementCountGreaterThan(cssSelector("table.selected-datasets tbody tr"), 1));
         removeDatasetByPartialName("Knowth");
         assertThat(find(".sharedOntologies").toList(), hasSize(2));
         assertThat(getText(), not(containsString("Knowth")));
@@ -282,10 +282,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void removeDatasetByPartialName(String name) {
-        find("ol.selected-datasets-list li").stream()
+        find("table.selected-datasets tbody tr ").stream()
                 .filter( elem -> elem.getText().contains(name))
                 .findFirst()
-                .ifPresent(li -> li.findElement(By.cssSelector("a")).click());
+                .ifPresent(row -> row.findElement(By.cssSelector("a.delete-button")).click());
     }
 
     private void chooseSelectByName(String name, By selector) {
@@ -327,7 +327,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     private void openDatasetsModal() throws InterruptedException {
         // wait for modal to load
-        find(id("btnAddDataset")).click();
+        waitFor(id("btnAddDataset")).click();
         // wait for results table
         waitFor(visibilityOfElementLocated(className("table-striped")));
     }
