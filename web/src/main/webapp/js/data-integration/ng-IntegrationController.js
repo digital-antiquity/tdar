@@ -4,8 +4,8 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService', '$attrs',
-        function($rootScope, $scope, $log,  integration, dataService, validationService, $attrs){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService', '$attrs', '$timeout',
+        function($rootScope, $scope, $log,  integration, dataService, validationService, $attrs, $timeout){
         $log.info("IntegrationController::");
 
         var self = this;
@@ -215,6 +215,15 @@
 
         self.isCountColumnDisabled = function() {
             return !self.integration.isCountColumnEnabled();
+        };
+
+
+        // simple hack for thwarting double-click to the integrate button
+        $scope.downloadDisabled = false;
+        $scope.downloadClicked = function() {
+            $scope.downloadDisabled = true;
+            $timeout(function() {$scope.downloadDisabled = false;}, 2000);
+            return true;
         };
 
         /**
