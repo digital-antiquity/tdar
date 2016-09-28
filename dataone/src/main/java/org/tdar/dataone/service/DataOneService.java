@@ -1,5 +1,7 @@
 package org.tdar.dataone.service;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -7,6 +9,8 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,6 +72,7 @@ import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
  */
 @org.springframework.stereotype.Service
 public class DataOneService implements DataOneConstants {
+
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -321,9 +326,12 @@ public class DataOneService implements DataOneConstants {
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
         // look up in log table what the last exposed version of metadata was
-        String oldId = dataOneDao.findLastExposedVersion(id);
-        if (oldId != null) {
-            metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
+        if (object.getType() == EntryType.TDAR) {
+            IdentifierParser parser = new IdentifierParser(id, informationResourceService);
+            String oldId = dataOneDao.findLastExposedVersion(id);
+            if (oldId != null) {
+                metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
+            }
         }
         metadata.setDateUploaded(resource.getDateUpdated());
 
@@ -399,31 +407,16 @@ public class DataOneService implements DataOneConstants {
     private ObjectResponseContainer getObjectFromTdar(String id_) {
         ObjectResponseContainer resp = null;
         try {
-            logger.debug("looking for Id: {}", id_);
-            String doi = StringUtils.substringBefore(id_, D1_SEP);
-            // switching back DOIs to have / in them.
-            doi = doi.replace(D1CONFIG.getDoiPrefix() + ":", D1CONFIG.getDoiPrefix() + "/");
-            String partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
-            InformationResource ir = informationResourceService.findByDoi(doi);
-            if (PersistableUtils.isNullOrTransient(ir)) {
-                logger.debug("resource not foound: {}", doi);
-                return null;
+            IdentifierParser parser = new IdentifierParser(id_, informationResourceService);
+            if (parser.getType() == EntryType.D1) {
+                resp = constructD1FormatObject(parser.getIr());
+            } 
+            if (parser.getType() == EntryType.TDAR && parser.getIr().getDateUpdated().equals(parser.getModified())) {
+                resp = constructMetadataFormatObject(parser.getIr());
             }
-            logger.debug("{} --> {} (id: {} {})", doi, ir.getId(), partIdentifier);
-            if (partIdentifier.startsWith(D1_FORMAT) || partIdentifier == null) {
-                resp = constructD1FormatObject(ir);
-            } else if (partIdentifier.equals(META)) {
-                resp = constructMetadataFormatObject(ir);
-            } else if (partIdentifier.contains(D1_VERS_SEP)) {
-                resp = constructFileFormatObject(partIdentifier, ir);
-            } else {
-                logger.warn("bad format for: {}", id_ );
-                return null;
+            if (parser.getType() == EntryType.FILE) {
+                resp = constructFileFormatObject(parser.getPartIdentifier(), parser.getIr());
             }
-            
-            resp.setIdentifier(id_);
-            resp.setTdarResource(ir);
-
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest:" + id_, e);
         }

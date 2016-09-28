@@ -146,6 +146,8 @@ public class ListObjectEntry implements Serializable {
                 break;
             case TDAR:
                 sb.append(DataOneService.META);
+                sb.append(DataOneService.D1_VERS_SEP);
+                sb.append(dateUpdated);
                 break;
             default:
                 break;
