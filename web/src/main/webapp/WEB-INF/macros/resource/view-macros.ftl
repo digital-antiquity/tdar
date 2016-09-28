@@ -272,13 +272,17 @@ View freemarker macros
     </p>
    <div class="links">
 <ul class="inline">
-<#assign url>http://${hostName}<#if hostPort != 80>:${hostPort}</#if>/${currentUrl?url}</#assign>
-<li><a href="https://twitter.com/share" onClick="TDAR.common.registerShare('twitter','${currentUrl}','${resource.id?c}')" >Tweet this</a></li>
-<li><a href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}" onClick="TDAR.common.registerShare('facebook','${currentUrl}','${resource.id?c}')">Share on Facebook</a></li>
+<#assign url="${((request.requestURL)!'')}" />
+<li><a href="https://twitter.com/intent/tweet?url=${url?url}&text=${((resource.title)!'')?url}"
+       target="_blank"
+       onClick="TDAR.common.registerShare('twitter','${currentUrl?js_string}','${resource.id?c}')">Tweet this</a></li>
+<li><a  href="http://www.facebook.com/sharer/sharer.php?u=${url?url}&amp;t=${resource.title?url}"
+        target="_blank"
+        onClick="TDAR.common.registerShare('facebook','${currentUrl?js_string}','${resource.id?c}')">Share on Facebook</a></li>
 
 <li><a 
     <#noescape>href="mailto:?subject=${resource.title?url}d&amp;body=${resourceCitation.fullCitation!''?trim?url}%0D%0A%0D%0A${url}"</#noescape>
-     onClick="TDAR.common.registerShare('email','${currentUrl}','${resource.id?c}')">Email a link to a Friend</a></li>
+     onClick="TDAR.common.registerShare('email','${currentUrl?js_string}','${resource.id?c}')">Email a link to a Friend</a></li>
 
 </ul></div>
 </div>
