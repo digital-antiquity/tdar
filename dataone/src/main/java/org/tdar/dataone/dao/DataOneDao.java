@@ -1,5 +1,7 @@
 package org.tdar.dataone.dao;
 
+import static org.hamcrest.CoreMatchers.any;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -130,12 +132,15 @@ public class DataOneDao {
         query.setParameter("end", to);
     }
 
-    public String findLastExposedVersion(String id) {
-        // extract out the sub-id
-        // look in the logs table for the latest version exposed
-        // return
-        // or
-        // return null
+    public String findLastExposedVersion(String prefix, String existingId, String type) {
+        Query namedQuery = genericDao.getNamedQuery("query.dataone_last_tdar_id");
+        namedQuery.setParameter(":prefix", prefix + "%");
+        namedQuery.setParameter(":type", "%" + type + "%");
+        namedQuery.setParameter(":id", existingId);
+        List list = namedQuery.list();
+        if (list.size() > 0 ) {
+            return (String) list.get(0);
+        }
         return null;
     }
 

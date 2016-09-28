@@ -24,4 +24,20 @@ public enum EntryType {
         }
         return EntryType.UNKOWN;
     }
+    
+    public String getUniquePart() {
+        switch (this) {
+            case D1:
+                return DataOneService.D1_FORMAT;
+            case FILE:
+                return null;
+            case TDAR:
+                return DataOneService.META;
+            case UNKOWN:
+                break;
+            default:
+                break;
+        }
+        return null;
+    }
 }

@@ -34,8 +34,9 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 public class DataOneWebITCase extends AbstractWebTest {
 
-    private static final String TEST_DOI = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
-    private static final String TEST_DOI_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;
+    private static final String TEST_DOI = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT + "1281812043684";
+    private static final String TEST_DOI_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META + DataOneService.D1_VERS_SEP
+            + "1281812043684";
 
     @Test
     public void replica() throws ClientProtocolException, IOException {
@@ -46,7 +47,7 @@ public class DataOneWebITCase extends AbstractWebTest {
 
     @Test
     public void ping() {
-        Assert.assertEquals(200,gotoPage("/v1/monitor/ping"));
+        Assert.assertEquals(200, gotoPage("/v1/monitor/ping"));
     }
 
     @Test
@@ -64,11 +65,12 @@ public class DataOneWebITCase extends AbstractWebTest {
 
     @Test
     public void testObject() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
+        HttpResponse record = getRecord("/v1/object");
+        logger.debug(IOUtils.toString(record.getEntity().getContent()));
         getRecord("/v1/object/" + TEST_DOI);
         getRecord("/v1/object/" + TEST_DOI_META);
     }
-    
-    
+
     @Test
     public void testChecksum2() throws ClientProtocolException, IOException, UnsupportedOperationException, ParserConfigurationException, SAXException {
         HttpResponse record = getRecord("/v1/object");
@@ -76,12 +78,12 @@ public class DataOneWebITCase extends AbstractWebTest {
         Document xmlDocument = getXmlDocument(new InputSource(new ByteArrayInputStream(body.getBytes())));
         logger.trace(body);
         NodeList elementsByTagName = xmlDocument.getElementsByTagName("objectInfo");
-        for (int i=0;i < elementsByTagName.getLength(); i++) {
+        for (int i = 0; i < elementsByTagName.getLength(); i++) {
             Node entry = elementsByTagName.item(i);
             String id = null;
             String checksum = null;
             NodeList childNodes = entry.getChildNodes();
-            for (int j=0; j < childNodes.getLength(); j++) {
+            for (int j = 0; j < childNodes.getLength(); j++) {
                 Node node = childNodes.item(j);
                 if (node.getNodeName().equals("identifier")) {
                     id = node.getTextContent();
@@ -93,38 +95,36 @@ public class DataOneWebITCase extends AbstractWebTest {
             logger.debug("{} {}", id, checksum);
             assertNotNull(checksum);
             assertNotNull(id);
-            HttpResponse hresponse = headRecord("/v1/object/"+ id);
+            HttpResponse hresponse = headRecord("/v1/object/" + id);
             logger.debug("headers: {}", hresponse.getAllHeaders());
             Header firstHeader = hresponse.getFirstHeader("DataONE-Checksum");
             String headerChecksum = firstHeader.getValue().replace("MD5,", "");
-            HttpResponse response = getRecord("/v1/object/"+ id);
-            logger.debug("encoding:{}",response.getEntity().getContentEncoding());
+            HttpResponse response = getRecord("/v1/object/" + id);
+            logger.debug("encoding:{}", response.getEntity().getContentEncoding());
             InputStream content = response.getEntity().getContent();
             String xml = IOUtils.toString(content, "UTF-8");
             String md5Hex = DigestUtils.md5Hex(xml);
-            logger.debug("{}",xml);
+            logger.debug("{}", xml);
             logger.debug("{} {} {} {}", id, md5Hex, checksum, headerChecksum);
             assertEquals(md5Hex, checksum);
-            
-            
+
         }
-        
+
     }
-    
+
     private HttpResponse getRecord(String path) throws ClientProtocolException, IOException {
         HttpGet getMethod = new HttpGet(TestConfiguration.getInstance().getBaseSecureUrl() + path);
         CloseableHttpClient httpClient = SimpleHttpUtils.createClient();
         HttpResponse httpResponse = httpClient.execute(getMethod);
         int statusCode = httpResponse.getStatusLine().getStatusCode();
-        
 
         Assert.assertEquals(200, statusCode);
         for (Header header : httpResponse.getAllHeaders()) {
             logger.debug("headers: {}", header);
         }
-        
+
         return httpResponse;
-        
+
     }
 
     private org.w3c.dom.Document getXmlDocument(InputSource is) throws ParserConfigurationException, SAXException, IOException {
@@ -142,11 +142,11 @@ public class DataOneWebITCase extends AbstractWebTest {
         // bad doi
         Assert.assertEquals(200, gotoPage("/v1/object?formatId=fake_formatasdasd"));
         Assert.assertEquals(200, gotoPage("/v1/object?"));
-        //YYYY-MM-DDTHH:MM:SS.mmm
+        // YYYY-MM-DDTHH:MM:SS.mmm
         Assert.assertEquals(200, gotoPage("/v1/object?fromDate=2010-01-01T01:01:00.000"));
-        //formatId??
+        // formatId??
     }
-    
+
     @Test
     public void testObjectHead() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
         String path = "/v1/object/" + TEST_DOI;
@@ -172,22 +172,24 @@ public class DataOneWebITCase extends AbstractWebTest {
         Assert.assertEquals(200, gotoPage("/v1/log?idFilter=" + TEST_DOI));
         Assert.assertEquals(200, gotoPage("/v1/log?event=READ"));
         Assert.assertEquals(200, gotoPage("/v1/log?fromDate=2010-01-01T01:01:00.000"));
-        //test with date ... YYYY-MM-DDTHH:MM:SS.mmm
-        
+        // test with date ... YYYY-MM-DDTHH:MM:SS.mmm
+
     }
 
     @Test
     public void testChecksum() {
-        Assert.assertEquals(200,  gotoPage("/v1/checksum/"+ TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/v1/checksum/" + TEST_DOI));
     }
+
     @Test
     public void testMeta() {
-        Assert.assertEquals(200, gotoPage("/v1/meta/"+ TEST_DOI));
+        Assert.assertEquals(200, gotoPage("/v1/meta/" + TEST_DOI));
         logger.debug(getPageCode());
     }
+
     @Test
     public void testMetaIvalid() {
-        Assert.assertEquals(404, gotoPage("/v1/meta/a"+ TEST_DOI));
+        Assert.assertEquals(404, gotoPage("/v1/meta/a" + TEST_DOI));
         logger.debug(getPageCode());
     }
 }

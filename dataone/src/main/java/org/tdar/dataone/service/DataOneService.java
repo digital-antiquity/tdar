@@ -1,6 +1,5 @@
 package org.tdar.dataone.service;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -9,8 +8,6 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -59,7 +56,6 @@ import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.ExtendedDcTransformer;
-import org.tdar.utils.PersistableUtils;
 
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
@@ -328,7 +324,7 @@ public class DataOneService implements DataOneConstants {
         // look up in log table what the last exposed version of metadata was
         if (object.getType() == EntryType.TDAR) {
             IdentifierParser parser = new IdentifierParser(id, informationResourceService);
-            String oldId = dataOneDao.findLastExposedVersion(id);
+            String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, object.getType().getUniquePart());
             if (oldId != null) {
                 metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
             }
@@ -408,13 +404,15 @@ public class DataOneService implements DataOneConstants {
         ObjectResponseContainer resp = null;
         try {
             IdentifierParser parser = new IdentifierParser(id_, informationResourceService);
-            if (parser.getType() == EntryType.D1) {
+            if (parser.getType() == EntryType.D1 && parser.getIr().getDateUpdated().compareTo(parser.getModified() ) == 0) {
                 resp = constructD1FormatObject(parser.getIr());
             } 
-            if (parser.getType() == EntryType.TDAR && parser.getIr().getDateUpdated().equals(parser.getModified())) {
+            if (parser.getType() == EntryType.TDAR && parser.getIr().getDateUpdated().compareTo(parser.getModified() ) == 0 ) {
+                logger.debug("{} vs. {}", parser.getIr().getDateUpdated(),  parser.getModified());
                 resp = constructMetadataFormatObject(parser.getIr());
             }
             if (parser.getType() == EntryType.FILE) {
+                // NOT FULLY IMPLEMENTED
                 resp = constructFileFormatObject(parser.getPartIdentifier(), parser.getIr());
             }
         } catch (Exception e) {
@@ -459,6 +457,7 @@ public class DataOneService implements DataOneConstants {
      */
     protected ObjectResponseContainer constructMetadataFormatObject(InformationResource ir)
             throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        logger.debug("construct metadata: {}", ir);
         ObjectResponseContainer resp = setupResponse(ir);
         resp.setContentType(XML_CONTENT_TYPE);
         resp.setType(EntryType.TDAR);

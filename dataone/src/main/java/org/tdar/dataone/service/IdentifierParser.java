@@ -1,7 +1,5 @@
 package org.tdar.dataone.service;
 
-import java.text.DateFormat;
-import java.text.ParseException;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,26 +31,29 @@ public class IdentifierParser implements DataOneConstants {
             logger.debug("resource not foound: {}", doi);
             return;
         }
-        logger.debug("{} --> {} (id: {} {})", doi, ir.getId(), partIdentifier);
+        logger.debug("{} --> {} (id: {} )", doi, ir.getId(), partIdentifier);
         if (partIdentifier.startsWith(D1_FORMAT)) {
             type = EntryType.D1;
-        } else if (partIdentifier.equals(META)) {
+            parseDate(D1_FORMAT);
+        } else if (partIdentifier.startsWith(META)) {
             type = EntryType.TDAR;
             modified = null;
             if (partIdentifier.contains(D1_VERS_SEP)) {
-                String date = StringUtils.substringAfter(partIdentifier, D1_VERS_SEP);
-                DateFormat df = DateFormat.getDateTimeInstance();
-                try {
-                    modified = df.parse(date);
-                } catch (ParseException pe) {
-                    logger.debug("parse exception: {} {}", date, pe, pe);
-                }
+                parseDate(D1_VERS_SEP);
             }
-
         } else if (partIdentifier.contains(D1_VERS_SEP)) {
             type = EntryType.FILE;
         } else {
             logger.warn("bad format for: {}", id_);
+        }
+    }
+
+    private void parseDate(String part) {
+        String date = StringUtils.substringAfter(partIdentifier, part);
+        try {
+            modified = new Date(Long.parseLong(date));
+        } catch (NumberFormatException pe) {
+            logger.debug("parse exception: {} {}", date, pe, pe);
         }
     }
 
