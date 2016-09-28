@@ -308,7 +308,7 @@ public class DataOneService implements DataOneConstants {
      */
     @Transactional(readOnly = true)
     public SystemMetadata metadataRequest(String id) {
-        org.dataone.service.types.v1.SystemMetadata metadata = new SystemMetadata();
+        SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
 
         ObjectResponseContainer object = getObjectFromTdar(id);
