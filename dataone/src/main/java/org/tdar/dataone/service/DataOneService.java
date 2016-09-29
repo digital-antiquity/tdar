@@ -342,7 +342,7 @@ public class DataOneService implements DataOneConstants {
             metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
             metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
             metadata.setSize(BigInteger.valueOf(object.getSize()));
-            metadata.setSeriesId(DataOneUtils.createIdentifier(object.getTdarResource().getId().toString()));
+            metadata.setSeriesId(DataOneUtils.createIdentifier(object.getTdarResource().getId().toString() +  D1_SEP + object.getType().getUniquePart() ));
             metadata.setIdentifier(DataOneUtils.createIdentifier(id));
         }
         metadata.setOriginMemberNode(getTdarNodeReference());
@@ -409,10 +409,10 @@ public class DataOneService implements DataOneConstants {
                 sameDate = true;
             }
             
-            if (parser.getType() == EntryType.D1 && sameDate) {
+            if (parser.getType() == EntryType.D1 && (parser.isSeriesIdentifier() || sameDate)) {
                 resp = constructD1FormatObject(parser.getIr());
             } 
-            if (parser.getType() == EntryType.TDAR && sameDate ) {
+            if (parser.getType() == EntryType.TDAR && (parser.isSeriesIdentifier() || sameDate)) {
                 logger.debug("{} vs. {}", parser.getIr().getDateUpdated(),  parser.getModified());
                 resp = constructMetadataFormatObject(parser.getIr());
             }
@@ -420,8 +420,10 @@ public class DataOneService implements DataOneConstants {
                 // NOT FULLY IMPLEMENTED
                 resp = constructFileFormatObject(parser.getPartIdentifier(), parser.getIr());
             }
-            resp.setTdarResource(parser.getIr());
-            resp.setIdentifier(id_);
+            if (resp != null) {
+                resp.setTdarResource(parser.getIr());
+                resp.setIdentifier(id_);
+            }
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest:" + id_, e);
         }

@@ -3,6 +3,7 @@ package org.tdar.dataone.service;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
@@ -19,19 +20,25 @@ public class IdentifierParser implements DataOneConstants {
     private InformationResource ir;
     private Date modified;
     private EntryType type;
-
+    private boolean seriesIdentifier = false;
+    
     public IdentifierParser(String id_, InformationResourceService informationResourceService) {
         logger.debug("looking for Id: {}", id_);
         base = StringUtils.substringBefore(id_, D1_SEP);
         // switching back DOIs to have / in them.
         doi = base.replace(D1CONFIG.getDoiPrefix() + ":", D1CONFIG.getDoiPrefix() + "/");
         partIdentifier = StringUtils.substringAfter(id_, D1_SEP);
-        ir = informationResourceService.findByDoi(doi);
+        if (NumberUtils.isDigits(doi)) {
+            ir = informationResourceService.find(Long.parseLong(doi));
+            setSeriesIdentifier(true);
+        } else {
+            ir = informationResourceService.findByDoi(doi);
+        }
         if (PersistableUtils.isNullOrTransient(ir)) {
             logger.debug("resource not foound: {}", doi);
             return;
         }
-        logger.debug("{} --> {} (id: {} )", doi, ir.getId(), partIdentifier);
+        logger.trace("{} --> {} (id: {} )", doi, ir.getId(), partIdentifier);
         if (partIdentifier.startsWith(D1_FORMAT)) {
             type = EntryType.D1;
             parseDate(D1_FORMAT);
@@ -106,6 +113,14 @@ public class IdentifierParser implements DataOneConstants {
 
     public void setBase(String base) {
         this.base = base;
+    }
+
+    public boolean isSeriesIdentifier() {
+        return seriesIdentifier;
+    }
+
+    public void setSeriesIdentifier(boolean seriesIdentifier) {
+        this.seriesIdentifier = seriesIdentifier;
     }
 
 }
