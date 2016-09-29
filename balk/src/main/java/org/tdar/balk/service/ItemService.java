@@ -319,4 +319,18 @@ public class ItemService {
 
     }
 
+    @Transactional(readOnly = false)
+    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping) 
+            throws Exception {
+        DropboxClient client = new DropboxClient(userMapping);
+        // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH
+        Metadata move = client.copy(item.getPath(), newPath);
+//        client = new DropboxClient();
+//        ToPersistListener listener = new ToPersistListener(this);
+//        client.processMetadataItem(listener, move);
+//        logger.debug("storing: {} {}", listener,listener.getWrappers());
+//        store(listener);
+    }
+
+
 }

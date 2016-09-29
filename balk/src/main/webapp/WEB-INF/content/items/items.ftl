@@ -33,9 +33,19 @@
 </#if>
 <tr>
 <td style="padding:1em;text-align:center"><span class="label label-default label-sm">${row.first.extension}</span></td>
-<td>${row.first.name}</td>
+<td><a href="https://www.dropbox.com/work${row.first.parentDirName?ensure_starts_with("/")?url_path}?preview=${row.first.name}" target="_blank">${row.first.name}</a></td>
 <td>${row.first.dateModified?string.short}</td>
-<td>${row.first.size!''}</td>
+<td>${row.first.size!''}
+
+<#if !row.usingWorkflow>
+    <@s.form action="/startWorkflow/?" method="POST">
+        <@s.hidden name="id" value="${row.first.dropboxId}"/>
+        <@s.hidden name="path" value="${_path}"/>
+        <@s.submit name="approve" value="Start Workflow" />
+    </@s.form>
+
+</#if>
+</td>
 	<@_printrow itemStatusReport row "TO_PDFA" />
 	<@_printrow itemStatusReport row "DONE_PDFA"/>
 	<@_printrow itemStatusReport row "UPLOAD_TDAR"/>
