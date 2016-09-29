@@ -50,6 +50,9 @@ public class IdentifierParser implements DataOneConstants {
 
     private void parseDate(String part) {
         String date = StringUtils.substringAfter(partIdentifier, part);
+        if (StringUtils.isBlank(date)) {
+            return;
+        }
         try {
             modified = new Date(Long.parseLong(date));
         } catch (NumberFormatException pe) {

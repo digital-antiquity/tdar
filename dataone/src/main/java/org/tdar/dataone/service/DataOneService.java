@@ -322,29 +322,29 @@ public class DataOneService implements DataOneConstants {
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
         // look up in log table what the last exposed version of metadata was
-        if (object.getType() == EntryType.TDAR) {
-            IdentifierParser parser = new IdentifierParser(id, informationResourceService);
-            String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, object.getType().getUniquePart());
-            if (oldId != null) {
-                metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
-            }
-        }
         metadata.setDateUploaded(resource.getDateUpdated());
-
+        
         // if it's deleted, we mark it as archived
         if (resource.getStatus() != Status.ACTIVE) {
             metadata.setArchived(true);
         } else {
             metadata.setArchived(false);
         }
-        metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
-        metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
-        metadata.setSize(BigInteger.valueOf(object.getSize()));
-        metadata.setSeriesId(DataOneUtils.createIdentifier(object.getTdarResource().getId().toString()));
-        metadata.setIdentifier(DataOneUtils.createIdentifier(object.getIdentifier()));
-        // metadata.setObsoletedBy(value);
-        // metadata.setObsoletes(value);
-
+        
+        if (object != null) { // could be a bad version
+            if (object.getType() == EntryType.TDAR) {
+                IdentifierParser parser = new IdentifierParser(id, informationResourceService);
+                String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, object.getType().getUniquePart());
+                if (oldId != null) {
+                    metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
+                }
+            }
+            metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
+            metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
+            metadata.setSize(BigInteger.valueOf(object.getSize()));
+            metadata.setSeriesId(DataOneUtils.createIdentifier(object.getTdarResource().getId().toString()));
+            metadata.setIdentifier(DataOneUtils.createIdentifier(id));
+        }
         metadata.setOriginMemberNode(getTdarNodeReference());
         // metadata.setReplicationPolicy(rpolicy );
 
@@ -404,10 +404,15 @@ public class DataOneService implements DataOneConstants {
         ObjectResponseContainer resp = null;
         try {
             IdentifierParser parser = new IdentifierParser(id_, informationResourceService);
-            if (parser.getType() == EntryType.D1 && parser.getIr().getDateUpdated().compareTo(parser.getModified() ) == 0) {
+            boolean sameDate = false;
+            if (parser.getModified() != null && parser.getIr().getDateUpdated().compareTo(parser.getModified() ) == 0) {
+                sameDate = true;
+            }
+            
+            if (parser.getType() == EntryType.D1 && sameDate) {
                 resp = constructD1FormatObject(parser.getIr());
             } 
-            if (parser.getType() == EntryType.TDAR && parser.getIr().getDateUpdated().compareTo(parser.getModified() ) == 0 ) {
+            if (parser.getType() == EntryType.TDAR && sameDate ) {
                 logger.debug("{} vs. {}", parser.getIr().getDateUpdated(),  parser.getModified());
                 resp = constructMetadataFormatObject(parser.getIr());
             }
@@ -415,9 +420,12 @@ public class DataOneService implements DataOneConstants {
                 // NOT FULLY IMPLEMENTED
                 resp = constructFileFormatObject(parser.getPartIdentifier(), parser.getIr());
             }
+            resp.setTdarResource(parser.getIr());
+            resp.setIdentifier(id_);
         } catch (Exception e) {
             logger.error("error in DataOneObjectRequest:" + id_, e);
         }
+
         return resp;
     }
 

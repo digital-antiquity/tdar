@@ -126,7 +126,7 @@ public class DataOneDao {
             from = fromDate;
         }
         if (toDate != null) {
-            toDate = to;
+            to = toDate;
         }
         query.setParameter("start", from);
         query.setParameter("end", to);
@@ -134,12 +134,13 @@ public class DataOneDao {
 
     public String findLastExposedVersion(String prefix, String existingId, String type) {
         Query namedQuery = genericDao.getNamedQuery("query.dataone_last_tdar_id");
-        namedQuery.setParameter(":prefix", prefix + "%");
-        namedQuery.setParameter(":type", "%" + type + "%");
-        namedQuery.setParameter(":id", existingId);
-        List list = namedQuery.list();
+        logger.debug("{} {} {}", prefix, type,existingId);
+        namedQuery.setParameter("prefix", prefix.replace("/", ":") + "%");
+        namedQuery.setParameter("type", "%" + type + "%");
+        namedQuery.setParameter("id", existingId);
+        List<LogEntryImpl> list = namedQuery.list();
         if (list.size() > 0 ) {
-            return (String) list.get(0);
+            return (String) list.get(0).getIdentifier();
         }
         return null;
     }

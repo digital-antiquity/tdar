@@ -1,7 +1,6 @@
 package org.tdar.dataone.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -34,7 +33,8 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 public class DataOneWebITCase extends AbstractWebTest {
 
-    private static final String TEST_DOI = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT + "1281812043684";
+    private static final String BASE = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
+    private static final String TEST_DOI = BASE + "1281812043684";
     private static final String TEST_DOI_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META + DataOneService.D1_VERS_SEP
             + "1281812043684";
 
@@ -184,6 +184,19 @@ public class DataOneWebITCase extends AbstractWebTest {
     @Test
     public void testMeta() {
         Assert.assertEquals(200, gotoPage("/v1/meta/" + TEST_DOI));
+        logger.debug(getPageCode());
+    }
+
+    @Test
+    public void testTdarMeta() {
+        Assert.assertEquals(200, gotoPage("/v1/meta/" + TEST_DOI_META));
+        logger.debug(getPageCode());
+        assertTrue(getPageCode().contains("<obsoletes>doi:10.6067:XCV8SN0B29_meta</obsoletes>"));
+    }
+
+    @Test
+    public void testMetaObsoleteObjectId() {
+        Assert.assertEquals(404, gotoPage("/v1/meta/" + BASE));
         logger.debug(getPageCode());
     }
 
