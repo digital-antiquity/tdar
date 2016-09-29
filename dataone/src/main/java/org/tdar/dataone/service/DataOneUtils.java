@@ -34,6 +34,7 @@ public class DataOneUtils {
     public static Identifier createIdentifier(String formattedIdentifier) {
         Identifier id = new Identifier();
         id.setValue(formattedIdentifier);
+        logger.debug("setting identifier:{}", formattedIdentifier);
         return id;
     }
 
