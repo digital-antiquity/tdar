@@ -37,8 +37,8 @@
 <td>${row.first.dateModified?string.short}</td>
 <td>${row.first.size!''}</td>
 	<@_printrow itemStatusReport row "TO_PDFA" />
-	<@_printrow itemStatusReport row "DONE_PDFA" row.doneOcr/>
-	<@_printrow itemStatusReport row "UPLOAD_TDAR" row.toUpload/>
+	<@_printrow itemStatusReport row "DONE_PDFA"/>
+	<@_printrow itemStatusReport row "UPLOAD_TDAR"/>
     <td>
         <#if (row.toUpload.tdarId)?has_content><a href="http://core.tdar.org/resource/${row.toUpload.tdarId?c}">${row.toUpload.tdarId?c}</a></#if>
     </td>
@@ -69,11 +69,11 @@
     <td></td>
 </#if>
 <td style="border-right:1px solid #999">
-<#if row.nextPhase?has_content && item?has_content && userInfo?has_content && userInfo.token?has_content && row.latestPhase == phase>
+<#if row.nextPhase?has_content && item?has_content && userInfo?has_content && userInfo.token?has_content && row.currentPhase == phase>
 	<@s.form action="/approve/?" method="POST">
 		<@s.hidden name="id" value="${item.dropboxId}"/>
 		<@s.hidden name="phase" value="${row.nextPhase}"/>
-		<@s.hidden name="path" value="${path}"/>
+		<@s.hidden name="path" value="${_path}"/>
 		<@s.submit name="approve" value="Approve" />
 	</@s.form>
 </#if>
