@@ -11,10 +11,6 @@ import org.apache.struts2.convention.annotation.Actions;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
 import org.apache.struts2.convention.annotation.Result;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeConstants;
-import org.joda.time.Interval;
-import org.joda.time.Period;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -153,19 +149,6 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
         return json;
     }
 
-    /**
-     * Increase the maximum integration columns/datasets during off-peak hours
-     * @return
-     */
-    public boolean isHappyHour() {
-        //Happy hour lasts from Friday 6pm to Monday 6am.
-        DateTime now = DateTime.now();
-        DateTime start = now.withDayOfWeek(DateTimeConstants.FRIDAY).withHourOfDay(18);
-        DateTime end = start.plusHours(24 * 2 + 12 );
-        Interval happyHours = new Interval(start, end);
-        return happyHours.contains(now);
-    }
-
     public List<Resource> getFullUserProjects() {
         return fullUserProjects;
     }
@@ -204,7 +187,7 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     public Boolean isEditable() {
         return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
     }
-    
+
     @Override
     public boolean authorize() throws TdarActionException {
         return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
@@ -256,16 +239,10 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     }
 
     public int getMaxOutputColumns() {
-        if(isHappyHour()) {
-            return TdarConfiguration.getInstance().getDataIntegrationMaximumColumns() * 10;
-        }
         return TdarConfiguration.getInstance().getDataIntegrationMaximumColumns();
     }
 
     public int getMaxDataTables() {
-        if(isHappyHour()) {
-            return TdarConfiguration.getInstance().getDataIntegrationMaximumDataTables() * 10;
-        }
         return TdarConfiguration.getInstance().getDataIntegrationMaximumDataTables();
     }
 

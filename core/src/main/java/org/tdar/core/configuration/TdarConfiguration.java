@@ -994,14 +994,10 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public int getDataIntegrationMaximumDataTables() {
-        return assistant.getIntProperty("data.integration.maxDataTables", 10);
+        return assistant.getIntProperty("data.integration.maxDataTables", 55);
     }
 
     public int getDataIntegrationMaximumColumns() {
-        return assistant.getIntProperty("data.integration.maxOutputColumns", 15);
-    }
-
-    public boolean restrictBigIntegrationsDuringWeek() {
-        return assistant.getBooleanProperty("data.integration.limit_weekday", true);
+        return assistant.getIntProperty("data.integration.maxOutputColumns", 35);
     }
 }
