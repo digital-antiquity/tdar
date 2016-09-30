@@ -10,11 +10,11 @@ public enum Phases {
     public String getPath() {
         switch (this) {
             case TO_PDFA:
-                return "Create PDFA/input/";
+                return DropboxConstants.TO_PDFA_PATH;
             case DONE_PDFA:
-                return "Create PDFA/output/";
+                return DropboxConstants.DONE_PDFA_PATH;
             case UPLOAD_TDAR:
-                return "Upload to tDAR/";
+                return DropboxConstants.UPLOAD_PATH;
         }
         return null;
     }
@@ -53,8 +53,8 @@ public enum Phases {
 
     public static String createKey(DropboxFile file) {
         String key = file.getPath().toLowerCase();
-        key = StringUtils.replace(key, "/input/", "/");
-        key = StringUtils.replace(key, "/output/", "/");
+        key = StringUtils.replace(key, "/" + DropboxConstants.INPUT + "/", "/");
+        key = StringUtils.replace(key, "/" + DropboxConstants.OUTPUT + "/", "/");
         key = StringUtils.remove(key, DropboxConstants.CLIENT_DATA.toLowerCase());
         key = StringUtils.substringAfter(key, "/");
         key = StringUtils.replace(key, "_ocr_pdfa.pdf", ".pdf");

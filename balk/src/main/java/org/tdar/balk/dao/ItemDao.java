@@ -1,6 +1,8 @@
 package org.tdar.balk.dao;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
+import org.tdar.utils.dropbox.DropboxConstants;
 
 @Component
 public class ItemDao {
@@ -72,7 +75,7 @@ public class ItemDao {
 
     @SuppressWarnings("unchecked")
     public List<DropboxFile> findToUpload() {
-        String query = "from DropboxFile where tdar_id is null and path like '%/Upload to tDAR/%'";
+        String query = "from DropboxFile where tdar_id is null and path ilike '%/"+DropboxConstants.UPLOAD_TO_TDAR+"/%'";
         Query query2 = getCurrentSession().createQuery(query);
         return query2.list();
     }
@@ -84,6 +87,24 @@ public class ItemDao {
         }
         Query query2 = getCurrentSession().createQuery(query);
         return query2.list();
+    }
+
+    public Set<String> findTopLevelPaths(String path) {
+        Query query = getCurrentSession().createQuery("select name from DropboxDirectory where parentId in (select dropboxId from DropboxDirectory where lower(name)=lower(:path) )");
+        query.setParameter("path", path);
+        Set<String> toReturn = new HashSet<>(query.list());
+        toReturn.remove(DropboxConstants.CREATE_PDFA);
+        toReturn.remove(DropboxConstants.COMBINE_PDF_DIR);
+        toReturn.remove(DropboxConstants.UPLOAD_TO_TDAR);
+        return toReturn;
+    }
+
+    public Set<String> findTopLevelManagedPaths() {
+        Set<String> paths = new HashSet<>();
+        paths.addAll(findTopLevelPaths(DropboxConstants.UPLOAD_TO_TDAR));
+        paths.addAll(findTopLevelPaths(DropboxConstants.INPUT));
+        paths.addAll(findTopLevelPaths(DropboxConstants.OUTPUT));
+        return paths;
     }
 
 }

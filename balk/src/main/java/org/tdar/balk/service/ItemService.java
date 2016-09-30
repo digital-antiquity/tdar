@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.TreeMap;
 
 import javax.xml.bind.JAXBContext;
@@ -125,7 +126,7 @@ public class ItemService {
         AbstractDropboxItem item = itemDao.findByDropboxId(dropboxItemWrapper.getId(), dropboxItemWrapper.isDir());
         if (item != null) {
             logger.debug("{} {}", dropboxItemWrapper.getPath(), item);
-            //fixme: better handling of "move/delete"
+            // fixme: better handling of "move/delete"
             item.setDropboxId("deleted" + item);
             genericDao.saveOrUpdate(item);
             return;
@@ -308,29 +309,32 @@ public class ItemService {
         client = new DropboxClient();
         ToPersistListener listener = new ToPersistListener(this);
         client.processMetadataItem(listener, move);
-        logger.debug("storing: {} {}", listener,listener.getWrappers());
+        logger.debug("storing: {} {}", listener, listener.getWrappers());
         store(listener);
 
     }
 
-    @Transactional(readOnly = true)
-    public List<String> listTopLevelPaths() {
-        return Arrays.asList("");
-
-    }
-
     @Transactional(readOnly = false)
-    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping) 
+    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping)
             throws Exception {
         DropboxClient client = new DropboxClient(userMapping);
         // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH
         Metadata move = client.copy(item.getPath(), newPath);
-//        client = new DropboxClient();
-//        ToPersistListener listener = new ToPersistListener(this);
-//        client.processMetadataItem(listener, move);
-//        logger.debug("storing: {} {}", listener,listener.getWrappers());
-//        store(listener);
+        // client = new DropboxClient();
+        // ToPersistListener listener = new ToPersistListener(this);
+        // client.processMetadataItem(listener, move);
+        // logger.debug("storing: {} {}", listener,listener.getWrappers());
+        // store(listener);
     }
 
+    @Transactional(readOnly = true)
+    public Set<String> listTopLevelPaths() {
+        return itemDao.findTopLevelPaths(DropboxConstants.CLIENT_DATA.replace("/", ""));
+    }
+
+    @Transactional(readOnly = true)
+    public Set<String> listTopLevelManagedPaths() {
+        return itemDao.findTopLevelManagedPaths();
+    }
 
 }
