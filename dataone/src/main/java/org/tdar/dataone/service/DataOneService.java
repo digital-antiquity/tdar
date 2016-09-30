@@ -316,7 +316,8 @@ public class DataOneService implements DataOneConstants {
         if (object == null) {
             return null;
         }
-        InformationResource resource = object.getTdarResource();
+        InformationResource tdarResource = object.getTdarResource();
+        InformationResource resource = tdarResource;
         policy.getAllowList().add(DataOneUtils.createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
@@ -332,18 +333,22 @@ public class DataOneService implements DataOneConstants {
         }
         
         if (object != null) { // could be a bad version
-            if (object.getType() == EntryType.TDAR) {
-                IdentifierParser parser = new IdentifierParser(id, informationResourceService);
-                String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, object.getType().getUniquePart());
-                if (oldId != null) {
-                    metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
-                }
+            IdentifierParser parser = new IdentifierParser(id, informationResourceService);
+//            if (object.getType() == EntryType.TDAR) {
+            String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, parser.getType().getUniquePart());
+            if (oldId != null) {
+                metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
             }
+//            }
             metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
             metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
             metadata.setSize(BigInteger.valueOf(object.getSize()));
-            metadata.setSeriesId(DataOneUtils.createIdentifier(object.getTdarResource().getId().toString() +  D1_SEP + object.getType().getUniquePart() ));
-            metadata.setIdentifier(DataOneUtils.createIdentifier(id));
+            metadata.setSeriesId(DataOneUtils.createIdentifier(tdarResource.getId().toString() +  D1_SEP + parser.getType().getUniquePart() ));
+            if (parser.isSeriesIdentifier()) {
+                metadata.setIdentifier(DataOneUtils.createIdentifier(IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null)));
+            } else {
+                metadata.setIdentifier(DataOneUtils.createIdentifier(id));
+            }
         }
         metadata.setOriginMemberNode(getTdarNodeReference());
         // metadata.setReplicationPolicy(rpolicy );

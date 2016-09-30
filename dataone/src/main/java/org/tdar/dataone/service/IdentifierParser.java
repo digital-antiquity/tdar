@@ -7,6 +7,7 @@ import org.apache.commons.lang.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.resource.InformationResource;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.service.resource.InformationResourceService;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.utils.PersistableUtils;
@@ -21,7 +22,7 @@ public class IdentifierParser implements DataOneConstants {
     private Date modified;
     private EntryType type;
     private boolean seriesIdentifier = false;
-    
+
     public IdentifierParser(String id_, InformationResourceService informationResourceService) {
         logger.debug("looking for Id: {}", id_);
         base = StringUtils.substringBefore(id_, D1_SEP);
@@ -121,6 +122,54 @@ public class IdentifierParser implements DataOneConstants {
 
     public void setSeriesIdentifier(boolean seriesIdentifier) {
         this.seriesIdentifier = seriesIdentifier;
+    }
+
+    /**
+     * The Identifier is constructed by combining the type with additional information. As we do not track every version of a
+     * record in tDAR, we use the "date" in the identifier name to differentiate within D1.
+     * 
+     * @param identifier
+     * @param dateUpdated
+     * @param type
+     * @param irfId
+     * @param version
+     * @return
+     */
+    public static String formatIdentifier(String identifier, Date dateUpdated, EntryType type, Long irfId, Integer version) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(webSafeDoi(identifier)).append(DataOneService.D1_SEP);
+        switch (type) {
+            case D1:
+                sb.append(DataOneService.D1_FORMAT);
+                sb.append(dateUpdated.getTime());
+                break;
+            case FILE:
+                sb.append(irfId);
+                sb.append(DataOneService.D1_VERS_SEP);
+                sb.append(version);
+                break;
+            case TDAR:
+                sb.append(DataOneService.META);
+                sb.append(DataOneService.D1_VERS_SEP);
+                sb.append(dateUpdated.getTime());
+                break;
+            default:
+                break;
+        }
+        return sb.toString().replace(" ", "%20");
+
+    }
+
+    public static String formatIdentifier(String identifier, Date dateUpdated, EntryType type, InformationResourceFile irf) {
+        if (irf == null) {
+            return IdentifierParser.formatIdentifier(identifier, dateUpdated, type, null, null);
+        }
+        return IdentifierParser.formatIdentifier(identifier, dateUpdated, type, irf.getId(), irf.getLatestVersion());
+    }
+
+    public static String webSafeDoi(String identfier) {
+        // switching back DOIs to have : in them instead of /.
+        return identfier.replace("/", ":");
     }
 
 }

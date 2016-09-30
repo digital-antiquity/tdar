@@ -224,13 +224,17 @@ public class DataOneWebITCase extends AbstractWebTest {
     }
 
     @Test
-    public void testObjectSid() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
-        HttpResponse record = getRecord("/v1/object/4230" + DataOneService.D1_SEP + DataOneService.META);
+    public void testObjectMetaSid() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
+        StringWriter contents = new StringWriter();
+        HttpResponse record = getRecord("/v1/object/4230" + DataOneService.D1_SEP + DataOneService.META, contents);
+        assertTrue(contents.toString().contains(TEST_DOI_META.replaceAll("&amp;", "&")));
     }
 
     @Test
-    public void testMetaSid() throws ClientProtocolException, IOException {
+    public void testD1Sid() throws ClientProtocolException, IOException {
+        StringWriter contents = new StringWriter();
         HttpResponse record = getRecord("/v1/meta/4230" + DataOneService.D1_SEP + EntryType.D1.getUniquePart());
+        assertTrue(contents.toString().contains(TEST_DOI.replaceAll("&amp;", "&")));
     }
 
     @Test
