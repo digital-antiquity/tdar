@@ -15,7 +15,7 @@ import org.tdar.struts.action.AbstractRequestAccessController;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class RequestAccessLoginController extends AbstractRequestAccessController<ResourceCollection>{
+public class CollectionRequestAccessLoginController extends AbstractRequestAccessController<ResourceCollection>{
 
 
     private static final long serialVersionUID = -1206933248591765156L;

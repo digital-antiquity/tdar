@@ -45,7 +45,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/resource/request")
 @Component
 @Scope("prototype")
-public class RequestAccessAction extends AbstractAuthenticatableAction
+public class ResourceRequestAccessAction extends AbstractAuthenticatableAction
         implements Preparable, PersistableLoadingAction<Resource> {
 
     @SuppressWarnings("unused")

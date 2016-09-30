@@ -33,7 +33,7 @@ import com.opensymphony.xwork2.Preparable;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class RequestAccessAction extends AbstractRequestAccessController<ResourceCollection> implements Preparable, PersistableLoadingAction<ResourceCollection> {
+public class CollectionRequestAccessAction extends AbstractRequestAccessController<ResourceCollection> implements Preparable, PersistableLoadingAction<ResourceCollection> {
 
     private Set<EmailMessageType> emailTypes = new HashSet<>(EmailMessageType.valuesWithoutConfidentialFiles());
 

@@ -19,7 +19,7 @@ import com.opensymphony.xwork2.Validateable;
 @Namespace("/collection/request")
 @Component
 @Scope("prototype")
-public class RequestAccessRegistrationController extends AbstractRequestAcessRegistrationAction<ResourceCollection> implements Validateable, Preparable {
+public class CollectionRequestAccessRegistrationController extends AbstractRequestAcessRegistrationAction<ResourceCollection> implements Validateable, Preparable {
 
     private static final long serialVersionUID = 8033398514273270692L;
 
