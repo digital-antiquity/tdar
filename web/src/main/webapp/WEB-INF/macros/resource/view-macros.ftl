@@ -99,7 +99,7 @@ View freemarker macros
         <a href="<@s.url value='${path}'/>"
             data-file-id="${version.informationResourceFile.id?c}"
             class="download-link download-file"
-           onClick="TDAR.common.registerDownload('${path}', '${id?c}')"
+           onClick="TDAR.common.registerDownload('${path?js_string}', '${id?c}')"
            title="click to download: ${version.filename}">
             <@common.truncate version.filename 65 />
         </a><#if newline><br/></#if>
@@ -718,12 +718,6 @@ View freemarker macros
     </table>
     </#macro>
 
-
-<#--
-    <#macro datatableChildJavascript>
-    TDAR.datatable.registerChild(${resource.id?c},"${resource.title?js_string}");
-    </#macro>
--->
 <#-- emit markup for a single thumbnail representing the specified resource (e.g. for use in search results or project/collection contents)  -->
     <#macro firstThumbnail resource_ forceAddSchemeHostAndPort=true>
     <#-- if you don't test if the resource hasThumbnails -- then you start showing the Image Unavailable on Projects, Ontologies... -->
