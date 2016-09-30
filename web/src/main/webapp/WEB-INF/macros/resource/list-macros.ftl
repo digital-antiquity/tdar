@@ -269,7 +269,7 @@ bookmark indicator, etc..
  -->
     <#macro searchResultTitleSection result titleTag >
         <#local titleCssClass="search-result-title-${result.status!('ACTIVE')}" />
-        <@bookmark result false/>
+<#--        <@bookmark result false/>  --> 
         <#if titleTag?has_content>
             <${titleTag} class="${titleCssClass}">
         </#if>
@@ -339,6 +339,7 @@ bookmark indicator, etc..
 -->
 
     <#macro bookmark _resource showLabel=true useListItem=false>
+    <#return />
         <#if sessionData?? && sessionData.authenticated>
             <#if _resource.resourceType?has_content>
                 <#assign status = "disabled-bookmark" />

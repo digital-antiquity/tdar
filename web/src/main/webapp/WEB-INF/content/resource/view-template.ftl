@@ -532,42 +532,42 @@
         	<@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
 		</#if>	
     </#if>
-        <ul class="unstyled">
+        <ul class="media-list">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
             <li class="media"><i class="icon-envelope pull-left"></i>
-            <div class="media-body">
-                    <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
-                <#if !(authenticatedUser.id)?has_content>
-                         (requires login)
-                </#if>
-            </a>
-            </div>
+                <div class="media-body">
+                        <a id="requestAccess" href="<@s.url value="/resource/request/${id?c}"/>">${txt}
+                    <#if !(authenticatedUser.id)?has_content>
+                             (requires login)
+                    </#if>
+                </a>
+                </div>
             </li>
             <#if (authenticatedUser.id)?has_content && editable>
             <li class="media"><i class="icon-share-alt pull-left"></i>
-            <div class="media-body">
-                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Share</a>
-            </div>
-            </li>
-
-            <li><strong>Library</strong>
-                <ul class="unstyled">
-            <li class="media"><i class="icon-star pull-left"></i>
                 <div class="media-body">
-                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Bookmark</a>
+                        <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Share</a>
                 </div>
-            </li>
-
-
-            <li class="media"><i class="icon-folder-open pull-left"></i>
-                <div class="media-body">
-                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Add to a Collection</a>
-                </div>
-            </li>
-            </ul>
             </li>
             </#if>
         </ul>
+        <#if (authenticatedUser.id)?has_content && editable>
+        <p><strong>Library</strong></p>
+        <ul class="media-list">
+            <li class="media"><i class="icon-star pull-left"></i>
+                <div class="media-body">
+                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Bookmark</a>
+                    <!-- WHY -->
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                </div>
+            </li>
+            <li class="media "><i class="icon-folder-open pull-left"></i>
+                <div class="media-body">
+                    <a id="requestAccess" href="#modal" data-toggle="modal">Add to a Collection</a>
+                </div>
+            </li>
+        </ul>
+        </#if>
     <h3>Basic Information</h3>
 
     <p>
@@ -659,5 +659,24 @@
         </table>
         </#list>
     </#macro>
+
+                <div class="modal hide fade" id="modal">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h3>Modal header</h3>
+                  </div>
+                  <div class="modal-body">
+                  <ul>
+                    <li>Australia</li>
+                    <li>test</li>
+                    <li>test collection</li>
+                    <li>new collection</li>
+                  </ul>
+                  </div>
+                  <div class="modal-footer">
+                    <a href="#" class="btn">Close</a>
+                    <a href="#" class="btn btn-primary">Save changes</a>
+                  </div>
+                </div>
 
 </#escape>
