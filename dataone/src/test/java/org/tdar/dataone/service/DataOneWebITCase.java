@@ -233,7 +233,7 @@ public class DataOneWebITCase extends AbstractWebTest {
     public void testSystemMetaMetaSid() throws FailingHttpStatusCodeException, MalformedURLException, IOException {
         StringWriter contents = new StringWriter();
         HttpResponse record = getRecord("/v1/meta/4230" + DataOneService.D1_SEP + DataOneService.META, contents);
-        assertTrue(contents.toString().contains(TEST_DOI_META.replaceAll("&amp;", "&")));
+        assertTrue(contents.toString().contains(TEST_DOI_META.replaceAll("&", "&amp;")));
     }
 
     @Test
