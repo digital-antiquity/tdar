@@ -12,11 +12,11 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.CultureKeyword;
 import org.tdar.core.bean.keyword.GeographicKeyword;
 import org.tdar.core.bean.keyword.InvestigationType;
@@ -29,8 +29,8 @@ import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAnnotation;
 import org.tdar.core.bean.resource.ResourceNote;
 import org.tdar.core.service.GenericService;
+import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
-import org.tdar.struts.interceptor.annotation.RequiresTdarUserGroup;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -39,7 +39,6 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/resource")
-@RequiresTdarUserGroup(TdarGroup.TDAR_EDITOR)
 public class ResourceComparisonAction extends AbstractAuthenticatableAction implements Preparable {
 
     private static final long serialVersionUID = 1996434590439580868L;
@@ -49,6 +48,9 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
     
     @Autowired
     private GenericService genericService;
+    @Autowired
+    private AuthorizationService authorizationService;
+    
     private Set<CultureKeyword> cultures = new HashSet<>();
     private Set<InvestigationType> investigationTypes = new HashSet<>();
     private Set<TemporalKeyword> temporal = new HashSet<>();
@@ -73,6 +75,12 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
             resources.addAll(rc.getResources());
         }
+        resources.forEach(resource -> {
+                if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
+                    addActionError("abstractPersistableController.unable_to_view_edit");
+                }
+            }
+        );
         setupSharedKeywords();
     }
 
