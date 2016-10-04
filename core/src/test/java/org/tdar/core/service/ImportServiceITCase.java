@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.entity.AuthorizedUser;
@@ -54,7 +55,9 @@ public class ImportServiceITCase extends AbstractIntegrationTestCase {
         document.setTitle("test");
         document.setDescription("test description");
         document.setDocumentType(DocumentType.BOOK);
-        document.getResourceCollections().add(new ResourceCollection("internal collection","intenral", SortOption.TITLE, CollectionType.INTERNAL, true, getUser()));
+        InternalCollection e = new InternalCollection();
+        e.setOwner(getUser());
+        document.getInternalCollections().add(e);
         document.getInternalResourceCollection().getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, getBillingUser().getUsername()), GeneralPermissions.ADMINISTER_GROUP));
         Document newDoc = importService.bringObjectOntoSession(document, getAdminUser(), null, null, true);
         genericService.synchronize();
