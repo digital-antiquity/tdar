@@ -36,6 +36,8 @@
 
     <properties>
         <!--  java 8 version of postgres driver -->
+        <hibernate.version>5.2.3.Final</hibernate.version>
+        <spring.framework.version>4.3.3.RELEASE</spring.framework.version>
         <postgresql.jdbc.version>9.4.1208.jre7</postgresql.jdbc.version>
         <servlet.api.version>3.0.1</servlet.api.version>
         <liquibase.version>3.5.0</liquibase.version>
