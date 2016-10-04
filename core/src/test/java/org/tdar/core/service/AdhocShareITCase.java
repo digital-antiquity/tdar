@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.jena.atlas.test.Gen;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
@@ -17,6 +18,8 @@ import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.entity.UserInvite;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.exception.TdarAuthorizationException;
 import org.tdar.core.service.collection.AdhocShare;
@@ -187,8 +190,28 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testShareWithEmail() {
-        // assert that it creates the user invite and links it to the share
-        fail();
+        AdhocShare adhoc = new AdhocShare();
+        adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_NOTHING_ID);
+        String email = "abc123@qhe1.com";
+        adhoc.setEmail(email);
+        adhoc.setPermission(GeneralPermissions.MODIFY_RECORD);
+        
+        List<Resource> resources = genericService.findAll(Resource.class, adhoc.getResourceIds());
+        InternalCollection shareFromAdhoc = (InternalCollection) resourceCollectionService.createShareFromAdhoc(adhoc, resources, null, null, getAdminUser());
+        assertTrue(shareFromAdhoc instanceof InternalCollection);
+        assertTrue(shareFromAdhoc.getResources().containsAll(resources));
+        assertEquals(1, shareFromAdhoc.getResources().size());
+        assertEquals(getAdminUser(), shareFromAdhoc.getOwner());
+        List<UserInvite> findAll = genericService.findAll(UserInvite.class);
+        UserInvite inv = null;
+        for (UserInvite invite : findAll) {
+            if (invite.getEmailAddress().equals(email)) {
+                inv = invite; 
+            }
+        };
+        assertTrue("should have seen invite", inv != null);
+        assertEquals(inv.getResourceCollection(), shareFromAdhoc);
+        assertEquals(inv.getPermissions(), GeneralPermissions.MODIFY_RECORD);
     }
 
 }

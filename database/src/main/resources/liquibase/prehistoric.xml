@@ -123,4 +123,7 @@
             baseColumnNames="owner_id" baseTableName="timed_access" referencedColumnNames="id" />
     </changeSet>
     <!--  FIXME: migration script -->
+    <changeSet id="prehistoric-collections-10" author="abrin">
+    <dropNotNullConstraint tableName="user_invite" columnName="date_redeemed"/>
+    </changeSet>
 </databaseChangeLog>

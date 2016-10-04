@@ -1179,6 +1179,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
                 tar.setCollection((ResourceCollection)collection);
                 tar.setUser(user);
+                tar.setCreatedBy(authenticatedUser);
                 getDao().saveOrUpdate(tar);
             }
 
@@ -1188,6 +1189,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             invite.setEmailAddress(share.getEmail());
             invite.setPermissions(share.getPermission());
             invite.setDateCreated(new Date());
+            invite.setAuthorizer(authenticatedUser);
             invite.setResourceCollection((ResourceCollection)collection);
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
