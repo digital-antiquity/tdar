@@ -6,6 +6,8 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -246,9 +248,11 @@ public abstract class ExtendedDcTransformer<R extends Resource> implements Trans
             }
             
 
+            SortedSet<String> types = new TreeSet<>();
             for (InformationResourceFileVersion version : source.getLatestUploadedVersions()) {
-                dc.addType(version.getMimeType());
+                types.add(version.getMimeType());
             }
+            types.forEach(type -> dc.addType(type));
 
             Institution resourceProviderInstitution = source.getResourceProviderInstitution();
             if (resourceProviderInstitution != null) {

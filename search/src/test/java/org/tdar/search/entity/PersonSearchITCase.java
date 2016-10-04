@@ -412,6 +412,21 @@ public class PersonSearchITCase extends AbstractWithIndexIntegrationTestCase {
             assertTrue(pers.getInstitution().getName().contains(" "));
         }
     }
+    
+
+    @Test
+    @Rollback(true)
+    public void testPersonEscapeIssues() throws SolrServerException, IOException, ParseException {
+        searchIndexService.indexAll(getAdminUser(), LookupSource.PERSON);
+        SearchResult<Person> result = findPerson(new Person(), "Margaret Nelson(CNH", null, min);
+        List<Person> people = result.getResults();
+        logger.info("{}", people);
+        // expecting not to have an exception, it's okay if it's empty
+        assertTrue("person list should have at least two items", people.size() >= 0);
+        for (Person pers : result.getResults()) {
+            assertTrue(pers.getInstitution().getName().contains(" "));
+        }
+    }
 
     @Test
     @Rollback(true)

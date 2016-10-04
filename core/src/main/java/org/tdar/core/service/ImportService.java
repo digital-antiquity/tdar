@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -158,7 +159,7 @@ public class ImportService {
         }
 
         if (validate) {
-            validateInvalidImportFields(incomingResource);
+            validateInvalidImportFields(incomingResource, authorizedUser);
         }
         TdarUser blessedAuthorizedUser = genericService.merge(authorizedUser);
         incomingResource.markUpdated(blessedAuthorizedUser);
@@ -327,7 +328,7 @@ public class ImportService {
      * @param incomingResource
      * @throws APIException
      */
-    private <R extends Resource> void validateInvalidImportFields(R incomingResource) throws APIException {
+    private <R extends Resource> void validateInvalidImportFields(R incomingResource, TdarUser user) throws APIException {
 
         if (incomingResource instanceof CodingSheet) {
             CodingSheet codingSheet = (CodingSheet) incomingResource;
@@ -351,6 +352,13 @@ public class ImportService {
             if (PersistableUtils.isNotNullOrTransient(informationResource.getMappedDataKeyColumn())) {
                 throw new APIException(MessageHelper.getMessage("importService.related_dataset_not_supported"), StatusCode.UNKNOWN_ERROR);
             }
+        }
+
+        Set<AuthorizedUser> aus = new HashSet<>();
+        // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
+        incomingResource.getResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+        if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
+            throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
         }
     }
 
@@ -560,7 +568,18 @@ public class ImportService {
             toReturn = (P) entityService.findOrSaveCreator(creator);
             logger.debug("findOrSaveCreator:{}", creator);
         }
-        
+
+        if (property instanceof AuthorizedUser) {
+            AuthorizedUser authorizedUser = (AuthorizedUser) property;
+            toReturn = (P)authorizedUser;
+            TdarUser user = entityService.findUser(authorizedUser.getUser());
+            if (user != null) {
+                authorizedUser.setUser(user);
+            } else {
+                throw new APIException("importService.cannot_find_user", StatusCode.FORBIDDEN);
+            }
+        }
+
         if (property instanceof DataTable) {
             DataTable dataTable = (DataTable) property;
             dataTable.setDataset((Dataset)resource);
@@ -703,7 +722,7 @@ public class ImportService {
 
 
         if (validate) {
-            validateInvalidImportFields(incomingResource);
+            validateInvalidImportFields(incomingResource, authenticatedUser);
         }
 
         TdarUser blessedAuthorizedUser = genericService.merge(authenticatedUser);
@@ -718,7 +737,7 @@ public class ImportService {
         return incomingResource;
     }
 
-private void validateInvalidImportFields(ResourceCollection incomingResource) throws APIException {
+private void validateInvalidImportFields(ResourceCollection incomingResource, TdarUser user) throws APIException {
 
         if (incomingResource.getType() == CollectionType.INTERNAL) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_type"), StatusCode.UNKNOWN_ERROR);
@@ -732,7 +751,7 @@ private void validateInvalidImportFields(ResourceCollection incomingResource) th
             throw new APIException(MessageHelper.getMessage("importService.invalid_collection_contents"), StatusCode.UNKNOWN_ERROR);
         }
 
-        if (CollectionUtils.isNotEmpty(incomingResource.getAuthorizedUsers())) {
+        if (CollectionUtils.isNotEmpty(incomingResource.getAuthorizedUsers()) && !authenticationAndAuthorizationService.isAdministrator(user)) {
             throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
         }
 }

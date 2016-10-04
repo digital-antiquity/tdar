@@ -1,8 +1,8 @@
 package org.tdar.search.query.part;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,11 +21,11 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
 
     @Override
     public String generateQueryString() {
-        List<String> fns = new ArrayList<>();
-        List<String> lns = new ArrayList<>();
-        List<String> ems = new ArrayList<>();
-        List<String> insts = new ArrayList<>();
-        List<String> wildcards = new ArrayList<>();
+        Set<String> fns = new HashSet<>();
+        Set<String> lns = new HashSet<>();
+        Set<String> ems = new HashSet<>();
+        Set<String> insts = new HashSet<>();
+        Set<String> wildcards = new HashSet<>();
         QueryPartGroup group = new QueryPartGroup();
         for (Person pers : getFieldValues()) {
             boolean hasName = false;
@@ -75,11 +75,6 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
 
             if (StringUtils.isNotBlank(pers.getInstitutionName())) {
                 String institution = StringUtils.trim(pers.getInstitutionName());
-                institution = PhraseFormatter.ESCAPED.format(institution);
-                // institution = PhraseFormatter.WILDCARD.format(institution);
-                if (institution.contains(" ")) {
-                    institution = PhraseFormatter.QUOTED.format(institution);
-                }
                 insts.add(institution);
             }
         }
@@ -97,7 +92,17 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         }
         if (CollectionUtils.isNotEmpty(insts)) {
             QueryPartGroup group1 = new QueryPartGroup(Operator.OR);
-            group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME, insts));
+            Set<String> formatted = new HashSet<>();
+            for (String inst : insts) {
+                String institution = PhraseFormatter.ESCAPED.format(inst);
+                if (institution.contains(" ")) {
+                    institution = PhraseFormatter.QUOTED.format(institution);
+                }
+                formatted.add(institution);
+            }
+            FieldQueryPart<String> inst = new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME, formatted);
+//            inst.setPhraseFormatters(PhraseFormatter.ESCAPED);
+            group1.append(inst);
             // group1.append(new FieldQueryPart<String>(QueryFieldNames.INSTITUTION_NAME_AUTO, insts));
             group.append(group1);
         }
@@ -119,7 +124,7 @@ public class PersonQueryPart extends FieldQueryPart<Person> {
         return group.toString();
     }
 
-    private QueryPartGroup createFieldGroup(List<String> terms, String norm, String auto) {
+    private QueryPartGroup createFieldGroup(Set<String> terms, String norm, String auto) {
         if (CollectionUtils.isNotEmpty(terms)) {
             QueryPartGroup group1 = new QueryPartGroup(Operator.OR);
             FieldQueryPart<String> fqp = new FieldQueryPart<String>(norm, terms);
