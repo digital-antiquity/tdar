@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.TimedAccessRestriction;
+import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -87,8 +88,10 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     @Override
     public void process(TimedAccessRestriction persistable) throws Exception {
         DateTime now = DateTime.now();
-        List<TdarUser> toRemove = new ArrayList<>();
+        List<AuthorizedUser> toRemove = new ArrayList<>();
         if (now.isAfter(new DateTime(persistable.getUntil()))) {
+            
+            ResourceCollection collection = persistable.getCollection();
             persistable.getCollection().getAuthorizedUsers().forEach(au ->{
                 TdarUser user = persistable.getUser();
                 // if the access restriction was created prior to the creation of the user, the invite might exist
@@ -96,11 +99,11 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                     user = persistable.getInvite().getUser();
                     persistable.getInvite().setPermissions(null);
                     genericDao.saveOrUpdate(persistable.getInvite());
+                    logger.debug("disabling invite for {}", persistable.getInvite());
                 }
                 
-                ResourceCollection collection = persistable.getCollection();
                 if (au.getUser().equals(user)) {
-                    toRemove.add(user);
+                    toRemove.add(au);
                     String name = "";
                     if (collection instanceof HasName) {
                         name = ((HasName)collection).getName();
@@ -110,13 +113,15 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                     String note = String.format("%s - %s", name, user.getName());
                     ownerNotes.get(persistable.getCreatedBy()).add(note);
                     userNotes.get(persistable.getUser()).add(note);
+                    logger.debug("disabling authorized user  ({}) for {}", au, collection);
                 }
-                collection.getAuthorizedUsers().removeAll(toRemove);
-                genericDao.saveOrUpdate(collection);
-                genericDao.saveOrUpdate(collection.getAuthorizedUsers());
-                publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
-
             });
+            genericDao.delete(persistable);
+            logger.debug("toRemove:{}", toRemove);
+            collection.getAuthorizedUsers().removeAll(toRemove);
+            genericDao.saveOrUpdate(collection);
+            logger.debug("result: {}", collection.getAuthorizedUsers());
+            publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
         }
     }
     

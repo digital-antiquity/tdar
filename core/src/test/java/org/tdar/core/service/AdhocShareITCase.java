@@ -3,9 +3,11 @@ package org.tdar.core.service;
 import static org.junit.Assert.*;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.jena.atlas.test.Gen;
+import org.joda.time.DateTime;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Role;
@@ -18,6 +20,7 @@ import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.UserInvite;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Resource;
@@ -32,7 +35,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     ResourceCollectionService ressourceCollectionService;
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithResources() {
         AdhocShare adhoc = new AdhocShare();
         adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_NOTHING_ID);
@@ -49,7 +52,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithResource() {
         AdhocShare adhoc = new AdhocShare();
         adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_NOTHING_ID);
@@ -64,7 +67,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithListCollection() {
         ListCollection list = new ListCollection("test", "test", SortOption.COLLECTION_TITLE, false, getBasicUser());
         list.getUnmanagedResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
@@ -84,7 +87,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithSharedCollection() {
         SharedCollection list = new SharedCollection("test", "test", false, getBasicUser());
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
@@ -105,7 +108,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithAccount() {
         BillingAccount account = new BillingAccount();
         account.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
@@ -125,7 +128,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithSharedCollectionAndResource() {
         SharedCollection list = new SharedCollection("test", "test", false, getBasicUser());
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
@@ -149,7 +152,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithoutRights() {
         SharedCollection list = new SharedCollection("test", "test", false, getEditorUser());
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
@@ -170,14 +173,14 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithExpiry() {
         AdhocShare adhoc = new AdhocShare();
         adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_NOTHING_ID);
         adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_CULTURE_ID);
         adhoc.setUserId(getBasicUserId());
-//        adhoc.
-        
+        Date expires = DateTime.now().minusDays(2).toDate();
+        adhoc.setExpires(expires);
         List<Resource> resources = genericService.findAll(Resource.class, adhoc.getResourceIds());
         SharedCollection shareFromAdhoc = (SharedCollection) resourceCollectionService.createShareFromAdhoc(adhoc, resources, null, null, getAdminUser());
         assertTrue(shareFromAdhoc instanceof SharedCollection);
@@ -185,10 +188,20 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
         assertEquals(2, shareFromAdhoc.getResources().size());
         assertEquals(getAdminUser(), shareFromAdhoc.getOwner());
         logger.debug(shareFromAdhoc.getName());
+        TimedAccessRestriction timed = null;
+        for (TimedAccessRestriction tar : genericService.findAll(TimedAccessRestriction.class)) {
+            if (tar.getCollection().equals(shareFromAdhoc)) {
+                timed = tar;
+            }
+        }
+        assertNotNull(timed);
+        assertEquals(expires, timed.getUntil());
+        assertEquals(getAdminUser(),timed.getCreatedBy());
+        assertEquals(shareFromAdhoc, timed.getCollection());
     }
 
     @Test
-    @Rollback
+    @Rollback(true)
     public void testShareWithEmail() {
         AdhocShare adhoc = new AdhocShare();
         adhoc.getResourceIds().add(TestConstants.DOCUMENT_INHERITING_NOTHING_ID);

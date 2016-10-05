@@ -37,7 +37,7 @@ public class TimedAccessRestriction extends AbstractPersistable {
     private TdarUser createdBy;
 
     @ManyToOne
-    @JoinColumn(nullable = false, name = "invite_id")
+    @JoinColumn(nullable = true, name = "invite_id")
     private UserInvite invite;
 
     @ManyToOne

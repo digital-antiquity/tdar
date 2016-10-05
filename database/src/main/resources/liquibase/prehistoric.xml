@@ -125,5 +125,6 @@
     <!--  FIXME: migration script -->
     <changeSet id="prehistoric-collections-10" author="abrin">
     <dropNotNullConstraint tableName="user_invite" columnName="date_redeemed"/>
+    <dropNotNullConstraint tableName="timed_access" columnName="invite_id"/>
     </changeSet>
 </databaseChangeLog>

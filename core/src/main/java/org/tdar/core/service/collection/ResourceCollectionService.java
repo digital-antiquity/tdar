@@ -1155,7 +1155,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         } else if (CollectionUtils.isNotEmpty(toTrack)) {
             // otherwise, we're really starting from scratch
             collection = _share;
-
             toTrack.forEach(r -> {
                 if (authorizationService.canEditResource(authenticatedUser, r, GeneralPermissions.MODIFY_RECORD)) {
                     _share.getResources().add(r);
@@ -1172,6 +1171,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         TdarUser user = getDao().find(TdarUser.class, share.getUserId());
         String _for = "";
+        getDao().saveOrUpdate((ResourceCollection)collection);
         if (user != null) {
             _for = user.getUsername();
             collection.getAuthorizedUsers().add(new AuthorizedUser(user, share.getPermission()));
@@ -1200,9 +1200,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             getDao().saveOrUpdate(invite);
             emailService.sendUserInviteEmail(invite, authenticatedUser);
         }
-        getDao().saveOrUpdate((ResourceCollection)collection);
         _share.setName(String.format("Share with %s", _for));
         _share.setDescription(String.format("auto generated share for %s with %s resources based on %s", _for, collection.getResources().size(), from));
+        getDao().saveOrUpdate((ResourceCollection)collection);
         return collection;
     }
 

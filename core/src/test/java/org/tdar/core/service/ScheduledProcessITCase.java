@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
+import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -30,9 +31,11 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.service.collection.AdhocShare;
 import org.tdar.core.service.external.MockMailSender;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
 import org.tdar.core.service.processes.OccurranceStatisticsUpdateProcess;
@@ -293,10 +296,34 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 //        dataset.getResourceCollections().add(collection);
         TimedAccessRestriction tar = new TimedAccessRestriction();
         TimedAccessRestriction expired = new TimedAccessRestriction();
+        tar.setDateCreated(new Date());
+        expired.setDateCreated(new Date());
+
+        Date expires = DateTime.now().minusDays(2).toDate();
+        expired.setUntil(expires);
+        expired.setCollection(collection);
+        expired.setCreatedBy(getAdminUser());
+        expired.setUser(e.getUser());
         genericService.saveOrUpdate(dataset);
-        
+        genericService.save(expired);
+        tar.setUntil(DateTime.now().plusDays(2).toDate());
+        tar.setCollection(collection);
+        tar.setCreatedBy(getAdminUser());
+        tar.setUser(e.getUser());
+        genericService.save(tar);
+        Long eid = expired.getId();
+        Long tid = tar.getId();
+        expired = null;
+        tar = null;
+        Long cid = collection.getId();
+        int aus = collection.getAuthorizedUsers().size();
+        collection = null;
+        genericService.synchronize();
         dtarp.execute();
-        fail("");
+        genericService.synchronize();
+        collection = genericService.find(SharedCollection.class, cid);
+        logger.debug("au: {}",collection.getAuthorizedUsers());
+        assertEquals(aus -1 , collection.getAuthorizedUsers().size());
     }
 
     @Autowired
