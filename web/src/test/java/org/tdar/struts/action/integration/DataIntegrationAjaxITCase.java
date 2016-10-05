@@ -15,7 +15,11 @@ import org.apache.commons.io.IOUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.Rollback;
 import org.tdar.TestConstants;
+import org.tdar.core.bean.resource.CodingSheet;
+import org.tdar.core.bean.resource.Dataset;
+import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.dao.integration.IntegrationColumnPartProxy;
 import org.tdar.core.dao.integration.IntegrationDataTableSearchResult;
@@ -150,9 +154,24 @@ public class DataIntegrationAjaxITCase extends AbstractControllerITCase {
         logger.debug(writer.toString());
     }
 
+    
     @Test
     public void testEmptyCountColumn() throws IOException, IntegrationDeserializationException {
         StringWriter writer = runJson(TEST_PATH + "test-empty-count-column.json");
+        logger.debug(writer.toString());
+    }
+
+    
+    @Test
+    @Rollback(true)
+    public void testRelaxedIntegration() throws IOException, IntegrationDeserializationException {
+        Dataset dataset = genericService.find(Dataset.class, 42990L);
+        DataTable table = dataset.getDataTables().iterator().next();
+        DataTableColumn column = table.getColumnByName("taxon");
+        CodingSheet codingsheet = column.getDefaultCodingSheet();
+        codingsheet.setDefaultOntology(null);
+        genericService.saveOrUpdate(dataset, table, column, codingsheet);
+        StringWriter writer = runJson(TEST_PATH + "test-relaxed-intgration.json");
         logger.debug(writer.toString());
     }
 

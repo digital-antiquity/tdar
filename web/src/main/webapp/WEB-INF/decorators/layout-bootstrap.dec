@@ -6,6 +6,7 @@
 <html class="no-js" lang="en" <#if ngApplicationName?has_content>ng-app="${ngApplicationName}"</#if>> <!--<![endif]-->
 <#import "decorator-macros.ftl" as dec>
 <#import "whitelabel-decorator-macros.ftl" as wdec>
+<#import "/WEB-INF/macros/resource/bootstrap-macros.ftl" as bs>
 
 <!-- README - UPDATE BOWER.JSON in lockstep -->
 <#global jquery_version="1.11.3">
@@ -105,7 +106,7 @@ ${head}
     </#if>
     <@header.outdatedBrowserWarning />
 
-    <div class="container">
+    <div class="${bs.container()}">
         <div class="row">
             <header class="span12">
                 <@dec.layout_header />
@@ -168,7 +169,7 @@ ${head}
         </#if>
 
         <#if actionMessages?has_content || (page.properties["div.messages"])?has_content>
-            <div class="row">
+            <div class="${bs.row()}">
                 <div class="span12">
                     <@s.actionmessage />
         ${(page.properties["div.messages"])!}
@@ -211,7 +212,7 @@ ${head}
         ${page.properties["div.titlebar"]}
         </#if>
 
-        <section class="row ${part}">
+        <section class="${bs.row()} ${part}">
 
             <#if showLeftSidebar()>
                 <aside class="span3">

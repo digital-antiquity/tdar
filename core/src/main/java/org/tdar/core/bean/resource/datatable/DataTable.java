@@ -301,6 +301,12 @@ public class DataTable extends AbstractPersistable {
         return getDataset().getTitle();
     }
 
+
+    @JsonView(JsonIntegrationDetailsFilter.class)
+    public Long getDatasetId() {
+        return getDataset().getId();
+    }
+
     public String getInternalName() {
         return getName().replaceAll("^((\\w+)_)(\\d+)(_?)", "");
     }

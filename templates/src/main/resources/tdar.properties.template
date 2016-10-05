@@ -408,3 +408,14 @@ xml.export.enabled=false
 # force the JSON to be "pretty" i.e. not one line
 #
 use.verbose.json=false
+
+################################
+##   Experimental/Advanced
+################################
+
+# maximum number a data tables user can include in an integration
+data.integration.maxDataTables=10
+
+# maximum number of output columns (integration/count/display) user can include in an integration
+
+data.integration.maxOutputColumns=15

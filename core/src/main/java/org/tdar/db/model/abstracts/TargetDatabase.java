@@ -72,7 +72,7 @@ public interface TargetDatabase extends Database {
     Map<String, Long> selectDistinctValuesWithCounts(DataTableColumn dataTableColumn);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
-    List<String> selectDistinctValues(DataTableColumn column);
+    List<String> selectDistinctValues(DataTableColumn column, boolean sort);
 
     @Transactional(value = "tdarDataTx", readOnly = true)
     List<List<String>> selectAllFromTable(DataTable dataTable, ResultSetExtractor<List<List<String>>> resultSetExtractor, boolean includeGenerated,

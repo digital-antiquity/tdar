@@ -18,6 +18,7 @@ import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.integration.DataIntegrationWorkflow;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.bean.resource.Resource;
+import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ResourceCollectionService;
@@ -186,7 +187,7 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
     public Boolean isEditable() {
         return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
     }
-    
+
     @Override
     public boolean authorize() throws TdarActionException {
         return authorizationService.canEditWorkflow(workflow, getAuthenticatedUser());
@@ -231,4 +232,19 @@ public class AngularIntegrationAction extends AbstractAuthenticatableAction impl
             }
         }
     }
+
+    /** tell layout.ftl and view.ftl that we want fluid containers **/
+    public String getGridSystemType() {
+        return "fluid";
+    }
+
+    public int getMaxOutputColumns() {
+        return TdarConfiguration.getInstance().getDataIntegrationMaximumColumns();
+    }
+
+    public int getMaxDataTables() {
+        return TdarConfiguration.getInstance().getDataIntegrationMaximumDataTables();
+    }
+
+
 }

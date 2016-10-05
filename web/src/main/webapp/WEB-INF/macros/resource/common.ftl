@@ -51,6 +51,7 @@ Common macros used in multiple contexts
         })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
         ga('create', '${googleAnalyticsId}', 'auto');
+        ga('set', 'transport', 'beacon');
         ga('send', 'pageview');
 
     </script>

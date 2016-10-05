@@ -17,7 +17,7 @@
     // prettify dataTables
     app.filter('dtDisplayName', function() {
         return function(dataTable) {
-            return dataTable.datasetTitle + ' :: ' + dataTable.displayName;
+            return dataTable.datasetTitle + ' ▸ ' + dataTable.displayName;
         }
     });
 

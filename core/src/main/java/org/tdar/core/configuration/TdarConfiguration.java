@@ -985,7 +985,19 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getBooleanProperty("sso.enabled", true);
     }
 
+    public boolean useMapInNodeParticipation() {
+        return assistant.getBooleanProperty("experimental.map_node_participation", false);
+    }
+
     public Long getMaxTranslatedFileSize() {
         return assistant.getLongProperty("max.translated_file_size", 75_000_000);
+    }
+
+    public int getDataIntegrationMaximumDataTables() {
+        return assistant.getIntProperty("data.integration.maxDataTables", 55);
+    }
+
+    public int getDataIntegrationMaximumColumns() {
+        return assistant.getIntProperty("data.integration.maxOutputColumns", 35);
     }
 }

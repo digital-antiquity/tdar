@@ -4,14 +4,14 @@
     var app = angular.module('integrationApp');
 
     // top-level controller for the integration viewmodel
-    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService',
-        function($rootScope, $scope, $log,  integration, dataService, validationService){
+    app.controller('IntegrationController', ['$rootScope', '$scope',  '$log', 'IntegrationService', 'DataService', 'ValidationService', '$attrs', '$timeout',
+        function($rootScope, $scope, $log,  integration, dataService, validationService, $attrs, $timeout){
         $log.info("IntegrationController::");
 
         var self = this;
         var _openModal;
         var _processAddedIntegrationColumns;
-        var _isReadOnly = $("#divIntegrationMain").data("read-only");
+        var _isReadOnly = $attrs.readOnly === "true";
         var _isBusy =false;
 
         // controller public fields
@@ -21,28 +21,31 @@
         _openModal = function(options) {
             $rootScope.$broadcast("openTdarModal", options);
         };
-        
         //status messages
         $scope.alert = {
             kind: "default",
             message: ""
         };
 
+        $scope.maxDataTables = parseInt($attrs.maxDataTables);
+        $scope.maxOutputColumns = parseInt($attrs.maxOutputColumns);
+
         // controller public methods
         self.setTab  = function(idx) {
             this.tab = idx;
-        }
+        };
+
 
         self.isTabSet = function(idx) {
             return this.tab === idx;
-        }
+        };
 
         self.closeTab = function(idx) {
             integration.removeOutputColumn(idx);
             if (integration.columns.length > 0) {
                 self.setTab(integration.columns.length - 1);
             }
-        }
+        };
 
         self.saveClicked = function() {
             self.updateStatus("Saving...");
@@ -54,7 +57,7 @@
         };
 
         self.saveAsClicked = function() {
-            console.log("Saving.");
+            //console.log("Saving.");
             self.integration.id = -1;
             self.updateStatus("Saving...");
 
@@ -101,9 +104,13 @@
             return promise;
         }
 
-        self.loadJSON = function() {
-            var jsonData = dataService.getDocumentData("jsondata");
+        $scope.$on('dataReceived', function(e, name, jsonData) {
+            if(name !== 'jsondata') return;
+
+            //var jsonData = dataService.getDocumentData("jsondata");
             if(!jsonData) return;
+            if($.isEmptyObject(jsonData)) return;
+
 
             //validate the embedded json first
             validationService.validateJson(jsonData);
@@ -126,10 +133,10 @@
                     }
                 },
                 function(err) {
-                    console.log("load failed - error information follows");
+                    //console.log("load failed - error information follows");
                     console.error(err);
                 });
-         };
+         });
         
         /**
          * Called after user selects list of dataset id's from 'add datasets' modal.
@@ -138,7 +145,6 @@
          */
         self.addDatasets = function(dataTableIds) {
             if(dataTableIds.length === 0) return;
-            
             var tableDetailsPromise =  dataService.loadTableDetails(dataTableIds);
             self.promiseStatus(tableDetailsPromise, "Loading table details");
             
@@ -154,14 +160,14 @@
 
         // add and initialize an integration column associated with with the specified ontology ID
         _processAddedIntegrationColumns = function(ontologies) {
-            console.debug("_processAddedIntegrationColumns ::");
+            //console.debug("_processAddedIntegrationColumns ::");
             ontologies.forEach(function(ontology){
                 self.integration.addIntegrationColumn('intcol' + ontology.id, ontology);
             });
         };
 
         self.addDatasetsClicked = function(arg) {
-            console.debug('Add Datasets clicked');
+            //console.debug('Add Datasets clicked');
             _openModal({
                 title: "Add Datasets",
                 searchType: "dataset",
@@ -172,17 +178,17 @@
             });
         };
 
-        self.addIntegrationColumnsClicked = function(arg) {
-            console.debug('Add Integration Columns Clicked');
-            _openModal({
-                title: "Add Ontologies",
-                searchType: "ontology",
-                categoryFilter: true,
-                close: function(data) {
-                    self.addIntegrationColumns(data);
-                }
-            });
-        };
+        // self.addIntegrationColumnsClicked = function(arg) {
+        //     //console.debug('Add Integration Columns Clicked');
+        //     _openModal({
+        //         title: "Add Ontologies",
+        //         searchType: "ontology",
+        //         categoryFilter: true,
+        //         close: function(data) {
+        //             self.addIntegrationColumns(data);
+        //         }
+        //     });
+        // };
 
         self.addDisplayColumnClicked = function(arg) {
             integration.addDisplayColumn("display column");
@@ -198,13 +204,26 @@
             dataService.removeDataTables(integration, $scope.selectedDataTables);
         };
 
+        self.removeDatatableClicked = function(dt) {
+            dataService.removeDataTables(integration, [dt])
+        };
+
         self.addIntegrationColumnsMenuItemClicked = function(ontology) {
             self.integration.addIntegrationColumn(ontology.title, ontology);
             self.setTab(integration.columns.length -1);
-        }
+        };
 
         self.isCountColumnDisabled = function() {
             return !self.integration.isCountColumnEnabled();
+        };
+
+
+        // simple hack for thwarting double-click to the integrate button
+        $scope.downloadDisabled = false;
+        $scope.downloadClicked = function() {
+            $scope.downloadDisabled = true;
+            $timeout(function() {$scope.downloadDisabled = false;}, 2000);
+            return true;
         };
 
         /**
@@ -217,6 +236,10 @@
             return col.columnEncodingType === 'COUNT';
         };
 
+        /**
+         * Return a compatible columns for an ontology, grouped by Dataset. The exact structure is a list of objects that contain 
+         * a 'dataTable' property and a 'compatCols' property  
+         */
         $scope.lookupCompatibleColumns = function(id) {
             return self.integration.mappedDataTables[id];
             // FIXME: angular doesn't like my getter functions - apparently they cause endless loop of detected changes (or something?)
@@ -229,6 +252,15 @@
         }
         // FIXME: proper validation required
         $scope.isValid = function() {
+
+            // do we exceed the max allowed output columns? datasets?
+            if(integration.columns.length > $scope.maxOutputColumns) {
+                return false;
+            }
+
+            if(integration.dataTables.length > $scope.maxDataTables) {
+                return false;
+            }
 
             // is the system already working on a preview or an integration
             if(_isBusy) {
@@ -348,10 +380,10 @@
                     },
                     ticketId: data.ticket.id
                 };
-                console.debug(data);
+                //console.debug(data);
             }, function(err) {
                 _isBusy = false;
-                console.debug("submitIntegration:: failed:%s", err);
+                console.error("submitIntegration:: failed:%s", err);
                 //todo: toast explaining what went wrong
             });
 

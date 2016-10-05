@@ -20,8 +20,11 @@
 
     <!-- Don't show header if header doesn't exist -->
     <div id="sidebar-right" parse="true">
-        <#if results?has_content>
         <br/><br/>
+        <#if (logoAvailable && (resourceCollection.whiteLabelCollection || (resourceCollection.customHeaderEnabled!false) == false)) >
+                <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
+         </#if>
+        <#if results?has_content>
         <hr class="light"/>
         <@common.renderWorldMap mode="mini" />
         <hr class="light"/>

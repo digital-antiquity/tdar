@@ -24,6 +24,7 @@ import static org.tdar.functional.util.TdarExpectedConditions.locatedElementCoun
 import static org.tdar.functional.util.TdarExpectedConditions.textToBePresentInElementsLocated;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -55,7 +56,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         waitForPageload();
         Assert.assertTrue(getText().contains("Data Integration"));
         Assert.assertTrue(getCurrentUrl().contains("/workspace/list"));
-        find(linkText("Start Now")).click();
+        find(linkText("START A NEW INTEGRATION")).click();
         Assert.assertTrue(getCurrentUrl().contains("/workspace/integrate"));
     }
 
@@ -82,8 +83,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // wait for modal to disappear and dataset list to populate
         waitFor(locatedElementCountEquals(className("sharedOntologies"), 0));
-        waitFor(locatedElementCountGreaterThan(cssSelector("#selDatasets option"), 1));
-
+        waitFor(locatedElementCountGreaterThan(cssSelector("table.selected-datasets tbody tr"), 1));
         removeDatasetByPartialName("Knowth");
         assertThat(find(".sharedOntologies").toList(), hasSize(2));
         assertThat(getText(), not(containsString("Knowth")));
@@ -282,9 +282,10 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
     }
 
     private void removeDatasetByPartialName(String name) {
-        By selector = id("selDatasets");
-        chooseSelectByName(name, selector);
-        find(id("rmDatasetBtn")).click();
+        find("table.selected-datasets tbody tr ").stream()
+                .filter( elem -> elem.getText().contains(name))
+                .findFirst()
+                .ifPresent(row -> row.findElement(By.cssSelector("a.delete-button")).click());
     }
 
     private void chooseSelectByName(String name, By selector) {
@@ -326,7 +327,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
     private void openDatasetsModal() throws InterruptedException {
         // wait for modal to load
-        find(id("btnAddDataset")).click();
+        waitFor(id("btnAddDataset")).click();
         // wait for results table
         waitFor(visibilityOfElementLocated(className("table-striped")));
     }

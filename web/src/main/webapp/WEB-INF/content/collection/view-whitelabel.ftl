@@ -41,12 +41,8 @@
 
         <@commonCollection.sidebar />
 
-        <@commonCollection.descriptionSection>
+        <@commonCollection.descriptionSection />
                 <#-- TODO: move this logic to logoAvailable() -->
-                <#if (logoAvailable && !whitelabelCollection.customHeaderEnabled)>
-                    <div class="pull-right"><img class="whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
-                </#if>
-        </@commonCollection.descriptionSection>
 
         <#if whitelabelCollection.featuredResourcesEnabled>
             <div class="viewpage-section">

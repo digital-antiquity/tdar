@@ -17,6 +17,7 @@ module.exports = function(config) {
     files: [
         'src/main/webapp/components/jquery/dist/jquery.js',
         'node_modules/angular/angular.js',
+        'node_modules/angular-mocks/angular-mocks.js',
         'src/main/webapp/js/data-integration/**/*.js',
         'src/test/frontend/spec-integrate/**/*.js',
         {pattern: 'src/test/frontend/fixtures/integrate/*.json', watched:true, served:true, included:false}
@@ -37,7 +38,7 @@ module.exports = function(config) {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'clear-screen'],
 
 
     // web server port
@@ -59,8 +60,15 @@ module.exports = function(config) {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
+    // browsers: ['Chrome_without_security', '--remote-debugging-port=9222'],
     browsers: ['PhantomJS'],
 
+  customLaunchers: {
+        Chrome_without_security: {
+          base: 'Chrome',
+          flags: ['--disable-web-security', '--remote-debugging-port=9222']
+        }
+      },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits

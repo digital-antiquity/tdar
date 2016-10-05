@@ -26,7 +26,6 @@ import org.jdom2.output.XMLOutputter;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.dataone.bean.EntryType;
-import org.tdar.dataone.bean.ListObjectEntry;
 
 /**
  * Generates an OAI-ORE ResourceMap based on an InformationResource
@@ -48,8 +47,8 @@ public class OaiOreResourceMapGenerator implements Serializable {
     public String generate() throws OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException {
         // Create an identifier for the ResourceMap
         Identifier id = new Identifier();
-        String formattedId = ListObjectEntry.webSafeDoi(ir.getExternalId());
-        id.setValue(ListObjectEntry.formatIdentifier(formattedId, ir.getDateUpdated(), EntryType.D1, null));
+        String formattedId = IdentifierParser.webSafeDoi(ir.getExternalId());
+        id.setValue(IdentifierParser.formatIdentifier(formattedId, ir.getDateUpdated(), EntryType.D1, null));
 
         // Create an Identifier for the metadata
         Identifier packageId = new Identifier();
@@ -60,7 +59,7 @@ public class OaiOreResourceMapGenerator implements Serializable {
         if (includeFiles) {
             for (InformationResourceFile irf : ir.getActiveInformationResourceFiles()) {
                 Identifier fileId = new Identifier();
-                fileId.setValue(ListObjectEntry.formatIdentifier(formattedId, ir.getDateUpdated(), EntryType.FILE, irf));
+                fileId.setValue(IdentifierParser.formatIdentifier(formattedId, ir.getDateUpdated(), EntryType.FILE, irf));
                 dataIds.add(fileId);
             }
         }
