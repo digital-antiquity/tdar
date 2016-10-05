@@ -34,7 +34,9 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     private TreeMap<String, WorkflowStatusReport> itemStatusReport;
     private DropboxUserMapping userInfo;
     private String path;
-    
+    private int page = 0;
+    private int size = 1000;
+    private int total = 0;
     @Override
     public void prepare() throws Exception {
         userInfo = userService.findUser(getAuthenticatedUser());
@@ -42,7 +44,7 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     
     @Action(value="" , results={@Result(name=SUCCESS, type=FREEMARKER, location="items.ftl")})
     public String execute() throws Exception {
-        setItemStatusReport(itemService.itemStatusReport(path));
+        total = itemService.itemStatusReport(path, page, size,itemStatusReport);
         return super.execute();
     }
 
@@ -68,5 +70,21 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
 
     public void setUserInfo(DropboxUserMapping userInfo) {
         this.userInfo = userInfo;
+    }
+
+    public int getPage() {
+        return page;
+    }
+
+    public void setPage(int page) {
+        this.page = page;
+    }
+
+    public int getSize() {
+        return size;
+    }
+
+    public void setSize(int size) {
+        this.size = size;
     }
 }

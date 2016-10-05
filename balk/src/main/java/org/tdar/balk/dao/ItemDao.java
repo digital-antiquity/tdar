@@ -80,13 +80,18 @@ public class ItemDao {
         return query2.list();
     }
 
-    public List<DropboxFile> findAllWithPath(String path) {
+    public int findAllWithPath(String path, List<DropboxFile> findAll, int page, int size) {
         String query = "from DropboxFile";
         if (StringUtils.isNotBlank(path) && path != "/") {
             query = "from DropboxFile where lower(path) like lower('%/" + path + "/%')";
         }
         Query query2 = getCurrentSession().createQuery(query);
-        return query2.list();
+        int total = query2.list().size();
+        query2 = getCurrentSession().createQuery(query);
+        query2.setMaxResults(size);
+        query2.setFirstResult(size * page);
+        findAll.addAll(query2.list());
+        return total;
     }
 
     public Set<String> findTopLevelPaths(String path) {
