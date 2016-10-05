@@ -50,6 +50,7 @@ import org.tdar.core.service.UrlService;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
+import org.tdar.utils.PersistableUtils;
 import org.tdar.utils.dropbox.DropboxClient;
 import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.DropboxItemWrapper;
@@ -176,12 +177,14 @@ public class ItemService {
         for (DropboxFile file : files) {
             try {
                 upload(file);
-                msg.append(" - ").append(file.getName()).append(" (").append(file.getTdarId()).append(")");
+                if (PersistableUtils.isNotNullOrTransient(file.getTdarId())) {
+                    msg.append(" - ").append(file.getName()).append(" (").append(file.getTdarId()).append(")\n");
+                }
             } catch (Exception e) {
                 logger.error("{}", e, e);
             }
         }
-        if (CollectionUtils.isNotEmpty(files)) {
+        if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
             sendEmail("balk@tdar.org", "adam.brin@asu.edu", "Uploaded files to tDAR", msg.toString());
         }
 
