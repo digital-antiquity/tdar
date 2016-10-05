@@ -1,6 +1,7 @@
 // Karma configuration
 var wro = require("./src/test/frontend/lib/wro");
 var fs = require("fs");
+var process = require("process");
 
 /**
  * @Param {string} [profile=default]
@@ -90,10 +91,14 @@ module.exports = function(config) {
 			'src/main/webapp/js/**/*.js': ['coverage']
         },
 
-        // test results reporter to use
-        // possible values: 'dots', 'progress'
-        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-        reporters: ['progress',"junit"],
+        //  Note:  "coverage" will obfuscate stack traces in failed tests.  Omit by declaring KARMA_SKIP_COVERAGE environment variable w/ non-empty value.
+        reporters: (function(){
+            var reporters = ['progress', "coverage", "junit"];
+            if(process.env.hasOwnProperty('KARMA_SKIP_COVERAGE')) {
+                reporters.splice(reporters.indexOf('coverage'), 1);
+            }
+            return reporters;
+        })(),
         junitReporter: {
             outputDir: 'target/karma/reports/',
             suite: 'models'
