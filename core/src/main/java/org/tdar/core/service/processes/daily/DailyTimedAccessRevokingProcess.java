@@ -17,16 +17,19 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.HasName;
+import org.tdar.core.bean.collection.CollectionRevisionLog;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.TimedAccessRestriction;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.Email;
+import org.tdar.core.bean.resource.RevisionLogType;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.event.EventType;
 import org.tdar.core.event.TdarEvent;
 import org.tdar.core.service.external.EmailService;
 import org.tdar.core.service.processes.AbstractScheduledBatchProcess;
+import org.tdar.utils.PersistableUtils;
 
 
 /**
@@ -45,7 +48,6 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
 
     private static final long serialVersionUID = 7534566757094920406L;
     public TdarConfiguration config = TdarConfiguration.getInstance();
-    @SuppressWarnings("unused")
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Autowired
@@ -90,10 +92,11 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     public void process(TimedAccessRestriction persistable) throws Exception {
         DateTime now = DateTime.now();
         if (now.isAfter(new DateTime(persistable.getUntil()))) {
-            
+            StringBuilder sb = new StringBuilder();
             ResourceCollection collection = persistable.getCollection();
             Set<AuthorizedUser> authorizedUsers = collection.getAuthorizedUsers();
             Iterator<AuthorizedUser> iter = authorizedUsers.iterator();
+            List<Long> idsToRemove = new ArrayList<>();
             while (iter.hasNext()) {
                 AuthorizedUser au = iter.next();
                 TdarUser user = persistable.getUser();
@@ -115,13 +118,20 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                     String note = String.format("%s - %s", name, user.getName());
                     ownerNotes.get(persistable.getCreatedBy()).add(note);
                     userNotes.get(persistable.getUser()).add(note);
-                    logger.debug("contains:{}", authorizedUsers.contains(au));
-                    logger.debug("disabling authorized user  ({}) for {}", au, collection);
+                    String msg = String.format("disabling authorized user  (%s) for %s", au, collection);
+                    logger.debug(msg);
+                    sb.append(msg);
+                    sb.append("\n");
+                    idsToRemove.add(au.getId());
                     iter.remove();
                 }
             }
-            genericDao.delete(persistable);
             genericDao.saveOrUpdate(collection);
+            genericDao.delete(persistable);
+            TdarUser user = genericDao.find(TdarUser.class, TdarConfiguration.getInstance().getAdminUserId());
+            CollectionRevisionLog crl = new CollectionRevisionLog(sb.toString(), collection, user, RevisionLogType.EDIT);
+            crl.setResourceCollection(collection);
+            genericDao.saveOrUpdate(crl);
             logger.debug("result: {}", collection.getAuthorizedUsers());
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
         }

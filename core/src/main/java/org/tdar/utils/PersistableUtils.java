@@ -56,7 +56,7 @@ public class PersistableUtils {
 
         // objects that are the same are equal
         if (a == b) {
-            logger.trace("object equality");
+            logger.trace("object equality, {} , {}",a,b);
             return true;
         }
 
@@ -75,6 +75,7 @@ public class PersistableUtils {
 
         if (a.getEqualityFields().isEmpty()) {
             if (isTransient(a) || isTransient(b)) {
+                logger.trace("false b/c one is transient {} != {} ", a.getClass(), b.getClass());
                 return false;
             } else {
                 equalsBuilder.append(a.getId(), b.getId());
@@ -103,21 +104,28 @@ public class PersistableUtils {
     public static int toHashCode(Persistable persistable) {
         // since we typically get called from instance method it's unlikely persistable will be null, but lets play safe...
         if (persistable == null) {
+            LoggerFactory.getLogger(Persistable.class).trace("0 b/c 'a' is null");
             return 0;
         }
         HashCodeBuilder builder = new HashCodeBuilder(23, 37);
 
+        Logger logger = LoggerFactory.getLogger(persistable.getClass());
         if (CollectionUtils.isEmpty(persistable.getEqualityFields())) {
             if (isTransient(persistable)) {
-                return System.identityHashCode(persistable);
+                int identityHashCode = System.identityHashCode(persistable);
+                logger.trace("system hash code because transient {} {}", persistable, identityHashCode);
+                return identityHashCode;
             } else {
                 builder.append(persistable.getId());
+                logger.trace("using id {} {}", persistable, persistable.getId());
             }
         } else {
+            logger.trace("using equality fields {} {}", persistable, persistable.getEqualityFields());
             builder.append(persistable.getEqualityFields().toArray());
         }
-
-        return builder.toHashCode();
+        int hashCode = builder.toHashCode();
+        logger.trace("hashCode {} {}", persistable, hashCode);
+        return hashCode;
     }
 
     /*

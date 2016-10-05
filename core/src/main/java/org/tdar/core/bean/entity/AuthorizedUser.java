@@ -48,7 +48,7 @@ import org.tdar.utils.jaxb.converters.JaxbPersistableConverter;
 @Entity
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.entity.AuthorizedUser")
-public class AuthorizedUser extends AbstractPersistable implements Persistable {
+public class AuthorizedUser extends AbstractPersistable {
 
     private static final long serialVersionUID = -6747818149357146542L;
 
@@ -132,7 +132,7 @@ public class AuthorizedUser extends AbstractPersistable implements Persistable {
             userid = user.getId();
             properName = user.getProperName();
         }
-        return String.format("%s[%s] ( %s)", properName, userid, generalPermission);
+        return String.format("%s[%s] (%s - %s)", properName, userid, generalPermission,getId());
     }
 
     /**

@@ -21,6 +21,8 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 import org.tdar.TestConstants;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
 import org.tdar.core.bean.billing.BillingAccount;
@@ -31,6 +33,7 @@ import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Document;
+import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
@@ -277,22 +280,22 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
     
     @Test
-    @Rollback(true)
+    @Rollback(false)
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = new SharedCollection();
         collection.getResources().add(dataset);
         dataset.getSharedCollections().add(collection);
         collection.markUpdated(getAdminUser());
-        AuthorizedUser e = new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL);
 //        e.setDateExpires(DateTime.now().minusDays(4).toDate());
         collection.setName("test");
         collection.setDescription("test");
         collection.markUpdated(getAdminUser());
-        collection.getAuthorizedUsers().add(e);
+        collection.getAuthorizedUsers().add( new AuthorizedUser(getBasicUser(), GeneralPermissions.VIEW_ALL));
         collection.getResources().add(dataset);
         genericService.saveOrUpdate(collection);
-//        genericService.saveOrUpdate(e);
+        final Long cid = collection.getId();
+//        genericService.saveOrUpdate(e)
 //        dataset.getResourceCollections().add(collection);
         TimedAccessRestriction tar = new TimedAccessRestriction();
         TimedAccessRestriction expired = new TimedAccessRestriction();
@@ -303,29 +306,32 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         expired.setUntil(expires);
         expired.setCollection(collection);
         expired.setCreatedBy(getAdminUser());
-        expired.setUser(e.getUser());
+        expired.setUser(getBasicUser());
         genericService.saveOrUpdate(dataset);
         genericService.save(expired);
         tar.setUntil(DateTime.now().plusDays(2).toDate());
         tar.setCollection(collection);
         tar.setCreatedBy(getAdminUser());
-        tar.setUser(e.getUser());
+        tar.setUser(getBasicUser());
         genericService.save(tar);
         Long eid = expired.getId();
         Long tid = tar.getId();
         dataset = null;
         expired = null;
         tar = null;
-        Long cid = collection.getId();
-        int aus = collection.getAuthorizedUsers().size();
-        genericService.evictFromCache(collection);
+        final int aus = collection.getAuthorizedUsers().size();
         collection = null;
-        genericService.synchronize();
-        dtarp.execute();
-        genericService.synchronize();
-        collection = genericService.find(SharedCollection.class, cid);
-        logger.debug("au: {}",collection.getAuthorizedUsers());
-        assertEquals(aus -1 , collection.getAuthorizedUsers().size());
+        setVerifyTransactionCallback(new TransactionCallback<Image>() {
+            @Override
+            public Image doInTransaction(TransactionStatus status) {
+                dtarp.execute();
+                SharedCollection rc = genericService.find(SharedCollection.class, cid);
+                logger.debug("{}",rc);
+                logger.debug("au: {}",rc.getAuthorizedUsers());
+                assertEquals(aus -1 , rc.getAuthorizedUsers().size());
+                return null;
+            }
+        });
     }
 
     @Autowired
