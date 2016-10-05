@@ -75,7 +75,7 @@ public class ItemDao {
 
     @SuppressWarnings("unchecked")
     public List<DropboxFile> findToUpload() {
-        String query = "from DropboxFile where tdar_id is null and path ilike '%/"+DropboxConstants.UPLOAD_TO_TDAR+"/%'";
+        String query = "from DropboxFile where tdar_id is null and lower(path) like lower('%/"+DropboxConstants.UPLOAD_TO_TDAR+"/%')";
         Query query2 = getCurrentSession().createQuery(query);
         return query2.list();
     }
@@ -83,7 +83,7 @@ public class ItemDao {
     public List<DropboxFile> findAllWithPath(String path) {
         String query = "from DropboxFile";
         if (StringUtils.isNotBlank(path) && path != "/") {
-            query = "from DropboxFile where path like '%/" + path + "/%'";
+            query = "from DropboxFile where lower(path) like lower('%/" + path + "/%')";
         }
         Query query2 = getCurrentSession().createQuery(query);
         return query2.list();
