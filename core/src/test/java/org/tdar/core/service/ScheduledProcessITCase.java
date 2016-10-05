@@ -277,7 +277,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
     }
     
     @Test
-    @Rollback
+    @Rollback(true)
     public void testDailyTimedAccessRevokingProcess() {
         Dataset dataset = createAndSaveNewDataset();
         SharedCollection collection = new SharedCollection();
@@ -292,7 +292,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         collection.getAuthorizedUsers().add(e);
         collection.getResources().add(dataset);
         genericService.saveOrUpdate(collection);
-        genericService.saveOrUpdate(e);
+//        genericService.saveOrUpdate(e);
 //        dataset.getResourceCollections().add(collection);
         TimedAccessRestriction tar = new TimedAccessRestriction();
         TimedAccessRestriction expired = new TimedAccessRestriction();
@@ -313,10 +313,12 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         genericService.save(tar);
         Long eid = expired.getId();
         Long tid = tar.getId();
+        dataset = null;
         expired = null;
         tar = null;
         Long cid = collection.getId();
         int aus = collection.getAuthorizedUsers().size();
+        genericService.evictFromCache(collection);
         collection = null;
         genericService.synchronize();
         dtarp.execute();

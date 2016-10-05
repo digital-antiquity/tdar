@@ -103,7 +103,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
         assertTrue(shareFromAdhoc instanceof SharedCollection);
         assertTrue(shareFromAdhoc.getResources().containsAll(list.getResources()));
         assertEquals(2, shareFromAdhoc.getResources().size());
-        assertEquals(getAdminUser(), shareFromAdhoc.getOwner());
+        assertEquals(getBasicUser(), shareFromAdhoc.getOwner());
         assertEquals(list, shareFromAdhoc);
     }
 

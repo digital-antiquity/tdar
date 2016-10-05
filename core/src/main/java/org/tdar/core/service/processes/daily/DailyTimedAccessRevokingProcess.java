@@ -3,6 +3,7 @@ package org.tdar.core.service.processes.daily;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,11 +89,13 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
     @Override
     public void process(TimedAccessRestriction persistable) throws Exception {
         DateTime now = DateTime.now();
-        List<AuthorizedUser> toRemove = new ArrayList<>();
         if (now.isAfter(new DateTime(persistable.getUntil()))) {
             
             ResourceCollection collection = persistable.getCollection();
-            persistable.getCollection().getAuthorizedUsers().forEach(au ->{
+            Set<AuthorizedUser> authorizedUsers = collection.getAuthorizedUsers();
+            Iterator<AuthorizedUser> iter = authorizedUsers.iterator();
+            while (iter.hasNext()) {
+                AuthorizedUser au = iter.next();
                 TdarUser user = persistable.getUser();
                 // if the access restriction was created prior to the creation of the user, the invite might exist
                 if (user == null && persistable.getInvite() != null) {
@@ -103,7 +106,6 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                 }
                 
                 if (au.getUser().equals(user)) {
-                    toRemove.add(au);
                     String name = "";
                     if (collection instanceof HasName) {
                         name = ((HasName)collection).getName();
@@ -113,12 +115,12 @@ public class DailyTimedAccessRevokingProcess extends AbstractScheduledBatchProce
                     String note = String.format("%s - %s", name, user.getName());
                     ownerNotes.get(persistable.getCreatedBy()).add(note);
                     userNotes.get(persistable.getUser()).add(note);
+                    logger.debug("contains:{}", authorizedUsers.contains(au));
                     logger.debug("disabling authorized user  ({}) for {}", au, collection);
+                    iter.remove();
                 }
-            });
+            }
             genericDao.delete(persistable);
-            logger.debug("toRemove:{}", toRemove);
-            collection.getAuthorizedUsers().removeAll(toRemove);
             genericDao.saveOrUpdate(collection);
             logger.debug("result: {}", collection.getAuthorizedUsers());
             publisher.publishEvent(new TdarEvent(collection, EventType.CREATE_OR_UPDATE));
