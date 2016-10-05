@@ -172,7 +172,7 @@ public class ItemService {
     @Transactional(readOnly = false)
     public void handleUploads() {
         List<DropboxFile> files = itemDao.findToUpload();
-        StringBuilder msg = new StringBuilder("the following files were uploaded to tDAR:\n");
+        StringBuilder msg = new StringBuilder();
 
         for (DropboxFile file : files) {
             try {
@@ -185,6 +185,7 @@ public class ItemService {
             }
         }
         if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
+            msg.insert(0, "the following files were uploaded to tDAR:\n");
             sendEmail("balk@tdar.org", "adam.brin@asu.edu", "Uploaded files to tDAR", msg.toString());
         }
 
