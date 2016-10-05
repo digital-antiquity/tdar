@@ -5,16 +5,21 @@
     <title>Dataset Integration: Edit</title>
 </head>
 <body>
-<div id="divIntegrationMain" ng-controller="IntegrationController as ctrl" data-read-only="${(!editable)?string}">
+
+<div id="divIntegrationMain" ng-controller="IntegrationController as ctrl"
+     data-read-only="${(!editable)?string}"
+     data-max-data-tables="${maxDataTables?c}"
+     data-max-output-columns="${maxOutputColumns?c}"
+>
     <div id="divIntegrationHeader">
-        <h1 class="compact">Dataset Integration</h1>
+        <h2 class="compact">Dataset Integration</h2>
     </div>
     <div id="divStatusMessage" class="alert alert-{{alert.kind}}" ng-show="alert.message !==''" >
     {{alert.message}}
     </div>
 
-    <form id="frmIntegrationEdit" class="form-horizontal" ng-init="ctrl.loadJSON()">
-        <div class="row">
+    <form id="frmIntegrationEdit" class="form-horizontal form-condensed" ng-init="ctrl.loadJSON()">
+        <div class="row-fluid">
             <div class="span9">
                <div class="control-group">
                    <label class="control-label">
@@ -54,35 +59,59 @@
         </div>
 
         <div id="divSelectedItemsSection">
-            <div class="row">
+            <div class="row-fluid">
                 <div class="span12">
                     <div class="control-group">
                         <label class="control-label">Datasets & Ontologies</label>
                         <div class="controls controls-row">
-                            <div class="span4">
-                                <label><b>Selected Datasets</b></label>
-                                <div>
-                                    <select size="5" class="input-block-level" multiple
-                                            ng-model="selectedDataTables" name="selectedDatasets" id="selDatasets"
-                                            ng-options="dataTable|dtDisplayName|titleCase for dataTable in ctrl.integration.dataTables"></select>
-                                </div>
-                                
-                                
-<div class="controls controls-row">
-                                <div class="btn-group">
-                                    <button type="button" class="btn"  id="btnAddDataset" ng-disabled="isReadOnly()"
-                                            ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
-                                    
-                                    <button type="button" class="btn" id="rmDatasetBtn"  ng-disabled="isReadOnly()"
-                                            ng-click="ctrl.removeSelectedDatasetClicked()" ng-disabled="ctrl.integration.dataTables.length === 0">Remove selected dataset</button>
-                                </div>
+                            <div class="span5">
+                                <table class="table table-condensed table-hover selected-datasets">
+                                    <thead>
+                                        <tr>
+                                            <th colspan="3">Selected Datasets
+                                                <div class="alert alert-warn" ng-show="ctrl.integration.dataTables.length > maxDataTables" >
+                                                    Please use less than {{maxDataTables}} datasets.
+                                                </div>
+
+                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
+                                                        ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
+
+                                        </th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="dt in ctrl.integration.dataTables">
+                                            <td><span class="badge bg-red ">{{$index + 1}}</span></td>
+                                            <td>
+                                                {{dt|dtDisplayName|titleCase}}
+                                                <a href="/dataset/{{dt.datasetId}}" target="_blank" >({{dt.datasetId}})</a>
+                                            </td>
+                                            <td style="width:10%">
+                                                <a class="btn btn-mini delete-button" href="#" ng-click="ctrl.removeDatatableClicked(dt)">X</a>
+                                            </td>
+
+                                        </tr>
+                                    </tbody>
+                                </table>
+
+
+
+
                         </div>
-                        </div>
-                            <div class="span4">
-                                <label><b>Shared Ontologies</b></label>
-                                <ul>
-                                    <li class="sharedOntologies" ng-repeat="ontology in ctrl.integration.ontologies">{{ontology | ontDisplayName}}</li>
-                                </ul>
+                            <div class="span3">
+                                <table class="table table-condensed table-hover">
+                                    <thead>
+                                        <tr><th colspan="2">Available Ontologies</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="ontology in ctrl.integration.ontologies">
+                                            <td class="sharedOntologies">
+                                                {{ontology | ontDisplayName}}
+                                                <a href="/ontology/{{ontology.id}}" target="_blank">({{ontology.id}})</a>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+
                             </div>
                         </div>
                     </div>
@@ -95,9 +124,13 @@
                     <div class="control-group">
                         <label class="control-label">Actions</label>
                         <div class="controls">
+                            <div id="divStatusMessage" class="alert alert-warn" ng-show="ctrl.integration.columns.length > maxOutputColumns" >
+                                Please use less than {{maxOutputColumns}} output columns.
+                            </div>
+
                             <div class="btn-group">
                                 <div class="btn-group" >
-                                    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
+                                    <a class="btn btn-mini dropdown-toggle" data-toggle="dropdown" href="#" ng-class="{disabled: !ctrl.integration.ontologies.length}">
                                         Add Integration Column
                                         <span class="caret"></span>
                                     </a>
@@ -106,12 +139,12 @@
                                                 ><a ng-click="ctrl.addIntegrationColumnsMenuItemClicked(ontology)">{{ontology.title}}</a></li>
                                     </ul>
                                 </div>
-                                <button type="button" class="btn" id="btnAddDisplayColumn"
+                                <button type="button" class="btn btn-mini" id="btnAddDisplayColumn"
                                         ng-click="ctrl.addDisplayColumnClicked()"
                                         ng-disabled="!ctrl.integration.ontologies.length"
                                         >Add Display Column</button>
 
-                                <button type="button" class="btn" id="btnAddCountColumn"
+                                <button type="button" class="btn btn-mini" id="btnAddCountColumn"
                                         ng-click="ctrl.addCountColumnClicked()"
                                         ng-disabled="ctrl.isCountColumnDisabled()"
                                         >Add Count Column</button>
@@ -122,7 +155,7 @@
         </div>
         
         <div id="divColumnSection">
-            <div class="row">
+            <div class="row-fluid">
                 <div class="span12">
 
                     <div class="control-group" ng-show="ctrl.integration.columns.length">
@@ -146,9 +179,10 @@
                                     <div class="tab-pane" id="tab{{$index}}"
                                          ng-repeat="outputColumn in ctrl.integration.columns" ng-class="{active: ctrl.isTabSet($index)}">
                                         <div ng-switch="outputColumn.type">
+
                                             <div ng-switch-when="integration" class=".integration-pane-content">
                                                 <div class="alert" ng-hide="outputColumn.isValidMapping">
-                                                    <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to a shared ontology.
+                                                    <strong>Invalid Ontology</strong> {{outputColumn.ontology | ontDisplayName}} does not belong to an available ontology.
                                                 </div>
                                                 <table class="table table-bordered table-condensed table-hover">
                                                     <thead>
@@ -164,26 +198,30 @@
                                                             </div>
                                                             <div>Node Value</div>
                                                         </th>
-                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{outputColumn.dataTableColumns.length}}">
+                                                        <th rowspan="1" style="white-space: nowrap;" colspan="{{outputColumn.selectedDataTableColumns.length}}">
                                                             Datasets
                                                         </th>
                                                     </tr>
                                                     <tr>
-                                                        <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" >
+                                                        <th ng-repeat="cc in lookupCompatibleColumns(outputColumn.ontologyId)" style="min-width: 2em;" >
                                                             <!-- suggest using  track by c.name to get at a key that we can more easily use" -->
-                                                            <div ng-switch on="cc.compatCols.length">
-                                                            <div ng-switch-when="1">
-                                                                <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span>
-                                                                <!-- FIXME: this is "hidden", but is it even needed? -->
-                                                                <!-- FIXME: shouldn't this be the dataset name? -->
-                                                                <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
-                                                            </div>
-                                                            <div ng-switch-when="0">
-                                                                <i>n/a</i>
-                                                            </div>
-                                                            <div ng-switch-default>
-                                                                <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index]" ng-options="c.displayName for c in cc.compatCols"></select>
-                                                            </div>
+                                                            <div class="text-center">
+                                                                <span data-content="{{cc.dataTable|dtDisplayName|titleCase}}" class="badge bg-red" popover>{{$index + 1}}</span>
+
+
+
+                                                                <div ng-switch on="cc.compatCols.length">
+                                                                <div ng-switch-when="1">
+
+                                                                    <!-- <span title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}">{{cc.compatCols[0].displayName}}</span> -->
+                                                                    <!-- FIXME: this is "hidden", but is it even needed? -->
+                                                                    <select class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols" ng-hide="true"></select>
+                                                                </div>
+                                                                <div ng-switch-when="0"></div>
+                                                                <div ng-switch-default>
+                                                                    <select title="{{cc.dataTable.datasetTitle}} :: {{cc.dataTable.displayName}}" class="intcol" ng-model="outputColumn.selectedDataTableColumns[$index].dataTableColumn" ng-options="c.displayName for c in cc.compatCols"></select>
+                                                                </div>
+                                                                </div>
                                                             </div>
                                                         </th>
                                                     </tr>
@@ -196,9 +234,9 @@
                                                                 <label for="cbont_{{::nodeSelection.node.id}}">{{::nodeSelection.node.displayName}}</label>
                                                             </div>
                                                         </td>
-                                                        <td ng-repeat="dataTableColumn in outputColumn.selectedDataTableColumns">
+                                                        <td ng-repeat="columnSelection in outputColumn.selectedDataTableColumns track by $index">
                                                             <div class="text-center">
-                                                                <i class="icon-ok" id="cbx-{{::dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(dataTableColumn, nodeSelection.node)"></i>
+                                                                <i class="icon-ok" id="cbx-{{::columnSelection.dataTableColumn.id}}-{{::nodeSelection.node.id}}" ng-show="::ontologyValuePresent(columnSelection.dataTableColumn, nodeSelection.node)"></i>
                                                             </div>
                                                         </td>
                                                     </tr>
@@ -269,6 +307,27 @@
             </div>
         </div>
     </form>
+
+    <script type="application/json" id="jsondata" raw-data>
+    ${workflowJson!"{}"}
+    </script>
+
+    <!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
+    <!-- FIXME: too much crap - we just need ID and title and submitterId -->
+    <script type="application/json" id="allProjects" raw-data>
+    ${fullUserProjectsJson}
+    </script>
+
+    <script type="application/json" id="allCollections" raw-data>
+    ${allResourceCollectionsJson}
+    </script>
+
+    <script type="application/json" id="allCategories" raw-data>
+    ${categoriesJson}
+    </script>
+    <script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
+
+
 </div>
 
 <tdar-modal ng-controller="ModalDialogController"></tdar-modal>
@@ -341,7 +400,7 @@
                                     <th style="width:1em">&nbsp</th>
                                     <th style="width:40em">Title</th>
                                     <th style="width:10em">Date</th>
-                                    <th style="width: 20em">Mapped Ontologies</th>
+                                    <th style="width: 20em">Mapped Ontologies (hover to show all)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -356,10 +415,10 @@
                                                 ng-checked="isSelected(result.id)"
                                                 ng-click="toggleSelection(result.id, this)">
                                     </td>
-                                    <td style="width:40em"><label for="cbResult{{result.id}}">{{result.title}}</label></td>
+                                    <td style="width:35em"><label for="cbResult{{result.id}}">{{result.title}}</label></td>
                                     <td style="width:10em">{{result.date_created | date }}</td>
-                                    <td class="ellipsified" style="max-width: 20em">
-                                        <span ng-repeat="ontology in result.ontologies">{{$first ? '' : ', '}}{{ontology}}</span>
+                                    <td class="ellipsified" style="max-width: 25em" title="{{result.ontologies.join(', ')}}" >
+                                        <span ng-repeat="ontology in result.ontologies" ">{{$first ? '' : ', '}}{{ontology}}</span>
                                     </td>
                                 </tr>
                                 </tbody>
@@ -403,24 +462,6 @@
         </div>
     </div>
 </script>
-<script type="application/json" id="jsondata">
-${workflowJson!"{}"}
-</script>
-
-<!-- FIXME: embedded lookup data like this will be untenable for large datasets - use ajax solution instead -->
-<!-- FIXME: too much crap - we just need ID and title and submitterId -->
-<script type="application/json" id="allProjects">
-${fullUserProjectsJson}
-</script>
-
-<script type="application/json" id="allCollections">
-${allResourceCollectionsJson}
-</script>
-
-<script type="application/json" id="allCategories">
-${categoriesJson}
-</script>
-<script src='https://ajax.googleapis.com/ajax/libs/angularjs/${angular_version}/angular.min.js'></script>
 
 <#-- fixme: hack: /workspace/integrate#addDatasets  -->
 <script>
@@ -471,7 +512,7 @@ ${categoriesJson}
 
             <div class="row-fluid">
                 <div class="span12">
-                    <a type="button" class="btn" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
+                    <a type="button" ng-disabled="downloadDisabled" class="btn" ng-click="downloadClicked()" ng-href="/workspace/download?ticketId={{download.ticketId}}">Download</a>
                     <button class="btn" data-dismiss="modal" aria-hidden="true" ng-click="cancel()">Close</button>
                 </div>
             </div>

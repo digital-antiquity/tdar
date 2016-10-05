@@ -558,7 +558,7 @@ public class ExcelWorkbookWriter {
         if (proxy.getNoteRow() != null) {
             addDataRow(sheet, rowNum, proxy.getStartCol(), Arrays.asList(proxy.getNoteRow()));
         }
-        int maxRows = version.getMaxRows();
+        int maxRows = version.getMaxRows() -1;
         if (TdarConfiguration.getInstance().getMaxSpreadSheetRows() > 1) {
             maxRows = TdarConfiguration.getInstance().getMaxSpreadSheetRows();
         }

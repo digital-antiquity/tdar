@@ -55,8 +55,8 @@
 
     // Our integration model
     function Integration(dataService) {
-        console.debug("Integration()::");
-        console.debug(dataService);
+        //console.debug("Integration()::");
+        //console.debug(dataService);
 
         var self = this;
         var _sharedOntologyIds = null;
@@ -158,9 +158,6 @@
             return mappedTables;
         };
 
-        // self.sharedOntologyPolicy = "relaxed";
-        self.sharedOntologyPolicy = "strict";
-
         /**
          * Append an 'integration column' to the columns list.
          * 
@@ -180,7 +177,11 @@
             };
 
             // fixme: try to keep model devoid of angular conventions (angular excludes $-prefix when evaluating/copying objects)
-            // initialize, or update, the selected dataTable column selections.
+            /**
+             * Initialize, or update, the selected dataTable column selections.  Each columnSelection object contains a 'dataTable' and a 'dataTableColumn'
+             * property. If a dataTable has no compatible dataTableColumns,  selection.dataTableColumn is null.
+             *
+             */
             col.$getSelectedDataTableColumns = function() {
                 if (this.selectedDataTableColumns === null)
                     this.selectedDataTableColumns = [];
@@ -193,9 +194,14 @@
                     }
 
                     this.selectedDataTableColumns = mappedTables.map(function(dt) {
-                        if (!dt.compatCols.length)
-                            return null;
-                        return dt.compatCols[0];
+                        var columnSelection = {
+                            dataTable: dt,
+                            dataTableColumn: null
+                        };
+
+                        if (dt.compatCols.length)
+                            columnSelection.dataTableColumn = dt.compatCols[0];
+                        return columnSelection;
                     });
                 }
             };
@@ -226,7 +232,7 @@
          * @private
          */
         self.removeDataTables = function _removeDataTables(dataTables) {
-            console.debug("removeDataTables::");
+            //console.debug("removeDataTables::");
 
             if (!dataTables) {
                 return;
@@ -281,7 +287,7 @@
 
         // update derived properties when user removes a dataTable
         function _dataTablesRemoved(removedDataTables) {
-            console.debug("_dataTablesRemoved::");
+            //console.debug("_dataTablesRemoved::");
             var removedDataTableColumnIds = [];
             removedDataTables.forEach(function(dataTable) {
                 dataTable.dataTableColumns.forEach(function(column) {
@@ -303,8 +309,9 @@
             self.getIntegrationColumns().forEach(function(integrationColumn) {
 
                 // clean up integrationColumn.selectedDataTableColumn
-                integrationColumn.selectedDataTableColumns = integrationColumn.selectedDataTableColumns.filter(function(dataTableColumn) {
-                    return removedDataTableColumnIds.indexOf(dataTableColumn.id) === -1
+                integrationColumn.selectedDataTableColumns = integrationColumn.selectedDataTableColumns.filter(function(selectedDataTableColumn) {
+                    return removedDataTables.indexOf(selectedDataTableColumn.dataTable) == -1;
+                    //return removedDataTableColumnIds.indexOf(dataTableColumn.id) === -1
                 });
 
             });
@@ -325,11 +332,12 @@
         }
 
         function _dataTablesAdded(addedDataTables) {
-            console.debug("_dataTablesAdded::");
+            //console.debug("_dataTablesAdded::");
 
             // Step 1: account for integration columns that refer to ontologies that are no longer shared by all of the dataTables
             // Calculate the new list of shared ontologies, find out if any ontologies should
             var currentSharedOntologyIds = self.ontologies.map(function(ontology) {
+                console.log('shared ontology id:{}', ontology.id);
                 return ontology.id
             });
             var newSharedOntologyIds = self.getSharedOntologyIds();
@@ -352,7 +360,7 @@
          * @private
          */
         function _sharedOntologiesUpdated(newSharedOntologyIds, oldSharedOntologyIds) {
-            console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
+            //console.debug("_sharedOntologiesUpdated::", newSharedOntologyIds);
             var invalidIntegrationColumns = self.getIntegrationColumns().filter(function(column) {
                 return newSharedOntologyIds.indexOf(column.ontologyId) === -1;
             });
@@ -387,24 +395,15 @@
                     return c.mappedOntologyId;
                 }));
 
-            if(self.sharedOntologyPolicy === "strict") {
-                ids  = mappedOntologyIds.filter(function(ontologyId) {
-                    return self.dataTables.every(function(dataTable) {
-                        return dataTable.dataTableColumns.some(function(dtc) {
-                            return ontologyId === dtc.mappedOntologyId
-                        });
-                    });
-                });
-            } else {
                 ids = mappedOntologyIds.filter(function(ontologyId) {
                     var participatingDataTables = self.dataTables.filter(function(dataTable){
                         return dataTable.dataTableColumns.some(function(dtc){
+                            //console.log('ontologyId === dtc.mappedOntologyId: {}', ontologyId === dtc.mappedOntologyId);
                             return ontologyId === dtc.mappedOntologyId;
                         });
                     });
-                    return participatingDataTables.length > 1;
+                    return participatingDataTables.length > 0;
                 });
-            }
 
             // We now have a deduped list of all mapped ontology id's,
             // Now we remove the ids that do not appear in at least two data tables.
@@ -434,10 +433,11 @@
                 var selection = {
                     dataTable : table,
                     dataTableColumn : null
-                }
+                };
                 displayColumn.dataTableColumnSelections.push(selection);
             });
             self.columns.push(displayColumn);
+            return displayColumn;
         };
 
         /**
@@ -459,6 +459,7 @@
                 countColumn.dataTableColumnSelections.push(selection);
             });
             self.columns.push(countColumn);
+            return countColumn;
         };
 
         self.isCountColumnEnabled = function() {

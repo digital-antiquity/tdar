@@ -50,7 +50,7 @@
                     //exclude  display columns (which are allowed to have null dataTableColumns)
                     .filter(function(c){return TYPE_INTEGRATION === c.type })
                     //exclude valid dataTableColumns
-                    .filter(function(ic){return ic.dataTableColumns.some(function(col){return col == null})})
+                    .filter(function(ic){return ic.dataTableColumns.every(function(col){return col == null})})
                     //convert invalid columns  to error messages
                     .map(function(invalidColumn){return "The following integration column is invalid:" + invalidColumn.name;}));
 
@@ -73,6 +73,16 @@
          * @returns {Array}  list of error messages, or empty list
          */
         this.validateIntegration = function(jsonData, integration) {
+
+            //rule: data tables still exist
+            var expectedTableIds = jsonData.dataTables.map(function(dt){return dt.id});
+            var actualTableIds = integration.dataTables.map(function(dt){return dt.id});
+            var missingTableIds = expectedTableIds.filter(function(id){return actualTableIds.indexOf(id) === -1});
+            if(missingTableIds.length > 0) {
+                _addErrors(["Some of the dataset tables referenced by this integration no longer exist.  "]);
+            }
+
+
             //rule: selected ontology nodes still exist
             _addErrors(jsonData.columns
                     //exclude all but integration columns
@@ -80,7 +90,7 @@
                     //exclude valid integration columns  (valid == every selected ontologyNodeId exists in the ontologyNode cache)
                     .filter(function(c){return !c.nodeSelection.every(function(node){
                         var cachedNode = DataService.ontologyNodeCache.get(node.id);
-                        if(!cachedNode) {console.error("node id not found:%s", node.id)}
+                        if(!cachedNode) {console.warn("node id not found:%s", node.id)}
                         return cachedNode})})
                     //convert invalid columns to list of error messages
                     .map(function(invalidColumn){
@@ -93,7 +103,14 @@
             _addErrors(jsonData.columns
                         //get one big list of all the dtc ids
                         .reduce(function(dtclist,c){
-                            return dtclist.concat(c.dataTableColumns.map(function(dtc){if(dtc) {return dtc.id} else {return -1;}}))
+                            return dtclist
+                                    .concat(
+                                        c.dataTableColumns
+                                            // get list of ids (in partial integration, some might be undefined
+                                            .map(function(dtc){if(dtc) {return dtc.id}})
+                                            // filter out undefined ids
+                                            .filter(function(id){return !!id})
+                                    )
                         }, [])
                         //then include only the ones that arent' found in dtc cache
                         .filter(function(dtcid){

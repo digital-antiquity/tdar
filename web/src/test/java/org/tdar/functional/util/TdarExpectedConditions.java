@@ -137,8 +137,13 @@ public class TdarExpectedConditions {
             public Boolean apply(WebDriver driver) {
                 for (WebElement element : driver.findElements(locator)) {
                     if (!isStale(element)) {
-                        if (element.getText().contains(text)) {
-                            return true;
+                        //Apparently things can go stale in the instant of time between checking if it's stale.  Oh, Selenium.
+                        try {
+                            if (element.getText().contains(text)) {
+                                return true;
+                            }
+                        } catch (StaleElementReferenceException ex) {
+                            return false;
                         }
                     }
                 }
@@ -162,8 +167,9 @@ public class TdarExpectedConditions {
     private static boolean isStale(WebElement element) {
         // Beleive it or not, this is how selenium advises checking for staleness (see ExpectedConditions.stalenessOf)
         try {
-            // will throw exception if stale
             element.isEnabled();
+            element.getText();
+            element.getTagName();
         } catch (StaleElementReferenceException ex) {
             return true;
         }

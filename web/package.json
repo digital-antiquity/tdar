@@ -9,10 +9,12 @@
   },
   "devDependencies": {
     "angular": "^1.5.7",
+    "angular-mocks": "^1.5.7",
     "deasync": "^0.1.0",
     "jasmine-core": "^2.4.1",
     "karma": "~0.13.10",
     "karma-chrome-launcher": "^0.2.0",
+    "karma-clear-screen-reporter": "^1.0.0",
     "karma-coverage": "^0.5.2",
     "karma-firefox-launcher": "^0.1.6",
     "karma-html2js-preprocessor": "^0.1.0",
@@ -21,7 +23,7 @@
     "karma-jasmine-jquery": "^0.1.1",
     "karma-junit-reporter": "^0.3.2",
     "karma-phantomjs-launcher": "^0.2.1",
-    "phantomjs": "^1.9.18",
+    "phantomjs": "^2.1.7",
     "xml2js": "^0.4.9",
     "xmldoc": "^0.3.2"
   },

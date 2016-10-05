@@ -558,6 +558,10 @@ img.responsive-image {
     color: #7a1501 /* "tDAR red" */
 }
 
+.bg-red {
+    background-color: #7a1501;
+}
+
 /* Put error codes in a block-level container w/ class of  .pull-right.error-codes to inset them in the
 upper-right corner. Individual codes should be wrapped in span.error-code elements */
 .error-banner > .pull-right.error-codes {
@@ -755,19 +759,19 @@ img.collection-logo {
     margin: 0.5em;
     padding: 0
 }
-
 /** collection logo presentation: flush with header **/
+/* 
 h1 > img.collection-logo {
     max-width: 7em;
     max-height: 4em ;
 }
 
-/** collection logo presentation: flush with description **/
+* collection logo presentation: flush with description *
 article > img.collection-logo {
     max-width: 13em;
     max-height: 8em ;
 }
-
+ */
 .divInheritSection button.clear-section {
     display:none;
 }

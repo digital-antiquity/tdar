@@ -175,6 +175,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         DataTableColumn tableColumn = new DataTableColumn();
         tableColumn.setName(INTEGRATION_TABLE_NAME_COL);
         executeUpdateOrDelete(String.format(ADD_NUMERIC_COLUMN, tempTable.getName(), tableColumn.getName()));
+        executeUpdateOrDelete(String.format("create index on \"%s\" (\"%s\")", tempTable.getName(), tableColumn.getName()));
         tempTable.getDataTableColumns().add(tableColumn);
         tableColumn.setDisplayName(provider.getText("dataIntegrationWorkbook.data_table"));
 
@@ -201,6 +202,7 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 executeUpdateOrDelete(String.format(ADD_COLUMN, tempTable.getName(), dtc.getName()));
                 String pretty = dtc.getPrettyDisplayName();
                 if (column.isIntegrationColumn()) {
+                    pretty += "(" + column.getSharedOntology().getId() + ")";
                     dtc.setDisplayName(provider.getText("dataIntegrationWorkbook.data_original_value", Arrays.asList(pretty)));
 
                     DataTableColumn integrationColumn = new DataTableColumn();
@@ -214,8 +216,6 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                 }
             }
         }
-        String addIndex = String.format("create index tmp_integ_%s on \"%s\" ( \"%s\" )", System.currentTimeMillis(), tempTable.getName(), tableColumn.getName());
-        executeUpdateOrDelete(addIndex);
         return tempTable;
     }
 
@@ -247,14 +247,19 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
         // FOR EACH COLUMN, grab the value, for the table or use '' to keep the spacing correct
         builder.setStringSelectValue(table.getId().toString());
         for (IntegrationColumn integrationColumn : proxy.getIntegrationColumns()) {
-            logger.trace("table:" + table + " column: " + integrationColumn);
+            boolean isIntColumn = integrationColumn.isIntegrationColumn();
             DataTableColumn column = integrationColumn.getColumnForTable(table);
+            logger.trace("table: {} column: {} type: {} ", table , column, isIntColumn);
             if (column == null) {
                 builder.getColumns().add(null);
+                if (isIntColumn) {
+                    builder.getColumns().add(null);
+                }
             } else {
                 builder.getColumns().add(column.getName());
-                // pull the column name thrice if an integration column so we have mapped and unmapped values, and sort
-                if (integrationColumn.isIntegrationColumn()) {
+                // pull the column name twice if an integration column so we have mapped and unmapped values, and sort
+                if (isIntColumn) {
+                    logger.debug("Is integration column");
                     builder.getColumns().add(column.getName());
 
                     WhereCondition cond = new WhereCondition(column.getName());
