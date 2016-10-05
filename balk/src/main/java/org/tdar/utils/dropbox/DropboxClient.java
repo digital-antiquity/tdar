@@ -140,7 +140,7 @@ public class DropboxClient {
                 BasicAccount account = client.users().getAccount(accountId);
                 cachedUsers.put(accountId, account);
                 return account;
-            } catch (DbxException e) {
+            } catch (Exception e) {
                 logger.error("{}", e, e);
             }
         }

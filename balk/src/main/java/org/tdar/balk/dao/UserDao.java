@@ -41,6 +41,9 @@ public class UserDao {
     }
 
     public DropboxUserMapping getUserForDropboxAccount(BasicAccount account) {
+        if (account == null) {
+            return null;
+        }
         String query = "from DropboxUserMapping map where (:id is not null and lower(map.username)=lower(:id)) or (:email is not null and lower(map.email)=lower(:email))";
         Query query2 = getCurrentSession().createQuery(query);
         query2.setParameter("id", account.getAccountId());
