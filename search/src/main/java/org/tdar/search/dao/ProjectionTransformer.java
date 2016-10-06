@@ -74,7 +74,11 @@ public class ProjectionTransformer<I extends Indexable> {
 		// only display for map
 		Collection<Long> llIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
 		List<LatitudeLongitudeBox> findAll = null;
-		if (resultHandler.getOrientation() == DisplayOrientation.MAP || resultHandler.getOrientation() == null) {
+		DisplayOrientation orientation = resultHandler.getOrientation();
+		if (orientation == null) {
+		    orientation = DisplayOrientation.LIST_FULL;
+		}
+        if (orientation == DisplayOrientation.MAP) {
 			findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);
 			r_.getLatitudeLongitudeBoxes().addAll(findAll);
 		}
@@ -82,7 +86,7 @@ public class ProjectionTransformer<I extends Indexable> {
 		// creators 
 		Collection<Long> cIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
 		logger.trace("{}: creator: {}", r_.getId(), cIds);
-		if (resultHandler.getOrientation() == DisplayOrientation.LIST_FULL || resultHandler.getOrientation() == null) {
+		if (orientation == DisplayOrientation.LIST_FULL ) {
 			r_.getResourceCreators().addAll(datasetDao.findAll(ResourceCreator.class, cIds));
 		}
 
@@ -95,7 +99,7 @@ public class ProjectionTransformer<I extends Indexable> {
 		        ir.setTransientAccessType(ResourceAccessType.valueOf(fieldValue));
 		    }
 			Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
-			if (resultHandler.getOrientation() == DisplayOrientation.GRID || resultHandler.getOrientation() == DisplayOrientation.MAP || resultHandler.getOrientation() == null) {
+			if (orientation == DisplayOrientation.GRID || orientation == DisplayOrientation.MAP) {
 				ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));
 			}
 			
