@@ -1,19 +1,18 @@
 // Karma configuration
-var wro = require('./src/test/frontend/lib/wro');
-var fs = require('fs');
-var process = require('process');
+var wro = require("./src/test/frontend/lib/wro");
+var fs = require("fs");
 
 /**
  * @Param {string} [profile=default]
  */
 function buildFilesFromWro(profile) {
     if(!profile) profile = 'default'
-    var xmldata = fs.readFileSync('src/main/resources/wro.xml', 'utf-8');
+    var xmldata = fs.readFileSync("src/main/resources/wro.xml", "utf-8");
     var wroconfig = wro.parse(xmldata);
     var files = ( 
             wroconfig[profile].cssFiles
             .concat(wroconfig[profile].jsFiles)
-            .map(function(file){return 'src/main/webapp' + file;}));
+            .map(function(file){return "src/main/webapp" + file;}));
     return files;
 }
 
@@ -34,14 +33,14 @@ module.exports = function(config) {
         files: [].concat(
             [
                 // app dependencies  (included in DOM served by karma, but not monitored for changes)
-                {pattern: 'src/main/webapp/components/jquery/dist/jquery.js', watched: false},
-                {pattern: 'src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js', watched: false},
-                {pattern: 'src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css', watched: false},
-                {pattern: 'src/main/webapp/includes/modernizr-custom-2.6.2.min.js', watched: false},
-                {pattern: 'src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js', watched: false},
-                {pattern: 'src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js', watched: false},
-                {pattern: 'src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js', watched: false},
-                {pattern: 'src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css', watched: false}
+                {pattern: "src/main/webapp/components/jquery/dist/jquery.js", watched: false},
+                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.js", watched: false},
+                {pattern: "src/main/webapp/includes/jquery-ui-1.11.4/jquery-ui.min.css", watched: false},
+                {pattern: "src/main/webapp/includes/modernizr-custom-2.6.2.min.js", watched: false},
+                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/jquery.validate.js", watched: false},
+                {pattern: "src/main/webapp/includes/jquery.validate-1.13.1/additional-methods.js", watched: false},
+                {pattern: "src/main/webapp/includes/bootstrap-2.32/js/bootstrap.js", watched: false},
+                {pattern: "src/main/webapp/includes/bootstrap-2.32/css/bootstrap.css", watched: false}
 
 
             ],
@@ -49,23 +48,23 @@ module.exports = function(config) {
             wroFiles,
             [
                 // specs
-                'src/test/frontend/spec/**/*.js',
+                "src/test/frontend/spec/**/*.js",
 
                 // jasmine fixtures - added to DOM when you call loadFixtures(filename) in your test
-                {pattern:'src/test/frontend/fixtures/**/*.html', watched:true, served:true, included:false},
+                {pattern:"src/test/frontend/fixtures/**/*.html", watched:true, served:true, included:false},
 
                 // html2js fixtures - globally accessible via  window.__html__[filepath]
-                'src/test/frontend/html2js/**/*.html',
+                "src/test/frontend/html2js/**/*.html",
 
                 //static files: served by karma webserver but not included on page
-                {pattern: 'src/main/webapp/images/**/*', served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/images/**/*", served:true, included:false, watched:false},
 
 
                 //static files: images used by js libraries, e.g. jquery-ui, jquery-file-upload
-                {pattern: 'src/main/webapp/includes/**/images/**/*', served:true, included:false, watched:false},
-                {pattern: 'src/main/webapp/includes/**/img/**/*', served:true, included:false, watched:false},
-                {pattern: 'src/main/webapp/components/**/*.*', served:true, included:false, watched:false},
-                {pattern: 'src/main/webapp/js/maps/**/*.*', served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/includes/**/images/**/*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/includes/**/img/**/*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/components/**/*.*", served:true, included:false, watched:false},
+                {pattern: "src/main/webapp/js/maps/**/*.*", served:true, included:false, watched:false},
 
             ]),
 
@@ -91,14 +90,10 @@ module.exports = function(config) {
 			'src/main/webapp/js/**/*.js': ['coverage']
         },
 
-        //  Note:  'coverage' will obfuscate stack traces in failed tests.  Omit by declaring KARMA_SKIP_COVERAGE environment variable w/ non-empty value.
-        reporters: (function(){
-            var reporters = ['progress', 'coverage', 'junit'];
-            if(process.env.hasOwnProperty('KARMA_SKIP_COVERAGE')) {
-                reporters.splice(reporters.indexOf('coverage'), 1);
-            }
-            return reporters;
-        })(),
+        // test results reporter to use
+        // possible values: 'dots', 'progress'
+        // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+        reporters: ['progress',"junit"],
         junitReporter: {
             outputDir: 'target/karma/reports/',
             suite: 'models'
