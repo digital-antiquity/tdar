@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
@@ -33,6 +35,8 @@ import org.tdar.utils.PersistableUtils;
 public class ProjectionTransformer<I extends Indexable> {
 
 	private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private DatasetDao datasetDao;
@@ -77,7 +81,8 @@ public class ProjectionTransformer<I extends Indexable> {
 		
 		// creators 
 		Collection<Long> cIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
-		if (resultHandler.getOrientation() == DisplayOrientation.LIST_FULL) {
+		logger.trace("{}: creator: {}", r_.getId(), cIds);
+		if (resultHandler.getOrientation() == DisplayOrientation.LIST_FULL || resultHandler.getOrientation() == null) {
 			r_.getResourceCreators().addAll(datasetDao.findAll(ResourceCreator.class, cIds));
 		}
 
