@@ -146,8 +146,8 @@ public class DataOneWebITCase extends AbstractWebTest {
         xml = xml.replaceAll("&amp;", "&"); // not valid XML, but making sure we're matching what we put in
         logger.debug(xml);
         if (path.contains(TEST_DOI) && path.contains("/object")) {
-            assertTrue(xml.contains("dcterms:identifier rdf:datatype")); // dataOne object
-
+            assertTrue(xml.contains("ore:isAggregatedBy")); // dataOne object
+            assertTrue(xml.contains("ore:ResourceMap")); // dataOne object
         }
         if (path.contains(TEST_DOI_META) && path.contains("/object")) {
             assertTrue(xml.contains("bibliographicCitation><references"));
