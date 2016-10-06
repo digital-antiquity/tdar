@@ -81,6 +81,13 @@ public class ConfigurationAssistant implements Serializable {
         InputStream stream = null;
         String CONFIG_DIR = System.getenv(DEFAULT_CONFIG_PATH);
         try {
+            stream = getResourceAsStream(resource);
+            return stream;
+        } catch (Exception e) {
+            // not found in default locations...expanding search
+        }
+        
+        try {
             if (CONFIG_DIR != null) {
                 File file = new File(CONFIG_DIR, resource);
                 if (file.exists()) {
@@ -91,8 +98,6 @@ public class ConfigurationAssistant implements Serializable {
             File file = new File(resource);
             if (file.isFile() && file.exists()) {
                 stream = new FileInputStream(file);
-            } else {
-                stream = getResourceAsStream(resource);
             }
         } catch (AccessControlException e) {
             stream = getResourceAsStream(resource);

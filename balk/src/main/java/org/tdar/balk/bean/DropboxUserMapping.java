@@ -2,10 +2,12 @@ package org.tdar.balk.bean;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 import org.tdar.core.bean.AbstractPersistable;
 
-@Entity(name = "dropbox_user_mapping")
+@Entity
+@Table(name = "dropbox_user_mapping")
 public class DropboxUserMapping extends AbstractPersistable {
 
     private static final long serialVersionUID = -5514797652457958555L;
@@ -15,6 +17,8 @@ public class DropboxUserMapping extends AbstractPersistable {
 
     @Column(name = "email", length = 512)
     private String email;
+    @Column(name = "token", length = 512)
+    private String token;
     @Column(name = "username", length = 512)
     private String username;
     @Column(name = "tdar_user_id")
@@ -50,6 +54,14 @@ public class DropboxUserMapping extends AbstractPersistable {
 
     public void setTdarId(Long tdarId) {
         this.tdarId = tdarId;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 
 }

@@ -2,7 +2,6 @@ package org.tdar.utils.dropbox;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -18,14 +17,10 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.tdar.balk.bean.DropboxUserMapping;
 
-import com.dropbox.core.DbxAppInfo;
-import com.dropbox.core.DbxAuthFinish;
 import com.dropbox.core.DbxDownloader;
 import com.dropbox.core.DbxException;
-import com.dropbox.core.DbxRequestConfig;
-import com.dropbox.core.DbxRequestConfig.Builder;
-import com.dropbox.core.DbxWebAuthNoRedirect;
 import com.dropbox.core.v2.DbxClientV2;
 import com.dropbox.core.v2.files.DownloadErrorException;
 import com.dropbox.core.v2.files.FileMetadata;
@@ -35,59 +30,48 @@ import com.dropbox.core.v2.files.ListFolderResult;
 import com.dropbox.core.v2.files.ListRevisionsErrorException;
 import com.dropbox.core.v2.files.ListRevisionsResult;
 import com.dropbox.core.v2.files.Metadata;
+import com.dropbox.core.v2.files.RelocationErrorException;
 import com.dropbox.core.v2.users.BasicAccount;
 import com.dropbox.core.v2.users.FullAccount;
 
 public class DropboxClient {
 
+    private static final String DbxRequestConfig = null;
     final String DEBUG2 = "debug";
     final String DROPBOX_CURSOR = "dropbox.cursor";
-    final String APP_KEY = "dropbox.key";
-    final String APP_SECRET = "dropbox.secret";
-    final String DROPBOX_TOKEN = "dropbox.token";
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
     private File propertiesFile;
     private DbxClientV2 client;
-    private Properties props;
+    private DropboxConfig config;
     private Boolean debug = Boolean.TRUE;
     private String currentCursor;
 
     public DropboxClient() throws URISyntaxException, FileNotFoundException, IOException, DbxException {
-        props = loadProperties();
-        this.setDebug(Boolean.parseBoolean(props.getProperty(DEBUG2, "true")));
-        String accessToken = props.getProperty(DROPBOX_TOKEN);
+        config = new DropboxConfig();
+        this.setDebug(Boolean.parseBoolean(config.getProperties().getProperty(DEBUG2, "true")));
+        String accessToken = config.getDefaultToken();
         if (accessToken == null) {
-            DbxAppInfo appInfo = new DbxAppInfo(props.getProperty(APP_KEY), props.getProperty(APP_SECRET));
-
-            DbxRequestConfig config = DbxRequestConfig.newBuilder("tdar/client").build();
-            DbxWebAuthNoRedirect webAuth = new DbxWebAuthNoRedirect(config, appInfo);
-
-            String authorizeUrl = webAuth.start();
+            String authorizeUrl = config.getAuthorizedUrl();
             // Have the user sign in and authorize your app.
             System.out.println("1. Go to: " + authorizeUrl);
             System.out.println("2. Click \"Allow\" (you might have to log in first)");
             System.out.println("3. Copy the authorization code.");
             String code = new BufferedReader(new InputStreamReader(System.in)).readLine().trim();
-            DbxAuthFinish authFinish = webAuth.finish(code);
-            accessToken = authFinish.getAccessToken();
-            props.put(DROPBOX_TOKEN, accessToken);
-            writePropertiesToFile(propertiesFile, props);
+            accessToken = config.finish(code);
+            config.getProperties().put(DropboxConfig.DROPBOX_TOKEN, accessToken);
+            writePropertiesToFile(propertiesFile, config.getProperties());
         }
-        Builder builder = DbxRequestConfig.newBuilder("dropbox/java-tutorial");
-        DbxRequestConfig config = builder.build();
-        logger.trace(props.getProperty(DROPBOX_TOKEN));
-        client = new DbxClientV2(config, props.getProperty(DROPBOX_TOKEN));
+        client = new DbxClientV2(config.buildRequest(), config.getDefaultToken());
+    }
+
+    public DropboxClient(DropboxUserMapping userMapping) throws FileNotFoundException, URISyntaxException, IOException {
+        config = new DropboxConfig();
+        logger.trace(userMapping.getToken());
+        client = new DbxClientV2(config.buildRequest(), config.getDefaultToken());
     }
 
     public FullAccount getUserAccount() throws DbxException {
         return client.users().getCurrentAccount();
-    }
-
-    private Properties loadProperties() throws URISyntaxException, IOException, FileNotFoundException {
-        propertiesFile = new File(Dropbox.class.getClassLoader().getResource("dropbox.properties").toURI());
-        Properties props = new Properties();
-        props.load(new FileInputStream(propertiesFile));
-        return props;
     }
 
     private void writePropertiesToFile(File propertiesFile, Properties props) throws FileNotFoundException, IOException {
@@ -101,17 +85,6 @@ public class DropboxClient {
         return client;
     }
 
-    public String getStoredCursor() {
-        return (String) props.get(DROPBOX_CURSOR);
-    }
-
-    public void updateCursor(String cursor) throws FileNotFoundException, IOException {
-        props.put(DROPBOX_CURSOR, cursor);
-        logger.debug("new cursor:{}", cursor);
-        writePropertiesToFile(propertiesFile, props);
-
-    }
-
     public void list(String path, String cursor, MetadataListener listener) throws ListFolderErrorException, DbxException {
         ListFolderResult result = null;
         if (cursor == null) {
@@ -123,18 +96,7 @@ public class DropboxClient {
 
         while (true) {
             for (Metadata metadata : result.getEntries()) {
-                if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
-                    continue;
-                }
-
-                DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
-                if (listener != null) {
-                    try {
-                        listener.consume(fileWrapper);
-                    } catch (Exception e) {
-                        logger.error("{}", e, e);
-                    }
-                }
+                processMetadataItem(listener, metadata);
             }
 
             if (!result.getHasMore()) {
@@ -149,6 +111,24 @@ public class DropboxClient {
         setCurrentCursor(cursor2);
     }
 
+    public DropboxItemWrapper processMetadataItem(MetadataListener listener, Metadata metadata) {
+        logger.trace("{}", metadata);
+        if (StringUtils.containsIgnoreCase(metadata.getName(), "Hot Folder Log")) {
+            return null;
+        }
+
+        DropboxItemWrapper fileWrapper = new DropboxItemWrapper(this, metadata);
+        if (listener != null) {
+            try {
+                logger.debug("consume: {}", fileWrapper);
+                listener.consume(fileWrapper);
+            } catch (Exception e) {
+                logger.error("{}", e, e);
+            }
+        }
+        return fileWrapper;
+    }
+
     private Map<String, BasicAccount> cachedUsers = new HashMap<>();
 
     public BasicAccount getAccount(String accountId) {
@@ -160,7 +140,7 @@ public class DropboxClient {
                 BasicAccount account = client.users().getAccount(accountId);
                 cachedUsers.put(accountId, account);
                 return account;
-            } catch (DbxException e) {
+            } catch (Exception e) {
                 logger.error("{}", e, e);
             }
         }
@@ -174,6 +154,13 @@ public class DropboxClient {
 
     }
 
+    public Metadata move(String from, String to) throws RelocationErrorException, DbxException {
+        logger.debug("Moving {} -> {}",from, to);
+        Metadata move = client.files().move(from, to);
+        logger.trace("\t{}",move);
+        return move;
+    }
+    
     public Boolean getDebug() {
         return debug;
     }
@@ -194,6 +181,13 @@ public class DropboxClient {
         ListRevisionsResult listRevisions = client.files().listRevisions(path);
         return listRevisions.getEntries();
 
+    }
+
+    public Metadata copy(String from, String to) throws RelocationErrorException, DbxException {
+        logger.debug("Moving {} -> {}",from, to);
+        Metadata move = client.files().copy(from, to);
+        logger.trace("\t{}",move);
+        return move;
     }
 
 }

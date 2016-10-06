@@ -30,6 +30,8 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
     private String path;
     @Column(name = "owner_id", length = 512)
     private String ownerId;
+    @Column(name = "owner_name", length = 512)
+    private String ownerName;
     @Column(name = "size")
     private Integer size;
     @Column(name = "item_type", length = 10, nullable = false, insertable = false, updatable = false)
@@ -134,5 +136,13 @@ public abstract class AbstractDropboxItem extends AbstractPersistable {
 
     public String getParentDirName() {
         return StringUtils.substringBeforeLast(getPath(), "/");
+    }
+
+    public String getOwnerName() {
+        return ownerName;
+    }
+
+    public void setOwnerName(String ownerName) {
+        this.ownerName = ownerName;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.balk.bean.PollType;
+import org.tdar.utils.dropbox.DropboxClient;
 import org.tdar.utils.dropbox.DropboxConstants;
 import org.tdar.utils.dropbox.ToPersistListener;
 
@@ -29,12 +30,21 @@ public class BalkScheduledProcessService {
     @Autowired
     private ItemService itemService;
     
-    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    @Scheduled(fixedDelay = ONE_MIN_MS)
     public void cronPollingQueue() {
-//        itemService.handleUploads();
+        DropboxClient client;
+        try {
+            client = new DropboxClient();
+            if (client.getDebug() == Boolean.FALSE) {
+                itemService.handleUploads();
+            }
+        } catch (URISyntaxException | IOException | DbxException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
-    @Scheduled(fixedDelay = FIVE_MIN_MS)
+    @Scheduled(fixedDelay = ONE_MIN_MS)
     @Transactional(readOnly=false)
     public void cronPollingStatsQueue() {
         try {
