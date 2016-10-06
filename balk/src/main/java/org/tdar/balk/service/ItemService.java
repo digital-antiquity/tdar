@@ -146,6 +146,7 @@ public class ItemService {
         item.setDropboxId(dropboxItemWrapper.getId());
         item.setName(dropboxItemWrapper.getName());
         item.setOwnerId(dropboxItemWrapper.getModifiedBy());
+        item.setOwnerName(dropboxItemWrapper.getModifiedByName());
         DropboxDirectory parent = findParentByPath(dropboxItemWrapper.getFullPath(), dropboxItemWrapper.isDir());
         if (parent != null) {
             item.setParentId(parent.getDropboxId());

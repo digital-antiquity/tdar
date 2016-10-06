@@ -53,4 +53,10 @@
             <column name="token" type="varchar(512)" />
 	    </addColumn>    
     </changeSet>
+
+    <changeSet id="6" author="abrin">
+	    <addColumn tableName="dropbox_items">
+            <column name="owner_name" type="varchar(512)" />
+	    </addColumn>    
+    </changeSet>
 </databaseChangeLog>

@@ -31,7 +31,7 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     @Autowired
     private UserService userService;
 
-    private TreeMap<String, WorkflowStatusReport> itemStatusReport;
+    private TreeMap<String, WorkflowStatusReport> itemStatusReport = new TreeMap<>();
     private DropboxUserMapping userInfo;
     private String path;
     private int page = 0;

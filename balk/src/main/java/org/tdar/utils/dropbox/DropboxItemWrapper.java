@@ -38,6 +38,8 @@ public class DropboxItemWrapper {
 
     private String extension;
 
+    private String modifiedByName;
+
     /*
      * path_display -> /Client Data/Upload to tDAR/srp digital library/Batch 1/1985_Effland_SaltRiver_OCR_PDFA.pdf
      * rev -> 574c829b34
@@ -87,7 +89,7 @@ public class DropboxItemWrapper {
                 setModifiedId(accountId);
                 if (accountId != null) {
                     BasicAccount account = client.getAccount(accountId);
-                    modifiedBy = account.getName().getDisplayName();
+                    setModifiedByName(account.getName().getDisplayName());
                 }
             }
         } catch (Exception e) {
@@ -193,6 +195,14 @@ public class DropboxItemWrapper {
 
     public void setModifiedId(String modifiedId) {
         this.modifiedId = modifiedId;
+    }
+
+    public String getModifiedByName() {
+        return modifiedByName;
+    }
+
+    public void setModifiedByName(String modifiedByName) {
+        this.modifiedByName = modifiedByName;
     }
 
 }
