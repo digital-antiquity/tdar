@@ -183,6 +183,10 @@
                     <groupId>commons-logging</groupId>
                     <artifactId>commons-logging</artifactId>
                 </exclusion>
+                <exclusion>
+                	<groupId>org.bouncycastle</groupId>
+                	<artifactId>bcpkix-jdk15on</artifactId>
+                </exclusion>
 			</exclusions>
 		</dependency>
 		<dependency>
