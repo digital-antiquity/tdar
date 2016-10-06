@@ -71,14 +71,14 @@ public abstract class AbstractPersistable implements Persistable {
     @Override
     public boolean equals(final Object object) {
         if (object == this) {
-            logger.debug("exact equals {},{}", this,object);
+            logger.trace("exact equals {},{}", this,object);
             return true;
         }
         if ((object instanceof Persistable) && getClass().isInstance(object)) {
-            logger.debug("same class {},{}", this,object);
+            logger.trace("same class {},{}", this,object);
             return PersistableUtils.isEqual(this, getClass().cast(object));
         }
-        logger.debug("!! not equals {},{}", this,object);
+        logger.trace("!! not equals {},{}", this,object);
         return false;
     }
 

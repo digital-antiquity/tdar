@@ -164,6 +164,7 @@
             <#if authenticatedUser.penultimateLogin??>
                 <li><strong>Last Login: </strong>${authenticatedUser.penultimateLogin?datetime}</li>
             </#if>
+</ul>
 </div>
     <#-- <@accountSection /> -->
 <hr/>

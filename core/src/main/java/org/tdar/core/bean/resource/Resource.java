@@ -1319,8 +1319,20 @@ public class Resource implements Persistable,
 
     @Transient
     public Set<RightsBasedResourceCollection> getRightsBasedResourceCollections() {
-        Set<RightsBasedResourceCollection> collections = new HashSet<>(getSharedCollections());
-        collections.addAll(internalCollections);
+        Set<RightsBasedResourceCollection> collections = new HashSet<>();
+        if (CollectionUtils.isNotEmpty(getSharedCollections())) {
+            collections.addAll(getSharedCollections());
+        }
+        if (CollectionUtils.isNotEmpty(getInternalCollections())) {
+            collections.addAll(getInternalCollections());
+        }
+        Iterator<RightsBasedResourceCollection> iterator = collections.iterator();
+        while (iterator.hasNext()) {
+            RightsBasedResourceCollection next = iterator.next();
+            if (next == null) {
+                iterator.remove();
+            }
+        }
         return collections;
     }
 

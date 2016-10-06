@@ -355,11 +355,13 @@ public class ImportService {
         }
 
         Set<AuthorizedUser> aus = new HashSet<>();
-        // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
-        incomingResource.getRightsBasedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
-        incomingResource.getUnmanagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
-        if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
-            throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
+        if (incomingResource != null) {
+            // for non-admins don't want to have to figure out rights check logic, so reject authorizedUsers
+            incomingResource.getRightsBasedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            incomingResource.getUnmanagedResourceCollections().forEach(c -> aus.addAll(c.getAuthorizedUsers()));
+            if (CollectionUtils.isNotEmpty(aus) && !authenticationAndAuthorizationService.isAdministrator(user)) {
+                throw new APIException(MessageHelper.getMessage("importService.invalid_authorized_users"), StatusCode.UNKNOWN_ERROR);
+            }
         }
     }
 

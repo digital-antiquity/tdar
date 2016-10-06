@@ -19,6 +19,10 @@ public class RequestAccessLoginController extends AbstractRequestAccessLoginActi
 
     private static final long serialVersionUID = 1525006233392261028L;
 
+    public Resource getResource() {
+        return getPersistable();
+    }
+
     @Override
     public String getTypeNamespace() {
         return "resource";

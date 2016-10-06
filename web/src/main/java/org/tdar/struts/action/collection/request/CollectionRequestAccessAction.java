@@ -97,6 +97,10 @@ public class CollectionRequestAccessAction extends AbstractRequestAccessControll
     public void setEmailTypes(Set<EmailMessageType> emailTypes) {
         this.emailTypes = emailTypes;
     }
+    
+    public ResourceCollection getCollection() {
+        return getPersistable();
+    }
 
     public Class<ResourceCollection> getPersistableClass() {
         return ResourceCollection.class;

@@ -30,4 +30,9 @@ public class RequestAccessRegistrationController extends AbstractRequestAcessReg
     public Class<Resource> getPersistableClass() {
         return Resource.class;
     }
+
+    public Resource getResource() {
+        return getPersistable();
+    }
+
 }
