@@ -62,7 +62,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
         CollectionSearchQueryObject csqo = new CollectionSearchQueryObject();
         csqo.getAllFields().add("Australia");
         SearchResult<ResourceCollection> result = new SearchResult<>();
-        collectionSearchService.buildResourceCollectionQuery(getBasicUser(), csqo,  result, MessageHelper.getInstance());
+        collectionSearchService.buildResourceCollectionQuery(getEditorUser(), csqo,  result, MessageHelper.getInstance());
         logger.debug("{}", result.getResults());
         assertNotEmpty(result.getResults());
         assertEquals("should have one result",  1, result.getResults().size());
