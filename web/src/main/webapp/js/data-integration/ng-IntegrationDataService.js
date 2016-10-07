@@ -35,32 +35,21 @@
                     dataTableColumns : []
                 };
 
-                // get the data table columns in the same structure for Integration, Display, and Count columns
-                var tempList = column.selectedDataTableColumns;
-                if (tempList == undefined) {
-                    tempList = [];
-                    if (column.dataTableColumnSelections != undefined) {
-                        column.dataTableColumnSelections.forEach(function(col) {
-                            if (col != undefined) {
-                                tempList.push(col.dataTableColumn);
-                            }
-                        });
-                    }
-                }
 
-                // add the id/name
-                tempList.forEach(function(dtc) {
-                    if (dtc != undefined && dtc.id != undefined) {
-                        var dtc_ = {
-                            id : dtc.id,
-                            name : dtc.name
-                        }
-                    }
-                    outputColumn.dataTableColumns.push(dtc_);
-                });
 
-                // get the nodes and ontologes
+                // for integration column,  build the dataTableColumns, selectedNodes, and list of ontologies
                 if (column.type == 'integration') {
+
+                // Get the data table columns in the same structure for Integration, Display, and Count columns.
+                // The ajax endpoint expects  a list of dataTableColumn objects, so we must flatten selectedDataTableColumns
+                outputColumn.dataTableColumns = (column.selectedDataTableColumns
+                    // select the dataTableColumn from the 'selectedDataTableColumn' object
+                    .map(function(selection){ return selection.dataTableColumn;})
+                    // filter out the null columns (if this is a partial integration)
+                    .filter(function(dtc){return !!dtc})
+                    // strip out the extraneous properties from our dtc object (all we want are ID and Name)
+                    .map(function(dtc){return {'id':dtc.id, 'name': dtc.name};}));
+
                     var ont = {
                         id : column.ontology.id,
                         title : column.ontology.title
@@ -83,12 +72,22 @@
                         });
                     }
                     ;
+                } else {
+                    //we assume a display column if not an integration column
+                    //fixme:  display columns have 'dataTableColumnSelections', which is virtually identical to 'selectedDataTableColumns'. refactor so they use the same name
+                    outputColumn.dataTableColumns = (column.dataTableColumnSelections
+                            .filter(function(col){return !!col})
+                            .map(function(col){return col.dataTableColumn})
+                            .filter(function(dtc){return !!dtc})
+                            .map(function(dtc){return {'id':dtc.id, 'name': dtc.name}})
+
+                    );
                 }
 
                 out.columns.push(outputColumn);
             });
-
         }
+
 
         // add any ontologies
         if (integration.ontologies != undefined) {
@@ -119,30 +118,19 @@
         return out;
     }
 
-    function _loadDocumentData() {
-        var dataElements = $('[type="application/json"][id]').toArray();
-        var map = {};
-        dataElements.forEach(function(elem) {
-            var key = elem.id;
-            var val = JSON.parse(elem.innerHTML);
-            map[key] = val;
-        });
-        return map;
-    }
 
     function _dedupe(items) {
-        var uniqueItems = [];
-        items.forEach(function(item) {
-            if (uniqueItems.indexOf(item) === -1) {
-                uniqueItems.push(item);
+        return items.reduce(function(a,b){
+            if(a.indexOf(b) < 0){
+                a.push(b);
             }
-        })
-        return uniqueItems;
+            return a;
+        }, []);
     }
 
-    function DataService($http, $cacheFactory, $q) {
+    function DataService($http, $cacheFactory, $q, $log, $rootScope) {
         var self = this;
-        var documentData = _loadDocumentData();
+        var documentData = {};
         var ontologyCache = $cacheFactory('ontologyCache');
         var dataTableCache = $cacheFactory('dataTableCache');
         var ontologyNodeCache = $cacheFactory('ontologyNodeCache');
@@ -166,7 +154,12 @@
                 data = null;
             }
             return data;
-        }
+        };
+
+        this.setDocumentData = function(name, data) {
+            documentData[name] = data;
+            $rootScope.$broadcast('dataReceived', name, data);
+        };
 
         /**
          * Create a subset of a specified array that does not contain duplicates (using object identity for equality)
@@ -192,8 +185,8 @@
             if (parseInt(integration.id) > -1) {
                 path += "/" + integration.id;
             }
-            console.log("savePath:" + path + " -- " + integration.id);
-            console.log(jsonData);
+            //console.log("savePath:" + path + " -- " + integration.id);
+            //console.log(jsonData);
             var httpPromise = $http({
                 method : "POST",
                 url : TDAR.uri(path),
@@ -222,7 +215,7 @@
          * Load Integration with specified ID into the specified integration object.
          */
         function _loadIntegrationById(id, integration) {
-            console.log(id);
+            //console.log(id);
             var futureData = $q.defer();
 
             var httpPromise = $http({
@@ -231,7 +224,7 @@
             });
 
             httpPromise.success(function(data) {
-                console.log(data);
+                //console.log(data);
                 _loadIntegration(data, integration).then(
                         function(){futureData.resolve()},
                         function(){futureData.reject()});
@@ -239,6 +232,7 @@
 
             return futureData.promise;
         }
+
 
         /**
          * Based on the specified JSON representation of a data object, try and rebuild the integration
@@ -254,82 +248,71 @@
             integration.title = json.title;
             integration.description = json.description;
             integration.id = json.id;
-            console.log("starting...");
+            //console.log("starting...");
             // Load the datasets and then use the results to build the columns out
             self.loadTableDetails(dataTableIds).then(function(dataTables) {
-                //These woods are lovely, dark, and deep
-                var promisesToKeep = [];
+                //some requested datatables may be missing since user created the workflow
+                dataTables = dataTables.filter(function(dt){return !!dt});
+
 
                 self.addDataTables(integration, dataTables);
-                var result = self.loadUpdatedParticipationInformation(integration);
-                result.then(function() {
+                //load  the participation information + ontology details,  then reconstitute  the columns in the integration
+                var futureParticipation = self.loadUpdatedParticipationInformation(integration);
+
+                //fixme: table details always(?) include ontology details, so calling loadOntologyDetails may be unnecessary. Consider removing this promise
+               var futureOntologyDetails = self.loadOntologyDetails(json.columns
+                        .filter(function(c){return c.type ==='INTEGRATION';})
+                        .map(function(c){return c.ontology.id;}));
+
+                $q.all([futureParticipation, futureOntologyDetails]).then(function() {
                     json.columns.forEach(function(column) {
                         var name = column.name;
                         if (name == undefined) {
                             name = "column";
                         }
 
-                        var ids = [];
-                        column.dataTableColumns.forEach(function(col) {
-                            if (col != undefined && col.id != undefined && dataTableColumnCache.get(col.id) != undefined) {
-                                ids.push(col.id);
+                        var ids = column.dataTableColumns.map(function(col){
+                            if(col != undefined && col.id != undefined && !!dataTableColumnCache.get(col.id)) {
+                                return col.id;
+                            } else {
+                                return undefined;
                             }
                         });
 
-                        if (column.type == 'DISPLAY') {
-                            integration.addDisplayColumn(name);
-                            self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
+                        if (column.type === 'DISPLAY') {
+                            var displayColumn = integration.addDisplayColumn(name);
+                            self._loadDisplayIntegrationColumns(ids, displayColumn);
                         }
-                        if (column.type == 'COUNT') {
-                            integration.addCountColumn(name);
-                            self._loadDisplayIntegrationColumns(ids, integration.columns[integration.columns.length - 1]);
+                        if (column.type === 'COUNT') {
+                            var countColumn = integration.addCountColumn(name);
+                            self._loadDisplayIntegrationColumns(ids, countColumn);
                         }
-                        if (column.type == 'INTEGRATION') {
-                            var ontology = undefined;
-                            var ontologyIds = new Array();
+                        if (column.type === 'INTEGRATION') {
+                            var ontology = ontologyCache.get(column.ontology.id);
+                            var integrationColumn = integration.addIntegrationColumn(name, ontology);
+                            var dataTableColumns = self.getCachedDataTableColumns(ids);
 
-                            integration.ontologies.forEach(function(ont) {
-                                if (column.ontology.id == ont.id) {
-                                    ontology = ont;
-                                } else {
-                                    ontologyIds.push(ont.id);
+                            integrationColumn.selectedDataTableColumns = dataTableColumns.map(function(dataTableColumn, idx){
+                                return {
+                                    'dataTable': integration.dataTables[idx],
+                                    'dataTableColumn': dataTableColumn
                                 }
                             });
-                            promisesToKeep.push(
-                                self.loadOntologyDetails(ontologyIds).then(function() {
-                                    if (ontology == undefined) {
-                                        ontology = ontologyCache.get(column.ontology.id);
-                                        integration.ontologies.push(ontology);
-                                        _rebuildSharedOntologies(integration);
-                                    }
-                                    // FIXME: if not loaded, then need to go to the server for ontology details
-                                    integration.addIntegrationColumn(name, ontology);
-                                    var col = integration.columns[integration.columns.length - 1];
 
-                                    // FIXME: I'm less sure about this direct replacement -- is this okay? It appears to work, change to setter
-                                    col.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
-                                    col.nodeSelections.forEach(function(node) {
-                                        column.nodeSelection.forEach(function(nodeRef) {
-                                            if (nodeRef.id == node.node.id) {
-                                                node.selected = true;
-                                            }
-                                        });
-                                    });
-                                })
-                            );
+
+                            //integrationColumn.selectedDataTableColumns = self.getCachedDataTableColumns(ids);
+
+
+                            integrationColumn.nodeSelections.forEach(function(node) {
+                                node.selected = column.nodeSelection.some(function(nodeRef){
+                                    return nodeRef.id == node.node.id;
+                                });
+                            });
                         }
                     });
-                    $q.all(promisesToKeep).then(
-                        function() {
-                            futureData.resolve();},
-                        function(reason) {
-                            console.warn("loadTableDetails:: one or more of the loadOntologyDetails ajax calls failed");
-                            futureData.reject(reason);
-                        }
-                    )
-                },
-                    //fixme: this is getting repetitive - consider writing a defaultRejectHandler callback
-                    function(reason) {
+                    futureData.resolve();
+
+                }, function(reason) {
                         console.warn("loadParticipationInformation ajax call failed");
                         futureData.reject(reason);
                     }
@@ -370,7 +353,7 @@
         self._loadDisplayIntegrationColumns = function(ids, col) {
 
             col.dataTableColumnSelections.forEach(function(selection) {
-                console.log(selection);
+                //console.log(selection);
                 selection.dataTable.dataTableColumns.forEach(function(dtc) {
                     ids.forEach(function(id) {
                         if (dtc.id == id) {
@@ -431,12 +414,12 @@
             missingTableIds = _dedupe(missingTableIds);
 
             if (missingTableIds.length > 0) {
-                var httpPromise = $http.get(TDAR.uri('/api/integration/table-details?' + $.param({
+                var httpPromise = $http.get('/api/integration/table-details?' + $.param({
                     dataTableIds : missingTableIds
-                }, true)));
+                }, true));
 
                 httpPromise.success(function(data) {
-
+                    $log.debug("success");
                     // add this new data to our caches
                     data.dataTables.forEach(function(dataTable) {
                         dataTableCache.put(dataTable.id, dataTable);
@@ -459,6 +442,7 @@
                     futureData.resolve(self.getCachedDataTables(dataTableIds));
 
                 }).error(function(err){
+                    $log.debug('failed');
                     futureData.reject(err);
                 });
 
@@ -471,6 +455,7 @@
             return futureData.promise;
         };
 
+
         /**
          * Returns httpPromise of an object containing: ontology objects corresponding to the specified array of ontologyId's
          * 
@@ -480,21 +465,23 @@
          */
         this.loadOntologyDetails = function(ontologyIds) {
             var futureData = $q.defer();
-            console.log("loading info for ontologies from server:", ontologyIds);
+            //console.log("loading info for ontologies from server:", ontologyIds);
             // only load tables that aren't already in the cache
-            var missingOntologyIds = ontologyIds.filter(function(ontologyId) {
+
+            // not sure if dupe tableIds will ever occur, but dedupe anyway.
+            var uniqueIds = _dedupe(ontologyIds);
+
+            var missingOntologyIds = uniqueIds.filter(function(ontologyId) {
                 return !ontologyCache.get(ontologyId)
             });
-            // not sure if dupe tableIds will ever occur, but dedupe anyway.
-            ontologyIds = _dedupe(ontologyIds);
 
-            if (ontologyIds.length > 0) {
+            if (missingOntologyIds.length > 0) {
                 var httpPromise = $http.get(TDAR.uri('/api/integration/ontology-details?' + $.param({
-                    ontologyIds : ontologyIds
+                    ontologyIds : missingOntologyIds
                 }, true)));
 
                 httpPromise.success(function(data) {
-                    console.log(data);
+                    //console.log(data);
                     // add this new data to our caches
                     data.forEach(function(proxy) {
                         proxy.ontology.nodes = [];
@@ -528,7 +515,7 @@
          */
         this.performIntegration = function(integration) {
             var futureData = $q.defer();
-            console.log("starting integration:");
+            //console.log("starting integration:");
             var integrationJson = self._dumpObject(integration);
             
             var httpPromise = $http.get(TDAR.uri('/api/integration/integrate?' + $.param({
@@ -595,7 +582,7 @@
          * @returns {*}
          */
         this.findDatasets = function(searchFilter) {
-            console.debug(searchFilter);
+            //console.debug(searchFilter);
             var transformer = function(data) {
                 return data.map(function(item) {
                     var d = new Date(0);
@@ -682,20 +669,21 @@
         this.loadNodeParticipation = function(dataTableColumnIds) {
             var postData = $.param({
                 dataTableColumnIds : dataTableColumnIds,
-                verbose: 'true'
+                //fixme:  use non-verbose output until TDAR-5236 is fixed.
+                verbose: 'false'
             }, true);
 
             var httpPromise = $http({
                 method: 'POST',
-                url: TDAR.uri('/api/integration/node-participation'),
+                url: '/api/integration/node-participation',
                 headers: {'Content-Type': 'application/x-www-form-urlencoded'},
                 data: postData
             });
 
             //var httpPromise = $http.get(url);
             var futureWork = $q.defer();
-            httpPromise.success(function(verboseData) {
-                var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
+            httpPromise.success(function(nodeIdsByColumnId) {
+                // var nodeIdsByColumnId = transformVerboseNodeInfo(verboseData);
                 Object.keys(nodeIdsByColumnId).forEach(function(dataTableColumnId) {
                     var dataTableColumn = dataTableColumnCache.get(dataTableColumnId);
                     var nodes = nodeIdsByColumnId[dataTableColumnId].map(function(ontologyNodeId){return ontologyNodeCache.get(ontologyNodeId)});
@@ -731,7 +719,7 @@
 
     }
 
-    app.service("DataService", [ '$http', '$cacheFactory', '$q', DataService ]);
+    app.service("DataService", [ '$http', '$cacheFactory', '$q', '$log', '$rootScope',  DataService ]);
 
     /* global angular */
 })(angular);

@@ -9,7 +9,7 @@
 <head>
     <@commonCollection.head />
     <style>
-    <#noescape>${whitelabelCollection.properties.css!''}</#noescape>
+    <#noescape>${whitelabelCollection.css!''}</#noescape>
 
 	<#-- todo: move these to .css and use collection-specific css classes -->
     <#if searchHeaderLogoAvailable>
@@ -41,24 +41,20 @@
 
         <@commonCollection.sidebar />
 
-        <@commonCollection.descriptionSection>
+        <@commonCollection.descriptionSection />
                 <#-- TODO: move this logic to logoAvailable() -->
-                <#if (logoAvailable && !whitelabelCollection.properties.customHeaderEnabled)>
-                    <div class="pull-right"><img class="whitelabel-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo"> </div>
-                </#if>
-        </@commonCollection.descriptionSection>
 
-        <#if whitelabelCollection.properties.featuredResourcesEnabled>
+        <#if whitelabelCollection.featuredResourcesEnabled>
             <div class="viewpage-section">
                 <div class="row">
-                    <@view.featured colspan="9" resourceList=whitelabelCollection.properties.featuredResources />
+                    <@view.featured colspan="9" resourceList=whitelabelCollection.featuredResources />
                 </div>
             </div>
         </#if>
 
         <@commonCollection.keywordSection />
 
-        <#if whitelabelCollection.properties.subCollectionsEnabled>
+        <#if whitelabelCollection.subCollectionsEnabled>
             <div class="viewpage-section">
                 <h2>Collections</h2>
                 <#list collections as childCollection>

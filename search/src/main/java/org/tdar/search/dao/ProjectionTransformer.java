@@ -6,6 +6,8 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.solr.common.SolrDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.DisplayOrientation;
@@ -35,6 +37,8 @@ import org.tdar.utils.PersistableUtils;
 public class ProjectionTransformer<I extends Indexable> {
 
 	private static final TdarConfiguration CONFIG = TdarConfiguration.getInstance();
+
+    protected final Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private DatasetDao datasetDao;
@@ -80,14 +84,19 @@ public class ProjectionTransformer<I extends Indexable> {
 		// only display for map
 		Collection<Long> llIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.ACTIVE_LATITUDE_LONGITUDE_BOXES_IDS);
 		List<LatitudeLongitudeBox> findAll = null;
-		if (resultHandler.getOrientation() == DisplayOrientation.MAP || resultHandler.getOrientation() == null) {
+		DisplayOrientation orientation = resultHandler.getOrientation();
+		if (orientation == null) {
+		    orientation = DisplayOrientation.LIST_FULL;
+		}
+        if (orientation == DisplayOrientation.MAP) {
 			findAll = datasetDao.findAll(LatitudeLongitudeBox.class,llIds);
 			r_.getLatitudeLongitudeBoxes().addAll(findAll);
 		}
 		
 		// creators 
 		Collection<Long> cIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.RESOURCE_CREATOR_ROLE_IDS);
-		if (resultHandler.getOrientation() == DisplayOrientation.LIST_FULL) {
+		logger.trace("{}: creator: {}", r_.getId(), cIds);
+		if (orientation == DisplayOrientation.LIST_FULL ) {
 			r_.getResourceCreators().addAll(datasetDao.findAll(ResourceCreator.class, cIds));
 		}
 
@@ -100,7 +109,7 @@ public class ProjectionTransformer<I extends Indexable> {
 		        ir.setTransientAccessType(ResourceAccessType.valueOf(fieldValue));
 		    }
 			Collection<Long> fileIds = (Collection<Long>) (Collection)doc.getFieldValues(QueryFieldNames.FILE_IDS);
-			if (resultHandler.getOrientation() == DisplayOrientation.GRID || resultHandler.getOrientation() == DisplayOrientation.MAP || resultHandler.getOrientation() == null) {
+			if (orientation == DisplayOrientation.GRID || orientation == DisplayOrientation.MAP) {
 				ir.getInformationResourceFiles().addAll(datasetDao.findAll(InformationResourceFile.class,fileIds));
 			}
 			

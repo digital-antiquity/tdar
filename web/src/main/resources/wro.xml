@@ -122,6 +122,7 @@
         <!-- <js>/js/data-integration/ng-IntegrationLegacyFormController.js</js> -->
         <js>/js/data-integration/ng-IntegrationModalDialogController.js</js>
         <js>/js/data-integration/ng-IntegrationDataService.js</js>
+        <js>/js/data-integration/ng-RawDataDirective.js</js>
         <js>/js/data-integration/ng-IntegrationCustomFilters.js</js>
         <js>/js/data-integration/ng-IntegrationValidationService.js</js>
         <js>/js/data-integration/ng-DatatableDirective.js</js>

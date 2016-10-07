@@ -81,6 +81,7 @@
           <h5>Admin Tools</h5>
             <ul>
              <li> <a href="<@s.url value="/collection/admin/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
+             <li> <a href="<@s.url value="/resource/compare?collectionId=${collection.id?c}"/>">Compare Resources in Collection</a></li>
              <li> <a href="<@s.url value="/search/download?collectionId=${collection.id?c}"/>">Export to Excel</a></li>
              <li> <a href="<@s.url value="/collection/admin/organize/${collection.id?c}"/>">Reorganize</a></li>
              <#if administrator && collection.type == 'LIST' && !collection.properties.whitelabel >

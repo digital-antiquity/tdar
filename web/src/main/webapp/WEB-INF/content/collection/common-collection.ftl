@@ -22,6 +22,9 @@
     <div id="sidebar-right" parse="true">
         <br/><br/>
         <#if !minimal>
+            <#if (logoAvailable && (resourceCollection.whiteLabelCollection || (resourceCollection.customHeaderEnabled!false) == false)) >
+                <img class="collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
+            </#if>
             <#if results?has_content>
             <hr class="light"/>
             <@common.renderWorldMap mode="mini" />
@@ -35,7 +38,6 @@
 		            <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
 		        </div>
 		    </div>
-				
         </#if>
         <#if collections?has_content && !collections.empty > 
             <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Shares</#if></h3>

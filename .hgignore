@@ -1,7 +1,6 @@
 syntax:glob
 .project
 .checkstyle
-.settings
 .classpath
 .checkstyle
 indexes
@@ -19,7 +18,6 @@ logs
 tags
 *.orig
 *.rej
-.idea/*
 *.iml
 nb-configuration.xml
 nbactions*
@@ -27,11 +25,17 @@ glassfish-web.xml
 .DS_Store
 libpeerconnection.log
 
-.externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
 import.log
 
+# Note: IDE files are untracked by default for security reasons.  If you manually add them, ensure they
+#    adhere to team formatting standards and do not contain sensitive and/or machine-specific information.
 *.sublime-workspace
 *.sublime-project
+.vscode/*
+.idea/*
+.settings
+.externalToolBuilders\org.eclipse.wst.jsdt.core.javascriptValidator.launch
+
 
 node
 node_modules
@@ -66,7 +70,7 @@ syntax: regexp
 ^(.+)/src/main/resources/log4j\.xml
 ^(.+)/src/main/resources/log4j2\.xml
 ^(.+)/src/main/webapp/bower_components
-^(.+)/(indexes|target|logs|bin|node|node_modules)
+^(.+)/(indexes|target|logs|bin|node_modules)
 ^web/src/main/webapp/components/(.+)/(examples|examples_support|test|tests|unit_testing|demo|docs)/(.+)
 ^web/src/main/webapp/components/(.+)\.sh
 ^web/src/main/webapp/components/jquery-file-upload/server

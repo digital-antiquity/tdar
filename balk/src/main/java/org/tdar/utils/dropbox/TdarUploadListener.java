@@ -6,9 +6,7 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,16 +26,11 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.service.UrlService;
 import org.tdar.utils.APIClient;
 import org.tdar.utils.ApiClientResponse;
-import org.tdar.utils.dropbox.container.AbstractContainer;
-import org.tdar.utils.dropbox.container.FileContainer;
-import org.tdar.utils.dropbox.container.FolderContainer;
 
 public class TdarUploadListener implements MetadataListener {
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
     File rootDir = new File("Client Data", "Upload to tDAR");
-    FolderContainer root = null;
-    private Map<String, AbstractContainer> map = new HashMap<>();
     private APIClient apiClient;
     boolean loggedIn = false;
     private Boolean debug;
@@ -67,9 +60,7 @@ public class TdarUploadListener implements MetadataListener {
         if (!loggedIn && debug == false) {
             apiClient.apiLogin();
         }
-        if (fileWrapper.isDir()) {
-            getMap().put(fileWrapper.getId(), new FolderContainer(fileWrapper));
-        } else {
+        if (fileWrapper.isFile()) {
             File file = null;
             String docXml = makeXml(file, fileWrapper.getName(), fileWrapper.getExtension(), StringUtils.join(tree, "/"));
             logger.trace(docXml);
@@ -81,9 +72,7 @@ public class TdarUploadListener implements MetadataListener {
                 ApiClientResponse response = apiClient.uploadRecordWithDefaultAccount(docXml, null, file);
                 itemService.markUploaded(fileWrapper.getId(), response.getTdarId() , fileWrapper.isDir());
             }
-            getMap().put(fileWrapper.getId(), new FileContainer(fileWrapper));
         }
-
     }
 
     private String makeXml(File file, String filename, String extension, String collection)
@@ -133,14 +122,6 @@ public class TdarUploadListener implements MetadataListener {
         marshaller.marshal(object, writer);
         return writer.toString();
 
-    }
-
-    public Map<String, AbstractContainer> getMap() {
-        return map;
-    }
-
-    public void setMap(Map<String, AbstractContainer> map) {
-        this.map = map;
     }
 
     @Override

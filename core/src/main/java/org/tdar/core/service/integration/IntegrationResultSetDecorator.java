@@ -140,7 +140,7 @@ public class IntegrationResultSetDecorator extends AbstractIteratorDecorator<Obj
                 
                 OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(mappedVal, realColumn);
                 // if we use the special rules
-                if (TdarConfiguration.getInstance().includeSpecialCodingRules()) {
+                if (TdarConfiguration.getInstance().includeSpecialCodingRules() && realColumn  != null) {
                     Map<String, OntologyNode> nodeMap = realColumn.getDefaultCodingSheet().getTermToOntologyNodeMap();
                     // if type "not" OK, ie. we need a special term
                     if (!StringUtils.equals(OK, type)) {

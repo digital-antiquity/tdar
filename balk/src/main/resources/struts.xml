@@ -35,8 +35,7 @@
     <constant name="struts.enable.SlashesInActionNames" value="true" />
     <constant name="struts.mapper.alwaysSelectFullNamespace" value="false" />
 
-    <constant name="struts.patternMatcher"
-        value="com.opensymphony.xwork2.util.NamedVariablePatternMatcher" />
+	<constant name="struts.patternMatcher" value="regex" />
     <!--<constant name="struts.patternMatcher" value="regex" /> -->
 
     <package name="default" extends="struts-default" namespace="/">

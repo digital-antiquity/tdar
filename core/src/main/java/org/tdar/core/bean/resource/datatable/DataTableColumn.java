@@ -44,6 +44,7 @@ import org.tdar.utils.json.JsonIdNameFilter;
 import org.tdar.utils.json.JsonIntegrationDetailsFilter;
 import org.tdar.utils.json.JsonIntegrationFilter;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -503,5 +504,14 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     @XmlTransient
     public boolean isFilenameColumn() {
         return this.getColumnEncodingType().isFilename();
+    }
+
+    @Transient
+    @XmlTransient
+    @JsonIgnore
+    public String getPrettyDisplayName() {
+        String displayName = getDisplayName().replaceAll(" (?i)Ontology","");
+        displayName = StringUtils.replace(displayName, "  ", " ");
+        return displayName;
     }
 }

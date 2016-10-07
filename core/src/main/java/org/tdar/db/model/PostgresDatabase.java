@@ -219,7 +219,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
     public <T> T selectAllFromTable(DataTable table, ResultSetExtractor<T> resultSetExtractor, String... orderBy) {
         SqlSelectBuilder builder = getSelectAll(table, false);
         builder.getOrderBy().addAll(Arrays.asList(orderBy));
-        return jdbcTemplate.query(builder.toSql(), resultSetExtractor);
+        return jdbcTemplate.query(new LowMemoryStatementCreator(builder.toSql()), resultSetExtractor);
     }
 
     private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
@@ -242,7 +242,7 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     @Override
     @Transactional(value = "tdarDataTx", readOnly = true)
-    public List<String> selectDistinctValues(DataTableColumn dataTableColumn) {
+    public List<String> selectDistinctValues(DataTableColumn dataTableColumn, boolean sort) {
         if (dataTableColumn == null) {
             return Collections.emptyList();
         }
@@ -256,7 +256,10 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
         }
         builder.getColumns().add(dataTableColumn.getName());
         builder.getTableNames().add(dataTableColumn.getDataTable().getName());
-        builder.getOrderBy().add(dataTableColumn.getName());
+        if (sort) {
+            builder.getOrderBy().add(dataTableColumn.getName());
+        }
+        logger.trace(builder.toSql());
         return jdbcTemplate.queryForList(builder.toSql(), String.class);
     }
 
