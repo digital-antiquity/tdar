@@ -29,9 +29,16 @@
                 <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="unstyled" pictoralIcon=true />
     <i class="icon-document-red"></i>
             </#if>
+		<#else>
+		    <div class="beige white-border-bottom">
+		        <div class="iconbox">
+		            <svg class="svgicon white svg-dynamic"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+		        </div>
+		    </div>
+				
         </#if>
         <#if collections?has_content && !collections.empty > 
-            <h3>Child Collections</h3>
+            <h3>Child <#if resourceCollection.type == 'LIST'>Collections<#else>Shares</#if></h3>
             <@common.listCollections collections=collections showOnlyVisible=true />
         </#if>
 		<@list.displayWidget />
@@ -166,12 +173,10 @@
 
         <#if results?has_content>
         <div id="divResultsSortControl">
-            <h2>${header}</h2>
             <div class="row">
-                <div class="span4">
-                    <@search.totalRecordsSection tag="h2" helper=paginationHelper itemType="Record"/>
+                <div class="span12">
+                    <@search.totalRecordsSection tag="h2" helper=paginationHelper header=header/>
                 </div>
-                <div class="span5"></div>
             </div>
         </div>
         

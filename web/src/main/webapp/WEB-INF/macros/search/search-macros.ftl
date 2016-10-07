@@ -189,9 +189,13 @@
         </#if>
     </#macro>
 
-    <#macro totalRecordsSection tag="h2" helper=paginationHelper itemType="Resource">
+    <#macro totalRecordsSection tag="h2" helper=paginationHelper itemType="Resource" header="">
     <${tag} class="totalRecords">
-    ${helper.startRecord}-${helper.endRecord} (${helper.totalNumberOfItems} ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if>)
+    <#if header?has_content>
+	  ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if> ${header!''} <span class="small">(Viewing ${helper.startRecord}-${helper.endRecord} of ${helper.totalNumberOfItems})</span>    
+    <#else>
+  	   ${helper.startRecord}-${helper.endRecord} (${helper.totalNumberOfItems} ${itemType}<#if (helper.totalNumberOfItems != 1)>s</#if>)
+  	</#if>
     </${tag}>
 
     </#macro>

@@ -15,14 +15,7 @@
 
     <@commonCollection.header />
 
-        <h1>${resourceCollection.name!"untitled collection"}
-			<#if (logoAvailable && (resourceCollection.description!'')?length < 150)>
-		        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
-		    </#if>
-		</h1>
-		<#if ( logoAvailable && (resourceCollection.description!'')?length > 150)>
-	        <img class="pull-right collection-logo" src="/files/collection/lg/${id?c}/logo" alt="logo" title="logo" />
-        </#if>
+        <h1>${resourceCollection.name!"untitled collection"}</h1>
 
     <#if !visible>
     This collection is not accessible
@@ -32,7 +25,7 @@
 
         <@commonCollection.descriptionSection/>
 
-        <@commonCollection.resultsSection header="Resources in this Share"/>
+        <@commonCollection.resultsSection header="in this Share"/>
 
         <@commonCollection.adminSection/>
     </#if>
