@@ -39,13 +39,13 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testSetupCorrect() {
         ResourceCollection collection = resourceCollectionService.find(1575l);
-        assertFalse(((VisibleCollection) collection).isHidden());
+        assertTrue(((VisibleCollection) collection).isHidden());
     }
 
     @Test
     @Rollback(true)
     public void testSparseResource() throws Exception {
-        SharedCollection collection = new SharedCollection("test", "test", true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", getAdminUser());
         collection.markUpdated(getAdminUser());
         collection.setResources(new HashSet<>(genericService.findRandom(Resource.class, 20)));
         genericService.saveOrUpdate(collection);
@@ -63,7 +63,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testMakeActive() throws Exception {
-        SharedCollection collection = new SharedCollection("test", "test", true, getAdminUser());
+        SharedCollection collection = new SharedCollection("test", "test", getAdminUser());
         collection.markUpdated(getAdminUser());
         boolean seen = false;
         genericService.saveOrUpdate(collection);
@@ -178,14 +178,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testDashboardQueries() {
-        SharedCollection parent = new SharedCollection("parent", "parent", false, getBasicUser());
-        SharedCollection parent2 = new SharedCollection("parent2", "parent", false, getAdminUser());
-        SharedCollection parent3 = new SharedCollection("parent3", "parent", false, getAdminUser());
-        SharedCollection child1 = new SharedCollection("child", "child", false, getBasicUser());
-        SharedCollection child11 = new SharedCollection("child1", "child1", false, getBasicUser());
-        SharedCollection access = new SharedCollection("access", "access", false, getAdminUser());
-        SharedCollection child2 = new SharedCollection("child2", "child2", false, getBasicUser());
-        SharedCollection child22 = new SharedCollection("child22", "child2", false, getBasicUser());
+        SharedCollection parent = new SharedCollection("parent", "parent", getBasicUser());
+        SharedCollection parent2 = new SharedCollection("parent2", "parent", getAdminUser());
+        SharedCollection parent3 = new SharedCollection("parent3", "parent", getAdminUser());
+        SharedCollection child1 = new SharedCollection("child", "child", getBasicUser());
+        SharedCollection child11 = new SharedCollection("child1", "child1", getBasicUser());
+        SharedCollection access = new SharedCollection("access", "access", getAdminUser());
+        SharedCollection child2 = new SharedCollection("child2", "child2",  getBasicUser());
+        SharedCollection child22 = new SharedCollection("child22", "child2", getBasicUser());
         ListCollection list = new ListCollection("child22", "child2", SortOption.TITLE, false, getBasicUser());
 
         parent.markUpdated(getAdminUser());
@@ -252,7 +252,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
-        SharedCollection collection = new SharedCollection(name, description, false, getBasicUser());
+        SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
         resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), users, PersistableUtils.extractIds(resources), null, true,
                 null, SharedCollection.class,-1L);

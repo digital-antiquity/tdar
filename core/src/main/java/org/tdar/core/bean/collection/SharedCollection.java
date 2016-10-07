@@ -33,19 +33,19 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
-    public SharedCollection(String title, String description, boolean hidden, TdarUser creator) {
+    public SharedCollection(String title, String description, TdarUser creator) {
         setName(title);
         setDescription(description);
-        setHidden(hidden);
+        setHidden(true);
         setOwner(creator);
         this.setType(CollectionType.SHARED);
     }
 
-    public SharedCollection(Long id, String title, String description, boolean hidden) {
+    public SharedCollection(Long id, String title, String description) {
         setId(id);
         setName(title);
         setDescription(description);
-        setHidden(hidden);
+        setHidden(true);
         this.setType(CollectionType.SHARED);
     }
 
@@ -127,10 +127,15 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
     public DisplayOrientation getDisplayOrientation() {
         return DisplayOrientation.LIST;
     }
-//    @Override
-//    public String getUrlNamespace() {
-//        return "share";
-//    }
 
+    //    @Override
+    //    public String getUrlNamespace() {
+    //        return "share";
+    //    }
+
+    @Override
+    public boolean isHidden() {
+        return true;
+    }
 
 }

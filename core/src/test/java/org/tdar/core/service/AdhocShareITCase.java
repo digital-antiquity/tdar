@@ -89,7 +89,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testShareWithSharedCollection() {
-        SharedCollection list = new SharedCollection("test", "test", false, getBasicUser());
+        SharedCollection list = new SharedCollection("test", "test", getBasicUser());
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_CULTURE_ID));
         list.markUpdated(getBasicUser());
@@ -130,7 +130,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testShareWithSharedCollectionAndResource() {
-        SharedCollection list = new SharedCollection("test", "test", false, getBasicUser());
+        SharedCollection list = new SharedCollection("test", "test", getBasicUser());
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
         list.markUpdated(getBasicUser());
         genericService.saveOrUpdate(list);
@@ -154,7 +154,7 @@ public class AdhocShareITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback(true)
     public void testShareWithoutRights() {
-        SharedCollection list = new SharedCollection("test", "test", false, getEditorUser());
+        SharedCollection list = new SharedCollection("test", "test",  getEditorUser());
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_NOTHING_ID));
         list.getResources().add(genericService.find(Resource.class, TestConstants.DOCUMENT_INHERITING_CULTURE_ID));
         list.markUpdated(getEditorUser());

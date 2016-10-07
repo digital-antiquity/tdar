@@ -56,7 +56,7 @@
                 query = "SELECT new CodingSheet(res.id, res.title, res.description, res.status) FROM CodingSheet as res where res.defaultOntology.id=:ontologyId and status in (:statuses) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_SHARED_COLLECTION_LOOKUP,
-                query = "SELECT new SharedCollection(col.id, col.name, col.description, col.hidden) FROM SharedCollection col where col.id in (:ids) "),
+                query = "SELECT new SharedCollection(col.id, col.name, col.description) FROM SharedCollection col where col.id in (:ids) "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_SPARSE_LIST_COLLECTION_LOOKUP,
                 query = "SELECT new ListCollection(col.id, col.name, col.description, col.sortBy, col.hidden) FROM ListCollection col where col.id in (:ids) "),
