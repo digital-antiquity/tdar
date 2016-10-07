@@ -5,6 +5,7 @@ package org.tdar.filestore.tasks;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -86,6 +87,8 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
         String outputPrefix = fn.substring(0, fn.lastIndexOf('.'));
         outputPrefix = new File(getWorkflowContext().getWorkingDirectory(), outputPrefix).toString();
         String outputFilename = outputPrefix + pageNum + "." + imageFormat;
+        File outputFile = new File(outputFilename);
+        outputFile.deleteOnExit();
 
         if (document != null) {
 //            ImageType imageType = determineImageType(color);
@@ -93,12 +96,11 @@ public class PDFDerivativeTask extends ImageThumbnailTask {
             try {
                 PDFRenderer pdfRenderer = new PDFRenderer(document);
                 BufferedImage bim = pdfRenderer.renderImageWithDPI(pageNum, 300, color);
-                boolean success = ImageIOUtil.writeImage(bim, outputFilename, 300);
+                boolean success = ImageIOUtil.writeImage(bim, imageFormat, new FileOutputStream(outputFile), 300);
 
                 if (!success) {
                     getLogger().info("Error: no writer found for image format '" + imageFormat + "'");
                 }
-                File outputFile = new File(outputFilename);
                 getLogger().debug("output file is: {} {}", outputFile, outputFile.length());
                 // if (outputFile.exists() && outputFile.length() < 50) {
                 //
