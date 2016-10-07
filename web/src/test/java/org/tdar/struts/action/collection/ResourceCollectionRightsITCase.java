@@ -442,7 +442,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getShares().add(new SharedCollection("test123", "test123", true, getBasicUser()));
+        controller.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;
@@ -487,7 +487,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         controller = generateNewInitializedController(DocumentController.class, getBasicUser());
         controller.setId(docId);
         controller.prepare();
-        controller.getShares().add(new SharedCollection("test123", "test123", true, getBasicUser()));
+        controller.getShares().add(new SharedCollection("test123", "test123", getBasicUser()));
         controller.setServletRequest(getServletPostRequest());
         controller.save();
         Long id = -1L;

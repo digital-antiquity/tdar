@@ -56,7 +56,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         String uploadStatus;
         CollectionAPIAction controller = setupParent();
 
-        rc = new SharedCollection("child", "child description", true, getBasicUser());
+        rc = new SharedCollection("child", "child description",  getBasicUser());
         rc.setParent(genericService.find(SharedCollection.class, controller.getId()));
 //        rc.setOrientation(DisplayOrientation.GRID);
         String childXml = serializationService.convertToXML(rc);
@@ -74,7 +74,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
     }
 
     private CollectionAPIAction setupParent() throws Exception {
-        SharedCollection rc = new SharedCollection("parent", "parent description", true, getBasicUser());
+        SharedCollection rc = new SharedCollection("parent", "parent description", getBasicUser());
 //        rc.setOrientation(DisplayOrientation.GRID);
         String docXml = serializationService.convertToXML(rc);
         logger.info(docXml);
@@ -97,7 +97,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
     @Ignore
     @Rollback
     public void testAPIControllerJSON() throws Exception {
-        SharedCollection rc = new SharedCollection("parent", "parent description",  true, getBasicUser());
+        SharedCollection rc = new SharedCollection("parent", "parent description",  getBasicUser());
 //        rc.setOrientation(DisplayOrientation.GRID);
         String docXml = serializationService.convertToJson(rc);
         logger.info(docXml);
@@ -114,7 +114,7 @@ public class CollectionAPIControllerITCase extends AbstractAdminControllerITCase
         docXml = serializationService.convertToJson(controller.getImportedRecord());
         logger.info(docXml);
 
-        rc = new SharedCollection("child", "child description", true, getBasicUser());
+        rc = new SharedCollection("child", "child description",  getBasicUser());
         rc.setParent(genericService.find(SharedCollection.class, controller.getId()));
 //        rc.setOrientation(DisplayOrientation.GRID);
         String childXml = serializationService.convertToJson(rc);

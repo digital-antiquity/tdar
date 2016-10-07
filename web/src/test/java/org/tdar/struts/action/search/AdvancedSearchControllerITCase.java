@@ -245,13 +245,13 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     public void testResourceCaseSensitivity() throws SolrServerException, IOException {
         Document doc = createAndSaveNewResource(Document.class);
-        SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test",  false, getAdminUser());
+        SharedCollection titleCase = new SharedCollection(USAF_TITLE_CASE, "test",  getAdminUser());
         titleCase.markUpdated(getAdminUser());
-        SharedCollection lowerCase = new SharedCollection(USAF_LOWER_CASE, "test",  false, getAdminUser());
+        SharedCollection lowerCase = new SharedCollection(USAF_LOWER_CASE, "test",  getAdminUser());
         lowerCase.markUpdated(getAdminUser());
-        SharedCollection upperCase = new SharedCollection("USAF", "test",  false, getAdminUser());
+        SharedCollection upperCase = new SharedCollection("USAF", "test",  getAdminUser());
         upperCase.markUpdated(getAdminUser());
-        SharedCollection usafLowerCase = new SharedCollection("usaf", "test",  false, getAdminUser());
+        SharedCollection usafLowerCase = new SharedCollection("usaf", "test", getAdminUser());
         usafLowerCase.markUpdated(getAdminUser());
         doc.setTitle("USAF");
         usafLowerCase.getResources().add(doc);

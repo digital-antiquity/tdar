@@ -34,7 +34,7 @@ public class ResourceCollectionSearchITCase extends AbstractCollectionSearchTest
     public void init() {
         boolean first = true;
         for (String name : collectionNames) {
-            SharedCollection collection = new SharedCollection(name, name, false, getAdminUser());
+            SharedCollection collection = new SharedCollection(name, name,  getAdminUser());
             collection.setDescription(name);
             collection.markUpdated(collection.getOwner());
             genericService.saveOrUpdate(collection);

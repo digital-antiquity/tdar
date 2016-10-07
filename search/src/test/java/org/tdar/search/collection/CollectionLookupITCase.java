@@ -75,7 +75,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     private void setupCollections() throws SolrServerException, IOException {
         List<ResourceCollection> collections = new ArrayList<ResourceCollection>();
         for (String collectionName : collectionNames) {
-            ResourceCollection e = new SharedCollection(collectionName, collectionName, true, getBasicUser());
+            ResourceCollection e = new SharedCollection(collectionName, collectionName, getBasicUser());
             collections.add(e);
             e.markUpdated(getBasicUser());
 
@@ -136,7 +136,7 @@ public class CollectionLookupITCase extends AbstractCollectionSearchTestCase {
     private ResourceCollection setupResourceCollectionForPermissionsTests(TdarUser owner, boolean visible, TdarUser user, CollectionType type,GeneralPermissions permission)
             throws SolrServerException, IOException {
         assertFalse(getSessionUser().equals(getAdminUser()));
-        ResourceCollection e = new SharedCollection("a test", "a Name", visible, owner);
+        ResourceCollection e = new SharedCollection("a test", "a Name",  owner);
         if (type == CollectionType.LIST) {
             e = new ListCollection("a test", "a name", SortOption.TITLE, visible, owner);
         }
