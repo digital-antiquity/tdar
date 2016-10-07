@@ -39,7 +39,6 @@
         </insert>
     </changeSet>
 
-    </changeSet>
     <changeSet id="dateone_old" author="abrin">
         <insert tableName="dataone_log">
             <column name="date_logged" value="2010-01-01" />
