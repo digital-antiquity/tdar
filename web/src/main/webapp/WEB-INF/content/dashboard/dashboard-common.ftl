@@ -78,8 +78,8 @@
         </ul>
         <div id="details${collection.id?c}" class="collapse">
           <ul class="">
-            <#list collection.transientChildren><li><i class="${folder}"></i> <#items as child>${child.name}<#sep>&bull;</#sep></#items></#list></li>
-            <#list collection.authorizedUsers><li><i class="icon-user"></i> <#items as user>${user.user.properName} (${user.generalPermission})<#sep>&bull;</#sep></#items></#list></li>
+            <#list collection.transientChildren><li><i class="${folder}"></i> <#items as child>${child.name}<#sep>&bull;</#sep></#items></li></#list>
+            <#list collection.authorizedUsers><li><i class="icon-user"></i> <#items as user>${user.user.properName} (${user.generalPermission})<#sep>&bull;</#sep></#items></li></#list>
         </ul>
        </div>
 </#macro>

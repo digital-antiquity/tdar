@@ -72,14 +72,12 @@
                 <#if (collection.resources?size > 0 )>
 					<#list collection.resources as resource>
                         <tr>
-                        <td>
-        						<a href="${resource.detailUrl}">${resource.title}</a></td>
+                        <td><a href="${resource.detailUrl}">${resource.title}</a></td>
                         <td>${collection.authorizedUsers?size}</td>
                         <td>
-                    <div class="btn-group">
-                      <a class="btn btn-mini" href="/${resource.urlNamespace}/${resource.id?c}/edit">Edit</a>
-                    </div>
-
+		                    <div class="btn-group">
+		                      <a class="btn btn-mini" href="/${resource.urlNamespace}/${resource.id?c}/edit">Edit</a>
+		                    </div>
                         </td>
                         </tr>
                     </#list>

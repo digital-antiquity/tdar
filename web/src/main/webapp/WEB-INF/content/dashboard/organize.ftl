@@ -38,9 +38,7 @@
             <#list allResourceCollections as collection>
                     <tr>
                         <th><a href="<@s.url value="${collection.detailUrl}"/>">${collection.name}</a></th>
-                        <td>${collection.description!"no description available"}
-                        </div>
-                        </td>
+                        <td>${collection.description!"no description available"}</td>
                         <td><@dash.collectionLegend collection /> </td>
                         <td><@moremenu collection /></td>
                     </tr>

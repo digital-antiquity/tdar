@@ -46,8 +46,6 @@ public class RequestAccessEmailAction extends AbstractResourceRequestAccessContr
     private Long fromId;
     private Long toId;
     private Person from;
-    private Resource resource;
-    private Long resourceId;
     private HasEmail to;
     private String subject;
     private String messageBody;
@@ -70,7 +68,7 @@ public class RequestAccessEmailAction extends AbstractResourceRequestAccessContr
         if (type == EmailMessageType.SAA) {
             to = genericService.find(TdarUser.class, TdarConfiguration.getInstance().getSAAContactId());
         }
-        emailService.constructEmail(from, to, resource, subject, messageBody, type, params);
+        emailService.constructEmail(from, to, getResource(), subject, messageBody, type, params);
         addActionMessage("Message Sent");
 
         return SUCCESS;
@@ -143,12 +141,12 @@ public class RequestAccessEmailAction extends AbstractResourceRequestAccessContr
         if (StringUtils.isBlank(messageBody)) {
             addActionError(getText("emailController.no_message"));
         }
-        if (PersistableUtils.isNotNullOrTransient(resourceId) && PersistableUtils.isNullOrTransient(resource)) {
+        if (PersistableUtils.isNotNullOrTransient(getId()) && PersistableUtils.isNullOrTransient(getResource())) {
             addActionError(getText("emailController.no_resource"));
         }
         if (type == null) {
             addActionError(getText("emailController.no_type"));
-        } else if (getType().requiresResource() && PersistableUtils.isNullOrTransient(resource)) {
+        } else if (getType().requiresResource() && PersistableUtils.isNullOrTransient(getResource())) {
             addActionError(getText("emailController.no_resource"));
         }
 
@@ -168,22 +166,6 @@ public class RequestAccessEmailAction extends AbstractResourceRequestAccessContr
 
     public void setFrom(Person from) {
         this.from = from;
-    }
-
-    public Long getResourceId() {
-        return resourceId;
-    }
-
-    public void setResourceId(Long resourceId) {
-        this.resourceId = resourceId;
-    }
-
-    public Resource getResource() {
-        return resource;
-    }
-
-    public void setResource(Resource resource) {
-        this.resource = resource;
     }
 
     @Override
