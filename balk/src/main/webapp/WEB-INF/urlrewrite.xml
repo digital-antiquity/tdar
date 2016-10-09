@@ -3,14 +3,13 @@
         PUBLIC "-//tuckey.org//DTD UrlRewrite 4.0//EN"
         "http://www.tuckey.org/res/dtds/urlrewrite4.0.dtd">
 <urlrewrite>
-
+<!-- 
 	<rule>
-		<from>/items/([^\?+])</from>
-		<to>/items/?path=$1</to>
+		<from>/items/([^\?+])\?(.*)</from>
+		<to>/items/?path=$1&amp;$2</to>
 	</rule>
 	<outbound-rule>
-		<from>/items?path=(.+)</from>
-		<to>/items/$1</to>
-	
-	</outbound-rule>
+		<from>/items?path=(.+)&amp;?(.*)</from>
+		<to>/items/$1?$2</to>
+	</outbound-rule> -->
 </urlrewrite>

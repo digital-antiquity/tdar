@@ -2,6 +2,17 @@
 
         <div class="row">
           <div class="col-md-9" role="main">
+         <h3> ${path!'Everything'}</h3>
+<ul class="pagination">
+	<#list 0 .. (total / size) as pageNum >
+	    <li  <#if pageNum == page>class="disabled"</#if>><a href="<@s.url>
+		<@s.param name="path" value="'${path!''?url}'" />
+		<@s.param name="page" value="${pageNum}"/>
+		<@s.param name="size" value="${size}" />
+		<@s.param name="managed" value="${managed?c}" />
+</@s.url>">${pageNum+1}</a></li>
+    </#list>
+</ul>
 
 <table class="table">
 <thead>
@@ -41,7 +52,14 @@
     <@s.form action="/startWorkflow/?" method="POST">
         <@s.hidden name="id" value="${row.first.dropboxId}"/>
         <@s.hidden name="path" value="${_path}"/>
-        <@s.submit name="approve" value="Start Workflow" />
+        <@s.hidden name="phase" value="UPLOAD_TDAR"/>
+        <@s.submit name="approve" value="Upload" />
+    </@s.form>
+    <@s.form action="/startWorkflow/?" method="POST">
+        <@s.hidden name="id" value="${row.first.dropboxId}"/>
+        <@s.hidden name="path" value="${_path}"/>
+        <@s.hidden name="phase" value="TO_PDFA"/>
+        <@s.submit name="approve" value="PDF" />
     </@s.form>
 
 </#if>

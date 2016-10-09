@@ -35,8 +35,9 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     private DropboxUserMapping userInfo;
     private String path;
     private int page = 0;
-    private int size = 1000;
+    private int size = 100;
     private int total = 0;
+    private boolean managed = false;
     @Override
     public void prepare() throws Exception {
         userInfo = userService.findUser(getAuthenticatedUser());
@@ -44,7 +45,7 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     
     @Action(value="" , results={@Result(name=SUCCESS, type=FREEMARKER, location="items.ftl")})
     public String execute() throws Exception {
-        total = itemService.itemStatusReport(path, page, size,itemStatusReport);
+        setTotal(itemService.itemStatusReport(path, page, size,itemStatusReport, isManaged()));
         return super.execute();
     }
 
@@ -86,5 +87,21 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public boolean isManaged() {
+        return managed;
+    }
+
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 }

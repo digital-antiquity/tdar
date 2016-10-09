@@ -14,6 +14,7 @@ import org.tdar.balk.service.Phases;
 import org.tdar.balk.service.UserService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+import org.tdar.utils.dropbox.DropboxConstants;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -49,7 +50,8 @@ public class StartWokflowAction extends AbstractAuthenticatedAction implements P
     public String execute() throws Exception {
         try {
             // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH
-            String newPath = "";
+            String newPath = phase.getPath();
+            newPath += item.getPath().replace(DropboxConstants.CLIENT_DATA, "");
             itemService.copy(item, newPath, userMapping);
         } catch (Exception e) {
             getLogger().error("{}", e, e);

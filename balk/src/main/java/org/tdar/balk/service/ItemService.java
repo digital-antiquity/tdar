@@ -284,9 +284,9 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map) {
+    public int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map, boolean managed) {
         List<DropboxFile> findAll = new ArrayList<>();
-        int total = itemDao.findAllWithPath(path, findAll, page, size);
+        int total = itemDao.findAllWithPath(path, findAll, page, size, managed);
         for (DropboxFile file : findAll) {
             String key = Phases.createKey(file);
             map.putIfAbsent(key, new WorkflowStatusReport());
