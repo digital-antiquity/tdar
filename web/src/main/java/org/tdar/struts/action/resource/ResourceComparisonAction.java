@@ -12,7 +12,10 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.coverage.CoverageDate;
 import org.tdar.core.bean.coverage.LatitudeLongitudeBox;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -73,7 +76,11 @@ public class ResourceComparisonAction extends AbstractAuthenticatableAction impl
         resources.addAll( genericService.findAll(Resource.class, ids));
         if (PersistableUtils.isNotNullOrTransient(getCollectionId())) {
             ResourceCollection rc = genericService.find(ResourceCollection.class, getCollectionId());
-            resources.addAll(rc.getResources());
+            if (rc instanceof ListCollection) {
+            resources.addAll(((ListCollection) rc).getUnmanagedResources());
+            } else {
+                resources.addAll(((RightsBasedResourceCollection)rc).getResources());
+            }
         }
         resources.forEach(resource -> {
                 if (!authorizationService.canEditResource(getAuthenticatedUser(), resource, GeneralPermissions.MODIFY_RECORD)) {
