@@ -23,6 +23,19 @@
                 });
             }
         });
+        $("#addToCollection").click(function() {
+            var $menu = $(this);
+                var $next = $("ul.collection-list");
+                $next.children().remove();
+                $next.append($("<li class='extra'><img src='" + TDAR.uri('images/ui-anim_basic_16x16.gif') + "' class='waiting' /></li>"));
+                $.getJSON( "/api/collection/tree?type=LIST", function( data ) {
+                    $next.children().remove();
+                    var items = _buildCollectionTree(data);
+                    $next.append(items);
+                });
+            
+        });
+        
     }
 
     var _buildCollectionTree = function(data) {
@@ -35,7 +48,7 @@
                 html: _child.join( "" )
               })
             }
-            var item = "<li id='" + val.id + "' class='extra'><a href='#'>" + TDAR.common.htmlEncode(TDAR.ellipsify(val.name, 80))+ "</a>";
+            var item = "<li id='" + val.id + "' class='extra'><input type='radio' name='collectionId' value='"+val.id+"'> <a href='#'>" + TDAR.common.htmlEncode(TDAR.ellipsify(val.name, 80))+ "</a>";
             if (children != undefined) {
             //http://stackoverflow.com/questions/9758587/twitter-bootstrap-multilevel-dropdown-menu
             //https://vsn4ik.github.io/bootstrap-submenu/

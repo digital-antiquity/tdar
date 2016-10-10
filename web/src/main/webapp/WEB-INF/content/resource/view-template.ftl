@@ -563,7 +563,7 @@
             </li>
             <li class="media "><i class="icon-folder-open pull-left"></i>
                 <div class="media-body">
-                    <a id="requestAccess" href="#modal" data-toggle="modal">Add to a Collection</a>
+                    <a id="addToCollection" href="#modal" data-toggle="modal">Add to a Collection</a>
                 </div>
             </li>
         </ul>
@@ -663,18 +663,14 @@
                 <div class="modal hide fade" id="modal">
                   <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h3>Modal header</h3>
+                    <h3>Add to a Collection</h3>
                   </div>
                   <div class="modal-body">
-                  <ul>
-                    <li>Australia</li>
-                    <li>test</li>
-                    <li>test collection</li>
-                    <li>new collection</li>
+                  <ul class="collection-list unstyled">
                   </ul>
                   </div>
                   <div class="modal-footer">
-                    <a href="#" class="btn">Close</a>
+                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
                     <a href="#" class="btn btn-primary">Save changes</a>
                   </div>
                 </div>
