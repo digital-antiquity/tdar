@@ -23,6 +23,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -757,7 +759,6 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
                 schemaMap.put(url, schema);
             }
         }
-
         if (schema != null) {
             v.addSchemaSource(new StreamSource(schema));
             for (Object err : v.getSchemaErrors()) {
@@ -778,7 +779,8 @@ public abstract class AbstractIntegrationTestCase extends AbstractTransactionalJ
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
         addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", new File(TestConstants.TEST_XML_DIR,
                 "schemaCache/xlink.xsd"));
-
+        addSchemaToValidatorWithLocalFallback(v, "http://dublincore.org/schemas/xmls/simpledc20021212.xsd", new File(TestConstants.TEST_XML_DIR,
+                "schemaCache/simpledc20021212.xsd"));
         // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
         addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd", new File(TestConstants.TEST_XML_DIR,
                 "schemaCache/oaipmh.xsd"));

@@ -1,7 +1,10 @@
 package org.tdar.search;
 
+import static org.junit.Assert.*;
+
 import java.io.IOException;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.junit.Test;
@@ -30,15 +33,20 @@ public class ProjectionITCase extends AbstractResourceSearchITCase {
 //        asqo.getReservedParams().getStatuses().addAll(Arrays.asList(Status.DRAFT,Status.DELETED));
         result.setAuthenticatedUser(getAdminUser());
         resourceSearchService.buildAdvancedSearch(asqo, null, result , MessageHelper.getInstance());
+        boolean seenCreator = false;
         for (Resource r : result.getResults()) {
         	logger.debug("{} {}", r, r.isViewable());
         	if (r instanceof InformationResource) {
         		InformationResource ir = (InformationResource)r;
         		logger.debug("\t{}", ir.getProject());
         	}
+        	if (CollectionUtils.isNotEmpty(r.getPrimaryCreators())) {
+        	    seenCreator = true;
+        	}
         	logger.debug("\t{}",r.getActiveLatitudeLongitudeBoxes());
         	logger.debug("\t{}",r.getPrimaryCreators());
         }
+        assertTrue(seenCreator);
     }
     
 }
