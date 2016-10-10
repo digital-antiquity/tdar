@@ -1,0 +1,41 @@
+.svgicon {
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	fill: currentColor;
+}
+
+/* =======================================================================================
+Example showing how to change the color/size of the icons:
+.svg-name {
+	font-size: 32px; // works because "width" & "height" were set using em units
+	color: red; // works for single-colored icons, because "fill" was set to "currentColor"
+}
+======================================================================================== */
+.fill-color1 {
+	fill: rgba(0, 0, 0, 0.41999998688697815);
+}
+.fill-color2 {
+	fill: #010101;
+}
+.fill-color3 {
+	fill: #000;
+}
+.fill-color4 {
+	fill: #781a15;
+}
+.fill-color5 {
+	fill: #7a1c17;
+}
+.fill-color6 {
+	fill: #6d6e71;
+}
+.fill-color7 {
+	fill: #a7a9ac;
+}
+.fill-color8 {
+	fill: #e2dfd8;
+}
+.fill-color9 {
+	fill: #fff;
+}

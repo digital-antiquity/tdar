@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- $Id$ -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>search</artifactId>
+    <packaging>jar</packaging>
+    <name>tDAR (search)</name>
+
+    <properties>
+        <lucene.version>6.2.0</lucene.version>
+        <skipTestLiquibase>false</skipTestLiquibase>
+    </properties>
+    <parent>
+        <groupId>org.tdar</groupId>
+        <artifactId>base</artifactId>
+        <version>15.5.0-OBSIDIAN-COLLECTIONS-SNAPSHOT</version>
+        <relativePath>../base/pom.xml</relativePath>
+    </parent>
+    <!-- 3rd party dependencies and libraries -->
+    <dependencies>
+        <dependency>
+            <artifactId>solr-solrj</artifactId>
+            <groupId>org.apache.solr</groupId>
+            <version>${lucene.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <exclusions>
+            	<exclusion>
+            		<groupId>com.google.guava</groupId>
+            		<artifactId>guava</artifactId>
+            	</exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <artifactId>solr-core</artifactId>
+            <groupId>org.apache.solr</groupId>
+            <version>${lucene.version}</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-core</artifactId>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jackson-dataformat-smile</artifactId>
+                    <groupId>com.fasterxml.jackson.dataformat</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-core</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-analyzers-common</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.lucene</groupId>
+            <artifactId>lucene-queryparser</artifactId>
+            <version>${lucene.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>guava</artifactId>
+                    <groupId>com.google.guava</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.tdar</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+
+    <build>
+        <finalName>tdar-search</finalName>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+        <plugins>
+            <plugin>
+                <executions>
+                    <execution>
+                        <id>jar</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <!-- <webappDirectory>${webapp.deploy.dir}</webappDirectory> -->
+                            <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>test-jar</id>
+                        <goals>
+                            <goal>test-jar</goal>
+                        </goals>
+                        <configuration>
+                            <finalName>tdar-search-test</finalName>
+                            <outputDirectory>${webapp.deploy.dir}</outputDirectory>
+                            <excludes>
+                                <exclude>**/hibernate-ehcache.xml</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+                <version>${maven-jar-version}</version>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+                            <!-- not this doesn't really work -->
+                            <resourcesDirectory>${basedir}/src/main/resources/</resourcesDirectory>
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                            <excludes>
+                                <exclude>liquibase.properties</exclude>
+                            </excludes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.liquibase</groupId>
+                <artifactId>liquibase-maven-plugin</artifactId>
+                <configuration>
+                    <username>${javax.persistence.jdbc.user}</username>
+                    <password>${javax.persistence.jdbc.password}</password>
+                    <url>${javax.persistence.jdbc.url}</url>
+                    <driver>${javax.persistence.jdbc.driver}</driver>
+                    <verbose>false</verbose>
+                    <promptOnNonLocalDatabase>false</promptOnNonLocalDatabase>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>upgrade-liquibase</id>
+                        <!-- if the liquibase profile is active (default 
+                            context) run the upgrade -->
+                        <configuration>
+                            <changeLogFile>target/liquibase/changelog.xml</changeLogFile>
+                            <skip>${skipUpgradeLiquibase}</skip>
+                        </configuration>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>update</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.17</version>
+                <configuration>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
+                    <skip>${maven.test.skip}</skip>
+                    <runOrder>alphabetical</runOrder>
+                    <systemProperties>
+                        <property>
+                            <name>maven.version</name>
+                            <value>${maven.version}</value>
+                        </property>
+                        <property>
+                            <name>maven.home</name>
+                            <value>${preparedMavenHome}</value>
+                        </property>
+                        <property>
+                            <name>maven.it.global-settings.dir</name>
+                            <value>${project.build.testOutputDirectory}</value>
+                        </property>
+                    </systemProperties>
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
+                    <junitArtifactName>junit:junit-dep</junitArtifactName>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>${maven-eclipse-version}</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                    <downloadJavadocs>true</downloadJavadocs>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-failsafe-plugin</artifactId>
+                <version>2.17</version>
+                <executions>
+                    <execution>
+                        <id>integration-test</id>
+                        <goals>
+                            <goal>integration-test</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>verify</id>
+                        <goals>
+                            <goal>verify</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <failIfNoTests>false</failIfNoTests>
+                    <runOrder>alphabetical</runOrder>
+                    <systemPropertyVariables>
+                        <display.port>${display.port}</display.port>
+                    </systemPropertyVariables>
+                    <argLine>${jvm.args}
+                        -DenableContextSwitchingConfig=true</argLine>
+                    <excludes>
+                        <exclude>**/experimental/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <build>
+                <!-- the properties defined in these files will be available 
+                    for interpolation in all filtered resources -->
+                <!-- <filters> <filter>src/main/resources/hibernate.properties</filter> 
+                    </filters> -->
+            </build>
+            <properties>
+                <!-- These are the default passwords for running locally 
+                    when developing -->
+                <!-- For more secret passwords, place them in settings.xml 
+                    in the ~.m2 directory -->
+                <!-- as per: http://maven.apache.org/settings.html -->
+                <!-- For even more secret passwords, encrypt them: http://maven.apache.org/guides/mini/guide-encryption.html -->
+                <application.password>tdardev.crowdpw</application.password>
+                <the.jdbc.password>tdar</the.jdbc.password>
+                <webapp.deploy.dir>target/</webapp.deploy.dir>
+            </properties>
+            <dependencies>
+                <!-- <dependency> <groupId>org.apache.struts</groupId> <artifactId>struts2-config-browser-plugin</artifactId> 
+                    </dependency> -->                    <!-- LICENSE: APACHE 2.0 -->
+            </dependencies>
+        </profile>
+        <profile>
+            <id>test</id>
+            <build>
+                <defaultGoal>surefire:test</defaultGoal>
+                <filters>
+                    <filter>src/test/resources/hibernate.properties</filter>
+                    <filter>src/main/resources/liquibase.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>properties-maven-plugin</artifactId>
+                        <version>1.0-alpha-2</version>
+                        <executions>
+                            <execution>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>read-project-properties</goal>
+                                </goals>
+                                <configuration>
+                                    <files>
+                                        <file>src/test/resources/hibernate.properties</file>
+                                    </files>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
