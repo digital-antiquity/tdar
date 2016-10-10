@@ -150,6 +150,19 @@
         window.location = url;
     };
 
+    /**
+     * Execute any main() functions found in the API
+     */
+    TDAR.main = function () {
+        for(var key in TDAR){
+            if(typeof TDAR[key] !== 'object') {continue}
+            if(typeof (TDAR[key]['main']) !== 'function' ) {continue}
+            var pkg = TDAR[key];
+            console.log('executing main in package:' + key);
+            pkg.main();
+        }
+    };
+
 
     /**
      * Define dummy console + log methods if not defined by browser.

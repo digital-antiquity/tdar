@@ -106,6 +106,7 @@
         <js>/js/maps/tdar.worldmap.js</js>
         <js>/js/tdar.bookmark.js</js>
         <js>/js/maps/tdar.leaflet.js</js>
+        <js>/js/tdar.manage.js</js>
         <!-- LICENSE: MIT -->
         <js>/includes/js-emca-5.1-polyfill.js</js>
     </group>

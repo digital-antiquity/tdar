@@ -102,8 +102,27 @@
                             <option value="RESOURCE">a resource</option>
                             <option value="SHARE">resources from</option>
                         </select>
-                        <div class="controls">
-                          <input type="text" id="autocomplete" placeholder="Search" class="input-xxlarge">
+                        <div class="controls" id>
+
+                            <div id="divResourceLookup">
+
+                                <input type="text" id="txtShareResourceName" placeholder="Search" class="input-xxlarge resourceAutoComplete"
+                                       autocompleteIdElement="#hdnShareResourceId"
+                                       autocompleteName="title"
+                                       autocompleteParentElement="#divResourceLookup">
+                                <input type="hidden" id="hdnShareResourceId" name="share.resourceId">
+                            </div>
+
+                            <div id="divCollectionLookup">
+                                <@s.textfield theme="simple" name="shareCollectionName" cssClass="input-xxlarge collectionAutoComplete"  autocomplete="off"
+                                autocompleteIdElement="#hdnSourceCollectionId" maxlength=255 autocompleteParentElement="#divCollectionLookup" autocompleteName="name"
+                                placeholder="Search" id="txtShareCollectionName"
+
+                                />
+                                <input type="hidden" id="hdnSourceCollectionId" name="share.collectionId">
+                            </div>
+
+
                         </div>
             </div>
         </div>
@@ -151,12 +170,12 @@
 </form>
 
 </#macro>
-            <script>
-            $(document).ready(function() {
-                TDAR.notifications.init();
-                TDAR.common.collectionTreeview();
-            });
-            </script>
+
+<script>
+$(function() {
+    TDAR.manage.init();
+})
+</script>
 
 
 
