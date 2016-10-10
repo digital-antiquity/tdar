@@ -63,11 +63,10 @@ public enum Phases {
 
     public String mutatePath(final String path) {
         String nPath = path;
-        nPath = StringUtils.removeStartIgnoreCase(nPath, DropboxConstants.CLIENT_DATA.toLowerCase());
         for (Phases phase : Phases.values()) {
             nPath = StringUtils.removeStartIgnoreCase(nPath, phase.getPath());
         }
-        return DropboxConstants.CLIENT_DATA + this.getPath() + nPath;
+        return this.getPath() + nPath;
     }
 
     public Phases getNextPhase() {
