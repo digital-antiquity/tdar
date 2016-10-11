@@ -110,7 +110,7 @@
                                        autocompleteIdElement="#hdnShareResourceId"
                                        autocompleteName="title"
                                        autocompleteParentElement="#divResourceLookup">
-                                <input type="hidden" id="hdnShareResourceId" name="share.resourceId">
+                                <input type="hidden" id="hdnShareResourceId" name="share.resourceIds">
                             </div>
 
                             <div id="divCollectionLookup">
