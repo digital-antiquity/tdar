@@ -1,5 +1,6 @@
 package org.tdar.struts.action;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -13,16 +14,28 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.permissions.GeneralPermissions;
+import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.service.index.SearchIndexService;
+import org.tdar.struts.action.AbstractPersistableController.RequestType;
+import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
+import org.tdar.struts_base.interceptor.annotation.PostOnly;
+import org.tdar.struts_base.interceptor.annotation.WriteableSession;
 import org.tdar.utils.PersistableUtils;
 
-public abstract class AbstractCollectionRightsController<C extends HierarchicalCollection<C>> extends AbstractPersistableController<C> {
+import com.opensymphony.xwork2.Preparable;
 
+public abstract class AbstractCollectionRightsController<C extends HierarchicalCollection<C>> extends AbstractAuthenticatableAction
+        implements Preparable, PersistableLoadingAction<C> {
+
+    private static final String RIGHTS = "rights";
 
     private static final long serialVersionUID = -8140980937049864587L;
+
+    private static final String RIGHTS_SAVE = "rights-save";
 
     @Autowired
     private transient SearchIndexService searchIndexService;
@@ -30,49 +43,44 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
     private transient ResourceCollectionService resourceCollectionService;
     @Autowired
     private transient AuthorizationService authorizationService;
-    
+
     private String ownerProperName;
     private TdarUser owner;
 
+    private C resourceCollection;
+    private List<AuthorizedUser> authorizedUsers = new ArrayList<>();
+    private List<String> authorizedUsersFullNames = new ArrayList<>();
+    private Long id;
+
+    private boolean asyncSave;
 
     @Override
     public boolean authorize() {
-        if (isNullOrNew()) {
-            return true;
-        }
         return authorizationService.canEditCollection(getAuthenticatedUser(), getPersistable());
     }
 
-    /**
-     * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
-     * 
-     * @return
-     */
-    public abstract List<C> getCandidateParentResourceCollections();
 
-    public abstract <C> C getResourceCollection();
+    public C getResourceCollection() {
+        return resourceCollection;
+    }
 
     @Override
     public void prepare() throws TdarActionException {
-        super.prepare();
+        prepareAndLoad(this, RequestType.EDIT);
 
-
-        
         setupOwnerField();
         if (PersistableUtils.isNotNullOrTransient(getOwner())) {
             TdarUser uploader = getGenericService().find(TdarUser.class, getOwner().getId());
             getPersistable().setOwner(uploader);
         }
     }
-    
+
     @Override
     public void validate() {
         super.validate();
 
-
     }
 
-    @Override
     public void indexPersistable() {
         /*
          * if we want to be really "aggressive" we only need to do this if
@@ -85,7 +93,6 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
             searchIndexService.indexAllResourcesInCollectionSubTree(getPersistable());
         }
     }
-
 
     public void setResourceCollection(C rc) {
         setPersistable(rc);
@@ -100,9 +107,12 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
         return options;
     }
 
-
-    @Override
-    public String loadEditMetadata() throws TdarActionException {
+    @SkipValidation
+    @Action(value = RIGHTS, results = {
+            @Result(name = SUCCESS, location = "../collection/rights.ftl"),
+            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT)
+    })
+    public String edit() throws TdarActionException {
         setOwner(getPersistable().getOwner());
         setupOwnerField();
         getAuthorizedUsers().addAll(resourceCollectionService.getAuthorizedUsersForCollection(getPersistable(), getAuthenticatedUser()));
@@ -117,21 +127,18 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
         return SUCCESS;
     }
 
-    @Override
-    public String loadAddMetadata() {
-        setupOwnerField();
-        return SUCCESS;
-    }
-
-    @Override
+    
     @SkipValidation
-    @Action(value = EDIT, results = {
-            @Result(name = SUCCESS, location = "edit.ftl"),
-            @Result(name = INPUT, location = ADD, type = TDAR_REDIRECT)
+    @Action(value = RIGHTS_SAVE, results = {
+            @Result(name = SUCCESS, type=TDAR_REDIRECT, location = "${persistable.detailUrl}"),
+            @Result(name = INPUT, location = RIGHTS)
     })
-    public String edit() throws TdarActionException {
-        String result = super.edit();
-        return result;
+    @WriteableSession
+    @PostOnly
+    public String save() throws TdarActionException {
+        resourceCollectionService.saveCollectionForRightsController(getPersistable(), getAuthenticatedUser(), getAuthorizedUsers(), getPersistableClass(), null);
+        indexPersistable();
+        return SUCCESS;
     }
 
     private void setupOwnerField() {
@@ -142,15 +149,6 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
             setOwnerProperName(getAuthenticatedUser().getProperName());
         }
     }
-
-    /**
-     * A hint to the view-layer that this resource collection is "big". The view-layer may choose to gracefully degrade the presentation to save on bandwidth
-     * and/or
-     * client resources.
-     * 
-     * @return
-     */
-    public abstract boolean isBigCollection();
 
 
     public String getOwnerProperName() {
@@ -167,6 +165,63 @@ public abstract class AbstractCollectionRightsController<C extends HierarchicalC
 
     public void setOwner(TdarUser owner) {
         this.owner = owner;
+    }
+
+    public C getPersistable() {
+        return getResourceCollection();
+    }
+
+    public List<AuthorizedUser> getAuthorizedUsers() {
+        return authorizedUsers;
+    }
+
+    public void setAuthorizedUsers(List<AuthorizedUser> authorizedUsers) {
+        this.authorizedUsers = authorizedUsers;
+    }
+
+    public List<String> getAuthorizedUsersFullNames() {
+        return authorizedUsersFullNames;
+    }
+
+    public void setAuthorizedUsersFullNames(List<String> authorizedUsersFullNames) {
+        this.authorizedUsersFullNames = authorizedUsersFullNames;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public void setAsync(boolean async) {
+        this.asyncSave = async;
+    }
+
+    public boolean isAsync() {
+        return asyncSave;
+    }
+
+    public void setPersistable(C rc) {
+        this.resourceCollection = rc;
+    }
+
+    @Override
+    public InternalTdarRights getAdminRights() {
+        return InternalTdarRights.EDIT_RESOURCE_COLLECTIONS;
+    }
+
+
+    public AuthorizedUser getBlankAuthorizedUser() {
+        AuthorizedUser user = new AuthorizedUser();
+        user.setUser(new TdarUser());
+        return user;
+    }
+
+    public List<GeneralPermissions> getAvailablePermissions() {
+        List<GeneralPermissions> permissions = GeneralPermissions.getAvailablePermissionsFor(getPersistableClass());
+        return permissions;
     }
 
 }

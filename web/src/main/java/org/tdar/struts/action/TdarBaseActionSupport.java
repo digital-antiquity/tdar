@@ -187,6 +187,7 @@ public class TdarBaseActionSupport extends TdarActionSupport {
 
         // get the ID
         Long id = pc.getId();
+        getLogger().debug("{} {}", persistableClass, id);
         // if we're not null or transient, somehow we've been initialized wrongly
         if (PersistableUtils.isNotNullOrTransient(pc.getPersistable())) {
             getLogger().error("item id should not be set yet -- persistable.id:{}\t controller.id:{}", pc.getPersistable().getId(), id);

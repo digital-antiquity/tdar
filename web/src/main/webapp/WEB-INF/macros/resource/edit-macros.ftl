@@ -336,7 +336,7 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
 <#-- provides a fieldset just for full user access -->
-    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource" type="resource">
+    <#macro fullAccessRights tipsSelector="#divAccessRightsTips" label="Users who can view or modify this resource" type="resource" header=true>
         <#local _authorizedUsers=authorizedUsers />
         <#local _isSubmitter = authenticatedUser.id == ((persistable.submitter.id)!-1)>
         <#if _authorizedUsers.empty><#local _authorizedUsers=[blankAuthorizedUser]></#if>
@@ -344,8 +344,9 @@ Edit freemarker macros.  Getting large, should consider splitting this file up.
 
 
     <div id="divAccessRights" data-tiplabel="Access Rights" data-tooltipcontent="${tipsSelector}">
-        <h2><a name="accessRights"></a>Access Rights</h2>
-
+        <#if header>
+                <h2><a name="accessRights"></a>Access Rights</h2>
+        </#if>
     <#if type == 'resource'>
         <@resourceCollectionSection prefix="shares" label="Shares" list=shares />
     </#if>

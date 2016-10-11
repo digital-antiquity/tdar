@@ -89,6 +89,16 @@
             disabled=disabled
             extraClass="hidden-tablet hidden-phone"/>
 
+            <@nav.makeLink
+                namespace="collection"
+                action="${id?c}/rights"
+                label="RIghts"
+                name="rights"
+                includeResourceId=false
+                current=current
+                disabled=disabled
+            extraClass=""/>
+
         <#if editor && ((resourceCollection.unmanagedResources![])?size > 0 || (resourceCollection.resources![])?size > 0) >
             <@nav.makeLink
             namespace="collection/admin/batch"

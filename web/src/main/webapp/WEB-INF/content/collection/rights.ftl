@@ -8,7 +8,7 @@
     <#if persistable.id == -1>
         <title>Create a Collection</title>
     <#else>
-        <title>Editing: ${persistable.name}</title>
+        <title>Rights &amp; Permissions: ${persistable.name}</title>
     </#if>
     <meta name="lastModifiedDate" content="$Date$"/>
 </head>
@@ -22,11 +22,11 @@
     </div>
 
 
-    <h1><#if persistable.id == -1>Creating<#else>Editing</#if>: <span> ${persistable.name!"New Collection"}</span></h1>
-        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='save'>
+    <h1>Rights &amp; Permissions: <span> ${persistable.name!"New Collection"}</span></h1>
+        <@s.form name='metadataForm' id='metadataForm'  method='post' cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} enctype='multipart/form-data' action='rights-save'>
         <@s.token name='struts.csrf.token' />
         <@common.jsErrorLog />
-
+        <@s.hidden name="id" value="${persistable.id?c}" />
         <#if editor>
             <div class="control-group" id="divSubmitter">
                 <label class="control-label">Owner</label>
@@ -60,7 +60,7 @@
                 <dd>
             </dl>
         </div>
-            <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection" type='collection'/>
+            <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection" type='collection' header=false />
 
             <@edit.submit fileReminder=false />
         </@s.form>
