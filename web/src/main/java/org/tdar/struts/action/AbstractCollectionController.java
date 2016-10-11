@@ -64,10 +64,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
     private Long viewCount = 0L;
     private ArrayList<ResourceType> selectedResourceTypes = new ArrayList<ResourceType>();
 
-    private List<Long> toRemove = new ArrayList<>();
-    private List<Long> toAdd = new ArrayList<>();
-    private List<Long> publicToRemove = new ArrayList<>();
-    private List<Long> publicToAdd = new ArrayList<>();
     private List<Project> allSubmittedProjects;
     private File file;
     private String fileContentType;
@@ -342,22 +338,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         this.allResourceCollections = allResourceCollections;
     }
 
-    public List<Long> getToAdd() {
-        return toAdd;
-    }
-
-    public void setToAdd(List<Long> toAdd) {
-        this.toAdd = toAdd;
-    }
-
-    public List<Long> getToRemove() {
-        return toRemove;
-    }
-
-    public void setToRemove(List<Long> toRemove) {
-        this.toRemove = toRemove;
-    }
-
     public File getFile() {
         return file;
     }
@@ -398,21 +378,6 @@ public abstract class AbstractCollectionController<C extends HierarchicalCollect
         this.owner = owner;
     }
 
-    public List<Long> getPublicToAdd() {
-        return publicToAdd;
-    }
-
-    public void setPublicToAdd(List<Long> publicToAdd) {
-        this.publicToAdd = publicToAdd;
-    }
-
-    public List<Long> getPublicToRemove() {
-        return publicToRemove;
-    }
-
-    public void setPublicToRemove(List<Long> publicToRemove) {
-        this.publicToRemove = publicToRemove;
-    }
 
     public C getParentCollection() {
         return parentCollection;

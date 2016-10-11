@@ -1,6 +1,5 @@
 package org.tdar.struts.action.share;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.struts2.convention.annotation.Namespace;
@@ -11,50 +10,21 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.search.service.index.SearchIndexService;
-import org.tdar.struts.action.AbstractCollectionController;
-import org.tdar.struts.action.DataTableResourceDisplay;
+import org.tdar.struts.action.AbstractCollectionRightsController;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
-@Namespace("/share")
-public class ShareController extends AbstractCollectionController<SharedCollection> implements DataTableResourceDisplay {
+@Namespace("/collection/rights")
+public class ShareRightsController extends AbstractCollectionRightsController<SharedCollection> {
 
-    private static final long serialVersionUID = 1169442990022630650L;
 
-    /**
-     * Threshold that defines a "big" collection.
-     */
-    public static final int BIG_COLLECTION_CHILDREN_COUNT = 3_000;
-
+    private static final long serialVersionUID = 5522048517742464825L;
     @Autowired
     private transient SearchIndexService searchIndexService;
     @Autowired
     private transient ResourceCollectionService resourceCollectionService;
     
-    private List<Long> toRemove = new ArrayList<>();
-    private List<Long> toAdd = new ArrayList<>();
-
-    public List<Long> getToRemove() {
-        return toRemove;
-    }
-
-
-    public void setToRemove(List<Long> toRemove) {
-        this.toRemove = toRemove;
-    }
-
-
-    public List<Long> getToAdd() {
-        return toAdd;
-    }
-
-
-    public void setToAdd(List<Long> toAdd) {
-        this.toAdd = toAdd;
-    }
-
-
     /**
      * Returns a list of all resource collections that can act as candidate parents for the current resource collection.
      * 
@@ -69,11 +39,7 @@ public class ShareController extends AbstractCollectionController<SharedCollecti
 
     @Override
     protected String save(SharedCollection persistable) {
-        // FIXME: may need some potential check for recursive loops here to prevent self-referential parent-child loops
-        // FIXME: if persistable's parent is different from current parent; then need to reindex all of the children as well
-
-        resourceCollectionService.saveCollectionForController(getPersistable(), getParentId(), getParentCollection(), getAuthenticatedUser(), getAuthorizedUsers(), getToAdd(),
-                getToRemove(), shouldSaveResource(), generateFileProxy(getFileFileName(), getFile()), SharedCollection.class, getStartTime());
+        resourceCollectionService.saveCollectionForRightsController(getPersistable(), getAuthenticatedUser(), getAuthorizedUsers(), SharedCollection.class, getStartTime());
         setSaveSuccessPath(getPersistable().getUrlNamespace());
         return SUCCESS;
     }
@@ -92,13 +58,6 @@ public class ShareController extends AbstractCollectionController<SharedCollecti
         }
     }
 
-    public SharedCollection getResourceCollection() {
-        if (getPersistable() == null) {
-            setPersistable(new SharedCollection());
-        }
-        return getPersistable();
-    }
-
     public void setResourceCollection(SharedCollection rc) {
         setPersistable(rc);
     }
@@ -108,14 +67,16 @@ public class ShareController extends AbstractCollectionController<SharedCollecti
         return SharedCollection.class;
     }
 
-    /**
-     * A hint to the view-layer that this resource collection is "big". The view-layer may choose to gracefully degrade the presentation to save on bandwidth
-     * and/or
-     * client resources.
-     * 
-     * @return
-     */
-    public boolean isBigCollection() {
-        return (getPersistable().getResources().size() + getAuthorizedUsers().size()) > BIG_COLLECTION_CHILDREN_COUNT;
+
+    @Override
+    public <C> C getResourceCollection() {
+        return (C)getPersistable();
     }
+
+
+    @Override
+    public boolean isBigCollection() {
+        return false;
+    }
+
 }

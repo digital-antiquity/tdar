@@ -51,6 +51,7 @@ import org.tdar.search.index.LookupSource;
 import org.tdar.struts.action.account.UserAccountController;
 import org.tdar.struts.action.api.resource.BookmarkApiController;
 import org.tdar.struts.action.codingSheet.CodingSheetController;
+import org.tdar.struts.action.collection.CollectionController;
 import org.tdar.struts.action.share.ShareController;
 import org.tdar.struts.action.dataset.DatasetController;
 import org.tdar.struts.action.document.DocumentController;
@@ -195,7 +196,12 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
         if (resources != null) {
-            controller.getToAdd().addAll(PersistableUtils.extractIds(resources));
+            if (controller instanceof ShareController) {
+                ((ShareController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
+            }
+            if (controller instanceof CollectionController) {
+                ((CollectionController) controller).getToAdd().addAll(PersistableUtils.extractIds(resources));
+            }
         }
         
         if (parentId != null) {

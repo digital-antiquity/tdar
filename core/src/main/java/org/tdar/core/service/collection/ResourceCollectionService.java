@@ -1095,11 +1095,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findCollectionByOwner(authenticatedUser);
     }
 
-    @Transactional(readOnly=false)
-    public RightsBasedResourceCollection createShareFromAdhoc(AdhocShare share, List<Resource> resources, ResourceCollection collectionFrom, BillingAccount account,
+    @Transactional(readOnly = false)
+    public RightsBasedResourceCollection createShareFromAdhoc(AdhocShare share, List<Resource> resources, ResourceCollection collectionFrom,
+            BillingAccount account,
             TdarUser authenticatedUser) {
         RightsBasedResourceCollection collection = null;
-        SharedCollection _share =  new SharedCollection();
+        SharedCollection _share = new SharedCollection();
         List<Resource> issues = new ArrayList<>();
         _share.setName("Share");
         _share.markUpdated(authenticatedUser);
@@ -1126,17 +1127,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 toTrack.addAll(((RightsBasedResourceCollection) collectionFrom).getResources());
             }
         }
-        
+
         // If what we're really trying to do is add a user to a collection, then bypass the create logic and just do that...
-        
-        // FIXME: how do we determine whether we're creating a new share or not??? Not sure pure canEdit() check is right as the issue might be a true admin, and thus... could be a new share???
-        
-        if (collectionFrom instanceof RightsBasedResourceCollection && toTrack.size() == ((RightsBasedResourceCollection) collectionFrom).getResources().size() &&
+
+        // FIXME: how do we determine whether we're creating a new share or not??? Not sure pure canEdit() check is right as the issue might be a true admin,
+        // and thus... could be a new share???
+
+        if (collectionFrom instanceof RightsBasedResourceCollection && toTrack.size() == ((RightsBasedResourceCollection) collectionFrom).getResources().size()
+                &&
                 authorizationService.canEditCollection(authenticatedUser, collectionFrom)) {
             collection = (RightsBasedResourceCollection) collectionFrom;
-        } else if (CollectionUtils.isNotEmpty(resources) && resources.size() == 1 && toTrack.size() ==1) {
+        } else if (CollectionUtils.isNotEmpty(resources) && resources.size() == 1 && toTrack.size() == 1) {
             // if we're dealing with something that could be an internal collection, use that
-            
+
             Resource resource = resources.get(0);
             Set<InternalCollection> internalCollections = resource.getInternalCollections();
             InternalCollection internal = null;
@@ -1165,19 +1168,19 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 }
             });
         }
-        
+
         if (CollectionUtils.isNotEmpty(issues)) {
             throw new TdarAuthorizationException("resourceCollectionService.could_not_add", Arrays.asList(issues));
         }
         TdarUser user = getDao().find(TdarUser.class, share.getUserId());
         String _for = "";
-        getDao().saveOrUpdate((ResourceCollection)collection);
+        getDao().saveOrUpdate((ResourceCollection) collection);
         if (user != null) {
             _for = user.getUsername();
             collection.getAuthorizedUsers().add(new AuthorizedUser(user, share.getPermission()));
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
-                tar.setCollection((ResourceCollection)collection);
+                tar.setCollection((ResourceCollection) collection);
                 tar.setUser(user);
                 tar.setCreatedBy(authenticatedUser);
                 getDao().saveOrUpdate(tar);
@@ -1190,10 +1193,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             invite.setPermissions(share.getPermission());
             invite.setDateCreated(new Date());
             invite.setAuthorizer(authenticatedUser);
-            invite.setResourceCollection((ResourceCollection)collection);
+            invite.setResourceCollection((ResourceCollection) collection);
             if (share.getExpires() != null) {
                 TimedAccessRestriction tar = new TimedAccessRestriction(share.getExpires());
-                tar.setCollection((ResourceCollection)collection);
+                tar.setCollection((ResourceCollection) collection);
                 tar.setInvite(invite);
                 getDao().saveOrUpdate(tar);
             }
@@ -1202,8 +1205,24 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         _share.setName(String.format("Share with %s", _for));
         _share.setDescription(String.format("auto generated share for %s with %s resources based on %s", _for, collection.getResources().size(), from));
-        getDao().saveOrUpdate((ResourceCollection)collection);
+        getDao().saveOrUpdate((ResourceCollection) collection);
         return collection;
+    }
+
+    @Transactional(readOnly = false)
+    public <C extends ResourceCollection> void saveCollectionForRightsController(C persistable, TdarUser authenticatedUser,
+            List<AuthorizedUser> authorizedUsers,
+            Class<C> class1, Long startTime) {
+        saveAuthorizedUsersForResourceCollection(persistable, persistable, authorizedUsers, true, authenticatedUser);
+
+        if (persistable instanceof VisibleCollection) {
+            String msg = String.format("%s modified rights on %s", authenticatedUser, ((VisibleCollection) persistable).getTitle());
+            CollectionRevisionLog revision = new CollectionRevisionLog(msg, persistable, authenticatedUser, RevisionLogType.EDIT);
+            revision.setTimeBasedOnStart(startTime);
+            getDao().saveOrUpdate(revision);
+        }
+        publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
+
     }
 
 }

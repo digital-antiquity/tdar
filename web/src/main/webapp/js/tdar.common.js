@@ -237,10 +237,6 @@ TDAR.common = function (TDAR, fileupload) {
             }
         }
 
-//        //wire up jquery-ui datepicker to our date fields
-//        $(".singleFileUpload .date, .existing-file .date, .date.datepicker").datepicker().on('changeDate', function(ev){
-//            $(ev.target).datepicker('hide');
-//        }); 
 
         //Multi-submit prevention disables submit button, so it will be disabled if we get here via back button. So we explicitly enable it.
         _submitButtonStopWait();
