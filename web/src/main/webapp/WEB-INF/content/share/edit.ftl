@@ -67,69 +67,11 @@
                 </div>
             </div>
 
-        <#if editor>
-            <div class="control-group" id="divSubmitter">
-                <label class="control-label">Owner</label>
-
-                <div class="controls controls-row">
-                    <#if owner?has_content>
-                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
-                    prefix="owner" includeRights=false includeRepeatRow=false />
-	 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
-                        prefix="owner" includeRights=false includeRepeatRow=false />
-                    </#if>
-                </div>
-            </div>
-        </#if>
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge' title="Please enter the description " />
 
         </div>
-<#--        
-
-            <#if administrator>
-                <@s.textarea rows="4" labelposition='top' label='Collection Description (allows html)' name='resourceCollection.formattedDescription' cols="80" 
-                cssClass='resizable input-xxlarge' title="Please enter the description " />
-            </#if>
-
-        <#if editor>
-            <div class="control-group">
-                <label class="control-label">Associate an Image/Logo with this Collection</label>
-                <div class="controls">
-                    <@s.file theme="simple" name='file' cssClass="input-xxlarge profileImage" id="fileUploadField"
-                    labelposition='left' size='40' dynamicAttributes={
-                        "data-rule-extension":"jpg,tiff,jpeg,png"
-                    }/>
-                </div>
-            </div>
-        </#if>
-
-
-        <div id="divBrowseOptionsTips" style="display:none">
-            <p>Choose whether this collection will be public or private, and how ${siteAcronym} will sort the resources when displaying this collection to other
-                users. Marking a collection as "private" does not restrict access to the resources within it.</p>
-            <ul>
-                <li>Public collections are viewable to all ${siteAcronym} users and accessible from the &quot;Browse Collections&quot; page.</li>
-                <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
-            </ul>
-        </div>
-        <div class="glide" data-tiplabel="Browse and Display Options" data-tooltipcontent="#divBrowseOptionsTips">
-            <h2>Browse and Display Options</h2>
-
-            <div class="control-group">
-                <label class="control-label">Hide this collection?</label>
-
-                <div class="controls">
-                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
-                                                                            value="true" <@common.checkedif resourceCollection.hidden true /> />Yes</label>
-                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
-                                                                             value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
-                </div>
-            </div>
-        </div>
--->    
 
         <div id="divCollectionAccessRightsTips" style="display:none">
             <p>Determines who can edit a document or related metadata. Enter the first few letters of the person's last name.
@@ -148,7 +90,6 @@
                 <dd>
             </dl>
         </div>
-            <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection" type="collection"/>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number

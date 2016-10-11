@@ -67,22 +67,6 @@
                 </div>
             </div>
 
-        <#if editor>
-            <div class="control-group" id="divSubmitter">
-                <label class="control-label">Owner</label>
-
-                <div class="controls controls-row">
-                    <#if owner?has_content>
-                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
-                    prefix="owner" includeRights=false includeRepeatRow=false />
-	 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
-                        prefix="owner" includeRights=false includeRepeatRow=false />
-                    </#if>
-                </div>
-            </div>
-        </#if>
-
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
             cssClass='resizable input-xxlarge' title="Please enter the description " />
 
@@ -153,7 +137,6 @@
                 <dd>
             </dl>
         </div>
-            <@edit.fullAccessRights tipsSelector="#divCollectionAccessRightsTips" label="Users who can View or Modify this Collection" type='collection'/>
 
         <div class="glide" id="divResourcesSesction" data-tiplabel="Share Resources with Users" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
                     in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
@@ -173,25 +156,7 @@
 
         </div>
 
-        <#--
-        <div class="glide" id="divPublicResourcesSesction" data-tiplabel="Include Other Resources" data-tooltipcontent="Check the items in this table to add them to the collection.  Navigate the pages
-                    in this list by clicking the left/right arrows at the bottom of this table.  Use the input fields above the table to limit the number
-                    of results.">
-            <h2>Include other resources (display only)</h2>
-            <@edit.resourceDataTable showDescription=false selectable=true limitToCollection=showLimitToCollection idAddition="public">
-            </@edit.resourceDataTable>
-
-            <div id="divNoticeContainerpublic" style="display:none">
-                <div id="divAddProjectToCollectionNoticepublic" class="alert">
-                    <button type="button" class="close" data-dismiss="alert" data-dismiss-cookie="divAddProjectToCollectionNoticepublic">×</button>
-                    <em>Reminder:</em> Adding projects to a collection does not include the resources within a project.
-                </div>
-            </div>
-
-        </div>
-
-        -->
-        <div id="divAddRemove">
+                <div id="divAddRemove">
             <h2>Modifications</h2>
 
             <div id="divToAdd">
