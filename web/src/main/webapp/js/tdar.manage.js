@@ -13,6 +13,7 @@ TDAR.manage = (function($, console) {
             TDAR.autocomplete.applyCollectionAutocomplete($('#txtShareCollectionName'),
                 {showCreate: false}, {permission: 'ADMINISTER_GROUP',collectionType:'LIST'});
             TDAR.autocomplete.applyResourceAutocomplete($('#txtShareResourceName'), '');
+            TDAR.autocomplete.applyPersonAutoComplete($("#txtShareEmail"), true, false);
 
 
         }

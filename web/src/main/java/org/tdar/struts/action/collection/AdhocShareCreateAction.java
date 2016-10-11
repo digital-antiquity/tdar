@@ -3,8 +3,10 @@ package org.tdar.struts.action.collection;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
+import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -57,6 +59,10 @@ public class AdhocShareCreateAction extends AbstractAuthenticatableAction implem
     }
     
     @Override
+    @Action(value="adhoc", results = {
+            @Result(name = "success", type="redirect", location="/manage"),
+            @Result(name = "input", location="/manage")
+    })
     public String execute() throws Exception {
         resourceCollectionService.createShareFromAdhoc(share, resources, collection, account, getAuthenticatedUser());
         return SUCCESS;

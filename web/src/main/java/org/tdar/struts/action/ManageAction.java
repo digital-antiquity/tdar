@@ -1,12 +1,7 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.struts2.convention.annotation.Action;
@@ -17,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
+import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -28,6 +24,7 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.UserNotificationService;
+import org.tdar.core.service.billing.BillingAccountService;
 import org.tdar.core.service.collection.AdhocShare;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.core.service.external.AuthorizationService;
@@ -74,6 +71,9 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
     private transient ResourceService resourceService;
     @Autowired
     private transient UserNotificationService userNotificationService;
+
+    @Autowired
+    private transient BillingAccountService billingAccountService;
 
     private List<Project> allSubmittedProjects;
     private List<UserNotification> currentNotifications;
@@ -261,6 +261,12 @@ public class ManageAction extends AbstractAuthenticatableAction implements DataT
 
     public void setAdhocShare(AdhocShare adhocShare) {
         this.adhocShare = adhocShare;
+    }
+
+    public List<BillingAccount> getBillingAccounts() {
+        List<BillingAccount> accts = new ArrayList<>();
+        accts.addAll(billingAccountService.listAvailableAccountsForUser(getAuthenticatedUser(), Status.ACTIVE));
+        return accts;
     }
 
 }
