@@ -14,7 +14,7 @@ interface DataOneConstants {
     static final String MN_AUTHORIZATION = "MNAuthorization";
     static final String MN_READ = "MNRead";
     static final String MN_CORE = "MNCore";
-    static final String VERSION = "v1";
+    static final String VERSION = "v2";
     static final String DATAONE = "/dataone/";
 
     static final String RDF_CONTENT_TYPE = "application/rdf+xml; charset=utf-8";
