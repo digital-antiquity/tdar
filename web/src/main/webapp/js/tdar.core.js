@@ -182,3 +182,6 @@
 
 
 })(console, window);
+$(function() {
+    TDAR.main();
+});

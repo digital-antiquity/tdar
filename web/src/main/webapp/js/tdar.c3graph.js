@@ -346,12 +346,12 @@ TDAR.c3graph = (function(console, $, ctx) {
 		initPieChart: _initPieChart,
 		initLineGraph: _initLineGraph,
 		initBarChart: _initBarChart,
-		initAreaGraph: _initAreaGraph
+		initAreaGraph: _initAreaGraph,
+        main : function() {
+            TDAR.c3graph.initPieChart();
+            TDAR.c3graph.initLineGraph();
+            TDAR.c3graph.initBarChart();
+            TDAR.c3graph.initAreaGraph();
+        }
 	}
 })(console, jQuery, window);
-$(function() {
-	TDAR.c3graph.initPieChart();
-	TDAR.c3graph.initLineGraph();
-	TDAR.c3graph.initBarChart();
-	TDAR.c3graph.initAreaGraph();
-});

@@ -12,11 +12,10 @@
     //expose public elements
     TDAR.datepicker = {
         "init": _init,
+        main : function() {
+            TDAR.datepicker.init();
+        }
+
     };
 
 })(TDAR, jQuery);
-
-$(document).ready(function () {
-    TDAR.datepicker.init();
-
-});
