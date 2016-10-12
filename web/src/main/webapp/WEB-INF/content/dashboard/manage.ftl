@@ -98,11 +98,17 @@
             <h4>Share:</h4>
         
             <div class="control-group">
-                        <select name="type" id="what" class="control-label">
-                            <option value="RESOURCE">a resource</option>
-                            <option value="SHARE">resources from</option>
-                        </select>
-                        <div class="controls" id>
+                <label class="control-label">What to Share</label>
+                <div class="controls" id="divWhat">
+                    <select name="type" id="what" >
+                        <option value="RESOURCE" data-target="#divResourceLookup" data-toggle="tab">A resource</option>
+                        <option value="SHARE" data-target="#divCollectionLookup" data-toggle="tab">Resources in a list </option>
+                        <option value="ACCOUNT" data-target="#divAccountLookup" data-toggle="tab">Resources in an account </option>
+                    </select>
+                </div>
+            </div>
+            <div class="control-group">
+                        <div class="controls" id="toggleControls">
 
                             <div id="divResourceLookup">
 
@@ -124,7 +130,7 @@
 
                             <div id="divAccountLookup">
 
-                                <@s.select name="share.accountId" list="billingAccounts" listKey="id" listValue="name"  emptyOption="true" />
+                                <@s.select name="share.accountId" list="billingAccounts" listKey="id" listValue="name"  emptyOption="true" theme="tdar" />
 
                             </div>
 
