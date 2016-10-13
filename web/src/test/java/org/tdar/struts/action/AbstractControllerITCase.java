@@ -188,7 +188,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         
         // controller.setSessionData(getSessionData());
         logger.info("{}", getUser());
-        assertEquals(owner, controller.getAuthenticatedUser());
+        assertEquals(controller.getAuthenticatedUser(), owner);
         C resourceCollection = (C) controller.getResourceCollection();
         resourceCollection.setName(name);
         	

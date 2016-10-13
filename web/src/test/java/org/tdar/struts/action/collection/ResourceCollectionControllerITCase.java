@@ -31,6 +31,7 @@ import org.springframework.test.annotation.Rollback;
 import org.tdar.core.bean.Viewable;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -473,16 +474,16 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         collection1.markUpdated(getUser());
         collection1.getAuthorizedUsers().addAll(users);
         genericService.saveOrUpdate(collection1);
-        SharedCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users),
-                new ArrayList<Resource>(), null);
+        ListCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users), getUser(),
+                new ArrayList<Resource>(), null, CollectionController.class, ListCollection.class);
         InformationResource testFile = generateDocumentWithUser();
-        SharedCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users),
-                Arrays.asList(testFile), null);
+        ListCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users),getUser(),
+                Arrays.asList(testFile), null, CollectionController.class, ListCollection.class);
         Long id = parentCollection.getId();
-        SharedCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(),
-                new ArrayList<Resource>(), id);
-        SharedCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(),
-                new ArrayList<Resource>(), id);
+        ListCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(),getUser(),
+                new ArrayList<Resource>(), id, CollectionController.class, ListCollection.class);
+        ListCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(),getUser(),
+                new ArrayList<Resource>(), id, CollectionController.class, ListCollection.class);
         // genericService.saveOrUpdate(parentCollection);
         Long parentCollectionId = parentCollection.getId();
         parentCollection = null;
@@ -520,9 +521,9 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         collection2 = null;
         assertFalse(collections.contains(collection1Id));
         assertFalse(collections.contains(collection2Id));
-
-        assertEquals(1, testFile.getRightsBasedResourceCollections().size());
-        parentCollection = genericService.find(SharedCollection.class, id);
+        assertEquals(0, testFile.getRightsBasedResourceCollections().size());
+        assertEquals(1, testFile.getUnmanagedResourceCollections().size());
+        parentCollection = genericService.find(ListCollection.class, id);
         assertTrue(!parentCollection.isHidden());
         assertTrue(parentCollection.isTopLevel());
         String slug = parentCollection.getSlug();
@@ -540,7 +541,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setId(id);
         vc.setSlug(slug);
         vc.prepare();
-        assertEquals(CollectionViewAction.SUCCESS_SHARE, vc.view());
+        assertEquals(CollectionViewAction.SUCCESS, vc.view());
         collections = PersistableUtils.extractIds(vc.getCollections());
         assertTrue(collections.contains(childCollectionId));
         assertFalse(collections.contains(childCollectionHiddenId));
@@ -553,7 +554,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setId(id);
         vc.setSlug(slug);
         vc.prepare();
-        assertEquals(CollectionViewAction.SUCCESS_SHARE, vc.view());
+        assertEquals(CollectionViewAction.SUCCESS, vc.view());
         collections = PersistableUtils.extractIds(vc.getCollections());
         assertEquals(2, collections.size());
         assertTrue(collections.contains(childCollectionId));
@@ -569,11 +570,10 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Rollback
     public void testHiddenParentVisibleChild() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-
-        SharedCollection collection1 = generateResourceCollection("test 1 private", "", false, new ArrayList<AuthorizedUser>(),
-                new ArrayList<Resource>(), null);
-        SharedCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(),
-                new ArrayList<Resource>(), collection1.getId());
+        ListCollection collection1 = generateResourceCollection("test 1 private", "", false, new ArrayList<AuthorizedUser>(),getUser(),
+                new ArrayList<Resource>(), null, CollectionController.class, ListCollection.class);
+        ListCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(), getUser(),
+                new ArrayList<Resource>(), collection1.getId(), CollectionController.class, ListCollection.class);
         evictCache();
         searchIndexService.index(collection1, collection2);
 
@@ -695,9 +695,9 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         draftDocument.setStatus(Status.DRAFT);
         genericService.save(draftDocument);
         evictCache();
-        SharedCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true, null,
-                Arrays.asList(draftDocument, activeDocument), null);
-        collection.setOwner(getAdminUser());
+        ListCollection collection = generateResourceCollection("test collection w/Draft", "testing draft...", true, null, getAdminUser(),
+                Arrays.asList(draftDocument, activeDocument), null, CollectionController.class, ListCollection.class);
+
         logger.info("DOCUMENT: {} ", draftDocument.getSubmitter());
 
         CollectionViewAction vc = generateNewInitializedController(CollectionViewAction.class);

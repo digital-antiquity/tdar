@@ -11,7 +11,11 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.ListCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -37,21 +41,36 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testSearchForPublicReosurceCollection() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        SharedCollection collection = setupCollection(false, null);
+        ListCollection collection = setupCollection(false, null);
         assertTrue(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAnonymous() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        SharedCollection collection = setupCollection(true, null);
+        ListCollection collection = setupCollection(true, null);
+        assertFalse(controller.getResults().contains(collection));
+    }
+
+    @Test
+    @Rollback
+    public void testSearchForPrivateSharedCollectionAnonymous() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        SharedCollection collection = setupCollection(true, null, false, SharedCollection.class);
         assertFalse(controller.getResults().contains(collection));
     }
 
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        SharedCollection collection = setupCollection(true, getBasicUser(), true);
+        ListCollection collection = setupCollection(true, getBasicUser(), true, ListCollection.class);
+        searchIndexService.index(collection);
+        assertTrue(controller.getResults().contains(collection));
+    }
+
+    @Test
+    @Rollback
+    public void testSearchForPrivateSharedCollectionAsBasicUserWithRights() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
+        SharedCollection collection = setupCollection(true, getBasicUser(), true, SharedCollection.class);
         searchIndexService.index(collection);
         assertTrue(controller.getResults().contains(collection));
     }
@@ -59,7 +78,7 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testSearchForPrivateCollectionAsBasicUserWithoutRights() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
-        SharedCollection collection = setupCollection(true, getBasicUser());
+        ListCollection collection = setupCollection(true, getBasicUser());
         assertFalse(controller.getResults().contains(collection));
     }
 
@@ -67,22 +86,26 @@ public class CollectionSearchControllerITCase extends AbstractControllerITCase {
     @Rollback
     public void testSearchForPrivateCollectionAsAdmin() throws InstantiationException, IllegalAccessException, SolrServerException, IOException {
 //        searchIndexService.purgeAll();
-        SharedCollection collection = setupCollection(true, getAdminUser());
+        ListCollection collection = setupCollection(true, getAdminUser());
         assertTrue(controller.getResults().contains(collection));
     }
 
-    private SharedCollection setupCollection(boolean visible, TdarUser user) throws SolrServerException, IOException {
-        return setupCollection(visible, user, false);
+    private ListCollection setupCollection(boolean visible, TdarUser user) throws SolrServerException, IOException {
+        return setupCollection(visible, user, false, ListCollection.class);
     }
 
-    private SharedCollection setupCollection(boolean visible, TdarUser user, boolean createAuthUser) throws SolrServerException, IOException {
+    private <C extends HierarchicalCollection> C  setupCollection(boolean visible, TdarUser user, boolean createAuthUser, Class<C> cls) throws SolrServerException, IOException {
         assertEquals(getUser(), getAdminUser());
-        SharedCollection collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project");
+        C collection = createAndSaveNewResourceCollection("Hohokam Archaeology along the Salt-Gila Aqueduct Central Arizona Project", cls);
         Document doc = createAndSaveNewResource(Document.class);
 
         collection.setDescription("test");
         collection.setHidden(visible);
-        collection.getResources().add(doc);
+        if (collection instanceof ListCollection) {
+            ((ListCollection) collection).getUnmanagedResources().add(doc);
+        } else {
+            ((RightsBasedResourceCollection)collection).getResources().add(doc);
+        }
         collection.markUpdated(getUser());
         genericService.saveOrUpdate(collection);
         if (createAuthUser) {
