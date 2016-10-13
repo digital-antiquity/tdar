@@ -33,10 +33,10 @@
 
                 <div class="controls controls-row">
                     <#if owner?has_content>
-                <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
-                    prefix="owner" includeRights=false includeRepeatRow=false />
+                    <@edit.registeredUserRow person=owner isDisabled=disabled   _personPrefix="" _indexNumber=''
+                        prefix="owner" includeRights=false includeRepeatRow=false />
 	 	        <#else>
-                        <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
+                    <@edit.registeredUserRow person=authenticatedUser isDisabled=disabled   _personPrefix="" _indexNumber=''
                         prefix="owner" includeRights=false includeRepeatRow=false />
                     </#if>
                 </div>

@@ -3,7 +3,6 @@ package org.tdar.functional;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -63,8 +62,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         loginAdmin();
         gotoEdit(url, CollectionType.SHARED);
         applyEditPageHacks();
+        submitForm();
+        find(By.partialLinkText("rights")).click();
         addUserWithRights(person.getProperName(), person.getUsername(),  person.getId(), GeneralPermissions.VIEW_ALL);
         submitForm();
+
         logout();
         // make sure unauthenticated user cannot see resources on the page
         setIgnorePageErrorChecks(true);
@@ -138,6 +140,8 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         TestConfiguration config = TestConfiguration.getInstance();
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
         gotoEdit(url, CollectionType.SHARED);
+        submitForm();
+        find(By.partialLinkText("rights")).click();
         addUserWithRights("test user", config.getUsername(), config.getUserId(), GeneralPermissions.ADMINISTER_SHARE);
         submitForm();
 
@@ -244,18 +248,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         setFieldByName("resourceCollection.name", title_);
         setFieldByName("resourceCollection.description", DESCRIPTION);
 
-        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
-        addAnother.click();
-        addAnother.click();
         setFieldByName("resourceCollection.hidden", visible.toString().toLowerCase());
         GeneralPermissions permission = GeneralPermissions.MODIFY_RECORD;
         if (type == CollectionType.LIST) {
             permission = GeneralPermissions.REMOVE_FROM_COLLECTION;
         }
-        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
-        		"person-"+ config.getEditorUserId(), permission);
-        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
-        		"michelle elliott",  "Michelle Elliott", "person-121", permission);
         addResourceToCollection(_139);
         for (String title : titles) {
             addResourceToCollection(title);
@@ -263,6 +260,16 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         submitForm();
         assertPageViewable(titles);
         String url = getCurrentUrl();
+        find(By.partialLinkText("RIGHTS")).click();
+        WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
+        addAnother.click();
+        addAnother.click();
+
+        addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
+        		"person-"+ config.getEditorUserId(), permission);
+        addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
+        		"michelle elliott",  "Michelle Elliott", "person-121", permission);
+        submitForm();
         return url;
     }
 
