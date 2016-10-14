@@ -81,8 +81,6 @@ public class DashboardController extends AbstractAuthenticatableAction implement
     @Autowired
     private transient ProjectService projectService;
     @Autowired
-    private transient BookmarkedResourceService bookmarkedResourceService;
-    @Autowired
     private transient InformationResourceFileService informationResourceFileService;
     @Autowired
     private transient BillingAccountService accountService;

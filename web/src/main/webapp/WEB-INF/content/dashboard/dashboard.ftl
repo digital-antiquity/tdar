@@ -36,6 +36,7 @@
             </#if>
         </div>
     </div>
+    <#if (activeResourceCount > 0 )>
     <div class="row">
         <div class="span8">
             <div class="row">
@@ -44,7 +45,7 @@
             <div class="row">
                 <div class="span4">
         
-                    <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick">
+                    <div class="pieChart" id="statusChart" data-columns="#statusTypeData" style="height:200px" data-click="dashboardStatusPieChartClick"  data-legend-position="right">
                     </div>
                     
                     <#noescape>
@@ -55,7 +56,7 @@
         
                 </div>
                 <div class="span4">
-                    <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick">
+                    <div class="pieChart" id="resourceTypeChart" data-columns="#resourceTypeData" style="height:200px" data-click="dashboardResourcePieChartClick" data-legend-position="right">
                     </div>
                     
                     <#noescape>
@@ -67,6 +68,7 @@
             </div>
         </div>
     </div>
+    </#if>
     <div class="row">
 <hr/>
     </div>

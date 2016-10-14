@@ -224,6 +224,13 @@ TDAR.c3graph = (function(console, $, ctx) {
 		if ($.isFunction(TDAR.c3graphsupport[clickname])) {
 			cdata.data.onclick = TDAR.c3graphsupport[clickname];
 		}
+		if ($parent.data("legend-position") != undefined) {
+		    if (cdata.legend == undefined) {
+		        cdata.legend = {};
+		    }
+		    cdata.legend.position = $parent.data("legend-position");
+		}
+		
 		if ($parent.data("source")) {
 			var source = JSON.parse($($parent.data("source")).html());
 			cdata.data.json = source;
