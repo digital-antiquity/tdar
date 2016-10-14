@@ -260,20 +260,20 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         String desc = "description goes here";
         setInput("resourceCollection.name", name);
         setInput("resourceCollection.description", desc);
-
-        setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
-        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
-
         submitForm();
         String url = getCurrentUrlPath();
         Long id = extractTdarIdFromCurrentURL();
+        gotoPage("/collection/" + id + "/rights");
+        setInput(String.format(FMT_AUTHUSERS_ID, 0), CONFIG.getUserId());
+        setInput(String.format(FMT_AUTHUSERS_PERMISSION, 0), GeneralPermissions.ADMINISTER_GROUP.toString());
+        submitForm();
         logout();
         
         // logout and login as that user, remove self
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
         assertTextPresent("my fancy collection");
-        clickLinkWithText("edit");
+        clickLinkWithText("rights");
         assertTextPresent("my fancy collection");
         removeElementsByName(String.format(FMT_AUTHUSERS_ID, 0));
         removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));

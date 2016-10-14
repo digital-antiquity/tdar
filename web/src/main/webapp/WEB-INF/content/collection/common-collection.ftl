@@ -78,9 +78,13 @@
 
 <#macro header>
     <#if editable>
+    <#local path="collection"/>
+    <#if resourceCollection.type == 'SHARED'>
+        <#local path="share"/>
+    </#if>
         <@nav.collectionToolbar "collection" "view">
             <@nav.makeLink
-            namespace="collection"
+            namespace="${path}"
             action="add?parentId=${id?c}"
             label="create child collection"
             name="columns"
@@ -90,7 +94,7 @@
             extraClass="hidden-tablet hidden-phone"/>
 
             <@nav.makeLink
-                namespace="collection"
+                namespace="${path}"
                 action="${id?c}/rights"
                 label="RIghts"
                 name="rights"
@@ -101,7 +105,7 @@
 
         <#if editor && ((resourceCollection.unmanagedResources![])?size > 0 || (resourceCollection.resources![])?size > 0) >
             <@nav.makeLink
-            namespace="collection/admin/batch"
+            namespace="${path}/admin/batch"
             action="${id?c}"
             label="batch title (beta)"
             name="batch"
