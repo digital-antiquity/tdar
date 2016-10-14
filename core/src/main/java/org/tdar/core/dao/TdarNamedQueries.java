@@ -167,6 +167,11 @@ public interface TdarNamedQueries {
     String CHECK_INVITES = "check.invites";
     String ALL_INTERNAL_COLLECTIONS = "all.internalCollections";
     String FIND_DOWNLOAD_AUTHORIZATION = "delete.downloadAuthorization";
+    String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
+    String FIND_RESOURCES_SHARED_WITH = "query.resources_shared_with";
+    String FIND_COLLECTIONS_SHARED_WITH = "query.collections_shared_with";
+    String FIND_RESOURCES_SHARED_WITH_USERS = "query.resources_shared_with_users";
+    String FIND_COLLECTIONS_SHARED_WITH_USERS = "query.collections_shared_with_users";
     // raw SQL/HQL queries
 
     /**
@@ -273,7 +278,6 @@ public interface TdarNamedQueries {
     String COUNT_ACTIVE_PERSISTABLE_BY_ID = "select count(id) from %s where status in ('ACTIVE')";
     String FIND_ACTIVE_PERSON_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
     String FIND_ACTIVE_INSTITUTION_BY_ID = "select id from %s where status in ('ACTIVE') and browse_occurrence > 0 and hidden=false";
-    String WEEKLY_EMAIL_STATS = "stats.weekly_emails";
 
     String RESOURCE_ACCESS_COUNT_SQL = "select coalesce((select count(ras.id)  from resource_access_statistics ras where ras.resource_id='%1$s' and ras.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(rad.count) from resource_access_day_agg rad where rad.resource_id='%1$s'),0)";
     String DOWNLOAD_COUNT_SQL = "select coalesce((select count(irfds.id)  from information_resource_file_download_statistics irfds where irfds.information_resource_file_id='%1$s' and irfds.date_accessed > '%2$tY-%2$tm-%2$td') ,0) + coalesce((select sum(fda.count) from file_download_day_agg fda where fda.information_resource_file_id='%1$s'),0)";

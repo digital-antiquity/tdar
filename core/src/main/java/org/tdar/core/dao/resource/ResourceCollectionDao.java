@@ -423,4 +423,64 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
             delete(da);
         }
     }
+
+    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user, boolean admin) {
+        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
+        shared.setParameter("userId", authenticatedUser.getId());
+        shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        List<SharedCollection> resultList = shared.getResultList();
+        List<Long> ids = PersistableUtils.extractIds(resultList);
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+        Query<Resource> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_RESOURCES_SHARED_WITH, Resource.class);
+        query.setParameter("owner", authenticatedUser);
+        query.setParameter("user", user);
+        query.setParameter("admin", admin);
+        query.setParameter("collectionIds", ids);
+        return query.getResultList();
+        
+    }
+
+    public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls, boolean admin) {
+        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
+        shared.setParameter("userId", authenticatedUser.getId());
+        shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        List<SharedCollection> resultList = shared.getResultList();
+        List<Long> ids = PersistableUtils.extractIds(resultList);
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+
+        Query<SharedCollection> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH, SharedCollection.class);
+        query.setParameter("owner", authenticatedUser);
+        query.setParameter("user", user);
+        query.setParameter("admin", admin);
+        query.setParameter("collectionIds", ids);
+        return query.getResultList();
+    }
+
+
+    public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser, boolean admin) {
+        Query<SharedCollection> shared = getCurrentSession().createNamedQuery(TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, SharedCollection.class);
+        shared.setParameter("userId", authenticatedUser.getId());
+        shared.setParameter("perm", GeneralPermissions.MODIFY_RECORD.getEffectivePermissions() - 1);
+        List<SharedCollection> resultList = shared.getResultList();
+        List<Long> ids = PersistableUtils.extractIds(resultList);
+        if (CollectionUtils.isEmpty(ids)) {
+            return new ArrayList<>();
+        }
+
+        Query<TdarUser> query = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS, TdarUser.class);
+        query.setParameter("owner", authenticatedUser);
+        query.setParameter("admin", admin);
+        query.setParameter("collectionIds", ids);
+        List<TdarUser> users = new ArrayList<>( query.getResultList());
+        Query<TdarUser> query2 = getCurrentSession().createNamedQuery(TdarNamedQueries.FIND_RESOURCES_SHARED_WITH_USERS, TdarUser.class);
+        query2.setParameter("owner", authenticatedUser);
+        query2.setParameter("admin", admin);
+        query2.setParameter("collectionIds", ids);
+        users.addAll(query2.getResultList());
+        return users;
+    }
 }

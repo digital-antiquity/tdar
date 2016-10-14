@@ -32,7 +32,7 @@
                 query = "SELECT distinct resCol from ListCollection resCol where lower(trim(resCol.name)) like lower(trim(:name)) and resCol.status='ACTIVE' "),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_COLLECTIONS_YOU_HAVE_ACCESS_TO, // NOTE: THIS MAY REQUIRE ADDITIONAL WORK INNER JOIN WILL PRECLUDE OwnerId w/no authorized users
-                query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and resCol.status='ACTIVE' "),
+                query = "SELECT distinct resCol from SharedCollection resCol left join resCol.authorizedUsers as authUser where (authUser.user.id=:userId or resCol.owner=:userId) and resCol.status='ACTIVE' and (:perm is null or authUser.effectiveGeneralPermission > :perm )"),
         @org.hibernate.annotations.NamedQuery(
                 name = TdarNamedQueries.QUERY_IS_ALLOWED_TO_MANAGE,
                 query = "SELECT distinct 1 from " +
@@ -580,8 +580,27 @@
                 query = "select distinct ic from InternalCollection ic right join ic.authorizedUsers as user right join ic.resources as res where (ic.owner.id=:owner or res.submitter.id=:owner) and res.status in ('ACTIVE','DRAFT') "),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_DOWNLOAD_AUTHORIZATION,
-                query = "from DownloadAuthorization da where da.resourceCollection.id=:collectionId")
-        
+                query = "from DownloadAuthorization da where da.resourceCollection.id=:collectionId"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_RESOURCES_SHARED_WITH,
+                query = "select distinct r from Resource r inner join r.internalCollections ic inner join ic.authorizedUsers au where au.user=:user and (:admin is true or r.id in ("
+                        + "select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId where r_.submitter=:owner or rc_.id in (:collectionIds) or parentId in (:collectionIds) "
+                        + "))"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH,
+                query = "select distinct s from SharedCollection s inner join s.authorizedUsers au where au.user=:user and (:admin is true or s.id in ("
+                        + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.owner=:owner or s_.id in (:collectionIds) or parentId in (:collectionIds) "
+                        + "))"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_RESOURCES_SHARED_WITH_USERS,
+                query = "select distinct au.user from Resource r inner join r.internalCollections ic inner join ic.authorizedUsers au where (:admin is true or r.id in ("
+                        + "select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId where r_.submitter=:owner or rc_.id in (:collectionIds) or parentId in (:collectionIds) "
+                        + "))"),
+        @org.hibernate.annotations.NamedQuery(
+                name=org.tdar.core.dao.TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS,
+                query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (:admin is true or s.id in ("
+                        + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.owner=:owner or s_.id in (:collectionIds) or parentId in (:collectionIds) "
+                        + "))")
 })
 package org.tdar.core.dao;
 

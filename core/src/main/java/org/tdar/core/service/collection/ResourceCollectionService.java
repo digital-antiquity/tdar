@@ -1224,5 +1224,32 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
 
     }
+    
+    @Transactional(readOnly=true)
+    public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user) {
+        boolean admin = false;
+        if (authorizationService.isEditor(authenticatedUser)) {
+            admin = true;
+        }
+        return getDao().findResourcesSharedWith(authenticatedUser, user, admin);
+    }
+    
 
+    @Transactional(readOnly=true)
+    public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls) {
+        boolean admin = false;
+        if (authorizationService.isEditor(authenticatedUser)) {
+            admin = true;
+        }
+        return getDao().findCollectionsSharedWith(authenticatedUser, user, cls, admin);
+    }
+
+    @Transactional(readOnly=true)
+    public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser)  {
+        boolean admin = false;
+        if (authorizationService.isEditor(authenticatedUser)) {
+            admin = true;
+        }
+        return getDao().findUsersSharedWith(authenticatedUser, admin);
+    }
 }
