@@ -14,18 +14,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
@@ -35,16 +31,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.resource.Document;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
-import org.tdar.core.service.bulk.CellMetadata;
-import org.tdar.utils.MessageHelper;
 import org.tdar.utils.Pair;
 
 import com.opensymphony.xwork2.ActionInvocation;
@@ -489,122 +480,6 @@ public class ReflectionService {
             }
         }
         return result;
-    }
-
-    /**
-     * @see #findBulkAnnotationsOnClass(Class, Stack, String)
-     * 
-     * @param class2
-     * @return
-     */
-    public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2) {
-        Stack<List<Class<?>>> classStack = new Stack<>();
-        return findBulkAnnotationsOnClass(class2, classStack, "");
-    }
-
-    /**
-     * Find all @link BulkImportField annotations on all resource classes.
-     * 
-     * @param class2
-     * @param stack
-     * @param prefix
-     * @return
-     */
-    public LinkedHashSet<CellMetadata> findBulkAnnotationsOnClass(Class<?> class2, Stack<List<Class<?>>> stack, String prefix) {
-        Class<BulkImportField> annotationToFind = BulkImportField.class;
-        LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
-        if (class2.getSuperclass() != Object.class) {
-            set.addAll(findBulkAnnotationsOnClass(class2.getSuperclass(), stack, prefix));
-        }
-
-        Field runMultiple = null;
-        List<Class<?>> runWith = new ArrayList<Class<?>>();
-        for (Field field : class2.getDeclaredFields()) {
-            BulkImportField annotation = field.getAnnotation(annotationToFind);
-            if ((annotation != null) && ArrayUtils.isNotEmpty(annotation.implementedSubclasses())) {
-                runWith.addAll(Arrays.asList(annotation.implementedSubclasses()));
-                runMultiple = field;
-            }
-        }
-        List<Class<?>> classList = new ArrayList<Class<?>>();
-        stack.add(classList);
-        classList.add(class2);
-
-        if (runMultiple == null) {
-            set.addAll(handleClassAnnotations(class2, stack, annotationToFind, null, null, prefix));
-        } else {
-            for (Class<?> runAs : runWith) {
-                classList.add(runAs);
-                set.addAll(handleClassAnnotations(class2, stack, annotationToFind, runAs, runMultiple, prefix));
-                classList.remove(runAs);
-            }
-        }
-        stack.remove(classList);
-        return set;
-    }
-
-    /**
-     * Find @link BulkImportField on a class.
-     * 
-     * @param class2
-     * @param stack
-     * @param annotationToFind
-     * @param runAs
-     * @param runAsField
-     * @param prefix
-     * @return
-     */
-    private LinkedHashSet<CellMetadata> handleClassAnnotations(Class<?> class2, Stack<List<Class<?>>> stack, Class<BulkImportField> annotationToFind,
-            Class<?> runAs, Field runAsField, String prefix_) {
-        LinkedHashSet<CellMetadata> set = new LinkedHashSet<>();
-        String prefix = prefix_;
-        for (Field field : class2.getDeclaredFields()) {
-            BulkImportField annotation = field.getAnnotation(annotationToFind);
-            if (prefix == null) {
-                prefix = "";
-            }
-            if (annotation != null) {
-                String fieldPrefix = prefix;
-                if (StringUtils.isNotBlank(annotation.key())) {
-                    fieldPrefix = CellMetadata.getDisplayLabel(MessageHelper.getInstance(), annotation.key());
-                }
-
-                Class<?> type = field.getType();
-                if (Objects.equals(field, runAsField)) {
-                    type = runAs;
-                    logger.trace(" ** overriding type with {}", type.getSimpleName());
-                }
-
-                if (Collection.class.isAssignableFrom(type))
-                // handle Collection private List<ResourceCreator> ...
-                {
-                    ParameterizedType stringListType = (ParameterizedType) field.getGenericType();
-                    Class<?> cls = (Class<?>) stringListType.getActualTypeArguments()[0];
-                    set.addAll(findBulkAnnotationsOnClass(cls, stack, fieldPrefix));
-                }
-                // handle Singleton private Person owner ...
-                else if (Persistable.class.isAssignableFrom(type)) {
-                    set.addAll(findBulkAnnotationsOnClass(type, stack, fieldPrefix));
-                }
-                // handle more primative fields private String ...
-                else {
-                    logger.trace("adding {} ({})", field, stack);
-                    if (!TdarConfiguration.getInstance().getCopyrightMandatory() && Objects.equals(annotation.key(), InformationResource.COPYRIGHT_HOLDER)) {
-                        continue;
-                    }
-
-                    if ((TdarConfiguration.getInstance().getLicenseEnabled() == false)
-                            && (Objects.equals(field.getName(), "licenseType") || Objects.equals(field.getName(), "licenseText"))) {
-                        continue;
-                    }
-                    set.add(new CellMetadata(field, annotation, class2, stack, prefix));
-
-                    // set.add(field);
-                }
-
-            }
-        }
-        return set;
     }
 
     /**

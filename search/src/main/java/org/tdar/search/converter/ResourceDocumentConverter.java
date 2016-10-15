@@ -55,6 +55,7 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         SolrInputDocument doc = convertPersistable(resource);
         doc.setField(QueryFieldNames.NAME, resource.getName());
+        logger.debug("{}", resource);
         doc.setField(QueryFieldNames.NAME_SORT, resource.getTitleSort());
         addRequiredField(resource, doc);
         doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());

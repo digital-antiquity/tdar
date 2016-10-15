@@ -30,10 +30,9 @@
     <h3>Upload Complete</h3>
 
     <p class="success">The upload process is complete.
-        You can visit the <a href="<@s.url value="/dashboard"/>">dashboard</a> to review your recently uploaded files.</p>
 
     <div class="form-actions">
-    <@s.a cssClass="btn btn-large btn-primary" href="/dashboard" id="btnDashboard">Continue to the Dashboard</@s.a>
+    <@s.a cssClass="btn btn-large btn-primary" href="/dashboard" id="btnDashboard">Continue to add titles, descriptions, and dates</@s.a>
     <@s.a cssClass="btn btn-large " href="/batch/template-prepare" id="btnBatch">Return to Batch Upload Page</@s.a>
 
     </div>

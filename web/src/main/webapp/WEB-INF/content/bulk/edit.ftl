@@ -4,7 +4,6 @@
     <#global inheritanceEnabled=true />
     <#global multipleUpload=true />
     <#global useBulkUpload=true />
-    <#import "batch-common.ftl" as batchCommon>
 
 <head>
     <title>Batch Upload Documents or Images</title>
@@ -28,7 +27,6 @@
     <#macro beforeUpload>
 
     <div class="alert">
-        <@batchCommon.printTemplate />
         <p>
             Select the files you'd like to add to ${siteAcronym}. Each file will be associated with a new record along with any metadata specified
             either in the excel spreadsheet specified above, or with any values selected on this form.</p>

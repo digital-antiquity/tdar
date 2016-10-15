@@ -39,6 +39,10 @@
                 } else {
                     $("#progressbar").progressbar("option", "value", 100);
                     $('#divUploadComplete').show();
+                    $("#btnDashboard").click(function(){
+                        var url = "/collection/admin/batch/" + data.collectionId;
+                        window.location.href = url;
+                    });
                     //$("#progressbar").progressbar("destroy");
                     $("#buildStatus").empty().append("Upload complete.");
                     $("#btnDashboard").button();

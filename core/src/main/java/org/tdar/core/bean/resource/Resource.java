@@ -64,7 +64,6 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.DeHydratable;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.HasName;
@@ -233,14 +232,12 @@ public class Resource implements Persistable,
     @JsonView(JsonLookupFilter.class)
     private Long id = -1L;
 
-    @BulkImportField(key = "TITLE", required = true, order = -100)
     @NotNull
     @Column(length = 512)
     @JsonView(JsonIdNameFilter.class)
     @Length(max = 512)
     private String title;
 
-    @BulkImportField(required = true, order = -50, key = "DESCRIPTION")
     @Lob
     @Type(type = "org.hibernate.type.TextType")
     @JsonView(JsonLookupFilter.class)
@@ -300,7 +297,6 @@ public class Resource implements Persistable,
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @OrderBy("sequenceNumber ASC")
     @JoinColumn(nullable = false, updatable = false, name = "resource_id")
-    @BulkImportField
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL, region = "org.tdar.core.bean.resource.Resource.resourceCreators")
     private Set<ResourceCreator> resourceCreators = new LinkedHashSet<ResourceCreator>();
 

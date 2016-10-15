@@ -49,16 +49,6 @@ import com.gargoylesoftware.htmlunit.WebRequest;
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
 
-    @Test
-    public void testInvalidBulkUpload() {
-        File testImagesDirectory = new File(TestConstants.TEST_IMAGE_DIR);
-        Collection<File> listFiles = FileUtils.listFiles(testImagesDirectory, new String[] { "jpg" }, false);
-        Map<String, String> extra = new HashMap<String, String>();
-        extra.put("resourceCollections[0].name", "template name");
-        testBulkUploadController("image_manifest2.xlsx", listFiles, extra, false);
-        assertTrue(getPageCode().contains("resource creator is not"));
-
-    }
 
     @Test
     public void testBulkUploadDups() {

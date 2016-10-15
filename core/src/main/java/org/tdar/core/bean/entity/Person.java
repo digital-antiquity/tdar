@@ -17,7 +17,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.Check;
 import org.hibernate.validator.constraints.Length;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
@@ -51,12 +50,10 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
 
     @JsonView(JsonLookupFilter.class)
     @Column(nullable = false, name = "last_name")
-    @BulkImportField(key = "CREATOR_LNAME", order = 2)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String lastName;
 
     @Column(nullable = false, name = "first_name")
-    @BulkImportField(key = "CREATOR_FNAME", order = 1)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String firstName;
@@ -66,7 +63,6 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     private String orcidId;
 
     @Column(unique = true, nullable = true)
-    @BulkImportField(key = "EMAIL", order = 3)
     @Length(min = 1, max = FieldLength.FIELD_LENGTH_255)
     @JsonView(JsonLookupFilter.class)
     private String email;
@@ -75,7 +71,6 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
     private Boolean emailPublic = Boolean.FALSE;
 
     @ManyToOne(cascade = { CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.MERGE, CascadeType.DETACH }, optional = true)
-    @BulkImportField(key = "CREATOR_PERSON_INSTITUTION", order = 50)
     @JsonView(JsonLookupFilter.class)
     private Institution institution;
 
