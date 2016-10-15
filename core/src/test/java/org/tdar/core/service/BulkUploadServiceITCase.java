@@ -9,6 +9,7 @@ package org.tdar.core.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.AbstractIntegrationTestCase;
@@ -24,6 +25,7 @@ import org.tdar.junit.MultipleTdarConfigurationRunner;
  */
 
 @RunWith(MultipleTdarConfigurationRunner.class)
+@Ignore
 public class BulkUploadServiceITCase extends AbstractIntegrationTestCase {
 
     @Autowired
