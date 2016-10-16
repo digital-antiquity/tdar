@@ -462,6 +462,7 @@ public class ResourceService {
                 resource.setDescription(" ");
             }
             resource.setDateCreated(proxy.getDateCreated());
+            genericDao.refresh(proxy.getSubmitter());
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
             if (save) {

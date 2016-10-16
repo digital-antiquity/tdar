@@ -3,8 +3,10 @@ package org.tdar.core.service.bulk;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -149,13 +151,12 @@ public class BulkUploadService {
             }
 
             logger.info("bulk: processing files, and then persisting");
-            ResourceCollection resources = processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver);
-            genericDao.saveOrUpdate(resources);
+            List<Resource> resources = (List<Resource>)(List)processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver);
             updateAccountQuotas(accountId, resources, asyncUpdateReceiver, submitter);
 
-            logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
+            ResourceCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
             completeBulkUpload(accountId, asyncUpdateReceiver, activity, ticketId);
-            asyncUpdateReceiver.setCollectionId(resources.getId());
+            asyncUpdateReceiver.setCollectionId(collection.getId());
         } catch (Throwable t) {
             logger.error("exception in BulkUploadService: {}", t, t);
         }
@@ -207,14 +208,12 @@ public class BulkUploadService {
      * 
      */
     @Transactional
-    public ResourceCollection processFileProxiesIntoResources(Collection<FileProxy> fileProxies, InformationResource image, TdarUser authenticatedUser,
+    public List<InformationResource> processFileProxiesIntoResources(Collection<FileProxy> fileProxies, InformationResource image, TdarUser authenticatedUser,
             AsyncUpdateReceiver asyncUpdateReceiver) {
         int count = 0;
-        String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
-        ResourceCollection collection = new ResourceCollection(title, title, SortOption.TITLE, CollectionType.SHARED, false, authenticatedUser);
-        collection.markUpdated(authenticatedUser);
-        collection.setSystemManaged(true);
+        List<InformationResource> resources = new ArrayList<>();
         image.setSubmitter(authenticatedUser);
+        Map<String,FileProxy> map = new HashMap<>();
         for (FileProxy fileProxy : fileProxies) {
             logger.trace("processing: {}", fileProxy);
             try {
@@ -235,37 +234,47 @@ public class BulkUploadService {
                             new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", Arrays.asList(fileName)));
                     continue;
                 }
-                InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, suggestTypeForFile.getResourceClass(),
-                        false);
+                InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, suggestTypeForFile.getResourceClass(),false);
                 informationResource.setTitle(fileName);
                 informationResource.setDescription("add description");
                 informationResource.setDate(DateTime.now().getYear());
                 informationResource.markUpdated(authenticatedUser);
-                genericDao.saveOrUpdate(informationResource);
-
-                // bring the children of the resource onto the session, generate new @OneToMany relationships, etc.
-                informationResource = importService.reconcilePersistableChildBeans(authenticatedUser, informationResource);
-                // merge everything onto session and persist (needed for thread issues)
-                informationResource = genericDao.merge(informationResource);
-                genericDao.saveOrUpdate(informationResource);
-                collection.getResources().add(informationResource);
-                informationResource.getResourceCollections().add(collection);
-                // process files
-                ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource,
-                        authenticatedUser, null, Arrays.asList(fileProxy));
-
-                // make sure we're up-to-date (needed for thread issues)
-                informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
-                asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
-                if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
-                    asyncUpdateReceiver.addError(new Exception(String.format("Errors: %s", listener)));
-                }
+//                genericDao.saveOrUpdate(informationResource);
+                map.put(informationResource.getTitle(), fileProxy);
             } catch (Exception e) {
-                logger.warn("something happend  while processing file proxy", e);
+                logger.warn("something happend  while creating file", e);
                 asyncUpdateReceiver.addError(e);
             }
         }
-        return collection;
+        
+        for (InformationResource informationResource : resources) {
+            try {
+            // bring the children of the resource onto the session, generate new @OneToMany relationships, etc.
+            informationResource = importService.reconcilePersistableChildBeans(authenticatedUser, informationResource);
+            // merge everything onto session and persist (needed for thread issues)
+            informationResource = genericDao.merge(informationResource);
+            genericDao.saveOrUpdate(informationResource);
+            resources.add(informationResource);
+            // process files
+            FileProxy fileProxy = map.get(informationResource.getName());
+            ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource,
+                    authenticatedUser, null, Arrays.asList(fileProxy));
+            String fileName = fileProxy.getFilename();
+
+            // make sure we're up-to-date (needed for thread issues)
+            informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
+            asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
+            if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
+                asyncUpdateReceiver.addError(new Exception(String.format("Errors: %s", listener)));
+            }
+        } catch (Exception e) {
+            logger.warn("something happend  while processing file proxy", e);
+            asyncUpdateReceiver.addError(e);
+        }
+
+        }
+        
+        return resources;
     }
 
     /**
@@ -273,12 +282,12 @@ public class BulkUploadService {
      * 
      * @param updateReciever
      */
-    private void updateAccountQuotas(Long accountId, ResourceCollection resources, AsyncUpdateReceiver updateReciever, TdarUser user) {
+    private void updateAccountQuotas(Long accountId, List<Resource> resources, AsyncUpdateReceiver updateReciever, TdarUser user) {
         try {
             logger.info("bulk: finishing quota work");
             if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {
                 BillingAccount account = genericDao.find(BillingAccount.class, accountId);
-                accountService.updateQuota(account, resources.getResources(), user);
+                accountService.updateQuota(account, resources, user);
             }
         } catch (Throwable t) {
             logger.error("quota error happend", t);
@@ -290,12 +299,17 @@ public class BulkUploadService {
      * Log each record to XML and put in the filestore, and persist the record
      * as needed, then let the @link AsyncUpdateReceiver know we're done
      */
-    private void logAndPersist(AsyncUpdateReceiver receiver, ResourceCollection resources, Long submitterId, Long accountId) {
+    private ResourceCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
         logger.info("bulk: setting final statuses and logging");
+        TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
+        String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
+        ResourceCollection collection = new ResourceCollection(title, title, SortOption.TITLE, CollectionType.SHARED, false, submitter);
         try {
-            Person submitter = genericDao.find(Person.class, submitterId);
+            collection.markUpdated(submitter);
+            collection.setSystemManaged(true);
+            genericDao.saveOrUpdate(collection);
 
-            Iterator<Resource> iterator = resources.getResources().iterator();
+            Iterator<Resource> iterator = resources.iterator();
             while (iterator.hasNext()) {
                 try {
                     Resource resource = iterator.next();
@@ -305,12 +319,14 @@ public class BulkUploadService {
                 }
             }
 
-            for (Resource resource : resources.getResources()) {
+            for (Resource resource : resources) {
                 receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
                         resource.getResourceType(), submitter, resource.getId(), StringUtils.left(resource.getTitle(), 100));
 
                 try {
+                    collection.getResources().add(resource);
+                    resource.getResourceCollections().add(collection);
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
@@ -319,11 +335,13 @@ public class BulkUploadService {
                     throw trex;
                 }
             }
+            genericDao.saveOrUpdate(collection);
             logger.info("bulk: completing");
         } catch (Throwable t) {
             logger.error("log and persist error happened", t);
             receiver.addError(t);
         }
+        return collection;
     }
 
     /**

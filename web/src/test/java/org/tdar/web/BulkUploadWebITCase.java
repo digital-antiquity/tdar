@@ -240,9 +240,9 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
             uploadFileToPersonalFilestore(ticketId, uploadedFile.getAbsolutePath());
         }
 
-        gotoPage("/batch/add");
+        gotoPage("/bulk/add");
         setInput("status", Status.ACTIVE.name());
-        setInput("uploadedFiles", TestConstants.TEST_BULK_DIR + filename);
+//        setInput("uploadedFiles", TestConstants.TEST_BULK_DIR + filename);
         if (extra != null) {
             boolean hasInput = true;
             try {
@@ -274,7 +274,7 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertTextPresentIgnoreCase("Bulk Upload Status");
         // logger.info(getPageCode());
         assertTextPresentInCode("The upload process is complete");
-        String statusPage = "/batch/checkstatus?ticketId=" + ticketId;
+        String statusPage = "/bulk/checkstatus?ticketId=" + ticketId;
         loadStatusPage(statusPage);
         int count = 0;
         // fixme: parse this json and get the actual number,

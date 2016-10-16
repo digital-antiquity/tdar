@@ -16,7 +16,7 @@ import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.resource.Image;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.service.SimpleBulkUploadService;
+import org.tdar.core.service.bulk.BulkUploadService;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.struts.action.resource.AbstractInformationResourceController;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -46,7 +46,7 @@ public class BulkUploadController extends AbstractInformationResourceController<
     private transient FileAnalyzer analyzer;
     
     @Autowired
-    private transient SimpleBulkUploadService bulkUploadService;
+    private transient BulkUploadService bulkUploadService;
 
     private String bulkFileName;
     private long bulkContentLength;
@@ -68,10 +68,6 @@ public class BulkUploadController extends AbstractInformationResourceController<
         }
         
         
-//        PersonalFilestoreTicket ticket = filestoreService.findPersonalFilestoreTicket(getTicketId());
-//        PersonalFilestore personalFilestore = filestoreService.getPersonalFilestore(getTicketId());
-//        List<PersonalFilestoreFile> retrieveAll = personalFilestore.retrieveAll(ticket);
-//        
         getLogger().debug("ticketId: {} ", getTicketId());
         getLogger().debug("proxy:    {}", getFileProxies());
         saveBasicResourceMetadata();

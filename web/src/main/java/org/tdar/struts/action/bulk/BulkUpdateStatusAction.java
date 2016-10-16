@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.SerializationService;
-import org.tdar.core.service.SimpleBulkUploadService;
+import org.tdar.core.service.bulk.BulkUploadService;
 import org.tdar.core.service.bulk.BulkUpdateReceiver;
 import org.tdar.struts.action.AbstractAuthenticatableAction;
 import org.tdar.struts.interceptor.annotation.HttpsOnly;
@@ -35,7 +35,7 @@ public class BulkUpdateStatusAction extends AbstractAuthenticatableAction implem
     private static final long serialVersionUID = -5855079741655022360L;
 
     @Autowired
-    private transient SimpleBulkUploadService bulkUploadService;
+    private transient BulkUploadService bulkUploadService;
 
     @Autowired
     private transient SerializationService serializationService;
