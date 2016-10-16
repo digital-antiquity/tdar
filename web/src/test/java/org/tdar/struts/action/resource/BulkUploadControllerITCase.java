@@ -8,7 +8,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -31,8 +30,6 @@ import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreator;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.keyword.MaterialKeyword;
@@ -56,7 +53,6 @@ import org.tdar.struts.action.bulk.BulkUpdateStatusAction;
 import org.tdar.struts.action.bulk.BulkUploadController;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.utils.Pair;
-import org.tdar.utils.TestConfiguration;
 
 /**
  * $Id$
@@ -94,8 +90,6 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         Long projectId = 3462L;
         bulkUploadController.setProjectId(projectId);
         // setup controller
-        bulkUploadController.setUploadedFiles(Arrays.asList(new File(TestConstants.TEST_BULK_DIR + "image_manifest.xlsx")));
-        bulkUploadController.setUploadedFilesFileName(Arrays.asList("image_manifest.xlsx"));
         List<Long> materialKeywordIds = genericService.findRandomIds(MaterialKeyword.class, 3);
         Collections.sort(materialKeywordIds);
         bulkUploadController.setApprovedMaterialKeywordIds(materialKeywordIds);

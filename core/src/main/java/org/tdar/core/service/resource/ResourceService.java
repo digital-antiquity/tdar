@@ -462,7 +462,9 @@ public class ResourceService {
                 resource.setDescription(" ");
             }
             resource.setDateCreated(proxy.getDateCreated());
-            genericDao.refresh(proxy.getSubmitter());
+            if (proxy.getSubmitter() != null) {
+                genericDao.refresh(proxy.getSubmitter());
+            }
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
             if (save) {
@@ -552,6 +554,7 @@ public class ResourceService {
             return resource;
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY
         } catch (Exception exception) {
+            logger.error("{}",exception, exception);
             throw new TdarRuntimeException(exception);
         }
     }
