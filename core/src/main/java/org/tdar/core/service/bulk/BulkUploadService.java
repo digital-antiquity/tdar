@@ -122,8 +122,7 @@ public class BulkUploadService {
      */
     @Transactional
     public void save(final InformationResource resourceTemplate_, final Long submitterId, final Long ticketId,
-            final Collection<FileProxy> fileProxies,
-            final Long accountId) {
+            final Collection<FileProxy> fileProxies, final Long accountId) {
         genericDao.clearCurrentSession();
         BulkUpdateReceiver asyncUpdateReceiver = new BulkUpdateReceiver();
         asyncStatusMap.put(ticketId, asyncUpdateReceiver);
@@ -236,10 +235,12 @@ public class BulkUploadService {
                 }
                 InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, suggestTypeForFile.getResourceClass(),false);
                 informationResource.setTitle(fileName);
+                informationResource.setId(null);
                 informationResource.setDescription("add description");
                 informationResource.setDate(DateTime.now().getYear());
                 informationResource.markUpdated(authenticatedUser);
-//                genericDao.saveOrUpdate(informationResource);
+                genericDao.saveOrUpdate(informationResource);
+                resources.add(informationResource);
                 map.put(informationResource.getTitle(), fileProxy);
             } catch (Exception e) {
                 logger.warn("something happend  while creating file", e);
@@ -247,30 +248,31 @@ public class BulkUploadService {
             }
         }
         
+        logger.debug("bulk: attaching files, {}", map);
+        
         for (InformationResource informationResource : resources) {
             try {
-            // bring the children of the resource onto the session, generate new @OneToMany relationships, etc.
-            informationResource = importService.reconcilePersistableChildBeans(authenticatedUser, informationResource);
-            // merge everything onto session and persist (needed for thread issues)
-            informationResource = genericDao.merge(informationResource);
-            genericDao.saveOrUpdate(informationResource);
-            resources.add(informationResource);
-            // process files
-            FileProxy fileProxy = map.get(informationResource.getName());
-            ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource,
-                    authenticatedUser, null, Arrays.asList(fileProxy));
-            String fileName = fileProxy.getFilename();
-
-            // make sure we're up-to-date (needed for thread issues)
-            informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
-            asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
-            if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
-                asyncUpdateReceiver.addError(new Exception(String.format("Errors: %s", listener)));
+                // bring the children of the resource onto the session, generate new @OneToMany relationships, etc.
+                informationResource = importService.reconcilePersistableChildBeans(authenticatedUser, informationResource);
+                // merge everything onto session and persist (needed for thread issues)
+                informationResource = genericDao.merge(informationResource);
+                genericDao.saveOrUpdate(informationResource);
+                // process files
+                FileProxy fileProxy = map.get(informationResource.getName());
+                ErrorTransferObject listener = informationResourceService.importFileProxiesAndProcessThroughWorkflow(informationResource,
+                        authenticatedUser, null, Arrays.asList(fileProxy));
+                String fileName = fileProxy.getFilename();
+    
+                // make sure we're up-to-date (needed for thread issues)
+                informationResource = genericDao.find(informationResource.getClass(), informationResource.getId());
+                asyncUpdateReceiver.getDetails().add(new Pair<Long, String>(informationResource.getId(), fileName));
+                if (CollectionUtils.isNotEmpty(listener.getActionErrors())) {
+                    asyncUpdateReceiver.addError(new Exception(String.format("Errors: %s", listener)));
+                }
+            } catch (Exception e) {
+                logger.warn("something happend  while processing file proxy", e);
+                asyncUpdateReceiver.addError(e);
             }
-        } catch (Exception e) {
-            logger.warn("something happend  while processing file proxy", e);
-            asyncUpdateReceiver.addError(e);
-        }
 
         }
         
