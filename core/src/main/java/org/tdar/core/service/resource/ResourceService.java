@@ -433,20 +433,24 @@ public class ResourceService {
         return datasetDao.getResourceCount(resourceType, status);
     }
 
-    /**
-     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
-     * 
-     * @param proxy
-     * @param resourceClass
-     * @return
-     */
-    @Transactional
-    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
-        return createResourceFrom(proxy, resourceClass, true);
+//    /**
+//     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+//     * 
+//     * @param proxy
+//     * @param resourceClass
+//     * @return
+//     */
+//    @Transactional
+//    public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass) {
+//        return createResourceFrom(proxy, resourceClass, true);
+//    }
+
+    public <T extends Resource> void clearOneToManyIds(T resource) {
+        datasetDao.clearOneToManyIds(resource, false);
     }
 
     /**
-     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type.
+     * Use by the @link BulkUploadService, we use a proxy @link Resource (image) to create a new @link Resource of the specified type. This is really a deep copy method
      * 
      * @param proxy
      * @param resourceClass
@@ -456,20 +460,16 @@ public class ResourceService {
     public <T extends Resource> T createResourceFrom(Resource proxy, Class<T> resourceClass, boolean save) {
         try {
             T resource = resourceClass.newInstance();
+            genericDao.detachFromSession(resource);
             resource.setTitle(proxy.getTitle());
             resource.setDescription(proxy.getDescription());
             if (StringUtils.isEmpty(resource.getDescription())) {
                 resource.setDescription(" ");
             }
             resource.setDateCreated(proxy.getDateCreated());
-            if (proxy.getSubmitter() != null) {
-                genericDao.refresh(proxy.getSubmitter());
-            }
             resource.markUpdated(proxy.getSubmitter());
             resource.setStatus(proxy.getStatus());
-            if (save) {
-                datasetDao.save(resource);
-            }
+
             resource.getMaterialKeywords().addAll(proxy.getMaterialKeywords());
             resource.getTemporalKeywords().addAll(proxy.getTemporalKeywords());
             resource.getInvestigationTypes().addAll(proxy.getInvestigationTypes());
@@ -484,29 +484,9 @@ public class ResourceService {
             for (ResourceCollection collection : proxy.getResourceCollections()) {
                 if (collection.isInternal()) {
                     logger.info("cloning collection: {}", collection);
-                    ResourceCollection newInternal = new ResourceCollection(CollectionType.INTERNAL);
-                    newInternal.setName(collection.getName());
-                    TdarUser owner = collection.getOwner();
-                    genericDao.refresh(owner);
-                    newInternal.markUpdated(owner);
-                    if (save) {
-                        datasetDao.save(newInternal);
-                    }
-                    for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
-                        AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
-                                proxyAuthorizedUser.getGeneralPermission());
-                        newInternal.getAuthorizedUsers().add(newAuthorizedUser);
-                    }
-                    resource.getResourceCollections().add(newInternal);
-                    newInternal.getResources().add(resource);
-                } else {
-                    logger.info("adding to shared collection : {} ", collection);
-                    if (collection.isTransient() && save) {
-                        genericDao.save(collection);
-                    }
-                    collection.getResources().add(resource);
-                    resource.getResourceCollections().add(collection);
+                    collection.setId(null);
                 }
+                resource.getResourceCollections().add(collection);
             }
 
             cloneSet(resource, resource.getCoverageDates(), proxy.getCoverageDates());
@@ -546,10 +526,6 @@ public class ResourceService {
                 informationResource.setInheritingNoteInformation(proxyInformationResource.isInheritingNoteInformation());
                 informationResource.setInheritingCollectionInformation(proxyInformationResource.isInheritingCollectionInformation());
                 informationResource.setInheritingIndividualAndInstitutionalCredit(proxyInformationResource.isInheritingIndividualAndInstitutionalCredit());
-            }
-            if (save) {
-                datasetDao.saveOrUpdate(resource);
-                return datasetDao.merge(resource);
             }
             return resource;
             // NOTE: THIS SHOULD BE THE LAST THING DONE AS IT BRINGS EVERYTHING BACK ONTO THE SESSION PROPERLY

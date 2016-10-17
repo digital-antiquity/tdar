@@ -44,6 +44,8 @@ import org.tdar.core.bean.resource.file.InformationResourceFile;
 import org.tdar.core.bean.resource.file.InformationResourceFileVersion;
 import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.core.dao.resource.DatasetDao;
+import org.tdar.core.dao.resource.ResourceDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.SerializationService;
 import org.tdar.core.service.external.EmailService;
@@ -69,6 +71,9 @@ public class ResourceExportService {
     @Autowired
     private GenericDao genericDao;
 
+    @Autowired
+    private DatasetDao datasetDao;
+    
     @Autowired
     private EmailService emailService;
 
@@ -171,30 +176,16 @@ public class ResourceExportService {
             }
         }
 
-        for (ResourceCreator rc : resource.getResourceCreators()) {
-            clearId(rc);
-            nullifyCreator(rc.getCreator());
-        }
 
         // remove internal
         resource.getResourceCollections().removeIf(rc -> rc.isInternal());
-        resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
         resource.getResourceCollections().forEach(rc -> {
             clearId(rc);
             rc.setResourceIds(null);
             rc.getResources().clear();
         });
 
-        resource.getActiveRelatedComparativeCollections().forEach(cc -> clearId(cc));
-        resource.getActiveSourceCollections().forEach(cc -> clearId(cc));
-        resource.getActiveCoverageDates().forEach(cd -> clearId(cd));
-        resource.getResourceNotes().forEach(rn -> clearId(rn));
-
-        resource.getResourceAnnotations().forEach(ra -> {
-            clearId(ra);
-            clearId(ra.getResourceAnnotationKey());
-        });
-
+        datasetDao.clearOneToManyIds(resource, true);
         resource.getResourceAnnotations().add(new ResourceAnnotation(new ResourceAnnotationKey("TDAR ID"), id.toString()));
 
         if (resource instanceof InformationResource) {
@@ -246,25 +237,17 @@ public class ResourceExportService {
         return resource;
     }
 
+    @Transactional(readOnly=true)
     public void clearId(Persistable p) {
-        genericDao.markReadOnly(p);
-        p.setId(null);
-
+        datasetDao.clearId(p);
     }
+
 
     private void nullifyCreator(Creator<?> creator) {
-        if (creator == null) {
-            return;
-        }
-        clearId(creator);
-        if (creator instanceof Person) {
-            Person person = (Person) creator;
-            if (person.getInstitution() != null) {
-                clearId(person.getInstitution());
-            }
-        }
+        datasetDao.nullifyCreator(creator);
     }
 
+    
     @Async
     @Transactional(readOnly = false)
     public void exportAsync(ResourceExportProxy resourceExportProxy, boolean forReImport, TdarUser authenticatedUser) {
