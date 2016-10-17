@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.openqa.selenium.By.id;
 import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -655,6 +656,25 @@ public abstract class AbstractSeleniumWebITCase {
         return waitFor(expectedCondition, DEFAULT_WAITFOR_TIMEOUT);
     }
 
+
+    /**
+     * Wait for the specified expected condition within the specified timeout (in seconds)
+     *
+     * @param expectedCondition
+     *            ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent},
+     *            {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
+     * @param timeoutInSeconds
+     *            amount of time that this method suppresses ElementNotFoundException
+     * @param <T>
+     *            object returned by the ExpectedCondition
+     *
+     * @return
+     */
+    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
+        return waitFor(expectedCondition, timeoutInSeconds, -1);
+    }
+
+
     /**
      * Wait for the specified expected condition within the specified timeout (in seconds)
      * 
@@ -665,12 +685,22 @@ public abstract class AbstractSeleniumWebITCase {
      *            amount of time that this method suppresses ElementNotFoundException
      * @param <T>
      *            object returned by the ExpectedCondition
+     * @param pollingInMillis  number of milliseconds to wait between evaluating the expected condition. Specify a non-zero
+     *                         amount to use the default (500ms).
+     *
+     *
      * @return
      */
-    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
+    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds, int pollingInMillis) {
         T value = null;
         waitTimer.start();
         WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+
+        // change polling interval from default of 500ms to 125ms.  This may be a bad idea.
+        if(pollingInMillis > 0) {
+            wait.pollingEvery(pollingInMillis, TimeUnit.MILLISECONDS);
+        }
+
         try {
             value = wait.until(expectedCondition);
         } catch (TimeoutException tex) {
@@ -1192,11 +1222,12 @@ public abstract class AbstractSeleniumWebITCase {
         int giveupCount = 0;
         // yes, you really have to do this. the api has no "expand all" method.
         WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
-        while (!visibleElements.isEmpty() && (giveupCount++ < 10)) {
-            visibleElements.click();
+        while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
+            waitFor(stabilityOfElement(".expandable-hitarea"), 10, 125).click();
+            //visibleElements.click();
             visibleElements = find(".expandable-hitarea").visibleElements();
         }
-        assertTrue("trying to expand all listview subtrees", giveupCount < 10);
+        assertTrue("trying to expand all listview subtrees", giveupCount < 100);
     }
 
     protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
