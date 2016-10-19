@@ -368,8 +368,15 @@ public abstract class AbstractSeleniumWebITCase {
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File(CONFIG.getChromeDriverPath());
                 logger.info("using app: {} ", app);
-                ChromeDriverService service = new ChromeDriverService
-                        .Builder().usingDriverExecutable(app).usingPort(9515).withEnvironment(environment).build();
+                File chromedriverLogFile = new File(System.getProperty("java.io.tmpdir"), "chromedriver.log");
+                logger.debug("chromedriver verbose logfile path:{}", chromedriverLogFile.getAbsolutePath());
+                ChromeDriverService service = new ChromeDriverService.Builder()
+                        .usingDriverExecutable(app)
+                        .usingPort(9515)
+                        .withEnvironment(environment)
+                        .withVerbose(true)
+                        .withLogFile(chromedriverLogFile)
+                        .build();
                 ChromeOptions copts = new ChromeOptions();
                 // copts.setExperimentalOption("autofill.enabled",false);
 
