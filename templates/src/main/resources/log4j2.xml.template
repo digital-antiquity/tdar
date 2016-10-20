@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
+    <!-- PatternLayout Gallery: start -->
+
+    <!--
+        name:   Minimal
+        desc:   Only displays level, epoch time, category, and message. Use  when you need max efficiency or when logdata seldom used.
+        <pattern>%-5p[%d{UNIX_MILLIS}|%c] %m%n</pattern>
+    -->
+
+    <!--
+        name:   Balanced
+        desc:   Adds date, context stack, short category, and line number (but no class name). Retains essential info for triage but not as readable as
+                dev layout.
+        <pattern>%-5p[%d %-4r|t:%t p:%X{tag_path} u:%X{tag_ua}|%c{1.}:%L] %m%n</pattern>
+    -->
+
+    <!--
+        name: Descriptive
+        desc: More human readable than others and IDE friendly,  but bloated and uses expensive conversion patterns.
+                <pattern>%-5p [%d %-4r|t:%t p:%X{tag_path} u:%X{tag_ua}|%c|%F:%L] %m%n</pattern>
+    -->
+
+
+    <!-- PatternLayout Gallery: end -->
+
 	<Appenders>
 		<Console name="Console" target="SYSTEM_OUT">
 			<PatternLayout pattern="%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n" />
