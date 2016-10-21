@@ -2,8 +2,6 @@
 <form id="loginForm" name="loginForm" action="login/process" method="post" class="form-horizontal" novalidate="novalidate">
     <fieldset>
 
-${authenticated?c}
-    
    <textarea name="h.comment" class="tdarCommentDescription" style="display:none"></textarea>
 
 <div class="control-group success"><label class="control-label" for="loginUsername">Username</label>    <div class="controls">

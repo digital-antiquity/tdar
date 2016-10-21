@@ -332,6 +332,12 @@ public class ItemService {
         // store(listener);
     }
 
+    
+    @Transactional(readOnly=false)
+    public Set<String> listChildPaths(String path) {
+        return itemDao.findTopLevelPaths(path);
+    }
+
     @Transactional(readOnly = true)
     public Set<String> listTopLevelPaths() {
         return itemDao.findTopLevelPaths(DropboxConstants.CLIENT_DATA.replace("/", ""));

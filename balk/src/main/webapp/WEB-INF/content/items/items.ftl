@@ -14,6 +14,15 @@
     </#list>
 </ul>
 
+<#list children>
+    <h5>Child Paths</h5>
+    <ul>
+        <#items as item>
+            <li><a href="?path=${path!''}/${item}&managed=${managed?c}">${item}</a></li>
+        </#items>
+    </ul>
+</#list>
+
 <table class="table">
 <thead>
     <tr>
