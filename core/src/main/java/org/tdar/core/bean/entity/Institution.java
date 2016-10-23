@@ -23,7 +23,6 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Check;
 import org.hibernate.validator.constraints.Length;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.Obfuscatable;
 import org.tdar.core.bean.Validatable;
@@ -56,7 +55,6 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
             "parentInstitution", "parentinstitution_id", "synonyms", "status", "occurrence", "browseOccurrence", "hidden" };
 
     @Column(nullable = false, unique = true)
-    @BulkImportField(key = "CREATOR_INSTITUTION", order = 10)
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String name;
 

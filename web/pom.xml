@@ -139,12 +139,12 @@
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
-        <dependency>
+<!--         <dependency>
         <groupId>org.apache.struts</groupId>
         <artifactId>struts2-java8-support-plugin</artifactId>
         <version>2.5</version>
         </dependency>
-        <dependency>
+ -->        <dependency>
             <groupId>org.apache.struts</groupId>
             <artifactId>struts2-sitemesh-plugin</artifactId>
             <!-- LICENSE: APACHE 2.0 -->
@@ -524,6 +524,7 @@
                 <configuration>
                     <runOrder>alphabetical</runOrder>
                     <systemPropertyVariables>
+                    	<DISPLAY>${display.port}</DISPLAY>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
                     <argLine>${jvm.args} -Dsolr.data.dir=target/solr-failsafe/</argLine>

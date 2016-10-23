@@ -57,7 +57,9 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
         doc.setField(QueryFieldNames.NAME, resource.getName());
         doc.setField(QueryFieldNames.NAME_SORT, resource.getTitleSort());
         addRequiredField(resource, doc);
-        doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
+        if (resource.getSubmitter() != null) {
+            doc.setField(QueryFieldNames.SUBMITTER_ID, resource.getSubmitter().getId());
+        }
         doc.setField(QueryFieldNames.DESCRIPTION, resource.getDescription());
         indexCreatorInformation(doc, resource);
         Map<String, Object> indexCollectionInformation = indexCollectionInformation(doc, resource);

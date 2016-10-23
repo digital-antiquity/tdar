@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.validator.constraints.Length;
-import org.tdar.core.bean.BulkImportField;
 import org.tdar.core.bean.FieldLength;
 import org.tdar.core.bean.resource.file.InformationResourceFile;
 
@@ -39,7 +38,6 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "document_type", length = FieldLength.FIELD_LENGTH_255)
-    @BulkImportField(key = "DOCUMENT_TYPE")
     private DocumentType documentType;
 
     @Enumerated(EnumType.STRING)
@@ -48,15 +46,12 @@ public class Document extends InformationResource {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "degree", length = FieldLength.FIELD_LENGTH_50)
-    @BulkImportField(key = "DEGREE")
     private DegreeType degree;
 
-    @BulkImportField(key = "SERIES_NAME")
     @Column(name = "series_name")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesName;
 
-    @BulkImportField(key = "SERIES_NUMBER")
     @Column(name = "series_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String seriesNumber;
@@ -64,47 +59,37 @@ public class Document extends InformationResource {
     @Column(name = "number_of_pages")
     private Integer numberOfPages;
 
-    @BulkImportField(key = "EDITION")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String edition;
 
-    @BulkImportField(key = "ISBN")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String isbn;
 
-    @BulkImportField(key = "BOOK_TITLE")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     @Column(name = "book_title")
     private String bookTitle;
 
-    @BulkImportField(key = "ISSN")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String issn;
 
-    @BulkImportField(key = "START_PAGE", order = 10)
     @Column(name = "start_page")
     @Length(max = 10)
     private String startPage;
 
-    @BulkImportField(key = "END_PAGE", order = 11)
     @Column(name = "end_page")
     @Length(max = 10)
     private String endPage;
 
-    @BulkImportField(key = "JOURNAL_NAME")
     @Column(name = "journal_name")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalName;
 
-    @BulkImportField(key = "VOLUME")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String volume;
 
-    @BulkImportField(key = "NUM_VOLUMES")
     @Column(name = "number_of_volumes")
     private Integer numberOfVolumes;
 
-    @BulkImportField(key = "JOURNAL_NUMBER")
     @Column(name = "journal_number")
     @Length(max = FieldLength.FIELD_LENGTH_255)
     private String journalNumber;

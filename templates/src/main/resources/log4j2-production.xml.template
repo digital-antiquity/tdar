@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN" monitorInterval="30">
+
     <Appenders>
-        <Console name="Console" target="SYSTEM_OUT">
-            <PatternLayout pattern="%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n" />
-        </Console>
         <!-- make sure to replace FILL.IN.THE.BLANK@example.com with valid email addresses (example.com is not routable per http://www.faqs.org/rfcs/rfc2606.html) -->
         <PatternSMTP name="Mail" to="FILL.IN.THE.BLANK@example.com" from="FILL.IN.THE.BLANK@example.com" smtpHost="localhost" bufferSize="100"
                      ignoreExceptionClasses="org.apache.catalina.connector.ClientAbortException">
@@ -22,7 +20,7 @@
                 <RegexFilter regex=".*jbig2-imageio is not installed.*" onMatch="DENY" onMismatch="NEUTRAL" />
             </Filters>
             <PatternLayout>
-                <pattern>%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n</pattern>
+                <pattern>%-5p [%d %-4r|t:%t p:%X{tag_path} u:%X{tag_ua}|%c|%F:%L] %m%n</pattern>
             </PatternLayout>
         </PatternSMTP>
         <Routing name="File">
@@ -31,7 +29,7 @@
                     <RollingFile name="Rolling-${sd:type}" fileName="logs/tdar.log"
                                  filePattern="logs/tdar.%d{yyyy-MM-dd}.log.gz">
                         <PatternLayout>
-                            <pattern>%-5p %d %-4r [t:%t p:%X{tag_path} u:%X{tag_ua}] (%F:%L) %c - %m%n</pattern>
+                            <pattern>%-5p[%d %-4r|t:%t p:%X{tag_path} u:%X{tag_ua}|%c{1.}:%L] %m%n</pattern>
                         </PatternLayout>
                         <TimeBasedTriggeringPolicy modulate="true"/>
                     </RollingFile>

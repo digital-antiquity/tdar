@@ -54,10 +54,9 @@
             as well as large databases cataloging all artifacts from a site.
         </div>
         <div class="span4">
-            <h3><a href="<@s.url value="/batch/template-prepare?projectId=${(projectId!-1)?c}" />">
+            <h3><a href="<@s.url value="/bulk/add?projectId=${(projectId!-1)?c}" />">
             <svg class="svgicon svg-small"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_bulk"></use></svg>Bulk Upload</a></h3>
-            Useful for uploading groups of resources with similar metadata at once.  Complete an excel file template that includes the filename, title, date, 
-            and other basic information and then upload your files.                
+            Useful for uploading groups of resources with similar metadata at once. 
 
         </div>
             <div class="span4">

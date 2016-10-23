@@ -1,7 +1,7 @@
-(function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+(function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.leafletControlGeocoder = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Nominatim = require('./geocoders/nominatim')["class"];
+	Nominatim = _dereq_('./geocoders/nominatim')["class"];
 
 module.exports = {
 	"class": L.Control.extend({
@@ -51,12 +51,14 @@ module.exports = {
 			this._alts = L.DomUtil.create('ul',
 				className + '-alternatives leaflet-control-geocoder-alternatives-minimized',
 				container);
+			L.DomEvent.disableClickPropagation(this._alts);
 
 			L.DomEvent.addListener(input, 'keydown', this._keydown, this);
 			L.DomEvent.addListener(input, 'blur', function() {
-				if (this.options.collapsed) {
+				if (this.options.collapsed && !this._preventBlurCollapse) {
 					this._collapse();
 				}
+				this._preventBlurCollapse = false;
 			}, this);
 
 
@@ -147,9 +149,7 @@ module.exports = {
 		},
 
 		_geocodeResultSelected: function(result) {
-			if (this.options.collapsed) {
-				this._collapse();
-			} else {
+			if (!this.options.collapsed) {
 				this._clearResults();
 			}
 
@@ -188,9 +188,20 @@ module.exports = {
 				a = L.DomUtil.create('a', '', li),
 			    icon = this.options.showResultIcons && result.icon ? L.DomUtil.create('img', '', a) : null,
 			    text = result.html ? undefined : document.createTextNode(result.name),
-			    clickHandler = function clickHandler(e) {
-					L.DomEvent.preventDefault(e);
+			    mouseDownHandler = function mouseDownHandler(e) {
+			    	// In some browsers, a click will fire on the map if the control is
+			    	// collapsed directly after mousedown. To work around this, we
+			    	// wait until the click is completed, and _then_ collapse the
+			    	// control. Messy, but this is the workaround I could come up with
+			    	// for #142.
+			    	this._preventBlurCollapse = true;
+					L.DomEvent.stop(e);
 					this._geocodeResultSelected(result);
+					L.DomEvent.on(li, 'click', function() {
+			    		if (this.options.collapsed) {
+			    			this._collapse();
+			    		}
+					}, this);
 				};
 
 			if (icon) {
@@ -205,7 +216,10 @@ module.exports = {
 				a.appendChild(text);
 			}
 
-			L.DomEvent.addListener(li, 'mousedown', clickHandler, this);
+			// Use mousedown and not click, since click will fire _after_ blur,
+			// causing the control to have collapsed and removed the items
+			// before the click can fire.
+			L.DomEvent.addListener(li, 'mousedown', mouseDownHandler, this);
 
 			return li;
 		},
@@ -275,10 +289,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./geocoders/nominatim":9}],2:[function(require,module,exports){
+},{"./geocoders/nominatim":9}],2:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -362,10 +376,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],3:[function(require,module,exports){
+},{"../util":13}],3:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -419,10 +433,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],4:[function(require,module,exports){
+},{"../util":13}],4:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -512,10 +526,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],5:[function(require,module,exports){
+},{"../util":13}],5:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-    Util = require('../util');
+    Util = _dereq_('../util');
 
 module.exports = {
     "class": L.Class.extend({
@@ -586,10 +600,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],6:[function(require,module,exports){
+},{"../util":13}],6:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -678,10 +692,10 @@ module.exports = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],7:[function(require,module,exports){
+},{"../util":13}],7:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -767,10 +781,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],8:[function(require,module,exports){
+},{"../util":13}],8:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -856,10 +870,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],9:[function(require,module,exports){
+},{"../util":13}],9:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -954,10 +968,10 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],10:[function(require,module,exports){
+},{"../util":13}],10:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -1057,10 +1071,10 @@ module.exports = {
 
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],11:[function(require,module,exports){
+},{"../util":13}],11:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Util = require('../util');
+	Util = _dereq_('../util');
 
 module.exports = {
 	"class": L.Class.extend({
@@ -1123,20 +1137,20 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"../util":13}],12:[function(require,module,exports){
+},{"../util":13}],12:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
-	Control = require('./control'),
-	Nominatim = require('./geocoders/nominatim'),
-	Bing = require('./geocoders/bing'),
-	MapQuest = require('./geocoders/mapquest'),
-	Mapbox = require('./geocoders/mapbox'),
-	What3Words = require('./geocoders/what3words'),
-	Google = require('./geocoders/google'),
-	Photon = require('./geocoders/photon'),
-	Mapzen = require('./geocoders/mapzen'),
-	ArcGis = require('./geocoders/arcgis'),
-	HERE = require('./geocoders/here');
+	Control = _dereq_('./control'),
+	Nominatim = _dereq_('./geocoders/nominatim'),
+	Bing = _dereq_('./geocoders/bing'),
+	MapQuest = _dereq_('./geocoders/mapquest'),
+	Mapbox = _dereq_('./geocoders/mapbox'),
+	What3Words = _dereq_('./geocoders/what3words'),
+	Google = _dereq_('./geocoders/google'),
+	Photon = _dereq_('./geocoders/photon'),
+	Mapzen = _dereq_('./geocoders/mapzen'),
+	ArcGis = _dereq_('./geocoders/arcgis'),
+	HERE = _dereq_('./geocoders/here');
 
 module.exports = L.Util.extend(Control["class"], {
 	Nominatim: Nominatim["class"],
@@ -1167,7 +1181,7 @@ L.Util.extend(L.Control, {
 });
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./control":1,"./geocoders/arcgis":2,"./geocoders/bing":3,"./geocoders/google":4,"./geocoders/here":5,"./geocoders/mapbox":6,"./geocoders/mapquest":7,"./geocoders/mapzen":8,"./geocoders/nominatim":9,"./geocoders/photon":10,"./geocoders/what3words":11}],13:[function(require,module,exports){
+},{"./control":1,"./geocoders/arcgis":2,"./geocoders/bing":3,"./geocoders/google":4,"./geocoders/here":5,"./geocoders/mapbox":6,"./geocoders/mapquest":7,"./geocoders/mapzen":8,"./geocoders/nominatim":9,"./geocoders/photon":10,"./geocoders/what3words":11}],13:[function(_dereq_,module,exports){
 (function (global){
 var L = (typeof window !== "undefined" ? window['L'] : typeof global !== "undefined" ? global['L'] : null),
 	lastCallbackId = 0,
@@ -1253,4 +1267,5 @@ module.exports = {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}]},{},[12]);
+},{}]},{},[12])(12)
+});

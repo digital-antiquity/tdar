@@ -14,20 +14,24 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 import org.hibernate.CacheMode;
 import org.hibernate.Criteria;
-import org.hibernate.query.Query;
-import org.hibernate.query.NativeQuery;
 import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.hibernate.criterion.SimpleExpression;
+import org.hibernate.query.NativeQuery;
+import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.Persistable;
+import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
+import org.tdar.core.bean.entity.ResourceCreator;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Project;
@@ -513,4 +517,54 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
 		return query.setCacheMode(CacheMode.IGNORE).scroll(ScrollMode.FORWARD_ONLY);
 
 	}
+
+    public void clearId(Persistable p) {
+        markReadOnly(p);
+        p.setId(null);
+
+    }
+
+    public void nullifyCreator(Creator<?> creator) {
+        if (creator == null) {
+            return;
+        }
+        clearId(creator);
+        if (creator instanceof Person) {
+            Person person = (Person) creator;
+            if (person.getInstitution() != null) {
+                clearId(person.getInstitution());
+            }
+        }
+    }
+
+    public <R extends Resource> void clearOneToManyIds(R resource, boolean nullifyCreators) {
+
+        for (ResourceCreator rc : resource.getResourceCreators()) {
+            clearId(rc);
+            if (nullifyCreators) {
+                nullifyCreator(rc.getCreator());
+            }
+        }
+        resource.getLatitudeLongitudeBoxes().forEach(llb -> clearId(llb));
+        resource.getActiveRelatedComparativeCollections().forEach(cc -> clearId(cc));
+        resource.getActiveSourceCollections().forEach(cc -> clearId(cc));
+        resource.getActiveCoverageDates().forEach(cd -> clearId(cd));
+        resource.getResourceCreators().forEach(cd -> clearId(cd));
+        resource.getResourceNotes().forEach(rn -> clearId(rn));
+        resource.getResourceCollections().forEach(rc -> {
+            if (rc.getType() == CollectionType.INTERNAL) {
+                rc.getAuthorizedUsers().forEach(au -> {
+                    au.setId(null);
+                });
+            }
+        });
+
+        resource.getResourceAnnotations().forEach(ra -> {
+            clearId(ra);
+            clearId(ra.getResourceAnnotationKey());
+        });
+        
+        
+        
+    }
 }

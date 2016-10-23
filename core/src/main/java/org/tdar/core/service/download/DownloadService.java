@@ -99,6 +99,7 @@ public class DownloadService {
         for (InformationResourceFileVersion irFileVersion : dto.getVersionsToDownload()) {
             addFileToDownload(irFileVersion, dto);
             dto.setFileName(irFileVersion.getFilename());
+            dto.setMimeType(irFileVersion.getMimeType());
             if (!irFileVersion.isDerivative()) {
                 logger.debug("User {} is trying to DOWNLOAD: {} ({}: {})", dto.getAuthenticatedUser(), irFileVersion, TdarConfiguration.getInstance()
                         .getSiteAcronym(),

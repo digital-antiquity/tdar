@@ -68,7 +68,7 @@ TDAR.worldmap = (function(console, $, ctx) {
      * Default color range for the world map based on custom weighting function
      */
     var _worldRangeColor = {
-        colorProperty : _getColor,
+        scale : ['#FFF', '#FED976','#FEB24C','#FD8D3C', '#FC4E2A','#E31A1C','#BD0026']
     };
 
     /**
@@ -102,6 +102,12 @@ TDAR.worldmap = (function(console, $, ctx) {
                 mouseover : _highlightFeature,
                 mouseout : _resetHighlight
             });
+            if (layer.feature.id == 'USA') {
+                layer.setStyle({
+                    fillColor: '#800026'
+                });
+            }
+            
         }
     }
 
@@ -253,6 +259,7 @@ TDAR.worldmap = (function(console, $, ctx) {
         } else {
             props = _defaultChoropleth;
         }
+
         var layer = L.choropleth(data, props);
         layer.addTo(map);
         return layer;
