@@ -419,7 +419,7 @@
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>${surefire-failsafe.version}</version>
                 <executions>
-                    <execution>
+               <!--      <execution>
                         <id>integration-test</id>
                         <goals>
                             <goal>integration-test</goal>
@@ -472,7 +472,6 @@
                                 <exclude>**/org/tdar/functional/**/*</exclude>
                                 <exclude>**/org/tdar/web/**/*</exclude>
                                 <exclude>**/org/tdar/core/**/*</exclude>
-                                <!-- <exclude>**/org/tdar/struts/**/*ITCase.java</exclude> -->
                             </excludes>
                             <includes>
                                 <include>**/org/tdar/struts/**/Struts*ITCase.java</include>
@@ -499,7 +498,7 @@
                             <reportsDirectory>target/failsafe-reports/htmlunit</reportsDirectory>
                             <skip>${skipWebTests}</skip>
                         </configuration>
-                    </execution>
+                    </execution> -->
                     <execution>
                         <id>integration-test-selenium</id>
                         <goals>
@@ -523,6 +522,7 @@
                 <configuration>
                     <runOrder>alphabetical</runOrder>
                     <systemPropertyVariables>
+                    	<DISPLAY>${display.port}</DISPLAY>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
                     <argLine>${jvm.args} -Dsolr.data.dir=target/solr-failsafe/</argLine>

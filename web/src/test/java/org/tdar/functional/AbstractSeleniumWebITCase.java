@@ -331,6 +331,7 @@ public abstract class AbstractSeleniumWebITCase {
         Map<String, String> environment = new HashMap<String, String>();
         if (StringUtils.isNotBlank(xvfbPort)) {
             environment.put("DISPLAY", xvfbPort);
+            logger.debug("SETTING DISPLAY: {}", xvfbPort);
         }
         LoggingPreferences logPrefs = new LoggingPreferences();
         logPrefs.enable(LogType.BROWSER, Level.ALL);
@@ -374,9 +375,11 @@ public abstract class AbstractSeleniumWebITCase {
                         .usingDriverExecutable(app)
                         .usingPort(9515)
                         .withEnvironment(environment)
+                        .withWhitelistedIps("").
                         .withVerbose(true)
                         .withLogFile(chromedriverLogFile)
                         .build();
+
                 ChromeOptions copts = new ChromeOptions();
                 // copts.setExperimentalOption("autofill.enabled",false);
 
