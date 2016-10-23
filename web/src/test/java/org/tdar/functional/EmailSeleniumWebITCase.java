@@ -18,7 +18,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
     private static final String EMAIL_LINK = "Submit Correction";
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Test
+    @Ignore @Test
     public void sendTest() throws InterruptedException {
         String url = "/project/3805";
         gotoPage(url);
@@ -34,6 +34,7 @@ public class EmailSeleniumWebITCase extends AbstractAdminSeleniumWebITCase {
         reportJavascriptErrors();
     }
 
+    @Ignore("")
     @Test
     public void sendTestErrorNoBody() throws InterruptedException {
         String url = "/project/3805";

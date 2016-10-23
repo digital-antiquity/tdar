@@ -533,6 +533,7 @@
                 <configuration>
                     <runOrder>alphabetical</runOrder>
                     <systemPropertyVariables>
+                    	<DISPLAY>${display.port}</DISPLAY>
                         <display.port>${display.port}</display.port>
                     </systemPropertyVariables>
                     <argLine>${jvm.args} -Dsolr.data.dir=target/solr-failsafe/</argLine>
