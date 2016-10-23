@@ -168,6 +168,7 @@ public class DownloadControllerITCase extends AbstractDataIntegrationTestCase {
         controller.prepare();
         assertEquals(Action.SUCCESS, controller.execute());
         assertEquals(TestConstants.TEST_DOCUMENT_NAME, controller.getDownloadTransferObject().getFileName());
+        assertEquals("application/pdf", controller.getDownloadTransferObject().getMimeType());
 
     }
 

@@ -43,6 +43,12 @@ clover.snapshot
 log4j2.xml
 npm-debug.log
 Indexes
+.tern-project
+ANDPersistentIdentifierClient.log
+core/ANDPersistentIdentifierClient.log
+search/ANDPersistentIdentifierClient.log
+web/.tern-project
+web/phantomjsdriver.log
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 
