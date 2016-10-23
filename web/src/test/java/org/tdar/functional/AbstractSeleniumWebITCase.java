@@ -375,7 +375,6 @@ public abstract class AbstractSeleniumWebITCase {
                         .usingDriverExecutable(app)
                         .usingPort(9515)
                         .withEnvironment(environment)
-                        .withWhitelistedIps("").
                         .withVerbose(true)
                         .withLogFile(chromedriverLogFile)
                         .build();
