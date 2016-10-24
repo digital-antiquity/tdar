@@ -8,7 +8,7 @@
     <name>tDAR (web-base)</name>
     <properties>
         <jetty.version>9.3.10.v20160621</jetty.version>
-        <struts2.version>2.5.5</struts2.version>
+        <struts2.version>2.5.1</struts2.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
