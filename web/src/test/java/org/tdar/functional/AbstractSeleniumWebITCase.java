@@ -1451,8 +1451,8 @@ public abstract class AbstractSeleniumWebITCase {
         Collections.sort(handles);
         cachedPageText = null;
         for (String handle : handles) {
-            logger.debug("handle: {}",handle);
             driver.switchTo().window(handle);
+            logger.debug("handle: {} ({})",handle, driver.getCurrentUrl());
             if (driver.getCurrentUrl().contains(url)) {
                 return handle;
             }
