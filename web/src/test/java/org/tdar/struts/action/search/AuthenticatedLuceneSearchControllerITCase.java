@@ -35,7 +35,8 @@ public class AuthenticatedLuceneSearchControllerITCase extends AbstractSearchCon
     SearchIndexService searchIndexService;
     @Autowired
     GenericKeywordService genericKeywordService;
-
+    private AdvancedSearchController controller = null;
+    
     @Before
     @Override
     public void reset() {
