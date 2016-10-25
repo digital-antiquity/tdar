@@ -1,0 +1,113 @@
+{
+    "columns": [
+        {
+            "dataTableColumns": [
+                {
+                    "id": $col_taxon,
+                    "name": "taxon"
+                },
+                {
+                    "id": $species_common_name,
+                    "name": "species_common_name"
+                }
+            ],
+            "name": "Fauna Taxon Ontology",
+            "nodeSelection": [
+                {
+                    "id": $catus,
+                    "iri": "Felis catus (Cat)"
+                },
+                {
+                    "id": $canis,
+                    "iri": "Canis familiaris (Dog)"
+                },
+                {
+                    "id": $ovis,
+                    "iri": "Ovis aries (Sheep)"
+                }
+            ],
+            "ontology": {
+                "id": $taxon,
+                "title": "Fauna Taxon Ontology"
+            },
+            "type": "INTEGRATION"
+        },
+        {
+            "dataTableColumns": [
+                {
+                    "id": $col_element,
+                    "name": "belement"
+                },
+                {
+                    "id": $bone_common_name,
+                    "name": "bone_common_name"
+                }
+            ],
+            "name": "Fauna Element Ontology",
+            "nodeSelection": [
+                {
+                    "id": $atlas,
+                    "iri": "Atlas"
+                },
+                {
+                    "id": $axis,
+                    "iri": "Axis"
+                },
+                {
+                    "id": $carpal,
+                    "iri": "Carpal"
+                },
+                {
+                    "id": $tooth,
+                    "iri": "Tooth"
+                },
+                {
+                    "id": $ulna,
+                    "iri": "Ulna"
+                }
+            ],
+            "ontology": {
+                "id": $element,
+                "title": "Fauna Element Ontology"
+            },
+            "type": "INTEGRATION"
+        },
+        {
+            "dataTableColumns": [
+                {
+                    "id": $col_no,
+                    "name": "boxno"
+                },
+                {
+                    "id": $fus_prox,
+                    "name": "fus_prox"
+                }
+            ],
+            "name": "Display Column",
+            "type": "DISPLAY"
+        }
+    ],
+    "dataTables": [
+        {
+            "displayName": "qryBone",
+            "id": $qrybone
+        },
+        {
+            "displayName": "Main table",
+            "id": $main
+        }
+    ],
+    "datasets": [],
+    "description": "",
+    "ontologies": [
+        {
+            "id": $taxon,
+            "title": "Fauna Taxon Ontology"
+        },
+        {
+            "id": $element,
+            "title": "Fauna Element Ontology"
+        }
+    ],
+    "title": "test element integration"
+}
