@@ -18,6 +18,7 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +107,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         // open the popup window
         find("#btnOpenPaymentWindow").click();
+        waitFor(ExpectedConditions.numberOfWindowsToBe(2), 1000);
         switchToWindow("test/nelnet");
         waitFor("[type=submit]");
         submitForm();
