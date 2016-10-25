@@ -1433,6 +1433,9 @@ public abstract class AbstractSeleniumWebITCase {
         List<String> handles = new ArrayList<>();
         handles.addAll(driver.getWindowHandles());
         Collections.sort(handles);
+        for (String handle : handles) {
+            logger.debug("handle: {}",handle);
+        }
         String previousHandle = driver.getWindowHandle();
         int idx = handles.indexOf(previousHandle);
         int idxNext = (idx + 1) % handles.size();
@@ -1440,6 +1443,21 @@ public abstract class AbstractSeleniumWebITCase {
         driver.switchTo().window(nextHandle);
         cachedPageText = null;
         return previousHandle;
+    }
+
+    public String switchToWindow(String url) {
+        List<String> handles = new ArrayList<>();
+        handles.addAll(driver.getWindowHandles());
+        Collections.sort(handles);
+        cachedPageText = null;
+        for (String handle : handles) {
+            logger.debug("handle: {}",handle);
+            driver.switchTo().window(handle);
+            if (driver.getCurrentUrl().contains(url)) {
+                return handle;
+            }
+        }
+        return null;
     }
 
     public Keys getMetaKey(TestConfiguration.OS os) {
