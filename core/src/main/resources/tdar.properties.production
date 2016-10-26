@@ -1,0 +1,102 @@
+#
+#	Basic System Settings
+#
+site.acronym=tDAR
+site.name=the Digital Archaeological Record
+
+web.root=src/main/webapp
+run.periodic.events=true
+# Do not preface the theme directory below with a slash. See TDAR-2342 for more detail
+app.theme.dir=includes/themes/tdar/
+server.environment=production
+app.hostname=core.tdar.org
+app.port=80
+app.contact.email=info@digitalantiquity.org
+tmp.dir=/tmp
+#
+#   Email Settings
+#
+app.email.hostname=
+mail.smtp.host=localhost
+sysadmin.email=
+#
+#	File Locations
+#
+file.store.location=/home/tdar/filestore
+personal.file.store.location=/home/tdar/personal-filestore
+file.store.class=org.tdar.filestore.PairtreeFilestore
+#
+#	Configurable Navigation Menu Components
+#
+base.url=http://core.tdar.org/
+about.url=http://www.tdar.org
+comment.url=mailto:comments@tdar.org
+bugreport.url=https://issues.tdar.org
+help.url=https://docs.tdar.org/display/TDAR/Documentation+Home
+help.url.cultural=https://docs.tdar.org/display/TDAR/Cultural+Terms
+help.url.investigation=https://docs.tdar.org/display/TDAR/Investigation+Types
+help.url.material=https://docs.tdar.org/display/TDAR/Material+Types
+help.url.site=https://docs.tdar.org/display/TDAR/Site+Types
+#
+#   Search Settings
+#
+scrollableResult.fetchSize=100
+lucene.stop.words.file=
+featured.colletion.id=-1
+#
+#   Export Settings
+#
+search.excel.export.recordMax=1000
+excel.export.rowMax=-1
+#
+#   Scheduling Settings
+#
+run.periodic.events=false
+tdar.indexer.flushEvery=500
+scheduled.startId=0
+scheduled.batchSize=100
+scheduled.endId=400000
+scheduled.maxProcess=6
+#
+#   Message Queue Settings
+#
+message.queue.enabled=false
+message.queue.server=dev.tdar.org
+message.queue.user=
+message.queue.pwd=
+message.queue.prefix=
+#
+#	OAI Settings
+#
+oai.repository.name=the Digital Archaeological Record
+oai.repository.enableEntities=false
+oai.repository.namespace-identifier=tdar.org
+oai.repository.enableTdarMetadataFormat=true
+oai.repository.description=tDAR is an international digital archive and repository that houses data about archaeological investigations, research, resources, and scholarship.  tDAR provides researchers new avenues to discover and integrate information relevant to topics they are studying.   Users can search tDAR for digital documents, data sets, images, GIS files, and other data resources from archaeological projects spanning the globe.  For data sets, users also can use data integration tools in tDAR to simplify and illuminate comparative research.
+#
+#	Google Maps
+#
+googlemaps.apikey=
+google.map.defaultLatitude=40.00
+google.map.defaultLongitude=-97.00
+#
+#	Global Copyright & Privacy Controls
+#
+copyright.fields.enabled=false
+privacy.controls.enabled=false
+#
+#   Recaptcha
+#
+recaptcha.host=
+recaptcha.privateKey=
+recaptcha.publicKey=
+#
+#   Experimental/Advanced
+#
+featureEnabled.leftJoinDataIntegration=false
+
+# show view rows in tDAR
+view.row.suppported=true
+
+#Show jira report a bug link
+jira.link.show=true

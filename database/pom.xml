@@ -1,0 +1,32 @@
+<project>
+	<artifactId>database</artifactId>
+    <name>tDAR (database)</name>
+    <modelVersion>4.0.0</modelVersion>
+	<parent>
+	    <groupId>org.tdar</groupId>
+	    <artifactId>parent</artifactId>
+	    <version>15.1.0-OBSIDIAN-SNAPSHOT</version>
+	</parent>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-remote-resources-plugin</artifactId>
+                <version>1.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>bundle</goal>
+                        </goals>
+                        <configuration>
+							<!-- not this doesn't really work -->
+                            <resourcesDirectory>${basedir}/src/main/resources</resourcesDirectory>
+                            <includes>
+                                <include>**/*.*</include>
+                            </includes>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>
