@@ -1,20 +1,5 @@
 package org.tdar.functional;
 
-import static java.util.Arrays.asList;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.stringContainsInOrder;
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.hamcrest.core.StringEndsWith.endsWith;
-import static org.tdar.URLConstants.CART_ADD;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.openqa.selenium.WebElement;
@@ -26,6 +11,19 @@ import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.functional.util.ByLabelText;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.Pair;
+
+import java.time.Duration;
+import java.util.*;
+
+import static java.time.temporal.ChronoUnit.SECONDS;
+import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.Is.is;
+import static org.hamcrest.core.IsNot.not;
+import static org.hamcrest.core.StringEndsWith.endsWith;
+import static org.tdar.URLConstants.CART_ADD;
 
 /**
  * Created by jimdevos on 6/25/14.
@@ -112,7 +110,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
         // close the popup window
         waitFor("#btnCloseWindow").click();
-        waitFor(ExpectedConditions.numberOfWindowsToBe(1), 1000);
+        waitFor(ExpectedConditions.numberOfWindowsToBe(1), Duration.of(2, SECONDS));
         assertThat("nelnet window should be closed / only one window remains", getDriver().getWindowHandles().size(), equalTo(1));
         Set<String> windowHandles = getDriver().getWindowHandles();
         getDriver().switchTo().window(windowHandles.iterator().next());
