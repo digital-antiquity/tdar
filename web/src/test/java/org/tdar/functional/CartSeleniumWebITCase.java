@@ -14,6 +14,7 @@ import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.Pair;
 
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 import static java.time.temporal.ChronoUnit.SECONDS;
@@ -105,7 +106,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_PROCESS_PAYMENT_REQUEST));
         // open the popup window
         find("#btnOpenPaymentWindow").click();
-        waitFor(ExpectedConditions.numberOfWindowsToBe(2), 1000);
+        waitFor(ExpectedConditions.numberOfWindowsToBe(2), Duration.of(2, SECONDS));
         switchToWindow("test/nelnet");
         waitFor("[type=submit]");
         submitForm();
