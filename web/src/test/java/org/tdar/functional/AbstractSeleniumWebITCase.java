@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -349,13 +350,15 @@ public abstract class AbstractSeleniumWebITCase {
         LoggingPreferences logPrefs = new LoggingPreferences();
         logPrefs.enable(LogType.BROWSER, Level.ALL);
         currentBrowser = browser;
+        File browserProfileDir = setupBrowserProfilePath();
+
         switch (browser) {
             case FIREFOX:
                 FirefoxBinary fb = new FirefoxBinary();
                 for (String key : environment.keySet()) {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
-                FirefoxProfile profile = new FirefoxProfile();
+                FirefoxProfile profile = new FirefoxProfile(browserProfileDir);
                 if (TestConfiguration.isMac()) {
                     profile.setPreference("focusmanager.testmode", true);
                 }
@@ -382,30 +385,28 @@ public abstract class AbstractSeleniumWebITCase {
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File(CONFIG.getChromeDriverPath());
                 logger.info("using app: {} ", app);
-                File chromedriverLogFile = new File(System.getProperty("java.io.tmpdir"), "chromedriver.log");
-                logger.debug("chromedriver verbose logfile path:{}", chromedriverLogFile.getAbsolutePath());
+                File chromeDriverLogFile = new File(browserProfileDir, "chromedriver.log");
+                logger.debug("chromedriver verbose logfile path:{}", chromeDriverLogFile.getAbsolutePath());
                 ChromeDriverService service = new ChromeDriverService.Builder()
                         .usingDriverExecutable(app)
                         .usingPort(9515)
                         .withEnvironment(environment)
                         .withVerbose(true)
-                        .withLogFile(chromedriverLogFile)
+                        .withLogFile(chromeDriverLogFile)
                         .build();
 
                 ChromeOptions copts = new ChromeOptions();
                 // copts.setExperimentalOption("autofill.enabled",false);
 
                 // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
-                File dir = new File(PATH_OUTPUT_ROOT, "profiles/chrome");
                 // File dir = new File("src/test/resources/c1");
-                String profilePath = dir.getAbsolutePath();
-                logger.debug("chrome profile path set to: {}", profilePath);
+                logger.debug("chrome profile path set to: {}", browserProfileDir.getAbsolutePath());
 
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
                 copts.addArguments(
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
-                        "user-data-dir=" + profilePath, // use specific profile path (random by default?)
+                        "user-data-dir=" + browserProfileDir.getAbsolutePath(), // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "noerrdialogs");
@@ -457,9 +458,7 @@ public abstract class AbstractSeleniumWebITCase {
         if (!TestConfiguration.isWindows()) {
             listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
         }
-        logout();
         try {
-            driver.close();
             driver.quit();
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
@@ -473,10 +472,44 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
         getJavascriptIgnorePatterns().clear();
+        performBrowserCleanup();
         if (!TestConfiguration.isWindows()) {
             ProcessList.killProcesses(listProcesses);
         }
     }
+
+    private File getBrowserProfilePath(){
+        String name = String.format("%s-%s", getClass().getSimpleName().replaceAll("\\W+", ""), testName.getMethodName().replaceAll("\\W+", ""));
+        return Paths.get(PATH_OUTPUT_ROOT,"browser-profiles", name).toFile();
+    }
+
+    /**
+     * This function creates a directory named after the currently-running JUnit test.
+     *
+     * Browsers typically need a 'profile' directory in local storage to save  cookies, browser history, and preference.  This stateful information
+     * can potentially introduce inconsistent test results.
+     *
+     * @return
+     */
+    private File setupBrowserProfilePath() {
+        String name = String.format("%s-%s", getClass().getSimpleName().replaceAll("\\W+", ""), testName.getMethodName().replaceAll("\\W+", ""));
+        File dir = getBrowserProfilePath();
+        dir.mkdirs();
+        try {
+            FileUtils.cleanDirectory(dir);
+        } catch (IOException ignored) {}
+        return dir;
+    }
+
+    /**
+     * Remove profile artifacts that take up space and provide little probitive value.
+     */
+    private void performBrowserCleanup() {
+        //
+        Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" );
+        FileUtils.deleteQuietly(Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" ).toFile());
+    }
+
 
     protected void takeScreenshot() {
         takeScreenshot(null);
