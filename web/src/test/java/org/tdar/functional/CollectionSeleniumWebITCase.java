@@ -1,19 +1,9 @@
 package org.tdar.functional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
-import static org.hamcrest.Matchers.is;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +11,12 @@ import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.Status;
 import org.tdar.functional.util.WebElementSelection;
 import org.tdar.utils.TestConfiguration;
+
+import java.util.*;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
 
 public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase {
 
@@ -291,6 +287,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
                 find("#resource_datatable").first(), title));
 
         // get the checkbox of the matching row
+        waitFor(stabilityOfElement(("#resource_datatable tbody tr")));
         WebElementSelection checkboxes = find("#resource_datatable tbody tr")
                 .any(tr -> tr.getText().contains(title))
                 .find(".datatable-checkbox");

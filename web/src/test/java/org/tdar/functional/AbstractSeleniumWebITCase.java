@@ -1,90 +1,26 @@
 package org.tdar.functional;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-import static org.openqa.selenium.By.id;
-import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.Set;
-import java.util.UUID;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nullable;
-
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
+import org.junit.*;
 import org.junit.rules.TestName;
-import org.openqa.selenium.Alert;
-import org.openqa.selenium.By;
-import org.openqa.selenium.Capabilities;
-import org.openqa.selenium.Dimension;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.NoAlertPresentException;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.TimeoutException;
-import org.openqa.selenium.UnhandledAlertException;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxBinary;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxProfile;
+import org.openqa.selenium.*;
+import org.openqa.selenium.chrome.*;
+import org.openqa.selenium.firefox.*;
 import org.openqa.selenium.ie.InternetExplorerDriver;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
-import org.openqa.selenium.logging.LoggingPreferences;
+import org.openqa.selenium.logging.*;
 import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.support.events.EventFiringWebDriver;
 import org.openqa.selenium.support.events.WebDriverEventListener;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.TestConstants;
-import org.tdar.core.bean.entity.Institution;
-import org.tdar.core.bean.entity.Person;
-import org.tdar.core.bean.entity.ResourceCreatorRole;
-import org.tdar.core.bean.entity.TdarUser;
+import org.tdar.core.bean.entity.*;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
 import org.tdar.core.bean.resource.file.FileAccessRestriction;
 import org.tdar.core.configuration.TdarConfiguration;
@@ -92,16 +28,30 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.filestore.Filestore;
-import org.tdar.functional.util.LoggingStopWatch;
-import org.tdar.functional.util.TdarExpectedConditions;
-import org.tdar.functional.util.WebDriverEventAdapter;
-import org.tdar.functional.util.WebElementSelection;
+import org.tdar.functional.util.*;
 import org.tdar.utils.ProcessList;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
+import javax.annotation.Nullable;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Paths;
+import java.time.Duration;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.regex.Pattern;
+
+import static java.time.temporal.ChronoUnit.*;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.*;
+import static org.openqa.selenium.By.id;
+import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
+import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
 
 public abstract class AbstractSeleniumWebITCase {
 
@@ -109,7 +59,8 @@ public abstract class AbstractSeleniumWebITCase {
     // , application/xls, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
     // default timeout used for waitFor()
-    public static final int DEFAULT_WAITFOR_TIMEOUT = 20;
+    public static final Duration WAITFOR_TIMEOUT_DEFAULT = Duration.of(20, SECONDS);
+    public static final Duration WAITFOR_TIMEOUT_MAX = Duration.of(2, MINUTES);
 
     protected static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
@@ -155,7 +106,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public AbstractSeleniumWebITCase() {
         findTimer = new LoggingStopWatch(getClass(), "findTimer", 0, 2 * 1000);
-        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, (DEFAULT_WAITFOR_TIMEOUT * 1000) / 4);
+        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, ((int)WAITFOR_TIMEOUT_DEFAULT.getSeconds() * 1000) / 4);
     }
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
@@ -492,12 +443,13 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     private File setupBrowserProfilePath() {
-        String name = String.format("%s-%s", getClass().getSimpleName().replaceAll("\\W+", ""), testName.getMethodName().replaceAll("\\W+", ""));
         File dir = getBrowserProfilePath();
         dir.mkdirs();
         try {
             FileUtils.cleanDirectory(dir);
-        } catch (IOException ignored) {}
+        } catch (IOException ex) {
+            logger.error("can't clean directory: {}", dir);
+        }
         return dir;
     }
 
@@ -667,12 +619,16 @@ public abstract class AbstractSeleniumWebITCase {
      * Wait for specified css selector to match at least one element within specified timeout.
      *
      * @param cssSelector
-     * @param timeoutInSeconds
+     * @param timeout amount of time to wait for specified condition before timing out. Selenium timeouts are measured
+     *                in seconds,  therefore this function truncates values to seconds.
      * @return elements matched by specified selector
      */
-    public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
+    public WebElementSelection waitFor(String cssSelector, Duration timeout) {
+        if(WAITFOR_TIMEOUT_MAX.minus(timeout).isNegative()) {
+            fail(String.format("Requested timeout of %s exceeds maximum timeout of", timeout, WAITFOR_TIMEOUT_MAX));
+        }
         // FIXME: rewrite in terms of waitFor(ExpectedCondition, int)
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
         List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
         WebElementSelection selection = new WebElementSelection(elements, driver);
         return selection;
@@ -720,7 +676,7 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public <T> T waitFor(ExpectedCondition<T> expectedCondition) {
-        return waitFor(expectedCondition, DEFAULT_WAITFOR_TIMEOUT);
+        return waitFor(expectedCondition, WAITFOR_TIMEOUT_DEFAULT);
     }
 
     /**
@@ -729,15 +685,15 @@ public abstract class AbstractSeleniumWebITCase {
      * @param expectedCondition
      *            ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent},
      *            {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
-     * @param timeoutInSeconds
+     * @param timeout
      *            amount of time that this method suppresses ElementNotFoundException
      * @param <T>
      *            object returned by the ExpectedCondition
      *
      * @return
      */
-    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
-        return waitFor(expectedCondition, timeoutInSeconds, -1);
+    public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout) {
+        return waitFor(expectedCondition, timeout, null);
     }
 
     /**
@@ -746,25 +702,27 @@ public abstract class AbstractSeleniumWebITCase {
      * @param expectedCondition
      *            ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent},
      *            {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
-     * @param timeoutInSeconds
-     *            amount of time that this method suppresses ElementNotFoundException
+     * @param timeout
+     *            amount of time that this method suppresses ElementNotFoundException.  Always truncated to second
+     *            accuracy.
      * @param <T>
      *            object returned by the ExpectedCondition
-     * @param pollingInMillis
-     *            number of milliseconds to wait between evaluating the expected condition. Specify a non-zero
+     * @param pollingEvery
+     *            Duration to wait between evaluating the expected condition. Specify a non-zero
      *            amount to use the default (500ms).
      *
      *
      * @return
      */
-    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds, int pollingInMillis) {
+    public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout, Duration pollingEvery) {
         T value = null;
         waitTimer.start();
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
 
         // change polling interval from default of 500ms to 125ms. This may be a bad idea.
-        if (pollingInMillis > 0) {
-            wait.pollingEvery(pollingInMillis, TimeUnit.MILLISECONDS);
+
+        if (pollingEvery != null && !pollingEvery.isZero()) {
+            wait.pollingEvery(pollingEvery.toMillis(), TimeUnit.MILLISECONDS);
         }
 
         try {
@@ -1036,8 +994,8 @@ public abstract class AbstractSeleniumWebITCase {
         gotoPage("/admin/searchindex/build?forceClear=true");
 
         find("#idxBtn").click();
-        waitFor("#buildStatus", 120);
-        waitFor("#spanDone", 120);
+        waitFor("#buildStatus", Duration.of(2, MINUTES));
+        waitFor("#spanDone", Duration.of(2, MINUTES));
         logout();
         AbstractSeleniumWebITCase.setReindexed(true);
     }
@@ -1291,7 +1249,7 @@ public abstract class AbstractSeleniumWebITCase {
         // yes, you really have to do this. the api has no "expand all" method.
         WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
         while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
-            waitFor(stabilityOfElement(".expandable-hitarea"), 10, 125).click();
+            waitFor(stabilityOfElement(".expandable-hitarea"), Duration.of(10, SECONDS), Duration.of(125, MILLIS)).click();
             // visibleElements.click();
             visibleElements = find(".expandable-hitarea").visibleElements();
         }
