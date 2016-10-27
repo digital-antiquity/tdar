@@ -131,7 +131,7 @@
                 <div class="span4">
                     <ul>
                     <#list col as res>
-                    <li> <@s.a href="${res.detailUrl}">${res.name}</@s.a>
+                    <li> <@s.a href="${res.detailUrl}">${res.name!'no name'}</@s.a>
                     </#list>
                     </ul>
                 </div>

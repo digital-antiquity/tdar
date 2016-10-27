@@ -5,7 +5,7 @@ import org.tdar.core.bean.Localizable;
 import org.tdar.utils.MessageHelper;
 
 public enum IntegratableOptions implements HasLabel, Localizable {
-    YES("Ready for Data Integration"), NO("Needs Ontology Mappings");
+    INTEGRATABLE("Ready for Data Integration"), NOT_INTEGRATABLE("Needs Ontology Mappings");
 
     private String label;
 
