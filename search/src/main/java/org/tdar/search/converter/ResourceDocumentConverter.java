@@ -145,11 +145,11 @@ public class ResourceDocumentConverter extends AbstractSolrDocumentConverter {
 
         if (resource instanceof Dataset) {
             Dataset dataset = (Dataset) resource;
-            IntegratableOptions option = IntegratableOptions.NO;
+            IntegratableOptions option = IntegratableOptions.NOT_INTEGRATABLE;
             for (DataTable dt : dataset.getDataTables()) {
                 for (DataTableColumn dtc : dt.getDataTableColumns()) {
                     if (dtc.getMappedOntology() != null) {
-                        option = IntegratableOptions.YES;
+                        option = IntegratableOptions.INTEGRATABLE;
                     }
                 }
             }

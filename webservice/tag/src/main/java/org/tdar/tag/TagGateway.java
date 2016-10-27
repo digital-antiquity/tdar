@@ -286,6 +286,6 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
             sb.append("groups[").append(i).append("].projects.id=").append(projIds.get(i)).append("&");
         }
         return String.format("%s/search/search?query=%s&integratableOptions=%s&resourceTypes=DATASET&referrer=TAG",
-                UrlService.getBaseUrl(), sb.toString(), IntegratableOptions.YES);
+                UrlService.getBaseUrl(), sb.toString(), IntegratableOptions.INTEGRATABLE);
     }
 }
