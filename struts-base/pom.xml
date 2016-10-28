@@ -22,18 +22,10 @@
     </parent>
     <dependencyManagement>
         <dependencies>
-            <dependency>
-                <groupId>org.apache.struts</groupId>
-                <artifactId>struts2-bom</artifactId>
-                <version>${struts2.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
     
     <dependencies>
-        
         <dependency>
             <groupId>org.tdar</groupId>
             <artifactId>core</artifactId>
