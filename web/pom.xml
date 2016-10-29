@@ -35,6 +35,18 @@
         <url>http://www.tdar.org</url>
     </organization>
 
+    <dependencyManagement>
+        <dependencies>
+
+            <dependency>
+                <groupId>org.seleniumhq.selenium</groupId>
+                <artifactId>selenium-java</artifactId>
+                <version>3.0.1</version>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
     <!-- 3rd party dependencies and libraries -->
     <dependencies>
         <dependency>
@@ -145,12 +157,16 @@
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>selenium-java</artifactId>
             <version>3.0.1</version>
-            <scope>test</scope>
             <exclusions>
                 <exclusion>
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <!--&lt;!&ndash; fixme: selenium-java 3.0.1 has a dependency on selenium-java 2.5. this exclusion satisfies enforcer, but will probably break the build &ndash;&gt;-->
+                <!--<exclusion>-->
+                    <!--<groupId>org.seleniumhq.selenium</groupId>-->
+                    <!--<artifactId>selenium-java</artifactId>-->
+                <!--</exclusion>-->
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
