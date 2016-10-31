@@ -86,7 +86,7 @@
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>
             <artifactId>htmlunit</artifactId>
-            <!--<version>2.21</version>-->
+            <version>2.21</version>
             <scope>test</scope>
             <!-- LICENSE: APACHE 2.0 -->
             <exclusions>

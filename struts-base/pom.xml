@@ -7,6 +7,7 @@
     <packaging>jar</packaging>
     <name>tDAR (struts-base)</name>
     <properties>
+        <jetty.version>9.3.9.v20160517</jetty.version>
         <jetty.port>8080</jetty.port>
         <jetty.ssl.port>8443</jetty.ssl.port>
         <jetty.stop.port>12919</jetty.stop.port>
@@ -147,7 +148,7 @@
             <!-- needed by spring for @Transactional calls -->
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
-            <!--<version>3.2.1</version>-->
+            <version>3.2.1</version>
             <!-- LICENSE: APACHE 1.1 -->
         </dependency>
         
