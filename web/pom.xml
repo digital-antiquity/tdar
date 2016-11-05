@@ -134,6 +134,11 @@
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java-legacy</artifactId>
+			<version>2.5.3</version>
+		</dependency>
     </dependencies>
 
 
