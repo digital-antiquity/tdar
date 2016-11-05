@@ -8,15 +8,8 @@
     <name>tDAR (base)</name>
 
     <properties>
-        <poi.version>3.12</poi.version>
         <!-- see http://tomcat.apache.org/whichversion.html for compatibility 
             with tomcat ; jetty: http://wiki.eclipse.org/Jetty/Starting/Jetty_Version_Comparison_Table -->
-        <apache.cxf.version>3.1.4</apache.cxf.version>
-        <jena.version>2.13.0</jena.version>
-        <!-- /end managed versions -->
-        <geotools.version>14.0</geotools.version>
-        <http-components.version>4.4.1</http-components.version>
-        <http-client.version>4.5</http-client.version>
         <testChangeLog>changelog.xml</testChangeLog>
     </properties>
     <parent>

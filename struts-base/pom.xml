@@ -22,6 +22,21 @@
     </parent>
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.struts</groupId>
+                <artifactId>struts2-bom</artifactId>
+                <version>${struts2.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!--force specified version of struts2-core, even if sub-project specifies a different version-->
+            <dependency>
+                <groupId>org.apache.struts</groupId>
+                <artifactId>struts2-core</artifactId>
+                <version>${struts2.version}</version>
+            </dependency>
+			
         </dependencies>
     </dependencyManagement>
     
@@ -97,6 +112,19 @@
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
         <dependency>
+            <groupId>com.jgeppert.struts2.bootstrap</groupId>
+            <artifactId>struts2-bootstrap-plugin</artifactId>
+            <version>1.7.0</version>
+            <exclusions>
+	            <exclusion>
+		            <groupId>org.apache.struts</groupId>
+	                <artifactId>struts2-core</artifactId>
+	            </exclusion>
+			</exclusions>			
+            <!-- LICENSE: APACHE 2.0 -->
+        </dependency>
+
+        <dependency>
             <groupId>org.tuckey</groupId>
             <artifactId>urlrewritefilter</artifactId>
             <version>4.0.4</version>
@@ -144,31 +172,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <!-- needed by spring for @Transactional calls -->
-            <groupId>cglib</groupId>
-            <artifactId>cglib-nodep</artifactId>
-            <version>3.2.1</version>
-            <!-- LICENSE: APACHE 1.1 -->
-        </dependency>
         
-        <dependency>
-            <groupId>net.sourceforge.htmlunit</groupId>
-            <artifactId>htmlunit</artifactId>
-            <version>2.21</version>
-            <scope>test</scope>
-            <!-- LICENSE: APACHE 2.0 -->
-            <exclusions>
-                <exclusion>
-                    <artifactId>httpclient</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>httpmime</artifactId>
-                    <groupId>org.apache.httpcomponents</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         <dependency>
             <groupId>javax.el</groupId>
             <artifactId>javax.el-api</artifactId>
@@ -217,6 +221,7 @@
             <version>1.5</version>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
+
     </dependencies>
     <build>
         <finalName>tdar-struts-base</finalName>
