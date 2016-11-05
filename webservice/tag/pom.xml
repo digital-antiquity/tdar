@@ -17,7 +17,7 @@
 	<parent>
 		<groupId>org.tdar</groupId>
 		<artifactId>web-base</artifactId>
-        <version>15.1.0-OBSIDIAN-SNAPSHOT</version>
+        <version>16.0.0-PREHISTORIC-SNAPSHOT</version>
 		<relativePath>../../web-base/pom.xml</relativePath>
 	</parent>
 
