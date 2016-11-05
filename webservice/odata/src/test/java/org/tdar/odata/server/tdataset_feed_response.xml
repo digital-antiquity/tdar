@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<feed xmlns="http://www.w3.org/2005/Atom"
+	xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+	xmlns:d="http://schemas.microsoft.com/ado/2007/08/dataservices"
+	xml:base="http://localhost:8888/test.svc/">
+	<title type="text">TDataSets</title>
+	<id>http://localhost:8888/test.svc/TDataSets</id>
+	<updated>2012-09-13T06:50:37Z</updated>
+	<link rel="self" title="TDataSets" href="TDataSets" />
+	<entry>
+		<id>http://localhost:8888/test.svc/TDataSets('Grecian Urns')</id>
+		<title type="text">Grecian Urns</title>
+		<summary type="text">Grecian Urns: none</summary>
+		<updated>2012-09-13T16:50:37Z</updated>
+		<author>
+			<name></name>
+		</author>
+		<link rel="edit" title="TDataSet" href="TDataSets('Grecian Urns')" />
+		<link
+			rel="http://schemas.microsoft.com/ado/2007/08/dataservices/related/TDataTables"
+			type="application/atom+xml;type=feed" title="TDataTables"
+			href="TDataSets('Grecian Urns')/TDataTables" />
+		<category term="tDAR.TDataSet"
+			scheme="http://schemas.microsoft.com/ado/2007/08/dataservices/scheme" />
+		<content type="application/xml">
+			<m:properties>
+				<d:id m:type="Edm.Int64">-1</d:id>
+				<d:name>Grecian Urns</d:name>
+			</m:properties>
+		</content>
+	</entry>
+</feed>
