@@ -82,6 +82,10 @@
                     <groupId>asm</groupId>
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
+                <exclusion>
+			  		  <groupId>org.freemarker</groupId>
+			  		  <artifactId>freemarker</artifactId>
+			    </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
