@@ -431,6 +431,10 @@
                     <groupId>asm</groupId>
                     <artifactId>asm-commons</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>javassist</groupId>
+                    <artifactId>javassist</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
