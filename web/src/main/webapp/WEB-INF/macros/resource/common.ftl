@@ -470,7 +470,7 @@ Common macros used in multiple contexts
             <@s.a href="${collection.detailUrl}">${(collection.name)!"No Title"}<#if collection.new><span style="margin-left:.8em" class="label">new</span></#if></@s.a>
             <#if collection.transientChildren?has_content>
                 <ul class="${clsHidden}">
-                    <#list collection.transientChildren as child>
+                    <#list collection.transientChildren?sort_by("name") as child>
                     <@collectionListItem depth= (depth - 1) collection=child showOnlyVisible=showOnlyVisible  showBadge=showBadge />
                 </#list>
                 </ul>
