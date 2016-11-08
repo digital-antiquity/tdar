@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.tdar</groupId>
     <artifactId>parent</artifactId>
-    <version>16.0.1-COLLECTIONS-PREHISTORIC-SNAPSHOT</version>
+    <version>16.0.1-PREHISTORIC-SNAPSHOT</version>
     <name>parent</name>
     <packaging>pom</packaging>
     <modules>
