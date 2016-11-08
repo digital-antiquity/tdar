@@ -24,6 +24,7 @@ import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.Creator;
@@ -327,7 +328,11 @@ public class ProjectControllerITCase extends AbstractResourceControllerITCase {
         assertFalse(project.isTransient());
         Project loadedProject = genericService.find(Project.class, id);
         assertNotNull(loadedProject);
-        assertUniqueCollections((Collection<? extends ResourceCollection>)loadedProject.getRightsBasedResourceCollections(), name1, name2);
+        Collection<ResourceCollection> cols = new HashSet<>();
+        for (RightsBasedResourceCollection rrc : loadedProject.getRightsBasedResourceCollections()) {
+            cols.add((ResourceCollection)rrc);
+        }
+        assertUniqueCollections(cols, name1, name2);
 
     }
 

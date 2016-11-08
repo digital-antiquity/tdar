@@ -29,7 +29,7 @@ import org.tdar.core.bean.resource.Resource;
 @DiscriminatorValue(value = "SHARED")
 @Entity
 @XmlRootElement(name = "sharedCollection")
-public class SharedCollection extends HierarchicalCollection<SharedCollection>
+public class SharedCollection extends CustomizableCollection<SharedCollection>
         implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
@@ -37,20 +37,20 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         setName(title);
         setDescription(description);
         setHidden(hidden);
-//        setSortBy(sortOption);
-//        setOrientation(displayOrientation);
+        setSortBy(sortOption);
+        setOrientation(displayOrientation);
         setOwner(creator);
         this.setType(CollectionType.SHARED);
     }
-
-    public SharedCollection(Long id, String title, String description) {
+    
+    public SharedCollection(Long id, String title, String description, SortOption sortOption, boolean hidden) {
         setId(id);
         setName(title);
         setDescription(description);
-        setHidden(false);
-//        setSortBy(SortOption.TITLE);
-//        setOrientation(DisplayOrientation.LIST);
+        setHidden(hidden);
+        setSortBy(sortOption);
         this.setType(CollectionType.SHARED);
+
     }
 
     public SharedCollection(String title, String description, TdarUser submitter) {
@@ -58,8 +58,8 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         setDescription(description);
         setHidden(false);
         this.setOwner(submitter);
-//        setSortBy(SortOption.TITLE);
-//        setOrientation(DisplayOrientation.LIST);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
         this.setType(CollectionType.SHARED);
     }
 
@@ -67,16 +67,16 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         markUpdated(tdarUser);
         getResources().add(document);
         setHidden(false);
-//        setSortBy(SortOption.TITLE);
-//        setOrientation(DisplayOrientation.LIST);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
         this.setType(CollectionType.SHARED);
     }
 
     public SharedCollection() {
         this.setType(CollectionType.SHARED);
         setHidden(false);
-//        setSortBy(SortOption.TITLE);
-//        setOrientation(DisplayOrientation.LIST);
+        setSortBy(SortOption.TITLE);
+        setOrientation(DisplayOrientation.LIST);
         this.setHidden(false);
     }
 
@@ -137,25 +137,6 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
     @XmlTransient
     public List<SharedCollection> getVisibleParents() {
         return getVisibleParents(SharedCollection.class);
-    }
-
-    @Override
-    public SortOption getSortBy() {
-        return SortOption.TITLE;
-    }
-
-    public DisplayOrientation getDisplayOrientation() {
-        return DisplayOrientation.LIST;
-    }
-
-    //    @Override
-    //    public String getUrlNamespace() {
-    //        return "share";
-    //    }
-
-    @Override
-    public boolean isHidden() {
-        return true;
     }
 
 }

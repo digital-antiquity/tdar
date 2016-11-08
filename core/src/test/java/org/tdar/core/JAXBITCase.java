@@ -191,7 +191,7 @@ public class JAXBITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testCollectionJson() throws IOException {
-        SharedCollection rc = new SharedCollection(10000L, "test", "test");
+        SharedCollection rc = new SharedCollection(10000L, "test", "test", SortOption.TITLE, false);
         rc.markUpdated(getAdminUser());
         rc.setOwner(getBasicUser());
         rc.getResources().addAll(genericService.findRandom(Resource.class, 4));
