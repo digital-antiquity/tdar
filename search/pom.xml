@@ -9,13 +9,12 @@
     <name>tDAR (search)</name>
 
     <properties>
-        <lucene.version>6.2.0</lucene.version>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
     <parent>
         <groupId>org.tdar</groupId>
         <artifactId>base</artifactId>
-        <version>15.5.0-OBSIDIAN-COLLECTIONS-SNAPSHOT</version>
+        <version>16.0.1-COLLECTIONS-PREHISTORIC-SNAPSHOT</version>
         <relativePath>../base/pom.xml</relativePath>
     </parent>
     <!-- 3rd party dependencies and libraries -->
@@ -26,12 +25,6 @@
             <version>${lucene.version}</version>
             <type>jar</type>
             <scope>compile</scope>
-            <exclusions>
-            	<exclusion>
-            		<groupId>com.google.guava</groupId>
-            		<artifactId>guava</artifactId>
-            	</exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <artifactId>solr-core</artifactId>
@@ -57,11 +50,6 @@
                     <groupId>com.fasterxml.jackson.dataformat</groupId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.4</version>
         </dependency>
         <dependency>
             <groupId>org.apache.lucene</groupId>

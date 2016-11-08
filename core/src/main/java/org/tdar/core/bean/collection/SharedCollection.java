@@ -33,10 +33,12 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         implements Comparable<SharedCollection>,  RightsBasedResourceCollection, HasName, Sortable {
     private static final long serialVersionUID = 7900346272773477950L;
 
-    public SharedCollection(String title, String description, TdarUser creator) {
+    public SharedCollection(String title, String description, boolean hidden, SortOption sortOption, DisplayOrientation displayOrientation, TdarUser creator) {
         setName(title);
         setDescription(description);
-        setHidden(true);
+        setHidden(hidden);
+//        setSortBy(sortOption);
+//        setOrientation(displayOrientation);
         setOwner(creator);
         this.setType(CollectionType.SHARED);
     }
@@ -45,19 +47,37 @@ public class SharedCollection extends HierarchicalCollection<SharedCollection>
         setId(id);
         setName(title);
         setDescription(description);
-        setHidden(true);
+        setHidden(false);
+//        setSortBy(SortOption.TITLE);
+//        setOrientation(DisplayOrientation.LIST);
+        this.setType(CollectionType.SHARED);
+    }
+
+    public SharedCollection(String title, String description, TdarUser submitter) {
+        setName(title);
+        setDescription(description);
+        setHidden(false);
+        this.setOwner(submitter);
+//        setSortBy(SortOption.TITLE);
+//        setOrientation(DisplayOrientation.LIST);
         this.setType(CollectionType.SHARED);
     }
 
     public SharedCollection(Document document, TdarUser tdarUser) {
         markUpdated(tdarUser);
         getResources().add(document);
+        setHidden(false);
+//        setSortBy(SortOption.TITLE);
+//        setOrientation(DisplayOrientation.LIST);
         this.setType(CollectionType.SHARED);
     }
 
     public SharedCollection() {
         this.setType(CollectionType.SHARED);
-        this.setHidden(true);
+        setHidden(false);
+//        setSortBy(SortOption.TITLE);
+//        setOrientation(DisplayOrientation.LIST);
+        this.setHidden(false);
     }
 
 

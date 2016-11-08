@@ -247,7 +247,7 @@ public class BulkUploadService {
         logger.info("bulk: setting final statuses and logging");
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
         String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
-        SharedCollection collection = new SharedCollection(title, title, submitter); //,false,  SortOption.TITLE
+        SharedCollection collection = new SharedCollection(title, title, submitter); 
         try {
             collection.markUpdated(submitter);
             collection.setSystemManaged(true);

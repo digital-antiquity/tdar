@@ -9,14 +9,13 @@
     <name>tDAR (OAI-PMH)</name>
 
     <properties>
-        <servlet.api.version>3.0.1</servlet.api.version>
         <skipJetty>false</skipJetty>
         <skipTestLiquibase>false</skipTestLiquibase>
     </properties>
 	<parent>
 		<groupId>org.tdar</groupId>
 		<artifactId>web-base</artifactId>
-		<version>15.5.0-OBSIDIAN-COLLECTIONS-SNAPSHOT</version>
+		<version>16.0.1-COLLECTIONS-PREHISTORIC-SNAPSHOT</version>
 		<relativePath>../../web-base/pom.xml</relativePath>
 	</parent>
 
