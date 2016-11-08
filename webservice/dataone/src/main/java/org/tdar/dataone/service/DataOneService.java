@@ -321,6 +321,7 @@ public class DataOneService implements DataOneConstants {
         policy.getAllowList().add(DataOneUtils.createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
+        // used to detect when changes happen in DataONE
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
         // look up in log table what the last exposed version of metadata was
         metadata.setDateUploaded(resource.getDateUpdated());
