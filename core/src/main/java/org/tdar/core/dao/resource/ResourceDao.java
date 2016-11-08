@@ -29,6 +29,7 @@ import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.Persistable;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.entity.Creator;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.ResourceCreator;
@@ -551,8 +552,8 @@ public abstract class ResourceDao<E extends Resource> extends Dao.HibernateBase<
         resource.getActiveCoverageDates().forEach(cd -> clearId(cd));
         resource.getResourceCreators().forEach(cd -> clearId(cd));
         resource.getResourceNotes().forEach(rn -> clearId(rn));
-        resource.getResourceCollections().forEach(rc -> {
-            if (rc.getType() == CollectionType.INTERNAL) {
+        resource.getRightsBasedResourceCollections().forEach(rc -> {
+            if (rc instanceof InternalCollection) {
                 rc.getAuthorizedUsers().forEach(au -> {
                     au.setId(null);
                 });

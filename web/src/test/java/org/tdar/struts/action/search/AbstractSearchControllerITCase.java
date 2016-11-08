@@ -45,6 +45,7 @@ import com.opensymphony.xwork2.Action;
 public abstract class AbstractSearchControllerITCase extends AbstractControllerITCase {
 
     @Autowired
+    @Deprecated
     protected AdvancedSearchController controller;
 
     protected static final Long DOCUMENT_INHERITING_CULTURE_ID = 4230L;

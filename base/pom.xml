@@ -455,7 +455,9 @@
                                 </goals>
                                 <configuration>
                                     <files>
-                                        <file>src/main/resources/hibernate.properties</file>
+                                        <!--<file>src/main/resources/hibernate.properties</file>-->
+                                        <file>${basedir}/src/main/resources/hibernate.properties</file>
+                                        <file>target/hg.properties</file>
                                     </files>
                                 </configuration>
                             </execution>

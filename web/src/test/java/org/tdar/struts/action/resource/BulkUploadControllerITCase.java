@@ -500,7 +500,7 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
 //         for (RightsBasedResourceCollection col : collections) {
 // =======
         assertEquals("we should have a total of 3 collections (2 internal +2 shared)", 4, collections.size());
-        for (ResourceCollection col : collections) {
+        for (RightsBasedResourceCollection col : collections) {
 // >>>>>>> theirs
             logger.debug("{} : {}", col, col.getResources());
             if (col instanceof InternalCollection) {

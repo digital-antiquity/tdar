@@ -65,6 +65,7 @@ import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.LocaleProvider;
 import com.opensymphony.xwork2.TextProviderFactory;
+import com.opensymphony.xwork2.TextProviderSupport;
 import com.opensymphony.xwork2.config.ConfigurationManager;
 import com.opensymphony.xwork2.config.providers.XWorkConfigurationProvider;
 import com.opensymphony.xwork2.ognl.OgnlValueStackFactory;
@@ -191,10 +192,14 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
 
         configurationManager.addContainerProvider(new XWorkConfigurationProvider());
         configurationManager.getConfiguration().getContainer().inject(factory);
+        if (controller instanceof ActionSupport) {
+            ((ActionSupport) controller).setContainer(configurationManager.getConfiguration().getContainer());
+        }
         ValueStack stack = factory.createValueStack();
 
         context.setValueStack(stack);
         ActionContext.setContext(context);
+        
         return controller;
     }
 
@@ -231,6 +236,7 @@ public abstract class AbstractIntegrationControllerTestCase extends AbstractInte
         if (controller != null) {
             TdarUser user_ = null;
             controller.setSessionData(getSessionData());
+            
             if ((user != null) && PersistableUtils.isTransient(user)) {
                 throw new TdarRecoverableRuntimeException("can't test this way right now, must persist first");
             } else if (user != null) {

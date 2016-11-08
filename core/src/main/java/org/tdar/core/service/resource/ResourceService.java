@@ -515,7 +515,7 @@ public class ResourceService {
                     collection.setId(null);
 //>>>>>>> theirs
                 }
-                resource.getResourceCollections().add(collection);
+                resource.getRightsBasedResourceCollections().add(collection);
             }
 
             cloneSet(resource, resource.getCoverageDates(), proxy.getCoverageDates());

@@ -15,7 +15,7 @@ public interface QueryFieldNames {
 	String PROJECT_TITLE = "project.name";
 	String PROJECT_TITLE_AUTOCOMPLETE = "project.name_autocomplete";
 	String DOCUMENT_TYPE = "documentType";
-	String INTEGRATABLE = "integratable";
+	String INTEGRATABLE = "integratableOption";
 	String SUBMITTER_ID = "submitter.id";
 	String ACTIVE_SITE_TYPE_KEYWORDS = "activeSiteTypeKeywords";
 	String ACTIVE_MATERIAL_KEYWORDS = "activeMaterialKeywords";

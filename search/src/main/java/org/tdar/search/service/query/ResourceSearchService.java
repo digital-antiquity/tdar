@@ -324,6 +324,9 @@ public class ResourceSearchService extends AbstractSearchService {
         reservedSearchParameters.setTdarGroup(authenticationService.findGroupWithGreatestPermissions(user));
         Set<Status> allowedSearchStatuses = authorizationService.getAllowedSearchStatuses(user);
         List<Status> statuses = reservedSearchParameters.getStatuses();
+        if (statuses == null) {
+            statuses = new ArrayList<>();
+        }
         statuses.removeAll(Collections.singletonList(null));
 
         if (CollectionUtils.isEmpty(statuses)) {

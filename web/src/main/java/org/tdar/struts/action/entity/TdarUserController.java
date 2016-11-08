@@ -81,6 +81,10 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
         }
         super.prepare();
         contributor = getPersistable().isContributor();
+        if (getPersistable().getProxyInstitution() != null)  {
+            setProxyInstitutionName(getPersistable().getProxyInstitution().getName());
+        }
+        setProxyNote(getPersistable().getProxyNote());
     }
 
     @Override

@@ -341,7 +341,12 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String rowId = findByIdWithText(title, selector);
         assertNotNull(rowId);
         //some searches may yield more than one result. just pick the first.
-        
+//        waitFor(stabilityOfElement(("#resource_datatable tbody tr")));
+//        WebElementSelection checkboxes = find("#resource_datatable tbody tr")
+//                .any(tr -> tr.getText().contains(title))
+//                .find(".datatable-checkbox");
+//        assertThat("expecting one or more matches", checkboxes.size(), is(greaterThan(0)));
+
         retryingFindClick(By.cssSelector("#" + rowId + " .datatable-checkbox"));
 
         //reset the search

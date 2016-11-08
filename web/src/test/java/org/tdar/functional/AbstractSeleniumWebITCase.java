@@ -1,5 +1,9 @@
 package org.tdar.functional;
 
+
+import static java.time.temporal.ChronoUnit.MILLIS;
+import static java.time.temporal.ChronoUnit.MINUTES;
+import static java.time.temporal.ChronoUnit.SECONDS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -18,6 +22,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -94,6 +100,7 @@ import org.tdar.functional.util.LoggingStopWatch;
 import org.tdar.functional.util.TdarExpectedConditions;
 import org.tdar.functional.util.WebDriverEventAdapter;
 import org.tdar.functional.util.WebElementSelection;
+import org.tdar.utils.ProcessList;
 import org.tdar.utils.TestConfiguration;
 import org.tdar.web.AbstractWebTestCase;
 
@@ -110,7 +117,8 @@ public abstract class AbstractSeleniumWebITCase {
     // , application/xls, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
     // default timeout used for waitFor()
-    public static final int DEFAULT_WAITFOR_TIMEOUT = 20;
+    public static final Duration WAITFOR_TIMEOUT_DEFAULT = Duration.of(20, SECONDS);
+    public static final Duration WAITFOR_TIMEOUT_MAX = Duration.of(2, MINUTES);
 
     protected static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
@@ -156,7 +164,7 @@ public abstract class AbstractSeleniumWebITCase {
 
     public AbstractSeleniumWebITCase() {
         findTimer = new LoggingStopWatch(getClass(), "findTimer", 0, 2 * 1000);
-        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, (DEFAULT_WAITFOR_TIMEOUT * 1000) / 4);
+        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, ((int)WAITFOR_TIMEOUT_DEFAULT.getSeconds() * 1000) / 4);
     }
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
@@ -210,10 +218,10 @@ public abstract class AbstractSeleniumWebITCase {
         private void getBrowserConsoleLogEntries(WebDriver driver) {
             LogEntries logEntries = driver.manage().logs().get(LogType.BROWSER);
             for (LogEntry entry : logEntries) {
-               if (entry.getLevel() == Level.SEVERE ) {
-                   logger.error("Browser: " + new Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
-               }
-                //do something useful with the data
+                if (entry.getLevel() == Level.SEVERE) {
+                    logger.error("Browser: " + new Date(entry.getTimestamp()) + " " + entry.getLevel() + " " + entry.getMessage());
+                }
+                // do something useful with the data
             }
         }
 
@@ -351,13 +359,15 @@ public abstract class AbstractSeleniumWebITCase {
         LoggingPreferences logPrefs = new LoggingPreferences();
         logPrefs.enable(LogType.BROWSER, Level.ALL);
         currentBrowser = browser;
+        File browserProfileDir = setupBrowserProfilePath();
+
         switch (browser) {
             case FIREFOX:
                 FirefoxBinary fb = new FirefoxBinary();
                 for (String key : environment.keySet()) {
                     fb.setEnvironmentProperty(key, environment.get(key));
                 }
-                FirefoxProfile profile = new FirefoxProfile();
+                FirefoxProfile profile = new FirefoxProfile(browserProfileDir);
                 if (TestConfiguration.isMac()) {
                     profile.setPreference("focusmanager.testmode", true);
                 }
@@ -384,35 +394,33 @@ public abstract class AbstractSeleniumWebITCase {
                 /* ubuntu install instructions http://www.liberiangeek.net/2011/12/install-google-chrome-using-apt-get-in-ubuntu-11-10-oneiric-ocelot/ */
                 File app = new File(CONFIG.getChromeDriverPath());
                 logger.info("using app: {} ", app);
-                File chromedriverLogFile = new File(System.getProperty("java.io.tmpdir"), "chromedriver.log");
-                logger.debug("chromedriver verbose logfile path:{}", chromedriverLogFile.getAbsolutePath());
+                File chromeDriverLogFile = new File(browserProfileDir, "chromedriver.log");
+                logger.debug("chromedriver verbose logfile path:{}", chromeDriverLogFile.getAbsolutePath());
                 ChromeDriverService service = new ChromeDriverService.Builder()
                         .usingDriverExecutable(app)
                         .usingPort(9515)
                         .withEnvironment(environment)
                         .withVerbose(true)
-                        .withLogFile(chromedriverLogFile)
+                        .withLogFile(chromeDriverLogFile)
                         .build();
 
                 ChromeOptions copts = new ChromeOptions();
                 // copts.setExperimentalOption("autofill.enabled",false);
 
                 // turn off autocomplete: https://code.google.com/p/chromedriver/issues/detail?id=333
-                File dir = new File(PATH_OUTPUT_ROOT, "profiles/chrome");
                 // File dir = new File("src/test/resources/c1");
-                String profilePath = dir.getAbsolutePath();
-                logger.debug("chrome profile path set to: {}", profilePath);
-                
+                logger.debug("chrome profile path set to: {}", browserProfileDir.getAbsolutePath());
+
                 // http://peter.sh/experiments/chromium-command-line-switches/
                 // ignore-certificate-errors ?
                 copts.addArguments(
                         "binary=" + CONFIG.getChromeApplicationPath(), // NOTE BINARY is needed for LINUX, may not be for Mac or Windows
-                        "user-data-dir=" + profilePath, // use specific profile path (random by default?)
+                        "user-data-dir=" + browserProfileDir.getAbsolutePath(), // use specific profile path (random by default?)
                         // "bwsi" //browse without signin
                         "browser.passwords=false",
                         "noerrdialogs");
                 driver = new ChromeDriver(service, copts);
-                
+
                 service.start();
                 break;
             case IE:
@@ -431,7 +439,12 @@ public abstract class AbstractSeleniumWebITCase {
         eventFiringWebDriver.register(eventListener);
 
         this.driver = eventFiringWebDriver;
+        listProcesses.clear();
         force1024x768();
+        if (!TestConfiguration.isWindows()) {
+            listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
+        }
+
     }
 
     private Capabilities configureCapabilities(DesiredCapabilities caps) {
@@ -444,15 +457,17 @@ public abstract class AbstractSeleniumWebITCase {
     public TestName testName = new TestName();
 
     private static boolean reindexed = false;
+    Set<Long> listProcesses = new HashSet<>();
 
     /*
      * Shutdown Selenium
      */
     @After
     public final void shutdownSelenium() {
-    	logout();
+        if (!TestConfiguration.isWindows()) {
+            listProcesses.addAll(ProcessList.listProcesses("chromedriver"));
+        }
         try {
-            driver.close();
             driver.quit();
         } catch (UnhandledAlertException uae) {
             logger.error("alert modal present when trying to close driver: {}", uae.getAlertText());
@@ -466,7 +481,45 @@ public abstract class AbstractSeleniumWebITCase {
         String fmt = " *** COMPLETED TEST: {}.{}() ***";
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
         getJavascriptIgnorePatterns().clear();
+        performBrowserCleanup();
+        if (!TestConfiguration.isWindows()) {
+            ProcessList.killProcesses(listProcesses);
+        }
     }
+
+    private File getBrowserProfilePath(){
+        String name = String.format("%s-%s", getClass().getSimpleName().replaceAll("\\W+", ""), testName.getMethodName().replaceAll("\\W+", ""));
+        return Paths.get(PATH_OUTPUT_ROOT,"browser-profiles", name).toFile();
+    }
+
+    /**
+     * This function creates a directory named after the currently-running JUnit test.
+     *
+     * Browsers typically need a 'profile' directory in local storage to save  cookies, browser history, and preference.  This stateful information
+     * can potentially introduce inconsistent test results.
+     *
+     * @return
+     */
+    private File setupBrowserProfilePath() {
+        File dir = getBrowserProfilePath();
+        dir.mkdirs();
+        try {
+            FileUtils.cleanDirectory(dir);
+        } catch (IOException ex) {
+            logger.error("can't clean directory: {}", dir);
+        }
+        return dir;
+    }
+
+    /**
+     * Remove profile artifacts that take up space and provide little probitive value.
+     */
+    private void performBrowserCleanup() {
+        //
+        Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" );
+        FileUtils.deleteQuietly(Paths.get(getBrowserProfilePath().getAbsolutePath(), "Default", "Cache" ).toFile());
+    }
+
 
     protected void takeScreenshot() {
         takeScreenshot(null);
@@ -608,7 +661,7 @@ public abstract class AbstractSeleniumWebITCase {
             String url = absoluteUrl(base, path);
             logger.debug("going to: {}", url);
             driver.get(url);
-            //waitForPageload();
+            // waitForPageload();
         } catch (MalformedURLException ex) {
             String err = String.format("bad url:: base:%s\tpath:%s", base, path);
             logger.error(err, ex);
@@ -630,12 +683,16 @@ public abstract class AbstractSeleniumWebITCase {
      * Wait for specified css selector to match at least one element within specified timeout.
      *
      * @param cssSelector
-     * @param timeoutInSeconds
+     * @param timeout amount of time to wait for specified condition before timing out. Selenium timeouts are measured
+     *                in seconds,  therefore this function truncates values to seconds.
      * @return elements matched by specified selector
      */
-    public WebElementSelection waitFor(String cssSelector, int timeoutInSeconds) {
+    public WebElementSelection waitFor(String cssSelector, Duration timeout) {
+        if(WAITFOR_TIMEOUT_MAX.minus(timeout).isNegative()) {
+            fail(String.format("Requested timeout of %s exceeds maximum timeout of", timeout, WAITFOR_TIMEOUT_MAX));
+        }
         // FIXME: rewrite in terms of waitFor(ExpectedCondition, int)
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
         List<WebElement> elements = wait.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.cssSelector(cssSelector)));
         WebElementSelection selection = new WebElementSelection(elements, driver);
         return selection;
@@ -683,9 +740,8 @@ public abstract class AbstractSeleniumWebITCase {
      * @return
      */
     public <T> T waitFor(ExpectedCondition<T> expectedCondition) {
-        return waitFor(expectedCondition, DEFAULT_WAITFOR_TIMEOUT);
+        return waitFor(expectedCondition, WAITFOR_TIMEOUT_DEFAULT);
     }
-
 
     /**
      * Wait for the specified expected condition within the specified timeout (in seconds)
@@ -693,17 +749,16 @@ public abstract class AbstractSeleniumWebITCase {
      * @param expectedCondition
      *            ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent},
      *            {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
-     * @param timeoutInSeconds
+     * @param timeout
      *            amount of time that this method suppresses ElementNotFoundException
      * @param <T>
      *            object returned by the ExpectedCondition
      *
      * @return
      */
-    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds) {
-        return waitFor(expectedCondition, timeoutInSeconds, -1);
+    public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout) {
+        return waitFor(expectedCondition, timeout, null);
     }
-
 
     /**
      * Wait for the specified expected condition within the specified timeout (in seconds)
@@ -711,24 +766,27 @@ public abstract class AbstractSeleniumWebITCase {
      * @param expectedCondition
      *            ExpectedCondition predicate (e.g. {@link ExpectedConditions#alertIsPresent},
      *            {@link ExpectedConditions#presenceOfAllElementsLocatedBy(org.openqa.selenium.By)}
-     * @param timeoutInSeconds
-     *            amount of time that this method suppresses ElementNotFoundException
+     * @param timeout
+     *            amount of time that this method suppresses ElementNotFoundException.  Always truncated to second
+     *            accuracy.
      * @param <T>
      *            object returned by the ExpectedCondition
-     * @param pollingInMillis  number of milliseconds to wait between evaluating the expected condition. Specify a non-zero
-     *                         amount to use the default (500ms).
+     * @param pollingEvery
+     *            Duration to wait between evaluating the expected condition. Specify a non-zero
+     *            amount to use the default (500ms).
      *
      *
      * @return
      */
-    public <T> T waitFor(ExpectedCondition<T> expectedCondition, int timeoutInSeconds, int pollingInMillis) {
+    public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout, Duration pollingEvery) {
         T value = null;
         waitTimer.start();
-        WebDriverWait wait = new WebDriverWait(driver, timeoutInSeconds);
+        WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
 
-        // change polling interval from default of 500ms to 125ms.  This may be a bad idea.
-        if(pollingInMillis > 0) {
-            wait.pollingEvery(pollingInMillis, TimeUnit.MILLISECONDS);
+        // change polling interval from default of 500ms to 125ms. This may be a bad idea.
+
+        if (pollingEvery != null && !pollingEvery.isZero()) {
+            wait.pollingEvery(pollingEvery.toMillis(), TimeUnit.MILLISECONDS);
         }
 
         try {
@@ -804,24 +862,24 @@ public abstract class AbstractSeleniumWebITCase {
 
     public void logout() {
         WebElementSelection find = find("#logout-button");
-//		driver.manage().deleteAllCookies();
-		logger.debug("LOGOUT: {} ", find);
+        // driver.manage().deleteAllCookies();
+        logger.debug("LOGOUT: {} ", find);
 
         if (find.size() > 0) {
             // handle modal dialogs
-        	try {
-        		find.click();
-        		try {
-					Thread.sleep(TimeUnit.SECONDS.toMillis(2));
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-        		return;
-        	} catch (WebDriverException se) {
-        		logger.error("error trying to logout {}", se);
-        	}
-        } 
+            try {
+                find.click();
+                try {
+                    Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+                } catch (InterruptedException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return;
+            } catch (WebDriverException se) {
+                logger.error("error trying to logout {}", se);
+            }
+        }
 
         gotoPage("/login");
         find = find("#logout-button");
@@ -829,11 +887,11 @@ public abstract class AbstractSeleniumWebITCase {
             find.click();
         }
         try {
-			Thread.sleep(TimeUnit.SECONDS.toMillis(2));
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            Thread.sleep(TimeUnit.SECONDS.toMillis(2));
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     public String getSource() {
@@ -856,11 +914,13 @@ public abstract class AbstractSeleniumWebITCase {
     @SuppressWarnings("unchecked")
     // this is a convenience so that callers don't have to cast. It's probably a bad idea.
     /**
-     * execute a snippet of javascript in an anonymous function.  if your snippet returns a value, Selenium will attempt to cast the most "appropriate"
-     * java type (String, Double, Integer, etc)  or a WebElement if you return a DOM node.  
+     * execute a snippet of javascript in an anonymous function. if your snippet returns a value, Selenium will attempt to cast the most "appropriate"
+     * java type (String, Double, Integer, etc) or a WebElement if you return a DOM node.
+     * 
      * @param functionBody
-     * @param arguments arguments applied to the anonymous function. you can reference them in your snippet using  javascript's 
-     * contextual <code>arguments</code> object.
+     * @param arguments
+     *            arguments applied to the anonymous function. you can reference them in your snippet using javascript's
+     *            contextual <code>arguments</code> object.
      * @return selenium's best approximation of the value returned by your snippet, if it exists.
      */
     public <T> T executeJavascript(String functionBody, Object... arguments) {
@@ -996,10 +1056,10 @@ public abstract class AbstractSeleniumWebITCase {
         logout();
         loginAdmin();
         gotoPage("/admin/searchindex/build?forceClear=true");
-        
+
         find("#idxBtn").click();
-        waitFor("#buildStatus",120);
-        waitFor("#spanDone", 120);
+        waitFor("#buildStatus", Duration.of(2, MINUTES));
+        waitFor("#spanDone", Duration.of(2, MINUTES));
         logout();
         AbstractSeleniumWebITCase.setReindexed(true);
     }
@@ -1014,9 +1074,9 @@ public abstract class AbstractSeleniumWebITCase {
         reportJavascriptErrors();
         WebElementSelection find = find("#submitButton");
         if (find.isEmpty()) {
-        	submitForm(".submitButton,form:not(.seleniumIgnoreForm) input[type=submit]");
+            submitForm(".submitButton,form:not(.seleniumIgnoreForm) input[type=submit]");
         } else {
-        	submitForm("#submitButton");
+            submitForm("#submitButton");
         }
     }
 
@@ -1108,7 +1168,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected boolean textContains(String substring) {
-        return StringUtils.containsIgnoreCase( getSource() ,substring);
+        return StringUtils.containsIgnoreCase(getSource(), substring);
     }
 
     public void reindexOnce() {
@@ -1253,22 +1313,22 @@ public abstract class AbstractSeleniumWebITCase {
         // yes, you really have to do this. the api has no "expand all" method.
         WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
         while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
-            waitFor(stabilityOfElement(".expandable-hitarea"), 10, 125).click();
-            //visibleElements.click();
+            waitFor(stabilityOfElement(".expandable-hitarea"), Duration.of(10, SECONDS), Duration.of(125, MILLIS)).click();
+            // visibleElements.click();
             visibleElements = find(".expandable-hitarea").visibleElements();
         }
         assertTrue("trying to expand all listview subtrees", giveupCount < 100);
     }
 
     protected void addPersonWithRole(Person p, String prefix, ResourceCreatorRole role) {
-        // the creator fields may not yet exist (i.e. user just clicked  "add-another" button).
+        // the creator fields may not yet exist (i.e. user just clicked "add-another" button).
         // So we confirm it's presence before calling val();
         waitFor(By.name(prefix + ".person.firstName")).val(p.getFirstName());
         waitFor(By.name(prefix + ".person.lastName")).val(p.getLastName());
         waitFor(By.name(prefix + ".person.email")).val(p.getEmail());
         String iname = p.getInstitutionName();
         if (iname == null) {
-        	iname = "";
+            iname = "";
         }
         find(By.name(prefix + ".person.institution.name")).val(iname);
         find(By.name(prefix + ".role")).visibleElements().val(role.name());
@@ -1423,11 +1483,14 @@ public abstract class AbstractSeleniumWebITCase {
      * the window handle names. If current window handle is at the end of the list, this method returns the first instead.
      *
      * @return value of previously active window handle.
-     * */
+     */
     public String switchToNextWindow() {
         List<String> handles = new ArrayList<>();
         handles.addAll(driver.getWindowHandles());
         Collections.sort(handles);
+        for (String handle : handles) {
+            logger.debug("handle: {}",handle);
+        }
         String previousHandle = driver.getWindowHandle();
         int idx = handles.indexOf(previousHandle);
         int idxNext = (idx + 1) % handles.size();
@@ -1436,7 +1499,22 @@ public abstract class AbstractSeleniumWebITCase {
         cachedPageText = null;
         return previousHandle;
     }
-    
+
+    public String switchToWindow(String url) {
+        List<String> handles = new ArrayList<>();
+        handles.addAll(driver.getWindowHandles());
+        Collections.sort(handles);
+        cachedPageText = null;
+        for (String handle : handles) {
+            driver.switchTo().window(handle);
+            logger.debug("handle: {} ({})",handle, driver.getCurrentUrl());
+            if (driver.getCurrentUrl().contains(url)) {
+                return handle;
+            }
+        }
+        return null;
+    }
+
     public Keys getMetaKey(TestConfiguration.OS os) {
         switch (os) {
             case OSX:
@@ -1445,7 +1523,7 @@ public abstract class AbstractSeleniumWebITCase {
                 return Keys.META;
             default:
                 return Keys.CONTROL;
-            
+
         }
     }
 
@@ -1588,10 +1666,10 @@ public abstract class AbstractSeleniumWebITCase {
         waitForPageload();
         List<WebElement> selection = find(By.linkText("LOG IN")).toList();
         if (CollectionUtils.isEmpty(selection)) {
-        	selection = find(By.linkText("Log In")).toList();
+            selection = find(By.linkText("Log In")).toList();
         }
         if (CollectionUtils.isEmpty(selection)) {
-        	selection = find("#loginButton").toList();
+            selection = find("#loginButton").toList();
         }
         logger.debug(getCurrentUrl());
         assertThat("login button is missing", selection, is(not(empty())));
@@ -1609,7 +1687,6 @@ public abstract class AbstractSeleniumWebITCase {
         return new WebElementSelection(elements, getDriver());
     }
 
-
     public void setStyle(WebElement elem, String property, Object value) {
         executeJavascript("arguments[0].style[arguments[1]]=arguments[2]", elem, property, value);
     }
@@ -1626,8 +1703,8 @@ public abstract class AbstractSeleniumWebITCase {
      * will not execute sendkeys() on elements that selenium determines to be invisible to the user.
      */
     public void clearFileInputStyles() {
-        //todo: we removed this back in rev 94d504cf5128:7082 as workaround to FirefoxDriver bug.
-        //      Try removing the workaround and seeing if the firefoxdriver bug is fixed.
+        // todo: we removed this back in rev 94d504cf5128:7082 as workaround to FirefoxDriver bug.
+        // Try removing the workaround and seeing if the firefoxdriver bug is fixed.
         WebElement input = find("#fileAsyncUpload").first();
         showAsyncFileInput(input);
     }
@@ -1651,20 +1728,20 @@ public abstract class AbstractSeleniumWebITCase {
         setStyle(input, "cursor", "auto");
     }
 
-    //TODO: move this method to WebElementSelection
-    //TODO: comment all of the lambda/stream insanity that's going on in this method
-    //FIXME: instead of separate method name, selection.val() should intelligently handle real form elements as well as select2 controls
+    // TODO: move this method to WebElementSelection
+    // TODO: comment all of the lambda/stream insanity that's going on in this method
+    // FIXME: instead of separate method name, selection.val() should intelligently handle real form elements as well as select2 controls
     public final void select2val(WebElementSelection selection, List<String> vals) {
         selection.toList().stream()
                 .filter(elem -> elem.getAttribute("class").contains("select2-hidden-accessible"))
                 .map(elem -> find(elem.findElement(By.xpath("following-sibling::*[1]"))))
-                .forEach( proxy -> {
+                .forEach(proxy -> {
                     logger.debug("select2 proxy:: length:{} tag:{}  html:{}", proxy.size(), proxy.getTagName(), proxy.getHtml());
                     logger.debug("values to set: {}", vals);
                     proxy.find(".select2-selection__rendered").click();
-                    vals.forEach( (v) -> {
+                    vals.forEach((v) -> {
                         waitFor(driver -> !proxy.find(".select2-search__field").isEmpty());
-                        //type value into textbox, wait for result menu , then click on the menu item.
+                        // type value into textbox, wait for result menu , then click on the menu item.
                         WebElementSelection searchField = proxy.find(".select2-search__field").sendKeys(v);
                         String menuOption = String.format("span.select2-container--open span[data-id=\"%s\"]", v);
                         logger.debug("looking for: {}", menuOption);
@@ -1676,9 +1753,11 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     /**
-     * Clears all values from a select2 control.  This only works with multi-valued select2 controls.  For single-value controls,  click on their delete button
+     * Clears all values from a select2 control. This only works with multi-valued select2 controls. For single-value controls, click on their delete button
      * instead.
-     * @param selection Selection that contains the original &lt;select&gt; elements that back a select2 control (not the select2 container facades)
+     * 
+     * @param selection
+     *            Selection that contains the original &lt;select&gt; elements that back a select2 control (not the select2 container facades)
      */
     public final void select2Clear(WebElementSelection selection) {
         selection.toList().stream()
@@ -1687,26 +1766,27 @@ public abstract class AbstractSeleniumWebITCase {
                 .forEach(facade -> facade.find(".select2-selection__choice__remove").click());
     }
 
-
-    //fixme: jtd: this function is likely unneeded (I wrote it thinking you needed to escape all css strings, instead of just literals).
+    // fixme: jtd: this function is likely unneeded (I wrote it thinking you needed to escape all css strings, instead of just literals).
     /**
-     * Escape a css literal.  Note that you probably don't need to do this.
+     * Escape a css literal. Note that you probably don't need to do this.
+     * 
      * @param val
      * @return
      */
     public String escapeCssLiteral(String val) {
-        char[] specials = {'"','#','$','%','&','\'','(',')','*','+','-','.','/',':',';','<','=','>','?','@','[','\\',']','^','`','{','|','}','~'};
+        char[] specials = { '"', '#', '$', '%', '&', '\'', '(', ')', '*', '+', '-', '.', '/', ':', ';', '<', '=', '>', '?', '@', '[', '\\', ']', '^', '`', '{',
+                '|', '}', '~' };
         char[] valchars = val.toCharArray();
         char esc = '\\';
         StringBuilder sb = new StringBuilder();
-        if(Character.isDigit(valchars[0])) {
+        if (Character.isDigit(valchars[0])) {
             sb.append(esc);
         }
         sb.append(valchars[0]);
 
         for (int i = 1; i < valchars.length; i++) {
-            for(int j = 0; j < specials.length; j++) {
-                if(valchars[i] == specials[j]) {
+            for (int j = 0; j < specials.length; j++) {
+                if (valchars[i] == specials[j]) {
                     sb.append(esc);
                     break;
                 }

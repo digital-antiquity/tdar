@@ -24,10 +24,7 @@ import org.tdar.core.bean.FileProxy;
 import org.tdar.core.bean.PersonalFilestoreTicket;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.entity.TdarUser;
@@ -139,18 +136,11 @@ public class BulkUploadService {
             Activity activity = registerActivity(fileProxies, submitter);
 
 
-        try {
-        logAndPersist(manifestProxy.getAsyncUpdateReceiver(), remainingResources, submitterId, accountId);
-        } catch (Throwable t) {
-            logger.error("erorr in persist", t);
-            logger.error("erorr in persist", t.getCause());
-            
-        }
             logger.info("bulk: processing files, and then persisting");
             processFileProxiesIntoResources(fileProxies, resourceTemplate, submitter, asyncUpdateReceiver, resources);
             updateAccountQuotas(accountId, resources, asyncUpdateReceiver, submitter);
 
-            ListCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
+            SharedCollection collection = logAndPersist(asyncUpdateReceiver, resources, submitterId, accountId);
             completeBulkUpload(accountId, asyncUpdateReceiver, activity, ticketId);
             asyncUpdateReceiver.setCollectionId(collection.getId());
         } catch (Throwable t) {
@@ -253,15 +243,16 @@ public class BulkUploadService {
      * Log each record to XML and put in the filestore, and persist the record
      * as needed, then let the @link AsyncUpdateReceiver know we're done
      */
-    private ResourceCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
+    private SharedCollection logAndPersist(AsyncUpdateReceiver receiver, List<Resource> resources, Long submitterId, Long accountId) {
         logger.info("bulk: setting final statuses and logging");
         TdarUser submitter = genericDao.find(TdarUser.class, submitterId);
         String title = "Bulk Upload:" + DateTime.now().toString( DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss"));
-        ListCollection collection = new ListCollection(title, title, SortOption.TITLE, false, submitter);
+        SharedCollection collection = new SharedCollection(title, title, submitter); //,false,  SortOption.TITLE
         try {
             collection.markUpdated(submitter);
             collection.setSystemManaged(true);
             genericDao.saveOrUpdate(collection);
+
             for (Resource resource : resources) {
                 receiver.update(receiver.getPercentComplete(), String.format("saving %s", resource.getTitle()));
                 String logMessage = String.format("%s edited and saved by %s:\ttdar id:%s\ttitle:[%s]",
@@ -269,7 +260,7 @@ public class BulkUploadService {
 
                 try {
                     collection.getResources().add(resource);
-                    resource.getResourceCollections().add(collection);
+                    resource.getSharedCollections().add(collection);
                     resourceService.logResourceModification(resource, resource.getSubmitter(), logMessage, RevisionLogType.CREATE);
                     genericDao.saveOrUpdate(resource);
                 } catch (TdarRecoverableRuntimeException trex) {
@@ -318,164 +309,6 @@ public class BulkUploadService {
         receiver.setCompleted();
         logger.info("bulk upload complete");
         // logger.info("remaining: " + image.getInternalResourceCollection());
-<<<<<<< mine
-        wrapper.getActivity().end();
-        // image.setStatus(Status.DELETED);
-        try {
-            IOUtils.closeQuietly(wrapper.getStream());
-        } catch (Exception e) {
-            logger.debug("an exception occurred when closing import stream", e);
-        }
-
-    }
-
-    /**
-     * Reads through the Excel Sheet and validates it. Looks for required fields
-     * that are missing, and also parses all files to figure out what files we
-     * have and whether to evaluate the entire sheet as case-sensitive filenames
-     * or not.
-     * 
-     * @param sheet
-     * @param fileProxies
-     * @return
-     */
-    @Transactional(readOnly = true)
-    public BulkManifestProxy validateManifestFile(Sheet sheet, InformationResource resourceTemplate, TdarUser submitter, Collection<FileProxy> fileProxies,
-            Long ticketId) {
-
-        Iterator<Row> rowIterator = sheet.rowIterator();
-
-        LinkedHashSet<CellMetadata> allValidFields = bulkUploadTemplateService.getAllValidFieldNames();
-        Map<String, CellMetadata> cellLookupMap = bulkUploadTemplateService.getCellLookupMapByName(allValidFields);
-        BulkManifestProxy proxy = new BulkManifestProxy(sheet, allValidFields, cellLookupMap, bulkUploadTemplateService, entityService,
-                reflectionService);
-        if (PersistableUtils.isNotNullOrTransient(ticketId)) {
-            asyncStatusMap.put(ticketId, proxy.getAsyncUpdateReceiver());
-        }
-        proxy.setSubmitter(submitter);
-        FormulaEvaluator evaluator = sheet.getWorkbook().getCreationHelper().createFormulaEvaluator();
-        proxy.setColumnNamesRow(sheet.getRow(ExcelWorkbookWriter.FIRST_ROW));
-
-        // capture all of the column names and make sure they're valid in general
-        proxy.initializeColumnMetadata(cellLookupMap, evaluator);
-        if (CollectionUtils.isEmpty(fileProxies)) {
-            proxy.createFakeFileProxies(sheet);
-        } else {
-            proxy.setFileProxies(fileProxies);
-        }
-        List<String> requiredErrors = new ArrayList<String>();
-        for (CellMetadata field : allValidFields) {
-            if (field.isRequired() && !proxy.getRequired().contains(field)) {
-                requiredErrors.add(field.getDisplayName());
-            }
-        }
-
-        if (proxy.getColumnNames().isEmpty()) {
-            logger.info("the manifest file uploaded appears to be empty");
-            throw new TdarRecoverableRuntimeException("bulkUploadService.the_manifest_file_uploaded_appears_to_be_empty_no_columns_found");
-        }
-
-        if (!proxy.getColumnNames().get(ExcelWorkbookWriter.FIRST_COLUMN).equals(BulkUploadTemplate.FILENAME)) {
-            throw new TdarRecoverableRuntimeException("bulkUploadService.the_first_column_must_be_the_filename");
-        }
-
-        if (CollectionUtils.isNotEmpty(requiredErrors)) {
-            throw new TdarRecoverableRuntimeException("bulkUploadService.the_following_columns_are_required_s",
-                    Arrays.asList(StringUtils.join(requiredErrors.toArray(), ", ")));
-        }
-
-        proxy.testFilenameCaseAndAddFiles(rowIterator);
-
-        createResourceFromFileProxies(resourceTemplate, proxy);
-        try {
-            proxy.readExcelFile();
-        } catch (InvalidFormatException | IOException e) {
-            proxy.getAsyncUpdateReceiver().addError(e);
-            logger.error(e.getMessage(), e);
-        }
-
-        return proxy;
-    }
-
-    /**
-     * Given the template @link Image (@link InformationResource) process each
-     * of the @link FileProxy entries (Excel template excluded) into it's own
-     * resource
-     * 
-     * @param image
-     * @param submitter
-     * @param proxy
-     * @param fileProxies
-     * @param receiver
-     * @param count
-     * @return
-     */
-    private void createResourceFromFileProxies(final InformationResource image, final BulkManifestProxy proxy) {
-
-        if (StringUtils.isBlank(image.getTitle())) {
-            image.setTitle(BulkUploadTemplate.BULK_TEMPLATE_TITLE);
-        }
-
-        if (proxy == null) {
-            return;
-        }
-        float count = 0f;
-        for (FileProxy fileProxy : proxy.getFileProxies()) {
-            logger.trace("processing: {}", fileProxy);
-            try {
-                if ((fileProxy == null) || (fileProxy.getAction() != FileAction.ADD)) {
-                    continue;
-                }
-                logger.debug("processing: {} | {}", fileProxy, fileProxy.getAction());
-                String fileName = fileProxy.getFilename();
-                // if there is not an exact match in the manifest file then,
-                // skip it. If there is no manifest file, then go merrily along
-                if ((proxy != null) && !proxy.containsFilename(fileName)) {
-                    logger.info("skipping {} filenames: {} ", fileName, proxy.listFilenames());
-                    continue;
-                }
-
-                logger.info("inspecting ... {}", fileName);
-                count++;
-                float percent = (count / Float.valueOf(proxy.getFileProxies().size())) * 50;
-                proxy.getAsyncUpdateReceiver().update(percent, " processing " + fileName);
-                ResourceType suggestTypeForFile = analyzer.suggestTypeForFileName(fileName, getResourceTypesSupportingBulkUpload());
-                if (suggestTypeForFile == null) {
-                    logger.debug("skipping because cannot figure out extension for file {}", fileName);
-                    proxy.getAsyncUpdateReceiver().addError(
-                            new TdarRecoverableRuntimeException("bulkUploadService.skipping_line_filename_not_found", Arrays.asList(fileName)));
-                    continue;
-                }
-
-                createResourceAndAddToProxyList(image, proxy, fileName, suggestTypeForFile);
-            } catch (Exception e) {
-                logger.error("something happend", e);
-                logger.error("something happend", e.getCause());
-                proxy.getAsyncUpdateReceiver().addError(e);
-            }
-        }
-    }
-
-    /**
-     * Create the actual resource and add it to the proxy list
-     * 
-     * @param image
-     * @param proxy
-     * @param fileName
-     * @param suggestTypeForFile
-     */
-    private void createResourceAndAddToProxyList(final InformationResource image, final BulkManifestProxy proxy, String fileName,
-            ResourceType suggestTypeForFile) {
-        Class<? extends Resource> resourceClass = suggestTypeForFile.getResourceClass();
-        if (InformationResource.class.isAssignableFrom(resourceClass)) {
-            logger.info("saving " + fileName + "..." + suggestTypeForFile);
-            InformationResource informationResource = (InformationResource) resourceService.createResourceFrom(image, resourceClass, false);
-            informationResource.setTitle(fileName);
-            informationResource.markUpdated(proxy.getSubmitter());
-            informationResource.setDescription(" ");
-
-            proxy.getResourcesCreated().put(fileName, informationResource);
-        }
         activity.end();
     }
 

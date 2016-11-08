@@ -210,20 +210,10 @@
             <#list facetlist as facet>
                 <li class="${liCssClass}">
                     <#if (facetlist?size > 1)>
-
                         <span class="media-body">
                         <#local facetUrl><#compress><@s.url action=action includeParams="get" >
                     <@s.param name="${facetParam}">${facet.raw}</@s.param>
                     <@s.param name="startRecord" value="0"/>
-                    <#if (documentType!'') == '' && facetParam != 'documentType'>
-                        <@s.param name="documentType" value=""/>
-                    </#if>
-                    <#if (fileAccess!'') == '' && facetParam != 'fileAccess'>
-                        <@s.param name="fileAccess" value=""/>
-                    </#if>
-                    <#if facetParam != "integratableOptions">
-                        <@s.param name="integratableOptions" value=""/>
-                    </#if>
                     <#nested>
                 </@s.url></#compress></#local>
                 <#if link><#t>
