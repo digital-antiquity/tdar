@@ -39,7 +39,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     @Rollback(true)
     public void testSetupCorrect() {
         ResourceCollection collection = resourceCollectionService.find(1575l);
-        assertTrue(((VisibleCollection) collection).isHidden());
+        assertFalse(((VisibleCollection) collection).isHidden());
     }
 
     @Test

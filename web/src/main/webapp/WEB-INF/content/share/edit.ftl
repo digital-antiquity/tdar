@@ -73,6 +73,36 @@
 
         </div>
 
+        <div id="divBrowseOptionsTips" style="display:none">
+            <p>Choose whether this collection will be public or private, and how ${siteAcronym} will sort the resources when displaying this collection to other
+                users. Marking a collection as "private" does not restrict access to the resources within it.</p>
+            <ul>
+                <li>Public collections are viewable to all ${siteAcronym} users and accessible from the &quot;Browse Collections&quot; page.</li>
+                <li>Private collections are only viewable to the users specified in the <a href="#accessRights">Access Rights</a> section.</li>
+            </ul>
+        </div>
+        <div class="glide" data-tiplabel="Browse and Display Options" data-tooltipcontent="#divBrowseOptionsTips">
+            <h2>Browse and Display Options</h2>
+
+        
+            <div class="control-group">
+                <label class="control-label">Hide this collection?</label>
+
+                <div class="controls">
+                    <label for="rdoVisibleTrue" class="radio inline"><input type="radio" id="rdoVisibleTrue" name="resourceCollection.hidden"
+                                                                            value="true" <@common.checkedif resourceCollection.hidden true /> />Yes</label>
+                    <label for="rdoVisibleFalse" class="radio inline"><input type="radio" id="rdoVisibleFalse" name="resourceCollection.hidden"
+                                                                             value="false" <@common.checkedif resourceCollection.hidden false /> />No</label>
+                </div>
+            </div>
+    
+            <@s.select labelposition='top' label='When Browsing Sort Resource By' name='resourceCollection.sortBy'
+            listValue='label' list='%{sortOptions}' title="Sort resource by" />
+
+            <@s.select labelposition='top' label='Display Collection as' name='resourceCollection.orientation'
+            list='%{ResultsOrientations}'  listValue='label'  title="Display as" />
+        </div>
+
         <div id="divCollectionAccessRightsTips" style="display:none">
             <p>Determines who can edit a document or related metadata. Enter the first few letters of the person's last name.
                 The form will check for matches in the ${siteAcronym} database and populate the related fields.</p>
