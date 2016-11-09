@@ -255,6 +255,8 @@
     </#macro>
 
     <#-- render a "remove this facet" link -->
+    <#-- Specifically,  render a link that has the same query parameters as the current page,  minus the query parameter that activates the facet
+            specified by the ${facetParam} argument. -->
     <#macro removeFacet facetlist="" label="Facet Label" facetParam="">
         <#if facetlist?has_content>
             <#if (facetlist?is_collection)>
@@ -277,6 +279,9 @@
                                     <@s.param suppressEmptyParameters=true />
                                     <@s.param name="${facetParam}"value="" />
                                     <@s.param name="startRecord" value="0"/>
+
+                                    <#-- fixme: (TDAR-5574) commenting out the block below fixes at least some of the issues seen in TDAR-5574 - is there a scenario I'm overlooking?  -->
+                                    <#--
                                     <#if facetParam != "documentType">
                                         <@s.param name="documentType" value=""/>
                                     </#if>
@@ -284,6 +289,7 @@
                                         <@s.param name="integratableOptions" value=""/>
                                     </#if>
                                     <#nested>
+                                    -->
                                 </@s.url>">
                                 <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
                                 ${facetText}
