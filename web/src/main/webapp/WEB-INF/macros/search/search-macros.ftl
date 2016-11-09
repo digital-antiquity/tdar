@@ -234,15 +234,17 @@
                                         </#if>
                                     </#if>
                                 </#if>
-                                </a>
+                                <#if link></a></#if>
                                 <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
-                                    <#if link></a></#if>
                                 <span>(${facet.count})</span>
                             </span>
                             <#elseif (currentValues?size > 0) >
                                 <@removeFacet facetlist=currentValues facetParam=facetParam />
                             <#else>
-                                <span class="media-body"> <@s.text name="${facet.label}"/> <span>(${facet.count})</span></span>
+                                <span class="media-body">
+                                    <@s.text name="${facet.label}"/>
+                                    <span>(${facet.count})</span>
+                                </span>
                             </#if>
                         </#compress>
                     </li>
@@ -252,6 +254,7 @@
 
     </#macro>
 
+    <#-- render a "remove this facet" link -->
     <#macro removeFacet facetlist="" label="Facet Label" facetParam="">
         <#if facetlist?has_content>
             <#if (facetlist?is_collection)>
@@ -264,28 +267,30 @@
             <#if facet?has_content>
                 <#assign facetText=facet/>
                 <#if facet.plural?has_content><#assign facetText=facet.plural/>
-                <#elseif facet.label?has_content><#assign facetText=facet.label/>
+                    <#elseif facet.label?has_content><#assign facetText=facet.label/>
                 </#if>
-        
-        <ul class="media-list tools">
-                <li class="media">
-                    <span class="media-body">
-            <a rel="noindex" href="<@s.url includeParams="all">
-            <@s.param name="${facetParam}"value="" />
-            <@s.param name="startRecord" value="0"/>
-            <#if facetParam != "documentType">
-                <@s.param name="documentType" value=""/>
-            </#if>
-            <#if facetParam != "integratableOptions">
-                <@s.param name="integratableOptions" value=""/>
-            </#if>
-            <#nested>
-        </@s.url>">
-                        <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
-                        ${facetText}</a>
-                    </span>
-                </li>
-        </ul>
+
+                <ul class="media-list tools">
+                    <li class="media">
+                        <span class="media-body">
+                            <a rel="noindex" href="<@s.url includeParams="all">
+                                    <@s.param suppressEmptyParameters=true />
+                                    <@s.param name="${facetParam}"value="" />
+                                    <@s.param name="startRecord" value="0"/>
+                                    <#if facetParam != "documentType">
+                                        <@s.param name="documentType" value=""/>
+                                    </#if>
+                                    <#if facetParam != "integratableOptions">
+                                        <@s.param name="integratableOptions" value=""/>
+                                    </#if>
+                                    <#nested>
+                                </@s.url>">
+                                <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>
+                                ${facetText}
+                            </a>
+                        </span>
+                    </li>
+                </ul>
             </#if>
         </#if>
     </#macro>
