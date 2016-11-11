@@ -1,13 +1,7 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -18,6 +12,7 @@ import org.apache.struts2.convention.annotation.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.tdar.core.bean.SimpleSearch;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.ResourceCollection;
@@ -177,8 +172,9 @@ public class DashboardController extends AbstractAuthenticatableAction implement
 		getLogger().trace("removing duplicates");
 		getSharedResourceCollections().removeAll(getAllResourceCollections());
 		getLogger().trace("sorting");
-		Collections.sort(allResourceCollections);
-		Collections.sort(sharedResourceCollections);
+
+        allResourceCollections.sort(SimpleSearch.TITLE_COMPARATOR);
+		sharedResourceCollections.sort(SimpleSearch.TITLE_COMPARATOR);
 		getLogger().trace("done sort");
 	}
 

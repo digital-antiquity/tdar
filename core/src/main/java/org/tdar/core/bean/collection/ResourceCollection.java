@@ -228,7 +228,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
     @Cache(usage = CacheConcurrencyStrategy.TRANSACTIONAL)
     private Set<CollectionRevisionLog> collectionRevisionLog = new HashSet<>();
 
-    private transient Set<ResourceCollection> transientChildren = new LinkedHashSet<>();
+    private transient List<ResourceCollection> transientChildren = new ArrayList<>();
 
     @Column(name = "hidden", nullable = false)
     private boolean hidden = false;
@@ -514,7 +514,7 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
         if (getTitle() == null) {
             return "";
         }
-        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "");
+        return getTitle().replaceAll(SimpleSearch.TITLE_SORT_REGEX, "").toLowerCase();
     }
 
     @Override
@@ -577,11 +577,11 @@ public class ResourceCollection extends AbstractPersistable implements HasName, 
 
     @XmlTransient
     @Transient
-    public Set<ResourceCollection> getTransientChildren() {
+    public List<ResourceCollection> getTransientChildren() {
         return transientChildren;
     }
 
-    public void setTransientChildren(Set<ResourceCollection> transientChildren) {
+    public void setTransientChildren(List<ResourceCollection> transientChildren) {
         this.transientChildren = transientChildren;
     }
 

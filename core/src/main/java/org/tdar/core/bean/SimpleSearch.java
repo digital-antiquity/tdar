@@ -2,6 +2,8 @@ package org.tdar.core.bean;
 
 import org.tdar.core.bean.entity.Person;
 
+import java.util.Comparator;
+
 /**
  * This interface is designed to ensure that fields are available for basic searhing
  * 
@@ -27,9 +29,12 @@ public interface SimpleSearch extends Persistable {
         }
     }
 
-    static final String TITLE_SORT_REGEX = "^([\\s\\W]|The |A |An )+";
+    String TITLE_SORT_REGEX = "^([\\s\\W]|The |A |An )+";
+
+    Comparator<SimpleSearch> TITLE_COMPARATOR = (c1, c2) -> c1.getTitleSort().compareTo(c2.getTitleSort());
 
     String getTitleSort();
+
 
     String getTitle();
 
@@ -38,5 +43,4 @@ public interface SimpleSearch extends Persistable {
     String getUrlNamespace();
 
     Person getSubmitter();
-
 }
