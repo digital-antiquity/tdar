@@ -25,6 +25,9 @@ import org.tdar.core.service.GenericService;
 import org.tdar.core.service.SerializationService;
 
 public class DataOneServiceITCase extends AbstractIntegrationTestCase {
+    private static final String TEST_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;
+    private static final String BASE = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
+    private static final String TEST_DOI = BASE + "1281812043684";
 
     @Autowired
     private DataOneService service;
@@ -43,6 +46,18 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     }
 
     String checksum = null;
+    
+    @Test
+    public void testIdentifierParser() {
+        IdentifierParser ip = new IdentifierParser(TEST_META, informationResourceService);
+        logger.debug(ip.getDoi());
+        logger.debug(ip.getType().name());
+    }
+
+    @Test
+    public void testMetadataRequest() {
+        service.metadataRequest(TEST_META);
+    }
     
     @Test
     @Rollback(false)
