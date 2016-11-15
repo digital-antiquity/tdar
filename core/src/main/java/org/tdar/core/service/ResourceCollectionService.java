@@ -514,7 +514,9 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
 
         // first pass - build the node hierarchy
-        allChildren.forEach( child -> {
+        collection.getTransientChildren().clear();
+        allChildren.forEach(child -> child.getTransientChildren().clear());
+        allChildren.forEach(child -> {
             authorizationService.applyTransientViewableFlag(child, authenticatedUser);
             if(child.getParent() != null) {
                 child.getParent().getTransientChildren().add(child);
