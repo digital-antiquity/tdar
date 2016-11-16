@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<OAI-PMH xmlns="http://www.openarchives.org/OAI/2.0/" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/
+         http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd">
+  <responseDate>2012-01-31T14:33:37Z</responseDate>
+  <request verb="ListRecords" 
+  	
+  	 metadataPrefix="oai_dc"
+  	
+  	
+  	
+  	
+  >http://localhost:8080/oai-pmh/oai?verb=ListRecords&amp;&amp;metadataPrefix=oai_dc</request>
+  <ListRecords>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:11</identifier>
+	        <datestamp>2008-04-19T18:33:03Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Nelson, Ben, PRINCIPAL_INVESTIGATOR (null)</dc:contributor><dc:contributor>Arizona State University (SPONSOR)</dc:contributor><dc:coverage>Mesoamerican Northern Periphery</dc:coverage><dc:coverage>North West Mexico</dc:coverage><dc:coverage>Epi-Classic</dc:coverage><dc:coverage>Malpaso Valley</dc:coverage><dc:coverage>La Quemada</dc:coverage><dc:coverage>MaxY: 22.4909883877989, MinY: 22.410393735105, MaxX: -102.79598236084, MinX: -102.879066467285</dc:coverage><dc:coverage>CALENDAR_DATE: 350 - 1000</dc:coverage><dc:subject>Social Complexity</dc:subject><dc:subject>Northern expansion of Mesoamerica</dc:subject><dc:title>Malpaso Valley - La Quemada Project</dc:title><dc:type>Project</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:95</identifier>
+	        <datestamp>2008-04-23T18:27:02Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Arizona State University (PREPARER)</dc:contributor><dc:contributor>Nelson, Margaret, PRINCIPAL_INVESTIGATOR (null)</dc:contributor><dc:contributor>National Science Foundation (SPONSOR)</dc:contributor><dc:coverage>Pueblo IV</dc:coverage><dc:coverage>Pueblo III</dc:coverage><dc:coverage>Pueblo II</dc:coverage><dc:coverage>Pueblo I</dc:coverage><dc:coverage>Preclassic</dc:coverage><dc:coverage>Late Pithouse</dc:coverage><dc:coverage>Postclassic</dc:coverage><dc:coverage>Classic</dc:coverage><dc:coverage>Soho</dc:coverage><dc:coverage>Civano</dc:coverage><dc:coverage>Sedentary</dc:coverage><dc:coverage>MaxY: 35.4606699514953, MinY: 17.1407903933166, MaxX: -98.61328125, MinX: -112.67578125</dc:coverage><dc:coverage>CALENDAR_DATE: 400 - 1600</dc:coverage><dc:subject>Resilience</dc:subject><dc:title>Long Term Vulnerability and Transformation Project</dc:title><dc:type>Project</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:139</identifier>
+	        <datestamp>2008-04-24T07:37:53Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Clark, Tiffany, CONTRIBUTOR (null)</dc:contributor><dc:contributor>Arizona State University (SPONSOR)</dc:contributor><dc:coverage>Rudd Creek</dc:coverage><dc:title>Rudd Creek Archaeological Project</dc:title><dc:type>Project</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:265</identifier>
+	        <datestamp>2008-05-05T02:00:11Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Kintigh, Keith, CONTACT (Arizona State University)</dc:contributor><dc:contributor>Kintigh, Keith, PRINCIPAL_INVESTIGATOR (Arizona State University)</dc:contributor><dc:contributor>Kintigh, Keith, PROJECT_DIRECTOR (Arizona State University)</dc:contributor><dc:contributor>Duff, Andrew, PROJECT_DIRECTOR (null)</dc:contributor><dc:contributor>Arizona State University (SPONSOR)</dc:contributor><dc:contributor>Arizona State University</dc:contributor><dc:coverage>Pueblo III</dc:coverage><dc:coverage>Hinkson Site</dc:coverage><dc:coverage>MaxY: 34.81561448619966, MinY: 34.7951271814613, MaxX: -108.98438099794988, MinX: -109.005317687988</dc:coverage><dc:coverage>CALENDAR_DATE: 1180 - 1300</dc:coverage><dc:date>1996</dc:date><dc:description>The century following the collapse of Chaco is often viewed as a time of cultural backsliding. However, imposing sites with Chaco-inspired public architecture provide evidence of large communities, dating between A.D. 1200 and 1275, that laid the organizational foundations of well-known Pueblo IV towns. This article reports on excavations at one such Zuni-area settlement. the Hinkson site. In this site, 32 residential room blocks surround a great house complex that includes an unroofed, oversize great kiva, a nazha, and roads. The Hinkson site appears to be the center of a 250 square kilometer community with 70 room blocks and nearly 900 rooms. Recognition of these multi-room block communities with public architecture permits a reformulation of current concepts of post-Chacoan, Anasazi social integration and provides a more plausible bridge between the Chacoan and Pueblo IV periods.</dc:description><dc:language>en</dc:language><dc:publisher>Keith Kintigh</dc:publisher><dc:title>Post-Chacoan Social Integration at the Hinkson Site, New Mexico</dc:title><dc:type>Document</dc:type><dc:type>Text</dc:type><dc:type>Journal Article</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:323</identifier>
+	        <datestamp>2008-05-07T18:45:04Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Meegan, Cathryn, CONTACT (null)</dc:contributor><dc:contributor></dc:contributor><dc:date>2007</dc:date><dc:description></dc:description><dc:language>en</dc:language><dc:publisher>Cathryn Meegan</dc:publisher><dc:title>Macrobotanical Taxon and Plant Part Codes</dc:title><dc:type>Document</dc:type><dc:type>Text</dc:type><dc:type>Journal Article</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:328</identifier>
+	        <datestamp>2008-05-08T22:00:26Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Kulow, Stephanie, CONTACT (ASU SHESC)</dc:contributor><dc:contributor>ASU SHESC</dc:contributor><dc:coverage>Quarai</dc:coverage><dc:coverage>Pueblo Blanco</dc:coverage><dc:coverage>Pueblo Colorado</dc:coverage><dc:coverage>Gran Quivira</dc:coverage><dc:date>2008</dc:date><dc:language>en</dc:language><dc:publisher>Stephanie Kulow</dc:publisher><dc:title>Synthesis of Salinas Pueblo Glazeware Sources from Petrographic Analyses</dc:title><dc:type>Dataset</dc:type><dc:type>Dataset</dc:type><dc:type>application/vnd.ms-excel</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:351</identifier>
+	        <datestamp>2008-05-12T22:41:45Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Kulow, Stephanie, CREATOR (ASU SHESC)</dc:contributor><dc:contributor>Kulow, Stephanie, CONTACT (ASU SHESC)</dc:contributor><dc:contributor>Arizona State University (SPONSOR)</dc:contributor><dc:contributor>ASU SHESC</dc:contributor><dc:coverage>Classic Mimbres</dc:coverage><dc:coverage>Reorganization Phase</dc:coverage><dc:coverage>Late Pithouse</dc:coverage><dc:coverage>Postclassic</dc:coverage><dc:date>2007</dc:date><dc:language>en</dc:language><dc:publisher>Stephanie Kulow</dc:publisher><dc:title>Decorated Ceramics from Excavated Mimbres Sites</dc:title><dc:type>Dataset</dc:type><dc:type>Dataset</dc:type><dc:type>application/vnd.ms-excel</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:623</identifier>
+	        <datestamp>2008-05-28T00:29:47Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Schiavitti, Vincent, CONTACT (Arizona State University)</dc:contributor><dc:contributor>Nelson, Ben, PRINCIPAL_INVESTIGATOR (null)</dc:contributor><dc:contributor>Arizona State University (SPONSOR)</dc:contributor><dc:contributor>Arizona State University</dc:contributor><dc:coverage>MaxY: 22.4909883877989, MinY: 22.4132502513063, MaxX: -102.795295715332, MinX: -102.878723144531</dc:coverage><dc:date>1993</dc:date><dc:description>Field work from the 1992 season at La Quemada</dc:description><dc:language>en</dc:language><dc:publisher>Vincent Schiavitti</dc:publisher><dc:title>Nelson et. al. 1993 Informe parcial del Proyecto Valle de Malpaso La Quemada Temporada 1992</dc:title><dc:type>Document</dc:type><dc:type>Text</dc:type><dc:type>application/pdf</dc:type><dc:type>Journal Article</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:641</identifier>
+	        <datestamp>2008-05-28T08:51:45Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:title>Cibola Archaeological Research Project</dc:title><dc:type>Project</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+  	<record>
+	    <header>
+	        <identifier>oai:tdar.org:Resource:645</identifier>
+	        <datestamp>2008-05-31T19:04:38Z</datestamp>
+	    </header>
+	    <metadata>
+	    	<oai_dc:dc xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/" xmlns:dc="http://purl.org/dc/elements/1.1/" xsi:schemaLocation="http://www.openarchives.org/OAI/2.0/oai_dc/ http://www.openarchives.org/OAI/2.0/oai_dc.xsd"><dc:contributor>Nelson, Ben, CONTACT (null)</dc:contributor><dc:contributor>Schiavitti, Vincent, CONTACT (Arizona State University)</dc:contributor><dc:contributor>Nelson, Ben, PRINCIPAL_INVESTIGATOR (null)</dc:contributor><dc:contributor>Arizona State University (SPONSOR)</dc:contributor><dc:contributor>Arizona State University</dc:contributor><dc:coverage>La Quemada</dc:coverage><dc:coverage>Los Pilarillos</dc:coverage><dc:coverage>MaxY: 22.4909883877989, MinY: 22.4107111286944, MaxX: -102.795295715332, MinX: -102.879066467285</dc:coverage><dc:date>1997</dc:date><dc:description>Report of the field work conducted in the 1995 season.</dc:description><dc:language>sp</dc:language><dc:publisher>Ben Nelson</dc:publisher><dc:publisher>Vincent Schiavitti</dc:publisher><dc:subject>Social Complexity</dc:subject><dc:title>Nelson et al 1997 Informe Parcial del Proyecto Valle del Malpaso La Quemada Temporada 1995</dc:title><dc:type>Document</dc:type><dc:type>Text</dc:type><dc:type>application/pdf</dc:type><dc:type>Journal Article</dc:type></oai_dc:dc>
+	    </metadata>
+	 </record>
+	     <resumptionToken>10,1900,3000,oai_dc</resumptionToken>
+  </ListRecords>
+</OAI-PMH>

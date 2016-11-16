@@ -1,0 +1,28 @@
+{
+    "_comment1" : "The secrets that puppet needs to run. See http://docs.puppetlabs.com/hiera/1/puppet.html",
+    "_comment2" : "Placed in the /WEB-INF/classes directory so every run of puppet can read it",
+
+    "tdar-database::tdarmetadata_password": "${the.jdbc.password}",
+    "tdar-database::tdardata_password": "${the.jdbc.password}",
+    "tdar-database::tdargis_password": "${the.jdbc.password}",
+    "tdar-database::postgres_password": "${the.jdbc.password}", 
+
+    "supporting_scripts::postgres_password" : "${the.jdbc.password}",
+    "supporting_scripts::amazon_access_key": "${amazon.access.key}",
+    "supporting_scripts::amazon_secret_key": "${amazon.secret.key}",
+    "supporting_scripts::swift_user_name": "${swift.user.name}",
+    "supporting_scripts::swift_password": "${swift.password}",
+    "supporting_scripts::do_write_to_swift": "${swift.do.write.to}",
+            
+    "nrpe::nagiosservers" : "nagios.vpac.org",
+
+    "ddclient::ddclientconnectserver" : "${dynamic.dns.service}",
+    "ddclient::ddclientlogin" : "${username.dns.service}",
+    "ddclient::ddclientpassword" : "${password.dns.service}",
+    "ddclient::ddclienthostname" : "${app.hostname}",
+
+    "tomcat7::keystore_password" : "${password.keystore}",
+    "tomcat7::manager_password" : "${password.tomcat.manager}",
+
+    "kettle::cli_user_password" : "${password.cli.user}"
+}
