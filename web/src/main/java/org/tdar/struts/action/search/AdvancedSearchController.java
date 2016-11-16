@@ -110,6 +110,12 @@ public class AdvancedSearchController extends AbstractAdvancedSearchController i
         // needs manual care, but, when the TdarActionException is processed, it returns a blank page instead of
         // not_found
 
+
+        //FIXME jtd: This is a workaround for a (possible) bug in Struts that inserts null into lists if a request querystring has parameter name w/o a value.
+        // Normally we would expect struts to set such properties to be empty lists, so we make sure this is the case by stripping null entries.
+        // Note that sometimes null entries are important placeholders, so don't do this *everywhere*, just in lists where nulls are never expected.
+        stripNulls(getIntegratableOptions(), getDocumentTypeFacets(), getResourceTypeFacets(), getResourceTypes());
+
         setProjectionModel(ProjectionModel.HIBERNATE_DEFAULT);
 
         getAsqo().setMultiCore(true);

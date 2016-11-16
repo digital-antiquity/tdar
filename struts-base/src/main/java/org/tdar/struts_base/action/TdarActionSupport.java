@@ -724,4 +724,18 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
         return getActionErrors();
     }
 
+    /**
+     * Remove null items from the specified list(s).
+     * @param lists
+     */
+    public final void stripNulls(List<?> ...lists) {
+        Arrays.stream(lists)
+                //if list is null itself, skip it
+                .filter(list -> list != null)
+                //otherwise, remove all the null items
+                .forEach(list -> {
+                    list.removeIf(item -> item == null);
+                });
+    }
+
 }
