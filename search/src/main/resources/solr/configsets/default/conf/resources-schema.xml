@@ -55,7 +55,7 @@
     <field name="metadataLanguage" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
 
 
-    <field name="integratable" type="boolean" indexed="true"  required="false" multiValued="false"  stored="true"/>
+    <field name="integratableOption" type="string" indexed="true"  required="false" multiValued="false"  stored="true"/>
     <field name="resourceAccessType" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="filename" type="strings" indexed="true"  required="false" multiValued="true"  stored="true"/>
     <field name="totalFiles" type="int" indexed="true" stored="true" required="false" multiValued="false" />

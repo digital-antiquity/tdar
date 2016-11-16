@@ -269,12 +269,12 @@
             <a rel="noindex" href="<@s.url includeParams="all">
             <@s.param name="${facetParam}"value="" />
             <@s.param name="startRecord" value="0"/>
-            <#if facetParam != "documentType">
-                <@s.param name="documentType" value=""/>
-            </#if>
-            <#if facetParam != "integratableOptions">
-                <@s.param name="integratableOptions" value=""/>
-            </#if>
+            <#--<#if facetParam != "documentType">-->
+                <#--<@s.param name="documentType" value=""/>-->
+            <#--</#if>-->
+            <#--<#if facetParam != "integratableOptions">-->
+                <#--<@s.param name="integratableOptions" value=""/>-->
+            <#--</#if>-->
             <#nested>
         </@s.url>">
                         <svg class=" svgicon grey"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_selected"></use></svg>

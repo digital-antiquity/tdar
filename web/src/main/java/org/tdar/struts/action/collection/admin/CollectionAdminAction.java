@@ -1,9 +1,6 @@
 package org.tdar.struts.action.collection.admin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -61,7 +58,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private Set<ResourceCollection> allChildCollections;
+    private List<ResourceCollection> allChildCollections = new ArrayList<>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -241,12 +238,12 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public Set<ResourceCollection> getAllChildCollections() {
+    public List<ResourceCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(Set<ResourceCollection> allChildCollections) {
-        this.allChildCollections = allChildCollections;
+    public void setAllChildCollections(List<ResourceCollection> allChildCollections) {
+        this.allChildCollections = new ArrayList<>(allChildCollections);
     }
 
     public List<Facet> getResourceTypeFacets() {

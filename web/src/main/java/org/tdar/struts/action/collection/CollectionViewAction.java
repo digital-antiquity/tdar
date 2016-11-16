@@ -190,13 +190,13 @@ public class CollectionViewAction extends AbstractPersistableViewableAction<Reso
             return;
         }
         getLogger().trace("child collections: begin");
-        Set<ResourceCollection> findAllChildCollections;
+        List<ResourceCollection> findAllChildCollections;
 
         if (isAuthenticated()) {
             resourceCollectionService.buildCollectionTreeForController(getPersistable(), getAuthenticatedUser(), CollectionType.SHARED);
             findAllChildCollections = getPersistable().getTransientChildren();
         } else {
-            findAllChildCollections = new LinkedHashSet<>(resourceCollectionService.findDirectChildCollections(getId(), false,
+            findAllChildCollections = new ArrayList<>(resourceCollectionService.findDirectChildCollections(getId(), false,
                     CollectionType.SHARED));
         }
         setCollections(new ArrayList<>(findAllChildCollections));

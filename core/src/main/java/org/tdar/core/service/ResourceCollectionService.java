@@ -502,25 +502,33 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      *            authuser instance to serve as a frame of reference when deriving the approprate
      *            value for the 'viewable' property of each child ResourceCollection in the returned
      *            list.
-     * @return a list containing the other 'root' collections besides the one initially specified
-     *         this method iteratively populates the transient children resource collection fields of the specified
-     *         collection.
      */
     @Transactional(readOnly = true)
-    public List<ResourceCollection> buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
+    public void buildCollectionTreeForController(ResourceCollection collection, TdarUser authenticatedUser, CollectionType collectionType) {
         List<ResourceCollection> allChildren = getAllChildCollections(collection);
-        // FIXME: iterate over all children to reconcile tree
-        Iterator<ResourceCollection> iter = allChildren.iterator();
-        while (iter.hasNext()) {
-            ResourceCollection child = iter.next();
-            authorizationService.applyTransientViewableFlag(child, authenticatedUser);
-            ResourceCollection parent = child.getParent();
-            if (parent != null) {
-                parent.getTransientChildren().add(child);
-                iter.remove();
-            }
+
+        // ensure no duplicates (theoretically unnecessary, unless database schema is misconfigured)
+        Set<ResourceCollection>  childrenSet = new HashSet<>(allChildren);
+        if(!allChildren.isEmpty() && allChildren.size() != childrenSet.size()) {
+            logger.error("The following collection contains duplicate children items:{}. ", collection);
         }
-        return allChildren;
+
+        // first pass - build the node hierarchy
+        collection.getTransientChildren().clear();
+        allChildren.forEach(child -> child.getTransientChildren().clear());
+        allChildren.forEach(child -> {
+            authorizationService.applyTransientViewableFlag(child, authenticatedUser);
+            if(child.getParent() != null) {
+                child.getParent().getTransientChildren().add(child);
+            }
+        });
+
+        // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
+        allChildren.add(collection);
+        allChildren.forEach(child -> {
+            child.getTransientChildren().sort(ResourceCollection.TITLE_COMPARATOR);
+            logger.debug("new list: {}", child.getTransientChildren());
+        });
     }
 
     /**
