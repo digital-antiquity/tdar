@@ -22,6 +22,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.AbstractSequenced;
 import org.tdar.core.bean.Sequenceable;
 import org.tdar.core.bean.billing.BillingAccount;
+import org.tdar.core.bean.collection.CustomizableCollection;
 import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -477,7 +478,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
         this.schemaOrgJsonLD = schemaOrgJsonLD;
     }
 
-    private transient ListCollection whiteLabelCollection;
+    private transient CustomizableCollection whiteLabelCollection;
     
     @XmlTransient
     /**
@@ -485,7 +486,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
      *
      * @return
      */
-    public ListCollection getWhiteLabelCollection() {
+    public CustomizableCollection getWhiteLabelCollection() {
         if (whiteLabelCollection == null) {
             whiteLabelCollection = resourceCollectionService.getWhiteLabelCollectionForResource(getResource());
         }
@@ -493,7 +494,7 @@ public abstract class AbstractResourceViewAction<R extends Resource> extends Abs
     }
 
     public boolean isWhiteLabelLogoAvailable() {
-        ListCollection wlc = getWhiteLabelCollection();
+        CustomizableCollection wlc = getWhiteLabelCollection();
         return wlc != null && checkLogoAvailable(FilestoreObjectType.COLLECTION, wlc.getId(), VersionType.WEB_LARGE);
     }
 

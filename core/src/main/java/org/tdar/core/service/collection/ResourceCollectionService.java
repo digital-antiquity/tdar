@@ -989,7 +989,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = true)
-    public ListCollection getWhiteLabelCollectionForResource(Resource resource) {
+    public CustomizableCollection getWhiteLabelCollectionForResource(Resource resource) {
         return getDao().getWhiteLabelCollectionForResource(resource);
     }
 

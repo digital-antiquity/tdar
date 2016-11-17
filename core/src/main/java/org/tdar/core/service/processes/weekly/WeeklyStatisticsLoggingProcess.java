@@ -86,7 +86,8 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
 
         stats.add(generateStatistics(StatisticType.NUM_USERS, entityService.findAllRegisteredUsers().size(), ""));
         stats.add(generateStatistics(StatisticType.NUM_ACTUAL_CONTRIBUTORS, entityService.findNumberOfActualContributors(), ""));
-        List<ListCollection> findAllResourceCollections = genericService.findAll(ListCollection.class);
+        List<CustomizableCollection> findAllResourceCollections = new ArrayList<>();
+        findAllResourceCollections.addAll(genericService.findAll(ListCollection.class));
         int numListCollections = findAllResourceCollections.size();
         List<SharedCollection> shareCollections = genericService.findAll(SharedCollection.class);
         int numSharedCollections = shareCollections.size();
@@ -97,7 +98,8 @@ public class WeeklyStatisticsLoggingProcess extends AbstractScheduledProcess {
         stats.add(generateStatistics(StatisticType.NUM_SHARED_COLLECTIONS, numSharedCollections, ""));
         int whitelabelCount = 0;
         if (!TdarConfiguration.getInstance().useListCollections()) {
-            findAllResourceCollections = shareCollections;
+            findAllResourceCollections.clear();
+            findAllResourceCollections.addAll(shareCollections);
         }
         
         for (CustomizableCollection c : findAllResourceCollections) {
