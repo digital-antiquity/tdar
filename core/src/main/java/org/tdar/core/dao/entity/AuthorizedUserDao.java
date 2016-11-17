@@ -96,7 +96,7 @@ public class AuthorizedUserDao extends Dao.HibernateBase<AuthorizedUser> {
         }
         List<Long> ids = new ArrayList<>();
         if (collection instanceof HierarchicalCollection) {
-            HierarchicalCollection hierarchicalCollection = (HierarchicalCollection)collection;
+            HierarchicalCollection<?> hierarchicalCollection = (HierarchicalCollection<?>)collection;
             ids.addAll(hierarchicalCollection.getParentIds());
         }
 

@@ -159,7 +159,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public <C extends ResourceCollection> List<C> findInheritedCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
         if (PersistableUtils.isTransient(user)) {
-            return Collections.EMPTY_LIST;
+            return Collections.<C>emptyList();
         }
         int permission = generalPermissions.getEffectivePermissions() - 1;
         String q = TdarNamedQueries.SHARED_COLLECTION_LIST_WITH_AUTHUSER;
@@ -172,6 +172,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         return query.getResultList();
     }
 
+//    @SuppressWarnings("unchecked")
     public <C extends ResourceCollection> Set<C> findFlattendCollections(Person user, GeneralPermissions generalPermissions, Class<C> cls) {
         Set<C> allCollections = new HashSet<>();
 
@@ -180,10 +181,12 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
         for (C rc : collections) {
             if (rc instanceof SharedCollection) {
-                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((SharedCollection) rc, SharedCollection.class));
+                List<SharedCollection> find = findAllChildCollectionsOnly((SharedCollection) rc, SharedCollection.class);
+                allCollections.addAll((Collection<? extends C>) find);
             }
             if (rc instanceof ListCollection) {
-                allCollections.addAll((Collection<C>) findAllChildCollectionsOnly((ListCollection) rc, ListCollection.class));
+                List<ListCollection> find = findAllChildCollectionsOnly((ListCollection) rc, ListCollection.class);
+                allCollections.addAll((Collection<? extends C>) find);
             }
             allCollections.add(rc);
         }
@@ -300,16 +303,16 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
         }
     }
 
-    public CustomizableCollection getWhiteLabelCollectionForResource(Resource resource) {
-        Set<CustomizableCollection> resourceCollections = new HashSet<>();
+    public CustomizableCollection<?> getWhiteLabelCollectionForResource(Resource resource) {
+        Set<CustomizableCollection<?>> resourceCollections = new HashSet<>();
         if (TdarConfiguration.getInstance().useListCollections()) {
             resourceCollections.addAll(resource.getUnmanagedResourceCollections());
         } else {
             resourceCollections.addAll(resource.getSharedCollections());
         }
 
-        List<CustomizableCollection> whiteLabelCollections = new ArrayList<>();
-        for (CustomizableCollection rc : resourceCollections) {
+        List<CustomizableCollection<?>> whiteLabelCollections = new ArrayList<>();
+        for (CustomizableCollection<?> rc : resourceCollections) {
             if (rc.getProperties() != null && rc.getProperties().isWhitelabel()) {
                 whiteLabelCollections.add(rc);
             }

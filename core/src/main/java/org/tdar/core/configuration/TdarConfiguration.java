@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -159,7 +160,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     private void initializeStopWords() {
         try {
-            stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file"))));
+            stopWords.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("lucene.stop.words.file")),Charset.defaultCharset()));
         } catch (Exception e) {
             stopWords.addAll(STOP_WORDS);
         }
@@ -167,7 +168,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
 
     private void intializeCouponCodes() {
         try {
-            couponCodes.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("coupon.codes.file"))));
+            couponCodes.addAll(IOUtils.readLines(new FileInputStream(assistant.getStringProperty("coupon.codes.file")),Charset.defaultCharset()));
         } catch (Exception e) {
             couponCodes.addAll(Arrays.asList("acheulean", "acropolis", "agora", "alidade", "alloy", "alluvial", "amphora", "anthropology", "antiquarian",
                     "archaeoastronomy", "archaeology", "archaeozoology", "archaic", "aristocracy", "artifact", "assemblage", "association", "balk",
