@@ -31,7 +31,7 @@ ${head}
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li><a href="/setup/request">Setup</a></li>
+            <li><a href="<@s.url value="/setup/request"/>">Setup</a></li>
             <#if authenticatedUser?has_content><li><a href="#">hi ${authenticatedUser.username}</a></li></#if>
           </ul>
         </div><!--/.nav-collapse -->

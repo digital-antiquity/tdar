@@ -155,7 +155,7 @@ public class ItemService {
 
     }
 
-    private void sendEmail(String from, String to, String subject, String text) {
+    private void sendEmail(String from, String[] to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         // Message message = new MimeMessage(session);
         message.setFrom(from);
@@ -187,7 +187,7 @@ public class ItemService {
         }
         if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
             msg.insert(0, "the following files were uploaded to tDAR:\n");
-            sendEmail("balk@tdar.org", "adam.brin@asu.edu", "Uploaded files to tDAR", msg.toString());
+            sendEmail("balk@tdar.org", new String[]{"adam.brin@asu.edu","laelliso@asu.edu"}, "Uploaded files to tDAR", msg.toString());
         }
 
     }
@@ -307,7 +307,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = false)
-    public void move(AbstractDropboxItem item, Phases phase, DropboxUserMapping userMapping)
+    public void move(AbstractDropboxItem item, Phases phase, DropboxUserMapping userMapping, TdarUser tdarUser)
             throws Exception {
         DropboxClient client = new DropboxClient(userMapping);
         Metadata move = client.move(item.getPath(), phase.mutatePath(item.getPath()));
@@ -320,7 +320,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = false)
-    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping)
+    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping, TdarUser tdarUser)
             throws Exception {
         DropboxClient client = new DropboxClient(userMapping);
         // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH

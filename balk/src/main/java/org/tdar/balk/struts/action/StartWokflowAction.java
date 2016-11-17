@@ -53,7 +53,7 @@ public class StartWokflowAction extends AbstractAuthenticatedAction implements P
             // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH
             String newPath = phase.getPath();
             newPath += item.getPath().replace(DropboxConstants.CLIENT_DATA, "");
-            itemService.copy(item, newPath, userMapping);
+            itemService.copy(item, newPath, userMapping, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("{}", e, e);
             addActionError(e.getMessage() + " " + ExceptionUtils.getFullStackTrace(e));
