@@ -1,5 +1,6 @@
 package org.tdar.balk.struts.action;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -55,6 +56,7 @@ public class StartWokflowAction extends AbstractAuthenticatedAction implements P
             itemService.copy(item, newPath, userMapping);
         } catch (Exception e) {
             getLogger().error("{}", e, e);
+            addActionError(e.getMessage() + " " + ExceptionUtils.getFullStackTrace(e));
             return INPUT;
         }
         return SUCCESS;
