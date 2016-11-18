@@ -5,7 +5,7 @@
       <li class="nav-header">My Shares</li>
       <li  <@activeIf current "share" />><a href="/manage">Share</a></li>
       <li><a href="/manage">Manage</a></li>
-      <li><a href="/manage#allResources">Resources</a></li>
+      <li><a href="/rights">Resources</a></li>
       <li class="nav-header">My Library</li>
       <li  <@activeIf current "collections" />> <a href="/organize">Collections</a></li>
       <li  <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>

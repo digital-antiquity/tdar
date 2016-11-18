@@ -1,7 +1,8 @@
 <#escape _untrusted as _untrusted?html >
-<h2>Resources and Shares User Has Access to</h2>
+<title>Resources and Shares ${user.properName} Has Access to</title>
+<h2>Resources and Shares ${user.properName} Has Access to</h2>
 <#list findResourcesSharedWith>
-<h5> Resources shared with:${user.properName}</h5>
+<h5>Shared Resources:</h5>
     <ul>
     <#items as item>
         <li><a href="${item.detailUrl}">${item.title}</a> (${item.id?c})</li>
@@ -11,7 +12,7 @@
 
 
 <#list findCollectionsSharedWith>
-<h5> Collections shared with:${user.properName}</h5>
+<h5>Shared Collections:</h5>
     <ul>
     <#items as item>
         <li><a href="${item.detailUrl}">${item.title}</a> (${item.id?c})</li>
