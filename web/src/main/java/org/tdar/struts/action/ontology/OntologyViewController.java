@@ -23,6 +23,7 @@ import org.tdar.core.service.resource.ontology.OntologyNodeWrapper;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 
 @Component
@@ -56,7 +57,7 @@ public class OntologyViewController extends AbstractOntologyViewAction {
     }
 
     @Override
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
             @Action(value = "{id}/"),

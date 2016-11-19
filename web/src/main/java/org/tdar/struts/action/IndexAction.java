@@ -21,6 +21,7 @@ import org.tdar.core.service.RssService;
 import org.tdar.core.service.collection.ResourceCollectionService;
 import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
@@ -72,7 +73,7 @@ public class IndexAction extends AbstractAuthenticatableAction {
 
     })
     @SkipValidation
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     public String about() {
         setHomepageGraphs(homepageService.getHomepageGraphs(getAuthenticatedUser(), null, this));
         featuredResources = new ArrayList<>(homepageService.featuredItems(getAuthenticatedUser()));

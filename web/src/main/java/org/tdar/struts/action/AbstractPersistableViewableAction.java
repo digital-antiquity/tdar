@@ -32,6 +32,7 @@ import org.tdar.filestore.FilestoreObjectType;
 import org.tdar.search.query.facet.Facet;
 import org.tdar.struts.action.AbstractPersistableController.RequestType;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.action.PersistableLoadingAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
@@ -100,7 +101,7 @@ public abstract class AbstractPersistableViewableAction<P extends Persistable> e
         return getGenericService().find(getPersistableClass(), id);
     }
 
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
             @Action(value = "{id}/"),

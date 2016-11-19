@@ -75,6 +75,7 @@ import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Preparable;
@@ -93,7 +94,7 @@ import com.opensymphony.xwork2.Preparable;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 @Results(value = { @Result(location = "../view-creator.ftl"),
         @Result(name = TdarActionSupport.BAD_SLUG, type = TdarActionSupport.TDAR_REDIRECT,
                 location = "${creator.id}/${creator.slug}${slugSuffix}", params = { "ignoreParams", "id,slug" })

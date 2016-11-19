@@ -36,6 +36,7 @@ import org.tdar.search.bean.SearchFieldType;
 import org.tdar.search.service.query.SearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.web.service.HomepageDetails;
 import org.tdar.web.service.HomepageService;
 
@@ -53,7 +54,7 @@ import org.tdar.web.service.HomepageService;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class ExploreController extends AbstractLookupController {
 
     private static final long serialVersionUID = -2826087034735486222L;
