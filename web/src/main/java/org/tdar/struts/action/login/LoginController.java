@@ -85,14 +85,14 @@ public class LoginController extends AbstractAuthenticatableAction implements Va
     @PostOnly
     @SkipValidation
     public String logout() {
-    	// manually handle SSO TOken
+        // manually handle SSO TOken
         String token = authenticationService.getSsoTokenFromRequest(ServletActionContext.getRequest());
         if (StringUtils.isNotBlank(token) && getTdarConfiguration().ssoEnabled()) {
             getLogger().debug("token:{}", token);
             @SuppressWarnings("unused")
             AuthenticationResult result = authenticationService.checkToken((String) token, getSessionData(), ServletActionContext.getRequest());
         }
-    	getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
+        getLogger().debug("is authenticated? {}", getSessionData().isAuthenticated());
         if (getSessionData().isAuthenticated()) {
             authenticationService.logout(getSessionData(), getServletRequest(), getServletResponse(), getAuthenticatedUser());
         }

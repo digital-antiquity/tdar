@@ -8,12 +8,12 @@ import org.tdar.core.service.processes.ScheduledProcess;
 
 public interface ProcessManager {
 
-	LinkedHashSet<ScheduledProcess> getUpgradeTasks();
+    LinkedHashSet<ScheduledProcess> getUpgradeTasks();
 
-	Set<Class<? extends ScheduledProcess>> getAllTasks();
+    Set<Class<? extends ScheduledProcess>> getAllTasks();
 
-	void addProcess(Class<? extends ScheduledProcess> cls);
-	
-	void reset();
+    void addProcess(Class<? extends ScheduledProcess> cls);
+
+    void reset();
 
 }

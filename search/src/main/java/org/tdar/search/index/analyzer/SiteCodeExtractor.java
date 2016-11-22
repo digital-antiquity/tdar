@@ -34,21 +34,21 @@ public final class SiteCodeExtractor {
 
     @SuppressWarnings("unchecked")
     public static Set<String> extractSiteCodeTokens(String str) {
-    	if (str == null) {
-    		return Collections.emptySet();
-    	}
-    	Set<String> toReturn = new HashSet<>();
-    	Matcher matcher = pattern.matcher(str);
-    	while (matcher.find()) {
-    		String group = matcher.group(0);
-    		toReturn.add(group.replaceAll(SEP, ""));
-    	}
-    	return toReturn;
+        if (str == null) {
+            return Collections.emptySet();
+        }
+        Set<String> toReturn = new HashSet<>();
+        Matcher matcher = pattern.matcher(str);
+        while (matcher.find()) {
+            String group = matcher.group(0);
+            toReturn.add(group.replaceAll(SEP, ""));
+        }
+        return toReturn;
     }
 
 
-	public static boolean matches(String term) {
-		return pattern.matcher(term).matches();
-	}
+    public static boolean matches(String term) {
+        return pattern.matcher(term).matches();
+    }
 
 }

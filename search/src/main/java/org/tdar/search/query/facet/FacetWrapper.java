@@ -25,10 +25,10 @@ public class FacetWrapper implements Serializable {
         facetMap.put(facetField, facetClass);
     }
     
-	public <T> void facetBy(String facetField, Class<T> facetClass, ArrayList<T> selectedResourceTypes) {
-		facetBy(facetField, facetClass);
-		filters.put(facetField, StringUtils.join(selectedResourceTypes, " "));
-	}
+    public <T> void facetBy(String facetField, Class<T> facetClass, ArrayList<T> selectedResourceTypes) {
+        facetBy(facetField, facetClass);
+        filters.put(facetField, StringUtils.join(selectedResourceTypes, " "));
+    }
 
 
     public Map<String, Class<?>> getFacetMap() {
@@ -55,10 +55,10 @@ public class FacetWrapper implements Serializable {
         return facetMap.get(name);
     }
 
-	public String getFilter(String facet) {
-		return filters.get(facet);
-		
-	}
+    public String getFilter(String facet) {
+        return filters.get(facet);
+
+    }
 
     public boolean isMapFacet() {
         return mapFacet;

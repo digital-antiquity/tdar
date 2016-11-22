@@ -210,21 +210,21 @@ public abstract class SimpleAppConfiguration implements Serializable {
         return ds;
     }
 
-	private void setupAndLogJdbcConnectionString(String prefix, ComboPooledDataSource ds, String url_) {
-		String property = getProperty(prefix, url_);
+    private void setupAndLogJdbcConnectionString(String prefix, ComboPooledDataSource ds, String url_) {
+        String property = getProperty(prefix, url_);
         String prefix_ = "tdar";
         String appPrefix = System.getProperty("appPrefix");
-		if (StringUtils.isNotBlank(appPrefix)) {
-        	prefix_ = appPrefix;
+        if (StringUtils.isNotBlank(appPrefix)) {
+            prefix_ = appPrefix;
         }
         if (property.contains("?")) {
-        	property += "&ApplicationName="+ prefix_;
+            property += "&ApplicationName="+ prefix_;
         } else {
-        	property += "?ApplicationName="+ prefix_;
+            property += "?ApplicationName="+ prefix_;
         }
-		ds.setJdbcUrl(property);
+        ds.setJdbcUrl(property);
         logger.debug(prefix_+ " JDBC Connection ("+prefix+"):"  + property);
-	}
+    }
 
     private int getChainedOptionalProperty(String prefix, String key, Integer deflt) {
         String appPrefix = System.getProperty("appPrefix");

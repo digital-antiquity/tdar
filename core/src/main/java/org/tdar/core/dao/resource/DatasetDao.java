@@ -284,7 +284,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
     public <I extends Indexable> List<I> findSkeletonsForSearch(boolean trustCache, List<Long> ids) {
         Session session = getCurrentSession();
         if (CollectionUtils.isEmpty(ids)) {
-        	return Collections.EMPTY_LIST;
+            return Collections.EMPTY_LIST;
         }
         // distinct prevents duplicates
         // left join res.informationResourceFiles

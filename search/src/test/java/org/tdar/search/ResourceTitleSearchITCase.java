@@ -326,35 +326,35 @@ public class ResourceTitleSearchITCase extends AbstractResourceSearchITCase {
     @Test
     @Rollback
     public void testTitleRelevancy() throws SolrServerException, IOException, ParseException {
-    	//(11R5)-1
-    	//1/4
-    	//4\"
-		String exact = "Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen";
-		//Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen
-		List<String> titles = Arrays.asList(
-				"Coding sheet for Element ("+exact+")",
-				"Coding sheet for Recovery ("+exact+")",
-				"Coding sheet for CulturalAffiliation ("+exact+")",
-				"Coding sheet for Resource Type ("+exact+")",
-				"Coding sheet for Taxon ("+exact+")",
-				"Coding sheet for Portion3 ("+exact+")",
-				"Coding sheet for Resource Type ("+exact+")",
-				"Coding sheet for ContextType ("+exact+")",
-				"Coding sheet for LevelType ("+exact+")",
-				"Coding sheet for Site ("+exact+")",
-				"Coding sheet for LevelType ("+exact+")",
-				exact,
-				"Coding sheet for Taxon (Modoc Rock Shelter (11R5), Randolph County, IL-1984, Main Trench 1/4\" screen fauna)");
+        //(11R5)-1
+        //1/4
+        //4\"
+        String exact = "Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen";
+        //Modoc Rock Shelter, IL (11R5)-1984 Fauna dataset Main Trench 1/4\" Screen
+        List<String> titles = Arrays.asList(
+                "Coding sheet for Element ("+exact+")",
+                "Coding sheet for Recovery ("+exact+")",
+                "Coding sheet for CulturalAffiliation ("+exact+")",
+                "Coding sheet for Resource Type ("+exact+")",
+                "Coding sheet for Taxon ("+exact+")",
+                "Coding sheet for Portion3 ("+exact+")",
+                "Coding sheet for Resource Type ("+exact+")",
+                "Coding sheet for ContextType ("+exact+")",
+                "Coding sheet for LevelType ("+exact+")",
+                "Coding sheet for Site ("+exact+")",
+                "Coding sheet for LevelType ("+exact+")",
+                exact,
+                "Coding sheet for Taxon (Modoc Rock Shelter (11R5), Randolph County, IL-1984, Main Trench 1/4\" screen fauna)");
 
 
-		List<Resource> docs = new ArrayList<>();
+        List<Resource> docs = new ArrayList<>();
         for (String title : titles) {
             Resource doc = new CodingSheet();
             if (title.equals(exact)) {
-            	doc = new Dataset();
-            	doc.setDescription("a");
+                doc = new Dataset();
+                doc.setDescription("a");
             } else {
-            	doc.setDescription(exact);
+                doc.setDescription(exact);
             }
             doc.setTitle(title);
             doc.markUpdated(getBasicUser());

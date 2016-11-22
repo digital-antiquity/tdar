@@ -23,13 +23,13 @@ import org.tdar.core.configuration.TdarConfiguration;
 
 public class ResourceExportServiceITCase extends AbstractIntegrationTestCase {
 
-	private static final String TDAR_XSD = "tdar.xsd";
+    private static final String TDAR_XSD = "tdar.xsd";
     private static final String TEST123_ZIP = "test123.zip";
     private static final String ARCHIVAL = "archival/";
     private static final String FILES = "files/";
     private static final String RESOURCE_XML = "resource.xml";
     @Autowired
-	ResourceExportService exportService;
+    ResourceExportService exportService;
 
     @Test
     @Rollback

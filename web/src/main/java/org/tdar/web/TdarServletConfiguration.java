@@ -24,35 +24,35 @@ import org.tuckey.web.filters.urlrewrite.UrlRewriteFilter;
 import com.opensymphony.sitemesh.webapp.SiteMeshFilter;
 
 public class TdarServletConfiguration extends AbstractServletConfiguration
-		implements Serializable, WebApplicationInitializer {
+        implements Serializable, WebApplicationInitializer {
 
-	private static final long serialVersionUID = -6063648713073283277L;
+    private static final long serialVersionUID = -6063648713073283277L;
 
-	private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-	public TdarServletConfiguration() {
-		super("Initializing tDAR Servlet");
-	}
-	
-	@Override
-	public String getAppPropertyPrefix() {
-	    return "tdar";
-	}
-	
-	@Override
-	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
-		return TdarWebAppConfiguration.class;
-	}
+    public TdarServletConfiguration() {
+        super("Initializing tDAR Servlet");
+    }
 
-	@Override
-	public void onStartup(ServletContext container) throws ServletException {
-		if (StringUtils.isNotBlank(getFailureMessage())) {
-			throw new ServletException(getFailureMessage());
-		}
-		if (!configuration.isProductionEnvironment()) {
-			onDevStartup(container);
-		}
-		
+    @Override
+    public String getAppPropertyPrefix() {
+        return "tdar";
+    }
+
+    @Override
+    public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+        return TdarWebAppConfiguration.class;
+    }
+
+    @Override
+    public void onStartup(ServletContext container) throws ServletException {
+        if (StringUtils.isNotBlank(getFailureMessage())) {
+            throw new ServletException(getFailureMessage());
+        }
+        if (!configuration.isProductionEnvironment()) {
+            onDevStartup(container);
+        }
+
       if (ImageUtilities.isMediaLibAvailable()) {
               logger.info("JAI ImageIO available and configured");
           } else {
@@ -62,85 +62,85 @@ public class TdarServletConfiguration extends AbstractServletConfiguration
               }
           }
 
-		
-		setupContainer(container);
+
+        setupContainer(container);
         container.addListener(StrutsListener.class);
 
-		configureUrlRewriteRule(container);
+        configureUrlRewriteRule(container);
 
-		if (configuration.getContentSecurityPolicyEnabled()) {
-			logger.debug("enabling cors");
-			configureCorsFilter(container);
-		}
+        if (configuration.getContentSecurityPolicyEnabled()) {
+            logger.debug("enabling cors");
+            configureCorsFilter(container);
+        }
 
-		setupOpenSessionInViewFilter(container);
+        setupOpenSessionInViewFilter(container);
 
-//		if (configuration.tagEnabled()) {
-//			configureCxfForTag(container);
-//		}
+//        if (configuration.tagEnabled()) {
+//            configureCxfForTag(container);
+//        }
         configureFreemarker(container);
 
-		configureStrutsAndSiteMeshFilters(container);
+        configureStrutsAndSiteMeshFilters(container);
 
-		if (!configuration.isStaticContentEnabled()) {
+        if (!configuration.isStaticContentEnabled()) {
             ServletRegistration.Dynamic staticContent = container.addServlet("static-content", StaticContentServlet.class);
-			staticContent.setInitParameter("default_encoding", "UTF-8");
-			staticContent.setLoadOnStartup(1);
-			staticContent.addMapping(HOSTED_CONTENT_BASE_URL + "/*");
-		}
+            staticContent.setInitParameter("default_encoding", "UTF-8");
+            staticContent.setLoadOnStartup(1);
+            staticContent.addMapping(HOSTED_CONTENT_BASE_URL + "/*");
+        }
 
-	}
+    }
 
-	private void onDevStartup(ServletContext container) {
-		if (configuration.isProductionEnvironment()) {
-			throw new IllegalStateException("dev startup tasks not allowed in production");
-		}
-//		logServerInfo(container);
-	}
+    private void onDevStartup(ServletContext container) {
+        if (configuration.isProductionEnvironment()) {
+            throw new IllegalStateException("dev startup tasks not allowed in production");
+        }
+//        logServerInfo(container);
+    }
 
-	private void configureFreemarker(ServletContext container) {
-		ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker",
-				FreemarkerDecoratorServlet.class);
-		freemarker.setInitParameter("default_encoding", "UTF-8");
-		freemarker.setLoadOnStartup(1);
-		freemarker.addMapping("*.dec");
-	}
+    private void configureFreemarker(ServletContext container) {
+        ServletRegistration.Dynamic freemarker = container.addServlet("sitemesh-freemarker",
+                FreemarkerDecoratorServlet.class);
+        freemarker.setInitParameter("default_encoding", "UTF-8");
+        freemarker.setLoadOnStartup(1);
+        freemarker.addMapping("*.dec");
+    }
 
-	@SuppressWarnings("unused")
+    @SuppressWarnings("unused")
     private void configureCxfForTag(ServletContext container) {
-		ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
-		cxf.setLoadOnStartup(1);
-		cxf.addMapping("/services/*");
-	}
+        ServletRegistration.Dynamic cxf = container.addServlet("cxf", CXFServlet.class);
+        cxf.setLoadOnStartup(1);
+        cxf.addMapping("/services/*");
+    }
 
 
-	private void configureUrlRewriteRule(ServletContext container) {
-		Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);
-		urlRewriteFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
-		urlRewriteFilter.setInitParameter("confReloadCheckInterval", configuration.getURLRewriteRefresh());
-		urlRewriteFilter.setInitParameter("logLevel", "slf4j");
-	}
+    private void configureUrlRewriteRule(ServletContext container) {
+        Dynamic urlRewriteFilter = container.addFilter("URLRewriteFilter", UrlRewriteFilter.class);
+        urlRewriteFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
+        urlRewriteFilter.setInitParameter("confReloadCheckInterval", configuration.getURLRewriteRefresh());
+        urlRewriteFilter.setInitParameter("logLevel", "slf4j");
+    }
 
-	private void configureStrutsAndSiteMeshFilters(ServletContext container) {
-		Dynamic strutsPrepare = container.addFilter("struts-prepare", StrutsPrepareFilter.class);
-		strutsPrepare.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
-		Dynamic sitemesh = container.addFilter("sitemesh", SiteMeshFilter.class);
-		sitemesh.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
-		Dynamic strutsExecute = container.addFilter("struts-execute", StrutsExecuteFilter.class);
-		strutsExecute.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
-	}
+    private void configureStrutsAndSiteMeshFilters(ServletContext container) {
+        Dynamic strutsPrepare = container.addFilter("struts-prepare", StrutsPrepareFilter.class);
+        strutsPrepare.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
+        Dynamic sitemesh = container.addFilter("sitemesh", SiteMeshFilter.class);
+        sitemesh.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
+        Dynamic strutsExecute = container.addFilter("struts-execute", StrutsExecuteFilter.class);
+        strutsExecute.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
+    }
 
-	private void configureCorsFilter(ServletContext container) {
-		// http://software.dzhuvinov.com/cors-filter-configuration.html [doesn't
-		// work]
-		// https://github.com/eBay/cors-filter [seems to not work with
-		// same-origin post requests on alpha
-		Dynamic corsFilter = container.addFilter("CORS", CORSFilter.class);
-		corsFilter.setInitParameter("cors.allowed.origins", configuration.getAllAllowedDomains());
-		corsFilter.setInitParameter("cors.preflight.maxage", "3600");
-		corsFilter.setInitParameter("cors.allowed.methods", "GET,POST,HEAD,PUT,DELETE,OPTIONS");
-		corsFilter.setInitParameter("cors.logging.enabled", "true");
-		corsFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
-	}
+    private void configureCorsFilter(ServletContext container) {
+        // http://software.dzhuvinov.com/cors-filter-configuration.html [doesn't
+        // work]
+        // https://github.com/eBay/cors-filter [seems to not work with
+        // same-origin post requests on alpha
+        Dynamic corsFilter = container.addFilter("CORS", CORSFilter.class);
+        corsFilter.setInitParameter("cors.allowed.origins", configuration.getAllAllowedDomains());
+        corsFilter.setInitParameter("cors.preflight.maxage", "3600");
+        corsFilter.setInitParameter("cors.allowed.methods", "GET,POST,HEAD,PUT,DELETE,OPTIONS");
+        corsFilter.setInitParameter("cors.logging.enabled", "true");
+        corsFilter.addMappingForUrlPatterns(strutsDispacherTypes, false, ALL_PATHS);
+    }
 
 }

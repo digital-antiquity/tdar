@@ -124,11 +124,11 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         takeScreenshot();
         submitForm();
         try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
         Assert.assertFalse(getText().contains(TAG_FAUNAL_WORKSHOP));
         Assert.assertTrue(getText().contains(HARP_FAUNA_SPECIES_CODING_SHEET));
         Assert.assertTrue(getText().contains(_2008_NEW_PHILADELPHIA_ARCHAEOLOGY_REPORT));
@@ -266,9 +266,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         addAnother.click();
 
         addAuthuser("authorizedUsersFullNames[1]", "authorizedUsers[1].generalPermission", "editor user", config.getEditorUsername(), 
-        		"person-"+ config.getEditorUserId(), permission);
+                "person-"+ config.getEditorUserId(), permission);
         addAuthuser("authorizedUsersFullNames[0]", "authorizedUsers[0].generalPermission",
-        		"michelle elliott",  "Michelle Elliott", "person-121", permission);
+                "michelle elliott",  "Michelle Elliott", "person-121", permission);
         submitForm();
         return url;
     }
@@ -416,10 +416,10 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         logger.debug(id);
         Assert.assertTrue("should have found at least one remove button with matching title: " + title, found);
         if (StringUtils.isNotBlank(id)) {
-        	if (rows.find(By.id(id)).isSelected()) {
-        		rows.find(By.id(id)).click();
-        	}
-        	Assert.assertFalse(rows.find(By.id(id)).isSelected());
+            if (rows.find(By.id(id)).isSelected()) {
+                rows.find(By.id(id)).click();
+            }
+            Assert.assertFalse(rows.find(By.id(id)).isSelected());
         }
     }
 

@@ -268,8 +268,8 @@ public class DatasetImportService {
         datasetDao.translate(associatedDataTableColumns, codingSheet);
         for (DataTable dataTable : dataTableDao.findDataTablesUsingResource(codingSheet)) {
             Dataset dataset = dataTable.getDataset();
-			InformationResourceFile file = datasetDao.createTranslatedFile(dataset, analyzer, inormationResourceFileDao);
-			dataTableDao.saveOrUpdate(file);
+            InformationResourceFile file = datasetDao.createTranslatedFile(dataset, analyzer, inormationResourceFileDao);
+            dataTableDao.saveOrUpdate(file);
         }
     }
 

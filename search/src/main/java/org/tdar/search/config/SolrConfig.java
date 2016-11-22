@@ -31,7 +31,7 @@ public class SolrConfig {
     
     private static final String TARGET_CLASSES_SOLR = "target/classes/solr/";
 
-	public static final String SEARCH_PROPERTIES = "search.properties";
+    public static final String SEARCH_PROPERTIES = "search.properties";
     
     @Resource
     private Environment environment;
@@ -93,10 +93,10 @@ public class SolrConfig {
         //fixme: brittle
         List<String> paths = Arrays.asList("","web/","tag/","webservice/tag/");
         for (String path_ : paths) {
-        	File globalTestPath = new File(path_ + TARGET_CLASSES_SOLR);
-	        if (globalTestPath.exists()) {
-	            path = globalTestPath.toPath();
-	        }
+            File globalTestPath = new File(path_ + TARGET_CLASSES_SOLR);
+            if (globalTestPath.exists()) {
+                path = globalTestPath.toPath();
+            }
         }
         if (StringUtils.isNotBlank(solrServerPath)) {
             File dir = new File(solrServerPath);

@@ -111,8 +111,8 @@ public class DataOneServiceITCase extends AbstractIntegrationTestCase {
     @Test
     @Rollback
     public void testObjectTotals() throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException, JAXBException {
-    	ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
-    	assertEquals(2, listObjectsResponse.getTotal());
-    	assertEquals(2, listObjectsResponse.getObjectInfoList().size());
+        ObjectList listObjectsResponse = service.getListObjectsResponse(null, null, null, null, 0, 10);
+        assertEquals(2, listObjectsResponse.getTotal());
+        assertEquals(2, listObjectsResponse.getObjectInfoList().size());
     }
 }

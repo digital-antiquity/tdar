@@ -70,6 +70,6 @@ public class OaiPmhConfiguration extends AbstractConfigurationFile {
 
     @Override
     protected ConfigurationAssistant getAssistant() {
-    	return assistant;
+        return assistant;
     }
 }

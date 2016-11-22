@@ -712,11 +712,11 @@ public abstract class TdarActionSupport extends ActionSupport implements Servlet
     }
  
     public List<String> getBarColors() {
-    	return getTdarConfiguration().getBarColors();
+        return getTdarConfiguration().getBarColors();
     }
     
     public boolean isSelenium() {
-    	return getTdarConfiguration().isSelenium();
+        return getTdarConfiguration().isSelenium();
     }
     
     @Override

@@ -32,9 +32,9 @@ import com.gargoylesoftware.htmlunit.html.HtmlElement;
 
 @RunWith(MultipleWebTdarConfigurationRunner.class)
 public class CompleteImageWebITCase extends AbstractAdminAuthenticatedWebTestCase {
-	
+
     private static final String TITLE = "My Sample Image";
-	private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
+    private static final String COPYRIGHT_HOLDER_PERSON_FIRST_NAME = "copyrightHolderProxies.person.firstName";
     private static final String COPYRIGHT_HOLDER_PERSON_LAST_NAME = "copyrightHolderProxies.person.lastName";
     private static final List<String> VALUES_NOT_SHOWN_ON_OVERVIEW_PAGE = Arrays.asList(new String[] { COPYRIGHT_HOLDER_PERSON_FIRST_NAME,
             COPYRIGHT_HOLDER_PERSON_LAST_NAME });

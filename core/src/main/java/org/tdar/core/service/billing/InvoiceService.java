@@ -492,8 +492,8 @@ public class InvoiceService extends ServiceInterface.TypedDaoBase<Invoice, Invoi
 
     @Transactional(readOnly = false)
     public void completeInvoice(Invoice invoice) {
-    	logger.debug("completing invoice");
-    	getDao().completeInvoice(invoice);
+        logger.debug("completing invoice");
+        getDao().completeInvoice(invoice);
 
     }
 

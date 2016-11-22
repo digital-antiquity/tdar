@@ -309,9 +309,9 @@ public class CartControllerITCase extends AbstractCartControllerITCase {
         doc =  genericService.find(Document.class, docId);
         AuthorizedUser user = null;
         for (AuthorizedUser au : doc.getInternalResourceCollection().getAuthorizedUsers()) {
-        	if (au.getUser().getId().equals(getUserId())) {
-        		user = au;
-        	}
+            if (au.getUser().getId().equals(getUserId())) {
+                user = au;
+            }
         }
         assertNotNull(user);
         assertEquals(GeneralPermissions.MODIFY_RECORD, user.getGeneralPermission());

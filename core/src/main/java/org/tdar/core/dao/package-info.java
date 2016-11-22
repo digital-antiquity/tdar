@@ -1,9 +1,9 @@
 /* FIXME: still unsupported
 @org.hibernate.annotations.NamedNativeQueries({
-	@org.hibernate.annotations.NamedNativeQuery(
-			name = TdarNamedQueries.QUERY_DASHBOARD,
-			query = TdarNamedQueries.QUERY_SQL_DASHBOARD
-			),
+    @org.hibernate.annotations.NamedNativeQuery(
+            name = TdarNamedQueries.QUERY_DASHBOARD,
+            query = TdarNamedQueries.QUERY_SQL_DASHBOARD
+            ),
 })
  */
 @org.hibernate.annotations.NamedQueries({

@@ -39,7 +39,7 @@ import com.opensymphony.xwork2.Preparable;
 public class ResourceAdminController extends AbstractAuthenticatableAction implements Preparable {
 
     private static final Filestore FILESTORE = TdarConfiguration.getInstance().getFilestore();
-	private static final long serialVersionUID = -2071449250711089300L;
+    private static final long serialVersionUID = -2071449250711089300L;
     public static final String ADMIN = "admin";
     private List<ResourceRevisionLog> resourceLogEntries;
 
@@ -120,12 +120,12 @@ public class ResourceAdminController extends AbstractAuthenticatableAction imple
         return permissions;
     }
 
-	public List<File> getXmlFiles() {
-		return xmlFiles;
-	}
+    public List<File> getXmlFiles() {
+        return xmlFiles;
+    }
 
-	public void setXmlFiles(List<File> xmlFiles) {
-		this.xmlFiles = xmlFiles;
-	}
+    public void setXmlFiles(List<File> xmlFiles) {
+        this.xmlFiles = xmlFiles;
+    }
 
 }

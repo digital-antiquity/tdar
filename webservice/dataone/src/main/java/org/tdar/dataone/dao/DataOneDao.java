@@ -28,10 +28,10 @@ import org.tdar.dataone.service.DataOneConfiguration;
 
 @Component
 public class DataOneDao {
-	private static final String D1_SUFFIX  = "from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type)";
-	private static final String TDAR_SUFFIX = "from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
-	private static final String D1_PREFIX = " external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
-	private static final String TDAR_PREFIX = " external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
+    private static final String D1_SUFFIX  = "from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type)";
+    private static final String TDAR_SUFFIX = "from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
+    private static final String D1_PREFIX = " external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
+    private static final String TDAR_PREFIX = " external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
     private static final String LIST_OBJECT_QUERY = "select " + D1_PREFIX + " " + D1_SUFFIX + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX;
     private static final String LIMIT = " and res.id < " + DataOneConfiguration.getInstance().getMaxId();
     private static final String LIST_OBJECT_QUERY_LIMITED = "select " + D1_PREFIX + " " + D1_SUFFIX + LIMIT + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX + LIMIT;

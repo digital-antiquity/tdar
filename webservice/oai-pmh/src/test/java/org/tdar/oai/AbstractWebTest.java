@@ -61,15 +61,15 @@ import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 @ContextConfiguration(classes = SimpleAppConfiguration.class)
 public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
 
-	protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
-	protected Page internalPage;
-	protected HtmlPage htmlPage;
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
+    protected Page internalPage;
+    protected HtmlPage htmlPage;
     static final TestConfiguration CONFIG = TestConfiguration.getInstance();
-	transient Logger logger = LoggerFactory.getLogger(getClass());
+    transient Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	SerializationService serializationService;
-	
+    @Autowired
+    SerializationService serializationService;
+
     /*
      * override to test with different URL can use this to point at another
      * instance of tDAR instead of running "integration" tests.
@@ -325,9 +325,9 @@ public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
         File schema = null;
         
         if (schemaFile.exists()) {
-        	schema = schemaFile;
-        	schemaMap.put(url, schemaFile);
-        	logger.trace("found schema, using: {}" , schemaFile);
+            schema = schemaFile;
+            schemaMap.put(url, schemaFile);
+            logger.trace("found schema, using: {}" , schemaFile);
         }
         
         if (schemaMap.containsKey(url)) {
@@ -365,22 +365,22 @@ public abstract class AbstractWebTest extends AbstractJUnit4SpringContextTests {
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/XML/2008/06/xlink.xsd")));
         // v.addSchemaSource(new StreamSource(schemaMap.get("http://www.w3.org/2001/03/xml.xsd")));
         addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/xlink/xlink.xsd", 
-        		new File(TestConstants.TEST_SCHEMA_DIR, "xlink.xsd"));
+                new File(TestConstants.TEST_SCHEMA_DIR, "xlink.xsd"));
 
         // not the "ideal" way to set these up, but it should work... caching the schema locally and injecting
         addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd",
-        		new File(TestConstants.TEST_SCHEMA_DIR, "oaipmh.xsd"));
+                new File(TestConstants.TEST_SCHEMA_DIR, "oaipmh.xsd"));
         addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai_dc.xsd",
                 new File(TestConstants.TEST_XML_DIR, "oaidc.xsd"));
         addSchemaToValidatorWithLocalFallback(v, "http://www.loc.gov/standards/mods/v3/mods-3-3.xsd", 
-        		new File(TestConstants.TEST_SCHEMA_DIR,"mods3.3.xsd"));
+                new File(TestConstants.TEST_SCHEMA_DIR,"mods3.3.xsd"));
         addSchemaToValidatorWithLocalFallback(v, "http://www.openarchives.org/OAI/2.0/oai-identifier.xsd", 
-        		new File(TestConstants.TEST_SCHEMA_DIR, "oai-identifier.xsd"));
+                new File(TestConstants.TEST_SCHEMA_DIR, "oai-identifier.xsd"));
 
         try {
-        	logger.debug("{}",serializationService);
-        	File schema = serializationService.generateSchema();
-			logger.debug("{}",schema);
+            logger.debug("{}",serializationService);
+            File schema = serializationService.generateSchema();
+            logger.debug("{}",schema);
             addSchemaToValidatorWithLocalFallback(v, "http://localhost:8180/schema/current", schema);
         } catch (Exception e) {
             logger.error("an error occured creating the schema", e);

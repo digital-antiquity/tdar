@@ -138,11 +138,11 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         }
     }
 
-	private String readToText(String filename) throws IOException, FileNotFoundException {
-		File file = new File(filename);
+    private String readToText(String filename) throws IOException, FileNotFoundException {
+        File file = new File(filename);
         String text = IOUtils.toString(new FileReader(file)).trim();
-		return text;
-	}
+        return text;
+    }
 
     @Test
     @Rollback

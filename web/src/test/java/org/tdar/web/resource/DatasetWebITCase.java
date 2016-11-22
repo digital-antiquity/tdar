@@ -36,7 +36,7 @@ import org.tdar.web.AbstractAdminAuthenticatedWebTestCase;
 public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
 
     private static final String DATA_DEFAULT_DATA_TABLE_ID = "data-default-data-table-id=\"";
-	// FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
+    // FIXME: add datatable controller browse tests. See EditInheritingSectionsWebITCase#testProjectJson on how to parse/inspect.
 
     private static final String AZ_PALEOINDIAN_POINT_SURVEY_MDB = "az-paleoindian-point-survey.mdb";
     private static final String WEST_COAST_CITIES = "West Coast Cities";
@@ -222,17 +222,17 @@ public class DatasetWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         assertTrue(getPageBodyCode().matches("(?s)(.*)\"results\"(\\s*):(\\s*)[(\\s*)](.*)"));
     }
 
-	private String getDataTableId() {
+    private String getDataTableId() {
         Long datasetId = extractTdarIdFromCurrentURL();
         gotoPage("/dataset/" + datasetId);
 //        logger.debug(getPageCode());
-		int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
-		logger.debug("index:{}", indexOf);
-		String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
-		logger.debug("index:{}", substring);
+        int indexOf = getPageCode().indexOf(DATA_DEFAULT_DATA_TABLE_ID) + DATA_DEFAULT_DATA_TABLE_ID.length();
+        logger.debug("index:{}", indexOf);
+        String substring = StringUtils.substring(getPageCode(), indexOf,indexOf + 100);
+        logger.debug("index:{}", substring);
         substring = StringUtils.substring(substring,0, substring.indexOf("\""));
         return substring;
-	}
+    }
 
     @SuppressWarnings("unused")
     @Test

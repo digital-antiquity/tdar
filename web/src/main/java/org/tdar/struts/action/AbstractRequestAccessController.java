@@ -61,7 +61,7 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
     
     @Override
     public void prepare() {
-    	// make sure the Reosurce ID is set
+        // make sure the Reosurce ID is set
         if (PersistableUtils.isNotNullOrTransient(getId())) {
             setPersistable(getGenericService().find(getPersistableClass(), getId()));
             // bad, but force onto session until better way found
@@ -81,13 +81,13 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
     }
 
 
-	public List<UserAffiliation> getAffiliations() {
-		return affiliations;
-	}
+    public List<UserAffiliation> getAffiliations() {
+        return affiliations;
+    }
 
-	public void setAffiliations(List<UserAffiliation> affiliations) {
-		this.affiliations = affiliations;
-	}
+    public void setAffiliations(List<UserAffiliation> affiliations) {
+        this.affiliations = affiliations;
+    }
 
     public Long getId() {
         return id;
@@ -97,13 +97,13 @@ public abstract class AbstractRequestAccessController<P extends Persistable> ext
         this.id = id;
     }
 
-	public AntiSpamHelper getH() {
-		return h;
-	}
+    public AntiSpamHelper getH() {
+        return h;
+    }
 
-	public void setH(AntiSpamHelper h) {
-		this.h = h;
-	}
+    public void setH(AntiSpamHelper h) {
+        this.h = h;
+    }
 
     public EmailMessageType getType() {
         return type;

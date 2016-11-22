@@ -96,7 +96,7 @@ public class CodingSheetController extends AbstractSupportingInformationResource
 
     @Override
     public Set<String> getValidFileExtensions() {
-    	//FIXME: was showing all valid dataset extensions
+        //FIXME: was showing all valid dataset extensions
         return new HashSet<>(Arrays.asList("csv","xlsx","xls"));
     }
 

@@ -91,11 +91,11 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         completePurchase();
     }
 
-	private void completePurchase() {
+    private void completePurchase() {
         // now we are on the "choose billing account" page. just click through to next page
         waitForPageload();
 
-		// choose
+        // choose
         assertThat(getCurrentUrl(), endsWith(URLConstants.CART_REVIEW_PURCHASE));
         // we aren't testing billing account customization, so we just advance to the next step
         submitForm();
@@ -117,7 +117,7 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
         switchToWindow("dashboard");
 
         waitFor("body.dashboard");
-	}
+    }
 
     private void selectPackage() {
         // choose the large package
@@ -212,12 +212,12 @@ public class CartSeleniumWebITCase extends AbstractSeleniumWebITCase {
 
     @Override
     public void waitForPageload() {
-    	super.waitForPageload();
-    	try {
-			Thread.sleep(300);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+        super.waitForPageload();
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

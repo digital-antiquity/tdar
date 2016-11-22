@@ -76,11 +76,11 @@ public class CollectionRightsComparator {
                 continue;
             }
             for (Long id : userIdMap.keySet()) {
-            	// skip changes
-            	if (changeUserIds.contains(id)) {
-            		continue;
-            	}
-            	
+                // skip changes
+                if (changeUserIds.contains(id)) {
+                    continue;
+                }
+
                 if (Objects.equals(user.getUser().getId(),id)) {
                     getDeletions().add(user);
                 }

@@ -95,7 +95,7 @@ public class TagGateway implements TagGatewayPort, QueryFieldNames {
                     "Error reading or parsing tagPortal.xsl.";
             logger.error(msg, e);
             throw new RuntimeException(msg, e);
-    	}
+        }
     }
 
     @SuppressWarnings({ "unchecked" })

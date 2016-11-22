@@ -257,10 +257,10 @@ public class ProjectViewAction extends AbstractResourceViewAction<Project> imple
         this.facetWrapper = facetWrapper;
     }
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		return getPersistable().getOrientation();
-	}
+    @Override
+    public DisplayOrientation getOrientation() {
+        return getPersistable().getOrientation();
+    }
 
     public List<DisplayOrientation> getAvailableOrientations() {
         return Arrays.asList(DisplayOrientation.values());

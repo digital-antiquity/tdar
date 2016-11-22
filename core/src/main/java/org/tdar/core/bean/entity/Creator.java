@@ -221,7 +221,7 @@ public abstract class Creator<T extends Creator<?>> implements Persistable, HasN
     
     
     public String getLabel() {
-    	return getName();
+        return getName();
     }
     @JsonView(JsonLookupFilter.class)
     public abstract String getProperName();

@@ -147,7 +147,7 @@ public class WorkflowContextService {
             orig.setInformationResourceFile(irFile);
             // genericDao.saveOrUpdate(orig);
             InformationResource informationResource = genericDao.find(InformationResource.class, ctx.getInformationResourceId());
-			irFile.setInformationResource(informationResource);
+            irFile.setInformationResource(informationResource);
             irFile.setWorkflowContext(ctx);
 
             // logger.info("end status: {}", irFile.getStatus());

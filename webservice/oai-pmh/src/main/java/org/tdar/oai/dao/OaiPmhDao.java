@@ -19,65 +19,65 @@ import org.tdar.oai.bean.OAIRecordType;
 @Component
 public class OaiPmhDao {
 
-	@Transient
-	private final transient Logger logger = LoggerFactory.getLogger(getClass());
+    @Transient
+    private final transient Logger logger = LoggerFactory.getLogger(getClass());
 
-	@Autowired
-	private GenericDao genericDao;
+    @Autowired
+    private GenericDao genericDao;
 
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
     public List<OaiDcProvider> handleSearch(OAIRecordType recordType, OaiSearchResult search, Date effectiveFrom,
-			Date effectiveUntil, Long collectionId) {
-		String qn = "query.oai.collections";
-		if (recordType != null) {
-			switch (recordType) {
-			case INSTITUTION:
-				qn = "query.oai.institutions";
-				break;
-			case PERSON:
-				qn = "query.oai.people";
-				break;
-			case RESOURCE:
-				qn = "query.oai.resources";
-				break;
-			default:
-				break;
-			}
-		}
-		
-		Query query = genericDao.getNamedQuery(qn + "_count");
-		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
-		search.setTotalRecords(((Long) query.uniqueResult()).intValue());
+            Date effectiveUntil, Long collectionId) {
+        String qn = "query.oai.collections";
+        if (recordType != null) {
+            switch (recordType) {
+            case INSTITUTION:
+                qn = "query.oai.institutions";
+                break;
+            case PERSON:
+                qn = "query.oai.people";
+                break;
+            case RESOURCE:
+                qn = "query.oai.resources";
+                break;
+            default:
+                break;
+            }
+        }
 
-		query = genericDao.getNamedQuery(qn);
-		setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+        Query query = genericDao.getNamedQuery(qn + "_count");
+        setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
+        search.setTotalRecords(((Long) query.uniqueResult()).intValue());
 
-		query.setMaxResults(search.getRecordsPerPage());
-		query.setFirstResult(search.getStartRecord());
-		List<OaiDcProvider> results = new ArrayList<>();
-		results.addAll(query.list());
-		search.setResults(results);
-		return results;
-	}
+        query = genericDao.getNamedQuery(qn);
+        setupQuery(query, effectiveFrom, effectiveUntil, recordType, collectionId);
 
-	void setupQuery(Query query, Date effectiveFrom, Date effectiveUntil, OAIRecordType recordType, Long collectionId) {
-		Date to = DateTime.now().toDate();
-		Date from = new DateTime(1900).toDate();
-		if (effectiveFrom != null) {
-			from = effectiveFrom;
-		}
-		if (effectiveUntil != null) {
-			effectiveUntil = to;
-		}
-		query.setParameter("start", from);
-		query.setParameter("end", to);
-		Long id = -1L;
-		if (collectionId != null && collectionId > -1L) {
-			id = collectionId;
-		}
-		if (recordType == OAIRecordType.RESOURCE) {
-			query.setParameter("collectionId", id);
-		}
+        query.setMaxResults(search.getRecordsPerPage());
+        query.setFirstResult(search.getStartRecord());
+        List<OaiDcProvider> results = new ArrayList<>();
+        results.addAll(query.list());
+        search.setResults(results);
+        return results;
+    }
 
-	}
+    void setupQuery(Query query, Date effectiveFrom, Date effectiveUntil, OAIRecordType recordType, Long collectionId) {
+        Date to = DateTime.now().toDate();
+        Date from = new DateTime(1900).toDate();
+        if (effectiveFrom != null) {
+            from = effectiveFrom;
+        }
+        if (effectiveUntil != null) {
+            effectiveUntil = to;
+        }
+        query.setParameter("start", from);
+        query.setParameter("end", to);
+        Long id = -1L;
+        if (collectionId != null && collectionId > -1L) {
+            id = collectionId;
+        }
+        if (recordType == OAIRecordType.RESOURCE) {
+            query.setParameter("collectionId", id);
+        }
+
+    }
 }

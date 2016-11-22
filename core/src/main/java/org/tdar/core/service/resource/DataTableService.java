@@ -116,19 +116,19 @@ public class DataTableService extends ServiceInterface.TypedDaoBase<DataTable, D
         for (DataTable table : tables) {
             for (DataTableColumn col : table.getDataTableColumns()) {
                 if (PersistableUtils.isEqual(col.getDefaultCodingSheet(), sheet)) {
-                	try {
+                    try {
                         List<String> selectNonNullDistinctValues = tdarDataImportDatabase.selectNonNullDistinctValues(col,true);
                         logger.trace("unique values for {}: {}", table.getName(), selectNonNullDistinctValues);
                         uniqueValues.addAll(selectNonNullDistinctValues);
-                	} catch(Exception e) {
+                    } catch(Exception e) {
                         logger.error("table doesn't exist: {}", table.getName());
                         // temporarily avoiding blocking to make sure that deploy is safer 
-//                		if (TdarConfiguration.getInstance().isProductionEnvironment()) {
-//                			throw e;
-//                		} else {
-//                			logger.warn("table doesn't exist: {}", table.getName());
-//                		}
-                	}
+//                      if (TdarConfiguration.getInstance().isProductionEnvironment()) {
+//                          throw e;
+//                      } else {
+//                          logger.warn("table doesn't exist: {}", table.getName());
+//                      }
+                    }
                 }
             }
         }

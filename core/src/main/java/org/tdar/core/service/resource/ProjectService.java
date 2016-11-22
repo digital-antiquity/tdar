@@ -197,11 +197,11 @@ public class ProjectService extends ServiceInterface.TypedDaoBase<Project, Proje
 
         try {
             if (PersistableUtils.isNotNullOrTransient(project)) {
-            	getDao().markReadOnly(project);
-            	List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
-            	project.getResourceCreators().clear();
-            	Collections.sort(rc);
-            	project.getResourceCreators().addAll(rc);
+                getDao().markReadOnly(project);
+                List<ResourceCreator> rc = new ArrayList<>(project.getResourceCreators());
+                project.getResourceCreators().clear();
+                Collections.sort(rc);
+                project.getResourceCreators().addAll(rc);
                 getLogger().trace("Trying to convert blank or null project to json: " + project);
                 // obfuscationService.obfuscate(project, user);
                 result = project;

@@ -48,12 +48,12 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
         SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Dataset dc = createAndSaveNewDataset();
         for (int i=0;i < 10; i++) {
-        	Image image = createAndSaveNewInformationResource(Image.class);
-        	image.setTitle(i + ":"+ image.getTitle() );
-        	collection.getResources().add(image);
-        	image.getSharedCollections().add(collection);
-        	genericService.saveOrUpdate(image);
-        	genericService.saveOrUpdate(collection);
+            Image image = createAndSaveNewInformationResource(Image.class);
+            image.setTitle(i + ":"+ image.getTitle() );
+            collection.getResources().add(image);
+            image.getSharedCollections().add(collection);
+            genericService.saveOrUpdate(image);
+            genericService.saveOrUpdate(collection);
         }
         genericService.synchronize();
         logger.debug("===================");
@@ -69,7 +69,7 @@ public class NestedObjectIdexingITCase extends AbstractWithIndexIntegrationTestC
     @Ignore
     @Rollback(true)
     public void testIndexing() throws SolrServerException, IOException, ParseException {
-//    	sessionFactory.getCurrentSession().
+//        sessionFactory.getCurrentSession().
         SharedCollection collection = createAndSaveNewResourceCollection(SPITAL_DB_NAME);
         Image image = createAndSaveNewInformationResource(Image.class);
         genericService.synchronize();

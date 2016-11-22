@@ -25,26 +25,26 @@ public class DataRecord implements AbstractDataRecord {
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.db.model.abstracts.ADR#getId()
-	 */
+     * @see org.tdar.db.model.abstracts.ADR#getId()
+     */
     @Override
-	public Long getId() {
+    public Long getId() {
         return id;
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.db.model.abstracts.ADR#getTableName()
-	 */
+     * @see org.tdar.db.model.abstracts.ADR#getTableName()
+     */
     @Override
-	public String getTableName() {
+    public String getTableName() {
         return dataTable.getName();
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.db.model.abstracts.ADR#getDataTable()
-	 */
+     * @see org.tdar.db.model.abstracts.ADR#getDataTable()
+     */
     @Override
-	public DataTable getDataTable() {
+    public DataTable getDataTable() {
         return dataTable;
     }
 
@@ -72,19 +72,19 @@ public class DataRecord implements AbstractDataRecord {
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.db.model.abstracts.ADR#propertyNames()
-	 */
+     * @see org.tdar.db.model.abstracts.ADR#propertyNames()
+     */
     @Override
-	public Set<String> propertyNames()
+    public Set<String> propertyNames()
     {
         return values.keySet();
     }
 
     /* (non-Javadoc)
-	 * @see org.tdar.db.model.abstracts.ADR#asMap()
-	 */
+     * @see org.tdar.db.model.abstracts.ADR#asMap()
+     */
     @Override
-	public Map<?, ?> asMap() {
+    public Map<?, ?> asMap() {
         return values;
     }
 

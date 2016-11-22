@@ -150,8 +150,8 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         scheduledProcessService.queue(SendEmailProcess.class);
         int count = 0;
         while (!scheduledProcessService.getScheduledProcessQueue().isEmpty() && count < 100) {
-        	scheduledProcessService.runNextScheduledProcessesInQueue();
-        	count++;
+            scheduledProcessService.runNextScheduledProcessesInQueue();
+            count++;
         };
         SimpleMailMessage received = checkMailAndGetLatest("reporting on files with issues");
         assertTrue(received.getSubject().contains(WeeklyFilestoreLoggingProcess.PROBLEM_FILES_REPORT));
@@ -202,10 +202,10 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
 
     }
 
-	private void setupQueue(Class<? extends ScheduledProcess> cls, ScheduledProcess proc) {
-		scheduledProcessService.getManager().reset();
-		scheduledProcessService.getManager().addProcess(cls);
-	}
+    private void setupQueue(Class<? extends ScheduledProcess> cls, ScheduledProcess proc) {
+        scheduledProcessService.getManager().reset();
+        scheduledProcessService.getManager().addProcess(cls);
+    }
 
     @Test
     @Rollback

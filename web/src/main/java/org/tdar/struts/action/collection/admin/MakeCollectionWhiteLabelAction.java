@@ -48,10 +48,10 @@ public class MakeCollectionWhiteLabelAction extends AbstractCollectionAdminActio
             return SUCCESS;
         }
         try {
-        	setCollection(resourceCollectionService.convertToWhitelabelCollection(lc));
-        	getLogger().debug(getCollection().getDetailUrl());
+            setCollection(resourceCollectionService.convertToWhitelabelCollection(lc));
+            getLogger().debug(getCollection().getDetailUrl());
         } catch (Exception e) {
-        	getLogger().error("{}",e,e);
+            getLogger().error("{}",e,e);
         }
         return SUCCESS;
     }

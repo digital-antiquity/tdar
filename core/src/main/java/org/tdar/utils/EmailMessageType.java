@@ -57,7 +57,7 @@ public enum EmailMessageType implements Localizable, HasLabel {
         return types;
     }
 
-	public static List<EmailMessageType> valuesWithoutSAA() {
+    public static List<EmailMessageType> valuesWithoutSAA() {
         ArrayList<EmailMessageType> types = new ArrayList<EmailMessageType>();
         for (EmailMessageType type : values()) {
             if (type != SAA && type != MERGE_PEOPLE) {
@@ -65,6 +65,6 @@ public enum EmailMessageType implements Localizable, HasLabel {
             }
         }
         return types;
-	}
+    }
 
 }

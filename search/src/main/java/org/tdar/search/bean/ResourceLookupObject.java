@@ -100,21 +100,21 @@ public class ResourceLookupObject implements Serializable {
         this.searchParameters = searchParameters;
     }
 
-	public List<Long> getCollectionIds() {
-		return collectionIds;
-	}
+    public List<Long> getCollectionIds() {
+        return collectionIds;
+    }
 
-	public void setCollectionIds(List<Long> collectionIds) {
-		this.collectionIds = collectionIds;
-	}
+    public void setCollectionIds(List<Long> collectionIds) {
+        this.collectionIds = collectionIds;
+    }
 
-	public String getGeneralQuery() {
-		return generalQuery;
-	}
+    public String getGeneralQuery() {
+        return generalQuery;
+    }
 
-	public void setGeneralQuery(String generalQuery) {
-		this.generalQuery = generalQuery;
-	}
+    public void setGeneralQuery(String generalQuery) {
+        this.generalQuery = generalQuery;
+    }
 
     public boolean isUseSubmitterContext() {
         return useSubmitterContext;

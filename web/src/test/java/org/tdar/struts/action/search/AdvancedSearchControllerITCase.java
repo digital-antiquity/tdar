@@ -384,12 +384,12 @@ public class AdvancedSearchControllerITCase extends AbstractControllerITCase {
     @Test
     @Rollback
     public void testCollectionSearchLabelText() throws SolrServerException, IOException, TdarActionException {
-    	ResourceCollection collection = createAndSaveNewResourceCollection("abecd");
-    	controller.setCollectionId(collection.getId());
-    	controller.setQuery("ab");
-    	controller.search();
-    	logger.debug(controller.getSearchPhrase());
-    	assertFalse(StringUtils.contains(controller.getSearchPhrase(), "null"));
+        ResourceCollection collection = createAndSaveNewResourceCollection("abecd");
+        controller.setCollectionId(collection.getId());
+        controller.setQuery("ab");
+        controller.search();
+        logger.debug(controller.getSearchPhrase());
+        assertFalse(StringUtils.contains(controller.getSearchPhrase(), "null"));
     }
 
 

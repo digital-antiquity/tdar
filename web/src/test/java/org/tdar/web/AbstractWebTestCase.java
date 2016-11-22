@@ -1396,7 +1396,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
     public void logout() {
         webClient.getOptions().setJavaScriptEnabled(false);
         if (internalPage instanceof HtmlPage && 
-        		getHtmlPage().getElementById("logout-button") != null) {
+                getHtmlPage().getElementById("logout-button") != null) {
             clickElementWithId("logout-button");
         } else {
             // go to homepage
@@ -1571,8 +1571,8 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
     }
 
     public void assertNotEquals(Object o1, Object o2) {
-    	assertFalse(Objects.equals(o1, o2));
-	}
+        assertFalse(Objects.equals(o1, o2));
+    }
 
 
 }

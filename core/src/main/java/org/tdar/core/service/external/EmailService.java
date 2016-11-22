@@ -105,33 +105,33 @@ public class EmailService {
     public void sendMimeMessage(String templateName, Map<String,?> dataModel, Email email, List<File> attachments, List<File> inline) {
 
         try {
-        	email.setMessage(freemarkerService.render(templateName, dataModel));
+            email.setMessage(freemarkerService.render(templateName, dataModel));
         } catch (IOException fnf) {
             logger.error("Email template file not found (" + templateName + ")", fnf);
         }
         enforceFromAndTo(email);
         try {
-        	MimeMessage message = mailSender.createMimeMessage();
+            MimeMessage message = mailSender.createMimeMessage();
 
             // Message message = new MimeMessage(session);
-        	MimeMessageHelper helper = new MimeMessageHelper(message);
-        	helper.setFrom(email.getFrom());
+            MimeMessageHelper helper = new MimeMessageHelper(message);
+            helper.setFrom(email.getFrom());
             helper.setSubject(email.getSubject());
             helper.setTo(email.getToAsArray());
             message.setText(email.getMessage(),"utf8","html");
             
             if (CollectionUtils.isNotEmpty(attachments)) {
                 for (File file_ : attachments) {
-                	FileSystemResource file = new FileSystemResource(file_);
-                	helper.addAttachment(file_.getName(), file);
+                    FileSystemResource file = new FileSystemResource(file_);
+                    helper.addAttachment(file_.getName(), file);
                 }
             }
 
             if (CollectionUtils.isNotEmpty(inline)) {
-				for (File file_ : inline) {
-					FileSystemResource file = new FileSystemResource(file_);
-					helper.addInline(file_.getName(), file);
-				}
+                for (File file_ : inline) {
+                    FileSystemResource file = new FileSystemResource(file_);
+                    helper.addInline(file_.getName(), file);
+                }
             }
             
             mailSender.send(message);

@@ -112,12 +112,12 @@ public class ResourceCreator extends AbstractSequenced<ResourceCreator> implemen
 
     @Override
     public String toString() {
-    	String properName = "";
-    	Long id = -1L;
-    	if (creator != null) {
-    		id = creator.getId();
-    		properName = creator.getProperName();
-    	}
+        String properName = "";
+        Long id = -1L;
+        if (creator != null) {
+            id = creator.getId();
+            properName = creator.getProperName();
+        }
         return String.format("%s[%s] (%s)", properName,id, role);
     }
 

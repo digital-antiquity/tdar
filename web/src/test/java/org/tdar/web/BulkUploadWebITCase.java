@@ -115,13 +115,13 @@ public class BulkUploadWebITCase extends AbstractAuthenticatedWebTestCase {
         assertFalse(getPageCode().contains("resource creator is not"));
     }
 
-	private void setupTestUserProxy(Map<String, String> extra) {
+    private void setupTestUserProxy(Map<String, String> extra) {
         extra.put("creditProxies[0].person.id", CONFIG.getUserId().toString());
         extra.put("creditProxies[0].person.firstName", "test");
         extra.put("creditProxies[0].person.lastName", "user");
         extra.put("creditProxies[0].person.institution.name", "");
         extra.put("creditProxies[0].role", ResourceCreatorRole.CONTACT.name());
-	}
+    }
 
     @SuppressWarnings("unused")
     @Test

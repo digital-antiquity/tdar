@@ -492,8 +492,8 @@ public class EntityService extends ServiceInterface.TypedDaoBase<Person, PersonD
 
     @Transactional(readOnly = false)
     public void deleteForController(Creator<?> creator, String deletionReason, TdarUser authenticatedUser) {
-    	creator.setStatus(Status.DELETED);
-    	getDao().saveOrUpdate(creator);
+        creator.setStatus(Status.DELETED);
+        getDao().saveOrUpdate(creator);
         publisher.publishEvent(new TdarEvent(creator, EventType.CREATE_OR_UPDATE));
     }
 

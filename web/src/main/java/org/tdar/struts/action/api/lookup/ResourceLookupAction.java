@@ -194,19 +194,19 @@ public class ResourceLookupAction extends AbstractLookupController<Resource> {
         return DisplayOrientation.LIST;
     }
 
-	public List<Long> getCollectionId() {
-		return collectionId;
-	}
+    public List<Long> getCollectionId() {
+        return collectionId;
+    }
 
-	public void setCollectionId(List<Long> collectionIds) {
-		this.collectionId = collectionIds;
-	}
+    public void setCollectionId(List<Long> collectionIds) {
+        this.collectionId = collectionIds;
+    }
 
-	public String getQuery() {
-		return query;
-	}
+    public String getQuery() {
+        return query;
+    }
 
-	public void setQuery(String query) {
-		this.query = query;
-	}
+    public void setQuery(String query) {
+        this.query = query;
+    }
 }

@@ -23,7 +23,7 @@ public class AbstractSolrDocumentConverter {
         SolrInputDocument doc = new SolrInputDocument();
         doc.setField(QueryFieldNames.ID, persist.getId());
         Class<? extends Indexable> class1 = persist.getClass();
-		doc.setField(QueryFieldNames.CLASS, class1.getName());
+        doc.setField(QueryFieldNames.CLASS, class1.getName());
         doc.setField(QueryFieldNames._ID, SearchUtils.createKey(persist));
         if (persist instanceof HasStatus) {
             doc.setField(QueryFieldNames.STATUS, ((HasStatus) persist).getStatus().name());

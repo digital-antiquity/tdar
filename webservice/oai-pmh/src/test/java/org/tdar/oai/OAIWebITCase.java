@@ -37,7 +37,7 @@ public class OAIWebITCase extends AbstractWebTest {
 
     private static final OaiPmhConfiguration CONFIG = OaiPmhConfiguration.getInstance();
 
-	@Autowired
+    @Autowired
     GenericService genericService;
 
     private XpathEngine xpathEngine;

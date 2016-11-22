@@ -51,13 +51,13 @@ import org.tdar.utils.PersistableUtils;
 
 public abstract class AbstractAdvancedSearchController extends AbstractLookupController<Resource> {
 
-	private static final long serialVersionUID = -1673127898112301380L;
+    private static final long serialVersionUID = -1673127898112301380L;
 
-	private static final String SEARCH_RSS = "/search/rss";
-	private boolean hideFacetsAndSort = false;
+    private static final String SEARCH_RSS = "/search/rss";
+    private boolean hideFacetsAndSort = false;
 
-	@Autowired
-	private transient ResourceSearchService resourceSearchService;
+    @Autowired
+    private transient ResourceSearchService resourceSearchService;
 
     @Autowired
     private transient BookmarkedResourceService bookmarkedResourceService;

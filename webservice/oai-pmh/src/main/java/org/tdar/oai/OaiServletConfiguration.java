@@ -14,22 +14,22 @@ import org.tdar.web.AbstractServletConfiguration;
 
 public class OaiServletConfiguration extends AbstractServletConfiguration implements Serializable, WebApplicationInitializer {
 
-	private static final long serialVersionUID = -4414884961889682778L;
+    private static final long serialVersionUID = -4414884961889682778L;
 
-	public OaiServletConfiguration() {
+    public OaiServletConfiguration() {
         super("Initializing OAI Servlet");
     }
-	
-	@Override
+
+    @Override
     public String getAppPropertyPrefix() {
         return "oaiPmh";
     }
 
 
     @Override
-	public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
-		return SimpleAppConfiguration.class;
-	}
+    public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
+        return SimpleAppConfiguration.class;
+    }
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
@@ -38,7 +38,7 @@ public class OaiServletConfiguration extends AbstractServletConfiguration implem
         }
 
 //        setupContainer(container);
-		setupOpenSessionInViewFilter(container);
+        setupOpenSessionInViewFilter(container);
 
         // http://stackoverflow.com/questions/16231926/trying-to-create-a-rest-service-using-jersey
         ServletRegistration.Dynamic oaiPmh = container.addServlet("oaipmh", ServletContainer.class);

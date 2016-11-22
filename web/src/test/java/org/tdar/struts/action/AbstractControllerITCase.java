@@ -191,7 +191,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         assertEquals(controller.getAuthenticatedUser(), owner);
         C resourceCollection = (C) controller.getResourceCollection();
         resourceCollection.setName(name);
-        	
+
         controller.setAsync(false);
         resourceCollection.setHidden(!visible);
         resourceCollection.setDescription(description);
@@ -205,7 +205,7 @@ public abstract class AbstractControllerITCase extends AbstractIntegrationContro
         }
         
         if (parentId != null) {
-        	controller.setParentId(parentId);
+            controller.setParentId(parentId);
         }
 
         if (users != null) {

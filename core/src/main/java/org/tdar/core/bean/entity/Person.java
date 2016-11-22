@@ -99,9 +99,9 @@ public class Person extends Creator<Person> implements Comparable<Person>, Dedup
         this.lastName = lastName;
         this.email = email;
         setId(id);
-	}
+    }
 
-	/**
+    /**
      * Returns the person's name in [last name, first name] format.
      * 
      * @return formatted String name

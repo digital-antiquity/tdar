@@ -124,7 +124,7 @@ public class RequestAccessEmailAction extends AbstractResourceRequestAccessContr
 
     @Override
     public void prepare() {
-    	super.prepare();
+        super.prepare();
         h.checkForSpammers(recaptchaService, true, getServletRequest().getRemoteHost(), null, false);
         from = genericService.find(Person.class, fromId);
         to = genericService.find(Creator.class, toId);

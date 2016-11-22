@@ -461,9 +461,9 @@ public abstract class AbstractLookupController<I extends Indexable> extends Abst
     }
 
 
-	@Override
-	public DisplayOrientation getOrientation() {
-		return null;
-	}
+    @Override
+    public DisplayOrientation getOrientation() {
+        return null;
+    }
 
 }

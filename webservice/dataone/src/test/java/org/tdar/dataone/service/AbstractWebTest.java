@@ -30,11 +30,11 @@ import com.gargoylesoftware.htmlunit.javascript.JavaScriptErrorListener;
 
 public abstract class AbstractWebTest {
 
-	protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
-	protected Page internalPage;
-	protected HtmlPage htmlPage;
+    protected final WebClient webClient = new WebClient(BrowserVersion.FIREFOX_38);
+    protected Page internalPage;
+    protected HtmlPage htmlPage;
     static final TestConfiguration CONFIG = TestConfiguration.getInstance();
-	transient Logger logger = LoggerFactory.getLogger(getClass());
+    transient Logger logger = LoggerFactory.getLogger(getClass());
 
     /*
      * override to test with different URL can use this to point at another

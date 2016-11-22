@@ -45,11 +45,11 @@ public class AdminPermissonsRequestAction extends AbstractProcessPermissonsActio
     }
 
     @Override
-	public List<GeneralPermissions> getAvailablePermissions() {
-    	if (getType() != null && getType() == EmailMessageType.SAA) {
-    		return Arrays.asList(GeneralPermissions.MODIFY_RECORD);
-    	}
-		return super.getAvailablePermissions();
-	}
+    public List<GeneralPermissions> getAvailablePermissions() {
+        if (getType() != null && getType() == EmailMessageType.SAA) {
+            return Arrays.asList(GeneralPermissions.MODIFY_RECORD);
+        }
+        return super.getAvailablePermissions();
+    }
 
 }

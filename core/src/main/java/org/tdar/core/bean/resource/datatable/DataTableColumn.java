@@ -439,7 +439,7 @@ public class DataTableColumn extends AbstractSequenced<DataTableColumn> implemen
     public Set<String> getUnmappedDataValues() {
         Set<String> values = new HashSet<>();
         if (getDefaultCodingSheet() == null || CollectionUtils.isEmpty(getDefaultCodingSheet().getCodingRules())) {
-        	return values;
+            return values;
         }
         for (CodingRule rule : getDefaultCodingSheet().getCodingRules()) {
             if (rule.getOntologyNode() == null) {

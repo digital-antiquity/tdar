@@ -22,31 +22,31 @@ import org.tdar.search.service.index.SearchIndexService;
 @Configuration
 public class TagAppConfiguration extends TdarSearchIntegrationAppConfiguration {
 
-	private static final long serialVersionUID = -6963493881813578774L;
+    private static final long serialVersionUID = -6963493881813578774L;
 
-	@Autowired
-	SearchIndexService searchIndexService;
-	
-	@Autowired
-	Environment env;
-	
-	@Autowired
-	SolrClient solrClient;
+    @Autowired
+    SearchIndexService searchIndexService;
 
-	@Autowired
-	GenericService genericService;
+    @Autowired
+    Environment env;
 
-	@PostConstruct
-	public void init() {
-		TdarConfiguration instance = TdarConfiguration.getInstance();
-		logger.debug("{}", solrClient.getClass());
-		if ((solrClient instanceof EmbeddedSolrServer) && 
-				env.getProperty("reindexOnStartup", Boolean.class,Boolean.TRUE)) {
-			searchIndexService.indexAll(genericService.find(TdarUser.class,instance.getAdminUserId()));
-		}
-	}
-	
-	
+    @Autowired
+    SolrClient solrClient;
+
+    @Autowired
+    GenericService genericService;
+
+    @PostConstruct
+    public void init() {
+        TdarConfiguration instance = TdarConfiguration.getInstance();
+        logger.debug("{}", solrClient.getClass());
+        if ((solrClient instanceof EmbeddedSolrServer) &&
+                env.getProperty("reindexOnStartup", Boolean.class,Boolean.TRUE)) {
+            searchIndexService.indexAll(genericService.find(TdarUser.class,instance.getAdminUserId()));
+        }
+    }
+
+
     @Override
     public boolean disableHibernateSearch() {
         return false;

@@ -32,10 +32,10 @@ public class TagServletConfiguration extends AbstractServletConfiguration implem
 
     @Override
     public void onStartup(ServletContext container) throws ServletException {
-    	if (!TdarConfiguration.getInstance().tagEnabled() && 
-    			TdarConfiguration.getInstance().tagEmbedded()) {
-    		return;
-    	}
+        if (!TdarConfiguration.getInstance().tagEnabled() &&
+                TdarConfiguration.getInstance().tagEmbedded()) {
+            return;
+        }
         if (StringUtils.isNotBlank(getFailureMessage())) {
             throw new ServletException(getFailureMessage());
         }

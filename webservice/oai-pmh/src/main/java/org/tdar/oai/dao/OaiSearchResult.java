@@ -7,7 +7,7 @@ import org.tdar.core.bean.OaiDcProvider;
 
 public class OaiSearchResult implements Serializable {
 
-	private static final long serialVersionUID = -2232337420440578402L;
+    private static final long serialVersionUID = -2232337420440578402L;
     private int resultSize = 0;
     private int totalRecords = 0;
     private int startRecord = 0;

@@ -238,9 +238,9 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
     }
 
     protected void indexPersistable() throws SolrServerException, IOException {
-    	if (getPersistable() instanceof Indexable) {
-    		publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
-    	}
+        if (getPersistable() instanceof Indexable) {
+            publisher.publishEvent(new TdarEvent((Indexable)getPersistable(), EventType.CREATE_OR_UPDATE));
+        }
     }
 
     private void logAction(String action_) {
@@ -397,10 +397,10 @@ public abstract class AbstractPersistableController<P extends Persistable & Upda
         RequestType type = RequestType.EDIT;
 
         if (getId() == null && (getCurrentUrl().contains("/add") || 
-        		(getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
+                (getTdarConfiguration().isTest() && StringUtils.isBlank(getCurrentUrl())))) {
             getLogger().debug("setting persistable");
             if (getPersistable() == null) {
-            	setPersistable(createPersistable());
+                setPersistable(createPersistable());
             }
             type = RequestType.CREATE;
         }
