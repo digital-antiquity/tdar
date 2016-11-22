@@ -34,6 +34,7 @@ import org.tdar.search.service.query.CollectionSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -49,7 +50,7 @@ import org.tdar.utils.PersistableUtils;
 @ParentPackage("default")
 @Component
 @Scope("prototype")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class BrowseCollectionController extends AbstractLookupController<ResourceCollection> {
 
     public static final String COLLECTIONS = "collections";

@@ -32,12 +32,13 @@ import org.tdar.core.service.excel.ExcelWorkbookWriter;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Namespace("/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class AdvancedSearchDownloadAction extends AbstractAdvancedSearchController {
 
     private static final String RESOURCETYPE = "resourcetype";

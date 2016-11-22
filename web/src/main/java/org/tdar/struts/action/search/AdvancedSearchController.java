@@ -55,6 +55,7 @@ import org.tdar.struts.action.AbstractAdvancedSearchController;
 import org.tdar.struts.data.KeywordNode;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 
 /**
@@ -69,7 +70,7 @@ import org.tdar.struts_base.interceptor.annotation.RequiresTdarUserGroup;
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class AdvancedSearchController extends AbstractAdvancedSearchController implements FacetedResultHandler<Resource> {
 
     private static final String SIMPLE_FTL = "simple.ftl";

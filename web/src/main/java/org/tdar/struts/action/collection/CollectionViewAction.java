@@ -59,6 +59,7 @@ import org.tdar.struts.action.SlugViewAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 import org.tdar.utils.PaginationHelper;
 import org.tdar.utils.PersistableUtils;
 import org.tdar.web.service.HomepageDetails;
@@ -226,7 +227,7 @@ public class CollectionViewAction<C extends HierarchicalCollection> extends Abst
         getLogger().trace("lucene: end");
     }
 
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Actions(value = {
             @Action(value = "{id}/{slug}"),
             @Action(value = "{id}")

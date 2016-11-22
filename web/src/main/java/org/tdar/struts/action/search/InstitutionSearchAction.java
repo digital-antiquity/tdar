@@ -20,12 +20,13 @@ import org.tdar.search.service.query.CreatorSearchService;
 import org.tdar.struts.action.AbstractLookupController;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Namespace("/search")
 @Component
 @Scope("prototype")
 @ParentPackage("default")
-@HttpOnlyIfUnauthenticated
+@HttpsOnly
 public class InstitutionSearchAction extends AbstractLookupController<Institution> {
 
     private static final long serialVersionUID = -2102002561399688184L;

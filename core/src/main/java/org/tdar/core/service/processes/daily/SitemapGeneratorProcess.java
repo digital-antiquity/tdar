@@ -77,7 +77,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             ScrollableResults allScrollable = resourceService.findAllActiveScrollableForSitemap();
             while (allScrollable.next()) {
                 Resource object = (Resource) allScrollable.get(0);
-                String url = UrlService.absoluteUrl(object);
+                String url = UrlService.absoluteSecureUrl(object);
                 addUrl(wsg, url);
             }
 
@@ -94,7 +94,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
                 if (!creator.isBrowsePageVisible()) {
                     continue;
                 }
-                String url = UrlService.absoluteUrl(creator);
+                String url = UrlService.absoluteSecureUrl(creator);
                 addUrl(wsg, url);
                 totalCreator++;
                 if (totalCreator % 500 == 0) {
@@ -149,7 +149,7 @@ public class SitemapGeneratorProcess extends AbstractScheduledProcess {
             if (collection.isHidden()) {
                 continue;
             }
-            String url = UrlService.absoluteUrl((VisibleCollection)collection);
+            String url = UrlService.absoluteSecureUrl((VisibleCollection)collection);
             addUrl(wsg, url);
             totalCollections++;
             if (totalCollections % 500 == 0) {

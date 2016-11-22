@@ -23,6 +23,7 @@ import org.tdar.core.service.resource.OntologyNodeService;
 import org.tdar.core.service.resource.OntologyService;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts.interceptor.annotation.HttpOnlyIfUnauthenticated;
+import org.tdar.struts.interceptor.annotation.HttpsOnly;
 
 @Component
 @Scope("prototype")
@@ -47,7 +48,7 @@ public class OntologyNodeViewAction extends AbstractOntologyViewAction {
     private String iri;
     private List<Dataset> datasetsWithMappingsToNode;
 
-    @HttpOnlyIfUnauthenticated
+    @HttpsOnly
     @Action(value = "{id}/node/{iri}",
             interceptorRefs = { @InterceptorRef("unauthenticatedStack") },
             results = {
