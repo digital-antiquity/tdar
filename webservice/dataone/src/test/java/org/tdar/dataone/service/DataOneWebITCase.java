@@ -36,10 +36,10 @@ import com.gargoylesoftware.htmlunit.FailingHttpStatusCodeException;
 
 public class DataOneWebITCase extends AbstractWebTest {
 
+    private static final String TEST_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META;
     private static final String BASE = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.D1_FORMAT;
     private static final String TEST_DOI = BASE + "1281812043684";
-    private static final String TEST_DOI_META = "doi:10.6067:XCV8SN0B29" + DataOneService.D1_SEP + DataOneService.META + DataOneService.D1_VERS_SEP
-            + "1281812043684";
+    private static final String TEST_DOI_META = TEST_META + DataOneService.D1_VERS_SEP + "1281812043684";
 
     @Test
     public void replica() throws ClientProtocolException, IOException {
@@ -251,8 +251,18 @@ public class DataOneWebITCase extends AbstractWebTest {
     }
 
     @Test
+    public void testOldTdarMeta() throws ClientProtocolException, IOException {
+        StringWriter contents = new StringWriter();
+        HttpResponse record = getRecord("/v2/meta/" + TEST_META, contents);
+                                                //obsoletedBy>doi:10.6067:XCV8SN0B29_meta&v=1281812043684</obsoletedBy>
+        String s = "<obsoletedBy>"+TEST_DOI_META.replaceAll("&", "&amp;")+"</obsoletedBy>";
+        logger.debug(s);
+        assertTrue(contents.toString().contains(s));
+    }
+
+    @Test
     public void testMetaObsoleteObjectId() {
-        Assert.assertEquals(404, gotoPage("/v2/meta/" + BASE));
+        Assert.assertEquals(200, gotoPage("/v2/meta/" + BASE));
         logger.debug(getPageCode());
     }
 

@@ -23,11 +23,15 @@ import org.tdar.utils.json.JsonLookupFilter;
 
 import com.fasterxml.jackson.annotation.JsonView;
 
+import java.util.Comparator;
+
 @Entity
 public abstract class VisibleCollection extends ResourceCollection implements OaiDcProvider, HasName, Slugable, Addressable, Validatable, Indexable, Viewable {
 
 
     private static final long serialVersionUID = -8963749030250029536L;
+    public static final Comparator<? super VisibleCollection> TITLE_COMPARATOR = (Comparator.comparing(VisibleCollection::getTitleSort)
+    );
     private transient boolean viewable;
 
     @Column
@@ -91,7 +95,7 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
         if (getTitle() == null) {
             return "";
         }
-        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "");
+        return getTitle().replaceAll(PersistableUtils.TITLE_SORT_REGEX, "").toLowerCase();
     }
 
     @Override

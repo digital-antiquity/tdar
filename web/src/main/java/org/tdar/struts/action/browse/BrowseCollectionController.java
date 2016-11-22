@@ -18,7 +18,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.Persistable;
-import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.SharedCollection;
@@ -66,7 +65,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
     @Autowired
     private CollectionSearchService collectionSearchService;
     
-    private List<BillingAccount> accounts = new ArrayList<BillingAccount>();
     Map<String, SearchFieldType> searchFieldLookup = new HashMap<>();
 
     private transient InputStream inputStream;
@@ -146,13 +144,6 @@ public class BrowseCollectionController extends AbstractLookupController<Resourc
         this.groups = groups;
     }
 
-    public List<BillingAccount> getAccounts() {
-        return accounts;
-    }
-
-    public void setAccounts(List<BillingAccount> accounts) {
-        this.accounts = accounts;
-    }
 
     public Long getContentLength() {
         return contentLength;

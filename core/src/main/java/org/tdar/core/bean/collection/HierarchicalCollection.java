@@ -49,7 +49,7 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
         this.parentIds = parentIds;
     }
 
-    private transient Set<C> transientChildren = new LinkedHashSet<>();
+    private transient List<C> transientChildren = new ArrayList<>();
 
     @XmlAttribute(name = "parentIdRef")
     @XmlJavaTypeAdapter(JaxbPersistableConverter.class)
@@ -59,11 +59,11 @@ public abstract class HierarchicalCollection<C extends VisibleCollection> extend
 
     @XmlTransient
     @Transient
-    public Set<C> getTransientChildren() {
+    public List<C> getTransientChildren() {
         return transientChildren;
     }
 
-    public void setTransientChildren(Set<C> transientChildren) {
+    public void setTransientChildren(List<C> transientChildren) {
         this.transientChildren = transientChildren;
     }
 

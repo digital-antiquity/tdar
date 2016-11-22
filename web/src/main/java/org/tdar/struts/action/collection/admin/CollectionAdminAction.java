@@ -1,9 +1,6 @@
 package org.tdar.struts.action.collection.admin;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
@@ -18,6 +15,7 @@ import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.TdarGroup;
 import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.HierarchicalCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceAccessType;
 import org.tdar.core.bean.resource.ResourceType;
@@ -65,7 +63,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private AuthorizationService authorizationService;
 
     private String term;
-    private Set<HierarchicalCollection> allChildCollections;
+    private List<HierarchicalCollection> allChildCollections = new ArrayList<>();
     private ResourceSpaceUsageStatistic uploadedResourceAccessStatistic;
     private PaginationHelper paginationHelper;
     private FacetWrapper facetWrapper = new FacetWrapper();
@@ -81,11 +79,13 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
     private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
 
+    private HierarchicalCollection collection;
+
     @Override
     public void prepare() throws Exception {
         super.prepare();
-        resourceCollectionService.buildCollectionTreeForController((HierarchicalCollection)getCollection(), getAuthenticatedUser(), HierarchicalCollection.class);
-        setAllChildCollections(((HierarchicalCollection)getCollection()).getTransientChildren());
+        resourceCollectionService.buildCollectionTreeForController(getCollection(), getAuthenticatedUser(), HierarchicalCollection.class);
+        setAllChildCollections(getCollection().getTransientChildren());
 
         List<Long> collectionIds = PersistableUtils.extractIds(getAllChildCollections());
         collectionIds.add(getId());
@@ -109,6 +109,12 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         }
 
     }
+
+    @Override
+    public HierarchicalCollection getCollection() {
+        return collection;
+    }
+
 
     @Override
     @Action(value = "{id}", results = {
@@ -245,12 +251,12 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
         return paginationHelper;
     }
 
-    public Set<HierarchicalCollection> getAllChildCollections() {
+    public List<HierarchicalCollection> getAllChildCollections() {
         return allChildCollections;
     }
 
-    public void setAllChildCollections(Set<HierarchicalCollection> allChildCollections) {
-        this.allChildCollections = allChildCollections;
+    public void setAllChildCollections(List<HierarchicalCollection> allChildCollections) {
+        this.allChildCollections = new ArrayList<>(allChildCollections);
     }
 
     public List<Facet> getResourceTypeFacets() {

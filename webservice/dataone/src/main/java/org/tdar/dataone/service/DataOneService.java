@@ -312,9 +312,16 @@ public class DataOneService implements DataOneConstants {
         SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
 
-        ObjectResponseContainer object = getObjectFromTdar(id);
+        ObjectResponseContainer object = getObjectFromTdar(id,false);
+        boolean dateIgnored = false;
         if (object == null) {
-            return null;
+            object = getObjectFromTdar(id,true);
+            logger.debug("{}", object);
+            dateIgnored = true;
+            if (object == null) {
+                logger.debug("not found -- returning");
+                return null;
+            }
         }
         InformationResource tdarResource = object.getTdarResource();
         InformationResource resource = tdarResource;
@@ -327,7 +334,7 @@ public class DataOneService implements DataOneConstants {
         metadata.setDateUploaded(resource.getDateUpdated());
         
         // if it's deleted, we mark it as archived
-        if (resource.getStatus() != Status.ACTIVE) {
+        if (resource.getStatus() != Status.ACTIVE || dateIgnored) {
             metadata.setArchived(true);
         } else {
             metadata.setArchived(false);
@@ -337,7 +344,9 @@ public class DataOneService implements DataOneConstants {
             IdentifierParser parser = new IdentifierParser(id, informationResourceService);
 //            if (object.getType() == EntryType.TDAR) {
             String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, parser.getType().getUniquePart());
-            if (oldId != null) {
+            if (dateIgnored) {
+                metadata.setObsoletedBy(DataOneUtils.createIdentifier(IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null)));
+            } else if (oldId != null) {
                 metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
             }
 //            }
@@ -390,7 +399,7 @@ public class DataOneService implements DataOneConstants {
      */
     @Transactional(readOnly = false)
     public ObjectResponseContainer getObject(final String id, HttpServletRequest request, Event event) {
-        ObjectResponseContainer resp = getObjectFromTdar(id);
+        ObjectResponseContainer resp = getObjectFromTdar(id,false);
         if (request != null && resp != null && event != null) {
             LogEntryImpl entry = new LogEntryImpl(id, request, event);
             genericService.markWritable(entry);
@@ -406,20 +415,20 @@ public class DataOneService implements DataOneConstants {
      * @return
      */
     @Transactional(readOnly = true)
-    private ObjectResponseContainer getObjectFromTdar(String id_) {
+    private ObjectResponseContainer getObjectFromTdar(String id_, boolean ignoreDate_) {
         ObjectResponseContainer resp = null;
+        boolean ignoreDate = ignoreDate_;
         try {
             IdentifierParser parser = new IdentifierParser(id_, informationResourceService);
-            boolean sameDate = false;
             if (parser.getModified() != null && parser.getIr().getDateUpdated().compareTo(parser.getModified() ) == 0) {
-                sameDate = true;
+                ignoreDate = true;
             }
-            
-            if (parser.getType() == EntryType.D1 && (parser.isSeriesIdentifier() || sameDate)) {
+            logger.trace("ignoreDate:{}", ignoreDate);
+            if (parser.getType() == EntryType.D1 && (parser.isSeriesIdentifier() || ignoreDate)) {
                 resp = constructD1FormatObject(parser.getIr());
             } 
-            if (parser.getType() == EntryType.TDAR && (parser.isSeriesIdentifier() || sameDate)) {
-                logger.debug("{} vs. {}", parser.getIr().getDateUpdated(),  parser.getModified());
+            if (parser.getType() == EntryType.TDAR && (parser.isSeriesIdentifier() || ignoreDate)) {
+                logger.trace("{} vs. {}", parser.getIr().getDateUpdated(),  parser.getModified());
                 resp = constructMetadataFormatObject(parser.getIr());
             }
             if (parser.getType() == EntryType.FILE) {

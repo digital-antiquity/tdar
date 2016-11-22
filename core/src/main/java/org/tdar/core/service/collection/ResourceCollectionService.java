@@ -1224,7 +1224,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         publisher.publishEvent(new TdarEvent(persistable, EventType.CREATE_OR_UPDATE));
 
     }
-    
+
     @Transactional(readOnly=true)
     public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user) {
         boolean admin = false;
@@ -1233,7 +1233,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         }
         return getDao().findResourcesSharedWith(authenticatedUser, user, admin);
     }
-    
 
     @Transactional(readOnly=true)
     public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls) {

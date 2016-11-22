@@ -1,13 +1,7 @@
 package org.tdar.struts.action;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.solr.client.solrj.SolrServerException;
@@ -22,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.bean.entity.Person;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.InformationResource;
@@ -160,6 +155,8 @@ public class DashboardController extends AbstractAuthenticatableAction implement
                 SharedCollection.class)) {
             getAllResourceCollections().add((SharedCollection) rc);
         }
+
+        allResourceCollections.sort(VisibleCollection.TITLE_COMPARATOR);
     }
 
     /**

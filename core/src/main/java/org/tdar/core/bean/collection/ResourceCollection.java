@@ -1,15 +1,4 @@
 /**
-    @XmlTransient
-    @Override
-    public boolean isViewable() {
-        return viewable;
-    }
-
-    @Override
-    public void setViewable(boolean viewable) {
-        this.viewable = viewable;
-    }
-
  * $Id$
  * 
  * @author $Author$
@@ -116,6 +105,23 @@ import com.fasterxml.jackson.annotation.JsonInclude.Include;
 public abstract class ResourceCollection extends AbstractPersistable
         implements Updatable, Validatable, DeHydratable, HasSubmitter, XmlLoggable, HasStatus {
 
+    /**
+
+     //fixme: is this snippet needed?  Remove otherwise.
+
+     @XmlTransient
+     @Override
+     public boolean isViewable() {
+     return viewable;
+     }
+
+     @Override
+     public void setViewable(boolean viewable) {
+     this.viewable = viewable;
+     }
+
+
+     */
     public static final SortOption DEFAULT_SORT_OPTION = SortOption.TITLE;
 
     @Transient
@@ -131,7 +137,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Column(name = "collection_type", updatable = false, insertable = false)
     private CollectionType type;
 
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status", length = FieldLength.FIELD_LENGTH_50)
     @JsonView(JsonLookupFilter.class)
@@ -170,7 +176,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     /**
      * Sort-of hack to support saving of massive resource collections -- the select that is generated for getResources() does a polymorphic deep dive for every
      * field when it only really needs to get at the Ids for proper logging.
-     * 
+     *
      * @return
      */
     @ElementCollection
@@ -302,7 +308,7 @@ public abstract class ResourceCollection extends AbstractPersistable
     @Transient
     public void setResourceIds(Set<Long> resourceIds) {
         this.resourceIds = resourceIds;
-    }   
+    }
 
     public String getUrlNamespace() {
         return "collection";
