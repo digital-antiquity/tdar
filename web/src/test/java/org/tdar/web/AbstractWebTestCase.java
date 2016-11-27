@@ -1151,7 +1151,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
     private int uploadFileToPersonalFilestore(String ticketId, String path, boolean assertNoErrors) {
         int code = 0;
         WebClient client = getWebClient();
-        String url = getBaseUrl() + "/upload/upload";
+        String url = getBaseSecureUrl() + "/upload/upload";
         try {
             WebRequest webRequest = new WebRequest(new URL(url), HttpMethod.POST);
             List<NameValuePair> parms = new ArrayList<NameValuePair>();
