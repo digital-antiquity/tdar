@@ -60,7 +60,7 @@ public class TdarUserController extends AbstractPersonController<TdarUser> {
     private transient EntityService entityService;
 
     @Action(value = MYPROFILE, results = {
-            @Result(name = SUCCESS, location = "edit.ftl")
+            @Result(name = SUCCESS, location = "/WEB-INF/content/dashboard/myprofile.ftl")
     })
     @HttpsOnly
     @SkipValidation

@@ -3,22 +3,24 @@
     <#import "/WEB-INF/macros/resource/common.ftl" as common>
     <#import "/WEB-INF/content/entity/entity-edit-common.ftl" as entityEdit>
     <#import "/WEB-INF/macros/resource/navigation-macros.ftl" as nav>
+    <#import "/WEB-INF/content/dashboard/dashboard-common.ftl" as dash>
 <head>
-    <#assign pageTitle = "Add a new User">
+    <#assign pageTitle = "Your Profile: ${person.properName!'n/a'}">
 
-    <#if (editingSelf)>
-        <#assign pageTitle = "Your Profile: ${person.properName!'n/a'}">
-
-    <#elseif person.id != -1>
-        <#assign pageTitle = "Editing: ${person.properName!'n/a'}" >
-    </#if>
     <title>${pageTitle}</title>
 
 </head>
 <body>
 
     <h1>${pageTitle}</h1>
-    <@entityEdit.userEditForm person/>
+    <div class="row">
+        <div class="span2">
+            <@dash.sidebar current="myprofile"/>
+        </div>
+        <div class="span10">
+            <@entityEdit.userEditForm person/>
+        </div>
+    </div>
 </body>
 
 </#escape>

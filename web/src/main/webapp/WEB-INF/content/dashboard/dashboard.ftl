@@ -103,9 +103,9 @@
 
 <div id="sidebar-right" parse="true">
     <div>
-    	<div id="myProfile">
+        <div id="myProfile">
             <hr/>
-    	</div>
+        </div>
         <#if contributor>
             <#if (activeResourceCount != 0)>
                 <@resourcePieChart />
@@ -216,13 +216,13 @@
 
                 <#list recentlyEditedResources as res>
                     <li id="li-recent-resource-${res.id?c}">
-	               <span class="fixed">
+                   <span class="fixed">
                        <@common.cartouche res true>
                            <span class="recent-nav">
-	                    <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
-	                    <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
-	                </span>
-	                        <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
+                        <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a> |
+                        <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+                    </span>
+                            <a href="<@s.url value='${res.detailUrl}' />"><@common.truncate res.title 60 /></a>
                             <small>(ID: ${res.id?c})</small>
                        </@common.cartouche>
                    </span>
@@ -253,7 +253,7 @@
                                    title="add a resource to this project">add resource</a> |
                                 <a href="<@s.url value='/${res.urlNamespace}/edit'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.edit" /></a>
                                 |
-			                    <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
+                                <a href="<@s.url value='/resource/delete?'><@s.param name="id" value="${res.id?c}"/></@s.url>"><@s.text name="menu.delete" /></a>
                             </div>
                         </li>
                     </#list>

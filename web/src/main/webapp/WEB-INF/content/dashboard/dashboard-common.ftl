@@ -1,20 +1,23 @@
 <#escape _untrusted as _untrusted?html>
 <#macro sidebar current="dashboard">
     <ul class="nav nav-list nav-stacked dashboard-nav">
-      <li <@activeIf current "dashboard" />><a href="/dashboard"> My Resources</a></li>
-      <li class="nav-header">My Shares</li>
-      <li  <@activeIf current "share" />><a href="/manage">Share</a></li>
-      <li><a href="/manage">Manage</a></li>
-      <li><a href="/rights">Resources</a></li>
-      <li class="nav-header">My Library</li>
-      <li  <@activeIf current "collections" />> <a href="/organize">Collections</a></li>
-      <li  <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>
-      <li class="nav-header">My Account</li>
-      <li><a href="/entity/user/myprofile">Profile</a></li>
-      <#if contributor>
-          <li <@activeIf current "billing" />><a href="/billing">Billing Accounts</a></li>
-          <li <@activeIf current "export" />><a href="/export/request">Export</a></li>
-      </#if>
+        <li class="nav-header">Dashboard</li>
+
+        <li <@activeIf current "dashboard" />><a href="/dashboard">Resources</a></li>
+        <li <@activeIf current "collections" />> <a href="/organize">Collections</a></li>
+        <li <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>
+
+        <li <@activeIf current "share" />><a href="/share">Share</a></li>
+        <li <@activeIf current "manage" />><a href="/manage">Manage</a></li>
+
+
+
+        <#--<li class="nav-header">My Library</li>-->
+        <li <@activeIf current "myprofile"/>><a href="/entity/user/myprofile">My Profile</a></li>
+        <#if contributor>
+            <li <@activeIf current "billing" />><a href="/billing">Billing Accounts</a></li>
+            <li <@activeIf current "export" />><a href="/export/request">Export</a></li>
+        </#if>
     </ul>
 </#macro>
 
