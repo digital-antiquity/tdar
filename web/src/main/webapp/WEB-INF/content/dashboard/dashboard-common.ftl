@@ -7,7 +7,7 @@
         <li <@activeIf current "collections" />> <a href="/organize">Collections</a></li>
         <li <@activeIf current "bookmarks" />> <a href="/bookmarks"> Bookmarks</a></li>
 
-        <li <@activeIf current "share" />><a href="/share">Share</a></li>
+        <#--<li <@activeIf current "share" />><a href="/share">Share</a></li>-->
         <li <@activeIf current "manage" />><a href="/manage">Manage</a></li>
 
 
