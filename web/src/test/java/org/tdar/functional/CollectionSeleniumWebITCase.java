@@ -1,5 +1,7 @@
 package org.tdar.functional;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
 
@@ -181,9 +183,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         find(".searchbox").val("Selenium").sendKeys(Keys.RETURN);
         waitForPageload();
         clearPageCache();
-        logger.debug(getText());
-        Assert.assertTrue(getText().contains(TITLE));
-
+        assertThat(getText(), containsString(TITLE));
     }
 
     @Test

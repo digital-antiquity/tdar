@@ -1003,6 +1003,6 @@ public class TdarConfiguration extends AbstractConfigurationFile {
     }
 
     public boolean useListCollections() {
-        return true;
+        return false;
     }
 }

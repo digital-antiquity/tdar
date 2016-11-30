@@ -526,14 +526,9 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     protected void takeScreenshot(String filename) {
-        if (!TestConfiguration.getInstance().screenshotsEnabled()) {
-            return;
-        }
-        
-        if (!screenshotsAllowed) {
-            return;
-        }
-        if (screenidx > TestConstants.MAX_SCREENSHOTS_PER_TEST) {
+        if (!TestConfiguration.getInstance().screenshotsEnabled() ||
+                !screenshotsAllowed ||
+                screenidx > TestConstants.MAX_SCREENSHOTS_PER_TEST) {
             return;
         }
 
@@ -542,7 +537,7 @@ public abstract class AbstractSeleniumWebITCase {
         screenshotsAllowed = false;
         try {
             Screenshot takeScreenshot = new AShot()
-            .shootingStrategy(ShootingStrategies.viewportPasting(500))
+            .shootingStrategy(ShootingStrategies.scaling(0.5f))
             .takeScreenshot(driver);
             String scrFilename = "target/screenshots/" + getClass().getSimpleName() + "/" + testName.getMethodName();
             File dir = new File(scrFilename);
