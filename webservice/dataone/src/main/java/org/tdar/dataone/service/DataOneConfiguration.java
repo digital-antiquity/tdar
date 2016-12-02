@@ -77,7 +77,7 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
     }
 
     public String getSubject() {
-        return assistant.getStringProperty("dataone.subject", "CN="+getMemberNodeIdentifier()+",DC=dataone,DC=org");
+        return assistant.getStringProperty("dataone.subject", "CN=" + getMemberNodeIdentifier() + ",DC=dataone,DC=org");
     }
 
     public boolean isProduction() {
@@ -94,5 +94,10 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
 
     public String getMaxId() {
         return Integer.toString(assistant.getIntProperty("dataone.maxId", 2000));
+    }
+
+    public String getD1UrlBase() {
+        // https://cn-sandbox.test.dataone.org
+        return assistant.getStringProperty("dataone.baseUrl", "https://cn.dataone.org/cn");
     }
 }
