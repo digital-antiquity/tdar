@@ -98,6 +98,6 @@ public class DataOneConfiguration extends AbstractConfigurationFile {
 
     public String getD1UrlBase() {
         // https://cn-sandbox.test.dataone.org
-        return assistant.getStringProperty("dataone.baseUrl", "https://cn.dataone.org/cn");
+        return assistant.getStringProperty("dataone.baseUrl", "https://cn.dataone.org");
     }
 }
