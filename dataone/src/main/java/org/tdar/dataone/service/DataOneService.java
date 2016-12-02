@@ -354,7 +354,7 @@ public class DataOneService implements DataOneConstants {
             logger.debug("dateIgnored: {} " , dateIgnored);
             logger.debug("obsoletesId: {} " , obsoletesId);
             logger.debug("defaultChecksum: {} " , object.getChecksum());
-            logger.debug("currentId: {} " , currentIdentifier);
+            logger.debug("currentId: {} " , id);
             if (dateIgnored) {
                 // we're an old request, so we set the obsoleted by, and get the old checksum
                 metadata.setObsoletedBy(DataOneUtils.createIdentifier(currentIdentifier));
@@ -362,7 +362,7 @@ public class DataOneService implements DataOneConstants {
                     try {
                         // temporary hack to get old checksum until DataONE can handle this for us
                         CloseableHttpClient client = SimpleHttpUtils.createClient();
-                        String uri = D1CONFIG.getD1UrlBase() + "/cn/v2/meta/" + URLEncoder.encode(currentIdentifier);
+                        String uri = D1CONFIG.getD1UrlBase() + "/cn/v2/meta/" + URLEncoder.encode(id);
                         logger.debug("getting uri:  {}", uri);
                         HttpGet get = new HttpGet(uri);
                         CloseableHttpResponse response = client.execute(get);
