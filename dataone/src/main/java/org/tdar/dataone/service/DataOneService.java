@@ -348,29 +348,41 @@ public class DataOneService implements DataOneConstants {
         if (object != null) { // could be a bad version
             IdentifierParser parser = new IdentifierParser(id, informationResourceService);
             // if (object.getType() == EntryType.TDAR) {
-            String oldId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, parser.getType().getUniquePart());
+            String obsoletesId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, parser.getType().getUniquePart());
             Checksum createChecksum = DataOneUtils.createChecksum(object.getChecksum());
+            String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
+            logger.debug("dateIgnored: {} " , dateIgnored);
+            logger.debug("obsoletesId: {} " , obsoletesId);
+            logger.debug("defaultChecksum: {} " , object.getChecksum());
+            logger.debug("currentId: {} " , currentIdentifier);
             if (dateIgnored) {
                 // we're an old request, so we set the obsoleted by, and get the old checksum
-                metadata.setObsoletedBy(DataOneUtils.createIdentifier(
-                        IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null)));
-                try {
-                    // temporary hack to get old checksum until DataONE can handle this for us
-                    CloseableHttpClient client = SimpleHttpUtils.createClient();
-                    HttpGet get = new HttpGet(D1CONFIG.getD1UrlBase() + "/cn/v2/meta/" + URLEncoder.encode(oldId));
-                    CloseableHttpResponse response = client.execute(get);
-                    String body = IOUtils.toString(response.getEntity().getContent());
-                    String cs = StringUtils.substringBetween(body, "<checksum", "</checksum");
-                    cs = StringUtils.substringAfter(cs, ">");
-                    createChecksum = DataOneUtils.createChecksum(cs);
-                    IOUtils.closeQuietly(response);
-                    IOUtils.closeQuietly(client);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                metadata.setObsoletedBy(DataOneUtils.createIdentifier(currentIdentifier));
+                if (StringUtils.isNotBlank(currentIdentifier)) {
+                    try {
+                        // temporary hack to get old checksum until DataONE can handle this for us
+                        CloseableHttpClient client = SimpleHttpUtils.createClient();
+                        String uri = D1CONFIG.getD1UrlBase() + "/cn/v2/meta/" + URLEncoder.encode(currentIdentifier);
+                        logger.debug("getting uri:  {}", uri);
+                        HttpGet get = new HttpGet(uri);
+                        CloseableHttpResponse response = client.execute(get);
+                        String body = IOUtils.toString(response.getEntity().getContent());
+                        logger.trace(body);
+                        String cs = StringUtils.substringBetween(body, "<checksum", "</checksum");
+                        cs = StringUtils.substringAfter(cs, ">");
+                        logger.debug("old checksum from d1: {}", cs);
+                        if (StringUtils.isNotBlank(cs)) {
+                            createChecksum = DataOneUtils.createChecksum(cs);
+                        }
+                        IOUtils.closeQuietly(response);
+                        IOUtils.closeQuietly(client);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
                 }
-            } else if (oldId != null) {
-                metadata.setObsoletes(DataOneUtils.createIdentifier(oldId));
+            } else if (obsoletesId != null) {
+                metadata.setObsoletes(DataOneUtils.createIdentifier(obsoletesId));
             }
             // }
             metadata.setChecksum(createChecksum);
@@ -379,7 +391,7 @@ public class DataOneService implements DataOneConstants {
             metadata.setSeriesId(DataOneUtils.createIdentifier(tdarResource.getId().toString() + D1_SEP + parser.getType().getUniquePart()));
             if (parser.isSeriesIdentifier()) {
                 metadata.setIdentifier(DataOneUtils.createIdentifier(
-                        IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null)));
+                        currentIdentifier));
             } else {
                 metadata.setIdentifier(DataOneUtils.createIdentifier(id));
             }
