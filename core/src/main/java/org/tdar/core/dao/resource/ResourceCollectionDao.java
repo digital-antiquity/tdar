@@ -14,15 +14,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.poi.xssf.usermodel.ListAutoNumber;
 import org.hibernate.Criteria;
 import org.hibernate.ScrollableResults;
 import org.hibernate.criterion.Restrictions;
@@ -56,7 +48,6 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.dao.Dao;
 import org.tdar.core.dao.TdarNamedQueries;
 import org.tdar.core.dao.entity.AuthorizedUserDao;
-import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -305,7 +296,7 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
 
     public CustomizableCollection<?> getWhiteLabelCollectionForResource(Resource resource) {
         Set<CustomizableCollection<?>> resourceCollections = new HashSet<>();
-        if (TdarConfiguration.getInstance().useListCollections()) {
+        if (TdarConfiguration.getInstance().isListCollectionsEnabled()) {
             resourceCollections.addAll(resource.getUnmanagedResourceCollections());
         } else {
             resourceCollections.addAll(resource.getSharedCollections());

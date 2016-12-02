@@ -56,7 +56,7 @@
         <div class="span4">
             <h3><a href="<@s.url value="/bulk/add?projectId=${(projectId!-1)?c}" />">
             <svg class="svgicon svg-small"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_bulk"></use></svg>Bulk Upload</a></h3>
-            Useful for uploading groups of resources with similar metadata at once. 
+            Useful for uploading groups of resources with similar metadata at once.
 
         </div>
             <div class="span4">
@@ -83,12 +83,20 @@
                 Certain images and/or datasets fall under the heading of Sensory Data. 3-D scans, for example.
             </div>
             <div class="span4">
+            <#if listCollectionsEnabled>
                 <h3>
-                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>                
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
                 <@link "collection" "Collection"/></h3>
+                In ${siteAcronym}, a collection allows contributors and users to create groups and
+                hierarchies of resources in any way they find useful.
+                <#else>
+                <h3>
+                <svg class="svgicon svg-small red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_collection"></use></svg>
+                <@link "share" "Collection"/></h3>
                 In ${siteAcronym}, a collection is an organizational tool with two purposes. The first is to allow contributors and users to create groups and
                 hierarchies of resources in any way they find useful. A secondary use of collections allows users to easily administer view and edit
                 permissions for large numbers of persons and resources.
+            </#if>
             </div>
 
         </div>

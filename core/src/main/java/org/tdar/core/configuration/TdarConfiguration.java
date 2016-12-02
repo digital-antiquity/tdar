@@ -1002,7 +1002,7 @@ public class TdarConfiguration extends AbstractConfigurationFile {
         return assistant.getIntProperty("data.integration.maxOutputColumns", 35);
     }
 
-    public boolean useListCollections() {
+    public boolean isListCollectionsEnabled() {
         return false;
     }
 }
