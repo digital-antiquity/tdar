@@ -269,7 +269,7 @@ describe("TDAR.common: edit page tests", function () {
             var expectedVal = null;
 
             var result = TDAR.common.registerDownload(url, tdarId);
-            expect(window.ga).toHaveBeenCalledWith("send", "event", "files", "downloaded", url, tdarId);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", "download", "download", url, tdarId);
 
         });
     

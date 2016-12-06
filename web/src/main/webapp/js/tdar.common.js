@@ -763,9 +763,9 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _registerDownload = function (url, tdarId) {
         if (tdarId) {
-            ga("send" , "event", "files", "downloaded",  url, tdarId);
+            ga("send" , "event", "download", "download",  url, tdarId);
         } else {
-            ga("send", "event", "files", "downloaded", url);
+            ga("send", "event", "download", "download", url);
         }
     };
 
