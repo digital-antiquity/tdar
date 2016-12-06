@@ -269,7 +269,7 @@ describe("TDAR.common: edit page tests", function () {
             var expectedVal = null;
 
             var result = TDAR.common.registerDownload(url, tdarId);
-            expect(window.ga).toHaveBeenCalledWith("send", "event", "Download", url, tdarId);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", "files", "downloaded", url, tdarId);
 
         });
     
@@ -279,7 +279,7 @@ describe("TDAR.common: edit page tests", function () {
             var tdarId = 1234;
             //ignore '_trackEvent failed'; we only care that the message is put on the queue
             var result = TDAR.common.registerShare(service, url, tdarId);
-            expect(window.ga).toHaveBeenCalledWith("send", "event", "share", service, url, tdarId);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", service, "shared", url, tdarId);
         });
     
 
@@ -289,7 +289,7 @@ describe("TDAR.common: edit page tests", function () {
 
             //ignore '_trackEvent failed'; we only care that the message is put on the queue
             var result = TDAR.common.outboundLink(elem);
-            expect(window.ga).toHaveBeenCalledWith("send", "event", "outboundLink", elem.href, window.location);
+            expect(window.ga).toHaveBeenCalledWith("send", "event", "outboundLink", "clicked", elem.href);
 
         });
 
