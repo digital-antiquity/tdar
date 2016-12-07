@@ -18,20 +18,22 @@
 </div>
 <div class="row">
     <div class="span2">
-    <@dash.sidebar current="share" />
+    <@dash.sidebar current="rights" />
     </div>
     <div class="span10">
         <h5>Users you've shared with</h5>
         <div class="row">
-        <#list findUsersSharedWith?chunk(findUsersSharedWith?size /4 ) as row>
-        <div  class="span2">
-            <#list row>
-            <ul>
-            <#items as item>
-                <li><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
-            </#items>
-            </ul>
-            </#list>
+            <#assign listGroups = [findUsersSharedWith]>
+            <#if (findUsersSharedWith?size > 4)><#assign listGroups =  findUsersSharedWith?chunk(findUsersSharedWith?size /4 )> </#if>
+            <#list listGroups as row>
+            <div  class="span2">
+                <#list row>
+                <ul>
+                <#items as item>
+                    <li><a href="/entity/user/rights/${item.id?c}">${item.properName}</a></li>
+                </#items>
+                </ul>
+                </#list>
             </div>
         </#list>
         </div>

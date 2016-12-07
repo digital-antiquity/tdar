@@ -593,12 +593,12 @@
                         + "))"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_RESOURCES_SHARED_WITH_USERS,
-                query = "select distinct au.user from Resource r inner join r.internalCollections ic inner join ic.authorizedUsers au where (:admin is true or r.id in ("
+                query = "select distinct au.user from Resource r inner join r.internalCollections ic inner join ic.authorizedUsers au where (r.id in ("
                         + "select r_.id from Resource r_ left join r_.resourceCollections as rc_ left join rc_.parentIds parentId where r_.submitter=:owner or rc_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))"),
         @org.hibernate.annotations.NamedQuery(
                 name=org.tdar.core.dao.TdarNamedQueries.FIND_COLLECTIONS_SHARED_WITH_USERS,
-                query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (:admin is true or s.id in ("
+                query = "select distinct au.user from SharedCollection s inner join s.authorizedUsers au where  (s.id in ("
                         + "select s_.id from SharedCollection s_  left join s_.parentIds parentId where s_.owner=:owner or s_.id in (:collectionIds) or parentId in (:collectionIds) "
                         + "))")
 })

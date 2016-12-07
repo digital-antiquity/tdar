@@ -1,28 +1,17 @@
 package org.tdar.struts.action;
 
-import java.io.IOException;
-import java.util.*;
-
+import com.opensymphony.xwork2.Preparable;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.SortOption;
 import org.tdar.core.bean.billing.BillingAccount;
-import org.tdar.core.bean.collection.InternalCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.*;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.notification.UserNotification;
-import org.tdar.core.bean.resource.Project;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.ResourceType;
-import org.tdar.core.bean.resource.Status;
-import org.tdar.core.dao.external.auth.InternalTdarRights;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.service.EntityService;
 import org.tdar.core.service.UserNotificationService;
 import org.tdar.core.service.billing.BillingAccountService;
@@ -34,7 +23,8 @@ import org.tdar.core.service.resource.ResourceService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * $Id$
@@ -96,6 +86,7 @@ public class ManageRightsAction extends AbstractAuthenticatableAction implements
         return SUCCESS;
     }
 
+    @SuppressWarnings("Duplicates")
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
         for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
@@ -154,7 +145,7 @@ public class ManageRightsAction extends AbstractAuthenticatableAction implements
     }
 
     private Set<Resource> editableProjects = new HashSet<>();
-    private List<TdarUser> findUsersSharedWith;
+    private List<TdarUser> findUsersSharedWith = new ArrayList<>();
 
     public Set<Resource> getEditableProjects() {
         return editableProjects;

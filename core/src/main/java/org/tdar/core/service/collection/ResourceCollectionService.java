@@ -1245,10 +1245,6 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     @Transactional(readOnly=true)
     public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser)  {
-        boolean admin = false;
-        if (authorizationService.isEditor(authenticatedUser)) {
-            admin = true;
-        }
-        return getDao().findUsersSharedWith(authenticatedUser, admin);
+        return getDao().findUsersSharedWith(authenticatedUser);
     }
 }

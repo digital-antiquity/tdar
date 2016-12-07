@@ -1,32 +1,24 @@
 package org.tdar.core.bean;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
-import org.tdar.core.bean.collection.ListCollection;
-import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
-import org.tdar.core.bean.collection.VisibleCollection;
+import org.tdar.core.bean.collection.*;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
-import org.tdar.core.bean.resource.Image;
-import org.tdar.core.bean.resource.InformationResource;
-import org.tdar.core.bean.resource.Resource;
-import org.tdar.core.bean.resource.Status;
+import org.tdar.core.bean.resource.*;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.dao.resource.ResourceCollectionDao;
 import org.tdar.core.service.resource.ResourceService.ErrorHandling;
 import org.tdar.utils.PersistableUtils;
+
+import java.util.*;
+
+import static java.util.stream.Collectors.toList;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
+import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_METADATA;
 
 public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
@@ -269,14 +261,40 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         logger.debug("au: {}", collection.getAuthorizedUsers());
         logger.debug("no: {}", normal.getSharedCollections());
         logger.debug("df: {}", draft.getSharedCollections());
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, GeneralPermissions.MODIFY_METADATA));
-        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, GeneralPermissions.MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, normal, MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(testPerson, draft, MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), draft, MODIFY_METADATA));
+        assertTrue(authenticationAndAuthorizationService.canEditResource(getBasicUser(), normal, MODIFY_METADATA));
 
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), draft));
         assertTrue(authenticationAndAuthorizationService.canViewResource(getBasicUser(), normal));
 
+    }
+
+    @Test
+    @Rollback(true)
+    //make a collection w/ three authusers, and confirm those users found via findUsersSharedWith()
+    public void testFindUsersSharedWith() {
+        final String collectionName = "the best collection ever";
+        List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
+
+        SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
+        users.remove(collection.getOwner());
+
+        // santity checks
+        assertThat("collection should have no authusers", collection.getAuthorizedUsers(), is( empty()));
+        assertThat("test requires at least one user that is not the same as the current user", users, not( empty()));
+
+
+        // now add some authusers
+        collection.getAuthorizedUsers().addAll(
+          users.stream().map(user -> new AuthorizedUser(user, MODIFY_METADATA)).collect(toList()));
+
+        genericService.saveOrUpdate(collection);
+
+        List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
+        assertThat("grantee list should not be empty", grantees, not( empty()));
+        assertThat(grantees, containsInAnyOrder(users));
     }
 
 }

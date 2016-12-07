@@ -1,20 +1,12 @@
 package org.tdar.struts.action;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import com.opensymphony.xwork2.Preparable;
 import org.apache.solr.client.solrj.SolrServerException;
-import org.apache.struts2.convention.annotation.Action;
-import org.apache.struts2.convention.annotation.Namespace;
-import org.apache.struts2.convention.annotation.ParentPackage;
-import org.apache.struts2.convention.annotation.Result;
+import org.apache.struts2.convention.annotation.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.ListCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.notification.UserNotification;
 import org.tdar.core.bean.resource.Resource;
@@ -26,7 +18,8 @@ import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.struts_base.interceptor.annotation.DoNotObfuscate;
 import org.tdar.utils.PersistableUtils;
 
-import com.opensymphony.xwork2.Preparable;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * $Id$
@@ -45,8 +38,8 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
 
     private static final long serialVersionUID = -5569349309409607003L;
     private List<Resource> bookmarkedResources;
-    private List<SharedCollection> allResourceCollections = new ArrayList<>();
-    private List<SharedCollection> sharedResourceCollections = new ArrayList<>();
+    private List<ListCollection> allResourceCollections = new ArrayList<>();
+    private List<ListCollection> sharedResourceCollections = new ArrayList<>();
 
 
     @Autowired
@@ -78,24 +71,24 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
 
     private void setupResourceCollectionTreesForDashboard() {
         getLogger().trace("parent/ owner collections");
-        for (SharedCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
-                SharedCollection.class)) {
-            getAllResourceCollections().add((SharedCollection) rc);
+        for (ListCollection rc : resourceCollectionService.findParentOwnerCollections(getAuthenticatedUser(),
+                ListCollection.class)) {
+            getAllResourceCollections().add((ListCollection) rc);
         }
         getLogger().trace("accessible collections");
         for (ResourceCollection rc : entityService.findAccessibleResourceCollections(getAuthenticatedUser())) {
-            if (rc instanceof SharedCollection) {
-                getSharedResourceCollections().add((SharedCollection) rc);
+            if (rc instanceof ListCollection) {
+                getSharedResourceCollections().add((ListCollection) rc);
             }
         }
         List<Long> collectionIds = PersistableUtils.extractIds(getAllResourceCollections());
         collectionIds.addAll(PersistableUtils.extractIds(getSharedResourceCollections()));
         getLogger().trace("reconcile tree1");
         resourceCollectionService.reconcileCollectionTree(getAllResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
+                collectionIds, ListCollection.class);
         getLogger().trace("reconcile tree2");
         resourceCollectionService.reconcileCollectionTree(getSharedResourceCollections(), getAuthenticatedUser(),
-                collectionIds, SharedCollection.class);
+                collectionIds, ListCollection.class);
 
         getLogger().trace("removing duplicates");
         getSharedResourceCollections().removeAll(getAllResourceCollections());
@@ -135,11 +128,11 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
 
 
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getAllResourceCollections() {
+    public List<ListCollection> getAllResourceCollections() {
         return allResourceCollections;
     }
 
-    public void setAllResourceCollections(List<SharedCollection> resourceCollections) {
+    public void setAllResourceCollections(List<ListCollection> resourceCollections) {
         this.allResourceCollections = resourceCollections;
     }
 
@@ -147,7 +140,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * @return the sharedResourceCollections
      */
     @DoNotObfuscate(reason = "not needed / performance test")
-    public List<SharedCollection> getSharedResourceCollections() {
+    public List<ListCollection> getSharedResourceCollections() {
         return sharedResourceCollections;
     }
 
@@ -155,7 +148,7 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * @param sharedResourceCollections
      *            the sharedResourceCollections to set
      */
-    public void setSharedResourceCollections(List<SharedCollection> sharedResourceCollections) {
+    public void setSharedResourceCollections(List<ListCollection> sharedResourceCollections) {
         this.sharedResourceCollections = sharedResourceCollections;
     }
 
@@ -178,15 +171,15 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * Return the current user's bookmarks as though it were a collection (which it isn't, but it's useful to treat it like one for certain tasks)
      * @return
      */
-    public SharedCollection getBookmarkCollection() {
+    public ListCollection getBookmarkCollection() {
         //maybe cache this, though I don't see it being called a lot by ftl
-        SharedCollection lc = new SharedCollection();
+        ListCollection lc = new ListCollection();
         lc.setName(getText("organize.bookmark_collection_name", "My Bookmarks"));
         //todo: other ideas for description:
         // - dynamic description e.g. "You have bookmarked 12 documents, 6 datasets, and 1 coding sheet",  or "No bookmarked resources yet"
         // - ???
         lc.setDescription(getText("organize.bookmark_collection_description", "Resources that you've collected go here"));
-        lc.getResources().addAll(getBookmarkedResources());
+        lc.getUnmanagedResources().addAll(getBookmarkedResources());
         lc.setId(-2L);
         return lc;
     }
@@ -195,8 +188,8 @@ public class OrganizeAction extends AbstractAuthenticatableAction implements Pre
      * Get the collections we wish to display in the 'summary' section (including shared collections & the bookmarks 'collection')
      * @return
      */
-    public List<SharedCollection> getSummaryItems() {
-            List<SharedCollection> items = new ArrayList<>();
+    public List<ListCollection> getSummaryItems() {
+            List<ListCollection> items = new ArrayList<>();
         items.add(getBookmarkCollection());
         //for some reason 'shared' resource list empty
         items.addAll(getAllResourceCollections());
