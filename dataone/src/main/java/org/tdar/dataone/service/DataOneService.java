@@ -402,7 +402,7 @@ public class DataOneService implements DataOneConstants {
         // rights to change the permissions sitting on the object
         metadata.setRightsHolder(getRightsHolder());
         // metadata.setSerialVersion(value);
-        metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
+        metadata.setSubmitter(getRightsHolder());
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
     }
