@@ -15,6 +15,7 @@ import org.tdar.utils.PersistableUtils;
 
 import java.util.*;
 
+import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
@@ -44,7 +45,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         Long collectionId = collection.getId();
         collection = null;
 
-        collection = genericService.findAll(SharedCollection.class, Arrays.asList(collectionId)).get(0);
+        collection = genericService.findAll(SharedCollection.class, asList(collectionId)).get(0);
 
         for (Resource resource : collection.getResources()) {
             logger.info("{} {} ", resource, resource.getSubmitter());
@@ -241,9 +242,9 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         final Long draftId = draft.getId();
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
-        List<AuthorizedUser> users = new ArrayList<>(Arrays.asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
+        List<AuthorizedUser> users = new ArrayList<>(asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
                 new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
-        List<Resource> resources = new ArrayList<Resource>(Arrays.asList(normal, draft));
+        List<Resource> resources = new ArrayList<Resource>(asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
         resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), users, PersistableUtils.extractIds(resources), null, true,
@@ -276,15 +277,14 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
     //make a collection w/ three authusers, and confirm those users found via findUsersSharedWith()
     public void testFindUsersSharedWith() {
         final String collectionName = "the best collection ever";
-        List<TdarUser> users = new ArrayList<>(Arrays.asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
+        List<TdarUser> users = new ArrayList<>(asList(getBasicUser(), getEditorUser(), getBillingUser(), getAdminUser()));
 
         SharedCollection collection = createAndSaveNewResourceCollection(collectionName, SharedCollection.class);
         users.remove(collection.getOwner());
 
-        // santity checks
+        // sanity checks
         assertThat("collection should have no authusers", collection.getAuthorizedUsers(), is( empty()));
         assertThat("test requires at least one user that is not the same as the current user", users, not( empty()));
-
 
         // now add some authusers
         collection.getAuthorizedUsers().addAll(
