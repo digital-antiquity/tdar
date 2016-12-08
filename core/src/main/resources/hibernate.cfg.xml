@@ -2,14 +2,19 @@
 <!DOCTYPE hibernate-configuration PUBLIC
 		"-//Hibernate/Hibernate Configuration DTD 3.0//EN"
 		"http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
-<!-- NOTE: this file is only used for hibernate-tool support in Eclipse/IntelliJ, it isn't needed by our spring + hibernate configuration -->
+<!-- NOTE: THIS FILE IS NO LONGER USED BY THE TDAR APPLICATION-->
+<!--
+    TDAR now uses the TdarAppConfiguration instead of this xml configuration file.  However, we keep it here because
+    It's needed for IDE tools e.g. Eclipse JBoss plugin and IntelliJ's Hibernate Console.
+ -->
 <hibernate-configuration>
     <session-factory name="sessionFactory">
         <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
-        <property name="hibernate.connection.url">jdbc:postgresql://localhost/tdarmetadata</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost/tdarmetadata_default</property>
         <property name="hibernate.connection.username">tdar</property>
-        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</property>
+        <property name="hibernate.dialect">org.hibernate.dialect.PostgreSQL95Dialect</property>
         <mapping package="org.tdar.core.bean.resource"/>
+        <mapping package="org.tdar.core.bean.resource.file"/>
         <mapping package="org.tdar.core.bean.entity" />
         <mapping package="org.tdar.core.bean.resource.datatable" />
         <mapping package="org.tdar.core.bean.resource.sensory" />
