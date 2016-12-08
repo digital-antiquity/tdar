@@ -1,5 +1,7 @@
 package org.tdar.core.bean;
 
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -20,11 +22,16 @@ import static java.util.stream.Collectors.toList;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_METADATA;
+import static org.tdar.core.bean.entity.permissions.GeneralPermissions.MODIFY_RECORD;
 
 public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
     @Autowired
     ResourceCollectionDao resourceCollectionDao;
+
+    @Autowired
+    private transient SessionFactory sessionFactory;
+
 
     private static final String TEST_TITLE = "Brookville Reservoir Survey 1991-1992";
 
@@ -141,7 +148,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         test.setName("test");
         test.markUpdated(getAdminUser());
         test.getAuthorizedUsers().add(new AuthorizedUser(getBillingUser(), GeneralPermissions.ADMINISTER_SHARE));
-        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        test.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), MODIFY_RECORD));
         genericService.saveOrUpdate(test);
 
         SharedCollection c1 = new SharedCollection();
@@ -191,7 +198,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         child22.markUpdated(getAdminUser());
         list.markUpdated(getAdminUser());
         genericService.saveOrUpdate(parent, child1, child2, child11, child22, parent2, parent3, list, access);
-        access.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), GeneralPermissions.MODIFY_RECORD));
+        access.getAuthorizedUsers().add(new AuthorizedUser(getBasicUser(), MODIFY_RECORD));
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child1, parent, SharedCollection.class);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child2, parent, SharedCollection.class);
         resourceCollectionService.updateCollectionParentTo(getAdminUser(), child11, child1, SharedCollection.class);
@@ -243,7 +250,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         draft.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(draft);
         List<AuthorizedUser> users = new ArrayList<>(asList(new AuthorizedUser(getBasicUser(), GeneralPermissions.ADMINISTER_SHARE),
-                new AuthorizedUser(getAdminUser(), GeneralPermissions.MODIFY_RECORD)));
+                new AuthorizedUser(getAdminUser(), MODIFY_RECORD)));
         List<Resource> resources = new ArrayList<Resource>(asList(normal, draft));
         SharedCollection collection = new SharedCollection(name, description, getBasicUser());
         collection.markUpdated(getBasicUser());
@@ -256,7 +263,7 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
         collection = null;
         collection = genericService.find(SharedCollection.class, id);
         List<AuthorizedUser> aus = new ArrayList<>(users);
-        aus.add(new AuthorizedUser(testPerson, GeneralPermissions.MODIFY_RECORD));
+        aus.add(new AuthorizedUser(testPerson, MODIFY_RECORD));
         resourceCollectionService.saveCollectionForController(collection, null, null, getBasicUser(), aus, null, null, true, null, SharedCollection.class, -1l);
         genericService.synchronize();
         logger.debug("au: {}", collection.getAuthorizedUsers());
@@ -288,13 +295,13 @@ public class ResourceCollectionITCase extends AbstractIntegrationTestCase {
 
         // now add some authusers
         collection.getAuthorizedUsers().addAll(
-          users.stream().map(user -> new AuthorizedUser(user, MODIFY_METADATA)).collect(toList()));
+                users.stream().map(user -> new AuthorizedUser(user, MODIFY_RECORD)).collect(toList()));
 
         genericService.saveOrUpdate(collection);
 
+        assertThat(sessionFactory.getCurrentSession(), notNullValue());
         List<TdarUser> grantees = resourceCollectionDao.findUsersSharedWith(collection.getOwner());
-        assertThat("grantee list should not be empty", grantees, not( empty()));
-        assertThat(grantees, containsInAnyOrder(users));
+        assertThat(grantees, containsInAnyOrder(getEditorUser(), getBillingUser(), getAdminUser()));
     }
 
 }
