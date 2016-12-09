@@ -2,26 +2,44 @@
 describe("TDAR.common: edit page tests", function () {
     "use strict";
 
+    var formProps = {
+        formSelector: "#metadataForm",
+        includeInheritance: true,
+        acceptFileTypes: /\.(pdf|doc|docx|rtf|txt)$/i,
+        multipleUpload: true,
+        validExtensions: "pdf|doc|docx|rtf|txt",
+        validExtensionsWarning: "Please enter a valid file (pdf, doc, docx, rtf, txt)",
+        ableToUpload: true,
+        dataTableEnabled: false
+    };
+
     it("initializes the edit page", function () {
-        var form = null;
-        var props = {
-            formSelector: "#metadataForm",
-            includeInheritance: true,
-            acceptFileTypes: /\.(pdf|doc|docx|rtf|txt)$/i,
-            multipleUpload: true,
-            validExtensions: "pdf|doc|docx|rtf|txt",
-            validExtensionsWarning: "Please enter a valid file (pdf, doc, docx, rtf, txt)",
-            ableToUpload: true,
-            dataTableEnabled: false
-        };
 
         loadFixtures("document-add-form.html", "fileupload-templates.html");
+        var form = document.getElementById('metadataForm');
         expect($j("#template-upload")).toHaveLength(1);
         expect($j("#metadataForm")).toHaveLength(1);
-        form = document.getElementById('metadataForm');
-        var result = TDAR.common.initEditPage(form, props);
+        var result = TDAR.common.initEditPage(form, formProps);
 
     });
+
+    it("form handler should trim fields with .trim class", function() {
+        loadFixtures("document-add-form.html");
+        TDAR.common.initEditPage($('#metadataForm')[0], formProps);
+        expect($('#resourceRegistrationTitle')).not.toHaveClass('trim');
+        var originalTitle = '       title     ';
+        var trimmedTitle = 'title';
+
+        $('#resourceRegistrationTitle').val(originalTitle);
+        $('#metadataForm').submit();
+        expect($('#resourceRegistrationTitle')).toHaveValue(originalTitle);
+
+        $('#resourceRegistrationTitle').addClass('trim');
+        $('#metadataForm').submit();
+        expect($('#resourceRegistrationTitle')).toHaveValue(trimmedTitle);
+
+    });
+
 
     describe("TDAR.common functions that utilize ajax", function() {
         "use strict";
@@ -33,6 +51,7 @@ describe("TDAR.common: edit page tests", function () {
         afterEach(function() {
             jasmine.Ajax.uninstall();
         });
+
 
         it("updates the subcategory options when you select a category", function () {
             //create a simple cat/subcat form.
