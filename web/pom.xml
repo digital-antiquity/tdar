@@ -58,6 +58,10 @@
             		<artifactId>xwork-core</artifactId>
             		<groupId>org.apache.struts.xwork</groupId>
             	</exclusion>
+            	<exclusion>
+            	    <groupId>commons-io</groupId>
+            	    <artifactId>commons-io</artifactId>
+            	</exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -77,6 +81,12 @@
             <groupId>org.tdar</groupId>
             <artifactId>search</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -134,6 +144,10 @@
                 <exclusion>
                     <groupId>asm</groupId>
                     <artifactId>asm-commons</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
                 </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
@@ -202,6 +216,10 @@
                     <artifactId>httpclient</artifactId>
                     <groupId>org.apache.httpcomponents</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
             </exclusions>
             <!-- LICENSE: APACHE 2.0 -->
         </dependency>
@@ -209,6 +227,12 @@
             <groupId>ro.isdc.wro4j</groupId>
             <artifactId>wro4j-core</artifactId>
             <version>${wro4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.yahoo.platform.yui</groupId>
