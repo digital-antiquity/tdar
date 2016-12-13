@@ -529,7 +529,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (o.getEventType() == EventType.DELETE) {
             purge(core, id);
         } else {
-			logger.debug("indexing {}, {}, {}", core, id, doc);
+			logger.trace("indexing {}, {}, {}", core, id, doc);
             index(core, id, doc);
         }
         commit(core);
