@@ -10,23 +10,25 @@ import org.tdar.core.bean.resource.Status;
 import org.tdar.search.index.LookupSource;
 import org.tdar.search.query.QueryFieldNames;
 
+import java.util.HashSet;
+
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
     public static SolrInputDocument convert(VisibleCollection collection) {
 
         SolrInputDocument doc = convertPersistable(collection);
-        VisibleCollection props = (VisibleCollection) collection;
+        VisibleCollection props = collection;
         doc.setField(QueryFieldNames.NAME, props.getName());
         doc.setField(QueryFieldNames.NAME_SORT, props.getTitleSort());
-        doc.setField(QueryFieldNames.COLLECTION_HIDDEN, ((VisibleCollection) collection).isHidden());
+        doc.setField(QueryFieldNames.COLLECTION_HIDDEN, collection.isHidden());
         doc.setField(QueryFieldNames.DESCRIPTION, props.getDescription());
         doc.setField(QueryFieldNames.ALL, props.getAllFieldSearch());
         doc.setField(QueryFieldNames.SUBMITTER_ID, collection.getOwner().getId());
-        doc.setField(QueryFieldNames.RESOURCE_IDS, collection.getResourceIds());
+        doc.setField(QueryFieldNames.RESOURCE_IDS, new HashSet<>(collection.getResourceIds()));
         if (collection instanceof HierarchicalCollection) {
             HierarchicalCollection hier = (HierarchicalCollection)collection;
             doc.setField(QueryFieldNames.COLLECTION_PARENT, hier.getParentId());
-            doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, hier.getParentIds());
+            doc.setField(QueryFieldNames.COLLECTION_PARENT_LIST, new HashSet<>(hier.getParentIds()));
             doc.setField(QueryFieldNames.TOP_LEVEL, hier.isTopLevel());
         } else {
             doc.setField(QueryFieldNames.TOP_LEVEL, false);

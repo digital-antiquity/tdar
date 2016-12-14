@@ -183,7 +183,8 @@ public abstract class ResourceCollection extends AbstractPersistable
     @CollectionTable(name = "collection_resource", joinColumns = @JoinColumn(name = "collection_id") )
     @Column(name = "resource_id")
     @Immutable
-    private Set<Long> resourceIds;
+    //fixme: replace resourceIds hack with service/dao with optimized DAO save() method. (TDAR-5605)
+    private Set<Long> resourceIds = new HashSet<>();
 
     private transient boolean created;
 
