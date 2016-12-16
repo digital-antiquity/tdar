@@ -96,6 +96,7 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         WebElementSelection addAnother = find(By.id("accessRightsRecordsAddAnotherButton"));
         addAnother.click();
         addAnother.click();
+        waitFor(By.name("authorizedUsersFullNames[2]"));
         addAuthuser("authorizedUsersFullNames[2]", "authorizedUsers[2].generalPermission", name, username, "person-" + userId, permissions);
     }
 
@@ -143,7 +144,9 @@ public class CollectionSeleniumWebITCase extends AbstractEditorSeleniumWebITCase
         String url = setupCollectionForTest(TITLE + " (collection retain)",titles, false, CollectionType.SHARED);
         gotoEdit(url, CollectionType.SHARED);
         submitForm();
-        find(By.partialLinkText("rights")).click();
+        find(".toolbar-rights").click();
+        waitForPageload();
+
         addUserWithRights("test user", config.getUsername(), config.getUserId(), GeneralPermissions.ADMINISTER_SHARE);
         submitForm();
 
