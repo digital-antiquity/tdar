@@ -8,6 +8,9 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -20,13 +23,11 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.dataone.service.types.v1.AccessPolicy;
 import org.dataone.service.types.v1.Checksum;
 import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
-import org.dataone.service.types.v2.Node;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v1.NodeReplicationPolicy;
 import org.dataone.service.types.v1.NodeState;
@@ -40,6 +41,7 @@ import org.dataone.service.types.v1.Service;
 import org.dataone.service.types.v1.Services;
 import org.dataone.service.types.v1.Subject;
 import org.dataone.service.types.v1.Synchronization;
+import org.dataone.service.types.v2.Node;
 import org.dataone.service.types.v2.SystemMetadata;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
@@ -336,7 +338,6 @@ public class DataOneService implements DataOneConstants {
         // used to detect when changes happen in DataONE
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
         // look up in log table what the last exposed version of metadata was
-        metadata.setDateUploaded(resource.getDateUpdated());
 
         // if it's deleted, we mark it as archived
         if (resource.getStatus() != Status.ACTIVE || dateIgnored) {
@@ -355,6 +356,8 @@ public class DataOneService implements DataOneConstants {
             logger.debug("obsoletesId: {} " , obsoletesId);
             logger.debug("defaultChecksum: {} " , object.getChecksum());
             logger.debug("currentId: {} " , id);
+            String _size = null;
+            String _uploaded = null; 
             if (dateIgnored) {
                 // we're an old request, so we set the obsoleted by, and get the old checksum
                 metadata.setObsoletedBy(DataOneUtils.createIdentifier(currentIdentifier));
@@ -368,12 +371,13 @@ public class DataOneService implements DataOneConstants {
                         CloseableHttpResponse response = client.execute(get);
                         String body = IOUtils.toString(response.getEntity().getContent());
                         logger.trace(body);
-                        String cs = StringUtils.substringBetween(body, "<checksum", "</checksum");
-                        cs = StringUtils.substringAfter(cs, ">");
+                        String cs = getTagEntry("checksum",body);
                         logger.debug("old checksum from d1: {}", cs);
                         if (StringUtils.isNotBlank(cs)) {
                             createChecksum = DataOneUtils.createChecksum(cs);
                         }
+                        _size = getTagEntry("size", body);
+                        _uploaded = getTagEntry("dateUploaded", body);
                         IOUtils.closeQuietly(response);
                         IOUtils.closeQuietly(client);
                     } catch (IOException e) {
@@ -387,7 +391,24 @@ public class DataOneService implements DataOneConstants {
             // }
             metadata.setChecksum(createChecksum);
             metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
-            metadata.setSize(BigInteger.valueOf(object.getSize()));
+            if (_size == null) {
+                metadata.setSize(BigInteger.valueOf(object.getSize()));
+            } else {
+                metadata.setSize(new BigInteger(_size));
+            }
+            if (_uploaded == null) {
+                metadata.setDateUploaded(resource.getDateUpdated());
+            } else {
+                DateFormat df = new SimpleDateFormat();
+                try {
+                    metadata.setDateUploaded(df.parse(_uploaded));
+                } catch (ParseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+
+            
             metadata.setSeriesId(DataOneUtils.createIdentifier(tdarResource.getId().toString() + D1_SEP + parser.getType().getUniquePart()));
             if (parser.isSeriesIdentifier()) {
                 metadata.setIdentifier(DataOneUtils.createIdentifier(
@@ -402,9 +423,18 @@ public class DataOneService implements DataOneConstants {
         // rights to change the permissions sitting on the object
         metadata.setRightsHolder(getRightsHolder());
         // metadata.setSerialVersion(value);
-        metadata.setSubmitter(getRightsHolder());
+        
+        
+//        metadata.setSubmitter(getRightsHolder());
+        metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
+    }
+
+    private String getTagEntry(String tag, String body) {
+        String cs = StringUtils.substringBetween(body, "<"+tag, "</" + tag);
+        cs = StringUtils.substringAfter(cs, ">");
+        return cs;
     }
 
     /**
