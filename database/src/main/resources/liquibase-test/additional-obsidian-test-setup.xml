@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.2.xsd http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet id="integration-workflow" author="abrin">
+        <insert tableName="data_integration_workflow">
+            <column name="id" valueNumeric="1000" />
+            <column name="user_id" valueNumeric="8092" />
+            <column name="title">Test Blank Integration</column>
+            <column name="description">Test Blank Integration -
+                for testing
+            </column>
+            <column name="hidden" valueBoolean="false" />
+            <column name="version" valueNumeric="1" />
+            <column name="date_created" valueDate="2016-01-01" />
+            <column name="date_updated" valueDate="2016-01-01" />
+            <column name="json_data">{}</column>
+        </insert>
+	</changeSet>
+    
+	<changeSet id="unmanaged-collections" author="abrin">
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1000"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1001"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1002"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+        <insert tableName="unmanaged_collection_resource">
+            <column name="collection_id" valueNumeric="1003"/>
+            <column name="resource_id" valueNumeric="4292"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="dateone_old" author="abrin">
+        <insert tableName="dataone_log">
+            <column name="date_logged" value="2010-01-01" />
+            <column name="identifier" value="doi:10.6067:XCV8SN0B29_meta" />
+            <column name="user_agent" value="Apache-HttpClient/4.5.2 (Java/1.8.0_25)" />
+            <column name="ip_address" value="127.0.0.1" />
+            <column name="event" value="READ" />
+            <column name="subject" value="DC=dataone, DC=org" />
+        </insert>
+    </changeSet>
+</databaseChangeLog>
