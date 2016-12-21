@@ -4,8 +4,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -14,15 +12,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.service.resource.ResourceExportService;
-import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts.action.TdarBaseActionSupport;
 
 import com.opensymphony.xwork2.Preparable;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 
 @Component
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/export")
-public class ResourceExportDownloadAction extends TdarActionSupport implements Preparable {
+public class ResourceExportDownloadAction extends TdarBaseActionSupport implements Preparable {
 
     private static final long serialVersionUID = -2267784497236541448L;
     private InputStream inputStream;

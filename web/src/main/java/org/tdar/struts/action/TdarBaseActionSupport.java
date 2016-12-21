@@ -31,7 +31,7 @@ import org.tdar.web.TdarServletConfiguration;
 import ro.isdc.wro.model.resource.ResourceType;
 
 public class TdarBaseActionSupport extends TdarActionSupport {
-
+    
     @Autowired
     private transient WebFileSystemResourceService webFilesystemResourceService;
 

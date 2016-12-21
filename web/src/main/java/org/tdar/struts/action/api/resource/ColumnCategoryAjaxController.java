@@ -15,7 +15,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.resource.CategoryVariable;
 import org.tdar.core.service.SerializationService;
-import org.tdar.struts_base.action.TdarActionSupport;
+import org.tdar.struts.action.TdarBaseActionSupport;
 import org.tdar.utils.PersistableUtils;
 
 /**
@@ -31,7 +31,7 @@ import org.tdar.utils.PersistableUtils;
 @ParentPackage("secured")
 @Scope("prototype")
 @Namespace("/api/resource")
-public class ColumnCategoryAjaxController extends TdarActionSupport {
+public class ColumnCategoryAjaxController extends TdarBaseActionSupport {
 
     private static final long serialVersionUID = -1202795099371942148L;
 
