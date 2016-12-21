@@ -28,6 +28,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -219,6 +220,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
     }
 
     public String pathToUrl(String localPath_) {
+        if(localPath_.startsWith("http")) {return localPath_;}
         String localPath = localPath_;
         String prefix = getBaseUrl();
         try {
@@ -1574,5 +1576,66 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         assertFalse(Objects.equals(o1, o2));
     }
 
+    /**
+     * Returns a list of DomElement nodes (ignoring any nodes that are not DomElements) that match the specified CSS selector, using the
+     * querySelector of the active window.
+     *
+     * @param selector a css selector
+     * @return A list of matching elements. List is empty if no matches found.
+     */
+    List<DomElement> querySelectorAll(String selector) {
+
+        List<DomElement> elements = htmlPage.getDocumentElement().querySelectorAll(selector).stream()
+                // only find nodes that are DomElements
+                .filter(node -> node instanceof DomElement)
+
+                // safely cast nodes to DomElement
+                .map(node -> (DomElement) node)
+
+                // collect results into a List
+                .collect(Collectors.toList());
+        return elements;
+    }
+
+
+    /**
+     * Send a POST request to the specified URL and data using the active web client for the current test.
+     * @param url url to send post request (including querystring).  prefix with "//" to substitute the host/protocol of the current page of the active client.
+     * @param urlEncodedData  form data in x-www-form-urlencoded format using  UTF-8 charset
+     * @return Page object, if the server sent a redirect response.
+     * @throws IOException
+     */
+    public Page post(String url, String urlEncodedData) throws IOException {
+
+        URL url_ = new URL(pathToUrl(url));
+
+        WebRequest request = new WebRequest(url_, HttpMethod.POST);
+
+        request.setAdditionalHeader("Accept", "*/*");
+        request.setAdditionalHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        request.setAdditionalHeader("Referer", "REFURLHERE");
+        request.setAdditionalHeader("Accept-Language", "en-US,en;q=0.8");
+        request.setAdditionalHeader("Accept-Encoding", "gzip,deflate,sdch");
+        request.setAdditionalHeader("Accept-Charset", "ISO-8859-1,utf-8;q=0.7,*;q=0.3");
+        request.setAdditionalHeader("X-Requested-With", "XMLHttpRequest");
+        request.setAdditionalHeader("Cache-Control", "no-cache");
+        request.setAdditionalHeader("Pragma", "no-cache");
+        request.setAdditionalHeader("Origin", "https://YOURHOST");
+
+        request.setRequestBody(urlEncodedData);
+
+        Page redirectPage = getWebClient().getPage(request);
+        return redirectPage;
+    }
+
+    /***
+     *
+     * Send a POST request to the specified URL and data using the active web client for the current test.
+     * @param url url to send post request (including querystring).  prefix with "//" to substitute the host/protocol of the current page of the active client.
+     * @return Page object, if the server sent a redirect response.
+     */
+    public Page post(String url) throws IOException {
+        return post(url, "");
+    }
 
 }

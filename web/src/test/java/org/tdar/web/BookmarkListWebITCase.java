@@ -1,6 +1,8 @@
 package org.tdar.web;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -17,7 +19,7 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
 
     // ensure that a 'deleted item no longer shows up in bookmarks
     @Test
-    public void testDeletedBoomarkedItem() {
+    public void testDeletedBoomarkedItem() throws IOException {
         String docTitle = "testing deleted bookmarked items";
         String docDescription = "test";
 
@@ -28,7 +30,8 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
         // bookmark it, confirm it's on workspace
-        clickBookmarkLink();
+        String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
+        bookmark(resourceId);
         gotoPage(viewPage);
         gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
@@ -57,16 +60,16 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
     }
 
     @Test
-    public void testDraftResourceInWorkspace() {
+    public void testDraftResourceInWorkspace() throws IOException {
         testResourceWithStatus("draft resource in workspace", Status.DRAFT);
     }
 
     @Test
-    public void testFlaggedResourceInWorkspace() {
+    public void testFlaggedResourceInWorkspace() throws IOException {
         testResourceWithStatus("flagged resource in workspace", Status.FLAGGED);
     }
 
-    private void testResourceWithStatus(String docTitle, Status status) {
+    private void testResourceWithStatus(String docTitle, Status status) throws IOException {
         String docDescription = "test";
 
         // create simple doc, remember name and url
@@ -80,8 +83,11 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         String viewPage = internalPage.getUrl().getPath().toLowerCase();
 
+
         // bookmark it, confirm it's on workspace
-        clickBookmarkLink();
+        //clickBookmarkLink();
+        String resourceId = querySelectorAll(".bookmark-link").get(0).getAttribute("resource-id");
+        bookmark(resourceId);
         gotoPage(viewPage);
         gotoPage(URLConstants.DASHBOARD);
 
@@ -94,15 +100,21 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput("status", status.name());
             submitForm();
             gotoPage(URLConstants.DASHBOARD);
-            boolean seen = false;
-            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
-                Element el = (Element) element_;
-                if (el.toString().contains(docTitle)) {
-                    seen = true;
-                }
-                logger.info(el.toString());
-            }
-            Assert.assertFalse(seen);
+
+//            boolean seen = false;
+//            for (DomNode element_ : htmlPage.getDocumentElement().querySelectorAll("#bookmarks")) {
+//                Element el = (Element) element_;
+//                if (el.toString().contains(docTitle)) {
+//                    seen = true;
+//                }
+//                logger.info(el.toString());
+//            }
+
+            // anyMatch() returns returns true (and terminates scan) if match found; returns false if scan produces no match.
+            boolean seen = querySelectorAll("#bookmarks").stream()
+                    .anyMatch(el -> el.toString().contains(docTitle));
+
+            Assert.assertFalse("document title should not be found on page:" + docTitle, seen);
         }
 
         // undelete it, should be back on workspace again
@@ -113,6 +125,15 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
         submitForm();
         gotoPage(URLConstants.DASHBOARD);
         assertTextPresentInCode(docTitle);
+    }
+
+
+    private void removeBookmark(String resourceId) throws IOException {
+        post("/resource/removeBookmark?resourceId=" + resourceId);
+    }
+
+    private void bookmark(String resourceId) throws IOException {
+        post("/resource/bookmark?resourceId=" + resourceId);
     }
 
     private void clickBookmarkLink() {
@@ -131,5 +152,6 @@ public class BookmarkListWebITCase extends AbstractAuthenticatedWebTestCase {
             setInput(TestConstants.COPYRIGHT_HOLDER_PROXY_INSTITUTION_NAME, "Elsevier");
         }
     }
+
 
 }

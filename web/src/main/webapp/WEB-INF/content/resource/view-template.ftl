@@ -57,7 +57,7 @@
 
     <@view.pageStatusCallout />
 
-<@list.bookmark resource false false/><h1 class="view-page-title">${resource.title!"No Title"}</h1>
+    <h1 class="view-page-title">${resource.title!"No Title"}</h1>
     <#if resource.project?? && resource.project.id?? && resource.project.id != -1>
 
     <div id="subtitle">
@@ -175,9 +175,9 @@
                 <#if tdarConfiguration.xmlExportEnabled>
                 <p class="faims_xml_logo"><a href="<@s.url value="/dataset/xml?dataTableId=${dataTable.id?c}"/>" target="_blank">XML</a></p>
                 </#if>
-			<#else>
+            <#else>
 
-	            <p><@view.embargoCheck /></p>
+                <p><@view.embargoCheck /></p>
 
             </#if>
 
@@ -195,8 +195,8 @@
             <#list resource.sortedDataTables as dataTable>
             <h4>Table Information: <span>${dataTable.displayName}</span></h4>
             <#if dataTable.description?has_content>
-			<p class="tableDescription">${dataTable.description}</p>
-			</#if>
+            <p class="tableDescription">${dataTable.description}</p>
+            </#if>
             <table class="tableFormat table table-bordered">
                 <thead class='highlight'>
                 <tr>
@@ -293,7 +293,7 @@
         ${ont.title!"no title"}</a>
         <#else>
         none
-		</#if>
+        </#if>
     </#macro>
 
 
@@ -354,12 +354,12 @@
             </#if>
         </#list>
         <#assign mks = (resource.activeManagedGeographicKeywords![])?size />
-		<#if editor && (mks > 0)>
+        <#if editor && (mks > 0)>
         <p>
             <strong>System Managed Geographic Keywords (${mks})</strong><br><span class="show red" onClick="$(this).hide();$('#managedKeywords').show()">show</span><span id="managedKeywords" style="display:none">
             <@view.keywordSearch resource.activeManagedGeographicKeywords "query"  /></span>
         </p>
-		</#if>
+        </#if>
         <#if (resource.keywordProperties?size > 0)>
         </div>
         </#if>
@@ -378,16 +378,16 @@
     </#macro>
 
         <#list resource.activeCoverageDates>
-	    <h2>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h2>
-	    <#items as coverageDate>
+        <h2>Temporal Coverage <#if editor && resource.inheritingTemporalInformation!false><small>(from project)</small></#if> </h2>
+        <#items as coverageDate>
             <#assign value>
                 <#if coverageDate.startDate?has_content>${coverageDate.startDate?c}<#else>?</#if> to
                 <#if coverageDate.endDate?has_content>${coverageDate.endDate?c}<#else>?</#if>
                 <#if (coverageDate.description?has_content)> (${coverageDate.description})</#if>
             </#assign>
             <@view.kvp key=coverageDate.dateType.label val=value />
-			</#items>
-		    <hr/>
+            </#items>
+            <hr/>
         </#list>
 
 
@@ -415,16 +415,16 @@
         <#if userAbleToViewUnobfuscatedMap && geoJson?has_content>data-geojson="#localGeoJson"</#if>
         <#if (resource.activeLatitudeLongitudeBoxes?has_content)>
             <#assign llb = resource.firstActiveLatitudeLongitudeBox />
-	        data-maxy="${llb.obfuscatedNorth}" 
-	        data-minx="${llb.obfuscatedWest}"
-	        data-maxx="${llb.obfuscatedEast}"
-	        data-miny="${llb.obfuscatedSouth}"
-	    <#-- disabled for Obsidian 
+            data-maxy="${llb.obfuscatedNorth}"
+            data-minx="${llb.obfuscatedWest}"
+            data-maxx="${llb.obfuscatedEast}"
+            data-miny="${llb.obfuscatedSouth}"
+        <#-- disabled for Obsidian
         <#if resource.confidentialViewable && llb.obfuscatedObjectDifferent >
-	        data-real-maxy="${llb.east}" 
-	        data-real-minx="${llb.south}"
-	        data-real-maxx="${llb.north}"
-	        data-real-miny="${llb.west}"
+            data-real-maxy="${llb.east}"
+            data-real-minx="${llb.south}"
+            data-real-maxx="${llb.north}"
+            data-real-miny="${llb.west}"
         </#if> -->
         </#if>
         ></div>
@@ -442,9 +442,9 @@
     </#if>
 
         <#list allResourceAnnotationKeys>
-    	<h3>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h3>
+        <h3>Record Identifiers <#if editor && resource.inheritingIdentifierInformation!false ><small>(from project)</small></#if> </h3>
 
-		<#items as key>
+        <#items as key>
             <#assign contents = "" />
             <#list resource.activeResourceAnnotations as ra>
                 <#if key.id == ra.resourceAnnotationKey.id >
@@ -455,15 +455,15 @@
                 <#assign keyLabel><#noescape>${key.key}</#noescape>(s)</#assign>
                 <@view.kvp key=keyLabel val=contents noescape=true />
             </#if>
-			</#items>
+            </#items>
         </#list>
 
 
-	<#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
+    <#list resource.activeResourceNotes.toArray()?sort_by("sequenceNumber")>
     <h2>Notes <#if editor && resource.inheritingNoteInformation!false ><small>(from project)</small></#if> </h2>
         <#items as resourceNote>
             <@view.kvp key=resourceNote.type.label val=resourceNote.note />
-		</#items>
+        </#items>
     <hr/>
         </#list>
 
@@ -474,11 +474,11 @@
     </#if>
 <#-- display linked data <-> ontology nodes -->
         <#list relatedResources![]>
-	    <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
-	    <ol style='list-style-position:inside'>
-			<#items as related >
+        <h3>This ${resource.resourceType.label} is Used by the Following Datasets:</h3>
+        <ol style='list-style-position:inside'>
+            <#items as related >
             <li><a href="<@s.url value="${related.detailUrl}"/>">${related.id?c} - ${related.title} </a></li>
-			</#items>
+            </#items>
     </ol>
         </#list>
 
@@ -526,11 +526,11 @@
     </#if>
     <#if !resource.resourceType.project>
         <@view.uploadedFileInfo />
-	<#else>
-		<#if resourceTypeFacets?has_content >
-		<p>Project Contents</p>
-        	<@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
-		</#if>	
+    <#else>
+        <#if resourceTypeFacets?has_content >
+        <p>Project Contents</p>
+            <@search.facetBy facetlist=resourceTypeFacets label="" facetParam="selectedResourceTypes" link=false liCssClass="" ulClass="inline" icon=false />
+        </#if>
     </#if>
         <ul class="media-list">
             <#assign txt><#if !resource.citationRecord>Request Access,</#if> Submit Correction, Comment</#assign>
@@ -554,11 +554,10 @@
         <#if (authenticatedUser.id)?has_content && editable>
         <p><strong>Library</strong></p>
         <ul class="media-list">
-            <li class="media"><i class="icon-star pull-left"></i>
+            <li class="media">
                 <div class="media-body">
-                    <a id="requestAccess" href="/manage?adhocShare.resourceId=${id?c}">Bookmark</a>
-                    <!-- WHY -->
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <#--FIXME: update bookmark widget to match surrounding style -->
+                    <@list.bookmark resource />
                 </div>
             </li>
             <li class="media "><i class="icon-folder-open pull-left"></i>

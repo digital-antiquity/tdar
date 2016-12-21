@@ -102,6 +102,7 @@
                         $this.attr("bookmark-state", newstate);
                         $this.attr("href", newUrl);
                         $(".waiting", $this).remove();
+                        $this.find('.bookmark-label').text(newstate === 'bookmarked' ? 'Un-bookmark' : 'Bookmark');
                     }
                 });
 
@@ -113,12 +114,11 @@
     //expose public elements
     TDAR.bookmark = {
         "init": _init,
-        "ajaxBookmark" : _ajaxBookmark
+        "ajaxBookmark" : _ajaxBookmark,
+
+        //Main entrypoint - to be called by TDAR.main()
+        "main": _init
     };
 
 })(TDAR, jQuery);
 
-$(document).ready(function () {
-    TDAR.bookmark.init();
-
-});

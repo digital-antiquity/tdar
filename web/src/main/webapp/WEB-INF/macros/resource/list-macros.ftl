@@ -64,20 +64,20 @@
                     
                         <#local box = resource.firstActiveLatitudeLongitudeBox />
                         data-scale="${box.scale?c}"
-	                    <#if resource.latLongVisible >
-	                        data-lat="${box.obfuscatedCenterLatitude?c}"
-	                        data-long="${box.obfuscatedCenterLongitude?c}"
-	                        data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
-	                        data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
-	                    </#if>
+                        <#if resource.latLongVisible >
+                            data-lat="${box.obfuscatedCenterLatitude?c}"
+                            data-long="${box.obfuscatedCenterLongitude?c}"
+                            data-lat-length="${box.obfuscatedAbsoluteLatLength?c}"
+                            data-long-length="${box.obfuscatedAbsoluteLongLength?c}"
+                        </#if>
                         <#-- disabled for Obsidian 
-	                    <#if editor || resource.confidentialViewable  >
-	                        data-real-lat="${box.centerLatitude?c}"
-	                        data-real-long="${box.centerLongitude?c}"
-	                        data-real-lat-length="${box.absoluteLatLength?c}"
-	                        data-real-long-length="${box.absoluteLongLength?c}"
-	                    </#if> -->
-	                    </#if>
+                        <#if editor || resource.confidentialViewable  >
+                            data-real-lat="${box.centerLatitude?c}"
+                            data-real-long="${box.centerLongitude?c}"
+                            data-real-lat-length="${box.absoluteLatLength?c}"
+                            data-real-long-length="${box.absoluteLongLength?c}"
+                        </#if> -->
+                        </#if>
                     id="resource-${resource.id?c}">
 
                 <#-- if we're at a new row; close the above tag and re-open it (bug) -->
@@ -86,7 +86,7 @@
                 <#-- add grid thumbnail -->
                     <#if isGridLayout>
                         <a href="<@s.url value="${resource.detailUrl}"/>" target="_top"><#t>
-	            <@view.firstThumbnail resource /><#t>
+                <@view.firstThumbnail resource /><#t>
                         </a><br/>
                     </#if>
 
@@ -114,27 +114,27 @@
         <#if orientation == "MAP">
         </div>
             <#if mapPosition=="left" || mapPosition == "bottom">
-				<@_mapDiv mapPosition mapHeight />
+                <@_mapDiv mapPosition mapHeight />
             </#if>
         </div>
         </#if>
 
     </#macro>
 
-	<#macro _mapDiv mapPosition mapHeight>
-		<#local spans = 12 />
-		<#if (mapPosition == 'left' || mapPosition == 'right')>
-			<#local spans = 9 />
-		</#if>
+    <#macro _mapDiv mapPosition mapHeight>
+        <#local spans = 12 />
+        <#if (mapPosition == 'left' || mapPosition == 'right')>
+            <#local spans = 9 />
+        </#if>
 
         <#if ((rightSidebar!false) || (leftSidebar!false)) >
-			<#local spans = spans - 3 />
-		</#if>
-		<div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
-		<#if id?has_content && namespace=="/collection">
-		data-infinite-url="/api/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
-		</#if>
-		data-fit-bounds="true"
+            <#local spans = spans - 3 />
+        </#if>
+        <div class="span${spans} leaflet-map-results" <#if mapHeight?has_content>style="height:${mapHeight}px"</#if>
+        <#if id?has_content && namespace=="/collection">
+        data-infinite-url="/api/search/json?webObfuscation=true&amp;recordsPerPage=100&amp;latScaleUsed=true&amp;collectionId=${id?c}"
+        </#if>
+        data-fit-bounds="true"
         <#assign map_ = "" />
         <#if map?has_content>
             <#assign map_ = map />
@@ -150,8 +150,8 @@
         
         </#if> >
 
-		</div>
-	</#macro>
+        </div>
+    </#macro>
 
 <#-- divider between the sections of results -->
     <#macro _printDividerBetweenResourceRows itemTag_ first rowCount itemsPerRow orientation>
@@ -293,7 +293,7 @@ bookmark indicator, etc..
 <#--list the author/editor/creators of a resource - part of the summary information included in a a search result item -->
     <#macro _listCreators resource_>
         <#assign showSubmitter=true/>
-		<#list resource_.primaryCreators![]>
+        <#list resource_.primaryCreators![]>
         <span class="authors">
             <#items as creatr>
                 <#assign showSubmitter=false/>
@@ -302,7 +302,7 @@ bookmark indicator, etc..
         </span>
         </#list>
 
-		<#list resource_.editors![]>
+        <#list resource_.editors![]>
         <span class="editors">
             <#items  as creatr>
                 <#assign showSubmitter=false/>
@@ -310,7 +310,7 @@ bookmark indicator, etc..
             ${creatr.creator.properName}<#if creatr__has_next??>,<#else>.</#if>
             </#items>
         </span>
-		</#list>
+        </#list>
 
         <#if showSubmitter && resource_.submitter?has_content>
             <#assign label = "Created" />
@@ -338,46 +338,27 @@ bookmark indicator, etc..
     @param _resource:Resource a resource object
 -->
 
-    <#macro bookmark _resource showLabel=true useListItem=false>
-    <#return />
+    <#macro bookmark _resource showLabel=true>
         <#if sessionData?? && sessionData.authenticated>
-            <#if _resource.resourceType?has_content>
-                <#assign status = "disabled-bookmark" />
-
+            <#if _resource.resourceType??>
+                <#local label="">
+                <#if showLabel>
+                    <#local label=_resource.bookmarked?string("Un-bookmark", "Bookmark")>
+                </#if>
                 <#if _resource.bookmarked>
-                    <#local status = "un-bookmark" />
                     <#local state = "bookmarked" />
                     <#local icon = "icon-star" />
                 <#else>
-                    <#local status = "bookmark" />
                     <#local state = "bookmark" />
                     <#local icon = "icon-star-empty" />
                 </#if>
-                <div class="btn-group pull-right bookmark-menu">
-                  
+
                   <button class="btn btn-mini bookmark-link" resource-id="${_resource.id?c}" bookmark-state="${state}" name="${state}">
                         <i title="bookmark or unbookmark" class="${icon} bookmarkicon"></i>
+                      <#if showLabel>
+                          <span class="bookmark-label">${label}</span>
+                      </#if>
                   </button>
-                  <button class="btn btn-mini dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                  </button>
-                  <ul class="dropdown-menu">
-                    	<li><a href="">new collection</a></li>
-<!--                    	<li><form class="form-search">
-  <input type="text" class="input-medium search-query">
-  <button type="submit" class="btn">Search</button>
-</form></li> -->
-						<li class="divider"></li>
-                  </ul>
-                </div>
-                <#if useListItem>
-                <li class="${status}">
-                </#if>
-
-
-                <#if useListItem>
-                </li>
-                </#if>
 
             </#if>
         </#if>
@@ -437,17 +418,17 @@ bookmark indicator, etc..
     </table>
     </#macro>
 
-	<#macro displayWidget>
+    <#macro displayWidget>
                 <h3>View Options</h3>
                 <ul class="tools media-list">
                     <#list availableOrientations as orientation>
                     <li class="media"><a href="<@s.url includeParams="all">
-	                    <@s.param name="orientation">${orientation}</@s.param>
-	                </@s.url>">
+                        <@s.param name="orientation">${orientation}</@s.param>
+                    </@s.url>">
                     <svg class="svgicon red"><use xlink:href="/images/svg/symbol-defs.svg#svg-icons_${orientation.svg!orientation}"></use></svg>
                     <@s.text name="${orientation.localeKey}"/></a></li>
                     </#list>
                 </ul>
-	</#macro>
+    </#macro>
 
 </#escape>
