@@ -43,6 +43,7 @@ import org.dataone.service.types.v1.Subject;
 import org.dataone.service.types.v1.Synchronization;
 import org.dataone.service.types.v2.Node;
 import org.dataone.service.types.v2.SystemMetadata;
+import org.dataone.service.util.DateTimeMarshaller;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
@@ -399,13 +400,7 @@ public class DataOneService implements DataOneConstants {
             if (_uploaded == null) {
                 metadata.setDateUploaded(resource.getDateUpdated());
             } else {
-                DateFormat df = new SimpleDateFormat();
-                try {
-                    metadata.setDateUploaded(df.parse(_uploaded));
-                } catch (ParseException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
+                metadata.setDateUploaded(DateTimeMarshaller.deserializeDateToUTC(_uploaded));
             }
 
             
