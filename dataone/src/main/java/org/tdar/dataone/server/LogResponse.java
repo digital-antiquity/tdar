@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.dataone.service.DataOneService;
+import org.tdar.dataone.service.DataOneUtils;
 
 @Path(AbstractDataOneResponse.BASE_PATH + "log")
 @Component
@@ -75,10 +76,10 @@ public class LogResponse extends AbstractDataOneResponse {
             Date fromDate = null;
             Date toDate = null;
             if (StringUtils.isNotBlank(fromDate_)) {
-                fromDate = DateTime.parse(fromDate_).toDate();
+                fromDate = DataOneUtils.parseAndConvertToLocalTime(fromDate_).toDate();
             }
             if (StringUtils.isNotBlank(toDate_)) {
-                toDate = DateTime.parse(toDate_).toDate();
+                toDate = DataOneUtils.parseAndConvertToLocalTime(toDate_).toDate();
             }
             Event evt = null;
             if (StringUtils.isNotBlank(event)) {

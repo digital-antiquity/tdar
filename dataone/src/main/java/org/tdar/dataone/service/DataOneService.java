@@ -8,9 +8,6 @@ import java.math.BigInteger;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,6 +44,8 @@ import org.dataone.service.util.DateTimeMarshaller;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -155,9 +154,9 @@ public class DataOneService implements DataOneConstants {
         node.setSubjectList(subjectList);
 
         Synchronization sync = new Synchronization();
-        sync.setLastCompleteHarvest(new Date(0));
+        sync.setLastCompleteHarvest(new DateTime(0,DateTimeZone.UTC).toDate());
         // node.getContactSubjectList().add(getSystemUserLdap());
-        sync.setLastHarvested(new Date());
+        sync.setLastHarvested(new DateTime(DateTimeZone.UTC).toDate());
         Schedule schedule = new Schedule();
         schedule.setHour("20");
         schedule.setMday("*");
@@ -398,7 +397,7 @@ public class DataOneService implements DataOneConstants {
                 metadata.setSize(new BigInteger(_size));
             }
             if (_uploaded == null) {
-                metadata.setDateUploaded(resource.getDateUpdated());
+                metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
             } else {
                 metadata.setDateUploaded(DateTimeMarshaller.deserializeDateToUTC(_uploaded));
             }

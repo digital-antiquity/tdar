@@ -16,6 +16,7 @@ import org.dataone.service.types.v1.ObjectList;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +26,7 @@ import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.service.DataOneConfiguration;
+import org.tdar.dataone.service.DataOneUtils;
 
 @Component
 public class DataOneDao {
@@ -64,7 +66,8 @@ public class DataOneDao {
         for (Object wrap : query.list()) {
             Object[] obj = (Object[])wrap;
             long longValue = ((BigInteger)obj[2]).longValue();
-            toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], longValue, (Date)obj[3],null,null,null,null));
+            DateTime utc = DataOneUtils.toUtc((Date)obj[3]);
+            toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], longValue, utc.toDate(),null,null,null,null));
         }
         logger.debug("return: {}:", toReturn);
         return toReturn;
