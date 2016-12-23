@@ -1,7 +1,5 @@
 package org.tdar.dataone.dao;
 
-import static org.hamcrest.CoreMatchers.any;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -12,16 +10,17 @@ import javax.persistence.Transient;
 import org.apache.commons.lang3.StringUtils;
 import org.dataone.service.types.v1.Event;
 import org.dataone.service.types.v1.Log;
+import org.dataone.service.types.v1.ObjectInfo;
 import org.dataone.service.types.v1.ObjectList;
 import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.tdar.core.dao.GenericDao;
+import org.tdar.dataone.bean.DataOneObject;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
@@ -51,6 +50,7 @@ public class DataOneDao {
         if (DataOneConfiguration.getInstance().isLimited()) {
             query = setupListObjectQuery(LIST_OBJECT_QUERY_COUNT_LIMITED, start, end, formatId, identifier);
         }
+//        logger.debug("{}", query);
         list.setTotal(((Number)query.uniqueResult()).intValue());
         if (count == 0) {
             return new ArrayList<>();
@@ -135,17 +135,55 @@ public class DataOneDao {
         query.setParameter("end", to);
     }
 
-    public String findLastExposedVersion(String prefix, String existingId, String type) {
-        Query namedQuery = genericDao.getNamedQuery("query.dataone_last_tdar_id");
-        logger.debug("{} {} {}", prefix, type,existingId);
-        namedQuery.setParameter("prefix", prefix.replace("/", ":") + "%");
-        namedQuery.setParameter("type", "%" + type + "%");
-        namedQuery.setParameter("id", existingId);
-        List<LogEntryImpl> list = namedQuery.list();
-        if (list.size() > 0 ) {
-            return (String) list.get(0).getIdentifier();
+ 
+    public DataOneObject updateObjectEntries(ObjectInfo info, EntryType type, String seriesId,Long tdarId, String submitter) {
+        DataOneObject uniqueResult = findByIdentifier(info.getIdentifier().getValue());
+        if (uniqueResult == null) {
+            DataOneObject obj = new DataOneObject();
+            obj.setChecksum(info.getChecksum().getValue());
+            obj.setIdentifier(info.getIdentifier().getValue());
+            obj.setDateCreated(new Date());
+            obj.setType(type);
+            obj.setTdarId(tdarId);
+            obj.setSeriesId(seriesId);
+            obj.setSysMetadataModified(info.getDateSysMetadataModified());
+            obj.setSize(info.getSize().longValue());
+            obj.setSubmitter(submitter);
+            obj.setFormatId(info.getFormatId().getValue());
+            genericDao.saveOrUpdate(obj);
+            return obj;
+        }
+        return uniqueResult;
+    }
+
+    
+    public DataOneObject findAndObsoleteLastHarvestedVersion(String seriesId, DataOneObject current) {
+        DataOneObject uniqueResult = findLastHarvestedVersion(seriesId, current);
+        if (uniqueResult != null) {
+            uniqueResult.setObsoletedBy(current.getIdentifier());
+            current.setObsoletes(uniqueResult.getIdentifier());
+            genericDao.saveOrUpdate(uniqueResult);
+            genericDao.saveOrUpdate(current);
+            return uniqueResult;
         }
         return null;
     }
+    
+    public DataOneObject findLastHarvestedVersion(String seriesId, DataOneObject current) {
+        Query namedQuery = genericDao.createQuery("from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier");
+        namedQuery.setParameter("seriesId", seriesId);
+        namedQuery.setParameter("identifier", current.getIdentifier());
+        DataOneObject uniqueResult = (DataOneObject) namedQuery.uniqueResult();
+        return uniqueResult;
+        
+    }
+
+    public DataOneObject findByIdentifier(String id) {
+        Query namedQuery = genericDao.createQuery("from DataOneObject where identifier=:identifier");
+        namedQuery.setParameter("identifier", id);
+        DataOneObject uniqueResult = (DataOneObject) namedQuery.uniqueResult();
+        return uniqueResult;
+    }
+
 
 }

@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 import java.net.URISyntaxException;
-import java.net.URLEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,19 +15,17 @@ import javax.persistence.Transient;
 import javax.servlet.http.HttpServletRequest;
 import javax.xml.bind.JAXBException;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.dataone.service.types.v1.AccessPolicy;
 import org.dataone.service.types.v1.Checksum;
 import org.dataone.service.types.v1.Event;
+import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Log;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v1.NodeReplicationPolicy;
 import org.dataone.service.types.v1.NodeState;
 import org.dataone.service.types.v1.NodeType;
+import org.dataone.service.types.v1.ObjectFormatIdentifier;
 import org.dataone.service.types.v1.ObjectInfo;
 import org.dataone.service.types.v1.ObjectList;
 import org.dataone.service.types.v1.Permission;
@@ -40,7 +37,6 @@ import org.dataone.service.types.v1.Subject;
 import org.dataone.service.types.v1.Synchronization;
 import org.dataone.service.types.v2.Node;
 import org.dataone.service.types.v2.SystemMetadata;
-import org.dataone.service.util.DateTimeMarshaller;
 import org.dspace.foresite.OREException;
 import org.dspace.foresite.ORESerialiserException;
 import org.jdom2.JDOMException;
@@ -58,12 +54,12 @@ import org.tdar.core.configuration.TdarConfiguration;
 import org.tdar.core.service.GenericService;
 import org.tdar.core.service.ObfuscationService;
 import org.tdar.core.service.resource.InformationResourceService;
+import org.tdar.dataone.bean.DataOneObject;
 import org.tdar.dataone.bean.EntryType;
 import org.tdar.dataone.bean.ListObjectEntry;
 import org.tdar.dataone.bean.LogEntryImpl;
 import org.tdar.dataone.dao.DataOneDao;
 import org.tdar.transform.ExtendedDcTransformer;
-import org.tdar.utils.SimpleHttpUtils;
 
 import edu.asu.lib.jaxb.JaxbDocumentWriter;
 import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
@@ -265,7 +261,7 @@ public class DataOneService implements DataOneConstants {
      * @throws IOException
      * @throws JAXBException
      */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = false)
     public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count)
             throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException,
             JAXBException {
@@ -295,10 +291,23 @@ public class DataOneService implements DataOneConstants {
             }
             info.setDateSysMetadataModified(entry.getDateUpdated());
             info.setFormatId(DataOneUtils.contentTypeToD1Format(entry.getType(), entry.getContentType()));
-            info.setIdentifier(DataOneUtils.createIdentifier(entry.getFormattedIdentifier()));
+            Identifier currentIdentifier = DataOneUtils.createIdentifier(entry.getFormattedIdentifier());
+            info.setIdentifier(currentIdentifier);
             if (object != null) {
                 info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
                 info.setSize(BigInteger.valueOf(object.getSize()));
+            }
+            String seriesId = DataOneUtils.createSeriesId(object.getTdarResource().getId() , entry.getType());
+            DataOneObject current = dataOneDao.updateObjectEntries(info, entry.getType(), seriesId, object.getTdarResource().getId(),object.getTdarResource().getSubmitter().getProperName());
+            DataOneObject previous = dataOneDao.findLastHarvestedVersion(seriesId, current);
+            // have to assume that we're sending back extra record
+            if (previous != null) {
+                ObjectInfo old = new ObjectInfo();
+                old.setDateSysMetadataModified(previous.getSysMetadataModified());
+                old.setFormatId(DataOneUtils.contentTypeToD1Format(previous.getType(), entry.getContentType()));
+                old.setIdentifier(DataOneUtils.createIdentifier(previous.getIdentifier()));
+                old.setChecksum(DataOneUtils.createChecksum(previous.getChecksum()));
+                old.setSize(BigInteger.valueOf(previous.getSize()));
             }
             list.getObjectInfoList().add(info);
         }
@@ -319,97 +328,66 @@ public class DataOneService implements DataOneConstants {
         SystemMetadata metadata = new SystemMetadata();
         AccessPolicy policy = new AccessPolicy();
 
-        ObjectResponseContainer object = getObjectFromTdar(id, false);
-        boolean dateIgnored = false;
-        if (object == null) {
-            object = getObjectFromTdar(id, true);
-            logger.debug("{}", object);
-            dateIgnored = true;
-            if (object == null) {
-                logger.debug("not found -- returning");
-                return null;
-            }
-        }
-        InformationResource tdarResource = object.getTdarResource();
-        InformationResource resource = tdarResource;
+        
         policy.getAllowList().add(DataOneUtils.createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
-        // used to detect when changes happen in DataONE
-        metadata.setDateSysMetadataModified(resource.getDateUpdated());
         // look up in log table what the last exposed version of metadata was
 
-        // if it's deleted, we mark it as archived
-        if (resource.getStatus() != Status.ACTIVE || dateIgnored) {
-            metadata.setArchived(true);
-        } else {
-            metadata.setArchived(false);
+        
+        ObjectResponseContainer object = getObjectFromTdar(id, false);
+        
+        DataOneObject dataOneObject = dataOneDao.findByIdentifier(id);
+        if (object == null && dataOneObject == null) {
+                logger.debug("not found -- returning");
+                return null;
         }
+        
+        // if we don't have an object in tDAR that's an exact match -- it's likely a request for an old version... 
+        if (object == null) {
+            InformationResource resource = informationResourceService.find(dataOneObject.getTdarId());
+            markArchived(metadata, true, resource);
+            metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
+            metadata.setObsoletedBy(DataOneUtils.createIdentifier(dataOneObject.getObsoletedBy()));
+            metadata.setObsoletes(DataOneUtils.createIdentifier(dataOneObject.getObsoletes()));
+            metadata.setChecksum(DataOneUtils.createChecksum(dataOneObject.getChecksum()));
+            metadata.setSize(BigInteger.valueOf(dataOneObject.getSize()));
+            ObjectFormatIdentifier format = new ObjectFormatIdentifier();
+            format.setValue(dataOneObject.getFormatId());
+            metadata.setFormatId(format);
+            metadata.setOriginMemberNode(getTdarNodeReference());
+            // metadata.setReplicationPolicy(rpolicy );
 
-        if (object != null) { // could be a bad version
-            IdentifierParser parser = new IdentifierParser(id, informationResourceService);
-            // if (object.getType() == EntryType.TDAR) {
-            String obsoletesId = dataOneDao.findLastExposedVersion(parser.getDoi(), id, parser.getType().getUniquePart());
-            Checksum createChecksum = DataOneUtils.createChecksum(object.getChecksum());
-            String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
-            logger.debug("dateIgnored: {} " , dateIgnored);
-            logger.debug("obsoletesId: {} " , obsoletesId);
-            logger.debug("defaultChecksum: {} " , object.getChecksum());
-            logger.debug("currentId: {} " , id);
-            String _size = null;
-            String _uploaded = null; 
-            if (dateIgnored) {
-                // we're an old request, so we set the obsoleted by, and get the old checksum
-                metadata.setObsoletedBy(DataOneUtils.createIdentifier(currentIdentifier));
-                if (StringUtils.isNotBlank(currentIdentifier)) {
-                    try {
-                        // temporary hack to get old checksum until DataONE can handle this for us
-                        CloseableHttpClient client = SimpleHttpUtils.createClient();
-                        String uri = D1CONFIG.getD1UrlBase() + "/cn/v2/meta/" + URLEncoder.encode(id);
-                        logger.debug("getting uri:  {}", uri);
-                        HttpGet get = new HttpGet(uri);
-                        CloseableHttpResponse response = client.execute(get);
-                        String body = IOUtils.toString(response.getEntity().getContent());
-                        logger.trace(body);
-                        String cs = getTagEntry("checksum",body);
-                        logger.debug("old checksum from d1: {}", cs);
-                        if (StringUtils.isNotBlank(cs)) {
-                            createChecksum = DataOneUtils.createChecksum(cs);
-                        }
-                        _size = getTagEntry("size", body);
-                        _uploaded = getTagEntry("dateUploaded", body);
-                        IOUtils.closeQuietly(response);
-                        IOUtils.closeQuietly(client);
-                    } catch (IOException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-                }
-            } else if (obsoletesId != null) {
-                metadata.setObsoletes(DataOneUtils.createIdentifier(obsoletesId));
-            }
-            // }
-            metadata.setChecksum(createChecksum);
-            metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
-            if (_size == null) {
-                metadata.setSize(BigInteger.valueOf(object.getSize()));
-            } else {
-                metadata.setSize(new BigInteger(_size));
-            }
-            if (_uploaded == null) {
-                metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
-            } else {
-                metadata.setDateUploaded(DateTimeMarshaller.deserializeDateToUTC(_uploaded));
-            }
+            // rights to change the permissions sitting on the object
+            metadata.setRightsHolder(getRightsHolder());
+            metadata.setSubmitter(DataOneUtils.createSubject(dataOneObject.getSubmitter()));
+            return metadata;
+        }
+        InformationResource tdarResource = object.getTdarResource();
+        InformationResource resource = tdarResource;
 
-            
-            metadata.setSeriesId(DataOneUtils.createIdentifier(tdarResource.getId().toString() + D1_SEP + parser.getType().getUniquePart()));
-            if (parser.isSeriesIdentifier()) {
-                metadata.setIdentifier(DataOneUtils.createIdentifier(
-                        currentIdentifier));
-            } else {
-                metadata.setIdentifier(DataOneUtils.createIdentifier(id));
-            }
+        // if it's deleted, we mark it as archived
+        markArchived(metadata, false, resource);
+        // used to detect when changes happen in DataONE
+        metadata.setDateSysMetadataModified(resource.getDateUpdated());
+
+        IdentifierParser parser = new IdentifierParser(id, informationResourceService);
+        // if (object.getType() == EntryType.TDAR) {
+        DataOneObject obj = dataOneDao.findByIdentifier(id);
+        String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
+        metadata.setObsoletes(DataOneUtils.createIdentifier(obj.getObsoletes()));
+        metadata.setObsoletedBy(DataOneUtils.createIdentifier(obj.getObsoletedBy()));
+
+        metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
+        metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
+        metadata.setSize(BigInteger.valueOf(object.getSize()));
+        metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
+
+        metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(tdarResource.getId(), parser.getType())));
+        if (parser.isSeriesIdentifier()) {
+            metadata.setIdentifier(DataOneUtils.createIdentifier(currentIdentifier));
+        } else {
+            metadata.setIdentifier(DataOneUtils.createIdentifier(id));
         }
         metadata.setOriginMemberNode(getTdarNodeReference());
         // metadata.setReplicationPolicy(rpolicy );
@@ -423,6 +401,14 @@ public class DataOneService implements DataOneConstants {
         metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
+    }
+
+    private void markArchived(SystemMetadata metadata, boolean dateIgnored, InformationResource resource) {
+        if (resource.getStatus() != Status.ACTIVE || dateIgnored) {
+            metadata.setArchived(true);
+        } else {
+            metadata.setArchived(false);
+        }
     }
 
     private String getTagEntry(String tag, String body) {

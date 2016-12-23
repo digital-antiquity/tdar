@@ -89,4 +89,8 @@ public class DataOneUtils {
     public static DateTime toUtc(Date date) {
         return new DateTime(date, DateTimeZone.getDefault()).toDateTime(DateTimeZone.UTC);
     }
+
+    public static String createSeriesId(Long id, EntryType type) {
+        return id.toString() + DataOneConstants.D1_SEP + type.getUniquePart();
+    }
 }
