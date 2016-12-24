@@ -274,6 +274,8 @@ public class DataOneService implements DataOneConstants {
         // for each entry we find in the database, create a packaged response
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
+			try {
+			
             ObjectResponseContainer object = null;
 
             // contstruct the metadata/response
@@ -299,7 +301,7 @@ public class DataOneService implements DataOneConstants {
             }
             String seriesId = DataOneUtils.createSeriesId(object.getTdarResource().getId() , entry.getType());
             DataOneObject current = dataOneDao.updateObjectEntries(info, entry.getType(), seriesId, object.getTdarResource().getId(),object.getTdarResource().getSubmitter().getProperName());
-            DataOneObject previous = dataOneDao.findLastHarvestedVersion(seriesId, current);
+            DataOneObject previous = dataOneDao.findAndObsoleteLastHarvestedVersion(seriesId, current);
             // have to assume that we're sending back extra record
             if (previous != null) {
                 ObjectInfo old = new ObjectInfo();
@@ -308,7 +310,9 @@ public class DataOneService implements DataOneConstants {
                 old.setIdentifier(DataOneUtils.createIdentifier(previous.getIdentifier()));
                 old.setChecksum(DataOneUtils.createChecksum(previous.getChecksum()));
                 old.setSize(BigInteger.valueOf(previous.getSize()));
+                list.addObjectInfo(old);
             }
+			} catch (Exception e) {logger.error("{}",e,e);}
             list.getObjectInfoList().add(info);
         }
         // matching count of list to match # of results per test
@@ -332,12 +336,21 @@ public class DataOneService implements DataOneConstants {
         policy.getAllowList().add(DataOneUtils.createAccessRule(Permission.READ, PUBLIC));
         metadata.setAccessPolicy(policy);
         metadata.setAuthoritativeMemberNode(getTdarNodeReference());
+        metadata.setOriginMemberNode(getTdarNodeReference());
+        // metadata.setReplicationPolicy(rpolicy );
+
+        // rights to change the permissions sitting on the object
+        metadata.setRightsHolder(getRightsHolder());
+        // metadata.setSerialVersion(value);
+
         // look up in log table what the last exposed version of metadata was
 
-        
+        logger.debug("{}", id);
         ObjectResponseContainer object = getObjectFromTdar(id, false);
+        logger.debug("{}", object);
         
         DataOneObject dataOneObject = dataOneDao.findByIdentifier(id);
+        logger.debug("{}", dataOneObject);
         if (object == null && dataOneObject == null) {
                 logger.debug("not found -- returning");
                 return null;
@@ -346,21 +359,22 @@ public class DataOneService implements DataOneConstants {
         // if we don't have an object in tDAR that's an exact match -- it's likely a request for an old version... 
         if (object == null) {
             InformationResource resource = informationResourceService.find(dataOneObject.getTdarId());
-            markArchived(metadata, true, resource);
-            metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
-            metadata.setObsoletedBy(DataOneUtils.createIdentifier(dataOneObject.getObsoletedBy()));
-            metadata.setObsoletes(DataOneUtils.createIdentifier(dataOneObject.getObsoletes()));
+            metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
+//            markArchived(metadata, true, resource);
+            String obsoletedBy = dataOneObject.getObsoletedBy();
+            String obsoletes = dataOneObject.getObsoletes();
+            updateObsoletesObsoletedBy(metadata, obsoletedBy, obsoletes);
             metadata.setChecksum(DataOneUtils.createChecksum(dataOneObject.getChecksum()));
             metadata.setSize(BigInteger.valueOf(dataOneObject.getSize()));
             ObjectFormatIdentifier format = new ObjectFormatIdentifier();
             format.setValue(dataOneObject.getFormatId());
             metadata.setFormatId(format);
-            metadata.setOriginMemberNode(getTdarNodeReference());
-            // metadata.setReplicationPolicy(rpolicy );
+            metadata.setIdentifier(DataOneUtils.createIdentifier(dataOneObject.getIdentifier()));
+            metadata.setDateSysMetadataModified(dataOneObject.getSysMetadataModified());
 
             // rights to change the permissions sitting on the object
-            metadata.setRightsHolder(getRightsHolder());
             metadata.setSubmitter(DataOneUtils.createSubject(dataOneObject.getSubmitter()));
+            logger.debug("returning: {}", metadata);
             return metadata;
         }
         InformationResource tdarResource = object.getTdarResource();
@@ -375,13 +389,13 @@ public class DataOneService implements DataOneConstants {
         // if (object.getType() == EntryType.TDAR) {
         DataOneObject obj = dataOneDao.findByIdentifier(id);
         String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
-        metadata.setObsoletes(DataOneUtils.createIdentifier(obj.getObsoletes()));
-        metadata.setObsoletedBy(DataOneUtils.createIdentifier(obj.getObsoletedBy()));
 
+        updateObsoletesObsoletedBy(metadata, obj.getObsoletedBy(), obj.getObsoletes());
+        
+        
         metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
         metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
-        metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
 
         metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(tdarResource.getId(), parser.getType())));
         if (parser.isSeriesIdentifier()) {
@@ -389,18 +403,21 @@ public class DataOneService implements DataOneConstants {
         } else {
             metadata.setIdentifier(DataOneUtils.createIdentifier(id));
         }
-        metadata.setOriginMemberNode(getTdarNodeReference());
-        // metadata.setReplicationPolicy(rpolicy );
+        
+        metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
 
-        // rights to change the permissions sitting on the object
-        metadata.setRightsHolder(getRightsHolder());
-        // metadata.setSerialVersion(value);
-        
-        
-//        metadata.setSubmitter(getRightsHolder());
         metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
         logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
+    }
+
+    private void updateObsoletesObsoletedBy(SystemMetadata metadata, String obsoletedBy, String obsoletes) {
+        if (StringUtils.isNotBlank(obsoletedBy)) {
+            metadata.setObsoletedBy(DataOneUtils.createIdentifier(obsoletedBy));
+        }
+        if (StringUtils.isNotBlank(obsoletes)) {
+            metadata.setObsoletes(DataOneUtils.createIdentifier(obsoletes));
+        }
     }
 
     private void markArchived(SystemMetadata metadata, boolean dateIgnored, InformationResource resource) {

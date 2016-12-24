@@ -29,8 +29,9 @@ import org.tdar.dataone.service.DataOneUtils;
 
 @Component
 public class DataOneDao {
-	private static final String D1_SUFFIX  = "from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and (:type is null or   'D1'=:type)";
-	private static final String TDAR_SUFFIX = "from resource res where res.external_id is not null and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and (:type is null or 'TDAR'=:type)";
+	private static final String SHARED_WHERE = "from resource res where (res.external_id is not null and res.external_id != '') and (res.date_updated between :start and :end or res.date_created between :start and :end) and res.status='ACTIVE' and res.resource_type not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and (:identifier is null or res.external_id=:identifier) and ";
+    private static final String D1_SUFFIX  = SHARED_WHERE  + "(:type is null or   'D1'=:type)";
+	private static final String TDAR_SUFFIX = SHARED_WHERE + " (:type is null or 'TDAR'=:type)";
 	private static final String D1_PREFIX = " external_id as \"externalId\", 'D1'   as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
 	private static final String TDAR_PREFIX = " external_id as \"externalId\", 'TDAR' as \"type\", id as \"id\", date_updated as \"dateUpdated\" ";
     private static final String LIST_OBJECT_QUERY = "select " + D1_PREFIX + " " + D1_SUFFIX + " union " + "select "+ TDAR_PREFIX +" " + TDAR_SUFFIX;
@@ -62,12 +63,20 @@ public class DataOneDao {
         }
         query.setMaxResults(count);
         query.setFirstResult(startNum);
+        List list2 = query.list();
         List<ListObjectEntry> toReturn = new ArrayList<>();
-        for (Object wrap : query.list()) {
+        for (Object wrap : list2) {
+            try {
+
             Object[] obj = (Object[])wrap;
-            long longValue = ((BigInteger)obj[2]).longValue();
-            DateTime utc = DataOneUtils.toUtc((Date)obj[3]);
-            toReturn.add(new ListObjectEntry((String)obj[0], (String)obj[1], longValue, utc.toDate(),null,null,null,null));
+            String externalId = (String) obj[0];
+            String type = (String)obj[1];
+            long tdarId = ((BigInteger)obj[2]).longValue();
+            DateTime dateUpdated = DataOneUtils.toUtc((Date)obj[3]);
+            toReturn.add(new ListObjectEntry(externalId, type, tdarId, dateUpdated.toDate(),null,null,null,null));
+            } catch (Exception e) {
+                logger.error("{}",e,e);
+            }
         }
         logger.debug("return: {}:", toReturn);
         return toReturn;
@@ -160,6 +169,7 @@ public class DataOneDao {
     public DataOneObject findAndObsoleteLastHarvestedVersion(String seriesId, DataOneObject current) {
         DataOneObject uniqueResult = findLastHarvestedVersion(seriesId, current);
         if (uniqueResult != null) {
+            logger.debug("find and obsolete: {} --> {}", seriesId, current, uniqueResult);
             uniqueResult.setObsoletedBy(current.getIdentifier());
             current.setObsoletes(uniqueResult.getIdentifier());
             genericDao.saveOrUpdate(uniqueResult);
@@ -170,11 +180,16 @@ public class DataOneDao {
     }
     
     public DataOneObject findLastHarvestedVersion(String seriesId, DataOneObject current) {
-        Query namedQuery = genericDao.createQuery("from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier");
+        Query namedQuery = genericDao.createQuery("from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier");// and type=:type
         namedQuery.setParameter("seriesId", seriesId);
         namedQuery.setParameter("identifier", current.getIdentifier());
-        DataOneObject uniqueResult = (DataOneObject) namedQuery.uniqueResult();
-        return uniqueResult;
+        List<DataOneObject> list = namedQuery.list();
+        if (list.size() == 0) {
+            return null;
+        } else if (list.size() > 1) {
+            logger.warn(" >> found {} results where expected 1", list.size());
+        }
+        return list.get(0);
         
     }
 
