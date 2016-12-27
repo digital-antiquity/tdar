@@ -180,6 +180,7 @@ public class DataOneDao {
             logger.debug("find and obsolete: {} --> {}", seriesId, current, uniqueResult);
             uniqueResult.setObsoletedBy(current.getIdentifier());
             current.setObsoletes(uniqueResult.getIdentifier());
+            uniqueResult.setSysMetadataModified(current.getSysMetadataModified());
             genericDao.saveOrUpdate(uniqueResult);
             genericDao.saveOrUpdate(current);
             return uniqueResult;
