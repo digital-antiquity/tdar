@@ -36,7 +36,7 @@
 
                 <!--// log parameterized SQL statements -->
 
-                <!-- <Logger name="org.hibernate.SQL" level="debug" /> -->
+<!--                 <Logger name="org.hibernate.SQL" level="debug" /> -->
 
                 <!--// log the parameter bindings for above SQL statements -->
                 <!-- <Logger name="org.hibernate.type" level="debug" /> -->

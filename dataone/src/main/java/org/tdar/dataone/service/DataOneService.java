@@ -268,9 +268,25 @@ public class DataOneService implements DataOneConstants {
         ObjectList list = new ObjectList();
         list.setCount(count);
         list.setStart(start);
+        processEntries();
+        List<DataOneObject> dataOneObjects = dataOneDao.findUpdatedResources(fromDate, toDate, formatid, identifier, list, start, count);
+        for (DataOneObject obj : dataOneObjects) {
+            logger.debug("{}", obj);
+            ObjectInfo item = new ObjectInfo();
+            item.setChecksum(DataOneUtils.createChecksum(obj.getChecksum()));
+            item.setDateSysMetadataModified(obj.getSysMetadataModified());
+            item.setFormatId(DataOneUtils.createFormatId(obj.getFormatId()));
+            item.setIdentifier(DataOneUtils.createIdentifier(obj.getIdentifier()));
+            item.setSize(BigInteger.valueOf(obj.getSize()));
+            list.addObjectInfo(item);
+        }
+        
+        return list;
+    }
 
-        List<ListObjectEntry> resources = dataOneDao.findUpdatedResourcesWithDOIs(fromDate, toDate, formatid, identifier, list, count, start);
-        logger.trace("{}", resources);
+    protected void processEntries() {
+        List<ListObjectEntry> resources = dataOneDao.unify();
+        logger.debug("{}", resources);
         // for each entry we find in the database, create a packaged response
         for (ListObjectEntry entry : resources) {
             ObjectInfo info = new ObjectInfo();
@@ -310,14 +326,9 @@ public class DataOneService implements DataOneConstants {
                 old.setIdentifier(DataOneUtils.createIdentifier(previous.getIdentifier()));
                 old.setChecksum(DataOneUtils.createChecksum(previous.getChecksum()));
                 old.setSize(BigInteger.valueOf(previous.getSize()));
-                list.addObjectInfo(old);
             }
 			} catch (Exception e) {logger.error("{}",e,e);}
-            list.getObjectInfoList().add(info);
         }
-        // matching count of list to match # of results per test
-        list.setCount(list.getObjectInfoList().size());
-        return list;
     }
 
     /**
@@ -387,11 +398,11 @@ public class DataOneService implements DataOneConstants {
 
         IdentifierParser parser = new IdentifierParser(id, informationResourceService);
         // if (object.getType() == EntryType.TDAR) {
-        DataOneObject obj = dataOneDao.findByIdentifier(id);
         String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
 
-        updateObsoletesObsoletedBy(metadata, obj.getObsoletedBy(), obj.getObsoletes());
-        
+        if (dataOneObject != null) {
+            updateObsoletesObsoletedBy(metadata, dataOneObject.getObsoletedBy(), dataOneObject.getObsoletes());
+        }
         
         metadata.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
         metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
@@ -426,12 +437,6 @@ public class DataOneService implements DataOneConstants {
         } else {
             metadata.setArchived(false);
         }
-    }
-
-    private String getTagEntry(String tag, String body) {
-        String cs = StringUtils.substringBetween(body, "<"+tag, "</" + tag);
-        cs = StringUtils.substringAfter(cs, ">");
-        return cs;
     }
 
     /**

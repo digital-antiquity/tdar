@@ -92,4 +92,10 @@ public class DataOneUtils {
     public static String createSeriesId(Long id, EntryType type) {
         return id.toString() + DataOneConstants.D1_SEP + type.getUniquePart();
     }
+
+    public static ObjectFormatIdentifier createFormatId(String formatId) {
+        ObjectFormatIdentifier identifier = new ObjectFormatIdentifier();
+        identifier.setValue(formatId);
+        return identifier;
+    }
 }
