@@ -284,6 +284,9 @@ public class DataOneService implements DataOneConstants {
         return list;
     }
 
+    /**
+     * This syncrhonizes tDAR records and DataOne records so that DataONE can see all of the various versions of tDAR records
+     */
     protected void processEntries() {
         List<ListObjectEntry> resources = dataOneDao.unify();
         logger.debug("{}", resources);

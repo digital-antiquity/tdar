@@ -16,6 +16,16 @@ import javax.persistence.TemporalType;
 
 import org.tdar.core.bean.FieldLength;
 
+/**
+ * This object matches and maps to a DataONE SystemMetadata Response / header and tries to track everything that could be 
+ * asked for and thus maintains what could be requested and caches it in the database so that an object request can always
+ * get at the basic info in a way that we can respond and list it back to DataONE.  This is critically important to help 
+ * maintain changes in a specific record syncronized.  E.g. tDAR updates record 1, DataONE needs to see two records the original
+ * and the update. 
+ * 
+ * @author abrin
+ *
+ */
 @Entity()
 @Table(name = "dataone_object")
 public class DataOneObject implements Serializable {
@@ -60,7 +70,7 @@ public class DataOneObject implements Serializable {
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
-    
+
     @Enumerated(EnumType.STRING)
     @Column(name = "entry_type", length = FieldLength.FIELD_LENGTH_255)
     private EntryType type;
