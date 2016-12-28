@@ -38,6 +38,7 @@ import org.tdar.core.bean.resource.CodingSheet;
 import org.tdar.core.bean.resource.Dataset;
 import org.tdar.core.bean.resource.Ontology;
 import org.tdar.core.bean.resource.OntologyNode;
+import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.datatable.DataTable;
 import org.tdar.core.bean.resource.datatable.DataTableColumn;
 import org.tdar.core.bean.resource.datatable.DataTableColumnEncodingType;
@@ -49,6 +50,7 @@ import org.tdar.core.service.integration.ModernIntegrationDataResult;
 import org.tdar.core.service.integration.dto.IntegrationDeserializationException;
 import org.tdar.filestore.personal.PersonalFilestoreFile;
 import org.tdar.struts.action.AbstractDataIntegrationTestCase;
+import org.tdar.struts.action.TdarActionException;
 import org.tdar.struts.action.api.integration.IntegrationAction;
 import org.tdar.struts.action.dataset.ColumnMetadataController;
 import org.tdar.utils.MessageHelper;
@@ -74,12 +76,13 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
     @Autowired
     private OntologyNodeDao ontologyNodeDao;
 
-    @Test
-    @Rollback
-    public void testFilteredNodesSurviveHierarchy() throws Exception {
+    public Map<Class,Object> setup() throws Exception {
+        Map<Class, Object> map  = new HashMap<>();
         Ontology taxonOntology = setupAndLoadResource("fauna-taxon---tag-uk-updated---default-ontology-draft.owl", Ontology.class);
+        map.put(Ontology.class, taxonOntology);
         logger.trace("{}", taxonOntology.getOntologyNodes());
         Dataset spitalDb = setupAndLoadResource(TestConstants.SPITAL_DB_NAME, Dataset.class);
+        map.put(Dataset.class, spitalDb);
         DataTable spitalTable = spitalDb.getDataTableByGenericName("spital_abone_database_mdb_main_table");
         DataTableColumn spitalSpeciesColumn = spitalTable.getColumnByName(SPECIES_COMMON_NAME_COL);
         ColumnMetadataController controller = generateNewInitializedController(ColumnMetadataController.class);
@@ -88,10 +91,20 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         controller.prepare();
         controller.setDataTableColumns(spitalTable.getDataTableColumns());
         spitalSpeciesColumn.setTransientOntology(taxonOntology);
+        map.put(DataTableColumn.class, spitalSpeciesColumn);
         controller.saveColumnMetadata();
         assertNotNull(spitalSpeciesColumn.getDefaultCodingSheet());
         assertNotNull(spitalSpeciesColumn.getDefaultCodingSheet().getDefaultOntology());
-
+        return map;
+    }
+    
+    @Test
+    @Rollback
+    public void testFilteredNodesSurviveHierarchy() throws Exception {
+        Map<Class, Object> map = setup();
+        Ontology taxonOntology = (Ontology) map.get(Ontology.class);
+        DataTableColumn spitalSpeciesColumn = (DataTableColumn) map.get(DataTableColumn.class);
+        Dataset spitalDb = (Dataset) map.get(Dataset.class);
         /*
          * -- this is the part of the TAG faunal ontology that we care about
          * OSTEICHTHYES (bony fishes)
@@ -143,6 +156,59 @@ public class DataIntegrationITCase extends AbstractDataIntegrationTestCase {
         for (String term : mappedGadidaeTerms) {
             logger.trace("{} -> {}", term, integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn).getDisplayName());
             assertEquals(paracanthopt.getDisplayName(), integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn).getDisplayName());
+        }
+
+    }
+    
+    
+    @Test
+    @Rollback
+    public void testDoubleFilters() throws Exception {
+        Map<Class, Object> map = setup();
+        Ontology taxonOntology = (Ontology) map.get(Ontology.class);
+        DataTableColumn spitalSpeciesColumn = (DataTableColumn) map.get(DataTableColumn.class);
+        Dataset spitalDb = (Dataset) map.get(Dataset.class);
+        /*
+         * -- this is the part of the TAG faunal ontology that we care about
+         * OSTEICHTHYES (bony fishes)
+         * |-label "Neopterygii (neopterygians)"
+         * | |-label "Acanthopterygii"
+         * | | |-label "Pleuronectiformes (flatfishes flounders soles)"
+         * | | | |-label "Pleuronectoidei"
+         * | | | | |-label "Plaice Flounder"
+         * | |-label "Paracanthopterygii"
+         * | | |-label "Gadidae (true cods)"
+         * | | | |-label "Gadidae Large (large true cods)"
+         */
+        CodingSheet codingSheet = spitalSpeciesColumn.getDefaultCodingSheet();
+        OntologyNode plaiceFlounderOntologyNode = taxonOntology.getNodeByName("Plaice Flounder");
+        OntologyNode OSTEICHTHYES = taxonOntology.getNodeByName("OSTEICHTHYES (bony fishes)");
+        OntologyNode Pleuronectiformes = taxonOntology.getNodeByName("Pleuronectiformes (flatfishes flounders soles)");
+
+        // parent of plaice flounder
+        String[] plaiceFlounderTerms = { "PLAICE/FLOUNDER", "PLAICE" };
+        for (String term : plaiceFlounderTerms) {
+            for (CodingRule rule : codingSheet.getCodingRuleByTerm(term)) {
+                rule.setOntologyNode(plaiceFlounderOntologyNode);
+            }
+        }
+        assertNotNull(plaiceFlounderOntologyNode);
+        assertNotNull(OSTEICHTHYES);
+        assertNotNull(Pleuronectiformes);
+        IntegrationColumn integrationColumn = new IntegrationColumn();
+        integrationColumn.setFilteredOntologyNodes(Arrays.asList(Pleuronectiformes, OSTEICHTHYES));
+        integrationColumn.buildNodeChildHierarchy(ontologyNodeDao);
+
+        // integrationColumn.setOntologyNodesForSelect(new HashSet<OntologyNode>(Arrays.asList(pleuronectiformesOntologyNode, plaiceFlounderOntologyNode,
+        // gadidae,
+        // paracanthopt)));
+        // tests that the mapped ontology node is not aggregated up to pleuronectiformes
+        
+        
+        for (String term : plaiceFlounderTerms) {
+            OntologyNode mappedOntologyNode = integrationColumn.getMappedOntologyNode(term, spitalSpeciesColumn);
+            logger.debug("{}", mappedOntologyNode);
+            assertEquals(Pleuronectiformes.getDisplayName(), mappedOntologyNode.getDisplayName());
         }
 
     }
