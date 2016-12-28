@@ -369,10 +369,13 @@ public class DataOneService implements DataOneConstants {
                 logger.debug("not found -- returning");
                 return null;
         }
+
+        IdentifierParser parser = new IdentifierParser(id, informationResourceService);
         
         // if we don't have an object in tDAR that's an exact match -- it's likely a request for an old version... 
         if (object == null) {
             InformationResource resource = informationResourceService.find(dataOneObject.getTdarId());
+            metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(resource.getId(), parser.getType())));
             metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
             markArchived(metadata, true, resource);
             String obsoletedBy = dataOneObject.getObsoletedBy();
@@ -399,7 +402,6 @@ public class DataOneService implements DataOneConstants {
         // used to detect when changes happen in DataONE
         metadata.setDateSysMetadataModified(resource.getDateUpdated());
 
-        IdentifierParser parser = new IdentifierParser(id, informationResourceService);
         // if (object.getType() == EntryType.TDAR) {
         String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
 
@@ -411,7 +413,6 @@ public class DataOneService implements DataOneConstants {
         metadata.setFormatId(DataOneUtils.contentTypeToD1Format(object.getType(), object.getContentType()));
         metadata.setSize(BigInteger.valueOf(object.getSize()));
 
-        metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(tdarResource.getId(), parser.getType())));
         if (parser.isSeriesIdentifier()) {
             metadata.setIdentifier(DataOneUtils.createIdentifier(currentIdentifier));
         } else {
