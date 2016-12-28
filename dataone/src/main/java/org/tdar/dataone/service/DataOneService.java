@@ -374,7 +374,7 @@ public class DataOneService implements DataOneConstants {
         if (object == null) {
             InformationResource resource = informationResourceService.find(dataOneObject.getTdarId());
             metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
-//            markArchived(metadata, true, resource);
+            markArchived(metadata, true, resource);
             String obsoletedBy = dataOneObject.getObsoletedBy();
             String obsoletes = dataOneObject.getObsoletes();
             updateObsoletesObsoletedBy(metadata, obsoletedBy, obsoletes);
