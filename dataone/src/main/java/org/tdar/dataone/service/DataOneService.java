@@ -404,6 +404,7 @@ public class DataOneService implements DataOneConstants {
 
         // if (object.getType() == EntryType.TDAR) {
         String currentIdentifier = IdentifierParser.formatIdentifier(tdarResource.getExternalId(), tdarResource.getDateUpdated(), parser.getType(), null);
+        metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(resource.getId(), parser.getType())));
 
         if (dataOneObject != null) {
             updateObsoletesObsoletedBy(metadata, dataOneObject.getObsoletedBy(), dataOneObject.getObsoletes());
