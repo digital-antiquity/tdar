@@ -234,11 +234,11 @@ public class DataOneService implements DataOneConstants {
      */
     @Transactional(readOnly = true)
     public Checksum getChecksumResponse(String pid, String checksum_) {
-        ObjectResponseContainer object = getObject(pid, null, null);
-        if (object == null) {
+        DataOneObject resp = dataOneDao.findByIdentifier(pid);
+        if (resp == null) {
             return null;
         }
-        return DataOneUtils.createChecksum(object.getChecksum());
+        return DataOneUtils.createChecksum(resp.getChecksum());
     }
 
     /**
