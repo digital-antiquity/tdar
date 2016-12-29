@@ -318,8 +318,9 @@ public class DataOneService implements DataOneConstants {
                 info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
                 info.setSize(BigInteger.valueOf(object.getSize()));
             }
-            String seriesId = DataOneUtils.createSeriesId(object.getTdarResource().getId() , entry.getType());
-            DataOneObject current = dataOneDao.updateObjectEntries(info, entry.getType(), seriesId, object.getTdarResource().getId(),object.getTdarResource().getSubmitter().getProperName());
+            InformationResource tdarResource = object.getTdarResource();
+            String seriesId = DataOneUtils.createSeriesId(tdarResource.getId() , entry.getType());
+            DataOneObject current = dataOneDao.updateObjectEntries(info, entry.getType(), seriesId, tdarResource.getId(),tdarResource.getSubmitter().getProperName(), tdarResource.getDateUpdated());
             DataOneObject previous = dataOneDao.findAndObsoleteLastHarvestedVersion(seriesId, current);
             // have to assume that we're sending back extra record
             if (previous != null) {
@@ -376,7 +377,7 @@ public class DataOneService implements DataOneConstants {
         if (object == null) {
             InformationResource resource = informationResourceService.find(dataOneObject.getTdarId());
             metadata.setSeriesId(DataOneUtils.createIdentifier(DataOneUtils.createSeriesId(resource.getId(), parser.getType())));
-            metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
+            metadata.setDateUploaded(DataOneUtils.toUtc(dataOneObject.getDateUploaded()).toDate());
             markArchived(metadata, true, resource);
             String obsoletedBy = dataOneObject.getObsoletedBy();
             String obsoletes = dataOneObject.getObsoletes();

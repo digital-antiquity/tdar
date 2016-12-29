@@ -67,6 +67,10 @@ public class DataOneObject implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date sysMetadataModified;
 
+    @Column(name = "date_uploaded", nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateUploaded;
+
     @Column(name = "date_created", nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateCreated;
@@ -177,6 +181,14 @@ public class DataOneObject implements Serializable {
 
     public void setSubmitter(String submitter) {
         this.submitter = submitter;
+    }
+
+    public Date getDateUploaded() {
+        return dateUploaded;
+    }
+
+    public void setDateUploaded(Date dateUploaded) {
+        this.dateUploaded = dateUploaded;
     }
 
 }

@@ -152,13 +152,14 @@ public class DataOneDao {
     }
 
  
-    public DataOneObject updateObjectEntries(ObjectInfo info, EntryType type, String seriesId,Long tdarId, String submitter) {
+    public DataOneObject updateObjectEntries(ObjectInfo info, EntryType type, String seriesId,Long tdarId, String submitter, Date dateUploaded) {
         DataOneObject uniqueResult = findByIdentifier(info.getIdentifier().getValue());
         if (uniqueResult == null) {
             DataOneObject obj = new DataOneObject();
             obj.setChecksum(info.getChecksum().getValue());
             obj.setIdentifier(info.getIdentifier().getValue());
             obj.setDateCreated(new Date());
+            obj.setDateUploaded(dateUploaded);
             obj.setType(type);
             obj.setTdarId(tdarId);
             obj.setSeriesId(seriesId);

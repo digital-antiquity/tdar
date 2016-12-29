@@ -178,6 +178,12 @@
         <column name="sys_metadata_modified" type="timestamp" />
         <column name="date_created" type="timestamp" />
     </createTable>
+        </changeSet>
+    
+    <changeSet id="obsidian-17" author="abrin">
+	    <addColumn tableName="dataone_object">
+	        <column name="date_uploaded" type="timestamp" />
+	    </addColumn>
     
     </changeSet>
     
