@@ -261,14 +261,13 @@ public class DataOneService implements DataOneConstants {
      * @throws IOException
      * @throws JAXBException
      */
-    @Transactional(readOnly = false)
+    @Transactional(readOnly = true)
     public ObjectList getListObjectsResponse(Date fromDate, Date toDate, String formatid, String identifier, int start, int count)
             throws UnsupportedEncodingException, NoSuchAlgorithmException, OREException, URISyntaxException, ORESerialiserException, JDOMException, IOException,
             JAXBException {
         ObjectList list = new ObjectList();
         list.setCount(count);
         list.setStart(start);
-        processEntries();
         List<DataOneObject> dataOneObjects = dataOneDao.findUpdatedResources(fromDate, toDate, formatid, identifier, list, start, count);
         for (DataOneObject obj : dataOneObjects) {
             logger.debug("{}", obj);
@@ -287,7 +286,9 @@ public class DataOneService implements DataOneConstants {
     /**
      * This syncrhonizes tDAR records and DataOne records so that DataONE can see all of the various versions of tDAR records
      */
-    protected void processEntries() {
+    @Transactional(readOnly=false)
+    public void synchronizeTdarChangesWithDataOneObjects() {
+        logger.debug("starting sync...");
         List<ListObjectEntry> resources = dataOneDao.unify();
         logger.debug("{}", resources);
         // for each entry we find in the database, create a packaged response
@@ -333,6 +334,7 @@ public class DataOneService implements DataOneConstants {
             }
 			} catch (Exception e) {logger.error("{}",e,e);}
         }
+        logger.debug("sync complete");
     }
 
     /**

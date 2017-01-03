@@ -26,7 +26,7 @@ public class DataOneServletConfiguration extends AbstractServletConfiguration im
     
     @Override
     public Class<? extends SimpleAppConfiguration> getConfigurationClass() {
-        return SimpleAppConfiguration.class;
+        return DataOneAppConfiguration.class;
     }
 
     @Override

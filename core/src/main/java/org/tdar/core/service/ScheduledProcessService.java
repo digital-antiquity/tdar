@@ -88,7 +88,7 @@ public class ScheduledProcessService implements  SchedulingConfigurer, Applicati
 
     private static final long ONE_HOUR_MS = 3600000;
     private static final long ONE_MIN_MS = 60000;
-    private static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
+    public static final long FIVE_MIN_MS = ONE_MIN_MS * 5;
     private static final long TWO_MIN_MS = ONE_MIN_MS * 2;
 
     TdarConfiguration config = TdarConfiguration.getInstance();
