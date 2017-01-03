@@ -71,7 +71,7 @@ import edu.asu.lib.qdc.QualifiedDublinCoreDocument;
  *
  */
 @org.springframework.stereotype.Service
-public class DataOneService implements DataOneConstants {
+public class DataOneService implements DataOneConstants, D1Formatter {
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -289,51 +289,8 @@ public class DataOneService implements DataOneConstants {
     @Transactional(readOnly=false)
     public void synchronizeTdarChangesWithDataOneObjects() {
         logger.debug("starting sync...");
-        List<ListObjectEntry> resources = dataOneDao.unify();
+        List<ListObjectEntry> resources = dataOneDao.unify(this);
         logger.debug("{}", resources);
-        // for each entry we find in the database, create a packaged response
-        for (ListObjectEntry entry : resources) {
-            ObjectInfo info = new ObjectInfo();
-			try {
-			
-            ObjectResponseContainer object = null;
-
-            // contstruct the metadata/response
-            if (entry.getType() != EntryType.FILE) {
-                InformationResource resource = genericService.find(InformationResource.class, entry.getPersistableId());
-                if (resource == null || StringUtils.isBlank(resource.getExternalId())) {
-                    continue;
-                }
-                if (entry.getType() == EntryType.D1) {
-                    object = constructD1FormatObject(resource);
-                }
-                if (entry.getType() == EntryType.TDAR) {
-                    object = constructMetadataFormatObject(resource);
-                }
-            }
-            info.setDateSysMetadataModified(entry.getDateUpdated());
-            info.setFormatId(DataOneUtils.contentTypeToD1Format(entry.getType(), entry.getContentType()));
-            Identifier currentIdentifier = DataOneUtils.createIdentifier(entry.getFormattedIdentifier());
-            info.setIdentifier(currentIdentifier);
-            if (object != null) {
-                info.setChecksum(DataOneUtils.createChecksum(object.getChecksum()));
-                info.setSize(BigInteger.valueOf(object.getSize()));
-            }
-            InformationResource tdarResource = object.getTdarResource();
-            String seriesId = DataOneUtils.createSeriesId(tdarResource.getId() , entry.getType());
-            DataOneObject current = dataOneDao.updateObjectEntries(info, entry.getType(), seriesId, tdarResource.getId(),tdarResource.getSubmitter().getProperName(), tdarResource.getDateUpdated());
-            DataOneObject previous = dataOneDao.findAndObsoleteLastHarvestedVersion(seriesId, current);
-            // have to assume that we're sending back extra record
-            if (previous != null) {
-                ObjectInfo old = new ObjectInfo();
-                old.setDateSysMetadataModified(previous.getSysMetadataModified());
-                old.setFormatId(DataOneUtils.contentTypeToD1Format(previous.getType(), entry.getContentType()));
-                old.setIdentifier(DataOneUtils.createIdentifier(previous.getIdentifier()));
-                old.setChecksum(DataOneUtils.createChecksum(previous.getChecksum()));
-                old.setSize(BigInteger.valueOf(previous.getSize()));
-            }
-			} catch (Exception e) {logger.error("{}",e,e);}
-        }
         logger.debug("sync complete");
     }
 
@@ -556,7 +513,8 @@ public class DataOneService implements DataOneConstants {
      * @throws UnsupportedEncodingException
      * @throws NoSuchAlgorithmException
      */
-    protected ObjectResponseContainer constructMetadataFormatObject(InformationResource ir)
+    @Override
+    public ObjectResponseContainer constructMetadataFormatObject(InformationResource ir)
             throws JAXBException, UnsupportedEncodingException, NoSuchAlgorithmException {
         logger.debug("construct metadata: {}", ir);
         ObjectResponseContainer resp = setupResponse(ir);
@@ -588,7 +546,8 @@ public class DataOneService implements DataOneConstants {
      * @throws UnsupportedEncodingException
      * @throws NoSuchAlgorithmException
      */
-    private ObjectResponseContainer constructD1FormatObject(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException,
+    @Override
+    public ObjectResponseContainer constructD1FormatObject(InformationResource ir) throws OREException, URISyntaxException, ORESerialiserException,
             JDOMException, IOException, UnsupportedEncodingException, NoSuchAlgorithmException {
         ObjectResponseContainer resp = setupResponse(ir);
         resp.setType(EntryType.D1);
