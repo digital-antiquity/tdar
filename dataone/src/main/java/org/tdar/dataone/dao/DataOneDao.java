@@ -1,7 +1,5 @@
 package org.tdar.dataone.dao;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,9 +34,16 @@ import org.tdar.dataone.service.ObjectResponseContainer;
 
 @Component
 public class DataOneDao {
+    private static final String TDAR_DATAONE_MERGE = "select id, externalId, dateUpdated from Resource where resourceType not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and" +
+             "(externalId is not null and trim(externalId) != '') and (dateUpdated > :date or dateCreated  > :date)";
+
+    private static final String DATONE_FIND_BY_IDENTIFIER = "from DataOneObject where identifier=:identifier";
+    private static final String DATAONE_FIND_LAST_HARVESTED = "from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier";  // and type=:type
     private static final String DATAONE_LIMIT = "from DataOneObject where (:type is null or type=:type) and "
             + "(sysMetadataModified between :start and :end) and "
             + "(:identifier is null or identifier=:identifier)";
+
+    private static final String DATAONE_COUNT = "select count(id) " + DATAONE_LIMIT;
 
     @Transient
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
@@ -48,7 +53,7 @@ public class DataOneDao {
 
     @SuppressWarnings("unchecked")
     public List<DataOneObject> findUpdatedResources(Date start, Date end, String formatId, String identifier, ObjectList list, int startNum, int count) {
-        String queryString = "select count(id) " + DATAONE_LIMIT;
+        String queryString = DATAONE_COUNT;
         if (DataOneConfiguration.getInstance().isLimited()) {
             queryString += " and id < " + DataOneConfiguration.getInstance().getMaxId();
         }
@@ -94,8 +99,12 @@ public class DataOneDao {
         if (date == null) {
             date = new Date(0L);
         }
-        query = genericDao.createQuery("select id, externalId, dateUpdated from Resource where resourceType not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and"
-                + "(externalId is not null and trim(externalId) != '') and (dateUpdated > :date or dateCreated  > :date)");
+        String queryString = TDAR_DATAONE_MERGE;
+        if (DataOneConfiguration.getInstance().isLimited()) {
+            queryString += " AND id < " + DataOneConfiguration.getInstance().getMaxId();
+        }
+
+        query = genericDao.createQuery(queryString);
         logger.trace("{}", date);
         query.setParameter("date", date);
         ScrollableResults list2 = query.scroll(ScrollMode.FORWARD_ONLY);
@@ -243,9 +252,7 @@ public class DataOneDao {
     }
 
     public DataOneObject findLastHarvestedVersion(String seriesId, DataOneObject current) {
-        Query namedQuery = genericDao
-                .createQuery("from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier");// and
-                                                                                                                                                     // type=:type
+        Query namedQuery = genericDao.createQuery(DATAONE_FIND_LAST_HARVESTED);
         namedQuery.setParameter("seriesId", seriesId);
         namedQuery.setParameter("identifier", current.getIdentifier());
         List<DataOneObject> list = namedQuery.list();
@@ -259,7 +266,7 @@ public class DataOneDao {
     }
 
     public DataOneObject findByIdentifier(String id) {
-        Query namedQuery = genericDao.createQuery("from DataOneObject where identifier=:identifier");
+        Query namedQuery = genericDao.createQuery(DATONE_FIND_BY_IDENTIFIER);
         namedQuery.setParameter("identifier", id);
         DataOneObject uniqueResult = (DataOneObject) namedQuery.uniqueResult();
         return uniqueResult;
