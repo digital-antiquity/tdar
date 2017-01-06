@@ -5,6 +5,9 @@ import java.sql.SQLException;
 
 import org.hibernate.jdbc.Work;
 import org.postgresql.PGConnection;
+import org.postgresql.core.BaseConnection;
+
+import com.mchange.v2.c3p0.impl.NewProxyConnection;
 
 public class PreparedStatementResetWork implements Work {
 
@@ -21,7 +24,9 @@ public class PreparedStatementResetWork implements Work {
 
     @Override
     public void execute(Connection connection) throws SQLException {
-        PGConnection pgConnection = (PGConnection) connection;
+        NewProxyConnection npc = (NewProxyConnection) connection;
+        PGConnection pgConnection = (PGConnection)npc.unwrap(PGConnection.class);
+//        PGConnection pgConnection = (PGConnection) connection;
         setOldStatements(pgConnection.getPrepareThreshold());
         if (statements == -1) {
             pgConnection.setPrepareThreshold(0);

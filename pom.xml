@@ -382,7 +382,19 @@
             <artifactId>hibernate-c3p0</artifactId>
             <version>${hibernate.version}</version>
             <!-- LICENSE: LGPL 2.1 -->
+			<exclusions>
+                <exclusion>
+                    <artifactId>c3p0</artifactId>
+		            <groupId>com.mchange</groupId>
+                </exclusion>
+			</exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.mchange</groupId>
+            <artifactId>c3p0</artifactId>
+            <version>0.9.5.2</version>
+        </dependency>
+		
         <!-- <dependency> -->
             <!-- this attempts to use the META-INF/ configuraiton for the 
                 right logging source; this allows us to pipe hibernate into slf4j -->
