@@ -26,9 +26,3 @@ Disallow: /browse/creators/12729/
 Disallow: *
 </#if>
 Sitemap: ${protocol}//${hostName}/sitemap/${sitemapFile}
-
-User-agent: msnbot 
-Crawl-delay: 1
-User-agent: bingbot 
-Crawl-delay: 1
-
