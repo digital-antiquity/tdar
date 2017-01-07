@@ -660,11 +660,11 @@ public class Resource implements Persistable,
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = StringUtils.trimToEmpty(title);
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = StringUtils.trimToEmpty(description);
     }
 
     @Override

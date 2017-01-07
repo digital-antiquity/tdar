@@ -16,6 +16,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
+import org.apache.commons.lang3.StringUtils;
+
 import javax.xml.bind.annotation.XmlType;
 
 import org.hibernate.annotations.Cache;
@@ -88,7 +90,7 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
 
     @Override
     public void setLabel(String label) {
-        this.label = label;
+        this.label = StringUtils.trimToEmpty(label);
     }
 
     @XmlTransient
@@ -99,7 +101,7 @@ public abstract class AbstractKeyword<T extends Keyword> extends AbstractPersist
 
     @Override
     public void setDefinition(String definition) {
-        this.definition = definition;
+        this.definition = StringUtils.trimToEmpty(definition);
     }
 
     @Override

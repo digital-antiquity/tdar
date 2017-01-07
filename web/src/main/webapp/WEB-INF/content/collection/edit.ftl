@@ -52,7 +52,7 @@
                 <@s.hidden name="id"  value="${resourceCollection.id?c}" />
             </#if>
             <@edit.hiddenStartTime />
-            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge"  title="A title is required for all collections." maxlength="500" />
+            <@s.textfield labelposition='left' label='Collection Name' name='resourceCollection.name'  cssClass="required descriptiveTitle input-xxlarge trim"  title="A title is required for all collections." maxlength="500" />
 
             <div id="parentIdContainer" class="control-group">
                 <label class="control-label">Parent Collection</label>
@@ -68,7 +68,7 @@
             </div>
 
             <@s.textarea rows="4" labelposition='top' label='Collection Description' name='resourceCollection.description'  cols="80" 
-            cssClass='resizable input-xxlarge' title="Please enter the description " />
+            cssClass='resizable input-xxlarge trim' title="Please enter the description " />
 
 
             <#if administrator>

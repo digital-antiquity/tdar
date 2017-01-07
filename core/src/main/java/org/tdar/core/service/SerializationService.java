@@ -153,7 +153,7 @@ public class SerializationService implements TxMessageBus<LoggingObjectContainer
 
     private File writeToTempFile(String recordId, XmlLoggable record) throws InstantiationException, IllegalAccessException, Exception {
         File tempDirectory = CONFIG.getTempDirectory();
-        File dir = new File(tempDirectory, "index");
+        File dir = new File(tempDirectory, "logging");
         if (!dir.exists()) {
             dir.mkdir();
         }

@@ -52,6 +52,10 @@
             		<artifactId>xwork-core</artifactId>
             		<groupId>org.apache.struts.xwork</groupId>
             	</exclusion>
+            	<exclusion>
+            	    <groupId>commons-io</groupId>
+            	    <artifactId>commons-io</artifactId>
+            	</exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -71,6 +75,12 @@
             <groupId>org.tdar</groupId>
             <artifactId>search</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-io</groupId>
+                    <artifactId>commons-io</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.tdar</groupId>
@@ -161,7 +171,6 @@
             </exclusions>
 			
 		</dependency>
-		
     </dependencies>
 
 

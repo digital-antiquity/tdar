@@ -158,7 +158,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
-        document.setDescription("\u0001");
+        document.setDescription("a\u0001a");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);

@@ -138,7 +138,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (!dir.exists()) {
             dir.mkdir();
         }
-        File temp = new File(dir, String.format("%s-%s.xml", recordId, System.nanoTime()));
+        File temp = new File(dir, String.format("%s-%s.ser", recordId, System.nanoTime()));
         temp.deleteOnExit();
 
         SerializationUtils.serialize(doc, new FileOutputStream(temp));
@@ -528,6 +528,7 @@ public class SearchIndexService implements TxMessageBus<SolrDocumentContainer> {
         if (o.getEventType() == EventType.DELETE) {
             purge(core, id);
         } else {
+			logger.trace("indexing {}, {}, {}", core, id, doc);
             index(core, id, doc);
         }
         commit(core);

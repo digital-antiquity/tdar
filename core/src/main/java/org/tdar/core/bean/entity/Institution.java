@@ -93,7 +93,7 @@ public class Institution extends Creator<Institution> implements Comparable<Inst
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trimToEmpty(name);
     }
 
     @Transient

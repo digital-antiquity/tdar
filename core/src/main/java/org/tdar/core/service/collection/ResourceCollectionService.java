@@ -576,6 +576,12 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
                 iter.remove();
             }
         }
+        // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
+        allChildren.add(collection);
+        allChildren.forEach(child -> {
+            child.getTransientChildren().sort(VisibleCollection.TITLE_COMPARATOR);
+            logger.trace("new list: {}", child.getTransientChildren());
+        });
         return allChildren;
     }
 

@@ -68,7 +68,7 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = StringUtils.trimToEmpty(name);
     }
 
     @Override
@@ -78,7 +78,7 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = StringUtils.trimToEmpty(description);
     }
 
     @Override

@@ -836,6 +836,7 @@ public class ResourceService {
         }
         String logMessage = String.format("%s id:%s deleted by:%s reason: %s", resource.getResourceType().name(), resource.getId(), authUser, reason);
         logResourceModification(resource, authUser, logMessage , null, RevisionLogType.DELETE);
+        resource.markUpdated(authUser);
         genericDao.delete(resource);
 
         if (TdarConfiguration.getInstance().isPayPerIngestEnabled()) {

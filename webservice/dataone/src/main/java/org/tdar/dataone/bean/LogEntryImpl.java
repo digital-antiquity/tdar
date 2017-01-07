@@ -138,7 +138,7 @@ public class LogEntryImpl implements Serializable {
     
     public LogEntry toEntry() {
         LogEntry entry = new LogEntry();
-        entry.setDateLogged(getDateLogged());
+        entry.setDateLogged(DataOneUtils.toUtc(getDateLogged()).toDate());
         entry.setEntryId(getId().toString());
         entry.setEvent(getEvent());
         Identifier identifier = new Identifier();

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +13,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -98,30 +100,34 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
 
             DataTableColumn column = integrationColumn.getTempTableDataTableColumn();
             Map<OntologyNode,Map<Set<String>,List<Long>>> map = new HashMap<>();
-            for (OntologyNode node : integrationColumn.getFilteredOntologyNodes()) {
+            List<OntologyNode> filteredOntologyNodes = integrationColumn.getFilteredOntologyNodes();
+            sortLeafToRoot(filteredOntologyNodes);
 
+            // don't reuse nodes
+            Set<OntologyNode> ignoreNodes = new  HashSet<>();
+            for (OntologyNode userChosenNode : filteredOntologyNodes) {
+                logger.debug(" -- {} {}", userChosenNode, userChosenNode.getNumberOfParents());
+                // only add to the "seen nodes" when we're done with a node 
+                Set<OntologyNode> seenNodes = new HashSet<>();
                 for (DataTableColumn actualColumn : integrationColumn.getColumns()) {
                     // Map<DataTable,Set<String>> tableNodeSetMap = new HashMap();
                     // do these need to be per-table-updates?
-                    Set<String> nodeSet = new HashSet<>();
+                    Set<String> nodeSet = new HashSet<>(actualColumn.getMappedDataValues(userChosenNode));
+                    seenNodes.add(userChosenNode);
                     // tableNodeSetMap.put(actualColumn.getDataTable(), nodeSet);
-                    nodeSet.addAll(actualColumn.getMappedDataValues(node));
                     // check parent mapping logic to make sure that we don't apply to the grantparent if multiple nodes in tree are selected
-                    for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
-                        if (node_.isChildOf(node) && !integrationColumn.getFilteredOntologyNodes().contains(node_)) {
-                            nodeSet.addAll(actualColumn.getMappedDataValues(node_));
-                        }
-                    }
+                    findAllChildNodesThatHaventBeenSeen(integrationColumn, filteredOntologyNodes, ignoreNodes, userChosenNode, seenNodes, actualColumn, nodeSet);
 
                     if (CollectionUtils.isEmpty(nodeSet)) {
                         continue;
                     }
                     // keep track of the nodes in a map Node --> Mapping --> [tableIds]
                     // only re-use when the node + mappings are 100% the same 
-                    map.putIfAbsent(node, new HashMap<>());
-                    map.get(node).putIfAbsent(nodeSet, new ArrayList<>());
-                    map.get(node).get(nodeSet).add(actualColumn.getDataTable().getId());
+                    map.putIfAbsent(userChosenNode, new HashMap<>());
+                    map.get(userChosenNode).putIfAbsent(nodeSet, new ArrayList<>());
+                    map.get(userChosenNode).get(nodeSet).add(actualColumn.getDataTable().getId());
                 }
+                ignoreNodes.addAll(seenNodes);
             }
             
             
@@ -147,6 +153,33 @@ public class PostgresIntegrationDatabase extends PostgresDatabase implements Int
                     executeUpdateOrDelete(sb.toString());
 
                 }
+            }
+        }
+    }
+
+    private void sortLeafToRoot(List<OntologyNode> filteredOntologyNodes) {
+        // sort by the most parents first
+        filteredOntologyNodes.sort(new Comparator<OntologyNode>() {
+            @Override
+            public int compare(OntologyNode o1, OntologyNode o2) {
+                if (o1.getNumberOfParents() > o2.getNumberOfParents()) {
+                    return -1;
+                }
+                
+                if (o1.getNumberOfParents() < o2.getNumberOfParents()) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+    }
+
+    private void findAllChildNodesThatHaventBeenSeen(IntegrationColumn integrationColumn, List<OntologyNode> filteredOntologyNodes, Set<OntologyNode> ignoreNodes,
+            OntologyNode userChosenNode, Set<OntologyNode> seenNodes, DataTableColumn actualColumn, Set<String> nodeSet) {
+        for (OntologyNode node_ : integrationColumn.getOntologyNodesForSelect()) {
+            if (node_.isChildOf(userChosenNode) && !filteredOntologyNodes.contains(node_) && !ignoreNodes.contains(node_)) {
+                seenNodes.add(node_);
+                nodeSet.addAll(actualColumn.getMappedDataValues(node_));
             }
         }
     }

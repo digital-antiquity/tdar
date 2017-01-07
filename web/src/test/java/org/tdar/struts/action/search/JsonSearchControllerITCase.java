@@ -105,7 +105,7 @@ public class JsonSearchControllerITCase extends AbstractSearchControllerITCase {
     @Rollback(true)
     public void testJsonInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
         InformationResource document = generateDocumentWithUser();
-        document.setDescription("\u0001");
+        document.setDescription("a\u0001a");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         JsonSearchAction controller = generateNewInitializedController(JsonSearchAction.class);

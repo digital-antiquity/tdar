@@ -717,9 +717,9 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _registerDownload = function (url, tdarId) {
         if (tdarId) {
-            ga("send" , "event", "Download", url, tdarId);
+            ga("send" , "event", "download", "download",  url, tdarId);
         } else {
-            ga("send", "event", "Download", url, "none");
+            ga("send", "event", "download", "download", url);
         }
     };
 
@@ -731,9 +731,9 @@ TDAR.common = function (TDAR, fileupload) {
      */
     var _registerShare = function (service, url, tdarId) {
         if (tdarId) {
-            ga("send", "event", "share", service, url, tdarId);
+            ga("send", "event", service, "shared", url, tdarId);
         } else {
-            ga("send", "event", "share", service, url, "none");
+            ga("send", "event", service, "shared", url);
         }
     };
 
@@ -743,7 +743,7 @@ TDAR.common = function (TDAR, fileupload) {
      * @private
      */
     var _outboundLink = function (elem) {
-        ga("send", "event", "outboundLink", elem.href, window.location);
+        ga("send", "event", "outboundLink", "clicked", elem.href);
     }
 
     /**

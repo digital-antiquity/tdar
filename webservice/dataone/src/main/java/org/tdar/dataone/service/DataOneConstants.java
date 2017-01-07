@@ -3,7 +3,7 @@ package org.tdar.dataone.service;
 interface DataOneConstants {
     static final String UTF_8 = "UTF-8";
     static final String META = "meta";
-    static final String D1_VERS_SEP = "&v=";
+    static final String D1_VERS_SEP = "$v=";
     static final String D1_SEP = "_";
     static final String D1_FORMAT = "format=d1rem";
     static final String D1_RESOURCE_MAP_FORMAT = "http://www.openarchives.org/ore/terms";

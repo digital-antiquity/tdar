@@ -160,4 +160,31 @@
         <renameColumn tableName="resource_investigation_type" oldColumnName="investigation_type_id" newColumnName="keyword_id"/>
         <renameColumn tableName="resource_material_keyword" oldColumnName="material_keyword_id" newColumnName="keyword_id"/>
     </changeSet>
+        
+    
+    <changeSet id="obsidian-16" author="abrin">
+        <createTable tableName="dataone_object">
+        <column name="id" type="bigserial" />
+        <column name="identifier" type="varchar(100)" />
+        <column name="series_id" type="varchar(100)" />
+        <column name="entry_type" type="varchar(100)" />
+        <column name="format_id" type="varchar(255)" />
+        <column name="submitter" type="varchar(512)" />
+        <column name="obsoletes" type="varchar(100)" />
+        <column name="obsoleted_by" type="varchar(100)" />
+        <column name="checksum" type="varchar(255)" />
+        <column name="size" type="bigint" />
+        <column name="tdar_id" type="bigint" />
+        <column name="sys_metadata_modified" type="timestamp" />
+        <column name="date_created" type="timestamp" />
+    </createTable>
+        </changeSet>
+    
+    <changeSet id="obsidian-17" author="abrin">
+	    <addColumn tableName="dataone_object">
+	        <column name="date_uploaded" type="timestamp" />
+	    </addColumn>
+    
+    </changeSet>
+    
 </databaseChangeLog>

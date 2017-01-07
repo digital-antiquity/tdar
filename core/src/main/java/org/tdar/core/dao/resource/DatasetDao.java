@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -35,7 +36,9 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
+import org.hibernate.jdbc.Work;
 import org.joda.time.DateTime;
+import org.postgresql.PGConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -539,9 +542,13 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
+        PreparedStatementResetWork  work = new PreparedStatementResetWork(0);
+        getCurrentSession().doWork(work);
+        int numStatements = work.getOldStatements();
         try {
             File tempFile = File.createTempFile("translated", ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
+            
             SheetProxy sheetProxy = toExcel(dataset, translatedFileOutputStream);
             String filename = FilenameUtils.getBaseName(file.getLatestUploadedVersion().getFilename()) + "_translated." + sheetProxy.getExtension();
             FileProxy fileProxy = new FileProxy(filename, tempFile, VersionType.TRANSLATED, FileAction.ADD_DERIVATIVE);
@@ -558,6 +565,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
+            getCurrentSession().doWork(new PreparedStatementResetWork(numStatements));
         }
         return irFile;
     }
