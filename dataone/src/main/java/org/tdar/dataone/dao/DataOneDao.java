@@ -100,9 +100,6 @@ public class DataOneDao {
             date = new Date(0L);
         }
         String queryString = TDAR_DATAONE_MERGE;
-        if (DataOneConfiguration.getInstance().isLimited()) {
-            queryString += " AND id < " + DataOneConfiguration.getInstance().getMaxId();
-        }
 
         query = genericDao.createQuery(queryString);
         logger.trace("{}", date);

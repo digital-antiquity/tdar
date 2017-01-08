@@ -19,7 +19,6 @@ import org.apache.commons.lang.StringUtils;
 import org.dataone.service.types.v1.AccessPolicy;
 import org.dataone.service.types.v1.Checksum;
 import org.dataone.service.types.v1.Event;
-import org.dataone.service.types.v1.Identifier;
 import org.dataone.service.types.v1.Log;
 import org.dataone.service.types.v1.NodeReference;
 import org.dataone.service.types.v1.NodeReplicationPolicy;
