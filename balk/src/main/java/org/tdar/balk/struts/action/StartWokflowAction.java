@@ -1,5 +1,6 @@
 package org.tdar.balk.struts.action;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -14,6 +15,7 @@ import org.tdar.balk.service.Phases;
 import org.tdar.balk.service.UserService;
 import org.tdar.struts_base.interceptor.annotation.PostOnly;
 import org.tdar.struts_base.interceptor.annotation.WriteableSession;
+import org.tdar.utils.dropbox.DropboxConstants;
 
 import com.opensymphony.xwork2.Preparable;
 
@@ -44,15 +46,17 @@ public class StartWokflowAction extends AbstractAuthenticatedAction implements P
         userMapping = userService.findUser(getAuthenticatedUser());
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items?path=${path}")})
     @Override
     public String execute() throws Exception {
         try {
             // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH
-            String newPath = "";
-            itemService.copy(item, newPath, userMapping);
+            String newPath = phase.getPath();
+            newPath += item.getPath().replace(DropboxConstants.CLIENT_DATA, "");
+            itemService.copy(item, newPath, userMapping, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("{}", e, e);
+            addActionError(e.getMessage() + " " + ExceptionUtils.getFullStackTrace(e));
             return INPUT;
         }
         return SUCCESS;

@@ -35,7 +35,6 @@ import org.tdar.balk.dao.ItemDao;
 import org.tdar.balk.dao.UserDao;
 import org.tdar.core.bean.collection.CollectionType;
 import org.tdar.core.bean.collection.ResourceCollection;
-import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -156,7 +155,7 @@ public class ItemService {
 
     }
 
-    private void sendEmail(String from, String to, String subject, String text) {
+    private void sendEmail(String from, String[] to, String subject, String text) {
         SimpleMailMessage message = new SimpleMailMessage();
         // Message message = new MimeMessage(session);
         message.setFrom(from);
@@ -188,7 +187,7 @@ public class ItemService {
         }
         if (CollectionUtils.isNotEmpty(files) && StringUtils.isNotBlank(msg.toString())) {
             msg.insert(0, "the following files were uploaded to tDAR:\n");
-            sendEmail("balk@tdar.org", "adam.brin@asu.edu", "Uploaded files to tDAR", msg.toString());
+            sendEmail("balk@tdar.org", new String[]{"adam.brin@asu.edu","laelliso@asu.edu"}, "Uploaded files to tDAR", msg.toString());
         }
 
     }
@@ -270,14 +269,14 @@ public class ItemService {
         object.setDescription(filename);
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
-        SharedCollection rc = new SharedCollection();
+        ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
         rc.setHidden(true);
         if (StringUtils.isNotBlank(username)) {
             rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
         }
         rc.setName(collection);
         rc.setDescription("(from dropbox)");
-        object.getSharedResourceCollections().add(rc);
+        object.getResourceCollections().add(rc);
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
         return writer.toString();
@@ -285,9 +284,9 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map) {
+    public int itemStatusReport(String path, int page, int size, TreeMap<String, WorkflowStatusReport> map, boolean managed) {
         List<DropboxFile> findAll = new ArrayList<>();
-        int total = itemDao.findAllWithPath(path, findAll, page, size);
+        int total = itemDao.findAllWithPath(path, findAll, page, size, managed);
         for (DropboxFile file : findAll) {
             String key = Phases.createKey(file);
             map.putIfAbsent(key, new WorkflowStatusReport());
@@ -308,7 +307,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = false)
-    public void move(AbstractDropboxItem item, Phases phase, DropboxUserMapping userMapping)
+    public void move(AbstractDropboxItem item, Phases phase, DropboxUserMapping userMapping, TdarUser tdarUser)
             throws Exception {
         DropboxClient client = new DropboxClient(userMapping);
         Metadata move = client.move(item.getPath(), phase.mutatePath(item.getPath()));
@@ -321,7 +320,7 @@ public class ItemService {
     }
 
     @Transactional(readOnly = false)
-    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping)
+    public void copy(AbstractDropboxItem item, String newPath, DropboxUserMapping userMapping, TdarUser tdarUser)
             throws Exception {
         DropboxClient client = new DropboxClient(userMapping);
         // FIGURE OUT WHAT PHASE, FIGURE OUT WHAT PATH
@@ -331,6 +330,12 @@ public class ItemService {
         // client.processMetadataItem(listener, move);
         // logger.debug("storing: {} {}", listener,listener.getWrappers());
         // store(listener);
+    }
+
+    
+    @Transactional(readOnly=false)
+    public Set<String> listChildPaths(String path) {
+        return itemDao.findTopLevelPaths(path);
     }
 
     @Transactional(readOnly = true)

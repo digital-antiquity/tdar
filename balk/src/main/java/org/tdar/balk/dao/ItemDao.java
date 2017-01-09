@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.tdar.balk.bean.AbstractDropboxItem;
 import org.tdar.balk.bean.DropboxDirectory;
 import org.tdar.balk.bean.DropboxFile;
+import org.tdar.balk.service.Phases;
 import org.tdar.utils.dropbox.DropboxConstants;
 
 @Component
@@ -80,11 +81,26 @@ public class ItemDao {
         return query2.list();
     }
 
-    public int findAllWithPath(String path, List<DropboxFile> findAll, int page, int size) {
+    public int findAllWithPath(String path, List<DropboxFile> findAll, int page, int size, boolean managed) {
         String query = "from DropboxFile";
         if (StringUtils.isNotBlank(path) && path != "/") {
             query = "from DropboxFile where lower(path) like lower('%/" + path + "/%')";
         }
+        
+        if (managed) {
+            query += " AND (";
+            boolean first = false;
+            for (Phases phase : Phases.values() ) {
+                if (!first) {
+                    first = true;
+                } else {
+                    query += " OR ";
+                }
+                query += " lower(path) like '" + phase.getPath().toLowerCase() + "%' ";
+            }
+            query += " ) ";
+        }
+        logger.debug(query);
         Query query2 = getCurrentSession().createQuery(query);
         int total = query2.list().size();
         query2 = getCurrentSession().createQuery(query);

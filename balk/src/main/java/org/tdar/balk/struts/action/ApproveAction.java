@@ -1,5 +1,6 @@
 package org.tdar.balk.struts.action;
 
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -45,13 +46,14 @@ public class ApproveAction extends AbstractAuthenticatedAction implements Prepar
         userMapping = userService.findUser(getAuthenticatedUser());
     }
 
-    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/${path}")})
+    @Action(value="",results={@Result(name=SUCCESS,type=REDIRECT, location="/items/?path=${path}")})
     @Override
     public String execute() throws Exception {
         try {
-            itemService.move(item, phase, userMapping);
+            itemService.move(item, phase, userMapping, getAuthenticatedUser());
         } catch (Exception e) {
             getLogger().error("{}", e, e);
+            addActionError(e.getMessage() + " " + ExceptionUtils.getFullStackTrace(e));
             return INPUT;
         }
         return SUCCESS;

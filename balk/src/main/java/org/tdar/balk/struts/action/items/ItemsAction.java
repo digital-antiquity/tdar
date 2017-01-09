@@ -1,7 +1,9 @@
 package org.tdar.balk.struts.action.items;
 
+import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.struts2.convention.annotation.Action;
 import org.apache.struts2.convention.annotation.Namespace;
 import org.apache.struts2.convention.annotation.ParentPackage;
@@ -15,6 +17,7 @@ import org.tdar.balk.service.UserService;
 import org.tdar.balk.service.WorkflowStatusReport;
 import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 
+import com.ibm.icu.impl.StringUCharacterIterator;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
@@ -35,8 +38,11 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     private DropboxUserMapping userInfo;
     private String path;
     private int page = 0;
-    private int size = 1000;
+    private int size = 100;
     private int total = 0;
+    private boolean managed = false;
+
+    private Set<String> children;
     @Override
     public void prepare() throws Exception {
         userInfo = userService.findUser(getAuthenticatedUser());
@@ -44,7 +50,12 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
     
     @Action(value="" , results={@Result(name=SUCCESS, type=FREEMARKER, location="items.ftl")})
     public String execute() throws Exception {
-        total = itemService.itemStatusReport(path, page, size,itemStatusReport);
+        setTotal(itemService.itemStatusReport(path, page, size,itemStatusReport, isManaged()));
+        String path_ = StringUtils.stripEnd(path, "/");
+        if (path_.contains("/")) {
+            path_ = StringUtils.substringAfterLast(path_, "/");
+        }
+        setChildren(itemService.listChildPaths(path_));
         return super.execute();
     }
 
@@ -86,5 +97,29 @@ public class ItemsAction extends AbstractAuthenticatedAction implements Preparab
 
     public void setSize(int size) {
         this.size = size;
+    }
+
+    public boolean isManaged() {
+        return managed;
+    }
+
+    public void setManaged(boolean managed) {
+        this.managed = managed;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
+    }
+
+    public Set<String> getChildren() {
+        return children;
+    }
+
+    public void setChildren(Set<String> children) {
+        this.children = children;
     }
 }
