@@ -49,6 +49,8 @@ core/ANDPersistentIdentifierClient.log
 search/ANDPersistentIdentifierClient.log
 web/.tern-project
 web/phantomjsdriver.log
+.springBeans
+*.diff
 syntax: regexp
 ^src/main/webapp/robots\.txt$
 
