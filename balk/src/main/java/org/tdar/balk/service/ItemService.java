@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -33,8 +32,7 @@ import org.tdar.balk.bean.DropboxFile;
 import org.tdar.balk.bean.DropboxUserMapping;
 import org.tdar.balk.dao.ItemDao;
 import org.tdar.balk.dao.UserDao;
-import org.tdar.core.bean.collection.CollectionType;
-import org.tdar.core.bean.collection.ResourceCollection;
+import org.tdar.core.bean.collection.SharedCollection;
 import org.tdar.core.bean.entity.AuthorizedUser;
 import org.tdar.core.bean.entity.TdarUser;
 import org.tdar.core.bean.entity.permissions.GeneralPermissions;
@@ -269,14 +267,14 @@ public class ItemService {
         object.setDescription(filename);
         object.setStatus(Status.DRAFT);
         object.setDate(2016);
-        ResourceCollection rc = new ResourceCollection(CollectionType.SHARED);
+        SharedCollection rc = new SharedCollection();
         rc.setHidden(true);
         if (StringUtils.isNotBlank(username)) {
             rc.getAuthorizedUsers().add(new AuthorizedUser(new TdarUser(null, null, null, username), GeneralPermissions.ADMINISTER_GROUP));
         }
         rc.setName(collection);
         rc.setDescription("(from dropbox)");
-        object.getResourceCollections().add(rc);
+        object.getSharedCollections().add(rc);
         StringWriter writer = new StringWriter();
         marshaller.marshal(object, writer);
         return writer.toString();

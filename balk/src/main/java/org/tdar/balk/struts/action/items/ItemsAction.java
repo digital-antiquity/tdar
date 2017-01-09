@@ -17,7 +17,6 @@ import org.tdar.balk.service.UserService;
 import org.tdar.balk.service.WorkflowStatusReport;
 import org.tdar.balk.struts.action.AbstractAuthenticatedAction;
 
-import com.ibm.icu.impl.StringUCharacterIterator;
 import com.opensymphony.xwork2.Preparable;
 
 @ParentPackage("secured")
