@@ -561,11 +561,17 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //            irFile.getInformationResourceFileVersions().add(version);
 //            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
 //            informationResourceFileDao.saveOrUpdate(version);
-        } catch (IOException exception) {
-            getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
+        } catch (IOException ioe) {
+            getLogger().error("Unable to create translated file for Dataset: " + dataset, ioe);
+        } catch (Throwable exception) {
+            logger.error("{}",exception,exception);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
-            getCurrentSession().doWork(new PreparedStatementResetWork(numStatements));
+            try {
+                getCurrentSession().doWork(new PreparedStatementResetWork(numStatements));
+            } catch (Throwable t) {
+                logger.error("{}",t,t);
+            }
         }
         return irFile;
     }
