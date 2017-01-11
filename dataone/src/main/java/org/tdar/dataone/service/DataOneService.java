@@ -321,13 +321,13 @@ public class DataOneService implements DataOneConstants, D1Formatter {
 
         logger.debug("{}", id);
         ObjectResponseContainer object = getObjectFromTdar(id, false);
-        logger.debug("{}", object);
+        logger.trace("{}", object);
         
         DataOneObject dataOneObject = dataOneDao.findByIdentifier(id);
-        logger.debug("{}", dataOneObject);
+        logger.trace("{}", dataOneObject);
         if (object == null && dataOneObject == null) {
-                logger.debug("not found -- returning");
-                return null;
+            logger.debug("not found -- returning");
+            return null;
         }
 
         IdentifierParser parser = new IdentifierParser(id, informationResourceService);
@@ -383,7 +383,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
 
         metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
-        logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
+        logger.trace("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
     }
 
