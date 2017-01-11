@@ -52,8 +52,8 @@ public class HostedDownloadAction extends AbstractDownloadController implements 
     public String execute() {
         getAuthorizationService().applyTransientViewableFlag(fileVersion, getAuthenticatedUser());
 
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(),
-                informationResourceFile, isCoverPageIncluded(), this, null, true));
+        setDownloadTransferObject(downloadService.handleDownload(getAuthenticatedUser(),
+                informationResourceFile, isCoverPageIncluded(), this, null));
 
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();

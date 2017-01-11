@@ -41,11 +41,11 @@ public class DownloadController extends AbstractDownloadController implements Pr
         getSessionData().clearPassthroughParameters();
 
         if (PersistableUtils.isNotNullOrTransient(getInformationResourceFileVersionId())) {
-            setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                    isCoverPageIncluded(), this, null, false));
+            setDownloadTransferObject(downloadService.validateDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                    isCoverPageIncluded(), this, null));
         } else {
-            setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(),
-                    isCoverPageIncluded(), this, null, false));
+            setDownloadTransferObject(downloadService.validateDownload(getAuthenticatedUser(), null, getInformationResource(),
+                    isCoverPageIncluded(), this, null));
         }
         setInformationResource(getDownloadTransferObject().getInformationResource());
         setResourceCitation(new ResourceCitationFormatter(getInformationResource()));
@@ -71,8 +71,8 @@ public class DownloadController extends AbstractDownloadController implements Pr
         if (PersistableUtils.isNotNullOrTransient(getInformationResourceId())) {
             setInformationResourceId(getInformationResourceFileVersion().getInformationResourceId());
         }
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
-                isCoverPageIncluded(), this, null, true));
+        setDownloadTransferObject(downloadService.handleDownload(getAuthenticatedUser(), getInformationResourceFileVersion(), null,
+                isCoverPageIncluded(), this, null));
         getDownloadTransferObject().setAttachment(forceAttachment);
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
@@ -90,8 +90,8 @@ public class DownloadController extends AbstractDownloadController implements Pr
         if (PersistableUtils.isNullOrTransient(getInformationResource())) {
             return ERROR;
         }
-        setDownloadTransferObject(downloadService.validateFilterAndSetupDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),
-                this, null, true));
+        setDownloadTransferObject(downloadService.handleDownload(getAuthenticatedUser(), null, getInformationResource(), isCoverPageIncluded(),
+                this, null));
         if (getDownloadTransferObject().getResult() != DownloadResult.SUCCESS) {
             return getDownloadTransferObject().getResult().name().toLowerCase();
         }
