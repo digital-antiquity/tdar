@@ -224,14 +224,15 @@ public class PostgresDatabase extends AbstractSqlTools implements TargetDatabase
 
     private SqlSelectBuilder getSelectAll(DataTable table, boolean includeGeneratedValues) {
         SqlSelectBuilder builder = new SqlSelectBuilder();
-        builder.getColumns().addAll(table.getColumnNames());
         if (includeGeneratedValues) {
-            table.getDataTableColumns().forEach(dtc -> {
-                if (dtc.getDefaultCodingSheet() != null) {
-                    builder.getColumns().add( generateOriginalColumnName(dtc));
-                }
-            });
+            builder.getColumns().add(DataTableColumn.TDAR_ROW_ID.getName());
         }
+        table.getDataTableColumns().forEach(dtc -> {
+            builder.getColumns().add(dtc.getName());
+            if (dtc.getDefaultCodingSheet() != null && includeGeneratedValues) {
+                builder.getColumns().add( generateOriginalColumnName(dtc));
+            }
+        });
         builder.getTableNames().add(table.getName());
         return builder;
     }

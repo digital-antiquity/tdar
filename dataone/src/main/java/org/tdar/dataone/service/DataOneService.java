@@ -287,10 +287,10 @@ public class DataOneService implements DataOneConstants, D1Formatter {
      */
     @Transactional(readOnly=false)
     public void synchronizeTdarChangesWithDataOneObjects() {
-        logger.debug("starting sync...");
+        logger.trace("starting sync...");
         List<ListObjectEntry> resources = dataOneDao.unify(this);
         logger.debug("{}", resources);
-        logger.debug("sync complete");
+        logger.trace("sync complete");
     }
 
     /**
