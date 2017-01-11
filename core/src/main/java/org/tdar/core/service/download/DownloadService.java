@@ -213,7 +213,7 @@ public class DownloadService {
     public DownloadTransferObject validateDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
             InformationResource resourceToDownload_, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
         DownloadTransferObject dto = setupDownload(authenticatedUser, versionToDownload, resourceToDownload_, includeCoverPage, textProvider, authorization);
-        if (dto.getResult() != DownloadResult.SUCCESS) {
+        if (dto.getResult() != DownloadResult.SUCCESS && dto.getResult() != null) {
             return dto;
         }
         try {
@@ -233,7 +233,7 @@ public class DownloadService {
     public DownloadTransferObject handleDownload(TdarUser authenticatedUser, InformationResourceFileVersion versionToDownload,
             InformationResource resourceToDownload_, boolean includeCoverPage, TextProvider textProvider, DownloadAuthorization authorization) {
         DownloadTransferObject dto = setupDownload(authenticatedUser, versionToDownload, resourceToDownload_, includeCoverPage, textProvider, authorization);
-        if (dto.getResult() != DownloadResult.SUCCESS) {
+        if (dto.getResult() != DownloadResult.SUCCESS && dto.getResult() != null) {
             return dto;
         }
         try {
