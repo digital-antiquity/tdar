@@ -76,7 +76,7 @@ public class DataOneDao {
     private String appendLimit(String queryString_) {
         String queryString = queryString_;
         if (DataOneConfiguration.getInstance().isLimited()) {
-            queryString += " and id > " + DataOneConfiguration.getInstance().getMaxId();
+            queryString += " and id < " + DataOneConfiguration.getInstance().getMaxId();
         }
         return queryString;
     }
