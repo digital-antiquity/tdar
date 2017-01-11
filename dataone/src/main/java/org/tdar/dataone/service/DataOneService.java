@@ -44,6 +44,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
@@ -285,7 +286,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     /**
      * This syncrhonizes tDAR records and DataOne records so that DataONE can see all of the various versions of tDAR records
      */
-    @Transactional(readOnly=false)
+//    @Transactional(readOnly=false)
     public void synchronizeTdarChangesWithDataOneObjects() {
         logger.trace("starting sync...");
         List<ListObjectEntry> resources = dataOneDao.unify(this);
