@@ -54,9 +54,7 @@ public class DataOneDao {
     @SuppressWarnings("unchecked")
     public List<DataOneObject> findUpdatedResources(Date start, Date end, String formatId, String identifier, ObjectList list, int startNum, int count) {
         String queryString = DATAONE_COUNT;
-        if (DataOneConfiguration.getInstance().isLimited()) {
-            queryString += " and id < " + DataOneConfiguration.getInstance().getMaxId();
-        }
+        queryString = appendLimit(queryString);
 
         Query query = setupQuery(start, end, formatId, identifier, queryString);
 
@@ -69,9 +67,18 @@ public class DataOneDao {
         query.setFirstResult(startNum);
 
         queryString = DATAONE_LIMIT;
+        queryString = appendLimit(queryString);
         query = setupQuery(start, end, formatId, identifier, queryString);
 
         return query.list();
+    }
+
+    private String appendLimit(String queryString_) {
+        String queryString = queryString_;
+        if (DataOneConfiguration.getInstance().isLimited()) {
+            queryString += " and id < " + DataOneConfiguration.getInstance().getMaxId();
+        }
+        return queryString;
     }
 
     private Query setupQuery(Date start, Date end, String formatId, String identifier, String queryString) {

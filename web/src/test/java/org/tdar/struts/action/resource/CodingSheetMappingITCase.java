@@ -432,7 +432,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + TEST_DATASET_FILENAME, Dataset.class);
         Long datasetId = dataset.getId();
         assertNotNull(datasetId);
-        DataTableColumn period_ = dataset.getDataTables().iterator().next().getColumnByDisplayName("Period");
+        DataTableColumn period_ = cloneDataTableColumn(dataset.getDataTables().iterator().next().getColumnByDisplayName("Period"));
         ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
         datasetController.setId(datasetId);
         datasetController.prepare();
@@ -473,7 +473,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
             Dataset dataset = setupAndLoadResource(TestConstants.TEST_DATA_INTEGRATION_DIR + "bigsheet.xlsx", Dataset.class);
             Long datasetId = dataset.getId();
             assertNotNull(datasetId);
-            DataTableColumn num = dataset.getDataTableByGenericName("ds1").getColumnByDisplayName("num");
+            DataTableColumn num = cloneDataTableColumn(dataset.getDataTableByGenericName("ds1").getColumnByDisplayName("num"));
             assertNotNull(num);
             ColumnMetadataController datasetController = generateNewInitializedController(ColumnMetadataController.class);
             datasetController.setId(datasetId);
@@ -567,7 +567,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         Long datasetId = dataset.getId();
         DataTable table = dataset.getDataTables().iterator().next();
         datasetController.setId(datasetId);
-        DataTableColumn period_ = table.getColumnByDisplayName("Period");
+        DataTableColumn period_ = cloneDataTableColumn(table.getColumnByDisplayName("Period"));
         assertFalse(period_.getColumnEncodingType().isSupportsCodingSheet());
         datasetController.prepare();
         datasetController.editColumnMetadata();
@@ -587,7 +587,7 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
         datasetController = generateNewInitializedController(ColumnMetadataController.class);
         table = dataset.getDataTables().iterator().next();
         datasetController.setId(datasetId);
-        period_ = table.getColumnByDisplayName("Period");
+        period_ = cloneDataTableColumn(table.getColumnByDisplayName("Period"));
         datasetController.prepare();
         datasetController.editColumnMetadata();
         period_.setDefaultCodingSheet(codingSheet);
@@ -610,6 +610,23 @@ public class CodingSheetMappingITCase extends AbstractDataIntegrationTestCase {
                 }
             }
         }
+    }
+
+    /**
+     * note, this just mainly works for coding sheets... it's not intended to be perfect
+     * @param dtc
+     * @return
+     */
+    private DataTableColumn cloneDataTableColumn(DataTableColumn dtc) {
+        DataTableColumn clone = new DataTableColumn();
+        clone.setCategoryVariable(dtc.getCategoryVariable());
+        clone.setColumnDataType(dtc.getColumnDataType());
+        clone.setColumnEncodingType(dtc.getColumnEncodingType());
+        clone.setDefaultCodingSheet(dtc.getDefaultCodingSheet());
+        clone.setId(dtc.getId());
+        clone.setName(dtc.getName());
+        clone.setDisplayName(dtc.getDisplayName());
+        return clone;
     }
 
     /**

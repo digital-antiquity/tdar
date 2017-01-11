@@ -269,7 +269,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         list.setStart(start);
         List<DataOneObject> dataOneObjects = dataOneDao.findUpdatedResources(fromDate, toDate, formatid, identifier, list, start, count);
         for (DataOneObject obj : dataOneObjects) {
-            logger.debug("{}", obj);
+            logger.trace("{}", obj);
             ObjectInfo item = new ObjectInfo();
             item.setChecksum(DataOneUtils.createChecksum(obj.getChecksum()));
             item.setDateSysMetadataModified(obj.getSysMetadataModified());
@@ -287,10 +287,10 @@ public class DataOneService implements DataOneConstants, D1Formatter {
      */
     @Transactional(readOnly=false)
     public void synchronizeTdarChangesWithDataOneObjects() {
-        logger.debug("starting sync...");
+        logger.trace("starting sync...");
         List<ListObjectEntry> resources = dataOneDao.unify(this);
         logger.debug("{}", resources);
-        logger.debug("sync complete");
+        logger.trace("sync complete");
     }
 
     /**

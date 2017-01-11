@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URL;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -36,9 +35,7 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.jdbc.Work;
 import org.joda.time.DateTime;
-import org.postgresql.PGConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -542,9 +539,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
-        PreparedStatementResetWork  work = new PreparedStatementResetWork(0);
-        getCurrentSession().doWork(work);
-        int numStatements = work.getOldStatements();
         try {
             File tempFile = File.createTempFile("translated", ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
@@ -561,11 +555,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //            irFile.getInformationResourceFileVersions().add(version);
 //            TdarConfiguration.getInstance().getFilestore().store(FilestoreObjectType.RESOURCE, tempFile, version);
 //            informationResourceFileDao.saveOrUpdate(version);
-        } catch (IOException exception) {
-            getLogger().error("Unable to create translated file for Dataset: " + dataset, exception);
+        } catch (IOException ioe) {
+            getLogger().error("Unable to create translated file for Dataset: " + dataset, ioe);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
-            getCurrentSession().doWork(new PreparedStatementResetWork(numStatements));
         }
         return irFile;
     }
@@ -584,7 +577,7 @@ public class DatasetDao extends ResourceDao<Dataset> {
         for (final DataTable dataTable : dataTables) {
             // each table becomes a sheet.
             String tableName = dataTable.getDisplayName();
-            getLogger().debug(tableName);
+            getLogger().debug("{} ({})",dataTable.getName(), dataTable.getId());
             proxy.setName(tableName);
             ResultSetExtractor<Boolean> excelExtractor = new ResultSetExtractor<Boolean>() {
                 @Override
@@ -598,6 +591,10 @@ public class DatasetDao extends ResourceDao<Dataset> {
                     return true;
                 }
             };
+            dataTable.getDataTableColumns().forEach(dataTableColumn -> {
+                getLogger().debug("\t{}", dataTableColumn);
+                getLogger().debug("\t{}", dataTableColumn.getDefaultCodingSheet());
+            });
             tdarDataImportDatabase.selectAllFromTableInImportOrder(dataTable, excelExtractor, true);
         }
         BufferedOutputStream stream = new BufferedOutputStream(outputStream);
