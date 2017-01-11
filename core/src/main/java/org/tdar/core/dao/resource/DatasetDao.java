@@ -36,9 +36,7 @@ import org.hibernate.ScrollMode;
 import org.hibernate.ScrollableResults;
 import org.hibernate.Session;
 import org.hibernate.criterion.CriteriaSpecification;
-import org.hibernate.jdbc.Work;
 import org.joda.time.DateTime;
-import org.postgresql.PGConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -542,9 +540,6 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //        }
         InformationResourceFile irFile = null;
         FileOutputStream translatedFileOutputStream = null;
-        PreparedStatementResetWork  work = new PreparedStatementResetWork(0);
-        getCurrentSession().doWork(work);
-        int numStatements = work.getOldStatements();
         try {
             File tempFile = File.createTempFile("translated", ".xlsx", TdarConfiguration.getInstance().getTempDirectory());
             translatedFileOutputStream = new FileOutputStream(tempFile);
@@ -563,15 +558,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
 //            informationResourceFileDao.saveOrUpdate(version);
         } catch (IOException ioe) {
             getLogger().error("Unable to create translated file for Dataset: " + dataset, ioe);
-        } catch (Throwable exception) {
-            logger.error("{}",exception,exception);
         } finally {
             IOUtils.closeQuietly(translatedFileOutputStream);
-            try {
-                getCurrentSession().doWork(new PreparedStatementResetWork(numStatements));
-            } catch (Throwable t) {
-                logger.error("{}",t,t);
-            }
         }
         return irFile;
     }
