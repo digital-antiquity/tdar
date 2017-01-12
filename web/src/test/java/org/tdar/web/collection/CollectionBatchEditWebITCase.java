@@ -12,33 +12,36 @@ public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWeb
 
     private static final String HORP_DESCRIPTION = "horp description";
     private static final String HORP_TITLE = "HORP title";
+    private static final String HORP_ID = "1628";
 
     @Test
     public void testBatchEdit() {
         gotoPage("/collection/admin/batch/1004");
-        boolean seen = false;
-        for (int i = 0; i < 5; i++) {
-            try {
-                HtmlElement input = getInput("ids[" + i + "]");
-                logger.debug("{} --> {} --> {}",input, input.getNodeValue(), input.getAttribute("value"));
-                if (StringUtils.equals(input.getAttribute("value"), "1628")) {
-                    setInput("titles["+i+"]", HORP_TITLE);
-                    setInput("descriptions["+i+"]", HORP_DESCRIPTION);
-//                    setInput("dates["+i+"]", _12345);
-                    seen = true;
-                }
-            } catch (Exception e) {
-            }
+
+        boolean seen = querySelectorAll(".resource-id-field").stream()
+                .peek( input -> logger.debug("looking for id in {}", input))
+                .anyMatch(input -> StringUtils.equals(HORP_ID, (input.getAttribute("value"))));
+        if(!seen) {
+            logger.debug(getPageText());
         }
-        assertTrue("should see HARP ID", seen);
-        logger.debug(getPageText());
+        assertTrue("at least one hidden input should have value:" + HORP_ID, seen);
+
+        //now change some titles (up to five)
+        querySelectorAll(".resource-title-field").stream().limit(5)
+                .forEach(input ->  input.setAttribute("value", HORP_TITLE));
+
+        // and change some descriptions
+        querySelectorAll(".resource-description-field").stream().limit(5)
+                .forEach(input -> input.setAttribute("value", HORP_DESCRIPTION));
+
+
         submitForm();
         gotoPage("/collection/1004");
         assertTextPresentInPage(HORP_TITLE);
         assertTextPresentInPage(HORP_DESCRIPTION);
-//        assertTextPresentInPage(_12345);
         assertTextNotPresent("(HARP)");
 
         logger.debug(getPageText());
     }
 }
+        

@@ -1583,7 +1583,7 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
      * @param selector a css selector
      * @return A list of matching elements. List is empty if no matches found.
      */
-    List<DomElement> querySelectorAll(String selector) {
+    public List<DomElement> querySelectorAll(String selector) {
 
         List<DomElement> elements = htmlPage.getDocumentElement().querySelectorAll(selector).stream()
                 // only find nodes that are DomElements
