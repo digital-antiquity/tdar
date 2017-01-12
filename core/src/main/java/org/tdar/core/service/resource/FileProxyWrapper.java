@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.commons.io.FilenameUtils;
 import org.joda.time.DateTime;
+import org.joda.time.Period;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tdar.core.bean.FileProxy;
@@ -238,14 +239,28 @@ public class FileProxyWrapper {
      */
     public void setInformationResourceFileMetadata(FileProxy proxy) {
         InformationResourceFile irFile = proxy.getInformationResourceFile();
-        FileAccessRestriction restriction = proxy.getRestriction();
-        irFile.setRestriction(restriction);
         Integer sequenceNumber = proxy.getSequenceNumber();
-        if (restriction.isEmbargoed()) {
+        DateTime currentDate = DateTime.now();
+
+
+        if (proxy.getRestriction().isEmbargoed()) {
+            //calculate initial expiry date if expiry date does not exist
             if (irFile.getDateMadePublic() == null) {
-                DateTime currentDate = new DateTime();
-                DateTime embargoDate = currentDate.plusDays(restriction.getEmbargoPeriod());
+                DateTime embargoDate = currentDate.plusDays(proxy.getRestriction().getEmbargoPeriod());
                 irFile.setDateMadePublic(embargoDate.toDate());
+
+            //user may have changed embargo period, so recalculate expiry date
+            } else {
+                Period currentPeriod  = Period.days(irFile.getRestriction().getEmbargoPeriod());
+                Period newPeriod = Period.days(proxy.getRestriction().getEmbargoPeriod());
+                DateTime currentExpiry = new DateTime(irFile.getDateMadePublic());
+                DateTime newExpiry = currentExpiry.plus(newPeriod.minus(currentPeriod));
+
+                // Don't allow new expiry to occur in the past.
+                if(newExpiry.isBefore(currentDate)){
+                    throw new TdarRecoverableRuntimeException("abstractInformationResourceService.expiry_occurs_before_today");
+                }
+                irFile.setDateMadePublic(newExpiry.toDate());
             }
         } else {
             irFile.setDateMadePublic(null);
@@ -261,6 +276,8 @@ public class FileProxyWrapper {
         } else {
             irFile.setSequenceNumber(sequenceNumber);
         }
+        irFile.setRestriction(proxy.getRestriction());
+
     }
 
     public void validateFileProxies() {
