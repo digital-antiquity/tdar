@@ -10,12 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.joda.time.DateTime;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.annotation.Rollback;
@@ -36,7 +33,10 @@ import org.tdar.core.bean.resource.Project;
 import org.tdar.core.bean.resource.Resource;
 import org.tdar.core.bean.resource.ResourceType;
 import org.tdar.core.bean.resource.Status;
-import org.tdar.core.bean.resource.file.*;
+import org.tdar.core.bean.resource.file.FileAction;
+import org.tdar.core.bean.resource.file.FileStatus;
+import org.tdar.core.bean.resource.file.InformationResourceFile;
+import org.tdar.core.bean.resource.file.VersionType;
 import org.tdar.core.dao.AccountAdditionStatus;
 import org.tdar.core.dao.BillingAccountDao;
 import org.tdar.core.dao.ResourceEvaluator;
@@ -328,23 +328,6 @@ public class AccountITCase extends AbstractIntegrationTestCase {
         assertEquals(0, re4.getSpaceUsedInBytes());
 
         logger.info(re3.toString());
-    }
-
-    @Test
-    @Rollback
-    @Ignore("I dare you to write this unit test (without going insane)")
-    public void testChangedEmbargoExpiry() {
-        Document doc = createAndSaveNewInformationResource(Document.class);
-        FileProxy proxy = new FileProxy("test.pdf", new File(TestConstants.TEST_DOCUMENT_DIR, "/t2/test.pdf"), VersionType.UPLOADED_ARCHIVAL);
-        FileProxyWrapper wrapper = new FileProxyWrapper(doc, analyzer, datasetDao, Arrays.asList(proxy));
-        proxy.setAction(FileAction.MODIFY_METADATA);
-        InformationResourceFile irf = proxy.getInformationResourceFile();
-        DateTime today = DateTime.now();
-        irf.setDateMadePublic(today.toDate());
-        irf.setRestriction(FileAccessRestriction.EMBARGOED_ONE_YEAR);
-        FileProxy proxy2 = new FileProxy();
-        proxy2.setRestriction(FileAccessRestriction.EMBARGOED_TWO_YEARS);
-        wrapper.setInformationResourceFileMetadata(proxy2);
     }
 
     @Test
