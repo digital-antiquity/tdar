@@ -44,6 +44,7 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 import org.tdar.core.bean.resource.InformationResource;
 import org.tdar.core.bean.resource.Status;
@@ -285,7 +286,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     /**
      * This syncrhonizes tDAR records and DataOne records so that DataONE can see all of the various versions of tDAR records
      */
-    @Transactional(readOnly=false)
+//    @Transactional(readOnly=false)
     public void synchronizeTdarChangesWithDataOneObjects() {
         logger.trace("starting sync...");
         List<ListObjectEntry> resources = dataOneDao.unify(this);
@@ -320,13 +321,13 @@ public class DataOneService implements DataOneConstants, D1Formatter {
 
         logger.debug("{}", id);
         ObjectResponseContainer object = getObjectFromTdar(id, false);
-        logger.debug("{}", object);
+        logger.trace("{}", object);
         
         DataOneObject dataOneObject = dataOneDao.findByIdentifier(id);
-        logger.debug("{}", dataOneObject);
+        logger.trace("{}", dataOneObject);
         if (object == null && dataOneObject == null) {
-                logger.debug("not found -- returning");
-                return null;
+            logger.debug("not found -- returning");
+            return null;
         }
 
         IdentifierParser parser = new IdentifierParser(id, informationResourceService);
@@ -382,7 +383,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
         metadata.setDateUploaded(DataOneUtils.toUtc(resource.getDateUpdated()).toDate());
 
         metadata.setSubmitter(DataOneUtils.createSubject(resource.getSubmitter().getProperName()));
-        logger.debug("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
+        logger.trace("rights: {} ; submitter: {} ", metadata.getRightsHolder(), metadata.getSubmitter());
         return metadata;
     }
 

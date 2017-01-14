@@ -69,6 +69,8 @@ public class DataOneDao {
         queryString = DATAONE_LIMIT;
         queryString = appendLimit(queryString);
         query = setupQuery(start, end, formatId, identifier, queryString);
+        query.setMaxResults(count);
+        query.setFirstResult(startNum);
 
         return query.list();
     }

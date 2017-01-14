@@ -67,7 +67,7 @@ public class AbstractDataOneResponse {
     }
 
     public Response constructObjectResponse(String id, HttpServletRequest request, Event read) {
-        logger.debug("object full request: {}", request);
+        logger.trace("object full request: {}", request);
         try {
             final ObjectResponseContainer container = service.getObject(id, request, Event.READ);
             StreamingOutput stream = new StreamingOutput() {
