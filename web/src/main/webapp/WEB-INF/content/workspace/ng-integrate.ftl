@@ -73,7 +73,7 @@
                                                     Please use less than {{maxDataTables}} datasets.
                                                 </div>
 
-                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly()"
+                                                <button type="button" class="btn btn-mini"  id="btnAddDataset" ng-disabled="isReadOnly() || isBusy()"
                                                         ng-click="ctrl.addDatasetsClicked()">Add Datasets...</button>
 
                                         </th></tr>
