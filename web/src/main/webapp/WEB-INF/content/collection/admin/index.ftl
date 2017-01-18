@@ -76,44 +76,48 @@
                         <@s.param name="startRecord" value=""/>
             </@s.url>">[remove this filter]</a></sup>
           </#if>
-          
-          
-          <h5>Admin Tools</h5>
-            <ul>
-             <li> <a href="<@s.url value="/collection/admin/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
-             <li> <a href="<@s.url value="/resource/compare?collectionId=${collection.id?c}"/>">Compare Resources in Collection</a></li>
-             <li> <a href="<@s.url value="/search/download?collectionId=${collection.id?c}"/>">Export to Excel</a></li>
-             <li> <a href="<@s.url value="/collection/admin/organize/${collection.id?c}"/>">Reorganize</a></li>
-             <#if administrator && collection.type == 'LIST' && !collection.properties.whitelabel >
-             <li>
-                <form action="/collection/admin/makeWhitelabel/${id?c}" method="POST" class="inline">
-                    <@s.submit cssClass="button btn btn-link tdar-btn-link" id="makeWhiteLabelCollection" value="Make Whitelabel"/>
-                </form>
-             
-             </li>
-            </#if>
-             <#if administrator >
-             <li>
-                <form action="/collection/admin/reindex/${id?c}" method="POST" class="inline">
-                    <@s.submit cssClass="button btn btn-link tdar-btn-link" id="reindexCollection" value="Reindex collection contents"/>
-                </form>
-             
-             </li>
-             <li>
-                <form action="/collection/admin/changeSubmitter/${id?c}" method="POST" class="inline">
-                    <@s.submit cssClass="button btn btn-link tdar-btn-link" id="reindexCollection" value="Set Submitter to 'System User'"/>
-                </form>
-             
-             </li>
-             </#if>
-             <#if editor >
-             <li>
-                <form action="/collection/admin/makeActive/${id?c}" method="POST" class="inline">
-                    <@s.submit cssClass="btn btn-link tdar-btn-link" id="makeActive" value="Make all Draft Resources Active"/>
-                </form>
-             </li>
-             </#if>
-         </ul>
+
+
+              <h5>Admin Tools</h5>
+              <div class="btn-group">
+                  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Admin Actions <span class="caret"></span></a>
+                  <ul class="dropdown-menu">
+                      <li> <a href="<@s.url value="/collection/admin/report/${collection.id?c}"/>">Admin Metadata Report</a></li>
+                      <li> <a href="<@s.url value="/resource/compare?collectionId=${collection.id?c}"/>">Compare Resources in Collection</a></li>
+                      <li> <a href="<@s.url value="/search/download?collectionId=${collection.id?c}"/>">Export to Excel</a></li>
+                      <li> <a href="<@s.url value="/collection/admin/organize/${collection.id?c}"/>">Reorganize</a></li>
+                      <#if administrator && collection.type == 'LIST' && !collection.properties.whitelabel >
+                          <li>
+                              <form action="/collection/admin/makeWhitelabel/${id?c}" method="POST" class="inline">
+                                  <@s.submit cssClass="button btn " id="makeWhiteLabelCollection" value="Make Whitelabel"/>
+                              </form>
+
+                          </li>
+                      </#if>
+                      <#if administrator >
+                          <li>
+                              <form action="/collection/admin/reindex/${id?c}" method="POST" class="inline">
+                                  <@s.submit cssClass="button btn " id="reindexCollection" value="Reindex collection contents"/>
+                              </form>
+
+                          </li>
+                          <li>
+                              <form action="/collection/admin/changeSubmitter/${id?c}" method="POST" class="inline">
+                                  <@s.submit cssClass="button btn " id="reindexCollection" value="Set Submitter to 'System User'"/>
+                              </form>
+
+                          </li>
+                      </#if>
+                      <#if editor >
+                          <li>
+                              <form action="/collection/admin/makeActive/${id?c}" method="POST" class="inline">
+                                  <@s.submit cssClass="btn " id="makeActive" value="Make all Draft Resources Active"/>
+                              </form>
+                          </li>
+                      </#if>
+                  </ul>
+
+              </div>
             </div>
 
 </div>
