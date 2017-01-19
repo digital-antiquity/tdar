@@ -79,7 +79,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
-        find(id("btnAddDisplayColumn")).click();
+        //find(id("btnAddDisplayColumn")).click();
+        waitFor(ExpectedConditions.elementToBeClickable(id("btnAddDisplayColumn"))).click();
         By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
         // dt_ + tabid + _ + data_table_id
@@ -143,7 +144,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
-        find(id("btnAddDisplayColumn")).click();
+        waitFor(elementToBeClickable(id("btnAddDisplayColumn"))).click();
         By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
         // dt_ + tabid + _ + data_table_id
@@ -212,7 +213,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // add integration column with a few check boxes
         takeScreenshot();
-        find(linkText("Add Integration Column")).click();
+        waitFor(elementToBeClickable(linkText("Add Integration Column"))).click();
         find(linkText("Fauna Taxon Ontology")).click();
         // wait for tab visible
         waitFor(id("tabtab0")).isDisplayed();
