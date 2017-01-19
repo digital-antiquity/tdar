@@ -5,6 +5,7 @@ import com.google.common.base.Predicates;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
 import org.junit.*;
 import org.junit.rules.TestName;
 import org.openqa.selenium.*;
@@ -82,15 +83,17 @@ public abstract class AbstractSeleniumWebITCase {
     private WebDriver driver;
     private Browser currentBrowser;
 
-    private LoggingStopWatch findTimer;
-    private LoggingStopWatch waitTimer;
-
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
     protected static Logger logger = LoggerFactory.getLogger(AbstractSeleniumWebITCase.class);
 
     private boolean ignorePageErrorChecks;
+
+    // indicates whether test is in a state where a find() operation may yield volatile results
+    private boolean isVolatileFind = false;
+
+    private Map<String, StopWatch> stopWatches = new HashMap<>();
 
     // predicate that returns true if document.readystate == "complete" (use with FluentWait)
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
@@ -105,8 +108,25 @@ public abstract class AbstractSeleniumWebITCase {
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
     public AbstractSeleniumWebITCase() {
-        findTimer = new LoggingStopWatch(getClass(), "findTimer", 0, 2 * 1000);
-        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, ((int)WAITFOR_TIMEOUT_DEFAULT.getSeconds() * 1000) / 4);
+    }
+
+    /**
+     *
+     * Get a stopwatch of a given name.  If watch doesn't exist,  method implicitly creates one in "suspended" state. We use to track
+     * aggregate time spent performing operations such implicit waits and find() operations.
+     * @param name
+     * @return
+     */
+    public StopWatch getStopWatch(String name) {
+        StopWatch stopWatch = stopWatches.get(name);
+
+        if(stopWatch == null) {
+            stopWatch = new StopWatch();
+            stopWatch.start();
+            stopWatch.suspend();
+            stopWatches.put(name, stopWatch);
+        }
+        return stopWatch;
     }
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
@@ -120,8 +140,6 @@ public abstract class AbstractSeleniumWebITCase {
      * The {@link WebDriverEventListener#afterClickOn} element argument is invalid if the clicked-on element caused the browser to navigate to new page, so we
      * we can't inspect it. So we use this field to signal whether afterClickOn() should call afterPageChange()
      */
-    private Set<WebElement> clickElems = new HashSet<>();
-
     private WebDriverEventListener eventListener = new WebDriverEventAdapter() {
         @Override
         public void afterNavigateTo(String url, WebDriver driver) {
@@ -170,18 +188,16 @@ public abstract class AbstractSeleniumWebITCase {
         @Override
         public void beforeClickOn(WebElement element, WebDriver driver) {
             if (elementCausesNavigation(element)) {
-                clickElems.add(element);
                 beforePageChange();
+            } else {
+                // if the click didn't cause navigation,  we assume that the click serves the purpose of modifying the current page somehow, the next
+                // find might be volatile if not preceded by an implicit wait.
+                isVolatileFind = true;
             }
         }
 
         @Override
         public void afterClickOn(WebElement element, WebDriver driver) {
-            // if beforeClickOn() put this element here, we are on the other side of page change.
-            if (clickElems.remove(element)) {
-                // FIXME: this fails, I think because the page has not finished rendering? commenting out for now...
-                // afterPageChange();
-            }
         }
 
         private boolean elementCausesNavigation(WebElement element) {
@@ -408,13 +424,26 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("Could not close selenium driver: {}", ex);
         }
         driver = null;
-        String fmt = " *** COMPLETED TEST: {}.{}() ***";
-        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
         getJavascriptIgnorePatterns().clear();
         performBrowserCleanup();
         if (!TestConfiguration.isWindows()) {
             ProcessList.killProcesses(listProcesses);
         }
+    }
+
+
+
+    @After
+    public final void report(){
+        String fmt = " *** COMPLETED TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
+
+        // go through the each stopwatch and report the elapsed time for each
+        stopWatches.forEach( (name, stopWatch) -> {
+            Duration d = Duration.of(stopWatch.getNanoTime(), NANOS);
+            logger.info("\t stopwatch name:{}\t  total time:{}s {}ms", name, d.getSeconds(), d.minusSeconds(d.getSeconds()).toMillis());
+        });
+        logger.info("*******");
     }
 
     private File getBrowserProfilePath(){
@@ -634,12 +663,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @Deprecated
     public void waitFor(int timeInSeconds) {
-        waitTimer.start();
+       getStopWatch("wait").resume();
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException ignored) {
         } finally {
-            waitTimer.stop();
+            getStopWatch("wait").suspend();
         }
     }
 
@@ -704,7 +733,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout, Duration pollingEvery) {
         T value = null;
-        waitTimer.start();
+        getStopWatch("wait").resume();
         WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
 
         // change polling interval from default of 500ms to 125ms. This may be a bad idea.
@@ -721,8 +750,12 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("Wait timeout.  Screenshot saved as timeout-exception-" + tex.hashCode());
             throw tex;
         } finally {
-            waitTimer.stop();
+            getStopWatch("wait").suspend();
         }
+
+        // after an implicit wait we assume (perhaps incorrectly) that find() calls are now "non-volatile"
+        isVolatileFind = false;
+
         return value;
     }
 
@@ -734,21 +767,25 @@ public abstract class AbstractSeleniumWebITCase {
      * @return WebElementSelection containing zero-or-more elments
      */
     public WebElementSelection find(String selector) {
-        findTimer.start();
         WebElementSelection wes = find(By.cssSelector(selector));
-        findTimer.stop();
         return wes;
     }
 
     /**
      * Return WebElementSelection containing all elements mathing the specified css selector.
-     * 
+     *
      * @param by
      * @return
      */
     public WebElementSelection find(By by) {
+        if(isVolatileFind) {
+            logger.warn("Volatile find: consider replacing with waitFor() (locator:{}  test:{})", by, testName.getMethodName());
+
+        }
+        getStopWatch("find").resume();
         WebElementSelection selection = new WebElementSelection(by, driver);
         logger.trace("criteria:{}\t  size:{}", by, selection.size());
+        getStopWatch("find").suspend();
         return selection;
     }
 

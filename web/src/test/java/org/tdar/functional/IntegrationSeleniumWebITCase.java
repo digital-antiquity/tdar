@@ -89,7 +89,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         By alex_select = id("dt_0_" + ALEX_DT_ID);
         chooseSelectByName("LOCATION", alex_select);
         takeScreenshot();
-        find(linkText("Add Integration Column")).click();
+        waitFor(linkText("Add Integration Column")).click();
         find(linkText("Fauna Taxon Ontology")).click();
 
         // wait until integration column becomes visible
@@ -97,8 +97,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // check the filter checkbox labeled "Aves"
         find(ByLabelText.byLabelText("Aves")).click();
-        find(rabbit).click();
-        find(sheep).click();
+        waitFor(rabbit).click();
+        waitFor(sheep).click();
 
         // make sure that the thing we checked is checked
         assertThat("Aves filter should be checked", find(id("cbont_64870")).isSelected(), is(true));
@@ -289,7 +289,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
      * @param cbid
      */
     private void findAndClickDataset(String text, String cbid) {
-        WebElementSelection currentResults = find("#modalResults tbody tr");
+        WebElementSelection currentResults = waitFor("#modalResults tbody tr");
         find(name("searchFilter.title")).val(text);
         if (!currentResults.isEmpty()) {
             waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
