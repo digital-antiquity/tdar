@@ -84,7 +84,7 @@
     <rule>
         <name>unstrutsworthy document url</name>
         <note>if slug does not match struts pattern, remove the label and redirect to /browse/keyword-type/1234 </note>
-        <from>^/(\w+)/(\d+)/(.*[^a-zA-Z0-9_!/\-].*)$</from>
+        <from>^/(?!.*wro)(\w+)/(\d+)/(.*[^a-zA-Z0-9_!/\-].*)$</from>
         <to type="redirect">/$1/$2</to>
     </rule>
 
