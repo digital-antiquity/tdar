@@ -294,7 +294,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
      * @param cbid
      */
     private void findAndClickDataset(String text, String cbid) {
-        WebElementSelection currentResults = waitFor("#modalResults tbody tr");
+        WebElementSelection currentResults = find("#modalResults tbody tr");
         find(name("searchFilter.title")).val(text);
         if (!currentResults.isEmpty()) {
             waitFor(ExpectedConditions.stalenessOf(currentResults.last()));
