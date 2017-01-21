@@ -66,7 +66,6 @@ import org.tdar.utils.PersistableUtils;
 
 import com.opensymphony.xwork2.Action;
 
-
 public class ResourceCollectionControllerITCase extends AbstractResourceControllerITCase {
 
     @Autowired
@@ -159,7 +158,6 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertTrue(vc.getResults().contains(draft));
         genericService.delete(vc.getResourceCollection().getAuthorizedUsers());
     }
-
 
     @SuppressWarnings("unused")
     @Test
@@ -301,10 +299,10 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         assertFalse("user should not be able to delete collection", resourceCollection == null);
 
         for (SharedCollection child : resourceCollectionService.findDirectChildCollections(rcid, null, SharedCollection.class)) {
-            ((SharedCollection)child).setParent(null);
+            ((SharedCollection) child).setParent(null);
             genericService.saveOrUpdate(child);
         }
-//        evictCache();
+        // evictCache();
 
         deleteAction = generateNewInitializedController(CollectionDeleteAction.class);
         deleteAction.setId(rcid);
@@ -317,7 +315,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
-//        evictCache();
+        // evictCache();
         assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
         resourceCollection = genericService.find(SharedCollection.class, rcid);
@@ -332,7 +330,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         logger.info("children: {}", children);
         assertTrue(child.getParent() == null);
         assertTrue((children == null) || (children.size() == 0));
-//        evictCache();
+        // evictCache();
 
     }
 
@@ -341,7 +339,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     public void testDeleteResourceCollectionWithUser() throws Exception {
         SharedCollection resourceCollection = new SharedCollection();
         resourceCollection.setName("a resource collection");
-//        resourceCollection.setSortBy(SortOption.DATE);
+        // resourceCollection.setSortBy(SortOption.DATE);
         resourceCollection.setDescription("testing add then remove resources");
         List<Document> docList = new ArrayList<>();
         docList.add(createAndSaveNewInformationResource(Document.class));
@@ -354,7 +352,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         AuthorizedUser authorizedUser = new AuthorizedUser(owner, GeneralPermissions.MODIFY_RECORD);
         resourceCollection.getAuthorizedUsers().addAll(Arrays.asList(authorizedUser));
         genericService.saveOrUpdate(resourceCollection);
-//        evictCache();
+        // evictCache();
 
         // okay, now let's try to remove the resources from the collection via the
         // controller.
@@ -385,13 +383,13 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
-//        evictCache();
+        // evictCache();
         assertEquals(null, deleteAction.getDeleteIssue());
         resourceCollection = null;
         resourceCollection = genericService.find(SharedCollection.class, rcid);
         logger.info("{}", genericService.find(ResourceCollection.class, rcid));
         assertTrue("user should be able to delete collection", resourceCollection.isDeleted());
-//        evictCache();
+        // evictCache();
     }
 
     @Test
@@ -404,8 +402,8 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         rc.setName("test delete w/ redundant rights");
         rc.setDescription("a tragedy in three acts");
         rc.setHidden(false);
-//        rc.setSortBy(SortOption.ID);
-//        rc.setOrientation(DisplayOrientation.LIST);
+        // rc.setSortBy(SortOption.ID);
+        // rc.setOrientation(DisplayOrientation.LIST);
 
         // Add three authusers. two of the authusers are redundant and should be normalized to the user with
         // the best permissions.
@@ -478,12 +476,12 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         ListCollection collection2 = generateResourceCollection("SHARED", "", false, new ArrayList<>(users), getUser(),
                 new ArrayList<Resource>(), null, CollectionController.class, ListCollection.class);
         InformationResource testFile = generateDocumentWithUser();
-        ListCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users),getUser(),
+        ListCollection parentCollection = generateResourceCollection("PARENT", "", true, new ArrayList<>(users), getUser(),
                 Arrays.asList(testFile), null, CollectionController.class, ListCollection.class);
         Long id = parentCollection.getId();
-        ListCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(),getUser(),
+        ListCollection childCollection = generateResourceCollection("CHILD", "", true, new ArrayList<AuthorizedUser>(), getUser(),
                 new ArrayList<Resource>(), id, CollectionController.class, ListCollection.class);
-        ListCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(),getUser(),
+        ListCollection childCollectionHidden = generateResourceCollection("HIDDEN CHILD", "", false, new ArrayList<AuthorizedUser>(), getUser(),
                 new ArrayList<Resource>(), id, CollectionController.class, ListCollection.class);
         // genericService.saveOrUpdate(parentCollection);
         Long parentCollectionId = parentCollection.getId();
@@ -515,7 +513,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         Long childCollectionHiddenId = childCollectionHidden.getId();
         Long collection1Id = collection1.getId();
         Long collection2Id = collection2.getId();
-        
+
         childCollection = null;
         childCollectionHidden = null;
         collection1 = null;
@@ -563,7 +561,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
 
         logger.info("{}", vc.getActionErrors());
 
-        //evictCache();
+        // evictCache();
     }
 
     @SuppressWarnings("deprecation")
@@ -571,15 +569,15 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Rollback
     public void testHiddenParentVisibleChild() throws Exception {
         TdarUser testPerson = createAndSaveNewPerson("a@basda.com", "1234");
-        ListCollection collection1 = generateResourceCollection("test 1 private", "", false, new ArrayList<AuthorizedUser>(),getUser(),
+        ListCollection collection1 = generateResourceCollection("test 1 private", "", false, new ArrayList<AuthorizedUser>(), getUser(),
                 new ArrayList<Resource>(), null, CollectionController.class, ListCollection.class);
         ListCollection collection2 = generateResourceCollection("test 2 public", "", true, new ArrayList<AuthorizedUser>(), getUser(),
                 new ArrayList<Resource>(), collection1.getId(), CollectionController.class, ListCollection.class);
         evictCache();
         searchIndexService.index(collection1, collection2);
 
-//        logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
-//        logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
+        // logger.debug("1:{} v: {} h:{}", collection1.getId(), collection1.getUsersWhoCanView(), collection1.isHidden());
+        // logger.debug("2:{} v: {} h:{}", collection2.getId(), collection2.getUsersWhoCanView(), collection2.isHidden());
         genericService.synchronize();
         BrowseCollectionController browseController = generateNewInitializedController(BrowseCollectionController.class, testPerson);
         browseController.setRecordsPerPage(Integer.MAX_VALUE);
@@ -954,7 +952,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setSlug(slug);
         vc.prepare();
         vc.view();
-        logger.info("{}", ((SharedCollection)vc.getResourceCollection()).getResources().iterator().next().getStatus());
+        logger.info("{}", ((SharedCollection) vc.getResourceCollection()).getResources().iterator().next().getStatus());
         assertTrue("collection should show the newly undeleted project", CollectionUtils.isNotEmpty(vc.getResults()));
 
         // we should also see the newly-undeleted resource on the edit page
@@ -1000,24 +998,24 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.view();
         assertEquals("collection should have one resource inside", 1, vc.getResults().size());
         vc = null;
-        
-         setIgnoreActionErrors(true);
+
+        setIgnoreActionErrors(true);
         // make sure it draft resource can't be seen by registered user (but not an authuser)
         TdarUser registeredUser = createAndSaveNewPerson("testDraftResourceVisibleByAuthuser", "foo");
         boolean expectingError = false;
         try {
-        vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
-        vc.setId(rcid);
-        vc.setSlug(slug);
-        vc.prepare();
-        vc.view();
-        assertEquals(controller.getAuthenticatedUser(), registeredUser);
-        assertTrue("resource should not be viewable", vc.getResults().isEmpty());
-        // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
+            vc = generateNewInitializedController(CollectionViewAction.class, registeredUser);
+            vc.setId(rcid);
+            vc.setSlug(slug);
+            vc.prepare();
+            vc.view();
+            assertEquals(controller.getAuthenticatedUser(), registeredUser);
+            assertTrue("resource should not be viewable", vc.getResults().isEmpty());
+            // assertFalse("resource should not be viewable", controller.getResults().get(0).isViewable());
         } catch (TdarActionException tae) {
             expectingError = true;
         }
-        assertTrue("should see tDAR Action Exception",expectingError);
+        assertTrue("should see tDAR Action Exception", expectingError);
         setIgnoreActionErrors(false);
 
         Long ruid = registeredUser.getId();
