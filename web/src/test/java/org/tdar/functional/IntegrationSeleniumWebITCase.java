@@ -213,8 +213,13 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // add integration column with a few check boxes
         takeScreenshot();
+        WebElementSelection btn = waitFor(linkText("Add Integration Column"));
+        // elementToBeClickable doesn't work for links because selenium considers links to always be "enabled".  Thumbs up, selenium team!!!
+        waitFor((ignored) -> !btn.hasClass("disabled"));
         waitFor(elementToBeClickable(linkText("Add Integration Column"))).click();
+
         find(linkText("Fauna Taxon Ontology")).click();
+
         // wait for tab visible
         waitFor(id("tabtab0")).isDisplayed();
         // wait for tab contents is visible

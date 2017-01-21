@@ -267,6 +267,7 @@ public class CompleteDocumentSeleniumWebITCase extends AbstractBasicSeleniumWebI
 
         submitForm();
 
+        waitFor(driver -> driver.getCurrentUrl().matches(REGEX_DOCUMENT_VIEW));
         String path = getDriver().getCurrentUrl();
         logger.trace(find("body").getText());
         assertTrue("expecting to be on view page. Actual path:" + path + "\n" + find("body").getText(), path.matches(REGEX_DOCUMENT_VIEW));
