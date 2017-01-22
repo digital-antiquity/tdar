@@ -34,7 +34,9 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         setInput("resourceCollection.name", TEST_SECURITY_COLLECTION);
         setInput("resourceCollection.description", "test for map secuity");
         setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
-//        setInput("resourceCollection.hidden", "false");
+        setInput("resourceCollection.hidden", "false");
+        submitForm();
+        clickLinkWithText("Rights");
         setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
@@ -42,8 +44,13 @@ public class MapLatLongWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         gotoPage("/share/add");
         setInput("resourceCollection.name", TEST_SECURITY_SHARE);
         setInput("resourceCollection.description", "test for map secuity");
-//        setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
-//        setInput("resourceCollection.hidden", "false");
+        setInput("resourceCollection.orientation", DisplayOrientation.MAP.name());
+        setInput("resourceCollection.hidden", "false");
+        submitForm();
+        clickLinkWithText("Rights");
+        setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
+        setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
+        submitForm();
         setInput("authorizedUsers[0].user.id", CONFIG.getUserId());
         setInput("authorizedUsers[0].generalPermission", GeneralPermissions.MODIFY_RECORD.name());
         submitForm();
