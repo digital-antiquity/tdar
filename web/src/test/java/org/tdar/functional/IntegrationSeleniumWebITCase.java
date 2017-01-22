@@ -79,7 +79,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
-        find(id("btnAddDisplayColumn")).click();
+        //find(id("btnAddDisplayColumn")).click();
+        waitFor(ExpectedConditions.elementToBeClickable(id("btnAddDisplayColumn"))).click();
         By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
         // dt_ + tabid + _ + data_table_id
@@ -88,7 +89,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         By alex_select = id("dt_0_" + ALEX_DT_ID);
         chooseSelectByName("LOCATION", alex_select);
         takeScreenshot();
-        find(linkText("Add Integration Column")).click();
+        waitFor(linkText("Add Integration Column")).click();
         find(linkText("Fauna Taxon Ontology")).click();
 
         // wait until integration column becomes visible
@@ -96,8 +97,8 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // check the filter checkbox labeled "Aves"
         find(ByLabelText.byLabelText("Aves")).click();
-        find(rabbit).click();
-        find(sheep).click();
+        waitFor(rabbit).click();
+        waitFor(sheep).click();
 
         // make sure that the thing we checked is checked
         assertThat("Aves filter should be checked", find(id("cbont_64870")).isSelected(), is(true));
@@ -143,7 +144,7 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
         setupSpitalfieldsAlexandriaForTest();
         Assert.assertEquals(2, find(className("sharedOntologies")).size());
 
-        find(id("btnAddDisplayColumn")).click();
+        waitFor(elementToBeClickable(id("btnAddDisplayColumn"))).click();
         By tab1 = id("tab0");
         waitFor(tab1).isDisplayed();
         // dt_ + tabid + _ + data_table_id
@@ -212,8 +213,13 @@ public class IntegrationSeleniumWebITCase extends AbstractBasicSeleniumWebITCase
 
         // add integration column with a few check boxes
         takeScreenshot();
-        find(linkText("Add Integration Column")).click();
+        WebElementSelection btn = waitFor(linkText("Add Integration Column"));
+        // elementToBeClickable doesn't work for links because selenium considers links to always be "enabled".  Thumbs up, selenium team!!!
+        waitFor((ignored) -> !btn.hasClass("disabled"));
+        waitFor(elementToBeClickable(linkText("Add Integration Column"))).click();
+
         find(linkText("Fauna Taxon Ontology")).click();
+
         // wait for tab visible
         waitFor(id("tabtab0")).isDisplayed();
         // wait for tab contents is visible

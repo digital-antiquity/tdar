@@ -1,20 +1,11 @@
 package org.tdar.functional;
 
 
-import static java.time.temporal.ChronoUnit.MILLIS;
-import static java.time.temporal.ChronoUnit.MINUTES;
-import static java.time.temporal.ChronoUnit.SECONDS;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsNot.not;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
-import static org.openqa.selenium.By.id;
-import static org.openqa.selenium.support.ui.ExpectedConditions.elementToBeClickable;
-import static org.tdar.functional.util.TdarExpectedConditions.stabilityOfElement;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -24,6 +15,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Paths;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -48,6 +40,8 @@ import javax.imageio.ImageIO;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.StopWatch;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -96,7 +90,6 @@ import org.tdar.core.dao.external.auth.CrowdRestDao;
 import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.auth.UserRegistration;
 import org.tdar.filestore.Filestore;
-import org.tdar.functional.util.LoggingStopWatch;
 import org.tdar.functional.util.TdarExpectedConditions;
 import org.tdar.functional.util.WebDriverEventAdapter;
 import org.tdar.functional.util.WebElementSelection;
@@ -117,8 +110,8 @@ public abstract class AbstractSeleniumWebITCase {
     // , application/xls, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet
 
     // default timeout used for waitFor()
-    public static final Duration WAITFOR_TIMEOUT_DEFAULT = Duration.of(20, SECONDS);
-    public static final Duration WAITFOR_TIMEOUT_MAX = Duration.of(2, MINUTES);
+    public static final Duration WAITFOR_TIMEOUT_DEFAULT = Duration.of(20, ChronoUnit.SECONDS);
+    public static final Duration WAITFOR_TIMEOUT_MAX = Duration.of(2, ChronoUnit.MINUTES);
 
     protected static final TestConfiguration CONFIG = TestConfiguration.getInstance();
 
@@ -140,15 +133,17 @@ public abstract class AbstractSeleniumWebITCase {
     private WebDriver driver;
     private Browser currentBrowser;
 
-    private LoggingStopWatch findTimer;
-    private LoggingStopWatch waitTimer;
-
     // prefix screenshot filename with sequence number, relative to start of test (no need to init in @before)
     private int screenidx = 0;
 
     protected static Logger logger = LoggerFactory.getLogger(AbstractSeleniumWebITCase.class);
 
     private boolean ignorePageErrorChecks;
+
+    // indicates whether test is in a state where a find() operation may yield volatile results
+    private boolean isVolatileFind = false;
+
+    private Map<String, StopWatch> stopWatches = new HashMap<>();
 
     // predicate that returns true if document.readystate == "complete" (use with FluentWait)
     private Predicate<WebDriver> pageReady = new Predicate<WebDriver>() {
@@ -163,8 +158,25 @@ public abstract class AbstractSeleniumWebITCase {
     private Predicate<WebDriver> pageNotReady = Predicates.not(pageReady);
 
     public AbstractSeleniumWebITCase() {
-        findTimer = new LoggingStopWatch(getClass(), "findTimer", 0, 2 * 1000);
-        waitTimer = new LoggingStopWatch(getClass(), "waitTimer", 0, ((int)WAITFOR_TIMEOUT_DEFAULT.getSeconds() * 1000) / 4);
+    }
+
+    /**
+     *
+     * Get a stopwatch of a given name.  If watch doesn't exist,  method implicitly creates one in "suspended" state. We use to track
+     * aggregate time spent performing operations such implicit waits and find() operations.
+     * @param name
+     * @return
+     */
+    public StopWatch getStopWatch(String name) {
+        StopWatch stopWatch = stopWatches.get(name);
+
+        if(stopWatch == null) {
+            stopWatch = new StopWatch();
+            stopWatch.start();
+            stopWatch.suspend();
+            stopWatches.put(name, stopWatch);
+        }
+        return stopWatch;
     }
 
     public void deleteUserFromCrowd(TdarUser user) throws FileNotFoundException, IOException {
@@ -178,8 +190,6 @@ public abstract class AbstractSeleniumWebITCase {
      * The {@link WebDriverEventListener#afterClickOn} element argument is invalid if the clicked-on element caused the browser to navigate to new page, so we
      * we can't inspect it. So we use this field to signal whether afterClickOn() should call afterPageChange()
      */
-    private Set<WebElement> clickElems = new HashSet<>();
-
     private WebDriverEventListener eventListener = new WebDriverEventAdapter() {
         @Override
         public void afterNavigateTo(String url, WebDriver driver) {
@@ -228,18 +238,16 @@ public abstract class AbstractSeleniumWebITCase {
         @Override
         public void beforeClickOn(WebElement element, WebDriver driver) {
             if (elementCausesNavigation(element)) {
-                clickElems.add(element);
                 beforePageChange();
+            } else {
+                // if the click didn't cause navigation,  we assume that the click serves the purpose of modifying the current page somehow, the next
+                // find might be volatile if not preceded by an implicit wait.
+                isVolatileFind = true;
             }
         }
 
         @Override
         public void afterClickOn(WebElement element, WebDriver driver) {
-            // if beforeClickOn() put this element here, we are on the other side of page change.
-            if (clickElems.remove(element)) {
-                // FIXME: this fails, I think because the page has not finished rendering? commenting out for now...
-                // afterPageChange();
-            }
         }
 
         private boolean elementCausesNavigation(WebElement element) {
@@ -478,13 +486,26 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("Could not close selenium driver: {}", ex);
         }
         driver = null;
-        String fmt = " *** COMPLETED TEST: {}.{}() ***";
-        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
         getJavascriptIgnorePatterns().clear();
         performBrowserCleanup();
         if (!TestConfiguration.isWindows()) {
             ProcessList.killProcesses(listProcesses);
         }
+    }
+
+
+
+    @After
+    public final void report(){
+        String fmt = " *** COMPLETED TEST: {}.{}() ***";
+        logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
+
+        // go through the each stopwatch and report the elapsed time for each
+        stopWatches.forEach( (name, stopWatch) -> {
+            Duration d = Duration.of(stopWatch.getNanoTime(), ChronoUnit.NANOS);
+            logger.info("\t stopwatch name:{}\t  total time:{}s {}ms", name, d.getSeconds(), d.minusSeconds(d.getSeconds()).toMillis());
+        });
+        logger.info("*******");
     }
 
     private File getBrowserProfilePath(){
@@ -705,12 +726,12 @@ public abstract class AbstractSeleniumWebITCase {
      */
     @Deprecated
     public void waitFor(int timeInSeconds) {
-        waitTimer.start();
+       getStopWatch("wait").resume();
         try {
             Thread.sleep(timeInSeconds * TestConstants.MILLIS_PER_SECOND);
         } catch (InterruptedException ignored) {
         } finally {
-            waitTimer.stop();
+            getStopWatch("wait").suspend();
         }
     }
 
@@ -775,7 +796,7 @@ public abstract class AbstractSeleniumWebITCase {
      */
     public <T> T waitFor(ExpectedCondition<T> expectedCondition, Duration timeout, Duration pollingEvery) {
         T value = null;
-        waitTimer.start();
+        getStopWatch("wait").resume();
         WebDriverWait wait = new WebDriverWait(driver, timeout.getSeconds());
 
         // change polling interval from default of 500ms to 125ms. This may be a bad idea.
@@ -792,8 +813,12 @@ public abstract class AbstractSeleniumWebITCase {
             logger.error("Wait timeout.  Screenshot saved as timeout-exception-" + tex.hashCode());
             throw tex;
         } finally {
-            waitTimer.stop();
+            getStopWatch("wait").suspend();
         }
+
+        // after an implicit wait we assume (perhaps incorrectly) that find() calls are now "non-volatile"
+        isVolatileFind = false;
+
         return value;
     }
 
@@ -805,21 +830,25 @@ public abstract class AbstractSeleniumWebITCase {
      * @return WebElementSelection containing zero-or-more elments
      */
     public WebElementSelection find(String selector) {
-        findTimer.start();
         WebElementSelection wes = find(By.cssSelector(selector));
-        findTimer.stop();
         return wes;
     }
 
     /**
      * Return WebElementSelection containing all elements mathing the specified css selector.
-     * 
+     *
      * @param by
      * @return
      */
     public WebElementSelection find(By by) {
+        if(isVolatileFind) {
+            logger.warn("Volatile find: consider replacing with waitFor() (locator:{}  test:{})", by, testName.getMethodName());
+
+        }
+        getStopWatch("find").resume();
         WebElementSelection selection = new WebElementSelection(by, driver);
         logger.trace("criteria:{}\t  size:{}", by, selection.size());
+        getStopWatch("find").suspend();
         return selection;
     }
 
@@ -1053,8 +1082,8 @@ public abstract class AbstractSeleniumWebITCase {
         gotoPage("/admin/searchindex/build?forceClear=true");
 
         find("#idxBtn").click();
-        waitFor("#buildStatus", Duration.of(2, MINUTES));
-        waitFor("#spanDone", Duration.of(2, MINUTES));
+        waitFor("#buildStatus", Duration.of(2, ChronoUnit.MINUTES));
+        waitFor("#spanDone", Duration.of(2, ChronoUnit.MINUTES));
         logout();
         AbstractSeleniumWebITCase.setReindexed(true);
     }
@@ -1278,7 +1307,7 @@ public abstract class AbstractSeleniumWebITCase {
     }
 
     public void uploadFileAsync(FileAccessRestriction restriction, File uploadFile) {
-        waitFor(elementToBeClickable(id("fileAsyncUpload")));
+        waitFor(ExpectedConditions.elementToBeClickable(By.id("fileAsyncUpload")));
         // TEMPORARY FIX
         try {
             Thread.sleep(500);
@@ -1286,8 +1315,8 @@ public abstract class AbstractSeleniumWebITCase {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
-        waitFor((WebDriver driver) -> driver.findElement(id("fileAsyncUpload")).isEnabled());
-        find(id("fileAsyncUpload")).sendKeys(uploadFile.getAbsolutePath());
+        waitFor((WebDriver driver) -> driver.findElement(By.id("fileAsyncUpload")).isEnabled());
+        find(By.id("fileAsyncUpload")).sendKeys(uploadFile.getAbsolutePath());
         waitFor(".delete-button");
         find("#proxy0_conf").val(restriction.name());
     }
@@ -1308,7 +1337,7 @@ public abstract class AbstractSeleniumWebITCase {
         // yes, you really have to do this. the api has no "expand all" method.
         WebElementSelection visibleElements = find(".expandable-hitarea").visibleElements();
         while (!visibleElements.isEmpty() && (giveupCount++ < 100)) {
-            waitFor(stabilityOfElement(".expandable-hitarea"), Duration.of(10, SECONDS), Duration.of(125, MILLIS)).click();
+            waitFor(TdarExpectedConditions.stabilityOfElement(".expandable-hitarea"), Duration.of(10, ChronoUnit.SECONDS), Duration.of(125, ChronoUnit.MILLIS)).click();
             // visibleElements.click();
             visibleElements = find(".expandable-hitarea").visibleElements();
         }
@@ -1562,7 +1591,7 @@ public abstract class AbstractSeleniumWebITCase {
         // hopefully this spawned a new window
         newHandles.addAll(driver.getWindowHandles());
         newHandles.removeAll(origHandles);
-        assertThat("new window should have been created", newHandles, is(not(empty())));
+        assertThat("new window should have been created", newHandles, Matchers.is(Matchers.not(Matchers.empty())));
         String newHandle = newHandles.iterator().next();
         return newHandle;
 
@@ -1630,7 +1659,7 @@ public abstract class AbstractSeleniumWebITCase {
         find("#lastName").val(person.getLastName());
         find("#emailAddress").val(person.getEmail());
 
-        assertThat(find("#confirmEmail").toList().size(), is(equalTo(1)));
+        assertThat(find("#confirmEmail").toList().size(), Matchers.is(Matchers.equalTo(1)));
         find("#confirmEmail").val(reg.getConfirmEmail());
         find("#password").val(reg.getPassword());
         find("#confirmPassword").val(reg.getConfirmPassword());
@@ -1667,7 +1696,7 @@ public abstract class AbstractSeleniumWebITCase {
             selection = find("#loginButton").toList();
         }
         logger.debug(getCurrentUrl());
-        assertThat("login button is missing", selection, is(not(empty())));
+        assertThat("login button is missing", selection, Matchers.is(Matchers.not(Matchers.empty())));
     }
 
     /**
