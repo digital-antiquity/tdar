@@ -280,7 +280,7 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         login(CONFIG.getUsername(), CONFIG.getPassword());
         gotoPage(url);
         assertTextPresent("my fancy collection");
-        clickLinkWithText("rights");
+        clickLinkWithText("Rights");
         assertTextPresent("my fancy collection");
         removeElementsByName(String.format(FMT_AUTHUSERS_ID, 0));
         removeElementsByName(String.format(FMT_AUTHUSERS_PERMISSION, 0));

@@ -96,7 +96,7 @@
             <@nav.makeLink
                 namespace="${path}"
                 action="${id?c}/rights"
-                label="RIghts"
+                label="Rights"
                 name="rights"
                 includeResourceId=false
                 current=current
