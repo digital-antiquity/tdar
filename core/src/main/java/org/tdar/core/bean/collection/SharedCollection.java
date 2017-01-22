@@ -74,10 +74,8 @@ public class SharedCollection extends CustomizableCollection<SharedCollection>
 
     public SharedCollection() {
         this.setType(CollectionType.SHARED);
-        setHidden(false);
         setSortBy(SortOption.TITLE);
         setOrientation(DisplayOrientation.LIST);
-        this.setHidden(false);
     }
 
 

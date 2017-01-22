@@ -969,22 +969,25 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
     @Test
     @Rollback(true)
     public void testDraftResourceVisibleByAuthuser() throws Exception {
-        controller = generateNewInitializedController(ShareController.class, getUser());
-        controller.prepare();
-        SharedCollection rc = controller.getPersistable();
+        ShareController shareController = generateNewInitializedController(ShareController.class, getUser());
+        shareController.prepare();
+        SharedCollection rc = shareController.getPersistable();
         Project project = createAndSaveNewResource(Project.class, getUser(), "test project");
         project.setStatus(Status.DRAFT);
         genericService.saveOrUpdate(project);
         // project = null;
         // Long pid = project.getId();
         Project proxy = new Project(project.getId(), project.getTitle());
-        controller.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
-        controller.getToAdd().add(proxy.getId());
-        controller.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
-        controller.getPersistable().setDescription("description");
-        controller.setServletRequest(getServletPostRequest());
-        controller.setAsync(false);
-        String result = controller.save();
+        shareController.setAuthorizedUsers(Collections.<AuthorizedUser> emptyList());
+        shareController.getToAdd().add(proxy.getId());
+        shareController.getPersistable().setName("testControllerWithActiveResourceThatBecomesDeleted");
+        shareController.getPersistable().setDescription("description");
+        if (shareController.getPersistable() instanceof VisibleCollection) {
+            shareController.getPersistable().setHidden(true);
+        }
+        shareController.setServletRequest(getServletPostRequest());
+        shareController.setAsync(false);
+        String result = shareController.save();
         // searchIndexService.index(proxy);
 
         Assert.assertEquals(Action.SUCCESS, result);
@@ -995,6 +998,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         vc.setId(rcid);
         vc.setSlug(slug);
         vc.prepare();
+        logger.debug("hidden:? {} ", vc.getResourceCollection().isHidden());
         vc.view();
         assertEquals("collection should have one resource inside", 1, vc.getResults().size());
         vc = null;
