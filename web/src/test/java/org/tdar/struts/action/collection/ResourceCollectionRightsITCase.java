@@ -87,7 +87,7 @@ public class ResourceCollectionRightsITCase extends AbstractResourceControllerIT
         assertEquals(name, foundCollection.getName());
         assertEquals(description, foundCollection.getDescription());
         assertEquals(CollectionType.SHARED, foundCollection.getType());
-        assertEquals(SortOption.TITLE, foundCollection.getSortBy());
+        assertEquals(SortOption.RESOURCE_TYPE, foundCollection.getSortBy());
 
         assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile2));
         assertTrue(foundCollection.getResources().contains(generateInformationResourceWithFile));
