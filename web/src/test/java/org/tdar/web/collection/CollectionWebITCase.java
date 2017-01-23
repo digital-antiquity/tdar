@@ -125,6 +125,9 @@ public class CollectionWebITCase extends AbstractAdminAuthenticatedWebTestCase {
         logger.trace(getHtmlPage().asText());
         String currentUrlPath = getCurrentUrlPath();
         logger.debug(currentUrlPath);
+        if (getPageText().contains("is either empty ")) {
+            gotoPage(currentUrlPath);
+        }
         for (Resource resource : someResources) {
             assertTextPresent(resource.getTitle());
         }

@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.tdar.core.bean.collection.SharedCollection;
+import org.tdar.core.bean.collection.VisibleCollection;
 import org.tdar.core.dao.external.auth.InternalTdarRights;
 import org.tdar.core.service.DeleteIssue;
 import org.tdar.core.service.collection.ResourceCollectionService;
@@ -18,7 +19,7 @@ import com.opensymphony.xwork2.Preparable;
 @Scope("prototype")
 @ParentPackage("secured")
 @Namespace("/collection")
-public class CollectionDeleteAction extends AbstractDeleteAction<SharedCollection> implements Preparable {
+public class CollectionDeleteAction extends AbstractDeleteAction<VisibleCollection> implements Preparable {
 
     private static final long serialVersionUID = 8210288974799774479L;
 
@@ -28,8 +29,8 @@ public class CollectionDeleteAction extends AbstractDeleteAction<SharedCollectio
     private transient AuthorizationService authorizationService;
 
     @Override
-    protected SharedCollection loadPersistable() {
-        SharedCollection collection = getGenericService().find(SharedCollection.class, getId());
+    protected VisibleCollection loadPersistable() {
+        VisibleCollection collection = getGenericService().find(VisibleCollection.class, getId());
         if (collection == null) {
             return null;
         }
@@ -37,7 +38,7 @@ public class CollectionDeleteAction extends AbstractDeleteAction<SharedCollectio
     }
 
     @Override
-    protected void delete(SharedCollection collection) {
+    protected void delete(VisibleCollection collection) {
         resourceCollectionService.deleteForController(collection, getDeletionReason(), getAuthenticatedUser());
     }
 

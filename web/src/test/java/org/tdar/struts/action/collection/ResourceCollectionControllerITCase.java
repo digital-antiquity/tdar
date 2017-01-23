@@ -289,7 +289,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((SharedCollection)deleteAction.getPersistable()).getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();
@@ -310,7 +310,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((SharedCollection)deleteAction.getPersistable()).getResources().isEmpty());
         // resourceCollection.setParent(parent)
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
@@ -363,7 +363,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((SharedCollection)deleteAction.getPersistable()).getResources().isEmpty());
         assertTrue("user list should not be empty", !deleteAction.getPersistable().getAuthorizedUsers().isEmpty());
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
@@ -379,7 +379,7 @@ public class ResourceCollectionControllerITCase extends AbstractResourceControll
         init(deleteAction, owner);
         deleteAction.prepare();
         assertNotNull(deleteAction.getPersistable());
-        assertTrue("resource list should not be empty", !deleteAction.getPersistable().getResources().isEmpty());
+        assertTrue("resource list should not be empty", !((SharedCollection)deleteAction.getPersistable()).getResources().isEmpty());
         setHttpServletRequest(getServletPostRequest());
         deleteAction.setDelete(TdarActionSupport.DELETE);
         deleteAction.delete();

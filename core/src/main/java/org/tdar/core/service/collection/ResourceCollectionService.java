@@ -898,13 +898,24 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
     }
 
     @Transactional(readOnly = false)
-    public void deleteForController(SharedCollection persistable, String deletionReason, TdarUser authenticatedUser) {
+    public void deleteForController(VisibleCollection persistable, String deletionReason, TdarUser authenticatedUser) {
         // should I do something special?
-        for (Resource resource : persistable.getResources()) {
-            removeFromCollection(resource, persistable);
-            getDao().saveOrUpdate(resource);
-            publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+        if (persistable instanceof SharedCollection) {
+            for (Resource resource : ((RightsBasedResourceCollection) persistable).getResources()) {
+                removeFromCollection(resource, persistable);
+                getDao().saveOrUpdate(resource);
+                publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+            }
         }
+        if (persistable instanceof ListCollection) {
+            ListCollection listCollection = (ListCollection)persistable;
+            for (Resource resource : listCollection.getUnmanagedResources()) {
+                removeFromCollection(resource, listCollection);
+                getDao().saveOrUpdate(resource);
+                publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
+            }
+        }
+        
         getDao().delete(persistable.getAuthorizedUsers());
         getDao().deleteDownloadAuthorizations(persistable);
         // FIXME: need to handle parents and children
