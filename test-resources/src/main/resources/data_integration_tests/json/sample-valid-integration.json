@@ -1,0 +1,71 @@
+{
+    "columns": [
+        {
+            "dataTableColumns": [
+                {
+                    "id": 32450,
+                    "name": "taxon"
+                },
+                {
+                    "id": 31710,
+                    "name": "species_common_name"
+                }
+            ],
+            "name": "Fauna Taxon Ontology ",
+            "nodeSelection": [
+                {
+                    "id": 65880,
+                    "iri": "Amphibia"
+                },
+                {
+                    "id": 56930,
+                    "iri": "Anura"
+                },
+                {
+                    "id": 57380,
+                    "iri": "Scaphiopodidae"
+                },
+                {
+                    "id": 62840,
+                    "iri": "Spea_sp"
+                },
+                {
+                    "id": 64870,
+                    "iri": "Aves"
+                },
+                {
+                    "id": 64550,
+                    "iri": "Accipitridae"
+                }
+            ],
+            "ontology": {
+                "id": 42940,
+                "title": "Fauna Taxon Ontology "
+            },
+            "type": "INTEGRATION"
+        }
+    ],
+    "dataTables": [
+        {
+            "displayName": "qryBone",
+            "id": 3104
+        },
+        {
+            "displayName": "Main table",
+            "id": 3091
+        }
+    ],
+    "datasets": [],
+    "description": "",
+    "ontologies": [
+        {
+            "id": 42940,
+            "title": "Fauna Taxon Ontology "
+        },
+        {
+            "id": 42950,
+            "title": "Fauna Element Ontology"
+        }
+    ],
+    "title": "test element integration"
+}
