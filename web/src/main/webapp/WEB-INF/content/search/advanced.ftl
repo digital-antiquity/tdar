@@ -23,11 +23,14 @@
 <h1>Search ${siteAcronym}</h1>
 
 <div class="usual">
-	<@search.toolbar />
+    <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} >
+    <div>
+        <@s.submit id="searchButtonTop" value="Search" cssClass="btn btn-primary pull-right" />
+        <@search.toolbar />
+    </div>
 
     <div class="tab-content">
         <div id="resource" class="tab-pane active">
-            <@s.form action="results" method="GET" id="searchGroups" cssClass="form-horizontal tdarvalidate"  dynamicAttributes={"data-validate-method":"initBasicForm"} >
                 <input type="hidden" name="_tdar.searchType" value="advanced">
 
                 <div class="searchgroup">
@@ -38,8 +41,8 @@
 
                             <@searchGroup group_index group />
 
-		                    <#else>
-		                        <@searchGroup 0 "" />
+                            <#else>
+                                <@searchGroup 0 "" />
                         </#list>
                 </div>
 
@@ -47,15 +50,15 @@
                     <@search.narrowAndSort />
                 </div>
 
-                <div>
+                <div class="form-actions">
                     <div id="error"></div>
                     <@s.submit id="searchButton" value="Search" cssClass="btn btn-primary" />
                 </div>
 
 
-            </@s.form>
         </div>
     </div>
+    </@s.form>
 </div>
 
 <script>

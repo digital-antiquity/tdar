@@ -114,7 +114,7 @@
     <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
         <@searchLink path linkText>
-    	<#if startRecord != 0>
+        <#if startRecord != 0>
             <@s.param name="startRecord" value="${startRecord?c}" />
         <#else>
             <@s.param name="startRecord" value="" />
@@ -234,8 +234,8 @@
                         </#if>
                     </#if></#if></a>
                 <a rel="noindex" href="<#noescape>${facetUrl}</#noescape>"><@s.text name="${facet.label}"/></a>
-				<#if link></a></#if>
-				 <span>(${facet.count})</span></span></#compress>
+                <#if link></a></#if>
+                 <span>(${facet.count})</span></span></#compress>
                     <#elseif (currentValues?size > 0) >
                         <@removeFacet facetlist=currentValues facetParam=facetParam />
                     <#else>
@@ -307,8 +307,8 @@
                 </#if>
 
                 <!--        <li>Subscribe via &raquo;
-	            <a class="subscribe"  href="${rssUrl}">RSS</a>
-	        </li> -->
+                <a class="subscribe"  href="${rssUrl}">RSS</a>
+            </li> -->
             </ul>
 
         </div>
