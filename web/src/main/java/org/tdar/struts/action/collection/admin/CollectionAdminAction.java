@@ -79,12 +79,12 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
     private ArrayList<Status> selectedResourceStatuses = new ArrayList<>();
     private ArrayList<ResourceAccessType> fileAccessTypes = new ArrayList<>();
 
-    private HierarchicalCollection collection;
 
     @Override
     public void prepare() throws Exception {
         super.prepare();
         resourceCollectionService.buildCollectionTreeForController(getCollection(), getAuthenticatedUser(), HierarchicalCollection.class);
+        getLogger().debug("{}", getCollection());
         setAllChildCollections(getCollection().getTransientChildren());
 
         List<Long> collectionIds = PersistableUtils.extractIds(getAllChildCollections());
@@ -112,7 +112,7 @@ public class CollectionAdminAction extends AbstractCollectionAdminAction impleme
 
     @Override
     public HierarchicalCollection getCollection() {
-        return collection;
+        return (HierarchicalCollection) super.getCollection();
     }
 
 

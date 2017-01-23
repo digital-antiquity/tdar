@@ -564,7 +564,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      */
     @Transactional(readOnly = true)
     public <C extends HierarchicalCollection<C>> List<C> buildCollectionTreeForController(C collection, TdarUser authenticatedUser, Class<C> cls) {
-        List<C> allChildren = getAllChildCollections(collection, cls);
+        List<C> allChildren = new ArrayList<>();
+        allChildren.addAll(getAllChildCollections(collection, cls));
         // FIXME: iterate over all children to reconcile tree
         Iterator<C> iter = allChildren.iterator();
         while (iter.hasNext()) {
@@ -579,8 +580,10 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
         allChildren.add(collection);
         allChildren.forEach(child -> {
-            child.getTransientChildren().sort(VisibleCollection.TITLE_COMPARATOR);
-            logger.trace("new list: {}", child.getTransientChildren());
+            if (child != null && CollectionUtils.isNotEmpty(child.getTransientChildren() )) {
+                child.getTransientChildren().sort(VisibleCollection.TITLE_COMPARATOR);
+                logger.trace("new list: {}", child.getTransientChildren());
+            }
         });
         return allChildren;
     }
