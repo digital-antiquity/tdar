@@ -16,6 +16,7 @@ public class DataOneSynchronizeTask implements Runnable {
     public void run() {
         logger.debug("running sync... {}", dataOneService);
         dataOneService.synchronizeTdarChangesWithDataOneObjects();
+        logger.debug("completed sync... {}", dataOneService);
     }
 
     public DataOneService getDataOneService() {
