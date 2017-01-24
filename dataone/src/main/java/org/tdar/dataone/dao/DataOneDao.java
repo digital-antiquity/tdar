@@ -35,7 +35,7 @@ import org.tdar.dataone.service.ObjectResponseContainer;
 @Component
 public class DataOneDao {
     private static final String TDAR_DATAONE_MERGE = "select id, externalId, dateUpdated from Resource where resourceType not in ('PROJECT', 'CODING_SHEET','ONTOLOGY') and" +
-             "(externalId is not null and trim(externalId) != '') and (dateUpdated > :date or dateCreated  > :date)";
+             "(externalId is not null and trim(externalId) != '') and (dateUpdated > (select max(sysMetadataModified) from DataOneObject) or dateCreated  > (select max(sysMetadataModified) from DataOneObject) or (select max(sysMetadataModified) from DataOneObject) is null )";
 
     private static final String DATONE_FIND_BY_IDENTIFIER = "from DataOneObject where identifier=:identifier";
     private static final String DATAONE_FIND_LAST_HARVESTED = "from DataOneObject where seriesId=:seriesId and (obsoletedBy is null or obsoletedBy='') and identifier !=:identifier";  // and type=:type
@@ -103,20 +103,13 @@ public class DataOneDao {
     }
 
     public List<ListObjectEntry> unify(D1Formatter formatter) {
-        Query query = genericDao.createQuery("select max(sysMetadataModified) from DataOneObject");
-        Date date = (Date) query.uniqueResult();
-        if (date == null) {
-            date = new Date(0L);
-        }
-        String queryString = TDAR_DATAONE_MERGE;
 
-        query = genericDao.createQuery(queryString);
-        logger.trace("{}", date);
-        query.setParameter("date", date);
+        Query query = genericDao.createQuery(TDAR_DATAONE_MERGE);
         ScrollableResults list2 = query.scroll(ScrollMode.FORWARD_ONLY);
-
         List<ListObjectEntry> entries = new ArrayList<>();
+        int count = 0;
         while (list2.next()) {
+            count++;
             try {
                 Object[] obj = list2.get();
                 String externalId = (String) obj[1];
@@ -131,6 +124,7 @@ public class DataOneDao {
                 logger.error("{}", e, e);
             }
         }
+        logger.debug("total added to queue: {}", count);
         return entries;
 
     }
