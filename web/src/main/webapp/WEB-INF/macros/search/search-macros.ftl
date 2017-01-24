@@ -114,7 +114,7 @@
     <#macro paginationLink startRecord path linkText>
     <span class="paginationLink">
         <@searchLink path linkText>
-    	<#if startRecord != 0>
+        <#if startRecord != 0>
             <@s.param name="startRecord" value="${startRecord?c}" />
         <#else>
             <@s.param name="startRecord" value="" />
@@ -322,8 +322,8 @@
                 </#if>
 
                 <!--        <li>Subscribe via &raquo;
-	            <a class="subscribe"  href="${rssUrl}">RSS</a>
-	        </li> -->
+                <a class="subscribe"  href="${rssUrl}">RSS</a>
+            </li> -->
             </ul>
 
         </div>

@@ -370,7 +370,7 @@
 
     <#macro _keywordSection label keywordList searchParam inherited=false >
         <#if keywordList?has_content>
-        <p>
+        <p class="break-word">
             <strong>${label} <#if editor && inherited><small>(from project)</small></#if> </strong><br>
             <@view.keywordSearch keywordList searchParam false />
         </p>

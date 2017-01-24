@@ -286,7 +286,7 @@ public class DataOneService implements DataOneConstants, D1Formatter {
     /**
      * This syncrhonizes tDAR records and DataOne records so that DataONE can see all of the various versions of tDAR records
      */
-//    @Transactional(readOnly=false)
+    @Transactional(readOnly=false)
     public void synchronizeTdarChangesWithDataOneObjects() {
         logger.trace("starting sync...");
         List<ListObjectEntry> resources = dataOneDao.unify(this);

@@ -5,9 +5,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -33,6 +38,7 @@ import org.tdar.search.service.index.SearchIndexService;
 import org.tdar.struts.action.api.search.RSSSearchAction;
 import org.tdar.struts_base.action.TdarActionException;
 import org.tdar.struts_base.action.TdarActionSupport;
+import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 @Transactional
@@ -97,7 +103,6 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         assertEquals(document, controller.getResults().get(0));
     }
 
-
     @Test
     @Rollback(true)
     public void testRss404() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
@@ -110,7 +115,7 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         String viewRss = controller.viewRss();
         assertNotEquals(TdarActionSupport.SUCCESS, viewRss);
         // the record we created should be the absolute first record
-//        assertEquals(document, controller.getResults().get(0));
+        // assertEquals(document, controller.getResults().get(0));
     }
 
     @Test
@@ -156,9 +161,10 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
 
     @Test
     @Rollback(true)
-    public void testRssInvalidCharacters() throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException {
+    public void testRssInvalidCharacters()
+            throws InstantiationException, IllegalAccessException, TdarActionException, SolrServerException, IOException, ParserConfigurationException {
         InformationResource document = generateDocumentWithUser();
-        document.setDescription("a\u0001a");
+        document.setDescription("a\u0001a\u000B");
         genericService.saveOrUpdate(document);
         searchIndexService.index(document);
         RSSSearchAction controller = generateNewInitializedController(RSSSearchAction.class);
@@ -166,6 +172,20 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         // doSearch("");
         String viewRss = controller.viewRss();
         logger.debug(viewRss);
+        String string = IOUtils.toString(controller.getInputStream());
+        logger.debug(string);
+        assertTrue(string.contains("aa"));
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        boolean exceptions = false;
+        try {
+            Document doc = builder.parse(new ByteArrayInputStream(string.getBytes()));
+        } catch (SAXException e) {
+            exceptions = true;
+            logger.error("e: {}",e,e);
+        }
+        assertFalse("Should not have seen any parsing exceptions",exceptions);
+
         logger.debug("{}", controller.getActionErrors());
         // the record we created should be the absolute first record
         assertEquals(0, controller.getActionErrors().size());
@@ -207,6 +227,5 @@ public class RSSSearchControllerITCase extends AbstractSearchControllerITCase {
         }
         return found;
     }
-
 
 }

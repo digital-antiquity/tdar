@@ -733,7 +733,7 @@ h2 {
 }
 
 #alt aside ul.collection-treeview a {
-    word-break: break-word;
+    word-break: break-all;
 }
 
 #alt aside ul.collection-treeview li {
@@ -1411,4 +1411,8 @@ hr.light {
 
 ul .header-auto {
 	text-decoration:underline;
+}
+
+.break-word {
+    overflow-wrap: break-word;
 }

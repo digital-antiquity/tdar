@@ -74,6 +74,7 @@ import org.tdar.db.model.abstracts.TargetDatabase;
 import org.tdar.filestore.FileAnalyzer;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.PersistableUtils;
+import org.tdar.utils.XmlEscapeHelper;
 
 import com.redfin.sitemapgenerator.GoogleImageSitemapGenerator;
 import com.redfin.sitemapgenerator.GoogleImageSitemapUrl;
@@ -376,7 +377,8 @@ public class DatasetDao extends ResourceDao<Dataset> {
         if (StringUtils.isEmpty(text)) {
             return text;
         }
-        return StringEscapeUtils.escapeXml11(RssService.stripInvalidXMLCharacters(text));
+        XmlEscapeHelper xse = new XmlEscapeHelper(-1L);
+        return StringEscapeUtils.escapeXml11(xse.stripNonValidXMLCharacters(text));
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })

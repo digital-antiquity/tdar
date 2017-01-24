@@ -42,6 +42,7 @@ import org.tdar.core.exception.TdarRecoverableRuntimeException;
 import org.tdar.core.service.external.AuthorizationService;
 import org.tdar.search.query.SearchResultHandler;
 import org.tdar.utils.MessageHelper;
+import org.tdar.utils.XmlEscapeHelper;
 
 import com.rometools.modules.georss.GeoRSSModule;
 import com.rometools.modules.georss.SimpleModuleImpl;
@@ -87,7 +88,6 @@ public class RssService implements Serializable {
     private static final long serialVersionUID = 8223380890944917677L;
 
     private final transient Logger logger = LoggerFactory.getLogger(getClass());
-    public static final Pattern INVALID_XML_CHARS = Pattern.compile("[\u0001\u0009\u0018\\u000A\\u000D\uD800\uDFFF]");
 
     // \uDC00-\uDBFF -\uD7FF\uE000-\uFFFD
 
@@ -114,21 +114,11 @@ public class RssService implements Serializable {
      * @return
      */
     public static String cleanStringForXML(String input) {
-        String result = INVALID_XML_CHARS.matcher(input).replaceAll("");
-        return StringUtils.replace(result, "\u000B", "");
+        XmlEscapeHelper xse = new XmlEscapeHelper(-1L);
+        String result = xse.stripNonValidXMLCharacters(input);
+        return result;
     }
 
-    /**
-     * Another XML Stripping method... why two?
-     * FIXME: remove second method
-     * 
-     * @param text
-     * @return
-     */
-    public static String stripInvalidXMLCharacters(String text) {
-        Pattern VALID_XML_CHARS = Pattern.compile("[^\\u0009\\u0018\\u000A\\u000D\\u0020-\\uD7FF\\uE000-\\uFFFD\uD800\uDC00-\uDBFF\uDFFF]");
-        return VALID_XML_CHARS.matcher(text).replaceAll("");
-    }
 
     @CacheEvict(allEntries = true, value = Caches.RSS_FEED)
     public void evictRssCache() {
@@ -206,7 +196,7 @@ public class RssService implements Serializable {
             StringWriter writer = new StringWriter();
             SyndFeedOutput output = new SyndFeedOutput();
             output.output(feed, writer);
-            return new ByteArrayInputStream(stripInvalidXMLCharacters(writer.toString()).getBytes());
+            return new ByteArrayInputStream(writer.toString().getBytes());
         }
         return null;
     }
