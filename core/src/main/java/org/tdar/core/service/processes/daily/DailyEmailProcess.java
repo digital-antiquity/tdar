@@ -88,7 +88,7 @@ public class DailyEmailProcess extends AbstractScheduledProcess {
             email.setDate(new Date());
             email.setFrom(config.getDefaultFromEmail());
             email.setTo(config.getContactEmail());
-            email.setSubject(String.format("New User Report: %s new users", people.size()));
+            email.setSubject(String.format("%s New User Report: %s new users", config.getSiteAcronym().toUpperCase(), people.size()));
             email.setUserGenerated(false);
             Map<String, Object> dataModel = initDataModel();
             dataModel.put("users", people);

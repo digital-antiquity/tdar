@@ -127,7 +127,7 @@ public class ScheduledProcessITCase extends AbstractIntegrationTestCase {
         logger.debug("//");
         scheduledProcessService.runNextScheduledProcessesInQueue();
 
-        SimpleMailMessage message = checkMailAndGetLatest("The following users were");
+        SimpleMailMessage message = checkMailAndGetLatest("The following users registered with");
         assertThat(message, is( not( nullValue())));
 //        assertTrue(dailyEmailProcess.isCompleted());
     }

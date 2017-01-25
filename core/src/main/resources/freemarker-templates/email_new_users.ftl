@@ -1,5 +1,5 @@
 <#list users>
-The following users were added to ${siteAcronym} in the last day (${date?date?string.short}):
+The following users registered with ${siteAcronym} since (${date?date?string.short}):
 
  <#items as user>
 ${user.properName}
