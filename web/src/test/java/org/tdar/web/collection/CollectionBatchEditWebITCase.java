@@ -14,9 +14,13 @@ public class CollectionBatchEditWebITCase extends AbstractEditorAuthenticatedWeb
     private static final String HORP_TITLE = "HORP title";
     private static final String HORP_ID = "1628";
 
+
+
     @Test
     public void testBatchEdit() {
         gotoPage("/collection/admin/batch/1004");
+        saveHtml("batch_1004");
+
 
         boolean seen = querySelectorAll(".resource-id-field").stream()
                 .peek( input -> logger.debug("looking for id in {}", input))

@@ -16,6 +16,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -31,6 +34,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -170,8 +174,24 @@ public abstract class AbstractWebTestCase  implements WebTestCase {
         logger.info(fmt, getClass().getCanonicalName(), testName.getMethodName());
     }
 
-    
-    
+    /**
+     * Write the current page to the "screenshots" directory.
+     *
+     * @param file
+     */
+    private void saveHtml(File file ) {
+        file.getParentFile().mkdirs();
+        try {
+            FileUtils.writeStringToFile(file, getPageCode(), StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            logger.error("Tried to save html to {}", file.getAbsolutePath(), e);
+        }
+    }
+
+    public void saveHtml(String prefix) {
+        // fixme: put this file into a test-specific directory  (e.g. target/htmlunit/MyTestSuite/myTestName)
+        saveHtml(Paths.get("./target/htmlunit-screenshots/", prefix + ".html").toFile());
+    }
     
     @SuppressWarnings("serial")
     private Map<String, Pattern> encodingErrorPatterns = new LinkedHashMap<String, Pattern>() {
