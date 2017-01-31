@@ -7,6 +7,9 @@ import java.util.HashSet;
 
 public class CollectionDocumentConverter extends AbstractSolrDocumentConverter {
 
+    /*
+     * See solr/configsets/default/conf/collections-schema.xml
+     */
     public static SolrInputDocument convert(ResourceCollection collection) {
         
         SolrInputDocument doc = convertPersistable(collection);
