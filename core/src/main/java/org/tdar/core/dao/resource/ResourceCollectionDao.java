@@ -316,13 +316,13 @@ public class ResourceCollectionDao extends Dao.HibernateBase<ResourceCollection>
     public void addToInternalCollection(Resource resource, TdarUser user, GeneralPermissions permission) {
         ResourceCollection internal = resource.getInternalResourceCollection();
         if (internal == null) {
-            internal = createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, true);
+            internal = createInternalResourceCollectionForResource(resource.getSubmitter(), resource, true);
         }
         internal.getAuthorizedUsers().add(new AuthorizedUser(user, permission));
         saveOrUpdate(internal);
     }
 
-    public ResourceCollection createInternalResourceCollectionWithResource(TdarUser owner, Resource resource, boolean shouldSave) {
+    public ResourceCollection createInternalResourceCollectionForResource(TdarUser owner, Resource resource, boolean shouldSave) {
         InternalCollection internalCollection;
         internalCollection = new InternalCollection();
         internalCollection.setOwner(owner);

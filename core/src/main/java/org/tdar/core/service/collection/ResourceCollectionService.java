@@ -100,10 +100,34 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
      * @param shouldSave
      */
     @Transactional
-    public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers, boolean shouldSave, TdarUser actor) {
+    public void saveAuthorizedUsersForResource(Resource resource, List<AuthorizedUser> authorizedUsers_, boolean shouldSave, TdarUser actor) {
         logger.info("saving authorized users...");
 
+        List<AuthorizedUser> authorizedUsers = new ArrayList<>();
         // if the incoming set is empty and the current has nothing ... NO-OP
+        if (CollectionUtils.isEmpty(authorizedUsers_)
+                && (resource.getInternalResourceCollection() == null || resource.getInternalResourceCollection().getAuthorizedUsers().size() == 0)) {
+            logger.debug("Skipping creation of internalResourceCollection -- no incomming, no current");
+            return;
+        } else {
+            Iterator<AuthorizedUser> iterator = authorizedUsers.iterator();
+            while (iterator.hasNext()) {
+                AuthorizedUser user = iterator.next();
+                if (user == null) {
+                    continue;
+                }
+                if (user.getGeneralPermission() == null) {
+                    continue;
+                }
+
+                TdarUser tdarUser = user.getUser();
+                if (PersistableUtils.isNullOrTransient(tdarUser) || tdarUser.hasNoPersistableValues()) {
+                    continue;
+                }
+                authorizedUsers.add(user);
+            }
+        }
+        
         if (CollectionUtils.isEmpty(authorizedUsers)
                 && (resource.getInternalResourceCollection() == null || resource.getInternalResourceCollection().getAuthorizedUsers().size() == 0)) {
             logger.debug("Skipping creation of internalResourceCollection -- no incomming, no current");
@@ -123,7 +147,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
         // if none, create one
         if (internalCollection == null) {
-            internalCollection = getDao().createInternalResourceCollectionWithResource(resource.getSubmitter(), resource, shouldSave);
+            internalCollection = getDao().createInternalResourceCollectionForResource(resource.getSubmitter(), resource, shouldSave);
         }
         // note: we assume here that the authorizedUser validation will happen in saveAuthorizedUsersForResourceCollection
         saveAuthorizedUsersForResourceCollection(resource, internalCollection, authorizedUsers, shouldSave, actor);
@@ -580,7 +604,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         // second pass - sort all children lists (we add root into "allchildren" so we can sort the top level)
         allChildren.add(collection);
         allChildren.forEach(child -> {
-            if (child != null && CollectionUtils.isNotEmpty(child.getTransientChildren() )) {
+            if (child != null && CollectionUtils.isNotEmpty(child.getTransientChildren())) {
                 child.getTransientChildren().sort(VisibleCollection.TITLE_COMPARATOR);
                 logger.trace("new list: {}", child.getTransientChildren());
             }
@@ -908,14 +932,14 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             }
         }
         if (persistable instanceof ListCollection) {
-            ListCollection listCollection = (ListCollection)persistable;
+            ListCollection listCollection = (ListCollection) persistable;
             for (Resource resource : listCollection.getUnmanagedResources()) {
                 removeFromCollection(resource, listCollection);
                 getDao().saveOrUpdate(resource);
                 publisher.publishEvent(new TdarEvent(resource, EventType.CREATE_OR_UPDATE));
             }
         }
-        
+
         getDao().delete(persistable.getAuthorizedUsers());
         getDao().deleteDownloadAuthorizations(persistable);
         // FIXME: need to handle parents and children
@@ -1245,7 +1269,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
 
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public List<Resource> findResourcesSharedWith(TdarUser authenticatedUser, TdarUser user) {
         boolean admin = false;
         if (authorizationService.isEditor(authenticatedUser)) {
@@ -1254,7 +1278,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findResourcesSharedWith(authenticatedUser, user, admin);
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public <C extends ResourceCollection> List<SharedCollection> findCollectionsSharedWith(TdarUser authenticatedUser, TdarUser user, Class<C> cls) {
         boolean admin = false;
         if (authorizationService.isEditor(authenticatedUser)) {
@@ -1263,8 +1287,8 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
         return getDao().findCollectionsSharedWith(authenticatedUser, user, cls, admin);
     }
 
-    @Transactional(readOnly=true)
-    public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser)  {
+    @Transactional(readOnly = true)
+    public List<TdarUser> findUsersSharedWith(TdarUser authenticatedUser) {
         return getDao().findUsersSharedWith(authenticatedUser);
     }
 }

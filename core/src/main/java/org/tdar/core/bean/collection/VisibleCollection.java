@@ -3,6 +3,7 @@ package org.tdar.core.bean.collection;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Lob;
+import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlTransient;
 
@@ -34,9 +35,9 @@ public abstract class VisibleCollection extends ResourceCollection implements Oa
     );
     private transient boolean viewable;
 
-    @Column
     @JsonView(JsonLookupFilter.class)
     @Length(max = FieldLength.FIELD_LENGTH_500)
+    @NotNull
     private String name;
 
     @Lob
