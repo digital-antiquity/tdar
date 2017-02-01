@@ -16,7 +16,7 @@ public enum CollectionType implements Localizable, PluralLocalizable {
     public String getLabel() {
         return this.label;
     }
-    
+
     public static <C extends ResourceCollection> CollectionType getTypeForClass(Class<C> cls) {
         if (cls.isAssignableFrom(SharedCollection.class)) {
             return SHARED;
@@ -43,7 +43,7 @@ public enum CollectionType implements Localizable, PluralLocalizable {
     public Class<? extends ResourceCollection> getClassForType() {
         switch (this) {
             case INTERNAL:
-                return  InternalCollection.class;
+                return InternalCollection.class;
             case LIST:
                 return ListCollection.class;
             case SHARED:
@@ -52,9 +52,14 @@ public enum CollectionType implements Localizable, PluralLocalizable {
         return null;
     }
 
-
     public String getUrlNamespace() {
-        if(this==INTERNAL) {return "invalid";}
-        return this == SHARED ? "share" : "collection";
+        switch (this) {
+            case LIST:
+                return "listcollection";
+            case SHARED:
+                return "collection";
+            default:
+                return "invalid";
+        }
     }
 }
