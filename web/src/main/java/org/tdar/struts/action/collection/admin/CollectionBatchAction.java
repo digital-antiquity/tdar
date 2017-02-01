@@ -74,7 +74,7 @@ public class CollectionBatchAction extends AbstractCollectionAdminAction impleme
     public void prepare() throws Exception {
         super.prepare();
         // COMMENTED OUT UNTIL WE FIGURE OUT What sort of collection should support this
-//        setResources(new ArrayList<>(getCollection().getResources()));
+        setResources(new ArrayList<>(getCollection().getResources()));
         Collections.sort(resources , new Comparator<Resource>() {
             @Override
             public int compare(Resource o1, Resource o2) {
