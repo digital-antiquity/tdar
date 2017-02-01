@@ -27,6 +27,7 @@ import org.tdar.core.bean.citation.Citation;
 import org.tdar.core.bean.citation.RelatedComparativeCollection;
 import org.tdar.core.bean.citation.SourceCollection;
 import org.tdar.core.bean.collection.CollectionType;
+import org.tdar.core.bean.collection.HierarchicalCollection;
 import org.tdar.core.bean.collection.InternalCollection;
 import org.tdar.core.bean.collection.ResourceCollection;
 import org.tdar.core.bean.collection.RightsBasedResourceCollection;
@@ -516,11 +517,8 @@ public class BulkUploadControllerITCase extends AbstractAdminControllerITCase {
         // assertEquals(msg, uploadFiles.size(), newInternalCount - origInternalCount );
     }
 
-    private int getCollectionCount(CollectionType type, Class cls) {
-        List<ResourceCollection> col = resourceCollectionDao.findCollectionsOfParent(null, null, cls);
-        if (type == CollectionType.INTERNAL) {
-            logger.info("INTERNAL COLLECTIONS: {} ", col);
-        }
+    private <C extends HierarchicalCollection> int getCollectionCount(CollectionType type, Class<C> cls) {
+        List<C> col = resourceCollectionDao.findCollectionsOfParent(null, null, cls);
         return col.size();
     }
 

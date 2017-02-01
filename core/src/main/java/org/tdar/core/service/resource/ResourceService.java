@@ -486,36 +486,31 @@ public class ResourceService {
             for (RightsBasedResourceCollection collection : proxy.getRightsBasedResourceCollections()) {
                 if (collection instanceof InternalCollection) {
                     logger.info("cloning collection: {}", collection);
-// <<<<<<< mine
-//                     InternalCollection newInternal = new InternalCollection();
-//                     TdarUser owner = collection.getOwner();
-//                     genericDao.refresh(owner);
-//                     newInternal.markUpdated(owner);
-//                     if (save) {
-//                         datasetDao.save(newInternal);
-//                     }
-//                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
-//                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
-//                                 proxyAuthorizedUser.getGeneralPermission());
-//                         newInternal.getAuthorizedUsers().add(newAuthorizedUser);
-//                     }
-//                     resource.getInternalCollections().add(newInternal);
-//                     newInternal.getResources().add(resource);
-//                 } else if (collection instanceof SharedCollection){
-//                     SharedCollection shared = (SharedCollection)collection;
-//                     logger.info("adding to shared collection : {} ", collection);
-//                     if (collection.isTransient() && save) {
-//                         genericDao.save(shared);
-//                     }
-//                     shared.getResources().add(resource);
-//                     resource.getSharedCollections().add(shared);
-//                 } else {
-//                     throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
-// =======
-                    collection.setId(null);
-//>>>>>>> theirs
+                     InternalCollection newInternal = new InternalCollection();
+                     TdarUser owner = collection.getOwner();
+                     genericDao.refresh(owner);
+                     newInternal.markUpdated(owner);
+                     if (save) {
+                         datasetDao.save(newInternal);
+                     }
+                     for (AuthorizedUser proxyAuthorizedUser : collection.getAuthorizedUsers()) {
+                         AuthorizedUser newAuthorizedUser = new AuthorizedUser(proxyAuthorizedUser.getUser(),
+                                 proxyAuthorizedUser.getGeneralPermission());
+                         newInternal.getAuthorizedUsers().add(newAuthorizedUser);
+                     }
+                     resource.getInternalCollections().add(newInternal);
+                     newInternal.getResources().add(resource);
+                 } else if (collection instanceof SharedCollection){
+                     SharedCollection shared = (SharedCollection)collection;
+                     logger.info("adding to shared collection : {} ", collection);
+                     if (collection.isTransient() && save) {
+                         genericDao.save(shared);
+                     }
+                     shared.getResources().add(resource);
+                     resource.getSharedCollections().add(shared);
+                 } else {
+                     throw new TdarRecoverableRuntimeException("resourceService.invalid_collectiontype");
                 }
-                resource.getRightsBasedResourceCollections().add(collection);
             }
 
             cloneSet(resource, resource.getCoverageDates(), proxy.getCoverageDates());

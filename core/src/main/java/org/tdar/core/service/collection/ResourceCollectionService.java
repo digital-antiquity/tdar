@@ -455,7 +455,7 @@ public class ResourceCollectionService extends ServiceInterface.TypedDaoBase<Res
             boolean shouldSave,
             ErrorHandling errorHandling, C collection, Class<C> cls) {
         C collectionToAdd = null;
-        logger.trace("{}", collection);
+        logger.trace("addResourceCollectionToResource({}) {} - {}", cls, collection, resource);
         if (collection instanceof InternalCollection) {
             collectionToAdd = collection;
         } else {
